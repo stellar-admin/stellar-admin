@@ -16,5 +16,6 @@
   <Folder Name="/workflows/">
     <File Path=".github/workflows/ci.yml" />
   </Folder>
+  <Project Path="src/StellarAdmin.Core/StellarAdmin.Core.csproj" />
   <Project Path="src/StellarAdmin.UI/StellarAdmin.UI.csproj" />
 </Solution>

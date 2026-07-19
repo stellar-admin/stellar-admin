@@ -33,6 +33,7 @@
       ReferenceOutputAssembly="false"
       OutputItemType="Analyzer"
     />
+    <ProjectReference Include="..\StellarAdmin.Core\StellarAdmin.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />

@@ -11,7 +11,7 @@ namespace StellarAdmin.UI.TagHelpers;
 public class DropdownMenuContentTagHelper(
     ThemeManager themeManager,
     ICssClassMerger classMerger,
-    IOptions<StellarAdminOptions> options
+    IOptions<StellarAdminUIOptions> options
 ) : StellarAdminTagHelperBase(themeManager, classMerger)
 {
     /// <summary>

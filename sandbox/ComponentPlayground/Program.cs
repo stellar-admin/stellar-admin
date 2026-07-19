@@ -1,10 +1,11 @@
+using StellarAdmin;
 using StellarAdmin.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddStellarAdmin();
+builder.Services.AddStellarAdmin().AddUI();
 
 var app = builder.Build();
 

@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using StellarAdmin;
 using StellarAdmin.UI;
+using StellarAdmin.UI.TagHelpers;
 using StellarAdmin.UI.Theming;
 
 namespace DocsSamples;
@@ -17,7 +19,11 @@ public class Program
             _ => new DemoUrlHelperFactory(new UrlHelperFactory())
         );
         builder.Services.AddRazorPages();
-        builder.Services.AddStellarAdmin().UseTheme<NovaThemePack>();
+        builder
+            .Services.AddStellarAdmin()
+            .AddUI()
+            .UseTheme<NovaThemePack>()
+            .ConfigureMenu(options => options.Color = MenuColor.Inverted);
 
         var app = builder.Build();
 
