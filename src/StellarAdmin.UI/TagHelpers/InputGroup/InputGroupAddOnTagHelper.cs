@@ -1,0 +1,91 @@
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using StellarAdmin.UI.Theming;
+
+namespace StellarAdmin.UI.TagHelpers;
+
+/// <summary>
+///     A decoration attached to an input group, such as an icon, text, or button, aligned to one of
+///     the input's edges. Clicking the add-on focuses the group's input.
+/// </summary>
+[HtmlTargetElement("sa-input-group-addon")]
+public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
+{
+    private static readonly Dictionary<
+        InputGroupAddOnVariantAlignment,
+        ClassElement[]
+    > AlignmentClasses = new Dictionary<InputGroupAddOnVariantAlignment, ClassElement[]>
+    {
+        [InputGroupAddOnVariantAlignment.InlineStart] =
+        [
+            new ThemeToken("sa-input-group-addon-align-inline-start"),
+            "order-first",
+        ],
+        [InputGroupAddOnVariantAlignment.InlineEnd] =
+        [
+            new ThemeToken("sa-input-group-addon-align-inline-end"),
+            "order-last",
+        ],
+        [InputGroupAddOnVariantAlignment.BlockStart] =
+        [
+            new ThemeToken("sa-input-group-addon-align-block-start"),
+            "order-first w-full justify-start",
+        ],
+        [InputGroupAddOnVariantAlignment.BlockEnd] =
+        [
+            new ThemeToken("sa-input-group-addon-align-block-end"),
+            "order-last w-full justify-start",
+        ],
+    };
+
+    /// <summary>
+    ///     Where the add-on is positioned relative to the input.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="InputGroupAddOnVariantAlignment.InlineStart" />.
+    /// </remarks>
+    [HtmlAttributeName("align")]
+    public InputGroupAddOnVariantAlignment? Alignment { get; set; }
+
+    public InputGroupAddOnTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
+        : base(themeManager, classMerger) { }
+
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        var effectiveAlignment = Alignment ?? InputGroupAddOnVariantAlignment.InlineStart;
+
+        output.TagName = "div";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("role", "group");
+        output.Attributes.SetAttribute("data-slot", "input-group-addon");
+        output.Attributes.SetAttribute("data-align", effectiveAlignment.GetDataAttributeText());
+
+        output.Attributes.SetAttribute(
+            "onclick",
+            """
+            (function(e) {
+              if ((e.target).closest('button')) {
+                return;
+              }
+              e.currentTarget.parentElement?.querySelector('input')?.focus();
+            })(event);
+            """
+        );
+
+        output.Attributes.SetAttribute(
+            "class",
+            ClassMerger.Merge(
+                new ClassElement[]
+                {
+                    new ThemeToken("sa-input-group-addon"),
+                    "flex cursor-text items-center justify-center select-none",
+                }
+                    .Union(AlignmentClasses[effectiveAlignment])
+                    .Append(output.GetUserSuppliedClass())
+                    .ToArray()
+            )
+        );
+
+        return Task.CompletedTask;
+    }
+}

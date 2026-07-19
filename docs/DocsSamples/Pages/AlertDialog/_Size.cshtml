@@ -1,0 +1,40 @@
+<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex justify-center gap-2">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--alert-dialog-size-default" command="show-modal">
+            Default
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--alert-dialog-size-sm" command="show-modal">
+            Small
+        </sa-button>
+    </div>
+    <sa-alert-dialog id="--alert-dialog-size-default" size="AlertDialogSize.Default">
+        <sa-alert-dialog-header>
+            <sa-alert-dialog-title>Delete this itinerary?</sa-alert-dialog-title>
+            <sa-alert-dialog-description>
+                Your saved itinerary for Bangkok will be permanently deleted. On larger screens the default alert dialog is wider and left-aligns its content.
+            </sa-alert-dialog-description>
+        </sa-alert-dialog-header>
+        <form method="dialog">
+            <sa-alert-dialog-footer>
+                <sa-alert-dialog-cancel>Cancel</sa-alert-dialog-cancel>
+                <sa-alert-dialog-action variant="ButtonVariant.Destructive">Delete</sa-alert-dialog-action>
+            </sa-alert-dialog-footer>
+        </form>
+    </sa-alert-dialog>
+    <sa-alert-dialog id="--alert-dialog-size-sm" size="AlertDialogSize.Small">
+        <sa-alert-dialog-header>
+            <sa-alert-dialog-title>Delete this itinerary?</sa-alert-dialog-title>
+            <sa-alert-dialog-description>
+                Your saved Bangkok itinerary will be permanently deleted. The small alert dialog stays narrow and centers its content.
+            </sa-alert-dialog-description>
+        </sa-alert-dialog-header>
+        <form method="dialog">
+            <sa-alert-dialog-footer>
+                <sa-alert-dialog-cancel>Cancel</sa-alert-dialog-cancel>
+                <sa-alert-dialog-action variant="ButtonVariant.Destructive">Delete</sa-alert-dialog-action>
+            </sa-alert-dialog-footer>
+        </form>
+    </sa-alert-dialog>
+    <!-- code end -->
+</div>

@@ -1,0 +1,37 @@
+﻿<div class="min-h-[260px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-button-group>
+            <sa-button variant="ButtonVariant.Outline">
+                <sa-icon name="bot"/>
+                Copilot
+            </sa-button>
+            <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" popovertarget="--popover-offset">
+                <sa-icon name="chevron-down"/>
+            </sa-button>
+        </sa-button-group>
+        <sa-popover id="--popover-offset" position="PositionArea.BottomSpanLeft">
+            <sa-stack gap="StackGap.Small">
+                <sa-popover-header>
+                    <sa-popover-title>Start a new task with Copilot</sa-popover-title>
+                    <sa-popover-description>
+                        Describe your task in natural language.
+                    </sa-popover-description>
+                </sa-popover-header>
+                <sa-field>
+                    <sa-field-label for="--button-group-popopver-task" class="sr-only">
+                        Task Description
+                    </sa-field-label>
+                    <sa-textarea
+                        id="--button-group-popopver-task"
+                        placeholder="I need to..."
+                        class="resize-none"/>
+                    <sa-field-description>
+                        Copilot will open a pull request for review.
+                    </sa-field-description>
+                </sa-field>
+            </sa-stack>
+        </sa-popover>
+        <!-- code end -->
+    </sa-group>
+</div>

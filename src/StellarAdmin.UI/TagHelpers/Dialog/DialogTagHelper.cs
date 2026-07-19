@@ -1,0 +1,38 @@
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using StellarAdmin.UI.Theming;
+
+namespace StellarAdmin.UI.TagHelpers;
+
+/// <summary>
+///     A modal window overlaid on the page, rendered over a native <c>&lt;dialog&gt;</c> element.
+///     Open and close it with the Invoker Commands API — a trigger button carrying
+///     <c>commandfor</c> and <c>command="show-modal"</c> or <c>command="close"</c>.
+/// </summary>
+[HtmlTargetElement("sa-dialog")]
+public class DialogTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(themeManager, classMerger)
+{
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "dialog";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "dialog-content");
+        output.Attributes.SetAttribute(
+            "class",
+            ClassMerger.Merge(
+                new ThemeToken("sa-dialog-content"),
+                "fixed inset-0 m-auto outline-none",
+                "backdrop:supports-backdrop-filter:backdrop-blur-xs",
+                output.GetUserSuppliedClass()
+            )
+        );
+
+        // Wrap inside web component
+        output.PreElement.AppendHtml("<sel-dialog>");
+        output.PostElement.AppendHtml("</sel-dialog>");
+
+        return Task.CompletedTask;
+    }
+}

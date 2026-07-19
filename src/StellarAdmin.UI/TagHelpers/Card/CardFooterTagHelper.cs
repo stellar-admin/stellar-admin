@@ -1,0 +1,32 @@
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using StellarAdmin.UI.Theming;
+
+namespace StellarAdmin.UI.TagHelpers;
+
+/// <summary>
+///     The footer region of a card; typically contains actions or supplementary information.
+/// </summary>
+[HtmlTargetElement("sa-card-footer")]
+public class CardFooterTagHelper : StellarAdminTagHelperBase
+{
+    public CardFooterTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
+        : base(themeManager, classMerger) { }
+
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "div";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "card-footer");
+        output.Attributes.SetAttribute(
+            "class",
+            BuildClassString(
+                new ThemeToken("sa-card-footer"),
+                "flex items-center",
+                output.GetUserSuppliedClass()
+            )
+        );
+
+        return Task.CompletedTask;
+    }
+}

@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/docs/">
+    <Project Path="docs/DocsSamples/DocsSamples.csproj" />
+    <Project Path="docs/DocsSamplesGenerator/DocsSamplesGenerator.csproj" />
+    <Project Path="docs/SkillsGenerator/SkillsGenerator.csproj" />
+  </Folder>
+  <Folder Name="/gen/">
+    <Project Path="gen/StellarAdmin.UI.Generators/StellarAdmin.UI.Generators.csproj" />
+  </Folder>
+  <Folder Name="/sandbox/">
+    <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
+  </Folder>
+  <Folder Name="/util/">
+    <Project Path="util/ThemePackGenerator/ThemePackGenerator.csproj" />
+  </Folder>
+  <Folder Name="/workflows/">
+    <File Path=".github/workflows/ci.yml" />
+  </Folder>
+  <Project Path="src/StellarAdmin.UI/StellarAdmin.UI.csproj" />
+</Solution>

@@ -1,0 +1,49 @@
+﻿<div class="min-h-[250px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-button variant="ButtonVariant.Outline" popovertarget="--popover-intro">
+            <sa-icon name="sliders-horizontal" class="text-muted-foreground"/>
+            Configure View
+        </sa-button>
+        <sa-popover id="--popover-intro">
+            <div class="flex flex-col gap-y-3">
+                <sa-field-set>
+                    <sa-field-legend variant="FieldLegendVariant.Label">Sort By</sa-field-legend>
+                    <sa-field-group data-slot="radio-group">
+                        <sa-field orientation="FieldOrientation.Horizontal">
+                            <sa-input type="radio" name="sort-by" value="departure" id="sort-departure" checked/>
+                            <sa-field-label for="sort-departure" class="font-normal">
+                                Departure Date
+                            </sa-field-label>
+                        </sa-field>
+                        <sa-field orientation="FieldOrientation.Horizontal">
+                            <sa-input type="radio" name="sort-by" value="posted" id="sort-posted"/>
+                            <sa-field-label for="sort-posted" class="font-normal">
+                                Date Posted
+                            </sa-field-label>
+                        </sa-field>
+                    </sa-field-group>
+                </sa-field-set>
+                <sa-separator orientation="SeparatorOrientation.Horizontal"/>
+                <sa-field-set>
+                    <sa-field-legend variant="FieldLegendVariant.Label">View As</sa-field-legend>
+                    <sa-field-group data-slot="radio-group">
+                        <sa-field orientation="FieldOrientation.Horizontal">
+                            <sa-input type="radio" name="view-as" value="departure" id="view-list" checked/>
+                            <sa-field-label for="view-list" class="font-normal">
+                                List
+                            </sa-field-label>
+                        </sa-field>
+                        <sa-field orientation="FieldOrientation.Horizontal">
+                            <sa-input type="radio" name="view-as" value="posted" id="view-gallery"/>
+                            <sa-field-label for="view-gallery" class="font-normal">
+                                Gallery
+                            </sa-field-label>
+                        </sa-field>
+                    </sa-field-group>
+                </sa-field-set>
+            </div>
+        </sa-popover>
+        <!-- code end -->
+    </sa-group>
+</div>

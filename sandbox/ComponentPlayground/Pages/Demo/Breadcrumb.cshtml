@@ -1,0 +1,28 @@
+﻿@page
+@model ComponentPlayground.Pages.Demo.Breadcrumb
+
+<div>
+    <sa-breadcrumb>
+        <sa-breadcrumb-list>
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-link asp-page="/Demo/Alert">
+                    Home
+                </sa-breadcrumb-link>
+            </sa-breadcrumb-item>
+            <sa-breadcrumb-separator />
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-ellipsis />
+            </sa-breadcrumb-item>
+            <sa-breadcrumb-separator />
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-link asp-page="/Demo/Field">
+                    Components
+                </sa-breadcrumb-link>
+            </sa-breadcrumb-item>
+            <sa-breadcrumb-separator><sa-icon name="chevrons-right"/></sa-breadcrumb-separator>
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-page>Breadcrumb</sa-breadcrumb-page>
+            </sa-breadcrumb-item>
+        </sa-breadcrumb-list>
+    </sa-breadcrumb>
+</div>

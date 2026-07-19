@@ -1,0 +1,60 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex justify-center gap-2">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-default" command="show-modal">
+            Default Dismiss
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-light" command="show-modal">
+            Light Dismiss
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-manual" command="show-modal">
+            Manual Dismiss
+        </sa-button>
+    </div>
+    <sa-sheet id="--sheet-dismiss-default">
+        <sa-sheet-header>
+            <sa-sheet-title>Default Dismiss</sa-sheet-title>
+        </sa-sheet-header>
+        <div class="p-4">
+            <p>This sheet can be closed by pressing the
+                <sa-kbd>Esc</sa-kbd>
+                key or clicking the close button below.
+            </p>
+        </div>
+        <sa-sheet-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-default" command="close">
+                Close
+            </sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <sa-sheet id="--sheet-dismiss-light" closedby="any">
+        <sa-sheet-header>
+            <sa-sheet-title>Light Dismiss</sa-sheet-title>
+        </sa-sheet-header>
+        <div class="p-4">
+            <p>This sheet can be closed by pressing the
+                <sa-kbd>Esc</sa-kbd>
+                key, clicking on the backdrop, or clicking the close button below.
+            </p>
+        </div>
+        <sa-sheet-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-light" command="close">
+                Close
+            </sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <sa-sheet id="--sheet-dismiss-manual" closedby="none">
+        <sa-sheet-header>
+            <sa-sheet-title>Manual Dismiss</sa-sheet-title>
+        </sa-sheet-header>
+        <div class="p-4">
+            <p>This sheet can only be closed by clicking the close button below.</p>
+        </div>
+        <sa-sheet-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-dismiss-manual" command="close">
+                Close
+            </sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <!-- code end -->
+</div>

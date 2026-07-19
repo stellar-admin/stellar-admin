@@ -1,0 +1,52 @@
+﻿@{
+    var bookingStatusList = Html.GetEnumSelectList<BookingStatus>();
+}
+<sa-table>
+    <sa-table-caption>Total Active Value includes Confirmed and Pending bookings only.</sa-table-caption>
+    <sa-table-header>
+        <sa-table-row>
+            <sa-table-head class="w-[100px]">Booking #</sa-table-head>
+            <sa-table-head>Status</sa-table-head>
+            <sa-table-head>Destination</sa-table-head>
+            <sa-table-head class="text-right">Amount</sa-table-head>
+        </sa-table-row>
+    </sa-table-header>
+    <sa-table-body>
+        @foreach (var booking in StaticData.Bookings)
+        {
+            <sa-table-row>
+                <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                <sa-table-cell>
+                    <sa-select size="SelectSize.Small">
+                        @foreach (var selectListItem in bookingStatusList)
+                        {
+                            var selected = BookingStatus.TryParse(selectListItem.Value, out BookingStatus status) && booking.Status == status;
+                            
+                            <option value="@selectListItem.Value" selected="@(selected)">@selectListItem.Text</option>
+                        }
+                    </sa-select>
+                </sa-table-cell>
+                <sa-table-cell>@booking.Destination</sa-table-cell>
+                <sa-table-cell class="text-right">
+                    @booking.Amount.ToString("N")
+                </sa-table-cell>
+            </sa-table-row>    
+        }
+    </sa-table-body>
+    <sa-table-footer>
+        <sa-table-row>
+            <sa-table-cell colspan="3">
+                Total Active Value
+            </sa-table-cell>
+            <sa-table-cell class="text-right">
+                @{
+                    var activeValue = StaticData.Bookings
+                        .Where(b => b.Status != BookingStatus.Cancelled)
+                        .Select(b => b.Amount)
+                        .Sum();
+                }
+                @activeValue.ToString("N")
+            </sa-table-cell>
+        </sa-table-row>
+    </sa-table-footer>
+</sa-table>

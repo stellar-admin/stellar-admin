@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <RootNamespace>StellarAdmin.UI</RootNamespace>
+    <Description>A collection of beautifully designed components you can use to create CRUD screens in ASP.NET Core MVC and Razor Pages applications</Description>
+    <!-- Ship XML documentation so consumers get IntelliSense on the tag helpers.
+         The SDK packs the generated .xml alongside the assembly automatically. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA2264</NoWarn>
+    <!-- CS1591 (missing XML comment) also fires on DI constructors and ProcessAsync
+         overrides, which never appear in Razor IntelliSense. The consumer-facing surface
+         (tag-helper classes, [HtmlAttributeName] properties, enums) is documented; the rest
+         is intentionally suppressed rather than filled with boilerplate. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="TailwindMerge.NET" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\gen\StellarAdmin.UI.Generators\StellarAdmin.UI.Generators.csproj"
+      ReferenceOutputAssembly="false"
+      OutputItemType="Analyzer"
+    />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <!-- Client -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" Pack="false" />
+  </ItemGroup>
+  <Target Name="Client" BeforeTargets="Build">
+    <Exec
+      WorkingDirectory="Client"
+      Command="npm install"
+      Condition=" !Exists('Client/node_modules') "
+    />
+    <Exec
+      Command="npm run build:css"
+      WorkingDirectory="Client"
+      Condition=" '$(Configuration)' == 'Debug' "
+    />
+    <Exec
+      Command="npm run build"
+      WorkingDirectory="Client"
+      Condition=" '$(Configuration)' == 'Release' "
+    />
+  </Target>
+  <!-- Icon packs -->
+  <ItemGroup>
+    <Content Update="Icons/Definitions/**/*.*" Pack="false" />
+    <!--<AdditionalFiles Include="Icons\Definitions\*.json" />-->
+    <AdditionalFiles Include="Icons\Definitions\Lucide.json" />
+  </ItemGroup>
+  <!-- Theme packs -->
+  <ItemGroup>
+    <Content Update="Theming/ThemePacks/**/*.*" Pack="false" />
+    <AdditionalFiles Include="Theming\ThemePacks\*.themepack" />
+  </ItemGroup>
+  <!-- Configure namespace provider for TagHelpers -->
+  <ItemGroup>
+    <Folder Include="TagHelpers\**\" NamespaceProvider="False" />
+    <Folder Remove="TagHelpers\" />
+  </ItemGroup>
+</Project>

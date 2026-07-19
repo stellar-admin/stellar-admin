@@ -1,0 +1,91 @@
+﻿@page
+@using StellarAdmin.UI.TagHelpers
+@model ComponentPlayground.Pages.Demo.Item
+
+<sa-item>
+    <sa-item-content>
+        <sa-item-title>Basic Item</sa-item-title>
+        <sa-item-description>
+            A simple item with title and description.
+        </sa-item-description>
+    </sa-item-content>
+</sa-item>
+
+<sa-item variant="ItemVariant.Muted">
+    <sa-item-content>
+        <sa-item-title>Basic Item</sa-item-title>
+        <sa-item-description>
+            A simple item with title and description.
+        </sa-item-description>
+    </sa-item-content>
+</sa-item>
+<p>&nbsp;</p>
+<sa-item variant="ItemVariant.Outline">
+    <sa-item-content>
+        <sa-item-title>Basic Item</sa-item-title>
+        <sa-item-description>
+            A simple item with title and description.
+        </sa-item-description>
+    </sa-item-content>
+</sa-item>
+<p>&nbsp;</p>
+<sa-item variant="ItemVariant.Outline" size="ItemSize.Small">
+    <sa-item-media>
+        <sa-icon name="badge-check"/>
+    </sa-item-media>
+    <sa-item-content>
+        <sa-item-title>Your profile has been verified.</sa-item-title>
+    </sa-item-content>
+    <sa-item-actions>
+        <sa-icon name="chevron-right"/>
+    </sa-item-actions>
+</sa-item>
+<p>&nbsp;</p>
+<sa-item variant="ItemVariant.Outline">
+    <sa-item-media>
+        <sa-avatar src="https://github.com/shadcn.png" />
+    </sa-item-media>
+    <sa-item-content>
+        <sa-item-title>Jerrie Pelser</sa-item-title>
+        <sa-item-description>Creator of StellarAdmin.UI</sa-item-description>
+    </sa-item-content>
+</sa-item>
+<p>&nbsp;</p>
+<sa-item-group>
+    <sa-item>
+        <sa-item-media>
+            <sa-icon name="badge-check"/>
+        </sa-item-media>
+        <sa-item-content>
+            <sa-item-title>Basic Item</sa-item-title>
+            <sa-item-description>
+                A simple item with title and description.
+            </sa-item-description>
+        </sa-item-content>
+    </sa-item>
+    <sa-item-separator></sa-item-separator>
+    <sa-item>
+        <sa-item-media>
+            <sa-icon name="badge-check"/>
+        </sa-item-media>
+        <sa-item-content>
+            <sa-item-title>Basic Item</sa-item-title>
+            <sa-item-description>
+                A simple item with title and description.
+            </sa-item-description>
+        </sa-item-content>
+    </sa-item>
+    <sa-item-separator></sa-item-separator>
+    <sa-item>
+        <sa-item-media>
+            <sa-icon name="badge-check"/>
+        </sa-item-media>
+        <sa-item-content>
+            <sa-item-title>Basic Item</sa-item-title>
+            <sa-item-description>
+                A simple item with title and description.
+            </sa-item-description>
+        </sa-item-content>
+    </sa-item>
+</sa-item-group>
+

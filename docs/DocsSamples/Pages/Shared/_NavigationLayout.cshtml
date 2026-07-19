@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<sa-sidebar-wrapper>
+    <sa-sidebar variant="SidebarVariant.Inset">
+        <sa-sidebar-content>
+            @{
+                List<DemoGroup> demoGroups =
+                [
+                    new DemoGroup("Layout",
+                    [
+                        new DemoItem("Card", "/Card/Index"),
+                        new DemoItem("Container", "/Container/Index"),
+                        new DemoItem("Group", "/Group/Index"),
+                        new DemoItem("Separator", "/Separator/Index"),
+                        new DemoItem("Stack", "/Stack/Index"),
+                    ]),
+                    new DemoGroup("Forms",
+                    [
+                        new DemoItem("Checkbox", "/Checkbox/Index"),
+                        new DemoItem("Field", "/Field/Index"),
+                        new DemoItem("Input", "/Input/Index"),
+                        new DemoItem("Input Group", "/InputGroup/Index"),
+                        new DemoItem("Input OTP", "/InputOtp/Index"),
+                        new DemoItem("Radio", "/Radio/Index"),
+                        new DemoItem("Select", "/Select/Index"),
+                        new DemoItem("Slider", "/Slider/Index"),
+                        new DemoItem("Switch", "/Switch/Index"),
+                        new DemoItem("Textarea", "/Textarea/Index"),
+                        new DemoItem("Toggle", "/Toggle/Index"),
+                        new DemoItem("Toggle Group", "/ToggleGroup/Index"),
+                    ]),
+                    new DemoGroup("Actions",
+                    [
+                        new DemoItem("Button", "/Button/Index"),
+                        new DemoItem("Button Group", "/ButtonGroup/Index"),
+                        new DemoItem("Link Button", "/LinkButton/Index"),
+                    ]),
+                    new DemoGroup("Data Display",
+                    [
+                        new DemoItem("Avatar", "/Avatar/Index"),
+                        new DemoItem("Badge", "/Badge/Index"),
+                        new DemoItem("Empty", "/Empty/Index"),
+                        new DemoItem("Icon", "/Icon/Index"),
+                        new DemoItem("Item", "/Item/Index"),
+                        new DemoItem("Kbd", "/Kbd/Index"),
+                        new DemoItem("Table", "/Table/Index"),
+                    ]),
+                    new DemoGroup("Feedback",
+                    [
+                        new DemoItem("Alert", "/Alert/Index"),
+                        new DemoItem("Progress", "/Progress/Index"),
+                        new DemoItem("Skeleton", "/Skeleton/Index"),
+                        new DemoItem("Spinner", "/Spinner/Index"),
+                    ]),
+                    new DemoGroup("Overlays",
+                    [
+                        new DemoItem("Alert Dialog", "/AlertDialog/Index"),
+                        new DemoItem("Dialog", "/Dialog/Index"),
+                        new DemoItem("Dropdown Menu", "/DropdownMenu/Index"),
+                        new DemoItem("Popover", "/Popover/Index"),
+                        new DemoItem("Sheet", "/Sheet/Index"),
+                        new DemoItem("Tooltip", "/Tooltip/Index"),
+                    ]),
+                    new DemoGroup("Navigation",
+                    [
+                        new DemoItem("Accordion", "/Accordion/Index"),
+                        new DemoItem("Breadcrumb", "/Breadcrumb/Index"),
+                        new DemoItem("Collapsible", "/Collapsible/Index"),
+                        new DemoItem("Pagination", "/Pagination/Index"),
+                        new DemoItem("Sidebar", "/Sidebar/Index"),
+                        new DemoItem("Tabs", "/Tabs/Index"),
+                    ]),
+                    new DemoGroup("JavaScript Helpers",
+                    [
+                        new DemoItem("Js/AlertDialog", "/Js/AlertDialog/Index"),
+                        new DemoItem("Js/Dialog", "/Js/Dialog/Index"),
+                    ])
+                ];
+            }
+            @foreach (var demoGroup in demoGroups)
+            {
+                <sa-sidebar-group>
+                    <sa-sidebar-group-label>@demoGroup.Title</sa-sidebar-group-label>
+                    <sa-sidebar-group-content>
+                        <sa-sidebar-menu>
+                            @foreach (var demoItem in demoGroup.Items)
+                            {
+                                <sa-sidebar-menu-item>
+                                    <sa-sidebar-menu-link asp-page="@demoItem.Page">
+                                        @demoItem.Title
+                                    </sa-sidebar-menu-link>
+                                </sa-sidebar-menu-item>
+                            }
+                        </sa-sidebar-menu>
+                    </sa-sidebar-group-content>
+                </sa-sidebar-group>
+            }
+        </sa-sidebar-content>
+        @*<sa-sidebar-footer>Footer</sa-sidebar-footer>*@
+    </sa-sidebar>
+    <sa-sidebar-inset>
+        <div class="py-8 flex w-full justify-center">
+            @RenderBody()
+        </div>
+    </sa-sidebar-inset>
+</sa-sidebar-wrapper>
+@section Scripts {
+    @await RenderSectionAsync("Scripts", false)
+}

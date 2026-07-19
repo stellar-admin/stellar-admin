@@ -1,0 +1,39 @@
+<div class="min-h-[330px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger variant="ButtonVariant.Outline">
+                <sa-icon name="compass" class="text-muted-foreground"/>
+                Quick Links
+            </sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content class="w-56">
+                <sa-dropdown-menu-label>Navigate</sa-dropdown-menu-label>
+                <sa-dropdown-menu-separator/>
+                <sa-dropdown-menu-group>
+                    <!-- Link to a Razor Page with a route value -->
+                    <sa-dropdown-menu-item asp-page="/Booking/Details" asp-route-id="TRP-4821">
+                        <sa-icon name="luggage"/>
+                        View Booking
+                    </sa-dropdown-menu-item>
+                    <!-- Link to an MVC controller action -->
+                    <sa-dropdown-menu-item asp-controller="Search" asp-action="Index">
+                        <sa-icon name="search"/>
+                        Search Trips
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-item asp-controller="User" asp-action="Profile">
+                        <sa-icon name="circle-user-round"/>
+                        My Profile
+                    </sa-dropdown-menu-item>
+                </sa-dropdown-menu-group>
+                <sa-dropdown-menu-separator/>
+                <!-- External link via a raw href -->
+                <sa-dropdown-menu-item href="https://help.voyager.travel" target="_blank" rel="noopener noreferrer">
+                    <sa-icon name="life-buoy"/>
+                    Help Center
+                    <sa-icon name="external-link" class="ml-auto size-4"/>
+                </sa-dropdown-menu-item>
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+        <!-- code end -->
+    </sa-group>
+</div>

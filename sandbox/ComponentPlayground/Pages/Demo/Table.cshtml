@@ -1,0 +1,26 @@
+﻿@page
+@model ComponentPlayground.Pages.Demo.Table
+
+<div class="flex flex-col gap-y-4 p-10">
+    <div class="max-w-2xl">
+        <sa-table>
+            <sa-table-caption>A list of your recent invoices.</sa-table-caption>
+            <sa-table-header>
+                <sa-table-row>
+                    <sa-table-head class="w-[100px]">Invoice</sa-table-head>
+                    <sa-table-head>Status</sa-table-head>
+                    <sa-table-head>Method</sa-table-head>
+                    <sa-table-head class="text-right">Amount</sa-table-head>
+                </sa-table-row>
+            </sa-table-header>
+            <sa-table-body>
+                <sa-table-row>
+                    <sa-table-cell class="font-medium">INV001</sa-table-cell>
+                    <sa-table-cell>Paid</sa-table-cell>
+                    <sa-table-cell>Credit Card</sa-table-cell>
+                    <sa-table-cell class="text-right">$250.00</sa-table-cell>
+                </sa-table-row>
+            </sa-table-body>
+        </sa-table>
+    </div>
+</div>

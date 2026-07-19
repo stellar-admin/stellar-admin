@@ -1,0 +1,49 @@
+﻿@model ImplicitModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var months = Enumerable.Range(1, 12).Select(i => $"{i:00}").Select(i => new SelectListItem(i, i));
+        var years = Enumerable.Range(2024, 2029).Select(i => new SelectListItem(i.ToString(), i.ToString()));
+    }
+  
+    <sa-field-group>
+        <sa-field-set>
+            <sa-field-legend>Payment Method</sa-field-legend>
+            <sa-field-description>
+                All transactions are secure and encrypted
+            </sa-field-description>
+            <sa-field-group>
+                <sa-input asp-for="Name"/>
+                <sa-input asp-for="CardNumber"/>
+                <div class="grid grid-cols-3 gap-4">
+                    <sa-select asp-for="Month" asp-items="@months" />
+                    <sa-select asp-for="Year" asp-items="@years" />
+                    <sa-input asp-for="Cvv"/>
+                </div>
+            </sa-field-group>
+        </sa-field-set>
+        <sa-field-separator/>
+        <sa-field-set>
+            <sa-field-legend>Billing Address</sa-field-legend>
+            <sa-field-description>
+                The billing address associated with your payment method
+            </sa-field-description>
+            <sa-field-group>
+                <sa-input asp-for="IsBillingAddressSame" />
+            </sa-field-group>
+        </sa-field-set>
+        <sa-field-set>
+            <sa-field-group>
+                <sa-textarea asp-for="Comments"/>
+            </sa-field-group>
+        </sa-field-set>
+        <sa-field orientation="FieldOrientation.Horizontal">
+            <sa-button type="button">Submit</sa-button>
+            <sa-button variant="ButtonVariant.Outline" type="button">
+                Cancel
+            </sa-button>
+        </sa-field>
+    </sa-field-group>
+    <!-- code end -->
+</div>

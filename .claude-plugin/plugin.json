@@ -1,0 +1,11 @@
+{
+  "name": "stellar-admin",
+  "description": "Build ASP.NET Core MVC / Razor Pages UIs with StellarAdmin.UI tag helpers. Bundles the component catalog and conventions plus task skills for forms, layout, and theming.",
+  "author": {
+    "name": "Jerrie Pelser"
+  },
+  "homepage": "https://github.com/stellar-admin/stellar-admin",
+  "repository": "https://github.com/stellar-admin/stellar-admin",
+  "license": "MIT",
+  "keywords": ["stellar-admin", "tag-helper", "aspnetcore", "razor", "mvc", "shadcn", "ui"]
+}

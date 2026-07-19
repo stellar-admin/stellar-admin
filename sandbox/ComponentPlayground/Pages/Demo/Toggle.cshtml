@@ -1,0 +1,95 @@
+@page
+@model ComponentPlayground.Pages.Demo.Toggle
+
+<sa-container class="py-6 lg:py-8">
+    <sa-stack>
+        <form method="post" class="flex w-full max-w-md flex-col gap-8">
+            <div class="flex flex-col gap-3">
+                <h2 class="bg-gray-100 text-base font-bold">Single toggle (bool)</h2>
+                <sa-toggle asp-for="Model.BreakfastIncluded" variant="ToggleVariant.Outline" render-field="false">
+                    <sa-icon name="coffee"/>
+                    Breakfast included
+                </sa-toggle>
+            </div>
+            <div class="flex flex-col gap-3">
+                <h2 class="bg-gray-100 text-base font-bold">Single-select group (string)</h2>
+                <sa-toggle-group asp-for="Model.ResultsView" type="ToggleGroupType.Single" variant="ToggleVariant.Outline">
+                    <sa-toggle-group-item value="list" aria-label="List view">
+                        <sa-icon name="list"/>
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="grid" aria-label="Grid view">
+                        <sa-icon name="layout-grid"/>
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="map" aria-label="Map view">
+                        <sa-icon name="map"/>
+                    </sa-toggle-group-item>
+                </sa-toggle-group>
+            </div>
+            <div class="flex flex-col gap-3">
+                <h2 class="bg-gray-100 text-base font-bold">Multi-select group (string[])</h2>
+                <sa-toggle-group asp-for="Model.Amenities" type="ToggleGroupType.Multiple" variant="ToggleVariant.Outline">
+                    <sa-toggle-group-item value="wifi" aria-label="Free Wi-Fi">
+                        <sa-icon name="wifi"/>
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="pool" aria-label="Pool">
+                        <sa-icon name="waves"/>
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="parking" aria-label="Parking">
+                        <sa-icon name="square-parking"/>
+                    </sa-toggle-group-item>
+                </sa-toggle-group>
+            </div>
+            <div class="flex flex-col gap-3">
+                <h2 class="bg-gray-100 text-base font-bold">Single-select group (enum)</h2>
+                <sa-toggle-group asp-for="Model.Sort" type="ToggleGroupType.Single" variant="ToggleVariant.Outline">
+                    <sa-toggle-group-item value="Recommended">
+                        <sa-icon name="sparkles"/>
+                        Recommended
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="Price">
+                        <sa-icon name="banknote"/>
+                        Price
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="Rating">
+                        <sa-icon name="star"/>
+                        Rating
+                    </sa-toggle-group-item>
+                </sa-toggle-group>
+            </div>
+            <div class="flex flex-col gap-3">
+                <h2 class="bg-gray-100 text-base font-bold">Multi-select group (enum[])</h2>
+                <sa-toggle-group asp-for="Model.TripStyles" type="ToggleGroupType.Multiple" variant="ToggleVariant.Outline">
+                    <sa-toggle-group-item value="Beach">
+                        <sa-icon name="sailboat"/>
+                        Beach
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="City">
+                        <sa-icon name="building"/>
+                        City
+                    </sa-toggle-group-item>
+                    <sa-toggle-group-item value="Camping">
+                        <sa-icon name="tent"/>
+                        Camping
+                    </sa-toggle-group-item>
+                </sa-toggle-group>
+            </div>
+            <sa-button type="submit">Submit</sa-button>
+        </form>
+
+        @if (Model.Posted)
+        {
+            <div class="w-full max-w-md rounded-md border border-green-600 bg-green-50 p-4 text-sm">
+                <p class="font-bold">Posted values</p>
+                <p>BreakfastIncluded = <code>@Model.Model.BreakfastIncluded</code></p>
+                <p>ResultsView = <code>@Model.Model.ResultsView</code></p>
+                <p>Amenities = <code>[@string.Join(", ", Model.Model.Amenities)]</code></p>
+                <p>Sort = <code>@Model.Model.Sort</code></p>
+                <p>TripStyles = <code>[@string.Join(", ", Model.Model.TripStyles)]</code></p>
+            </div>
+        }
+    </sa-stack>
+</sa-container>
+
+@section Scripts {
+    <script src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
+}

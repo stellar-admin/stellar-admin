@@ -1,0 +1,68 @@
+﻿<!--strip
+asp-antiforgery="false"
+-->
+<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-stack align="StackAlign.Start" class="min-w-md">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-return-form-value-sheet" command="show-modal">
+            Open Sheet with Form
+        </sa-button>
+        <label class="text-sm font-bold">Output:</label>
+        <div class="font-mono w-full h-40 overflow-y-auto bg-gray-50" id="--sheet-return-form-value-output">-</div>
+    </sa-stack>
+    <sa-sheet id="--sheet-return-form-value-sheet">
+        <form method="dialog" asp-antiforgery="false" class="flex flex-col h-full gap-4">
+            <sa-sheet-header>
+                <sa-sheet-title>Edit profile</sa-sheet-title>
+                <sa-sheet-description>Make changes to your profile here. Click save when you're done.
+                </sa-sheet-description>
+            </sa-sheet-header>
+            <sa-field-group class="grid gap-6 px-4">
+                <sa-field>
+                    <sa-label for="--sheet-return-form-value-name">Name</sa-label>
+                    <sa-input id="--sheet-return-form-value-name" name="name" defaultValue="Ibn Battuta" required/>
+                </sa-field>
+                <sa-field>
+                    <sa-label for="--sheet-return-form-value-username">Username</sa-label>
+                    <sa-input id="--sheet-return-form-value-username" name="username" defaultValue="@@ibnbattuta"
+                               required/>
+                </sa-field>
+            </sa-field-group>
+            <sa-sheet-footer>
+                <sa-button variant="ButtonVariant.Outline" type="button" commandfor="--sheet-return-form-value-sheet"
+                            command="close">
+                    Cancel
+                </sa-button>
+                <sa-button type="submit" value="confirm">
+                    Save Changes
+                </sa-button>
+            </sa-sheet-footer>
+        </form>
+    </sa-sheet>
+    <script>
+        (function() {
+            const sheet = document.getElementById("--sheet-return-form-value-sheet");
+            const output = document.getElementById("--sheet-return-form-value-output");
+
+            sheet.addEventListener("close", () => {
+                const cancelled = sheet.returnValue === "" || sheet.returnValue === "cancel";
+                if (cancelled) {
+                    output.innerHTML = "Cancelled";
+                    return;
+                }
+
+                const form = sheet.querySelector("form");
+                const data = Object.fromEntries(new FormData(form));
+                output.innerHTML = JSON.stringify(data, null, 2);
+            });
+            sheet.addEventListener("toggle", (e) => {
+                // Reset the return value every time the dialog opens to prevent a previous
+                // returnValue from being returned when pressing the Esc key
+                if (e.newState === "open") {
+                    sheet.returnValue = "";
+                }
+            });
+        })();
+    </script>
+    <!-- code end -->
+</div>

@@ -1,0 +1,196 @@
+﻿@page
+@using StellarAdmin.UI.TagHelpers
+@model ComponentPlayground.Pages.Demo.Field
+
+<div class="flex flex-col gap-y-4 p-12">
+  <p>Field</p>
+  <sa-field>
+    <sa-field-label>
+      First Name
+    </sa-field-label>
+    <sa-input/>
+    <sa-field-error>This is a super-dooper error</sa-field-error>
+    <sa-field-description>
+      First name as displayed on card
+    </sa-field-description>
+  </sa-field>
+  <sa-separator />
+  <p>Field using shorthand</p>
+  <sa-input render-field="false" 
+            label="First Name" 
+            description="First name as displayed on card" 
+            error="This is a super-dooper error"/>
+  <sa-separator />
+  <p>Explicit field bound to model</p>
+  <sa-field>
+    <sa-field-label asp-for="Model.FirstName"/>
+    <sa-input asp-for="Model.FirstName"/>
+    <sa-field-error asp-for="Model.FirstName"/>
+    <sa-field-description asp-for="Model.FirstName"/>
+  </sa-field>
+  <sa-separator />
+  <p>Implicit field bound to model</p>
+  <sa-input asp-for="Model.FirstName"/>
+  <sa-separator />
+  <p>Card</p>
+  <sa-card class="w-full max-w-md">
+    <sa-card-content>
+      <form>
+        <sa-field-group>
+          <sa-field-set>
+            <sa-field-legend>Payment Method</sa-field-legend>
+            <sa-field-description>
+              All transactions are secure and encrypted
+            </sa-field-description>
+            <sa-field-group>
+              <sa-field>
+                <sa-field-label for="checkout-7j9-card-name-43j">
+                  Name on Card
+                </sa-field-label>
+                <sa-input
+                  id="checkout-7j9-card-name-43j"
+                  placeholder="Evil Rabbit"
+                  required/>
+              </sa-field>
+              <sa-field>
+                <sa-field-label for="checkout-7j9-card-number-uw1">
+                  Card Number
+                </sa-field-label>
+                <sa-input
+                  id="checkout-7j9-card-number-uw1"
+                  placeholder="1234 5678 9012 3456"
+                  required/>
+                <sa-field-description>
+                  Enter your 16-digit card number
+                </sa-field-description>
+              </sa-field>
+              <div class="grid grid-cols-3 gap-4">
+                <sa-field>
+                  <sa-field-label for="checkout-exp-month-ts6">
+                    Month
+                  </sa-field-label>
+                  <sa-select>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </sa-select>
+                </sa-field>
+                <sa-field>
+                  <sa-field-label for="checkout-7j9-exp-year-f59">
+                    Year
+                  </sa-field-label>
+                  <sa-select defaultValue="">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                  </sa-select>
+                </sa-field>
+                <sa-field>
+                  <sa-field-label for="checkout-7j9-cvv">CVV</sa-field-label>
+                  <sa-input id="checkout-7j9-cvv" placeholder="123" required/>
+                </sa-field>
+              </div>
+            </sa-field-group>
+          </sa-field-set>
+          <sa-field-separator/>
+          <sa-field-set>
+            <sa-field-legend>Billing Address</sa-field-legend>
+            <sa-field-description>
+              The billing address associated with your payment method
+            </sa-field-description>
+            <sa-field-group>
+              <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input
+                  type="checkbox"
+                  id="checkout-7j9-same-as-shipping-wgm"/>
+                <sa-field-label
+                  htmlFor="checkout-7j9-same-as-shipping-wgm"
+                  class="font-normal">
+                  Same as shipping address
+                </sa-field-label>
+              </sa-field>
+            </sa-field-group>
+          </sa-field-set>
+          <sa-field-set>
+            <sa-field-group>
+              <sa-field>
+                <sa-field-label for="checkout-7j9-optional-comments">
+                  Comments
+                </sa-field-label>
+                <sa-textarea
+                  id="checkout-7j9-optional-comments"
+                  name="checkout-7j9-optional-comments"
+                  placeholder="Add any additional comments"
+                  class="resize-none">These are some comments...
+                </sa-textarea>
+              </sa-field>
+            </sa-field-group>
+          </sa-field-set>
+          <sa-field orientation="FieldOrientation.Horizontal">
+            <sa-button type="submit">Submit</sa-button>
+            <sa-button variant="ButtonVariant.Outline" type="button">
+              Cancel
+            </sa-button>
+          </sa-field>
+        </sa-field-group>
+      </form>
+    </sa-card-content>
+  </sa-card>
+
+  <sa-card class="w-full max-w-4xl">
+    <sa-card-content>
+      <form>
+        <sa-field-set>
+          <sa-field-legend>Profile</sa-field-legend>
+          <sa-field-description>Fill in your profile information.</sa-field-description>
+          <sa-field-separator/>
+          <sa-field-group>
+            <sa-field orientation="FieldOrientation.Responsive">
+              <sa-field-content>
+                <sa-field-label for="name">Name</sa-field-label>
+                <sa-field-description>
+                  Provide your full name for identification
+                </sa-field-description>
+              </sa-field-content>
+              <sa-input id="name" placeholder="Evil Rabbit" required/>
+            </sa-field>
+            <sa-field-separator/>
+            <sa-field orientation="FieldOrientation.Responsive">
+              <sa-field-content>
+                <sa-field-label form="lastName">Message</sa-field-label>
+                <sa-field-description>
+                  You can write your message here. Keep it short, preferably
+                  under 100 characters.
+                </sa-field-description>
+              </sa-field-content>
+              <sa-textarea
+                id="message"
+                placeholder="Hello, world!"
+                required
+                class="min-h-[100px] resize-none sm:min-w-[300px]"></sa-textarea>
+            </sa-field>
+            <sa-field-separator/>
+            <sa-field orientation="FieldOrientation.Responsive">
+              <sa-button type="submit">Submit</sa-button>
+              <sa-button type="button" variant="ButtonVariant.Outline">
+                Cancel
+              </sa-button>
+            </sa-field>
+          </sa-field-group>
+        </sa-field-set>
+      </form>
+    </sa-card-content>
+  </sa-card>
+</div>

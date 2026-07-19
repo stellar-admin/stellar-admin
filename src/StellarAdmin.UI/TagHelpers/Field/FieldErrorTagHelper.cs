@@ -1,0 +1,102 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using StellarAdmin.UI.Theming;
+
+namespace StellarAdmin.UI.TagHelpers;
+
+/// <summary>
+///     Displays the validation error message for a field. When bound with <c>asp-for</c>, it shows
+///     the model's validation message and appears only when that field is invalid.
+/// </summary>
+[HtmlTargetElement("sa-field-error")]
+public class FieldErrorTagHelper : StellarAdminTagHelperBase
+{
+    private readonly IHtmlGenerator _htmlGenerator;
+
+    public FieldErrorTagHelper(
+        ThemeManager themeManager,
+        IHtmlGenerator htmlGenerator,
+        ICssClassMerger classMerger
+    )
+        : base(themeManager, classMerger)
+    {
+        _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
+    }
+
+    private const string ForAttributeName = "asp-for";
+
+    /// <summary>
+    /// An expression to be evaluated against the current model.
+    /// </summary>
+    [HtmlAttributeName(ForAttributeName)]
+    public ModelExpression? For { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="ViewContext"/> of the executing view.
+    /// </summary>
+    [HtmlAttributeNotBound]
+    [ViewContext]
+    public required ViewContext ViewContext { get; set; }
+
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        var tagBuilder =
+            For == null
+                ? GenerateValidationMessageTagBuilder()
+                : _htmlGenerator.GenerateValidationMessage(
+                    ViewContext,
+                    For.ModelExplorer,
+                    For.Name,
+                    null,
+                    "div",
+                    null
+                );
+
+        output.TagName = "div";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.MergeAttributes(tagBuilder);
+
+        output.Attributes.SetAttribute("role", "alert");
+        output.Attributes.SetAttribute("data-slot", "field-error");
+        output.Attributes.SetAttribute(
+            "class",
+            ClassMerger.Merge(
+                new ThemeToken("sa-field-error"),
+                "font-normal",
+                "hidden [&.field-validation-error]:block",
+                output.GetUserSuppliedClass()
+            )
+        );
+
+        var childContent = await output.GetChildContentAsync();
+        if (childContent.IsEmptyOrWhiteSpace)
+        {
+            if (tagBuilder.HasInnerHtml)
+            {
+                output.Content.SetHtmlContent(tagBuilder.InnerHtml);
+            }
+        }
+        else
+        {
+            output.Content.SetHtmlContent(childContent);
+        }
+    }
+
+    private TagBuilder GenerateValidationMessageTagBuilder(
+        IDictionary<string, object?>? htmlAttributes = null
+    )
+    {
+        var tagBuilder = new TagBuilder("div");
+        tagBuilder.AddCssClass(HtmlHelper.ValidationMessageCssClassName);
+
+        if (htmlAttributes != null)
+        {
+            tagBuilder.MergeAttributes(htmlAttributes);
+        }
+
+        return tagBuilder;
+    }
+}

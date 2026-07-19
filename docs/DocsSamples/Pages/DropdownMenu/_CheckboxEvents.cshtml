@@ -1,0 +1,48 @@
+<div class="min-h-[300px]">
+    <!-- code begin -->
+    <sa-stack gap="StackGap.Small" align="StackAlign.Center">
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger variant="ButtonVariant.Outline">
+                <sa-icon name="sliders-horizontal" class="text-muted-foreground"/>
+                Trip Filters
+            </sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content class="w-56">
+                <sa-dropdown-menu-label>Show Categories</sa-dropdown-menu-label>
+                <sa-dropdown-menu-separator/>
+                <!-- One "checkedchange" listener on the group catches every item (the event bubbles) -->
+                <sa-dropdown-menu-group id="--trip-filters">
+                    <sa-dropdown-menu-checkbox-item checked="true">Flights</sa-dropdown-menu-checkbox-item>
+                    <sa-dropdown-menu-checkbox-item checked="true">Accommodation</sa-dropdown-menu-checkbox-item>
+                    <sa-dropdown-menu-checkbox-item>Car Rental</sa-dropdown-menu-checkbox-item>
+                </sa-dropdown-menu-group>
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+        <p class="text-muted-foreground text-sm" id="--trip-filters-output"></p>
+    </sa-stack>
+    <script>
+        (() => {
+            const group = document.getElementById('--trip-filters');
+            const output = document.getElementById('--trip-filters-output');
+
+            // Checkbox items carry no value, so identify the toggled item via event.target.
+            // Seed the active set from whatever is checked on load.
+            const active = new Set(
+                [...group.querySelectorAll('[aria-checked="true"]')].map((el) => el.textContent.trim()),
+            );
+
+            const render = () => {
+                output.textContent = active.size ? 'Showing: ' + [...active].join(', ') : 'No categories selected';
+            };
+
+            // The menu stays open while toggling; the event fires for mouse and keyboard alike.
+            group.addEventListener('checkedchange', (event) => {
+                const label = event.target.textContent.trim();
+                event.detail.checked ? active.add(label) : active.delete(label);
+                render();
+            });
+
+            render();
+        })();
+    </script>
+    <!-- code end -->
+</div>

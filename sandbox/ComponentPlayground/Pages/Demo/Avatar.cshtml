@@ -1,0 +1,28 @@
+﻿@page
+@using StellarAdmin.UI.TagHelpers
+@model ComponentPlayground.Pages.Demo.Avatar
+@{
+    var url = "https://github.com/shadcn.png";
+}
+
+<sa-avatar src="@url" />
+<p>&nbsp;</p>
+<sa-avatar name="Jeremia Josiah Pelser" />
+<sa-avatar name="Jerrie Pelser" />
+<sa-avatar name="Jerrie" />
+<sa-avatar name="J" />
+<sa-avatar />
+<p>&nbsp;</p>
+<sa-avatar src="@url" size="AvatarSize.Small" />
+<sa-avatar src="@url" size="AvatarSize.Default" />
+<sa-avatar src="@url" size="AvatarSize.Large" />
+<p>&nbsp;</p>
+<sa-avatar name="Jerrie Pelser" size="AvatarSize.Small" />
+<sa-avatar name="Jerrie Pelser" size="AvatarSize.Default" />
+<sa-avatar name="Jerrie Pelser" size="AvatarSize.Large" />
+<p>&nbsp;</p>
+<sa-avatar-group>
+<sa-avatar src="@url" />
+<sa-avatar src="@url" />
+<sa-avatar src="@url" />
+</sa-avatar-group>
