@@ -4,14 +4,28 @@ Guidance for working in this repository.
 
 ## What this is
 
-**StellarAdmin.UI** is a library of ASP.NET Core **Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/) components, for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.UI` NuGet package. Consumers call `services.AddStellarAdmin()`, register the tag helpers in `_ViewImports.cshtml`, and reference the generated `stellar-admin-ui.css` / `stellar-admin-ui.js` assets.
+**StellarAdmin.UI** is a library of ASP.NET Core **Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/) components, for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.UI` NuGet package. Consumers register it, add the tag helpers to `_ViewImports.cshtml`, and reference the generated `stellar-admin-ui.css` / `stellar-admin-ui.js` assets.
 
 Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **Lit web components** (`<sel-*>`) bundled into `stellar-admin-ui.js`.
+
+**This repo is the free, open-source layer.** Closed-source paid extensions build on top of it in separate repos, so keep additions here to what belongs in the OSS package.
+
+### Registration
+
+`StellarAdmin.Core` owns the shared entry point; `StellarAdmin.UI` layers onto it:
+
+```csharp
+services.AddStellarAdmin()   // StellarAdmin.Core — returns StellarAdminBuilder
+        .AddUI();            // StellarAdmin.UI  — returns StellarAdminUIBuilder
+```
+
+`AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddUI()` is what registers `TwMerge`, `ICssClassMerger`, `IIconManager` and `ThemeManager`, and applies the Lucide icon pack + Vega theme defaults — `AddStellarAdmin()` on its own does not pull in the UI services.
 
 ## Repository layout
 
 | Path | What |
 |------|------|
+| `src/StellarAdmin.Core/` | Shared DI entry point — `StellarAdminBuilder`, `AddStellarAdmin()` (namespace `StellarAdmin`). |
 | `src/StellarAdmin.UI/` | The library. Tag helpers, theming, icons, client assets. |
 | `src/StellarAdmin.UI/TagHelpers/<Component>/` | One folder per component (e.g. `Sidebar/`, `Button/`, `Sheet/`). |
 | `src/StellarAdmin.UI/Theming/` | `ThemeManager`, `IThemePack`, and `ThemePacks/*.themepack` (Vega is the default). |
@@ -21,7 +35,7 @@ Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that ca
 | `gen/`, `util/`, gen projects | Source generators and the themepack generator. |
 | `sandbox/` | Throwaway prototypes (e.g. `sandbox/html/*.html` for validating CSS approaches). |
 
-Solution file: `StellarAdmin.UI.slnx`. SDK pinned in `global.json` (`.NET 10`). Packages are centrally managed in `Directory.Packages.props`.
+Solution file: `StellarAdmin.slnx`. SDK pinned in `global.json` (`.NET 10`). Packages are centrally managed in `Directory.Packages.props`.
 
 ## Build & dev commands
 
@@ -54,7 +68,7 @@ npm run fmt          # oxfmt (format TS/JS)
 
 ### Theming
 - `ThemeManager.GetComponentClass("sa-...")` resolves a component's classes from the active themepack; `new ThemeToken("sa-...")` is the mergeable form passed to `ClassMerger.Merge`.
-- Themepacks live in `Theming/ThemePacks/*.themepack`. Default is registered in `AddStellarAdmin()` (`UseTheme<VegaThemePack>()`); the default icon pack is Lucide.
+- Themepacks live in `Theming/ThemePacks/*.themepack`. Default is registered in `AddUI()` (`UseTheme<VegaThemePack>()`); the default icon pack is Lucide.
 
 ### Established C# patterns (follow these — they're enforced in review)
 - **Enum → data-attribute text** lives in an **extension method**, not inline `switch`/`if`. Add a `GetDataAttributeText()` in a C# 14 `extension(...)` block next to the enum. Reference: `TagHelpers/Separator/SeparatorOrientation.cs`, `TagHelpers/Sidebar/SidebarSide.cs`.
