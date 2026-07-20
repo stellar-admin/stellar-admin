@@ -9,7 +9,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.16",
-    "tailwindcss": "^4.1.16"
+    "@tailwindcss/cli": "4.2.2",
+    "tailwindcss": "4.2.2"
   }
 }

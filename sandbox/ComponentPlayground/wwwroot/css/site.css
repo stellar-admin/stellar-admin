@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.16 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -294,6 +294,12 @@
   .inset-y-0 {
     inset-block: calc(var(--spacing) * 0);
   }
+  .start {
+    inset-inline-start: var(--spacing);
+  }
+  .end {
+    inset-inline-end: var(--spacing);
+  }
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
@@ -301,7 +307,7 @@
     top: calc(var(--spacing) * 1.5);
   }
   .top-1\/2 {
-    top: calc(1/2 * 100%);
+    top: calc(1 / 2 * 100%);
   }
   .top-2 {
     top: calc(var(--spacing) * 2);
@@ -376,7 +382,7 @@
     left: calc(var(--spacing) * 1.5);
   }
   .left-1\/2 {
-    left: calc(1/2 * 100%);
+    left: calc(1 / 2 * 100%);
   }
   .left-2 {
     left: calc(var(--spacing) * 2);
@@ -829,7 +835,7 @@
     height: calc(var(--spacing) * 3);
   }
   .h-3\/4 {
-    height: calc(3/4 * 100%);
+    height: calc(3 / 4 * 100%);
   }
   .h-4 {
     height: calc(var(--spacing) * 4);
@@ -952,22 +958,22 @@
     width: calc(var(--spacing) * 1);
   }
   .w-1\/2 {
-    width: calc(1/2 * 100%);
+    width: calc(1 / 2 * 100%);
   }
   .w-3 {
     width: calc(var(--spacing) * 3);
   }
   .w-3\/4 {
-    width: calc(3/4 * 100%);
+    width: calc(3 / 4 * 100%);
   }
   .w-3\/5 {
-    width: calc(3/5 * 100%);
+    width: calc(3 / 5 * 100%);
   }
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
   .w-4\/5 {
-    width: calc(4/5 * 100%);
+    width: calc(4 / 5 * 100%);
   }
   .w-5 {
     width: calc(var(--spacing) * 5);
@@ -1123,7 +1129,7 @@
     transform-origin: var(--transform-origin);
   }
   .-translate-x-1\/2 {
-    --tw-translate-x: calc(calc(1/2 * 100%) * -1);
+    --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .-translate-x-full {
@@ -1147,15 +1153,15 @@
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .-translate-y-1\/2 {
-    --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+    --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .-translate-y-3\/4 {
-    --tw-translate-y: calc(calc(3/4 * 100%) * -1);
+    --tw-translate-y: calc(calc(3 / 4 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .translate-y-3\/4 {
-    --tw-translate-y: calc(3/4 * 100%);
+    --tw-translate-y: calc(3 / 4 * 100%);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .translate-y-\[calc\(-50\%-2px\)\] {
@@ -6153,7 +6159,7 @@
   }
   .data-\[side\=inline-end\]\:top-1\/2\! {
     &[data-side="inline-end"] {
-      top: calc(1/2 * 100%) !important;
+      top: calc(1 / 2 * 100%) !important;
     }
   }
   .data-\[side\=inline-end\]\:-left-1 {
@@ -6169,7 +6175,7 @@
   }
   .data-\[side\=inline-end\]\:-translate-y-1\/2 {
     &[data-side="inline-end"] {
-      --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+      --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
@@ -6180,7 +6186,7 @@
   }
   .data-\[side\=inline-start\]\:top-1\/2\! {
     &[data-side="inline-start"] {
-      top: calc(1/2 * 100%) !important;
+      top: calc(1 / 2 * 100%) !important;
     }
   }
   .data-\[side\=inline-start\]\:-right-1 {
@@ -6196,7 +6202,7 @@
   }
   .data-\[side\=inline-start\]\:-translate-y-1\/2 {
     &[data-side="inline-start"] {
-      --tw-translate-y: calc(calc(1/2 * 100%) * -1);
+      --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
@@ -6222,7 +6228,7 @@
   }
   .data-\[side\=left\]\:w-3\/4 {
     &[data-side="left"] {
-      width: calc(3/4 * 100%);
+      width: calc(3 / 4 * 100%);
     }
   }
   .data-\[side\=left\]\:translate-x-\[-1\.5px\] {
@@ -6264,7 +6270,7 @@
   }
   .data-\[side\=right\]\:w-3\/4 {
     &[data-side="right"] {
-      width: calc(3/4 * 100%);
+      width: calc(3 / 4 * 100%);
     }
   }
   .data-\[side\=right\]\:translate-x-\[1\.5px\] {

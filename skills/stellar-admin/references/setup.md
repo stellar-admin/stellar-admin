@@ -75,8 +75,9 @@ Three changes:
 
 This copies StellarAdmin's Tailwind sources into `obj/stellaradmin-ui/tailwind/` on build.
 
-**b. Import them from your Tailwind entry stylesheet**, after `@import "tailwindcss"` (adjust
-the relative path to reach your project's `obj/`):
+**b. Import them from your Tailwind entry stylesheet**, after `@import "tailwindcss"`. The path is
+relative to the stylesheet containing it, so adjust it to reach your project's `obj/` — the example
+below assumes an entry at `Client/css/site.css`:
 
 ```css
 @import "tailwindcss";
