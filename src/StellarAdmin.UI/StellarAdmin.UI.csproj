@@ -120,9 +120,28 @@
     <Exec Command="npm run build:utility-classes" WorkingDirectory="Client" />
     <Touch Files="$(IntermediateOutputPath)client-utility-classes.stamp" AlwaysCreate="true" />
   </Target>
+  <!--
+    A stamp says "the inputs haven't changed", not "the output is still there". wwwroot/ is
+    gitignored build output, so it can be absent while the stamp is fresh (a clean checkout that
+    kept obj/, or a manual delete) — which would skip regeneration and ship an empty wwwroot.
+    Drop the stamp when the real artifact is gone.
+  -->
+  <Target Name="ClientCssStampCheck" BeforeTargets="ClientCss" Condition=" !Exists('wwwroot/stellar-admin-ui.css') ">
+    <Delete Files="$(IntermediateOutputPath)client-css.stamp" />
+  </Target>
+  <Target Name="ClientJsStampCheck" BeforeTargets="ClientJs" Condition=" !Exists('wwwroot/stellar-admin-ui.js') ">
+    <Delete Files="$(IntermediateOutputPath)client-js.stamp" />
+  </Target>
+  <!--
+    These hook ResolveProjectStaticWebAssets, not Build. wwwroot/ is gitignored, so on a clean
+    checkout the evaluation-time Content glob finds nothing; a BeforeTargets="Build" target runs
+    after CoreBuild — and therefore after static web asset discovery has already concluded the
+    folder is empty. The result was a package containing no stellar-admin-ui.css at all, silently,
+    on the first pack after a fresh clone. ClientStaticAssets below re-globs what they produced.
+  -->
   <Target
     Name="ClientCss"
-    BeforeTargets="Build"
+    BeforeTargets="ResolveProjectStaticWebAssets"
     Inputs="@(Compile);@(ClientCssInput)"
     Outputs="$(IntermediateOutputPath)client-css.stamp"
   >
@@ -131,12 +150,21 @@
   </Target>
   <Target
     Name="ClientJs"
-    BeforeTargets="Build"
+    BeforeTargets="ResolveProjectStaticWebAssets"
     Inputs="@(ClientJsInput)"
     Outputs="$(IntermediateOutputPath)client-js.stamp"
   >
     <Exec Command="npm run build:js" WorkingDirectory="Client" />
     <Touch Files="$(IntermediateOutputPath)client-js.stamp" AlwaysCreate="true" />
+  </Target>
+  <Target
+    Name="ClientStaticAssets"
+    AfterTargets="ClientCss;ClientJs"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+  >
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
   </Target>
   <!-- Icon packs -->
   <ItemGroup>
