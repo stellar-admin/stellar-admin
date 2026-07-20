@@ -1,4 +1,5 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+/* Two-bundle mode: the prebuilt bundle shipped at _content/StellarAdmin.UI/stellar-admin-ui.css.
+   The shared parts live in ../../tailwind/ and are also packed for single-build mode. */
 
 /* Ensure stellar-admin utilities have higher specificity than app */
 @layer theme, base, components, utilities, stellar-admin;
@@ -6,10 +7,7 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(stellar-admin);
-@import "tw-animate-css";
-@import "./theme.css";
-@import "./shadcn-tailwind.css";
-@import "../../tailwind/anchors.css";
+@import "../../tailwind/index.css";
 
 @source "../../Theming/ThemePacks/";
 @source "../../TagHelpers/";

@@ -4,8 +4,10 @@
   "scripts": {
     "build": "npm run build:js && npm run build:css",
     "build:css": "npx @tailwindcss/cli -i ./css/stellar-admin-ui.css -o ../wwwroot/stellar-admin-ui.css",
+    "build:utility-classes": "node ./scripts/gen-utility-classes.mjs .. ../tailwind/utility-classes.txt",
     "build:js": "rolldown -c",
     "build:js:watch": "rolldown -c rolldown.config.js -w",
+    "sync:vendor": "node ./scripts/sync-vendor.mjs",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check"
   },

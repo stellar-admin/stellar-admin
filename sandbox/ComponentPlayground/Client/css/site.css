@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* StellarAdmin.UI's Tailwind sources, copied into obj/ by StellarAdmin.UI.targets.
+   With this imported there is no <link> to _content/StellarAdmin.UI/stellar-admin-ui.css —
+   that prebuilt bundle is for two-bundle mode and would duplicate every rule. */
+@import "../../obj/stellaradmin-ui/tailwind/index.css";
+
 @plugin "@tailwindcss/forms" {
     strategy: "class";
 }

@@ -76,6 +76,29 @@ Start using the StellarAdmin.UI Tag Helpers inside your Razor Pages or MVC Views
 </sa-alert>
 ```
 
+## Using the design tokens in your own markup
+
+The stylesheet above styles the `<sa-*>` components. If you also want to write
+`class="bg-primary"` or `dark:...` in your *own* Razor and have it match, and your app already
+runs a Tailwind v4 build, opt into single-build mode:
+
+```xml
+<PropertyGroup>
+  <StellarAdminUIExportTailwindSources>true</StellarAdminUIExportTailwindSources>
+</PropertyGroup>
+```
+
+Then import StellarAdmin.UI into your Tailwind entry stylesheet, and drop the
+`stellar-admin-ui.css` `<link>` from your layout (keep the `<script>`):
+
+```css
+@import "tailwindcss";
+@import "../../obj/stellaradmin-ui/tailwind/index.css";
+```
+
+Your build now produces a single stylesheet covering your app and StellarAdmin.UI. Don't keep the
+`<link>` as well — you'd get every rule twice.
+
 ## Documentation
 
 Documentation and code examples for all the Tag Helpers [can be found online](https://www.duneui.com/docs/tag-helpers/components/avatar).
