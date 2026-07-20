@@ -1,0 +1,60 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(cut:*)",
+      "Bash(tr:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(diff:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(stat:*)",
+      "Bash(file:*)",
+      "Bash(mkdir:*)",
+      "Bash(unzip -l:*)",
+
+      "Bash(dotnet build:*)",
+      "Bash(dotnet pack:*)",
+      "Bash(dotnet csharpier:*)",
+      "Bash(dotnet tool restore:*)",
+      "Bash(npm run:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm view:*)",
+      "Bash(npx @tailwindcss/cli:*)",
+
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git blame:*)",
+      "Bash(git check-ignore:*)",
+
+      "Bash(pgrep:*)",
+      "Bash(ps:*)",
+      "Bash(ss:*)",
+
+      "Read(//tmp/claude-1000/**)",
+      "Write(//tmp/claude-1000/**)",
+      "Edit(//tmp/claude-1000/**)",
+
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(sed -i:*)",
+      "Bash(find * -delete:*)",
+      "Bash(find * -exec:*)"
+    ]
+  }
+}
