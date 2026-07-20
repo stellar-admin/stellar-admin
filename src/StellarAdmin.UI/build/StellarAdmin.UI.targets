@@ -1,102 +1,36 @@
 <Project>
 
   <!--
-    Single-build mode (opt-in).
-
-    Copies the package's tailwind/ folder into the consuming project's obj/, where the app's own
-    Tailwind entry stylesheet can @import it:
+    Copies StellarAdmin.UI's Tailwind sources into obj/, for apps that run their own Tailwind build:
 
         @import "tailwindcss";
         @import "../../obj/stellaradmin-ui/tailwind/index.css";
 
-    That gives the app one bundle carrying both its own classes and the library's, sharing a single
-    set of design tokens.
-
-    This property only puts the files on disk — it does not by itself change how anything builds.
-    The consumer still adds the @import above and drops the stellar-admin-ui.css <link>. Left
-    unset, nothing is copied and the app stays on the prebuilt bundle.
-
-    This file also ships to buildTransitive/ so projects that reference StellarAdmin.UI through an
-    intermediate class library still get the copy.
+    Opt in with <StellarAdminUIExportTailwindSources>true</StellarAdminUIExportTailwindSources>.
+    That only puts the files on disk; the app still adds the @import and drops the
+    stellar-admin-ui.css <link>.
   -->
 
   <PropertyGroup>
     <StellarAdminUIExportTailwindSources Condition=" '$(StellarAdminUIExportTailwindSources)' == '' ">false</StellarAdminUIExportTailwindSources>
-
-    <!--
-      BaseIntermediateOutputPath, not IntermediateOutputPath: the latter includes Debug/net10.0/,
-      which would make the consumer's @import path depend on configuration and target framework.
-    -->
+    <!-- BaseIntermediateOutputPath, so the @import path doesn't vary by configuration or TFM. -->
     <StellarAdminUITailwindDir Condition=" '$(StellarAdminUITailwindDir)' == '' ">$(BaseIntermediateOutputPath)stellaradmin-ui/tailwind/</StellarAdminUITailwindDir>
-
-    <!-- Resolves to tailwind/ next to this file, in both the package and the source tree. -->
-    <StellarAdminUITailwindSourceDir>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'tailwind'))</StellarAdminUITailwindSourceDir>
   </PropertyGroup>
 
-  <!--
-    Ordering is load-bearing in two directions.
+  <ItemGroup Condition=" '$(StellarAdminUIExportTailwindSources)' == 'true' ">
+    <StellarAdminUITailwindFile Include="$(MSBuildThisFileDirectory)../tailwind/**/*" />
+  </ItemGroup>
 
-    It must run AFTER ResolveProjectReferences, not at BeforeBuild/PrepareForBuild. With a
-    ProjectReference to StellarAdmin.UI (how the in-repo samples consume it), utility-classes.txt is
-    produced by the referenced project's own build, which happens during ResolveProjectReferences —
-    i.e. after PrepareForBuild. Copying earlier silently omits that file on a clean tree, and since
-    Tailwind ignores a missing @source, the result is a successful build emitting a stylesheet with
-    none of the library's classes. Package consumers never hit this (the file is in the package),
-    which is exactly why it would have gone unnoticed.
-
-    It must also run BEFORE the consumer's Tailwind CLI invocation. That falls out of the same
-    hook rather than needing a second one: ResolveProjectReferences sits inside CoreBuild, while a
-    `BeforeTargets="Build"` target — the usual way to invoke Tailwind — fires only once that whole
-    chain has finished. This holds whatever the consumer calls their target; there is deliberately
-    no `BeforeTargets="<some name>"` here, since keying on a name we don't control would guarantee
-    nothing while implying a contract.
-
-    A consumer who instead runs Tailwind *earlier* than CoreBuild should depend on this target
-    explicitly:
-
-        <Target Name="MyStyles" BeforeTargets="PrepareForBuild"
-                DependsOnTargets="StellarAdminUICopyTailwind">
-
-    Without that, their Tailwind run fails with an unresolvable @import of index.css — noisy and
-    actionable, not silent.
-  -->
   <Target
     Name="StellarAdminUICopyTailwind"
     Condition=" '$(StellarAdminUIExportTailwindSources)' == 'true' "
-    AfterTargets="ResolveProjectReferences"
+    BeforeTargets="PrepareForBuild"
+    Inputs="@(StellarAdminUITailwindFile)"
+    Outputs="@(StellarAdminUITailwindFile->'$(StellarAdminUITailwindDir)%(RecursiveDir)%(Filename)%(Extension)')"
   >
-    <!--
-      Globbed inside the target on purpose. At project scope this expands during evaluation, before
-      the referenced library has built, so on a clean tree it would miss the generated
-      utility-classes.txt.
-    -->
-    <ItemGroup>
-      <StellarAdminUITailwindFile Include="$(StellarAdminUITailwindSourceDir)**/*" />
-    </ItemGroup>
-
-    <!--
-      Fail loudly rather than emit an incomplete export. Both of these produce a *successful* build
-      whose stylesheet is missing every library class, because Tailwind treats an unresolvable
-      @source as a no-op — so without these checks the first symptom is an unstyled app.
-    -->
-    <Error
-      Condition=" '@(StellarAdminUITailwindFile)' == '' "
-      Text="StellarAdmin.UI: Tailwind source export is enabled but no sources were found at $(StellarAdminUITailwindSourceDir). Your build would emit a stylesheet containing none of the library's classes."
-    />
-    <Error
-      Condition=" !Exists('$(StellarAdminUITailwindSourceDir)utility-classes.txt') "
-      Text="StellarAdmin.UI: utility-classes.txt is missing from $(StellarAdminUITailwindSourceDir). It lists every Tailwind class the library uses, so without it your build would emit a stylesheet containing none of the library's classes. If you reference StellarAdmin.UI by ProjectReference, build that project first."
-    />
-
-    <!--
-      No Inputs/Outputs: they're incompatible with in-target item population (the item is empty when
-      MSBuild runs its up-to-date check, so the target would be skipped forever).
-      SkipUnchangedFiles gives the actual I/O avoidance.
-    -->
     <Copy
       SourceFiles="@(StellarAdminUITailwindFile)"
       DestinationFiles="@(StellarAdminUITailwindFile->'$(StellarAdminUITailwindDir)%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true"
     />
   </Target>
 
