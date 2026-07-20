@@ -1,0 +1,105 @@
+/* CSS anchor positioning utilities.
+
+   Replaces the `@toolwind/anchors` plugin, of which the library used only these two families.
+   Kept here as plain CSS (rather than a JS plugin) so a consuming app's own Tailwind build can
+   resolve it without our node_modules — see `tailwind/index.css`.
+
+   `anchored-*` mirrors the PositionArea enum in TagHelpers/PositionArea.cs one-for-one. */
+
+@layer base {
+  [popover] {
+    inset: var(--sa-popover-inset, 0px);
+    background-color: var(--sa-popover-background, canvas);
+    color: var(--sa-popover-color, canvastext);
+    margin: var(--sa-popover-margin, auto);
+  }
+}
+
+/* Neutralises the [popover] defaults above, which would otherwise fight anchor positioning. */
+@utility try-flip-all {
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  --sa-popover-inset: auto;
+  --sa-popover-background: transparent;
+  --sa-popover-color: inherit;
+  --sa-popover-margin: 0px;
+}
+
+@utility anchored-top-center {
+  position-area: top center;
+}
+
+@utility anchored-top-span-left {
+  position-area: top span-left;
+}
+
+@utility anchored-top-span-right {
+  position-area: top span-right;
+}
+
+@utility anchored-top {
+  position-area: top;
+}
+
+@utility anchored-left-center {
+  position-area: left center;
+}
+
+@utility anchored-left-span-top {
+  position-area: left span-top;
+}
+
+@utility anchored-left-span-bottom {
+  position-area: left span-bottom;
+}
+
+@utility anchored-left {
+  position-area: left;
+}
+
+@utility anchored-bottom-center {
+  position-area: bottom center;
+}
+
+@utility anchored-bottom-span-left {
+  position-area: bottom span-left;
+}
+
+@utility anchored-bottom-span-right {
+  position-area: bottom span-right;
+}
+
+@utility anchored-bottom {
+  position-area: bottom;
+}
+
+@utility anchored-right-center {
+  position-area: right center;
+}
+
+@utility anchored-right-span-top {
+  position-area: right span-top;
+}
+
+@utility anchored-right-span-bottom {
+  position-area: right span-bottom;
+}
+
+@utility anchored-right {
+  position-area: right;
+}
+
+@utility anchored-top-left {
+  position-area: top left;
+}
+
+@utility anchored-top-right {
+  position-area: top right;
+}
+
+@utility anchored-bottom-left {
+  position-area: bottom left;
+}
+
+@utility anchored-bottom-right {
+  position-area: bottom right;
+}

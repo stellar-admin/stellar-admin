@@ -9,8 +9,7 @@
 @import "tw-animate-css";
 @import "./theme.css";
 @import "./shadcn-tailwind.css";
-
-@plugin "@toolwind/anchors";
+@import "../../tailwind/anchors.css";
 
 @source "../../Theming/ThemePacks/";
 @source "../../TagHelpers/";
