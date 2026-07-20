@@ -76,6 +76,14 @@ npm run fmt          # oxfmt (format TS/JS)
 - **Inline single-use locals** rather than naming a value used exactly once.
 - **Rendering a button:** prefer calling `ButtonRenderingHelper.RenderAttributes(output, ClassMerger, variant, size)` directly on the element you're rendering, rather than instantiating a `ButtonTagHelper` and suppressing a wrapper. Reference: `InputGroupButtonTagHelper`, `PaginationLinkTagHelper`, `SidebarTriggerTagHelper`. (`RenderAttributes` only sets `data-slot="button"` if none is already present, and folds in the user class.)
 
+### Cascade layers (CSS entry point)
+`Client/css/stellar-admin-ui.css` imports Tailwind **part-by-part**, not as a bare `@import "tailwindcss"`. This is deliberate — don't collapse it back:
+- `@layer theme, base, components, utilities, stellar-admin;` comes first. The four leading names are Tailwind's stock layers, so naming them here pins a consuming app's bundle *below* ours regardless of `<link>` order. Without it both bundles emit into `utilities`, where a media query adds no specificity and an app's duplicate `.flex-col-reverse` beats our `.sm\:flex-row`.
+- Only `tailwindcss/utilities.css` is promoted to `layer(stellar-admin)`. Theme vars stay in `theme` (apps can still override design tokens) and preflight stays in `base` — a promoted `*{margin:0}` would beat an app's `.mt-4` on every element.
+- `@toolwind/anchors` is loaded with `@plugin`, not `@import`. Its `index.css` re-imports Tailwind, which isn't deduped and ships preflight twice.
+
+Overrides are resolved by tailwind-merge in C# before rendering, so the layer rarely matters; where tailwind-merge can't detect a conflict, `!` or unlayered CSS still outrank the layer.
+
 ### Client web components (`sel-*`)
 - Built with **Lit**, but rendered in **light DOM** (`createRenderRoot() { return this; }`) so server-rendered children stay styleable by Tailwind and participate in layout. Don't use shadow DOM here.
 - Register a new component by adding `import "./web-components/sel-foo";` to `Client/js/stellar-admin-ui.ts`.

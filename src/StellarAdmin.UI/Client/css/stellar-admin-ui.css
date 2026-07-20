@@ -1,10 +1,16 @@
 ﻿@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 
-@import "tailwindcss";
+/* Ensure stellar-admin utilities have higher specificity than app */
+@layer theme, base, components, utilities, stellar-admin;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(stellar-admin);
 @import "tw-animate-css";
-@import "@toolwind/anchors";
 @import "./theme.css";
 @import "./shadcn-tailwind.css";
+
+@plugin "@toolwind/anchors";
 
 @source "../../Theming/ThemePacks/";
 @source "../../TagHelpers/";
