@@ -26,10 +26,13 @@ public static partial class Processors
     public static partial Regex GridRegex();
 
     [GeneratedRegex(@"data-((open)|(closed)|(\[state=delayed-open])|(\[side=\w+])):\S+\s?")]
-    public static partial Regex TooltipContentDataAnimationClasses();
+    public static partial Regex PopoverContentDataAnimationClasses();
+
+    [GeneratedRegex(@"\-aria$")]
+    public static partial Regex ReactAriaStyle();
 
     [GeneratedRegex(@"data-((open)|(closed)|(\[state=delayed-open])|(\[side=\w+])):\S+\s?")]
-    public static partial Regex PopoverContentDataAnimationClasses();
+    public static partial Regex TooltipContentDataAnimationClasses();
 
     extension(Dictionary<string, string> input)
     {
@@ -105,6 +108,21 @@ public static partial class Processors
             )
             {
                 output["sa-radiobutton-indicator-icon"] = radioGroupIndicatorIcon;
+            }
+
+            return output;
+        }
+
+        public Dictionary<string, string> DropReactAriaStyles()
+        {
+            var output = new Dictionary<string, string>();
+
+            foreach (var (key, value) in input)
+            {
+                if (!ReactAriaStyle().IsMatch(key))
+                {
+                    output.Add(key, AriaInvalidRingRegex().Replace(value, string.Empty));
+                }
             }
 
             return output;

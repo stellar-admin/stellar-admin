@@ -44,6 +44,7 @@ public partial class Program
 
             var responseText = await responseMessage.Content.ReadAsStringAsync();
             var themeStyles = ExtractComponentsFromThemeStyle(responseText)
+                .DropReactAriaStyles()
                 .AddFieldRadioGroupSupport()
                 .RemoveAriaInvalidRing()
                 .CreateInputValidationErrorClassesFromAriaInvalid()
