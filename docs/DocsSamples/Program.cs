@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using StellarAdmin;
 using StellarAdmin.UI;
 using StellarAdmin.UI.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace DocsSamples;
 
@@ -22,7 +21,6 @@ public class Program
         builder
             .Services.AddStellarAdmin()
             .AddUI()
-            .UseTheme<NovaThemePack>()
             .ConfigureMenu(options => options.Color = MenuColor.Inverted);
 
         var app = builder.Build();

@@ -11,3 +11,5 @@
 @import "../../tailwind/index.css";
 
 @source "../../TagHelpers/";
+/* The sel-* web components inject classes from JS at runtime (e.g. the input-otp caret). */
+@source "../js/";

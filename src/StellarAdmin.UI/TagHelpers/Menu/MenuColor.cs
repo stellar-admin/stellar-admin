@@ -18,13 +18,16 @@ internal static class MenuColorExtensions
     extension(MenuColor color)
     {
         /// <summary>
-        ///     The themepack token that renders this color, or <c>null</c> when no token is
-        ///     needed (<see cref="MenuColor.Default" /> is the absence of a token).
+        ///     The literal class that renders this color, or <c>null</c> when no class is needed
+        ///     (<see cref="MenuColor.Default" /> is the absence of one). Inverted is the
+        ///     <c>dark</c> marker class: it re-scopes the theme variables for the surface and its
+        ///     descendants, so it must be present on the element itself rather than styled from
+        ///     the theme stylesheet.
         /// </summary>
-        public string? GetSurfaceTokenName() =>
+        public string? GetSurfaceClass() =>
             color switch
             {
-                MenuColor.Inverted => "sa-menu-inverted",
+                MenuColor.Inverted => "dark",
                 _ => null,
             };
     }

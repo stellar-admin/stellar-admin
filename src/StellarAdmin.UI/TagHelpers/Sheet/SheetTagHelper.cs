@@ -111,10 +111,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
             var buttonTagHelperOutput = new TagHelperOutput(
                 string.Empty,
                 [
-                    new TagHelperAttribute(
-                        "class",
-                        ThemeManager.GetComponentClass("sa-sheet-close")
-                    ),
+                    new TagHelperAttribute("class", "sa-sheet-close"),
                     new TagHelperAttribute("commandfor", id),
                     new TagHelperAttribute("command", "close"),
                 ],

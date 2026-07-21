@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 /* StellarAdmin.UI's Tailwind sources, copied into obj/ by StellarAdmin.UI.targets.
-   With this imported there is no <link> to _content/StellarAdmin.UI/stellar-admin-ui.css —
-   that prebuilt bundle is for two-bundle mode and would duplicate every rule. */
+   With these imported there is no <link> to a _content/StellarAdmin.UI/ bundle — the prebuilt
+   per-theme bundles are for two-bundle mode and would duplicate every rule. The second import
+   picks the theme: it carries the .sa-* component rules for that theme. */
 @import "../../obj/stellaradmin-ui/tailwind/index.css";
+@import "../../obj/stellaradmin-ui/tailwind/themes/vega.css";
 
 @plugin "@tailwindcss/forms" {
     strategy: "class";

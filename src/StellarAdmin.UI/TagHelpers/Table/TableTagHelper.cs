@@ -21,10 +21,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "table-container");
-        output.Attributes.SetAttribute(
-            "class",
-            ThemeManager.GetComponentClass("sa-table-container")
-        );
+        output.Attributes.SetAttribute("class", "sa-table-container");
 
         var tableTagBuilder = new TagBuilder("table");
         tableTagBuilder.Attributes.Add("data-slot", "table");

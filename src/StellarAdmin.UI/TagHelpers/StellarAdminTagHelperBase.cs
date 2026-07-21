@@ -75,10 +75,7 @@ public class StellarAdminTagHelperBase : TagHelper
             return ClassMerger.Merge([.. additionalClasses]);
         }
 
-        return ClassMerger.Merge([
-            ThemeManager.GetComponentClass(themeTokenName),
-            .. additionalClasses,
-        ]);
+        return ClassMerger.Merge([new ThemeToken(themeTokenName), .. additionalClasses]);
     }
 
     /// <summary>

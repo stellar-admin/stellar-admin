@@ -1,12 +1,15 @@
-// Dumps every Tailwind candidate used by the tag helpers and theme packs to a flat file, so a
-// consuming app's own Tailwind build can generate the library's classes without us shipping the
-// 1.1 MB of .cs sources they'd otherwise have to scan.
+// Dumps every Tailwind candidate used by the tag helpers and the sel-* web components (which
+// inject classes from JS at runtime, e.g. the input-otp caret) to a flat file, so a consuming
+// app's own Tailwind build can generate the library's classes without us shipping the 1.1 MB
+// of .cs/.ts sources they'd otherwise have to scan. (Theme component styling is not scanned:
+// it lives as real .sa-* rules in tailwind/themes/<theme>.css, which the consumer imports
+// directly.)
 //
 // This uses @tailwindcss/oxide's Scanner — the exact extractor Tailwind itself runs — over the
-// exact directories Client/css/stellar-admin-ui.css names in its @source directives. Tailwind
-// normalises a trailing-slash directory source to {base, pattern: "**/*"}, which is the
-// SourceEntry shape constructed below, so the candidate set is identical by construction rather
-// than by a heuristic that could drift.
+// exact directory the bundle entries name in their @source directives. Tailwind normalises a
+// trailing-slash directory source to {base, pattern: "**/*"}, which is the SourceEntry shape
+// constructed below, so the candidate set is identical by construction rather than by a
+// heuristic that could drift.
 //
 //   node ./scripts/gen-utility-classes.mjs <projectRoot> <outFile>
 
@@ -20,7 +23,7 @@ const out = resolve(process.argv[3] ?? "../tailwind/utility-classes.txt");
 const scanner = new Scanner({
   sources: [
     { base: `${root}/TagHelpers`, pattern: "**/*", negated: false },
-    { base: `${root}/Theming/ThemePacks`, pattern: "**/*", negated: false },
+    { base: `${root}/Client/js`, pattern: "**/*", negated: false },
   ],
 });
 

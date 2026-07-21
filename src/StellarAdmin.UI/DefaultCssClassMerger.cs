@@ -5,12 +5,10 @@ namespace StellarAdmin.UI;
 
 internal class DefaultCssClassMerger : ICssClassMerger
 {
-    private readonly ThemeManager _themeManager;
     private readonly TwMerge _twMerge;
 
-    public DefaultCssClassMerger(ThemeManager themeManager, TwMerge twMerge)
+    public DefaultCssClassMerger(TwMerge twMerge)
     {
-        _themeManager = themeManager ?? throw new ArgumentNullException(nameof(themeManager));
         _twMerge = twMerge ?? throw new ArgumentNullException(nameof(twMerge));
     }
 
@@ -22,7 +20,10 @@ internal class DefaultCssClassMerger : ICssClassMerger
                 {
                     return c switch
                     {
-                        ThemeToken cn => _themeManager.GetComponentClass(cn.Name),
+                        // A theme token is emitted as its own class name; the linked theme
+                        // stylesheet carries the matching .sa-* rule. TwMerge passes unknown
+                        // classes through untouched, so tokens never conflict with utilities.
+                        ThemeToken cn => cn.Name,
                         ClassList cl => cl.Classes,
                         _ => string.Empty,
                     };

@@ -15,7 +15,8 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </remarks>
 internal static class MenuSurfaceInternals
 {
-    public static ClassElement? ColorToken(MenuColor color) => ToToken(color.GetSurfaceTokenName());
+    public static ClassElement? ColorToken(MenuColor color) =>
+        color.GetSurfaceClass() is { } surfaceClass ? new ClassList(surfaceClass) : null;
 
     public static ClassElement? AppearanceToken(MenuAppearance appearance) =>
         ToToken(appearance.GetSurfaceTokenName());
