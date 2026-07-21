@@ -20,3 +20,20 @@ public enum GroupJustify
     /// <summary>Children are spaced with equal gaps around each of them.</summary>
     SpaceAround,
 }
+
+internal static class GroupJustifyExtensions
+{
+    extension(GroupJustify justify)
+    {
+        public string GetClass() =>
+            justify switch
+            {
+                GroupJustify.Center => "justify-center",
+                GroupJustify.Start => "justify-start",
+                GroupJustify.End => "justify-end",
+                GroupJustify.SpaceBetween => "justify-between",
+                GroupJustify.SpaceAround => "justify-around",
+                _ => "justify-start",
+            };
+    }
+}

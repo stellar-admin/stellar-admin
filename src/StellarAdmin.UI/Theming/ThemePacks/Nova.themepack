@@ -917,7 +917,7 @@ text-sm
 border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent px-2.5 py-2 text-base transition-colors focus-visible:ring-3 md:text-sm [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50
 
 -sa-toggle
-hover:text-foreground has-[:checked]:bg-muted has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 has-[[aria-invalid]]:ring-destructive/20 dark:has-[[aria-invalid]]:ring-destructive/40 has-[[aria-invalid]]:border-destructive has-[:checked]:bg-muted gap-1 rounded-lg text-sm font-medium transition-all [&_svg:not([class*='size-'])]:size-4 has-[.input-validation-error]:ring-destructive/20 dark:has-[.input-validation-error]:ring-destructive/40 has-[.input-validation-error]:border-destructive
+hover:text-foreground aria-pressed:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[state=on]:bg-muted gap-1 rounded-lg text-sm font-medium transition-all [&_svg:not([class*='size-'])]:size-4 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive
 
 -sa-toggle-variant-default
 bg-transparent
@@ -1131,3 +1131,33 @@ dark
 
 -sa-menu-accent-bold
 [--accent:var(--primary)] [--accent-foreground:var(--primary-foreground)]
+
+-sa-stack-gap-xs
+gap-y-1
+
+-sa-group-gap-xs
+gap-x-1
+
+-sa-stack-gap-sm
+gap-y-2
+
+-sa-group-gap-sm
+gap-x-2
+
+-sa-stack-gap-md
+gap-y-4
+
+-sa-group-gap-md
+gap-x-4
+
+-sa-stack-gap-lg
+gap-y-5
+
+-sa-group-gap-lg
+gap-x-5
+
+-sa-stack-gap-xl
+gap-y-8
+
+-sa-group-gap-xl
+gap-x-8

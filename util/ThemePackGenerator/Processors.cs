@@ -42,9 +42,9 @@ public static partial class Processors
         /// </summary>
         public Dictionary<string, string> AddFieldRadioGroupSupport()
         {
-            var output = new Dictionary<string, string>(input);
+            var tokens = new Dictionary<string, string>(input);
 
-            if (output.TryGetValue("sa-field-group", out var fieldGroupClass))
+            if (tokens.TryGetValue("sa-field-group", out var fieldGroupClass))
             {
                 foreach (Match match in FieldGroupCheckboxGroupRegex().Matches(fieldGroupClass))
                 {
@@ -52,10 +52,10 @@ public static partial class Processors
                 }
 
                 // Store the updated
-                output["sa-field-group"] = fieldGroupClass;
+                tokens["sa-field-group"] = fieldGroupClass;
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ public static partial class Processors
         /// <returns></returns>
         public Dictionary<string, string> CreateInputValidationErrorClassesFromAriaInvalid()
         {
-            var output = new Dictionary<string, string>();
+            var tokens = new Dictionary<string, string>();
 
             foreach (var (key, value) in input)
             {
@@ -78,10 +78,10 @@ public static partial class Processors
                         $" {match.Groups["dark"].Value}[&.input-validation-error]:{match.Groups["class"].Value}";
                 }
 
-                output.Add(key, newValue);
+                tokens.Add(key, newValue);
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -115,17 +115,17 @@ public static partial class Processors
 
         public Dictionary<string, string> DropReactAriaStyles()
         {
-            var output = new Dictionary<string, string>();
+            var tokens = new Dictionary<string, string>();
 
             foreach (var (key, value) in input)
             {
                 if (!ReactAriaStyle().IsMatch(key))
                 {
-                    output.Add(key, AriaInvalidRingRegex().Replace(value, string.Empty));
+                    tokens.Add(key, AriaInvalidRingRegex().Replace(value, string.Empty));
                 }
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -135,14 +135,14 @@ public static partial class Processors
         /// </summary>
         public Dictionary<string, string> RemoveAriaInvalidRing()
         {
-            var output = new Dictionary<string, string>();
+            var tokens = new Dictionary<string, string>();
 
             foreach (var (key, value) in input)
             {
-                output.Add(key, AriaInvalidRingRegex().Replace(value, string.Empty));
+                tokens.Add(key, AriaInvalidRingRegex().Replace(value, string.Empty));
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -254,14 +254,14 @@ public static partial class Processors
         /// <returns></returns>
         public Dictionary<string, string> ReplaceDuiCheckboxDataChecked()
         {
-            var output = new Dictionary<string, string>(input);
+            var tokens = new Dictionary<string, string>(input);
 
-            if (output.TryGetValue("sa-checkbox", out var classes))
+            if (tokens.TryGetValue("sa-checkbox", out var classes))
             {
-                output["sa-checkbox"] = classes.Replace("data-checked:", "checked:");
+                tokens["sa-checkbox"] = classes.Replace("data-checked:", "checked:");
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -272,14 +272,14 @@ public static partial class Processors
         /// <returns></returns>
         public Dictionary<string, string> ReplaceDuiRadioGroupItemDataChecked()
         {
-            var output = new Dictionary<string, string>(input);
+            var tokens = new Dictionary<string, string>(input);
 
-            if (output.TryGetValue("sa-radio-group-item", out var classes))
+            if (tokens.TryGetValue("sa-radio-group-item", out var classes))
             {
-                output["sa-radio-group-item"] = classes.Replace("data-checked:", "checked:");
+                tokens["sa-radio-group-item"] = classes.Replace("data-checked:", "checked:");
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -301,27 +301,27 @@ public static partial class Processors
         /// </summary>
         public Dictionary<string, string> CleanSwitchClasses()
         {
-            var output = new Dictionary<string, string>(input);
+            var tokens = new Dictionary<string, string>(input);
 
-            if (output.TryGetValue("sa-switch", out var trackClasses))
+            if (tokens.TryGetValue("sa-switch", out var trackClasses))
             {
                 trackClasses = trackClasses.Replace("data-unchecked:", string.Empty);
                 trackClasses = trackClasses.Replace("data-checked:", "checked:");
                 trackClasses = SwitchTrackSizeRegex()
                     .Replace(trackClasses, "group-data-[size=${size}]/switch:");
 
-                output["sa-switch"] = trackClasses;
+                tokens["sa-switch"] = trackClasses;
             }
 
-            if (output.TryGetValue("sa-switch-thumb", out var thumbClasses))
+            if (tokens.TryGetValue("sa-switch-thumb", out var thumbClasses))
             {
                 thumbClasses = thumbClasses.Replace("data-unchecked:", string.Empty);
                 thumbClasses = thumbClasses.Replace("data-checked:", "peer-checked:");
 
-                output["sa-switch-thumb"] = thumbClasses;
+                tokens["sa-switch-thumb"] = thumbClasses;
             }
 
-            return output;
+            return tokens;
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ public static partial class Processors
         /// </summary>
         public Dictionary<string, string> CleanToggleClasses()
         {
-            var output = new Dictionary<string, string>(input);
+            var tokens = new Dictionary<string, string>(input);
 
             static string Adapt(string classes) =>
                 classes
@@ -344,17 +344,17 @@ public static partial class Processors
                     .Replace("[&.input-validation-error]:", "has-[.input-validation-error]:")
                     .Replace("aria-invalid:", "has-[[aria-invalid]]:");
 
-            if (output.TryGetValue("sa-toggle", out var toggleClasses))
+            if (tokens.TryGetValue("sa-toggle", out var toggleClasses))
             {
-                output["sa-toggle"] = Adapt(toggleClasses);
+                tokens["sa-toggle"] = Adapt(toggleClasses);
             }
 
-            if (output.TryGetValue("sa-toggle-group-item", out var itemClasses))
+            if (tokens.TryGetValue("sa-toggle-group-item", out var itemClasses))
             {
-                output["sa-toggle-group-item"] = Adapt(itemClasses);
+                tokens["sa-toggle-group-item"] = Adapt(itemClasses);
             }
 
-            return output;
+            return input;
         }
     }
 }

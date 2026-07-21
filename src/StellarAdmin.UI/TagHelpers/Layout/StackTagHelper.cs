@@ -51,34 +51,11 @@ public class StackTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            BuildClassString(
                 "flex flex-col",
-                effectiveAlign switch
-                {
-                    StackAlign.Stretch => "items-stretch",
-                    StackAlign.Center => "items-center",
-                    StackAlign.Start => "items-start",
-                    StackAlign.End => "items-end",
-                    _ => "items-stretch",
-                },
-                effectiveGap switch
-                {
-                    StackGap.ExtraSmall => "gap-y-1",
-                    StackGap.Small => "gap-y-2",
-                    StackGap.Default => "gap-y-4",
-                    StackGap.Large => "gap-y-6",
-                    StackGap.ExtraLarge => "gap-y-8",
-                    _ => "gap-y-4",
-                },
-                effectiveJustify switch
-                {
-                    StackJustify.Start => "justify-start",
-                    StackJustify.End => "justify-end",
-                    StackJustify.SpaceBetween => "justify-between",
-                    StackJustify.SpaceAround => "justify-around",
-                    StackJustify.Center => "justify-center",
-                    _ => "justify-start",
-                },
+                effectiveAlign.GetClass(),
+                effectiveGap.GetThemeToken(),
+                effectiveJustify.GetClass(),
                 output.GetUserSuppliedClass()
             )
         );

@@ -17,3 +17,19 @@ public enum StackAlign
     /// <summary>Children are aligned to the end of the cross axis.</summary>
     End,
 }
+
+internal static class StackAlignExtensions
+{
+    extension(StackAlign align)
+    {
+        public string GetClass() =>
+            align switch
+            {
+                StackAlign.Stretch => "items-stretch",
+                StackAlign.Center => "items-center",
+                StackAlign.Start => "items-start",
+                StackAlign.End => "items-end",
+                _ => "items-stretch",
+            };
+    }
+}

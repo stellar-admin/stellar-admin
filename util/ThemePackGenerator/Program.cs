@@ -43,7 +43,7 @@ public partial class Program
             responseMessage.EnsureSuccessStatusCode();
 
             var responseText = await responseMessage.Content.ReadAsStringAsync();
-            var themeStyles = ExtractComponentsFromThemeStyle(responseText)
+            var themeTokens = ExtractComponentsFromThemeStyle(responseText)
                 .DropReactAriaStyles()
                 .AddFieldRadioGroupSupport()
                 .RemoveAriaInvalidRing()
@@ -59,21 +59,22 @@ public partial class Program
                 .CleanSheetClasses()
                 .CleanTooltipClasses();
 
-            var fileName = Path.GetFileNameWithoutExtension(themeFile)
+            var themeName = Path.GetFileNameWithoutExtension(themeFile)
                 .Replace("style-", string.Empty);
+            themeName = char.ToUpperInvariant(themeName[0]) + themeName[1..];
+
+            // Append custom theme tokens
+            themeTokens = themeTokens.AppendCustomThemeTokens(themeName);
 
             var themePackText = string.Join(
                 Environment.NewLine,
-                themeStyles.Select(pair =>
+                themeTokens.Select(pair =>
                     $"-{pair.Key}{Environment.NewLine}{pair.Value}{Environment.NewLine}"
                 )
             );
 
             await File.WriteAllTextAsync(
-                Path.Combine(
-                    themePackFolder,
-                    char.ToUpperInvariant(fileName[0]) + fileName[1..] + ".themepack"
-                ),
+                Path.Combine(themePackFolder, themeName + ".themepack"),
                 themePackText
             );
         }
@@ -84,13 +85,13 @@ public partial class Program
 
     private static Dictionary<string, string> ExtractComponentsFromThemeStyle(string input)
     {
-        var componentStyles = new Dictionary<string, string>();
+        var tokens = new Dictionary<string, string>();
 
         foreach (Match match in StyleRegex().Matches(input))
         {
-            componentStyles.Add($"sa-{match.Groups["name"].Value}", match.Groups["value"].Value);
+            tokens.Add($"sa-{match.Groups["name"].Value}", match.Groups["value"].Value);
         }
 
-        return componentStyles;
+        return tokens;
     }
 }
