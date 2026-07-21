@@ -61,7 +61,7 @@ npm run fmt                   # oxfmt (format TS/JS)
 ```bash
 dotnet run --project util/ThemePackGenerator   # downloads shadcn style-*.css -> tailwind/themes/*.css
 ```
-Adding a theme: generate its `tailwind/themes/<name>.css`, add a `Client/css/themes/<name>.css` entry, and add the name to `ThemeBundleName` in `StellarAdmin.UI.csproj`.
+Adding a theme: generate its `tailwind/themes/<name>.css`, add a `Client/css/themes/<name>.css` entry, and add a `ClientOutput` line for its bundle in `StellarAdmin.UI.csproj`. (Keep these as literal per-file lines — an item-transform over a name list makes Rider show the names as phantom files in the solution explorer.)
 
 `dotnet build` runs `npm run build` for you via the `Client` target, which skips when none of its inputs changed. It hooks `ResolveProjectStaticWebAssets` rather than `Build`: `wwwroot/` is gitignored, so on a clean checkout a `BeforeTargets="Build"` target would run *after* static web asset discovery had already found the folder empty — leaving the first build with no `_content/` assets.
 

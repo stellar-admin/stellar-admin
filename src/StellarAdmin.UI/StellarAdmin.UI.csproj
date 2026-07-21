@@ -84,8 +84,14 @@
     <ClientOutput Include="wwwroot/stellar-admin-ui.js" />
     <ClientOutput Include="tailwind/utility-classes.txt" />
 
-    <ThemeBundleName Include="luma;lyra;maia;mira;nova;rhea;sera;vega" />
-    <ClientOutput Include="@(ThemeBundleName->'wwwroot/stellar-admin-ui.%(Identity).css')" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.luma.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.lyra.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.maia.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.mira.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.nova.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.rhea.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.sera.css" />
+    <ClientOutput Include="wwwroot/stellar-admin-ui.vega.css" />
   </ItemGroup>
 
   <!-- Trigger client build -->
