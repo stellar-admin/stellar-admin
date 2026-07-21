@@ -14,12 +14,8 @@ public class LinkButtonTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly ICssClassMerger _classMerger;
 
-    public LinkButtonTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public LinkButtonTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));

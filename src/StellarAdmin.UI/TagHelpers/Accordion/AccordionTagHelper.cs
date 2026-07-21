@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-accordion")]
 public class AccordionTagHelper : StellarAdminTagHelperBase
 {
-    public AccordionTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public AccordionTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

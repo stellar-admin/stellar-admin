@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button")]
 public class ButtonTagHelper : StellarAdminTagHelperBase
 {
-    public ButtonTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ButtonTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The size of the button.

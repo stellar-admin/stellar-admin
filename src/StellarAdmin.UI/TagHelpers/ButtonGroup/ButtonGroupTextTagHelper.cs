@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button-group-text")]
 public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
 {
-    public ButtonGroupTextTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ButtonGroupTextTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

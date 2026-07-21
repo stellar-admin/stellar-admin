@@ -27,12 +27,11 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
     private readonly IIconManager _iconManager;
 
     public InputOtpTagHelper(
-        ThemeManager themeManager,
         IHtmlGenerator htmlGenerator,
         ICssClassMerger classMerger,
         IIconManager iconManager
     )
-        : base(themeManager, htmlGenerator, classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
@@ -342,7 +341,6 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
                 await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                     separator.Content,
                     context,
-                    ThemeManager,
                     ClassMerger,
                     _iconManager
                 );

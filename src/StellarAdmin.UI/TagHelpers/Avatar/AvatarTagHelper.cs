@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-avatar")]
 public class AvatarTagHelper : StellarAdminTagHelperBase
 {
-    public AvatarTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public AvatarTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     Explicit initials to display when no image is available. Takes precedence over

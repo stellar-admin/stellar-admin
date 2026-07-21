@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-alert-action")]
 public class AlertAction : StellarAdminTagHelperBase
 {
-    public AlertAction(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public AlertAction(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async void Process(TagHelperContext context, TagHelperOutput output)
     {

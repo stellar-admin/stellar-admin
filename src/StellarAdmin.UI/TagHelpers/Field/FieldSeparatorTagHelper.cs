@@ -10,8 +10,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-separator")]
 public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
 {
-    public FieldSeparatorTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public FieldSeparatorTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -40,7 +40,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
             [new TagHelperAttribute("class", "absolute inset-0 top-1/2")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var separatorTagHelper = new SeparatorTagHelper(ThemeManager, ClassMerger)
+        var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
         {
             Orientation = SeparatorOrientation.Horizontal,
         };

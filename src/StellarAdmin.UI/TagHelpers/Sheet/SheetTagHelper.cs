@@ -16,12 +16,8 @@ public class SheetTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public SheetTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public SheetTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -101,10 +97,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
-            {
-                Name = "x",
-            };
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "x" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
 
             // Render the button
@@ -120,7 +113,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
                         new DefaultTagHelperContent().AppendHtml(iconOutput)
                     )
             );
-            var buttonTagHelper = new ButtonTagHelper(ThemeManager, ClassMerger)
+            var buttonTagHelper = new ButtonTagHelper(ClassMerger)
             {
                 Size = ButtonSize.IconSmall,
                 Variant = ButtonVariant.Ghost,

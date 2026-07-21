@@ -38,8 +38,8 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
-    public InputGroupButtonTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public InputGroupButtonTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

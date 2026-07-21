@@ -16,8 +16,8 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
         [SeparatorOrientation.Vertical] = new ThemeToken("sa-separator-vertical"),
     };
 
-    public SeparatorTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public SeparatorTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The orientation of the separator.

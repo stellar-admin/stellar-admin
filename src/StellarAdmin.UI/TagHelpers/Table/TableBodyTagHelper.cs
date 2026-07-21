@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table-body")]
 public class TableBodyTagHelper : StellarAdminTagHelperBase
 {
-    public TableBodyTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public TableBodyTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

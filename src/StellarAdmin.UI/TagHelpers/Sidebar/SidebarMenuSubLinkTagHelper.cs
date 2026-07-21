@@ -21,12 +21,8 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// </remarks>
     public SidebarMenuSubLinkSize? Size { get; set; }
 
-    public SidebarMenuSubLinkTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IHtmlGenerator htmlGenerator
-    )
-        : base(themeManager, classMerger)
+    public SidebarMenuSubLinkTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

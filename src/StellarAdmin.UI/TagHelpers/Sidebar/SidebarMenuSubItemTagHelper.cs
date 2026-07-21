@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A single item within a nested sidebar submenu, rendered as a list item.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-sub-item")]
-public class SidebarMenuSubItemTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarMenuSubItemTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The header region of the sidebar, pinned above its content; typically holds branding or a workspace switcher.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-header")]
-public class SidebarHeaderTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarHeaderTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

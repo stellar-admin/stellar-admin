@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-pagination-item")]
 public class PaginationItemTagHelper : StellarAdminTagHelperBase
 {
-    public PaginationItemTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public PaginationItemTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

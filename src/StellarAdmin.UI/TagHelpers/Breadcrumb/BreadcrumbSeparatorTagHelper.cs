@@ -13,12 +13,8 @@ public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public BreadcrumbSeparatorTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public BreadcrumbSeparatorTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -52,7 +48,7 @@ public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
             {
                 Name = "chevron-right",
             };

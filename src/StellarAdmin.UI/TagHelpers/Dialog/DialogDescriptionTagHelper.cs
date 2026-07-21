@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-dialog-description")]
 public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public DialogDescriptionTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public DialogDescriptionTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

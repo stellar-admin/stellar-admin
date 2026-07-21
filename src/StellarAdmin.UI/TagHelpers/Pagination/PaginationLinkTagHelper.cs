@@ -13,12 +13,8 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public PaginationLinkTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public PaginationLinkTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

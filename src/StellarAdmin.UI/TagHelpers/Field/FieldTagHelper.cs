@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field")]
 public class FieldTagHelper : StellarAdminTagHelperBase
 {
-    public FieldTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public FieldTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     How the field arranges its label, control, and supporting text.

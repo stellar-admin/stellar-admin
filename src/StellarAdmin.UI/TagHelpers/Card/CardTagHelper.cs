@@ -19,8 +19,8 @@ public class CardTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("size")]
     public CardSize? Size { get; set; }
 
-    public CardTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public CardTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

@@ -15,12 +15,8 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public FieldErrorTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public FieldErrorTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

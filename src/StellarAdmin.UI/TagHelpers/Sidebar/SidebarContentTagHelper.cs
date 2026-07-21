@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The main scrollable content region of the sidebar; holds the sidebar's groups and menus.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-content")]
-public class SidebarContentTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarContentTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

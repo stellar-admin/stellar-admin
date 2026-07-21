@@ -29,12 +29,8 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("is-active")]
     public bool? IsActive { get; set; }
 
-    public TabLinkTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public TabLinkTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

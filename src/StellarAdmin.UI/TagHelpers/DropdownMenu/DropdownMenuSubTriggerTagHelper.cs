@@ -19,12 +19,8 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuSubTriggerTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public DropdownMenuSubTriggerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -70,7 +66,6 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
         output.Content.AppendHtml(
             DropdownMenuInternals.RenderIcon(
                 context,
-                ThemeManager,
                 ClassMerger,
                 _iconManager,
                 "chevron-right",

@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button-group-separator")]
 public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
 {
-    public ButtonGroupSeparatorTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ButtonGroupSeparatorTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The orientation of the separator.
@@ -35,7 +35,7 @@ public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        var separatorTagHelper = new SeparatorTagHelper(ThemeManager, ClassMerger)
+        var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
         {
             Orientation = effectiveOrientation,
         };

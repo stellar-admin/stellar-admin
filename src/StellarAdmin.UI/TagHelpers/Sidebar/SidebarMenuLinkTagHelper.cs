@@ -42,12 +42,8 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// </remarks>
     public SidebarMenuLinkVariant? Variant { get; set; }
 
-    public SidebarMenuLinkTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IHtmlGenerator htmlGenerator
-    )
-        : base(themeManager, classMerger)
+    public SidebarMenuLinkTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

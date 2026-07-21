@@ -10,8 +10,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-content")]
 public class FieldContentTagHelper : StellarAdminTagHelperBase
 {
-    public FieldContentTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public FieldContentTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

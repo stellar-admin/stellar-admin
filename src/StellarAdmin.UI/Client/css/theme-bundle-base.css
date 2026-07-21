@@ -1,6 +1,6 @@
-/* Shared skeleton for the per-theme prebuilt bundles (see css/themes/<theme>.css). Mirrors
-   Client/css/stellar-admin-ui.css minus the ThemePacks @source — component styling comes from
-   the imported tailwind/themes/<theme>.css rules instead of scanned themepack strings. */
+/* Shared skeleton for the per-theme prebuilt bundles (see css/themes/<theme>.css). Component
+   styling comes from the imported tailwind/themes/<theme>.css rules; the @source directives
+   below only cover the structural utilities the library emits into HTML. */
 
 /* Ensure stellar-admin utilities have higher specificity than app */
 @layer theme, base, components, utilities, stellar-admin;

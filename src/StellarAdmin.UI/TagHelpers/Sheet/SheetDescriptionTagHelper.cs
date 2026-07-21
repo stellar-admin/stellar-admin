@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     Supporting description text for a sheet, shown beneath the title.
 /// </summary>
 [HtmlTargetElement("sa-sheet-description")]
-public class SheetDescriptionTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SheetDescriptionTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     backdrop.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog")]
-public class AlertDialogTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class AlertDialogTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     /// <summary>
     ///     The size of the alert dialog.

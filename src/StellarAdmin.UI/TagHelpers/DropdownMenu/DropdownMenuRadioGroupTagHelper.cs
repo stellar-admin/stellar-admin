@@ -8,8 +8,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     which value is selected.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-radio-group")]
-public class DropdownMenuRadioGroupTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class DropdownMenuRadioGroupTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     /// <summary>
     ///     The value of the currently selected item in the group.

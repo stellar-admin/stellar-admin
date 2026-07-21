@@ -13,12 +13,8 @@ public class AlertTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public AlertTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public AlertTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -114,10 +110,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
-            {
-                Name = Icon,
-            };
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = Icon };
             await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
             output.Content.AppendHtml(iconTagHelperOutput);
@@ -133,7 +126,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(titleContent)
             );
-            var titleTagHelper = new AlertTitleTagHelper(ThemeManager, ClassMerger);
+            var titleTagHelper = new AlertTitleTagHelper(ClassMerger);
             await titleTagHelper.ProcessAsync(context, titleTagHelperOutput);
 
             output.Content.AppendHtml(titleTagHelperOutput);
@@ -150,7 +143,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(descriptionContent)
             );
 
-            var descriptionTagHelper = new AlertDescriptionTagHelper(ThemeManager, ClassMerger);
+            var descriptionTagHelper = new AlertDescriptionTagHelper(ClassMerger);
             await descriptionTagHelper.ProcessAsync(context, descriptionTagHelperOutput);
 
             output.Content.AppendHtml(descriptionTagHelperOutput);

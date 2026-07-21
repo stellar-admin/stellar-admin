@@ -85,7 +85,6 @@ internal static class DropdownMenuInternals
     /// <summary>Renders a Lucide icon (via <see cref="IconTagHelper" />) as inline content.</summary>
     public static IHtmlContent RenderIcon(
         TagHelperContext context,
-        ThemeManager themeManager,
         ICssClassMerger classMerger,
         IIconManager iconManager,
         string name,
@@ -97,10 +96,7 @@ internal static class DropdownMenuInternals
             [new TagHelperAttribute("class", cssClass)],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(themeManager, classMerger, iconManager)
-        {
-            Name = name,
-        };
+        var iconTagHelper = new IconTagHelper(classMerger, iconManager) { Name = name };
         iconTagHelper.Process(context, iconOutput);
 
         return iconOutput;

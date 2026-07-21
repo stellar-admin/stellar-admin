@@ -10,8 +10,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-avatar-group-count")]
 public class AvatarGroupCount : StellarAdminTagHelperBase
 {
-    public AvatarGroupCount(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public AvatarGroupCount(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

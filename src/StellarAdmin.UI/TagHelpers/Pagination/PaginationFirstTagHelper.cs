@@ -22,12 +22,11 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
     public ButtonSize? Size { get; set; }
 
     public PaginationFirstTagHelper(
-        ThemeManager themeManager,
         ICssClassMerger classMerger,
         IHtmlGenerator htmlGenerator,
         IIconManager iconManager
     )
-        : base(themeManager, classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
@@ -42,7 +41,7 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
                 output.GetUserSuppliedClass()
             )
         );
-        var linkTagHelper = new PaginationLinkTagHelper(ThemeManager, _htmlGenerator, ClassMerger)
+        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator, ClassMerger)
         {
             ViewContext = ViewContext,
             Action = Action,
@@ -74,7 +73,7 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
             {
                 Name = "chevron-first",
             };

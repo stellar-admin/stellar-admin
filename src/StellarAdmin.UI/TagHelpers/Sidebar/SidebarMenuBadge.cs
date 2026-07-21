@@ -7,8 +7,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A small badge, typically a count, shown at the end of a sidebar menu item; hidden while the sidebar is collapsed to icons.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-badge")]
-public class SidebarMenuBadge(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarMenuBadge(ICssClassMerger classMerger) : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A horizontal divider that visually separates groups of menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-separator")]
-public class DropdownMenuSeparatorTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class DropdownMenuSeparatorTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

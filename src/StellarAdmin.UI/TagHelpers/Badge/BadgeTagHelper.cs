@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-badge")]
 public class BadgeTagHelper : StellarAdminTagHelperBase
 {
-    public BadgeTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public BadgeTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     private static readonly Dictionary<BadgeVariant, ThemeToken> BadgeVariantClasses = new()
     {

@@ -21,8 +21,8 @@ public class AlertDialogCancelTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
-    public AlertDialogCancelTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public AlertDialogCancelTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

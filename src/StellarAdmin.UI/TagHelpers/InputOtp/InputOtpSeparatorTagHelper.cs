@@ -13,12 +13,8 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public InputOtpSeparatorTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public InputOtpSeparatorTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -46,7 +42,6 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
             await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                 output.Content,
                 context,
-                ThemeManager,
                 ClassMerger,
                 _iconManager
             );

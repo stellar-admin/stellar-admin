@@ -12,8 +12,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-otp-slot")]
 public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
 {
-    public InputOtpSlotTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public InputOtpSlotTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The zero-based position of this slot. When omitted, the slot takes the next position in

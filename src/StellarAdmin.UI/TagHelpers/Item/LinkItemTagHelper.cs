@@ -31,12 +31,8 @@ public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
-    public LinkItemTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public LinkItemTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

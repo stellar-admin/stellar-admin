@@ -10,8 +10,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-container")]
 public class ContainerTagHelper : StellarAdminTagHelperBase
 {
-    public ContainerTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ContainerTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

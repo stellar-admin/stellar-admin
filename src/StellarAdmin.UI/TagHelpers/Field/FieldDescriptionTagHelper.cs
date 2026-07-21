@@ -12,8 +12,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-description")]
 public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public FieldDescriptionTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public FieldDescriptionTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     private const string ForAttributeName = "asp-for";
 

@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The footer region of the sidebar, pinned below its content; typically holds a user menu or secondary actions.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-footer")]
-public class SidebarFooterTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarFooterTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

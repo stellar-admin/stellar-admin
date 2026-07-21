@@ -10,8 +10,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-otp-group")]
 public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
 {
-    public InputOtpGroupTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public InputOtpGroupTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

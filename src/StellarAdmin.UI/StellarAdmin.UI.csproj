@@ -53,12 +53,6 @@
     <AdditionalFiles Include="Icons\Definitions\Lucide.json" />
   </ItemGroup>
 
-  <!-- Theme packs -->
-  <ItemGroup>
-    <Content Update="Theming/ThemePacks/**/*.*" Pack="false" />
-    <AdditionalFiles Include="Theming\ThemePacks\*.themepack" />
-  </ItemGroup>
-
   <!-- Client -->
   <ItemGroup>
     <Content Update="Client/**/*.*" Pack="false" />
@@ -86,9 +80,7 @@
     <ClientInput Include="Client/tsconfig.json" />
     <ClientInput Include="Client/package.json" />
     <ClientInput Include="tailwind/**/*.css" />
-    <ClientInput Include="Theming/ThemePacks/*.themepack" />
 
-    <ClientOutput Include="wwwroot/stellar-admin-ui.css" />
     <ClientOutput Include="wwwroot/stellar-admin-ui.js" />
     <ClientOutput Include="tailwind/utility-classes.txt" />
 

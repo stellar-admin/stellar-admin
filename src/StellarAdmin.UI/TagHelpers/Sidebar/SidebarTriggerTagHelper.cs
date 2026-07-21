@@ -12,12 +12,8 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public SidebarTriggerTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public SidebarTriggerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -54,7 +50,7 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
             {
                 Name = "panel-left",
             };

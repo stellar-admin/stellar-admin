@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 using TailwindMerge;
 
 namespace StellarAdmin.UI;
@@ -18,12 +17,10 @@ public static class StellarAdminUIExtensions
             stellarAdminBuilder
                 .Services.AddSingleton<TwMerge>()
                 .AddSingleton<ICssClassMerger, DefaultCssClassMerger>()
-                .AddSingleton<IIconManager>(_ => DefaultIconManager.Instance)
-                .AddSingleton<ThemeManager>(_ => ThemeManager.Instance);
+                .AddSingleton<IIconManager>(_ => DefaultIconManager.Instance);
 
             var builder = new StellarAdminUIBuilder(stellarAdminBuilder.Services);
             builder.AddIconPack<LucideIconPack>();
-            builder.UseTheme<VegaThemePack>();
             return builder;
         }
     }

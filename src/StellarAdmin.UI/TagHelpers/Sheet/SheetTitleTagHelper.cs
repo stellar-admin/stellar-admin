@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The accessible title of a sheet, rendered as a heading in the sheet header.
 /// </summary>
 [HtmlTargetElement("sa-sheet-title")]
-public class SheetTitleTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SheetTitleTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

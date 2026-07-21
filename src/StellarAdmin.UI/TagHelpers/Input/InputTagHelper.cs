@@ -20,12 +20,11 @@ public class InputTagHelper : FieldInputBaseTagHelper
     private readonly IIconManager _iconManager;
 
     public InputTagHelper(
-        ThemeManager themeManager,
         IHtmlGenerator htmlGenerator,
         ICssClassMerger classMerger,
         IIconManager iconManager
     )
-        : base(themeManager, htmlGenerator, classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -178,11 +177,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var checkboxIconTagHelper = new IconTagHelper(
-                    ThemeManager,
-                    ClassMerger,
-                    _iconManager
-                )
+                var checkboxIconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
                 {
                     Name = "check",
                 };
@@ -223,7 +218,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
+                var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
                 {
                     Name = "circle",
                 };

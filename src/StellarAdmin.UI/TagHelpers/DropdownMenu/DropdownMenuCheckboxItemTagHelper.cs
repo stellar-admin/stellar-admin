@@ -42,12 +42,8 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuCheckboxItemTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public DropdownMenuCheckboxItemTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -101,14 +97,7 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(
-                context,
-                ThemeManager,
-                ClassMerger,
-                _iconManager,
-                "check",
-                "size-4"
-            )
+            DropdownMenuInternals.RenderIcon(context, ClassMerger, _iconManager, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

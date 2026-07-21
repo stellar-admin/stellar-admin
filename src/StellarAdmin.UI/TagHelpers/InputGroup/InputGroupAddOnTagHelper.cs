@@ -46,8 +46,8 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("align")]
     public InputGroupAddOnVariantAlignment? Alignment { get; set; }
 
-    public InputGroupAddOnTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public InputGroupAddOnTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

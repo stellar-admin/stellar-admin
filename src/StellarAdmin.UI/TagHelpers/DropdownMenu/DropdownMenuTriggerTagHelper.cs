@@ -8,8 +8,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     and size options.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-trigger")]
-public class DropdownMenuTriggerTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class DropdownMenuTriggerTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     /// <summary>
     ///     The size of the trigger button.

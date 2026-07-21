@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A button rendered as an entry within a sidebar menu item.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-button")]
-public class SidebarMenuButtonTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     private static readonly Dictionary<SidebarMenuButtonSize, ThemeToken> SizeClasses = new()
     {

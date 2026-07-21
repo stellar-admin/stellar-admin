@@ -4,8 +4,8 @@ using StellarAdmin.UI.Theming;
 namespace StellarAdmin.UI.TagHelpers;
 
 /// <summary>
-///     Base class for all StellarAdmin.UI tag helpers. Provides the theme manager and CSS class
-///     merger, named-slot support, and tracks the ancestor tag-helper stack so children can
+///     Base class for all StellarAdmin.UI tag helpers. Provides the CSS class merger,
+///     named-slot support, and tracks the ancestor tag-helper stack so children can
 ///     locate their parents.
 /// </summary>
 public class StellarAdminTagHelperBase : TagHelper
@@ -27,15 +27,8 @@ public class StellarAdminTagHelperBase : TagHelper
     [HtmlAttributeNotBound]
     protected internal StellarAdminTagHelperBase? ParentTagHelper { get; private set; }
 
-    /// <summary>
-    ///     The theme manager that resolves component classes from the active theme pack.
-    /// </summary>
-    [HtmlAttributeNotBound]
-    protected ThemeManager ThemeManager { get; }
-
-    public StellarAdminTagHelperBase(ThemeManager themeManager, ICssClassMerger classMerger)
+    public StellarAdminTagHelperBase(ICssClassMerger classMerger)
     {
-        ThemeManager = themeManager ?? throw new ArgumentNullException(nameof(themeManager));
         ClassMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
     }
 

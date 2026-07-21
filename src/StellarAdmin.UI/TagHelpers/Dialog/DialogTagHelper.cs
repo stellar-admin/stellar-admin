@@ -10,8 +10,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     <c>commandfor</c> and <c>command="show-modal"</c> or <c>command="close"</c>.
 /// </summary>
 [HtmlTargetElement("sa-dialog")]
-public class DialogTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class DialogTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

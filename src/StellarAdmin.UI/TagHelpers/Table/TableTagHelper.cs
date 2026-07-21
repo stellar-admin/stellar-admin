@@ -12,8 +12,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table")]
 public class TableTagHelper : StellarAdminTagHelperBase
 {
-    public TableTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public TableTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

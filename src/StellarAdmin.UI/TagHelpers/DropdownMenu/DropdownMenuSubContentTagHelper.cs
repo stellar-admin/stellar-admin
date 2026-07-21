@@ -9,10 +9,9 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-sub-content")]
 public class DropdownMenuSubContentTagHelper(
-    ThemeManager themeManager,
     ICssClassMerger classMerger,
     IOptions<StellarAdminUIOptions> options
-) : StellarAdminTagHelperBase(themeManager, classMerger)
+) : StellarAdminTagHelperBase(classMerger)
 {
     /// <summary>
     ///     Where the submenu panel is placed relative to its sub-trigger.

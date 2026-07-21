@@ -1276,7 +1276,6 @@ main
 make
 makes
 making
-manager
 manual
 many
 mapped
@@ -2249,7 +2248,6 @@ thead
 their
 them
 theme
-themeManager
 themepack
 themes
 then

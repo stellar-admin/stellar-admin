@@ -14,12 +14,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-slider", TagStructure = TagStructure.WithoutEndTag)]
 public class SliderTagHelper : FieldInputBaseTagHelper
 {
-    public SliderTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, htmlGenerator, classMerger) { }
+    public SliderTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(htmlGenerator, classMerger) { }
 
     /// <summary>
     ///     The minimum value the slider can take.

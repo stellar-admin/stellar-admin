@@ -32,8 +32,8 @@ public class TooltipTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
-    public TooltipTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public TooltipTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

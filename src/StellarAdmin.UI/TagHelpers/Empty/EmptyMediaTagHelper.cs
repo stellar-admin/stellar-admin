@@ -25,8 +25,8 @@ public class EmptyMediaTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public EmptyMediaVariant? Variant { get; set; }
 
-    public EmptyMediaTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public EmptyMediaTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

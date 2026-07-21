@@ -27,8 +27,8 @@ public class ItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
-    public ItemTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ItemTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

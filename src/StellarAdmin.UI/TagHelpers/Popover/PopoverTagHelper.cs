@@ -19,8 +19,8 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
-    public PopoverTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public PopoverTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

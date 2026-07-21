@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The footer region of a sheet; typically contains action buttons.
 /// </summary>
 [HtmlTargetElement("sa-sheet-footer")]
-public class SheetFooterTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SheetFooterTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

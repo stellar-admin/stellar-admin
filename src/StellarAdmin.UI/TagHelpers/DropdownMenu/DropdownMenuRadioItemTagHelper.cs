@@ -34,12 +34,8 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    public DropdownMenuRadioItemTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public DropdownMenuRadioItemTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -99,14 +95,7 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(
-                context,
-                ThemeManager,
-                ClassMerger,
-                _iconManager,
-                "check",
-                "size-4"
-            )
+            DropdownMenuInternals.RenderIcon(context, ClassMerger, _iconManager, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

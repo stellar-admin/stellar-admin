@@ -54,12 +54,11 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
     public required ViewContext ViewContext { get; set; }
 
     public InputGroupInputTagHelper(
-        ThemeManager themeManager,
         IHtmlGenerator htmlGenerator,
         ICssClassMerger classMerger,
         IIconManager iconManager
     )
-        : base(themeManager, classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -77,12 +76,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        var inputTagHelper = new InputTagHelper(
-            ThemeManager,
-            _htmlGenerator,
-            ClassMerger,
-            _iconManager
-        )
+        var inputTagHelper = new InputTagHelper(_htmlGenerator, ClassMerger, _iconManager)
         {
             ViewContext = ViewContext,
             For = For,

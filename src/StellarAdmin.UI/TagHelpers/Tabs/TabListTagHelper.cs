@@ -28,8 +28,8 @@ public class TabListTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public TabListVariant? Variant { get; set; }
 
-    public TabListTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public TabListTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

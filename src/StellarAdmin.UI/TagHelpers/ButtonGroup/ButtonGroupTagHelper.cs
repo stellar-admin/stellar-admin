@@ -36,8 +36,8 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("orientation")]
     public ButtonGroupOrientation? Orientation { get; set; }
 
-    public ButtonGroupTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ButtonGroupTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

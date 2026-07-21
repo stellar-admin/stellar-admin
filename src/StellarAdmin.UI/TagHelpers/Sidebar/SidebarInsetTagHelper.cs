@@ -7,8 +7,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The main content area shown alongside the sidebar, rendered as a <c>&lt;main&gt;</c> element.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-inset")]
-public class SidebarInsetTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarInsetTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

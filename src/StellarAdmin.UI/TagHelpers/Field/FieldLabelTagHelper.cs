@@ -13,12 +13,8 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public FieldLabelTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public FieldLabelTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -51,7 +47,7 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        var labelTagHelper = new LabelTagHelper(ThemeManager, _htmlGenerator, ClassMerger)
+        var labelTagHelper = new LabelTagHelper(_htmlGenerator, ClassMerger)
         {
             For = For,
             ViewContext = ViewContext,

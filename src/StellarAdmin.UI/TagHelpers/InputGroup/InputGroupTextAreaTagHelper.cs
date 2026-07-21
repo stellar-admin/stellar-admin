@@ -26,12 +26,8 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public InputGroupTextAreaTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, classMerger)
+    public InputGroupTextAreaTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -48,7 +44,7 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        var textareaTagHelper = new TextareaTagHelper(ThemeManager, _htmlGenerator, ClassMerger)
+        var textareaTagHelper = new TextareaTagHelper(_htmlGenerator, ClassMerger)
         {
             ViewContext = ViewContext,
             For = For,

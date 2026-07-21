@@ -13,12 +13,8 @@ public class SpinnerTagHelper : StellarAdminTagHelperBase
     private readonly ICssClassMerger _classMerger;
     private readonly IIconManager _iconManager;
 
-    public SpinnerTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(themeManager, classMerger)
+    public SpinnerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
+        : base(classMerger)
     {
         _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
@@ -26,10 +22,7 @@ public class SpinnerTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
-        {
-            Name = "loader-circle",
-        };
+        var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "loader-circle" };
         await iconTagHelper.ProcessAsync(context, output);
 
         output.Attributes.SetAttribute("role", "status");

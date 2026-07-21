@@ -9,10 +9,9 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-content")]
 public class DropdownMenuContentTagHelper(
-    ThemeManager themeManager,
     ICssClassMerger classMerger,
     IOptions<StellarAdminUIOptions> options
-) : StellarAdminTagHelperBase(themeManager, classMerger)
+) : StellarAdminTagHelperBase(classMerger)
 {
     /// <summary>
     ///     Where the panel is placed relative to its trigger.

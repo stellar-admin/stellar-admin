@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-sidebar")]
 public class SidebarTagHelper : StellarAdminTagHelperBase
 {
-    public SidebarTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public SidebarTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The visual style of the sidebar.

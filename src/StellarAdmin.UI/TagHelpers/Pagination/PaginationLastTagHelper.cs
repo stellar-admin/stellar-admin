@@ -22,12 +22,11 @@ public class PaginationLastTagHelper : StellarAdminAnchorTagHelperBase
     public ButtonSize? Size { get; set; }
 
     public PaginationLastTagHelper(
-        ThemeManager themeManager,
         IHtmlGenerator htmlGenerator,
         ICssClassMerger classMerger,
         IIconManager iconManager
     )
-        : base(themeManager, classMerger)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator;
         _iconManager = iconManager;
@@ -39,7 +38,7 @@ public class PaginationLastTagHelper : StellarAdminAnchorTagHelperBase
             "class",
             ClassMerger.Merge(new ThemeToken("sa-pagination-next"), output.GetUserSuppliedClass())
         );
-        var linkTagHelper = new PaginationLinkTagHelper(ThemeManager, _htmlGenerator, ClassMerger)
+        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator, ClassMerger)
         {
             ViewContext = ViewContext,
             Action = Action,
@@ -77,7 +76,7 @@ public class PaginationLastTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
+            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
             {
                 Name = "chevron-last",
             };

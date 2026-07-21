@@ -19,12 +19,11 @@ public class SelectTagHelper : FieldInputBaseTagHelper
     private FrameworkSelectTagHelper? _frameworkTagHelper;
 
     public SelectTagHelper(
-        ThemeManager themeManager,
         IHtmlGenerator htmlGenerator,
         ICssClassMerger classMerger,
         IIconManager iconManager
     )
-        : base(themeManager, htmlGenerator, classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -125,10 +124,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
             ],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(ThemeManager, ClassMerger, _iconManager)
-        {
-            Name = "chevron-down",
-        };
+        var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "chevron-down" };
         await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
         output.Content.AppendHtml(iconTagHelperOutput);

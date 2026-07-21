@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-progress")]
 public class ProgressTagHelper : StellarAdminTagHelperBase
 {
-    public ProgressTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ProgressTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     /// <summary>
     ///     The value representing full completion.

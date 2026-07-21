@@ -8,8 +8,8 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     Renders the <c>sel-sidebar</c> web component that nested triggers and the backdrop toggle.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-wrapper")]
-public class SidebarWrapperTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(themeManager, classMerger)
+public class SidebarWrapperTagHelper(ICssClassMerger classMerger)
+    : StellarAdminTagHelperBase(classMerger)
 {
     private const string SidebarWidth = "16rem";
     private const string SidebarWidthIcon = "3rem";

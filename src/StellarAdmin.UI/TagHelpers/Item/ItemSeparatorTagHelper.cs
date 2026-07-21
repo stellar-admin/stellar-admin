@@ -9,8 +9,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-item-separator")]
 public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
 {
-    public ItemSeparatorTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ItemSeparatorTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -20,7 +20,7 @@ public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
             ClassMerger.Merge(new ThemeToken("sa-item-separator"), GetUserSpecifiedClass(output))
         );
 
-        var separatorTagHelper = new SeparatorTagHelper(ThemeManager, ClassMerger)
+        var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
         {
             Orientation = SeparatorOrientation.Horizontal,
         };

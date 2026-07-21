@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-breadcrumb")]
 public class BreadcrumbTagHelper : StellarAdminTagHelperBase
 {
-    public BreadcrumbTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public BreadcrumbTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

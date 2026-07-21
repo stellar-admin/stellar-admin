@@ -15,12 +15,8 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public ToggleTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, htmlGenerator, classMerger)
+    public ToggleTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

@@ -17,12 +17,8 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public DropdownMenuItemTagHelper(
-        ThemeManager themeManager,
-        ICssClassMerger classMerger,
-        IHtmlGenerator htmlGenerator
-    )
-        : base(themeManager, classMerger)
+    public DropdownMenuItemTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
+        : base(classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

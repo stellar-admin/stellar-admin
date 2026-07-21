@@ -26,8 +26,8 @@ public class ItemMediaTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemMediaVariant? Variant { get; set; }
 
-    public ItemMediaTagHelper(ThemeManager themeManager, ICssClassMerger classMerger)
-        : base(themeManager, classMerger) { }
+    public ItemMediaTagHelper(ICssClassMerger classMerger)
+        : base(classMerger) { }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

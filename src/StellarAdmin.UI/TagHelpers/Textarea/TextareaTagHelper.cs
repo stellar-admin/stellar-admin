@@ -17,12 +17,8 @@ public class TextareaTagHelper : FieldInputBaseTagHelper
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly ICssClassMerger _classMerger;
 
-    public TextareaTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, htmlGenerator, classMerger)
+    public TextareaTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));

@@ -17,12 +17,8 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public SwitchTagHelper(
-        ThemeManager themeManager,
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger
-    )
-        : base(themeManager, htmlGenerator, classMerger)
+    public SwitchTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
+        : base(htmlGenerator, classMerger)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
