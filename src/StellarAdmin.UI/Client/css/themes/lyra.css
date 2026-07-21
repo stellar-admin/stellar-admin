@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Lyra theme -> wwwroot/stellar-admin-ui.lyra.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/lyra.css";

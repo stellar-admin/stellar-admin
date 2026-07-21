@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Rhea theme -> wwwroot/stellar-admin-ui.rhea.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/rhea.css";

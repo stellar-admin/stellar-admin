@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Luma theme -> wwwroot/stellar-admin-ui.luma.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/luma.css";

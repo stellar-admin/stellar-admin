@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Single-stylesheet standalone test</title>
+
+    <!-- ONLY the per-theme bundle. No app CSS. Components must render fully. -->
+    <link
+      rel="stylesheet"
+      href="../../../src/StellarAdmin.UI/wwwroot/stellar-admin-ui.vega.css"
+    />
+  </head>
+  <body class="bg-background text-foreground p-8">
+    <div class="flex max-w-xl flex-col gap-4">
+      <button
+        class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-default sa-button-size-default"
+        data-slot="button"
+      >
+        Default
+      </button>
+      <button
+        class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-destructive sa-button-size-sm"
+        data-slot="button"
+      >
+        Destructive / sm
+      </button>
+    </div>
+  </body>
+</html>

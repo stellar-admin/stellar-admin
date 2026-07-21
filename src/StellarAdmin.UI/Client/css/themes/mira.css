@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Mira theme -> wwwroot/stellar-admin-ui.mira.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/mira.css";

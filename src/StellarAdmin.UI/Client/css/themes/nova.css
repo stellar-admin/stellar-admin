@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Nova theme -> wwwroot/stellar-admin-ui.nova.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/nova.css";

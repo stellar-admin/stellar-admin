@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Sera theme -> wwwroot/stellar-admin-ui.sera.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/sera.css";

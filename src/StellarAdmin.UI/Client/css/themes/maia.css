@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Maia theme -> wwwroot/stellar-admin-ui.maia.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/maia.css";

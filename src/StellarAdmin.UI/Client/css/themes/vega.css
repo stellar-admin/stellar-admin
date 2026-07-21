@@ -1,0 +1,3 @@
+/* Prebuilt bundle entry for the Vega theme -> wwwroot/stellar-admin-ui.vega.css. */
+@import "../theme-bundle-base.css";
+@import "../../../tailwind/themes/vega.css";

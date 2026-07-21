@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Theme-as-CSS override semantics test</title>
+
+    <!--
+      Simulates two-bundle mode with themes as CSS files:
+        1. lib-vega.css  — the future per-theme library bundle: layer order declaration,
+           Tailwind theme/preflight, utilities promoted to layer(stellar-admin), and the
+           generated tailwind/themes/vega.css component rules in layer(components).
+        2. app.css       — a consuming app's own Tailwind bundle (stock layers), built by
+           scanning this page. Its utilities join the document-level `utilities` layer,
+           which sits ABOVE `components`, so author classes must beat .sa-* rules.
+    -->
+    <link
+      rel="stylesheet"
+      href="../../../src/StellarAdmin.UI/wwwroot/stellar-admin-ui.vega.css"
+    />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body class="bg-background text-foreground p-8">
+    <div class="flex max-w-xl flex-col gap-6">
+      <h1 class="text-lg font-semibold">Theme-as-CSS override semantics</h1>
+
+      <!-- 1. Component classes alone must produce a fully styled button -->
+      <section class="flex flex-col gap-2">
+        <h2 class="text-sm font-medium">1. Base + variant + size from CSS only</h2>
+        <div class="flex gap-2">
+          <button
+            class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-default sa-button-size-default"
+          >
+            Default
+          </button>
+          <button
+            class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-destructive sa-button-size-default"
+          >
+            Destructive
+          </button>
+          <button
+            class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-outline sa-button-size-sm"
+          >
+            Outline / sm
+          </button>
+        </div>
+        <p class="text-muted-foreground text-xs">
+          Expect: primary, red, and bordered small buttons — identical shape to today's
+          server-resolved output.
+        </p>
+      </section>
+
+      <!-- 2. A user utility from the APP bundle must beat the components-layer rule -->
+      <section class="flex flex-col gap-2">
+        <h2 class="text-sm font-medium">2. Author override via app-bundle utility</h2>
+        <button
+          class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-default sa-button-size-default bg-blue-500"
+        >
+          bg-blue-500 wins
+        </button>
+        <p class="text-muted-foreground text-xs">
+          Expect: solid blue button. The app bundle's <code>.bg-blue-500</code> (utilities
+          layer) must out-rank the theme's <code>.sa-button-variant-default</code>
+          background (components layer) — including while hovered: the variant's
+          <code>hover:bg-primary/90</code> also lives in the components layer, so the
+          author's static background wins even on hover. (Today tailwind-merge keeps the
+          hover class; this is the one intentional semantics change.)
+        </p>
+      </section>
+
+      <!-- 3. Hover states from the theme still work when not overridden -->
+      <section class="flex flex-col gap-2">
+        <h2 class="text-sm font-medium">3. Theme hover state intact without override</h2>
+        <button
+          class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-ghost sa-button-size-default"
+        >
+          Ghost — hover me
+        </button>
+        <p class="text-muted-foreground text-xs">
+          Expect: transparent at rest, accent background on hover (from the components
+          layer's <code>&amp;:hover</code>).
+        </p>
+      </section>
+
+      <!-- 4. Unknown sa-* token = harmless dead class -->
+      <section class="flex flex-col gap-2">
+        <h2 class="text-sm font-medium">4. Token with no rule</h2>
+        <button
+          class="sa-button inline-flex items-center justify-center whitespace-nowrap transition-all outline-none select-none sa-button-variant-default sa-button-size-default sa-does-not-exist"
+        >
+          Dead class, no effect
+        </button>
+      </section>
+    </div>
+  </body>
+</html>
