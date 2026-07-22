@@ -354,7 +354,7 @@ public static partial class Processors
                 tokens["sa-toggle-group-item"] = Adapt(itemClasses);
             }
 
-            return input;
+            return tokens;
         }
     }
 }
