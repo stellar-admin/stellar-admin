@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ThemePackGenerator;
+namespace ThemeGenerator;
 
 public static partial class Processors
 {

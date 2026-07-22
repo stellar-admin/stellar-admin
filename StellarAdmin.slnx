@@ -11,7 +11,7 @@
     <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
   </Folder>
   <Folder Name="/util/">
-    <Project Path="util/ThemePackGenerator/ThemePackGenerator.csproj" />
+    <Project Path="util\ThemeGenerator\ThemeGenerator.csproj" />
   </Folder>
   <Folder Name="/workflows/">
     <File Path=".github/workflows/ci.yml" />

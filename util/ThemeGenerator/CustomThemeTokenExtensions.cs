@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-namespace ThemePackGenerator;
+namespace ThemeGenerator;
 
 public static partial class CustomThemeTokenExtensions
 {
@@ -11,7 +11,7 @@ public static partial class CustomThemeTokenExtensions
     // The templates sit in ThemePacks/ alongside this source file. [CallerFilePath] is resolved at
     // compile time, so they are read straight from the source tree rather than copied to the output.
     private static string GetTemplateFolder([CallerFilePath] string sourceFilePath = "") =>
-        Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "ThemePacks");
+        Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "Themes");
 
     /// <summary>
     ///     A token declaration in a template — a single leading dash followed by the token name. The
@@ -43,7 +43,7 @@ public static partial class CustomThemeTokenExtensions
         ///     <para>
         ///         The values come from the theme itself (see
         ///         <see cref="ExtractSpacingScaleVariables" />), but which component uses which step is
-        ///         authored by hand in <c>ThemePacks/&lt;theme&gt;.themepack.template</c>. A template
+        ///         authored by hand in <c>Themes/&lt;theme&gt;.custom.template</c>. A template
         ///         references a step as <c>--sa-token-*</c> and this substitutes the theme's class for
         ///         it, so adding a theme-aware component is a template edit rather than a code change.
         ///     </para>
@@ -51,12 +51,12 @@ public static partial class CustomThemeTokenExtensions
         public Dictionary<string, string> AppendCustomThemeTokens(string themeName)
         {
             var spacingScaleVariables = ExtractSpacingScaleVariables(tokens);
-            var templateFile = Path.Combine(TemplateFolder, $"{themeName}.themepack.template");
+            var templateFile = Path.Combine(TemplateFolder, $"{themeName}.custom.template");
 
             if (!File.Exists(templateFile))
             {
                 throw new FileNotFoundException(
-                    $"No theme pack template for {themeName}. Every theme needs one.",
+                    $"No theme template for {themeName}. Every theme needs one.",
                     templateFile
                 );
             }
@@ -79,8 +79,6 @@ public static partial class CustomThemeTokenExtensions
 
                 if (classes.Contains("--sa-token-"))
                 {
-                    // ThemeManager cannot tell a bad value from a good one, so an unresolved placeholder
-                    // would ship as a class name that silently matches nothing.
                     throw new InvalidOperationException(
                         $"{themeName}: token '{name}' references an unknown scale variable: {classes}"
                     );
