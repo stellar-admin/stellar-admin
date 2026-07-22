@@ -1,34 +1,43 @@
 using StellarAdmin.UI.Theming;
-using TailwindMerge;
 
 namespace StellarAdmin.UI;
 
 internal class DefaultCssClassMerger : ICssClassMerger
 {
-    private readonly TwMerge _twMerge;
-
-    public DefaultCssClassMerger(TwMerge twMerge)
-    {
-        _twMerge = twMerge ?? throw new ArgumentNullException(nameof(twMerge));
-    }
-
+    /// <summary>
+    ///     Joins the elements into a class string, de-duplicating repeats. A theme token is
+    ///     emitted as its own class name; the linked theme stylesheet carries the matching
+    ///     <c>.sa-*</c> rule. Conflict resolution happens in CSS (cascade layers: author
+    ///     utilities beat component rules), so no tailwind-merge pass is needed.
+    /// </summary>
     public string? Merge(params ClassElement?[] classes)
     {
-        return _twMerge.Merge(
-            classes
-                .Select(c =>
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var result = new List<string>();
+
+        foreach (var element in classes)
+        {
+            var value = element switch
+            {
+                ThemeToken token => token.Name,
+                ClassList list => list.Classes,
+                _ => null,
+            };
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                continue;
+            }
+
+            foreach (var cssClass in value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (seen.Add(cssClass))
                 {
-                    return c switch
-                    {
-                        // A theme token is emitted as its own class name; the linked theme
-                        // stylesheet carries the matching .sa-* rule. TwMerge passes unknown
-                        // classes through untouched, so tokens never conflict with utilities.
-                        ThemeToken cn => cn.Name,
-                        ClassList cl => cl.Classes,
-                        _ => string.Empty,
-                    };
-                })
-                .ToArray()
-        );
+                    result.Add(cssClass);
+                }
+            }
+        }
+
+        return result.Count == 0 ? null : string.Join(' ', result);
     }
 }

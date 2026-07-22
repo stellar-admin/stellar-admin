@@ -44,6 +44,10 @@ public class DropdownMenuContentTagHelper(
         output.Attributes.SetAttribute("role", "menu");
         output.Attributes.SetAttribute("data-slot", "dropdown-menu-content");
         output.Attributes.SetAttribute(
+            "data-anchor-side",
+            effectivePosition.GetAnchorSideDataAttributeText()
+        );
+        output.Attributes.SetAttribute(
             "data-side",
             DropdownMenuInternals.GetSideDataAttribute(effectivePosition)
         );
@@ -56,7 +60,6 @@ public class DropdownMenuContentTagHelper(
                 MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
                 MenuSurfaceInternals.AccentToken(menuOptions.Accent),
                 effectivePosition.GetTailwindClassName(),
-                DropdownMenuInternals.GetMarginClassName(effectivePosition),
                 output.GetUserSuppliedClass()
             )
         );

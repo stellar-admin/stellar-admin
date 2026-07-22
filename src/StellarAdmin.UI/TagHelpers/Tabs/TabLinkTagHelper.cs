@@ -79,11 +79,7 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-tabs-trigger"), // Additional StellarAdmin.UI classes
-                "data-disabled:cursor-not-allowed",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-tabs-trigger"), output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

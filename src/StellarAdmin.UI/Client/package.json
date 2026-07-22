@@ -2,9 +2,8 @@
   "name": "stellar-admin-ui",
   "type": "module",
   "scripts": {
-    "build": "npm run build:utility-classes && npm run build:js && npm run build:css",
+    "build": "npm run build:js && npm run build:css",
     "build:css": "node ./scripts/build-theme-bundles.mjs",
-    "build:utility-classes": "node ./scripts/gen-utility-classes.mjs .. ../tailwind/utility-classes.txt",
     "build:js": "rolldown -c",
     "build:js:watch": "rolldown -c rolldown.config.js -w",
     "sync:vendor": "node ./scripts/sync-vendor.mjs",

@@ -36,43 +36,18 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute("data-slot", "popover-content");
         output.Attributes.SetAttribute(
+            "data-anchor-side",
+            effectivePositionArea.GetAnchorSideDataAttributeText()
+        );
+        output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-popover-content"),
                 effectivePositionArea.GetTailwindClassName(),
-                GetMarginClassName(effectivePositionArea),
                 output.GetUserSuppliedClass()
             )
         );
 
         return Task.CompletedTask;
-    }
-
-    private string GetMarginClassName(PositionArea positionArea)
-    {
-        return positionArea switch
-        {
-            PositionArea.TopCenter
-            or PositionArea.TopSpanLeft
-            or PositionArea.TopSpanRight
-            or PositionArea.TopLeft
-            or PositionArea.TopRight
-            or PositionArea.Top => "mb-2",
-            PositionArea.LeftCenter
-            or PositionArea.LeftSpanTop
-            or PositionArea.LeftSpanBottom
-            or PositionArea.Left => "me-2",
-            PositionArea.BottomCenter
-            or PositionArea.BottomSpanLeft
-            or PositionArea.BottomSpanRight
-            or PositionArea.BottomLeft
-            or PositionArea.BottomRight
-            or PositionArea.Bottom => "mt-2",
-            PositionArea.RightCenter
-            or PositionArea.RightSpanTop
-            or PositionArea.RightSpanBottom
-            or PositionArea.Right => "ms-2",
-            _ => string.Empty,
-        };
     }
 }

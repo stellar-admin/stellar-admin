@@ -12,7 +12,48 @@
    extra marker classes. Like everything under tailwind/, this file must be resolvable
    without our node_modules. */
 
+/* The class-attribute half of the contract: the few utility classes the tag helpers still
+   emit into HTML on purpose. Styling lives in the rules below, but these classes exist as
+   literal markup, so their CSS must be force-generated here — nothing scans the C# sources
+   anymore. When a tag helper gains a new sanctioned literal, add it to this list.
+
+   Why each group stays in the class attribute instead of a rule:
+   - size-4 / sr-only: icons and hidden inputs (Sheet close, SidebarTrigger, Breadcrumb /
+     Pagination ellipsis, dropdown indicators, InputOtp, Spinner, Toggle inputs). Theme rules
+     guard on the literal attribute (svg:not([class*='size-'])), so the size must be visible
+     in the markup.
+   - the [&>*] field group: Field forces its children's widths (FieldTagBuilder). These must
+     out-rank the children's own component classes, which only the utilities layer can do.
+   - anchored-* / try-flip-all: CSS anchor positioning (PositionArea, anchors.css), picked
+     per position at render time.
+   - font-heading: an escape hatch that only resolves when a consumer defines a
+     --font-heading theme variable; inert otherwise. */
+@source inline("size-4");
+@source inline("sr-only");
+@source inline("[&>*]:w-full");
+@source inline("[&>.sr-only]:w-auto");
+@source inline("@md/field-group:[&>*]:w-auto");
+@source inline("anchored-{top,bottom}{,-center,-left,-right,-span-left,-span-right}");
+@source inline("anchored-{left,right}{,-center,-span-top,-span-bottom}");
+@source inline("try-flip-all");
+@source inline("font-heading");
+
 @layer components {
+  /* The gap between an anchored overlay panel and its trigger, keyed off the
+     data-anchor-side attribute the overlay tag helpers emit (PositionArea). Lives here so an
+     author's own margin utilities always win. */
+  [data-anchor-side="top"] {
+    @apply mb-2;
+  }
+  [data-anchor-side="bottom"] {
+    @apply mt-2;
+  }
+  [data-anchor-side="left"] {
+    @apply me-2;
+  }
+  [data-anchor-side="right"] {
+    @apply ms-2;
+  }
   .sa-accordion {
     @apply flex w-full flex-col;
   }
@@ -82,6 +123,12 @@
   .sa-button-group {
     @apply flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1;
   }
+  .sa-button-group-orientation-horizontal {
+    @apply [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>[data-slot]]:rounded-r-none [&>[data-slot]>[data-slot]]:rounded-r-none [&>[data-slot]~[data-slot]>[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]>[data-slot]]:border-l-0;
+  }
+  .sa-button-group-orientation-vertical {
+    @apply flex-col [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>[data-slot]]:rounded-b-none;
+  }
   .sa-button-group-separator {
     @apply relative self-stretch data-[orientation=horizontal]:mx-px data-[orientation=horizontal]:w-auto data-[orientation=vertical]:my-px data-[orientation=vertical]:h-auto;
   }
@@ -99,6 +146,9 @@
   }
   .sa-card-header {
     @apply @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto];
+  }
+  .sa-checkbox {
+    @apply relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none;
   }
   .sa-checkbox-indicator {
     @apply invisible peer-checked:visible;
@@ -229,6 +279,9 @@
   .sa-group-justify-start {
     @apply justify-start;
   }
+  .sa-input {
+    @apply file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive;
+  }
   .sa-input-control-wrapper {
     @apply relative flex items-center;
   }
@@ -237,6 +290,18 @@
   }
   .sa-input-group-addon {
     @apply flex cursor-text items-center justify-center select-none;
+  }
+  .sa-input-group-addon-align-block-end {
+    @apply order-last w-full justify-start;
+  }
+  .sa-input-group-addon-align-block-start {
+    @apply order-first w-full justify-start;
+  }
+  .sa-input-group-addon-align-inline-end {
+    @apply order-last;
+  }
+  .sa-input-group-addon-align-inline-start {
+    @apply order-first;
   }
   .sa-input-group-button {
     @apply shadow-none flex items-center;
@@ -340,6 +405,9 @@
   .sa-progress-track {
     @apply relative flex w-full items-center overflow-x-hidden;
   }
+  .sa-radiobutton {
+    @apply relative aspect-square shrink-0 border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none rounded-full;
+  }
   .sa-radiobutton-indicator {
     @apply size-0 invisible peer-checked:visible;
   }
@@ -430,9 +498,6 @@
   .sa-sidebar-menu-sub-button {
     @apply flex min-w-0 -translate-x-px items-center overflow-hidden outline-hidden group-data-[collapsible=icon]:hidden disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:shrink-0;
   }
-  button.sa-sidebar-menu-sub-button {
-    @apply w-full;
-  }
   .sa-sidebar-menu-sub-item {
     @apply relative;
   }
@@ -458,7 +523,7 @@
     @apply relative grow overflow-hidden select-none;
   }
   .sa-spinner {
-    @apply animate-spin;
+    @apply size-4 animate-spin;
   }
   .sa-stack {
     @apply flex flex-col;
@@ -490,6 +555,9 @@
   .sa-stack-justify-start {
     @apply justify-start;
   }
+  .sa-switch {
+    @apply relative appearance-none transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50;
+  }
   .sa-switch-thumb {
     @apply pointer-events-none absolute left-px top-1/2 block ring-0 -translate-y-1/2 transition-transform;
   }
@@ -502,11 +570,23 @@
   .sa-tabs-list {
     @apply text-muted-foreground inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col;
   }
+  .sa-tabs-list-variant-default {
+    @apply bg-muted;
+  }
+  .sa-tabs-list-variant-line {
+    @apply gap-1 bg-transparent;
+  }
   .sa-tabs-trigger {
-    @apply focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground/60 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap transition-all group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background dark:data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 data-active:text-foreground after:bg-foreground after:absolute after:opacity-0 after:transition-opacity group-data-[orientation=horizontal]/tabs:after:inset-x-0 group-data-[orientation=horizontal]/tabs:after:bottom-[-5px] group-data-[orientation=horizontal]/tabs:after:h-0.5 group-data-[orientation=vertical]/tabs:after:inset-y-0 group-data-[orientation=vertical]/tabs:after:-right-1 group-data-[orientation=vertical]/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100;
+    @apply focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring text-foreground/60 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap transition-all group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background dark:data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 data-active:text-foreground after:bg-foreground after:absolute after:opacity-0 after:transition-opacity group-data-[orientation=horizontal]/tabs:after:inset-x-0 group-data-[orientation=horizontal]/tabs:after:bottom-[-5px] group-data-[orientation=horizontal]/tabs:after:h-0.5 group-data-[orientation=vertical]/tabs:after:inset-y-0 group-data-[orientation=vertical]/tabs:after:-right-1 group-data-[orientation=vertical]/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 data-disabled:cursor-not-allowed;
   }
   .sa-textarea {
     @apply placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full outline-none disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .sa-toggle {
+    @apply inline-flex items-center justify-center whitespace-nowrap shrink-0 select-none cursor-pointer outline-none hover:bg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 has-[:focus-visible]:ring-3 has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed;
+  }
+  .sa-toggle-group-item {
+    @apply has-[:focus-visible]:z-10;
   }
   .sa-toggle-group[data-orientation="horizontal"] {
     @apply inline-flex w-fit items-center;

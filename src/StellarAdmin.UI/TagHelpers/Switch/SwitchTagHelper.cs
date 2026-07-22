@@ -100,11 +100,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
             inputOutput.Attributes.SetAttribute("data-slot", "switch-input");
         }
 
-        ClassElement[] classNames =
-        [
-            new ThemeToken("sa-switch"),
-            "peer relative appearance-none transition-all outline-none disabled:cursor-not-allowed disabled:opacity-50",
-        ];
+        ClassElement[] classNames = [new ThemeToken("sa-switch"), "peer"];
 
         inputOutput.Attributes.SetAttribute(
             "class",

@@ -22,9 +22,6 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="TailwindMerge.NET" />
-  </ItemGroup>
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
@@ -82,7 +79,6 @@
     <ClientInput Include="tailwind/**/*.css" />
 
     <ClientOutput Include="wwwroot/stellar-admin-ui.js" />
-    <ClientOutput Include="tailwind/utility-classes.txt" />
 
     <ClientOutput Include="wwwroot/stellar-admin-ui.luma.css" />
     <ClientOutput Include="wwwroot/stellar-admin-ui.lyra.css" />

@@ -15,15 +15,10 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
             [ButtonGroupOrientation.Horizontal] =
             [
                 new ThemeToken("sa-button-group-orientation-horizontal"),
-                "[&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>[data-slot]]:rounded-r-none",
-                /* StellarAdmin.UI additional classes */
-                // Handles sa-select where the select is nested in a container
-                "[&>[data-slot]>[data-slot]]:rounded-r-none [&>[data-slot]~[data-slot]>[data-slot]]:rounded-l-none  [&>[data-slot]~[data-slot]>[data-slot]]:border-l-0",
             ],
             [ButtonGroupOrientation.Vertical] =
             [
                 new ThemeToken("sa-button-group-orientation-vertical"),
-                "flex-col [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>[data-slot]]:rounded-b-none",
             ],
         };
 

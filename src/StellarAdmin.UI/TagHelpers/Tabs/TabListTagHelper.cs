@@ -65,7 +65,6 @@ public class TabListTagHelper : StellarAdminTagHelperBase
                 effectiveVariant == TabListVariant.Default
                     ? new ThemeToken("sa-tabs-list-variant-default")
                     : new ThemeToken("sa-tabs-list-variant-line"),
-                effectiveVariant == TabListVariant.Default ? "bg-muted" : "gap-1 bg-transparent",
                 output.GetUserSuppliedClass()
             )
         );

@@ -107,27 +107,9 @@ public class InputTagHelper : FieldInputBaseTagHelper
 
         ClassElement[] classNames = type switch
         {
-            "checkbox" =>
-            [
-                new ThemeToken("sa-checkbox"),
-                "peer relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50",
-                // Custom StellarAdmin.UI override
-                "before:content[''] appearance-none",
-            ],
-            "radio" =>
-            [
-                new ThemeToken("sa-radiobutton"),
-                "peer relative aspect-square shrink-0 border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50",
-                // Custom StellarAdmin.UI override
-                "before:content[''] appearance-none rounded-full",
-            ],
-            _ =>
-            [
-                new ThemeToken("sa-input"),
-                "file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-                // Custom StellarAdmin.UI overrides for validation
-                "[&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive",
-            ],
+            "checkbox" => [new ThemeToken("sa-checkbox"), "peer"],
+            "radio" => [new ThemeToken("sa-radiobutton"), "peer"],
+            _ => [new ThemeToken("sa-input")],
         };
 
         if (!inputOutput.Attributes.ContainsName("data-slot"))

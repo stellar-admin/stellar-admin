@@ -18,22 +18,18 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
         [InputGroupAddOnVariantAlignment.InlineStart] =
         [
             new ThemeToken("sa-input-group-addon-align-inline-start"),
-            "order-first",
         ],
         [InputGroupAddOnVariantAlignment.InlineEnd] =
         [
             new ThemeToken("sa-input-group-addon-align-inline-end"),
-            "order-last",
         ],
         [InputGroupAddOnVariantAlignment.BlockStart] =
         [
             new ThemeToken("sa-input-group-addon-align-block-start"),
-            "order-first w-full justify-start",
         ],
         [InputGroupAddOnVariantAlignment.BlockEnd] =
         [
             new ThemeToken("sa-input-group-addon-align-block-end"),
-            "order-last w-full justify-start",
         ],
     };
 

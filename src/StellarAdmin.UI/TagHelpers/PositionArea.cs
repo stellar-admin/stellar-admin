@@ -70,6 +70,33 @@ internal static class PositionAreaExtensions
 {
     extension(PositionArea area)
     {
+        /// <summary>
+        ///     The side of the anchor the panel sits on, as the <c>data-anchor-side</c>
+        ///     attribute value. Drives the trigger-to-panel gap via the
+        ///     <c>[data-anchor-side=...]</c> rules in tailwind/components.css.
+        /// </summary>
+        public string GetAnchorSideDataAttributeText()
+        {
+            return area switch
+            {
+                PositionArea.TopCenter
+                or PositionArea.TopSpanLeft
+                or PositionArea.TopSpanRight
+                or PositionArea.TopLeft
+                or PositionArea.TopRight
+                or PositionArea.Top => "top",
+                PositionArea.LeftCenter
+                or PositionArea.LeftSpanTop
+                or PositionArea.LeftSpanBottom
+                or PositionArea.Left => "left",
+                PositionArea.RightCenter
+                or PositionArea.RightSpanTop
+                or PositionArea.RightSpanBottom
+                or PositionArea.Right => "right",
+                _ => "bottom",
+            };
+        }
+
         public string GetTailwindClassName()
         {
             return area switch

@@ -29,12 +29,7 @@ public class SpinnerTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-label", "Loading");
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge(
-                new ThemeToken("sa-spinner"),
-                // size-4 stays literal: theme rules size icons via svg:not([class*='size-']) guards.
-                "size-4",
-                output.GetUserSuppliedClass()
-            )
+            _classMerger.Merge(new ThemeToken("sa-spinner"), output.GetUserSuppliedClass())
         );
     }
 }

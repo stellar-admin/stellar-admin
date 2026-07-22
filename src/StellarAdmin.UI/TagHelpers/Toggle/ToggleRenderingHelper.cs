@@ -29,8 +29,7 @@ internal static class ToggleRenderingHelper
      * has-[:checked] / has-[:focus-visible] / has-[:disabled] here (the sa-toggle token's own
      * checked/focus/validation styles were rewritten to the same has-* forms by the generator).
      */
-    private const string BaseLayout =
-        "group/toggle inline-flex items-center justify-center whitespace-nowrap shrink-0 select-none cursor-pointer outline-none hover:bg-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 has-[:focus-visible]:ring-3 has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50 has-[:disabled]:cursor-not-allowed";
+    private const string BaseLayout = "group/toggle";
 
     /*
      * Group-item-only statics. A grouped toggle item raises the focused item above its
@@ -38,8 +37,6 @@ internal static class ToggleRenderingHelper
      * doubly needed here because joined groups overlap items with -space-x-px. The focus state
      * lives on the inner input, so this is the has-[:focus-visible] form (matching the ring).
      */
-    private const string GroupItemLayout = "has-[:focus-visible]:z-10";
-
     public static string BuildClass(
         ICssClassMerger classMerger,
         ToggleVariant variant,
@@ -58,7 +55,6 @@ internal static class ToggleRenderingHelper
 
         if (includeGroupItemToken)
         {
-            elements.Add(GroupItemLayout);
             elements.Add(new ThemeToken("sa-toggle-group-item"));
         }
 

@@ -29,10 +29,10 @@
     Outputs="@(StellarAdminUITailwindFile->'$(StellarAdminUITailwindDir)%(RecursiveDir)%(Filename)%(Extension)')"
   >
     <!-- Without this the build succeeds and emits a stylesheet containing none of the library's
-         classes, because Tailwind treats an unresolvable @source as a no-op. -->
+         component styles, because a missing @import fails only at the consumer's Tailwind build. -->
     <Error
-      Condition=" !Exists('$(MSBuildThisFileDirectory)../tailwind/utility-classes.txt') "
-      Text="StellarAdmin.UI: tailwind/utility-classes.txt is missing, so your stylesheet would contain none of the library's classes. If you reference StellarAdmin.UI by ProjectReference, build that project first."
+      Condition=" !Exists('$(MSBuildThisFileDirectory)../tailwind/components.css') "
+      Text="StellarAdmin.UI: tailwind/components.css is missing, so your stylesheet would contain none of the library's styles. If you reference StellarAdmin.UI by ProjectReference, build that project first."
     />
     <Copy
       SourceFiles="@(StellarAdminUITailwindFile)"

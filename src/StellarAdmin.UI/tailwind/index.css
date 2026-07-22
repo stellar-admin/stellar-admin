@@ -18,11 +18,3 @@
 @import "./anchors.css";
 @import "./components.css";
 
-/* Every Tailwind candidate used by the tag helpers and theme packs, extracted at build time by
-   Client/scripts/gen-utility-classes.mjs. Resolved relative to THIS file, so it travels with the folder
-   when it's copied into a consuming project's obj/.
-
-   A missing @source is silently ignored by Tailwind, so a tree where the generator hasn't run
-   still builds — the library's own entry names TagHelpers/ and ThemePacks/ directly, making this
-   a redundant superset there rather than a dependency. */
-@source "./utility-classes.txt";
