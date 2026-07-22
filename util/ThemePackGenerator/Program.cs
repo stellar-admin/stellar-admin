@@ -27,7 +27,8 @@ public partial class Program
                 "..",
                 "src",
                 "StellarAdmin.UI",
-                "tailwind",
+                "Client",
+                "css",
                 "themes"
             )
         );

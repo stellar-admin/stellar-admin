@@ -89,8 +89,8 @@ attributes by hand.
 
 ## 8. Theming (brief)
 
-Colors, radius, and other design tokens come from the active theme pack (**Vega**
-by default) as CSS variables, plus Tailwind utilities like `bg-primary`,
+Colors, radius, and other design tokens come from the linked theme stylesheet
+(`stellar-admin-ui.<theme>.css`) as CSS variables, plus Tailwind utilities like `bg-primary`,
 `text-muted-foreground`, `border`. Prefer these semantic tokens over hard-coded
 colors so components stay consistent in light and dark mode. Deeper theming
 (dark mode, menu color/appearance/accent) will be covered by the `stellar-admin-theming`

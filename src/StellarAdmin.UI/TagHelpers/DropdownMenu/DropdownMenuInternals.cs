@@ -13,12 +13,12 @@ internal static class DropdownMenuInternals
 {
     // The shared popover-surface styling (positioning, overflow, open/close transition —
     // including the justified divergences from shadcn documented there) lives in
-    // tailwind/components.css under .sa-dropdown-menu-content / .sa-dropdown-menu-sub-content.
+    // Client/css/components.css under .sa-dropdown-menu-content / .sa-dropdown-menu-sub-content.
 
     /// <summary>
     ///     Best-effort <c>data-side</c> from the requested placement. On viewport-collision
     ///     flip (<c>try-flip-all</c>) the rendered side can differ — acceptable, since the
-    ///     directional slide animation is not used (see the surface rules in tailwind/components.css).
+    ///     directional slide animation is not used (see the surface rules in Client/css/components.css).
     /// </summary>
     public static string GetSideDataAttribute(PositionArea area) =>
         area switch

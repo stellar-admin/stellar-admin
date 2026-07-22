@@ -4,7 +4,7 @@ namespace StellarAdmin.UI;
 
 /// <summary>
 ///     Application-wide settings for floating menu surfaces (Dropdown Menu, and future menu
-///     families). Configured via <see cref="Builders.StellarAdminBuilder.ConfigureMenu" />.
+///     families). Configured via <see cref="StellarAdminUIBuilder.ConfigureMenu" />.
 /// </summary>
 public class StellarAdminUIMenuOptions
 {

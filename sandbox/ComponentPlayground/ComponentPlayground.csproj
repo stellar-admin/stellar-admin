@@ -11,20 +11,10 @@
     <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
   </ItemGroup>
   <!--
-    Single-build mode: this app's own Tailwind build generates the library's styles alongside its
-    own, from one set of design tokens, so there is no separate stellar-admin-ui.css to link.
-
-    A real consumer using the NuGet package gets StellarAdmin.UI.targets imported automatically;
-    build/*.targets are not auto-imported for a ProjectReference, hence the explicit Import. The
-    targets file locates its payload relative to itself, so the same file works either way and the
-    obj/ path below is identical to a package consumer's.
-
-    docs/DocsSamples deliberately stays on two-bundle mode so both paths keep being exercised.
+    Two-bundle mode: the layout links the prebuilt _content/StellarAdmin.UI bundle (vega), and
+    this Tailwind build covers only the app's own markup — importing theme-tokens.css so
+    token-named utilities (bg-primary, …) resolve to the bundle's runtime variables.
   -->
-  <PropertyGroup>
-    <StellarAdminUIExportTailwindSources>true</StellarAdminUIExportTailwindSources>
-  </PropertyGroup>
-  <Import Project="..\..\src\StellarAdmin.UI\build\StellarAdmin.UI.targets" />
   <Target Name="Tailwind" BeforeTargets="Build">
     <Exec
       WorkingDirectory="Client"

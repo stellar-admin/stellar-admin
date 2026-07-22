@@ -7,8 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"/>
-    <!-- Single-build mode: site.css carries both this app's styles and StellarAdmin.UI's. -->
+    <!-- Two-bundle mode: the prebuilt theme bundle for the components, site.css for this app's own markup. -->
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.vega.css" asp-append-version="true"/>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
 </head>
 <body>
 @{

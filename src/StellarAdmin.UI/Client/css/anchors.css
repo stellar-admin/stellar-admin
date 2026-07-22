@@ -1,8 +1,7 @@
 /* CSS anchor positioning utilities.
 
-   Replaces the `@toolwind/anchors` plugin, of which the library used only these two families.
-   Kept here as plain CSS (rather than a JS plugin) so a consuming app's own Tailwind build can
-   resolve it without our node_modules — see `tailwind/index.css`.
+   Replaces the `@toolwind/anchors` plugin, of which the library used only these two families —
+   kept as plain CSS rather than a JS plugin dependency.
 
    `anchored-*` mirrors the PositionArea enum in TagHelpers/PositionArea.cs one-for-one. */
 

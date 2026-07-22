@@ -20,12 +20,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Found at: https://github.com/shadcn-ui/ui/blob/main/LICENSE.md
 
 --------------------------------------------------------------------------------
-TailwindMerge.NET license
+tw-animate-css license
 --------------------------------------------------------------------------------
 
 MIT License
 
-Copyright (c) 2024 desmondinho
+Copyright (c) 2025 Wombosvideo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Found at: https://github.com/desmondinho/tailwind-merge-dotnet/blob/main/LICENSE
+Found at: https://github.com/Wombosvideo/tw-animate-css/blob/main/LICENSE
 
 --------------------------------------------------------------------------------
 Tailwind license

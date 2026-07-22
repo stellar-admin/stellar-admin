@@ -1,49 +1,76 @@
 ---
 name: stellar-admin-theming
 description: >-
-  Configures the look of a StellarAdmin.UI app — selecting a theme pack, enabling dark mode, tuning the
-  menu color / appearance / accent, and styling with StellarAdmin.UI's semantic color tokens. Use when
-  the user wants to change the StellarAdmin.UI theme, add or toggle dark mode, adjust menu/dropdown
-  appearance, or asks which colors/classes to use with StellarAdmin.UI.
+  Configures the look of a StellarAdmin.UI app — picking a theme stylesheet, customizing theme
+  values, enabling dark mode, tuning the menu color / appearance / accent, and styling with
+  StellarAdmin.UI's semantic color tokens. Use when the user wants to change the StellarAdmin.UI
+  theme, add or toggle dark mode, adjust menu/dropdown appearance, or asks which colors/classes
+  to use with StellarAdmin.UI.
 metadata:
   author: StellarAdmin.UI
 ---
 
 # Theming StellarAdmin.UI
 
-Most theming is configured **once at startup** off `AddStellarAdmin()`; dark mode is a CSS class; and
-day-to-day styling means using semantic tokens instead of hard-coded colors.
+**A theme is a stylesheet.** The package ships one self-contained CSS bundle per theme; the
+layout links exactly one, and switching themes means switching that `<link>`. Nothing about the
+theme is configured in C#. Dark mode is a CSS class, and day-to-day styling means using semantic
+tokens instead of hard-coded colors.
 
-## Configure at startup (`Program.cs`)
+## Pick a theme (the layout `<link>`)
 
-Chain configuration onto `AddStellarAdmin()`. Vega (theme) and Lucide (icons) are applied by default —
-only call these to override.
+Available themes: `vega`, `nova`, `luma`, `lyra`, `maia`, `mira`, `rhea`, `sera`. Each bundle is
+a full palette:
+
+```razor
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.nova.css" asp-append-version="true" />
+```
+
+To change the theme, change `nova` to another theme name — that's the whole operation.
+
+## Customize theme values
+
+Every color and radius is a CSS custom property; the compiled rules all reference `var(--…)`.
+Override by redeclaring properties in the app's own stylesheet — no build tooling required:
+
+```css
+:root {
+  --primary: oklch(0.55 0.2 260);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --primary: oklch(0.7 0.18 260);
+}
+```
+
+## Menu appearance (`Program.cs`)
+
+Floating menu surfaces (Dropdown Menu, and future menu families) have app-wide options, chained
+off `.AddUI()`:
 
 ```csharp
+using StellarAdmin;
 using StellarAdmin.UI;
 using StellarAdmin.UI.TagHelpers;
 
 builder.Services.AddStellarAdmin()
-    .UseTheme<VegaThemePack>()          // pick a theme pack (default: Vega)
+    .AddUI()
     .ConfigureMenu(menu =>
     {
-        menu.Color = MenuColor.Inverted;            // Default | Inverted
+        menu.Color = MenuColor.Inverted;              // Default | Inverted
         menu.Appearance = MenuAppearance.Translucent; // Solid | Translucent (frosted glass)
-        menu.Accent = MenuAccent.Bold;              // Subtle | Bold
+        menu.Accent = MenuAccent.Bold;                // Subtle | Bold
     });
 ```
 
-- **Theme packs** available: `VegaThemePack`, `NovaThemePack`, `LumaThemePack`, `LyraThemePack`,
-  `MaiaThemePack`, `MiraThemePack`, `RheaThemePack`, `SeraThemePack`. Each is a full palette; pick
-  one with `UseTheme<T>()`.
-- **Menu options** apply to floating menu surfaces (Dropdown Menu, and future menu families).
-  Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle`.
-- Enum values are fully-qualified (`MenuColor.Inverted`, etc.).
+Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle` — only call `ConfigureMenu`
+to override.
 
 ## Dark mode
 
-Dark mode is a **class-based Tailwind variant** — the shipped `stellar-admin-ui.css` already carries both
-the light (`:root`) and dark (`.dark`) token values, so there's no extra CSS or config method.
+Dark mode is a **class-based Tailwind variant** — every theme bundle already carries both the
+light (`:root`) and dark (`.dark`) token values, so there's no extra CSS or config method.
 
 Enable it by putting the **`dark` class on an ancestor** (usually `<html>` or `<body>`); every
 descendant then reads the dark values:
@@ -53,13 +80,15 @@ descendant then reads the dark values:
 ```
 
 To make it user-toggleable, add the `dark` class yourself — server-side from a preference, or a
-small client script (e.g. reading `prefers-color-scheme` / a saved setting). StellarAdmin.UI ships the
-token values; the toggle logic is the app's.
+small client script (e.g. reading `prefers-color-scheme` / a saved setting). StellarAdmin.UI ships
+the token values; the toggle logic is the app's.
 
 ## Style with semantic tokens, not hard-coded colors
 
-StellarAdmin.UI components use CSS-variable-backed **semantic tokens**, exposed as Tailwind utilities.
-Prefer these so your markup stays consistent and adapts to the theme + dark mode automatically:
+StellarAdmin.UI components use CSS-variable-backed **semantic tokens**, exposed as Tailwind
+utilities. Prefer these so your markup stays consistent and adapts to the theme + dark mode
+automatically (using them in the app's *own* markup requires the app's Tailwind build to import
+StellarAdmin's `theme-tokens.css` — see the setup reference):
 
 | Use | Tokens |
 |-----|--------|
@@ -82,11 +111,14 @@ Also available: the `sidebar-*` and `chart-*` token families and the `--radius` 
 
 ## Rules
 
-1. Configure the theme pack and menu options once, chained off `AddStellarAdmin()` in `Program.cs`.
-2. Vega + Lucide are the defaults — only call `UseTheme<>` / `AddIconPack<>` to change them.
-3. Enable dark mode with the `dark` class on an ancestor; don't add your own dark CSS — the
+1. Pick the theme by linking one `stellar-admin-ui.<theme>.css` in the layout; switch themes by
+   switching the `<link>`. No C# theme configuration exists.
+2. Customize theme values by redeclaring the CSS custom properties (`--primary`, `--radius`, …)
+   in the app's own stylesheet.
+3. Configure menu options once via `ConfigureMenu`, chained off `.AddUI()` in `Program.cs`.
+4. Enable dark mode with the `dark` class on an ancestor; don't add your own dark CSS — the
    tokens are already themed for both modes.
-4. Prefer semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-card`, `border`,
+5. Prefer semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-card`, `border`,
    `text-destructive`) over hard-coded colors.
-5. For one-off tweaks, override via the `class` attribute (merged last, so it wins) rather than
-   editing theme packs or CSS variables by hand.
+6. For one-off tweaks, override via the `class` attribute (author utilities out-rank component
+   rules, so they win) rather than editing the shipped bundles.

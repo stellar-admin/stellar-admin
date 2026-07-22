@@ -6,7 +6,6 @@
     "build:css": "node ./scripts/build-theme-bundles.mjs",
     "build:js": "rolldown -c",
     "build:js:watch": "rolldown -c rolldown.config.js -w",
-    "sync:vendor": "node ./scripts/sync-vendor.mjs",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check"
   },

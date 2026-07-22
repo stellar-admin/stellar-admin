@@ -55,19 +55,6 @@
     <Content Update="Client/**/*.*" Pack="false" />
   </ItemGroup>
 
-  <!-- tailwind/ ships as plain files, not static web assets: a consuming app's Tailwind build reads
-       them off disk, and they must never be served under _content/. The .targets goes to
-       buildTransitive/ as well, or projects referencing us via an intermediate library get nothing. -->
-  <ItemGroup>
-    <Content Update="tailwind/**/*.*" Pack="false" />
-    <None Include="tailwind/**/*" Pack="true" PackagePath="tailwind/" />
-    <None
-      Include="build/StellarAdmin.UI.targets"
-      Pack="true"
-      PackagePath="build/;buildTransitive/"
-    />
-  </ItemGroup>
-
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
     <ClientInput Include="Client/js/**/*.ts" />
@@ -76,7 +63,6 @@
     <ClientInput Include="Client/rolldown.config.js" />
     <ClientInput Include="Client/tsconfig.json" />
     <ClientInput Include="Client/package.json" />
-    <ClientInput Include="tailwind/**/*.css" />
 
     <ClientOutput Include="wwwroot/stellar-admin-ui.js" />
 

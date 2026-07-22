@@ -28,9 +28,10 @@ dotnet add package StellarAdmin.UI
 Update your `Program.cs` (or `Startup.cs`) to register the StellarAdmin.UI services.
 
 ```cs
+using StellarAdmin;
 using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin();
+builder.Services.AddStellarAdmin().AddUI();
 ```
 
 ### 3. Update imports
@@ -44,14 +45,14 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin.UI Tag Helpers an
 
 ### 4. Add stylesheets and JavaScript file 
 
-Add the StellarAdmin.UI stylesheet (`/_content/StellarAdmin.UI/stellar-admin-ui.css`) and JavaScript file (`/_content/StellarAdmin.UI/stellar-admin-ui.js`) to your Razor layout.   
+Add a StellarAdmin.UI theme stylesheet (`/_content/StellarAdmin.UI/stellar-admin-ui.<theme>.css`) and the JavaScript file (`/_content/StellarAdmin.UI/stellar-admin-ui.js`) to your Razor layout. A theme is just a stylesheet — pick one of `vega`, `nova`, `luma`, `lyra`, `maia`, `mira`, `rhea` or `sera`, and switch themes by switching the `<link>`.
 
 ```razor
 <!DOCTYPE html>
 <html lang="en">
 <head>
     ...   
-    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.nova.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
 </head>
 <body>
@@ -76,28 +77,34 @@ Start using the StellarAdmin.UI Tag Helpers inside your Razor Pages or MVC Views
 </sa-alert>
 ```
 
+## Customizing the theme
+
+Every color and radius in the stylesheet is a CSS custom property. To customize a theme, redeclare
+the properties in your own CSS — no build tooling required:
+
+```css
+:root {
+  --primary: oklch(0.55 0.2 260);
+  --radius: 0.5rem;
+}
+```
+
 ## Using the design tokens in your own markup
 
 The stylesheet above styles the `<sa-*>` components. If you also want to write
-`class="bg-primary"` or `dark:...` in your *own* Razor and have it match, and your app already
-runs a Tailwind v4 build, opt into single-build mode:
-
-```xml
-<PropertyGroup>
-  <StellarAdminUIExportTailwindSources>true</StellarAdminUIExportTailwindSources>
-</PropertyGroup>
-```
-
-Then import StellarAdmin.UI into your Tailwind entry stylesheet, and drop the
-`stellar-admin-ui.css` `<link>` from your layout (keep the `<script>`):
+`class="bg-primary"` or `dark:...` in your *own* Razor and have it match, and your app runs a
+Tailwind v4 build, copy
+[`theme-tokens.css`](src/StellarAdmin.UI/Client/css/theme-tokens.css) into your project and import
+it from your Tailwind entry stylesheet:
 
 ```css
 @import "tailwindcss";
-@import "../../obj/stellaradmin-ui/tailwind/index.css";
+@import "./theme-tokens.css";
 ```
 
-Your build now produces a single stylesheet covering your app and StellarAdmin.UI. Don't keep the
-`<link>` as well — you'd get every rule twice.
+It contains only the token *vocabulary* — the utilities it enables compile to `var(--…)`
+references whose values come from the StellarAdmin.UI stylesheet at runtime. Keep the `<link>`
+from step 4 in place.
 
 ## Documentation
 

@@ -13,13 +13,16 @@ dotnet add package StellarAdmin.UI
 ## 2. Register services (`Program.cs`)
 
 ```csharp
+using StellarAdmin;
 using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin();
+builder.Services.AddStellarAdmin().AddUI();
 ```
 
-`AddStellarAdmin()` registers the theme manager, the CSS class merger, the icon manager,
-and applies the defaults: the **Vega** theme pack and the **Lucide** icon pack.
+`AddStellarAdmin()` (from `StellarAdmin.Core`) creates the shared builder; `.AddUI()` registers
+the UI services — the icon manager, with the **Lucide** icon pack as the default. Without
+`.AddUI()`, tag helpers that render icons fail to resolve their services. Theme selection is
+not part of registration: the theme is whichever stylesheet the layout links (step 4).
 
 ## 3. Register the tag helpers (`_ViewImports.cshtml`)
 
@@ -33,10 +36,12 @@ emits it verbatim (no styling, no behavior).
 
 ## 4. Reference the CSS and JS assets (your layout, e.g. `_Layout.cshtml`)
 
-The assets are served from the package as static web assets under `_content/StellarAdmin.UI/`:
+The assets are served from the package as static web assets under `_content/StellarAdmin.UI/`.
+The CSS ships as one self-contained bundle per theme (`vega`, `nova`, `luma`, `lyra`, `maia`,
+`mira`, `rhea`, `sera`); link exactly one — switching themes is switching the `<link>`:
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.css" asp-append-version="true" />
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.nova.css" asp-append-version="true" />
 <script defer src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
 ```
 
@@ -50,7 +55,22 @@ The assets are served from the package as static web assets under `_content/Stel
 
 Using StellarAdmin.UI alongside another CSS framework (Bootstrap being the common one)
 will almost always break rendering — their resets and utilities fight StellarAdmin.UI's.
-Remove third-party stylesheets and rely on `stellar-admin-ui.css` alone.
+Remove third-party stylesheets and rely on the StellarAdmin.UI bundle alone.
+
+## Optional: customize the theme
+
+Every color and radius in the bundle is a CSS custom property. Redeclare the properties in the
+app's own CSS — no build tooling or imports required:
+
+```css
+:root {
+  --primary: oklch(0.55 0.2 260);
+  --radius: 0.5rem;
+}
+```
+
+Values live on `:root` (with dark-mode overrides under `.dark`); the compiled rules all reference
+`var(--…)`, so redeclared values take effect everywhere.
 
 ## Optional: use StellarAdmin's design tokens in your own markup
 
@@ -58,63 +78,21 @@ Steps 1–4 give you the prebuilt stylesheet, which styles the `<sa-*>` componen
 **not** let your own markup use the design system — write `class="bg-primary"` in your own
 Razor and nothing happens, because those tokens only exist inside the prebuilt bundle.
 
-If your app already runs a Tailwind build, you can switch to **single-build mode**, where your
-Tailwind build generates everything from one set of tokens into one stylesheet. Then
-`bg-primary`, `text-muted-foreground`, `rounded-lg`, `dark:*` and the component variants all
-work in your markup too.
-
-Three changes:
-
-**a. Opt in, in your `.csproj`:**
-
-```xml
-<PropertyGroup>
-  <StellarAdminUIExportTailwindSources>true</StellarAdminUIExportTailwindSources>
-</PropertyGroup>
-```
-
-This copies StellarAdmin's Tailwind sources into `obj/stellaradmin-ui/tailwind/` on build.
-
-**b. Import them from your Tailwind entry stylesheet**, after `@import "tailwindcss"`. The path is
-relative to the stylesheet containing it, so adjust it to reach your project's `obj/` — the example
-below assumes an entry at `Client/css/site.css`:
+If the app runs its own Tailwind v4 build, copy `theme-tokens.css` from the StellarAdmin
+repository (`src/StellarAdmin.UI/Client/css/theme-tokens.css`) into the project and import it
+from the Tailwind entry stylesheet:
 
 ```css
 @import "tailwindcss";
-@import "../../obj/stellaradmin-ui/tailwind/index.css";
+@import "./theme-tokens.css";
 
 @source "../../Pages/";
 ```
 
-**c. Remove the CSS `<link>` from your layout.** Keep the `<script>`:
-
-```razor
-<link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
-<script defer src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
-```
-
-Leaving both in place is the one thing that will actually bite you — you'd get every rule twice,
-and the two stylesheets would compete.
-
-Notes:
-
-- **Run `dotnet build` before your first standalone Tailwind run.** `obj/stellaradmin-ui/` doesn't
-  exist until the build creates it. If you drive Tailwind from an MSBuild target with
-  `BeforeTargets="Build"` (the usual setup), ordering takes care of itself — the export runs
-  earlier in the build, whatever you've named your target.
-- **If your Tailwind target runs earlier than `CoreBuild`**, depend on the export explicitly:
-
-  ```xml
-  <Target Name="MyStyles" BeforeTargets="PrepareForBuild"
-          DependsOnTargets="StellarAdminUICopyTailwind">
-  ```
-
-  Otherwise your Tailwind run fails with an unresolvable `@import` of `index.css`.
-- **Requires Tailwind v4.** Keep reasonably close to the version StellarAdmin.UI ships with; on an
-  older v4 release, any utility your version doesn't know is skipped silently rather than erroring.
-- Two-bundle mode (steps 1–4) remains fully supported — single-build mode is opt-in, and you can
-  switch back by reverting these three changes.
-- Override any design token by redefining it in your own CSS, e.g. `--primary` or `--radius`.
+Then `bg-primary`, `text-muted-foreground`, `rounded-lg`, `dark:*` and the rest work in the
+app's own markup. The file carries only the token *vocabulary* — the generated utilities compile
+to `var(--…)` references whose values come from the linked StellarAdmin.UI bundle at runtime, so
+the `<link>` from step 4 stays in place, and any `:root` customizations apply to both stylesheets.
 
 ## Quick smoke test
 

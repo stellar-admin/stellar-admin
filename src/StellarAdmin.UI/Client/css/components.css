@@ -9,8 +9,7 @@
    renderer's structural utilities were passed after the theme token. The whole components
    layer sits below utilities, so an author's own classes still always win. State/variant
    styling keys off the data-* attributes the tag helpers emit (e.g. [data-side]), never off
-   extra marker classes. Like everything under tailwind/, this file must be resolvable
-   without our node_modules. */
+   extra marker classes. */
 
 /* The class-attribute half of the contract: the few utility classes the tag helpers still
    emit into HTML on purpose. Styling lives in the rules below, but these classes exist as
