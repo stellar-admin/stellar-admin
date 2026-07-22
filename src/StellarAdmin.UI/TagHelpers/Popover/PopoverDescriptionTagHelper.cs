@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The descriptive body text of a popover, shown beneath the title.
 /// </summary>
 [HtmlTargetElement("sa-popover-description")]
-public class PopoverDescriptionTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class PopoverDescriptionTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class PopoverDescriptionTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "popover-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-popover-description", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-popover-description", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

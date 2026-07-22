@@ -52,12 +52,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public InputGroupInputTagHelper(
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(classMerger)
+    public InputGroupInputTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -68,10 +63,10 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "input-group-control");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-input-group-input", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-input-group-input", output.GetUserSuppliedClass())
         );
 
-        var inputTagHelper = new InputTagHelper(_htmlGenerator, ClassMerger, _iconManager)
+        var inputTagHelper = new InputTagHelper(_htmlGenerator, _iconManager)
         {
             ViewContext = ViewContext,
             For = For,

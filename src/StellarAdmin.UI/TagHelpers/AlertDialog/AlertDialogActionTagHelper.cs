@@ -20,9 +20,6 @@ public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
-    public AlertDialogActionTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ButtonVariant.Default;
@@ -41,15 +38,10 @@ public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "alert-dialog-action");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-alert-dialog-action", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-alert-dialog-action", output.GetUserSuppliedClass())
         );
 
-        ButtonRenderingHelper.RenderAttributes(
-            output,
-            ClassMerger,
-            effectiveVariant,
-            ButtonSize.Default
-        );
+        ButtonRenderingHelper.RenderAttributes(output, effectiveVariant, ButtonSize.Default);
 
         output.Content.AppendHtml(await output.GetChildContentAsync());
     }

@@ -18,12 +18,8 @@ public class InputTagHelper : FieldInputBaseTagHelper
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IIconManager _iconManager;
 
-    public InputTagHelper(
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(htmlGenerator, classMerger)
+    public InputTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+        : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -118,7 +114,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
 
         inputOutput.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 classNames
                     .Union([inputOutput.GetUserSuppliedClass(), output.GetUserSuppliedClass()])
                     .ToArray()
@@ -139,7 +135,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
 
                 // Add the span
                 var checkboxSpan = new TagBuilder("span");
-                checkboxSpan.Attributes.Add("class", ClassMerger.Merge("sa-checkbox-indicator"));
+                checkboxSpan.Attributes.Add("class", JoinCssClasses("sa-checkbox-indicator"));
 
                 // Add the icon
                 var checkboxIconOutput = new TagHelperOutput(
@@ -147,10 +143,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var checkboxIconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
-                {
-                    Name = "check",
-                };
+                var checkboxIconTagHelper = new IconTagHelper(_iconManager) { Name = "check" };
                 await checkboxIconTagHelper.ProcessAsync(context, checkboxIconOutput);
                 checkboxSpan.InnerHtml.AppendHtml(checkboxIconOutput);
 
@@ -165,10 +158,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
 
                 // Add the span
                 var spanTagBuilder = new TagBuilder("span");
-                spanTagBuilder.Attributes.Add(
-                    "class",
-                    ClassMerger.Merge("sa-radiobutton-indicator")
-                );
+                spanTagBuilder.Attributes.Add("class", JoinCssClasses("sa-radiobutton-indicator"));
 
                 // Add the icon
                 var iconOutput = new TagHelperOutput(
@@ -176,15 +166,12 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     [
                         new TagHelperAttribute(
                             "class",
-                            ClassMerger.Merge("sa-radiobutton-indicator-icon")
+                            JoinCssClasses("sa-radiobutton-indicator-icon")
                         ),
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
-                {
-                    Name = "circle",
-                };
+                var iconTagHelper = new IconTagHelper(_iconManager) { Name = "circle" };
                 await iconTagHelper.ProcessAsync(context, iconOutput);
                 spanTagBuilder.InnerHtml.AppendHtml(iconOutput);
 

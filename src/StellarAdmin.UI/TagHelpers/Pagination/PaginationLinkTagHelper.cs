@@ -12,8 +12,7 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public PaginationLinkTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public PaginationLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -68,12 +67,11 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute("data-active", effectiveIsActive ? "true" : "false");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-pagination-link", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-pagination-link", output.GetUserSuppliedClass())
         );
 
         ButtonRenderingHelper.RenderAttributes(
             output,
-            ClassMerger,
             effectiveIsActive ? ButtonVariant.Outline : ButtonVariant.Ghost,
             effectiveSize
         );

@@ -10,9 +10,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-sidebar")]
 public class SidebarTagHelper : StellarAdminTagHelperBase
 {
-    public SidebarTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The visual style of the sidebar.
     /// </summary>
@@ -65,7 +62,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             );
             output.Attributes.SetAttribute(
                 "class",
-                ClassMerger.Merge("sa-sidebar-inner", output.GetUserSuppliedClass())
+                JoinCssClasses("sa-sidebar-inner", output.GetUserSuppliedClass())
             );
 
             output.Content.AppendHtml(await output.GetChildContentAsync());
@@ -102,7 +99,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         /* Gap — desktop-only spacer that pushes the inset content. */
         var gapTagBuilder = new TagBuilder("div");
         gapTagBuilder.Attributes.Add("data-slot", "sidebar-gap");
-        gapTagBuilder.Attributes.Add("class", ClassMerger.Merge("sa-sidebar-gap"));
+        gapTagBuilder.Attributes.Add("class", JoinCssClasses("sa-sidebar-gap"));
         output.Content.AppendHtml(gapTagBuilder);
 
         /* Sidebar container — desktop panel + mobile drawer in one element.
@@ -114,14 +111,14 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         sidebarContainerTagBuilder.Attributes.Add("data-slot", "sidebar-container");
         sidebarContainerTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-sidebar-container", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-container", output.GetUserSuppliedClass())
         );
 
         /* Sidebar inner */
         var sidebarInnerTagBuilder = new TagBuilder("div");
         sidebarInnerTagBuilder.Attributes.Add("data-sidebar", "sidebar");
         sidebarInnerTagBuilder.Attributes.Add("data-slot", "sidebar-inner");
-        sidebarInnerTagBuilder.Attributes.Add("class", ClassMerger.Merge("sa-sidebar-inner"));
+        sidebarInnerTagBuilder.Attributes.Add("class", JoinCssClasses("sa-sidebar-inner"));
         sidebarInnerTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 
         sidebarContainerTagBuilder.InnerHtml.AppendHtml(sidebarInnerTagBuilder);

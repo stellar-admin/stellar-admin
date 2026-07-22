@@ -10,9 +10,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-avatar")]
 public class AvatarTagHelper : StellarAdminTagHelperBase
 {
-    public AvatarTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     Explicit initials to display when no image is available. Takes precedence over
     ///     initials derived from <see cref="Name" />.
@@ -52,7 +49,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveAvatarSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-avatar", "group/avatar", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-avatar", "group/avatar", output.GetUserSuppliedClass())
         );
 
         if (Source != null)
@@ -61,7 +58,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             imageTagBuilder.Attributes.Add("data-slot", "avatar-image");
             imageTagBuilder.Attributes.Add("src", Source);
             imageTagBuilder.Attributes.Add("alt", Name);
-            imageTagBuilder.Attributes.Add("class", BuildClassString("sa-avatar-image"));
+            imageTagBuilder.Attributes.Add("class", JoinCssClasses("sa-avatar-image"));
             output.Content.AppendHtml(imageTagBuilder);
         }
         else
@@ -69,7 +66,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             var textToRender = GetInitials() ?? "&nbsp";
             var fallbackTagBuilder = new TagBuilder("span");
             fallbackTagBuilder.Attributes.Add("data-slot", "avatar-fallback");
-            fallbackTagBuilder.Attributes.Add("class", BuildClassString("sa-avatar-fallback"));
+            fallbackTagBuilder.Attributes.Add("class", JoinCssClasses("sa-avatar-fallback"));
             fallbackTagBuilder.InnerHtml.AppendHtml(textToRender);
             output.Content.AppendHtml(fallbackTagBuilder);
         }

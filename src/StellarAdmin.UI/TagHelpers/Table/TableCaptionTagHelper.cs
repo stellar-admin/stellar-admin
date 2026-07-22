@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table-caption")]
 public class TableCaptionTagHelper : StellarAdminTagHelperBase
 {
-    public TableCaptionTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "caption";
@@ -20,7 +17,7 @@ public class TableCaptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-caption");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-table-caption", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-table-caption", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-pagination-item")]
 public class PaginationItemTagHelper : StellarAdminTagHelperBase
 {
-    public PaginationItemTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "li";

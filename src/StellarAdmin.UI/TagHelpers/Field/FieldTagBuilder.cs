@@ -21,18 +21,14 @@ internal class FieldTagBuilder : TagBuilder
         ],
     };
 
-    public FieldTagBuilder(
-        ICssClassMerger classMerger,
-        FieldOrientation orientation,
-        string? userSuppliedClass
-    )
+    public FieldTagBuilder(FieldOrientation orientation, string? userSuppliedClass)
         : base("div")
     {
         Attributes.Add("data-slot", "field");
         Attributes.Add("data-orientation", orientation.GetDataAttributeText());
         Attributes.Add(
             "class",
-            classMerger.Merge(
+            StellarAdminTagHelperBase.JoinCssClasses(
                 new string?[] { "sa-field", "group/field" }
                     .Union(OrientationClasses[orientation])
                     .Append(userSuppliedClass)

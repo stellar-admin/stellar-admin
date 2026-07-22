@@ -13,8 +13,7 @@ public class LabelTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public LabelTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public LabelTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -58,7 +57,7 @@ public class LabelTagHelper : StellarAdminTagHelperBase
         }
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-label", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-label", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-progress-value")]
 public class ProgressValueTagHelper : StellarAdminTagHelperBase
 {
-    public ProgressValueTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";
@@ -20,7 +17,7 @@ public class ProgressValueTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "progress-value");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-progress-value", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-progress-value", output.GetUserSuppliedClass())
         );
 
         var content = await output.GetChildContentAsync();

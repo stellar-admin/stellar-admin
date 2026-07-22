@@ -8,8 +8,8 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 /// <remarks>
 ///     Each accessor returns <c>null</c> when the setting needs no token (Default color, Solid
-///     appearance, Subtle accent); <see cref="ICssClassMerger.Merge" /> skips <c>null</c>
-///     elements, so the results can be passed straight into a <c>Merge(...)</c> call.
+///     appearance, Subtle accent); <see cref="StellarAdminTagHelperBase.JoinCssClasses" /> skips
+///     <c>null</c> elements, so the results can be passed straight into a join call.
 /// </remarks>
 internal static class MenuSurfaceInternals
 {

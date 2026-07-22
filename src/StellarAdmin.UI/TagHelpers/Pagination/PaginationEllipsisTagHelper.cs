@@ -12,8 +12,7 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public PaginationEllipsisTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public PaginationEllipsisTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -27,7 +26,7 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "pagination-ellipsis");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-pagination-ellipsis", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-pagination-ellipsis", output.GetUserSuppliedClass())
         );
 
         var content = await output.GetChildContentAsync();
@@ -44,7 +43,7 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "ellipsis" };
+            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "ellipsis" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
 

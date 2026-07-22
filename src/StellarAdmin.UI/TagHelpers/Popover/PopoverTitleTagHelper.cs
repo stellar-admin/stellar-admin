@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The title heading of a popover.
 /// </summary>
 [HtmlTargetElement("sa-popover-title")]
-public class PopoverTitleTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class PopoverTitleTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class PopoverTitleTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "popover-title");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-popover-title", "sa-font-heading", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-popover-title", "sa-font-heading", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

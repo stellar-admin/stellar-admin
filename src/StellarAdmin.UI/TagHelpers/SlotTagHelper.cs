@@ -15,9 +15,6 @@ public class SlotTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("name")]
     public required string Name { get; set; }
 
-    public SlotTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         if (string.IsNullOrWhiteSpace(Name))

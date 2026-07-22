@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table-body")]
 public class TableBodyTagHelper : StellarAdminTagHelperBase
 {
-    public TableBodyTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "tbody";
@@ -19,7 +16,7 @@ public class TableBodyTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-body");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-table-body", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-table-body", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

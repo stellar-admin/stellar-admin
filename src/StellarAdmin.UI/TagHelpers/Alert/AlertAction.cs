@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-alert-action")]
 public class AlertAction : StellarAdminTagHelperBase
 {
-    public AlertAction(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class AlertAction : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "alert-action");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-alert-action", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-alert-action", output.GetUserSuppliedClass())
         );
 
         output.Content.SetHtmlContent(await output.GetChildContentAsync());

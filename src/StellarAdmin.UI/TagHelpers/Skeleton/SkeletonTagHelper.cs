@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-skeleton")]
 public class SkeletonTagHelper : StellarAdminTagHelperBase
 {
-    public SkeletonTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class SkeletonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "skeleton");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-skeleton", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-skeleton", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

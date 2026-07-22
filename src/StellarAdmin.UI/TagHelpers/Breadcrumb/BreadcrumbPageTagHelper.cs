@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-breadcrumb-page")]
 public class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
 {
-    public BreadcrumbPageTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";
@@ -23,7 +20,7 @@ public class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-current", "page");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-breadcrumb-page", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-breadcrumb-page", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

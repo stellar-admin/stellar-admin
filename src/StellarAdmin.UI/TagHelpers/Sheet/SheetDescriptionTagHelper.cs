@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     Supporting description text for a sheet, shown beneath the title.
 /// </summary>
 [HtmlTargetElement("sa-sheet-description")]
-public class SheetDescriptionTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SheetDescriptionTagHelper : StellarAdminTagHelperBase
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class SheetDescriptionTagHelper(ICssClassMerger classMerger)
         output.Attributes.Add("data-slot", "sheet-description");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-sheet-description", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sheet-description", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The label heading for a sidebar group.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-group-label")]
-public class SidebarGroupLabelTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarGroupLabelTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -18,7 +17,7 @@ public class SidebarGroupLabelTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "group-label");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-group-label", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-group-label", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

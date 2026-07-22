@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A horizontal separator used to divide sections of the sidebar.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-separator")]
-public class SidebarSeparatorTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarSeparatorTagHelper : StellarAdminTagHelperBase
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -15,10 +14,10 @@ public class SidebarSeparatorTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "separator");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-separator", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-separator", output.GetUserSuppliedClass())
         );
 
-        var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
+        var separatorTagHelper = new SeparatorTagHelper()
         {
             Orientation = SeparatorOrientation.Horizontal,
         };

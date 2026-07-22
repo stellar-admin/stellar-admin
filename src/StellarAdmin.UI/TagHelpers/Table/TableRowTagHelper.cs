@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table-row")]
 public class TableRowTagHelper : StellarAdminTagHelperBase
 {
-    public TableRowTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "tr";
@@ -19,7 +16,7 @@ public class TableRowTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-row");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-table-row", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-table-row", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

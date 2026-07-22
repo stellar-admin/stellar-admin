@@ -31,9 +31,6 @@ public class TooltipTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
-    public TooltipTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -53,7 +50,7 @@ public class TooltipTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-tooltip-content",
                 effectivePositionArea.GetTailwindClassName(),
                 output.GetUserSuppliedClass()

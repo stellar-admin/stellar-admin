@@ -15,9 +15,6 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
         [SeparatorOrientation.Vertical] = "sa-separator-vertical",
     };
 
-    public SeparatorTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The orientation of the separator.
     /// </summary>
@@ -47,7 +44,7 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-separator",
                 OrientationClasses[effectiveOrientation],
                 output.GetUserSuppliedClass()

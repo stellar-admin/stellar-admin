@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     Displays a keyboard shortcut hint, aligned to the trailing edge of a menu item.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-shortcut")]
-public class DropdownMenuShortcutTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class DropdownMenuShortcutTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class DropdownMenuShortcutTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "dropdown-menu-shortcut");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dropdown-menu-shortcut", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dropdown-menu-shortcut", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

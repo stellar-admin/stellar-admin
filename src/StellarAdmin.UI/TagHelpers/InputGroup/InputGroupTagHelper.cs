@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-group")]
 public class InputGroupTagHelper : StellarAdminTagHelperBase
 {
-    public InputGroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -22,7 +19,7 @@ public class InputGroupTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-input-group", "group/input-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-input-group", "group/input-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

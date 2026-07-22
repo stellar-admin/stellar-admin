@@ -12,8 +12,7 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public InputOtpSeparatorTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public InputOtpSeparatorTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -26,10 +25,7 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.SetAttribute("data-slot", "input-otp-separator");
         output.Attributes.SetAttribute("role", "separator");
-        output.Attributes.SetAttribute(
-            "class",
-            InputOtpRenderer.SeparatorClass(ClassMerger, userClass)
-        );
+        output.Attributes.SetAttribute("class", InputOtpRenderer.SeparatorClass(userClass));
 
         var childContent = await output.GetChildContentAsync();
         if (!childContent.IsEmptyOrWhiteSpace)
@@ -41,7 +37,6 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
             await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                 output.Content,
                 context,
-                ClassMerger,
                 _iconManager
             );
         }

@@ -11,9 +11,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-otp-slot")]
 public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
 {
-    public InputOtpSlotTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The zero-based position of this slot. When omitted, the slot takes the next position in
     ///     document order.
@@ -54,7 +51,7 @@ public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
         }
         output.Attributes.SetAttribute(
             "class",
-            InputOtpRenderer.SlotClass(ClassMerger, output.GetUserSuppliedClass())
+            InputOtpRenderer.SlotClass(output.GetUserSuppliedClass())
         );
 
         // Render the character and the specified index

@@ -37,9 +37,6 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
-    public InputGroupButtonTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? InputGroupButtonSize.ExtraSmall;
@@ -50,7 +47,7 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-input-group-button",
                 SizeClasses[effectiveSize],
                 output.GetUserSuppliedClass()
@@ -59,7 +56,6 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
 
         ButtonRenderingHelper.RenderAttributes(
             output,
-            ClassMerger,
             Variant ?? ButtonVariant.Ghost,
             ButtonSize.Default
         );

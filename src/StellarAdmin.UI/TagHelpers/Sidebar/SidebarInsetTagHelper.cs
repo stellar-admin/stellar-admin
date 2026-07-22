@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The main content area shown alongside the sidebar, rendered as a <c>&lt;main&gt;</c> element.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-inset")]
-public class SidebarInsetTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarInsetTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class SidebarInsetTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sidebar-inset");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-inset", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-inset", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

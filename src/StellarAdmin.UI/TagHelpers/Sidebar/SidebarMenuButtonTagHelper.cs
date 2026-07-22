@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A button rendered as an entry within a sidebar menu item.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-button")]
-public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<SidebarMenuButtonSize, string> SizeClasses = new()
     {
@@ -70,7 +69,7 @@ public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-sidebar-menu-button",
                 "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],

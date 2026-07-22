@@ -12,8 +12,7 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public FieldLabelTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public FieldLabelTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -38,14 +37,14 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-label");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-field-label",
                 "group/field-label peer/field-label",
                 output.GetUserSuppliedClass()
             )
         );
 
-        var labelTagHelper = new LabelTagHelper(_htmlGenerator, ClassMerger)
+        var labelTagHelper = new LabelTagHelper(_htmlGenerator)
         {
             For = For,
             ViewContext = ViewContext,

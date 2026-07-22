@@ -12,8 +12,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public AlertTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public AlertTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -69,7 +68,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("role", "alert");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
+            JoinCssClasses(
                 "sa-alert",
                 "group/alert",
                 AlertVariantClasses[effectiveVariant],
@@ -109,7 +108,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = Icon };
+            var iconTagHelper = new IconTagHelper(_iconManager) { Name = Icon };
             await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
             output.Content.AppendHtml(iconTagHelperOutput);
@@ -125,7 +124,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(titleContent)
             );
-            var titleTagHelper = new AlertTitleTagHelper(ClassMerger);
+            var titleTagHelper = new AlertTitleTagHelper();
             await titleTagHelper.ProcessAsync(context, titleTagHelperOutput);
 
             output.Content.AppendHtml(titleTagHelperOutput);
@@ -142,7 +141,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(descriptionContent)
             );
 
-            var descriptionTagHelper = new AlertDescriptionTagHelper(ClassMerger);
+            var descriptionTagHelper = new AlertDescriptionTagHelper();
             await descriptionTagHelper.ProcessAsync(context, descriptionTagHelperOutput);
 
             output.Content.AppendHtml(descriptionTagHelperOutput);

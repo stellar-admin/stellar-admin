@@ -6,7 +6,7 @@ using StellarAdmin.UI.TagHelpers;
 namespace DocsSamples.TagHelpers;
 
 [HtmlTargetElement("docs-example")]
-public class ExampleTagHelper(ICssClassMerger classMerger) : TagHelper
+public class ExampleTagHelper : TagHelper
 {
     [HtmlAttributeName("container-class")]
     public string? ContainerClass { get; set; }
@@ -31,7 +31,8 @@ public class ExampleTagHelper(ICssClassMerger classMerger) : TagHelper
         contentTagBuilder.Attributes.Add("data-slot", "example-content");
         contentTagBuilder.Attributes.Add(
             "class",
-            classMerger.Merge(
+            string.Join(
+                ' ',
                 "bg-background text-foreground flex min-w-0 flex-1 flex-col items-start gap-6 border border-dashed p-4 sm:p-6 *:[div:not([class*='w-']):not([data-slot])]:w-full",
                 output.GetUserSuppliedClass()
             )
@@ -42,7 +43,8 @@ public class ExampleTagHelper(ICssClassMerger classMerger) : TagHelper
         output.Attributes.SetAttribute("data-slot", "example");
         output.Attributes.SetAttribute(
             "class",
-            classMerger.Merge(
+            string.Join(
+                ' ',
                 "mx-auto flex w-full max-w-lg min-w-0 flex-col gap-1 self-stretch lg:max-w-none",
                 ContainerClass
             )

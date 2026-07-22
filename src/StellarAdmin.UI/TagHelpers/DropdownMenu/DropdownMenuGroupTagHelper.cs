@@ -7,8 +7,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     <c>role="group"</c>.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-group")]
-public class DropdownMenuGroupTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class DropdownMenuGroupTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

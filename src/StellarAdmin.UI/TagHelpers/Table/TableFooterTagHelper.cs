@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-table-footer")]
 public class TableFooterTagHelper : StellarAdminTagHelperBase
 {
-    public TableFooterTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "tfoot";
@@ -19,7 +16,7 @@ public class TableFooterTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-footer");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-table-footer", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-table-footer", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

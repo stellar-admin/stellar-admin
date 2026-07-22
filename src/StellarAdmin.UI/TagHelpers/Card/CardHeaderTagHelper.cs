@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-card-header")]
 public class CardHeaderTagHelper : StellarAdminTagHelperBase
 {
-    public CardHeaderTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class CardHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "card-header");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-card-header", "group/card-header", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-card-header", "group/card-header", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

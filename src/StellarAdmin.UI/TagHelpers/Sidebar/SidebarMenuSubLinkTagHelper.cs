@@ -20,8 +20,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// </remarks>
     public SidebarMenuSubLinkSize? Size { get; set; }
 
-    public SidebarMenuSubLinkTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
-        : base(classMerger)
+    public SidebarMenuSubLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -59,7 +58,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-menu-sub-button", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-menu-sub-button", output.GetUserSuppliedClass())
         );
     }
 }

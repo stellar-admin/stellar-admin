@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-avatar-group")]
 public class AvatarGroupTagHelper : StellarAdminTagHelperBase
 {
-    public AvatarGroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class AvatarGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "avatar-group");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-avatar-group", "group/avatar-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-avatar-group", "group/avatar-group", output.GetUserSuppliedClass())
         );
 
         await base.ProcessAsync(context, output);

@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The content region of a sidebar group, wrapping the group's menu.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-group-content")]
-public class SidebarGroupContentTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarGroupContentTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -18,7 +17,7 @@ public class SidebarGroupContentTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "group-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-group-content", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-group-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

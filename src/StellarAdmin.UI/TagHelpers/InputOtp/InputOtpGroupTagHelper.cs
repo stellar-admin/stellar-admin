@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-otp-group")]
 public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
 {
-    public InputOtpGroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var userClass = output.GetUserSuppliedClass();
@@ -20,9 +17,6 @@ public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "input-otp-group");
-        output.Attributes.SetAttribute(
-            "class",
-            InputOtpRenderer.GroupClass(ClassMerger, userClass)
-        );
+        output.Attributes.SetAttribute("class", InputOtpRenderer.GroupClass(userClass));
     }
 }

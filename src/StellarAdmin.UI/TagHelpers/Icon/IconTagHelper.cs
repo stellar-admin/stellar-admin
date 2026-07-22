@@ -46,8 +46,7 @@ public class IconTagHelper : StellarAdminTagHelperBase
         ]
     );
 
-    public IconTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public IconTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }

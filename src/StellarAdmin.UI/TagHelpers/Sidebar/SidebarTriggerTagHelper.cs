@@ -11,8 +11,7 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public SidebarTriggerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public SidebarTriggerTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -49,20 +48,12 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
-            {
-                Name = "panel-left",
-            };
+            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "panel-left" };
             iconTagHelper.Process(context, iconOutput);
             iconContent = new DefaultTagHelperContent().AppendHtml(iconOutput);
         }
 
-        ButtonRenderingHelper.RenderAttributes(
-            output,
-            ClassMerger,
-            ButtonVariant.Ghost,
-            ButtonSize.IconSmall
-        );
+        ButtonRenderingHelper.RenderAttributes(output, ButtonVariant.Ghost, ButtonSize.IconSmall);
 
         output.Content.SetHtmlContent(iconContent);
     }

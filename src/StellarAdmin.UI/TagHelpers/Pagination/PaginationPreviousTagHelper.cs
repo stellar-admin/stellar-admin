@@ -20,12 +20,7 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
-    public PaginationPreviousLinkTagHelper(
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(classMerger)
+    public PaginationPreviousLinkTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
@@ -35,9 +30,9 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
     {
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-pagination-previous", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-pagination-previous", output.GetUserSuppliedClass())
         );
-        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator, ClassMerger)
+        var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator)
         {
             ViewContext = ViewContext,
             Action = Action,
@@ -69,10 +64,7 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
-            {
-                Name = "chevron-left",
-            };
+            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "chevron-left" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
 

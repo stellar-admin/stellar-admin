@@ -9,7 +9,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     <c>commandfor</c> and <c>command="show-modal"</c> or <c>command="close"</c>.
 /// </summary>
 [HtmlTargetElement("sa-dialog")]
-public class DialogTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelperBase(classMerger)
+public class DialogTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -19,7 +19,7 @@ public class DialogTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelpe
         output.Attributes.SetAttribute("data-slot", "dialog-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dialog-content", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dialog-content", output.GetUserSuppliedClass())
         );
 
         // Wrap inside web component

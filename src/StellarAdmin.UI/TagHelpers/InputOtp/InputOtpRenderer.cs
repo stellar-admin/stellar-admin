@@ -12,25 +12,21 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 internal static class InputOtpRenderer
 {
-    internal static string GroupClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge("sa-input-otp-group", userClass) ?? string.Empty;
+    internal static string GroupClass(string? userClass) =>
+        StellarAdminTagHelperBase.JoinCssClasses("sa-input-otp-group", userClass) ?? string.Empty;
 
-    internal static string SlotClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge("sa-input-otp-slot", userClass) ?? string.Empty;
+    internal static string SlotClass(string? userClass) =>
+        StellarAdminTagHelperBase.JoinCssClasses("sa-input-otp-slot", userClass) ?? string.Empty;
 
-    internal static string SeparatorClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge("sa-input-otp-separator", userClass) ?? string.Empty;
+    internal static string SeparatorClass(string? userClass) =>
+        StellarAdminTagHelperBase.JoinCssClasses("sa-input-otp-separator", userClass)
+        ?? string.Empty;
 
     /// <summary>
     ///     Builds a single presentational slot cell. The character (if any) seeds the first paint;
     ///     the web component re-distributes the live value once hydrated.
     /// </summary>
-    internal static TagBuilder BuildSlot(
-        ICssClassMerger classMerger,
-        int index,
-        string? character,
-        bool hasError
-    )
+    internal static TagBuilder BuildSlot(int index, string? character, bool hasError)
     {
         var slot = new TagBuilder("div");
         slot.Attributes.Add("data-slot", "input-otp-slot");
@@ -40,7 +36,7 @@ internal static class InputOtpRenderer
         {
             slot.Attributes.Add("aria-invalid", "true");
         }
-        slot.Attributes.Add("class", SlotClass(classMerger, null));
+        slot.Attributes.Add("class", SlotClass(null));
         if (!string.IsNullOrEmpty(character))
         {
             slot.InnerHtml.Append(character);
@@ -54,7 +50,6 @@ internal static class InputOtpRenderer
     internal static async Task RenderDefaultSeparatorContentAsync(
         TagHelperContent target,
         TagHelperContext context,
-        ICssClassMerger classMerger,
         IIconManager iconManager
     )
     {
@@ -63,7 +58,7 @@ internal static class InputOtpRenderer
             [new TagHelperAttribute("class", "size-4")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(classMerger, iconManager) { Name = "minus" };
+        var iconTagHelper = new IconTagHelper(iconManager) { Name = "minus" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         target.AppendHtml(iconOutput);
     }

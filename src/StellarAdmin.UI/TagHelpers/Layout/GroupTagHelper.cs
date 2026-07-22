@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-group")]
 public class GroupTagHelper : StellarAdminTagHelperBase
 {
-    public GroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     How the children are aligned along the cross axis (vertically).
     /// </summary>
@@ -50,7 +47,7 @@ public class GroupTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
+            JoinCssClasses(
                 "sa-group",
                 effectiveAlign.GetClass(),
                 effectiveGap.GetClassName(),

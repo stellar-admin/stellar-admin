@@ -7,8 +7,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     that links them.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu")]
-public class DropdownMenuTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class DropdownMenuTagHelper : StellarAdminTagHelperBase
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

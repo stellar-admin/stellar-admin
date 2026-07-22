@@ -27,9 +27,6 @@ public class TabListTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public TabListVariant? Variant { get; set; }
 
-    public TabListTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? TabListOrientation.Horizontal;
@@ -46,7 +43,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-tabs", "group/tabs", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-tabs", "group/tabs", output.GetUserSuppliedClass())
         );
 
         var tabListTagBuilder = new TagBuilder("div");
@@ -54,7 +51,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
         tabListTagBuilder.Attributes.Add("data-variant", effectiveVariant.GetDataAttributeText());
         tabListTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-tabs-list",
                 "group/tabs-list",
                 effectiveVariant == TabListVariant.Default

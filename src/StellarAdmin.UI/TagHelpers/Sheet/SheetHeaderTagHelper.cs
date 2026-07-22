@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The header region of a sheet; typically contains the title and description.
 /// </summary>
 [HtmlTargetElement("sa-sheet-header")]
-public class SheetHeaderTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SheetHeaderTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class SheetHeaderTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sheet-header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sheet-header", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sheet-header", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

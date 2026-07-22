@@ -11,9 +11,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-description")]
 public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public FieldDescriptionTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     private const string ForAttributeName = "asp-for";
 
     /// <summary>
@@ -37,7 +34,7 @@ public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-field-description", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-description", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

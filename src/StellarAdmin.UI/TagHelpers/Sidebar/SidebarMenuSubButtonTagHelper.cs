@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A button rendered as an entry within a nested sidebar submenu.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-sub-button")]
-public class SidebarMenuSubButtonTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class SidebarMenuSubButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     The size of the submenu button.
@@ -48,7 +47,7 @@ public class SidebarMenuSubButtonTagHelper(ICssClassMerger classMerger)
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-sidebar-menu-sub-button", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-menu-sub-button", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

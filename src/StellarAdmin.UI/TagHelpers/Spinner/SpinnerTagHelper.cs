@@ -9,26 +9,23 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-spinner")]
 public class SpinnerTagHelper : StellarAdminTagHelperBase
 {
-    private readonly ICssClassMerger _classMerger;
     private readonly IIconManager _iconManager;
 
-    public SpinnerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public SpinnerTagHelper(IIconManager iconManager)
     {
-        _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "loader-circle" };
+        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "loader-circle" };
         await iconTagHelper.ProcessAsync(context, output);
 
         output.Attributes.SetAttribute("role", "status");
         output.Attributes.SetAttribute("aria-label", "Loading");
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge("sa-spinner", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-spinner", output.GetUserSuppliedClass())
         );
     }
 }

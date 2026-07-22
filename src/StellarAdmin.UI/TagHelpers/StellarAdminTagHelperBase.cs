@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI.TagHelpers;
 
 /// <summary>
-///     Base class for all StellarAdmin.UI tag helpers. Provides the CSS class merger,
+///     Base class for all StellarAdmin.UI tag helpers. Provides class-string composition,
 ///     named-slot support, and tracks the ancestor tag-helper stack so children can
 ///     locate their parents.
 /// </summary>
@@ -15,21 +15,10 @@ public class StellarAdminTagHelperBase : TagHelper
         new Dictionary<string, TagHelperContent>();
 
     /// <summary>
-    ///     The CSS class merger used to compose and de-duplicate Tailwind utility classes.
-    /// </summary>
-    [HtmlAttributeNotBound]
-    public ICssClassMerger ClassMerger { get; }
-
-    /// <summary>
     ///     The immediate ancestor StellarAdmin.UI tag helper, or <c>null</c> when this is a root.
     /// </summary>
     [HtmlAttributeNotBound]
     protected internal StellarAdminTagHelperBase? ParentTagHelper { get; private set; }
-
-    public StellarAdminTagHelperBase(ICssClassMerger classMerger)
-    {
-        ClassMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
-    }
 
     public override void Init(TagHelperContext context)
     {
@@ -55,9 +44,14 @@ public class StellarAdminTagHelperBase : TagHelper
         return _namedSlots.TryGetValue(name, out content);
     }
 
-    protected string BuildClassString(params string?[] classes)
+    /// <summary>
+    ///     Joins class strings into a single <c>class</c> attribute value, skipping null and
+    ///     empty entries. Component class names are emitted verbatim; conflict resolution is
+    ///     the stylesheet's job (author utilities out-rank component rules by cascade layer).
+    /// </summary>
+    protected internal static string JoinCssClasses(params string?[] classes)
     {
-        return ClassMerger.Merge(classes) ?? string.Empty;
+        return string.Join(' ', classes.Where(c => !string.IsNullOrWhiteSpace(c)));
     }
 
     /// <summary>

@@ -13,8 +13,7 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IIconManager _iconManager;
 
-    public BreadcrumbEllipsisTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public BreadcrumbEllipsisTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -29,7 +28,7 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-hidden", "true");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-breadcrumb-ellipsis", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-breadcrumb-ellipsis", output.GetUserSuppliedClass())
         );
 
         /* Render the ellipsis icon */
@@ -38,7 +37,7 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
             [new TagHelperAttribute("class", "size-4")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "ellipsis" };
+        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "ellipsis" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         output.Content.AppendHtml(iconOutput);
 

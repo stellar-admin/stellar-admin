@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-kbd")]
 public class KbdTagHelper : StellarAdminTagHelperBase
 {
-    public KbdTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "kbd";
@@ -19,7 +16,7 @@ public class KbdTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "kbd");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-kbd", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-kbd", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

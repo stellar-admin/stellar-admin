@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-separator")]
 public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
 {
-    public FieldSeparatorTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -26,7 +23,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-field-separator", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-separator", output.GetUserSuppliedClass())
         );
 
         /* Add the actual separator */
@@ -35,7 +32,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
             [new TagHelperAttribute("class", "sa-field-separator-line")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
+        var separatorTagHelper = new SeparatorTagHelper()
         {
             Orientation = SeparatorOrientation.Horizontal,
         };
@@ -49,7 +46,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
             contentWrapperTagBuilder.Attributes.Add("data-slot", "field-separator-content");
             contentWrapperTagBuilder.Attributes.Add(
                 "class",
-                ClassMerger.Merge("sa-field-separator-content")
+                JoinCssClasses("sa-field-separator-content")
             );
 
             contentWrapperTagBuilder.InnerHtml.AppendHtml(childContent);

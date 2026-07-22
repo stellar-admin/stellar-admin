@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button")]
 public class ButtonTagHelper : StellarAdminTagHelperBase
 {
-    public ButtonTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The size of the button.
     /// </summary>
@@ -37,12 +34,7 @@ public class ButtonTagHelper : StellarAdminTagHelperBase
         output.TagName = "button";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        ButtonRenderingHelper.RenderAttributes(
-            output,
-            ClassMerger,
-            effectiveVariant,
-            effectiveSize
-        );
+        ButtonRenderingHelper.RenderAttributes(output, effectiveVariant, effectiveSize);
 
         output.Content.AppendHtml(await output.GetChildContentAsync());
     }

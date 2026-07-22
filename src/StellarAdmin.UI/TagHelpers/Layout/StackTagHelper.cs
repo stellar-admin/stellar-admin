@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-stack")]
 public class StackTagHelper : StellarAdminTagHelperBase
 {
-    public StackTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     How the children are aligned along the cross axis (horizontally).
     /// </summary>
@@ -50,7 +47,7 @@ public class StackTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
+            JoinCssClasses(
                 "sa-stack",
                 effectiveAlign.GetClass(),
                 effectiveGap.GetClassName(),

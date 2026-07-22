@@ -10,9 +10,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field")]
 public class FieldTagHelper : StellarAdminTagHelperBase
 {
-    public FieldTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     How the field arranges its label, control, and supporting text.
     /// </summary>
@@ -25,7 +22,7 @@ public class FieldTagHelper : StellarAdminTagHelperBase
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // The MergeAttributes call below does a simple concatenation of the classes, but this is not correct.
-        // We need to do proper merging using ICssClassMerger, which will happen inside the FieldTagBuilder.
+        // We need to compose the class string, whil happen inside the FieldTagBuilder.
         // To ensure correct behaviour we need to first extract the user supplied class so we can pass it to
         // FieldTagBuilder and then clear it before calling MergeAttribute() to prevent a double merge.
         var userSuppliedClass = output.GetUserSuppliedClass();
@@ -33,7 +30,7 @@ public class FieldTagHelper : StellarAdminTagHelperBase
 
         var effectiveOrientation = Orientation ?? FieldOrientation.Vertical;
 
-        var tagBuilder = new FieldTagBuilder(ClassMerger, effectiveOrientation, userSuppliedClass);
+        var tagBuilder = new FieldTagBuilder(effectiveOrientation, userSuppliedClass);
 
         output.TagName = tagBuilder.TagName;
         output.TagMode = TagMode.StartTagAndEndTag;

@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-alert-dialog-media")]
 public class AlertDialogMediaTagHelper : StellarAdminTagHelperBase
 {
-    public AlertDialogMediaTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class AlertDialogMediaTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "alert-dialog-media");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-alert-dialog-media", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-alert-dialog-media", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

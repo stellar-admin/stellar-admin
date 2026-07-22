@@ -18,9 +18,6 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
-    public PopoverTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -40,7 +37,7 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-popover-content",
                 effectivePositionArea.GetTailwindClassName(),
                 output.GetUserSuppliedClass()

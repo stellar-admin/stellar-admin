@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-accordion-item")]
 public class AccordionItemTagHelper : StellarAdminTagHelperBase
 {
-    public AccordionItemTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "details";
@@ -20,7 +17,7 @@ public class AccordionItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "accordion-item");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-accordion-item", "group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-accordion-item", "group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

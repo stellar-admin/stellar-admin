@@ -10,9 +10,6 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
 {
-    public StellarAdminAnchorTagHelperBase(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     private const string ActionAttributeName = "asp-action";
     private const string ControllerAttributeName = "asp-controller";
     private const string AreaAttributeName = "asp-area";

@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-set")]
 public class FieldSetTagHelper : StellarAdminTagHelperBase
 {
-    public FieldSetTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "fieldset";
@@ -19,7 +16,7 @@ public class FieldSetTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-set");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-field-set", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-set", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

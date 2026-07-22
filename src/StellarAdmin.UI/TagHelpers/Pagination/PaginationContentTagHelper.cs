@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-pagination-content")]
 public class PaginationContentTagHelper : StellarAdminTagHelperBase
 {
-    public PaginationContentTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ul";
@@ -19,7 +16,7 @@ public class PaginationContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "pagination-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-pagination-content", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-pagination-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

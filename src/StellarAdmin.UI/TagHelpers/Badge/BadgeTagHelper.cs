@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-badge")]
 public class BadgeTagHelper : StellarAdminTagHelperBase
 {
-    public BadgeTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     private static readonly Dictionary<BadgeVariant, string> BadgeVariantClasses = new()
     {
         [BadgeVariant.Default] = "sa-badge-variant-default",
@@ -40,7 +37,7 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "badge");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
+            JoinCssClasses(
                 "sa-badge",
                 "group/badge",
                 BadgeVariantClasses[effectiveVariant],

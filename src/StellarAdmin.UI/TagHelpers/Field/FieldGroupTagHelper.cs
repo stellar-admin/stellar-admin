@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-group")]
 public class FieldGroupTagHelper : StellarAdminTagHelperBase
 {
-    public FieldGroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -23,7 +20,7 @@ public class FieldGroupTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-field-group", "group/field-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-group", "group/field-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -13,8 +13,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    protected FieldInputBaseTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    protected FieldInputBaseTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -130,7 +129,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                         : Task.FromResult(new DefaultTagHelperContent().Append(Description))
             );
-            var fieldDescriptionTagHelper = new FieldDescriptionTagHelper(ClassMerger)
+            var fieldDescriptionTagHelper = new FieldDescriptionTagHelper()
             {
                 For = For,
                 ViewContext = ViewContext,
@@ -148,7 +147,6 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     )
     {
         var fieldTagBuilder = new FieldTagBuilder(
-            ClassMerger,
             autoFieldConfiguration.Layout == AutoFieldLayout.Vertical
                 ? FieldOrientation.Vertical
                 : FieldOrientation.Horizontal,
@@ -176,7 +174,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
 
-            var fieldContentTagHelper = new FieldContentTagHelper(ClassMerger);
+            var fieldContentTagHelper = new FieldContentTagHelper();
             await fieldContentTagHelper.ProcessAsync(context, fieldContentOutput);
 
             await RenderLabelControl(
@@ -228,7 +226,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                         : Task.FromResult(new DefaultTagHelperContent().Append(Error))
             );
-            var fieldErrorTagHelper = new FieldErrorTagHelper(_htmlGenerator, ClassMerger)
+            var fieldErrorTagHelper = new FieldErrorTagHelper(_htmlGenerator)
             {
                 For = For,
                 ViewContext = ViewContext,
@@ -255,7 +253,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                         : Task.FromResult(new DefaultTagHelperContent().Append(Label))
             );
-            var fieldLabelTagHelper = new FieldLabelTagHelper(_htmlGenerator, ClassMerger)
+            var fieldLabelTagHelper = new FieldLabelTagHelper(_htmlGenerator)
             {
                 For = For,
                 ViewContext = ViewContext,

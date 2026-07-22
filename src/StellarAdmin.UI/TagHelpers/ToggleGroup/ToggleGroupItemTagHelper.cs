@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-toggle-group-item")]
 public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
 {
-    public ToggleGroupItemTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The value this item posts when selected.
     /// </summary>
@@ -119,7 +116,6 @@ public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ToggleRenderingHelper.BuildClass(
-                ClassMerger,
                 effectiveVariant,
                 effectiveSize,
                 includeGroupItemToken: true,

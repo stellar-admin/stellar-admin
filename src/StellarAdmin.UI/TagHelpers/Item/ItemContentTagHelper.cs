@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-item-content")]
 public class ItemContentTagHelper : StellarAdminTagHelperBase
 {
-    public ItemContentTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class ItemContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-item-content", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-content", GetUserSpecifiedClass(output))
         );
 
         return Task.CompletedTask;

@@ -34,7 +34,6 @@ internal static class ButtonRenderingHelper
 
     public static void RenderAttributes(
         TagHelperOutput output,
-        ICssClassMerger classMerger,
         ButtonVariant variant,
         ButtonSize size
     )
@@ -46,7 +45,7 @@ internal static class ButtonRenderingHelper
 
         output.Attributes.SetAttribute(
             "class",
-            classMerger.Merge(
+            StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-button",
                 "group/button",
                 ButtonVariantClasses[variant],

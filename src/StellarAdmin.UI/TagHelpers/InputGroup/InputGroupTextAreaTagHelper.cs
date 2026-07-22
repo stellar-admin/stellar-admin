@@ -25,8 +25,7 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public InputGroupTextAreaTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public InputGroupTextAreaTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -36,10 +35,10 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "input-group-control");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-input-group-textarea", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-input-group-textarea", output.GetUserSuppliedClass())
         );
 
-        var textareaTagHelper = new TextareaTagHelper(_htmlGenerator, ClassMerger)
+        var textareaTagHelper = new TextareaTagHelper(_htmlGenerator)
         {
             ViewContext = ViewContext,
             For = For,

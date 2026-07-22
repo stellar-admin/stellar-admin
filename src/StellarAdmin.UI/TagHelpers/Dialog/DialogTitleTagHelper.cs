@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-dialog-title")]
 public class DialogTitleTagHelper : StellarAdminTagHelperBase
 {
-    public DialogTitleTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "h2";
@@ -19,7 +16,7 @@ public class DialogTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-title");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-dialog-title",
                 "sa-font-heading",
                 "font-heading",

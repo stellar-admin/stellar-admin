@@ -14,8 +14,7 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public FieldErrorTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public FieldErrorTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -58,7 +57,7 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-error");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-field-error", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-error", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

@@ -14,13 +14,11 @@ namespace StellarAdmin.UI.TagHelpers;
 public class TextareaTagHelper : FieldInputBaseTagHelper
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly ICssClassMerger _classMerger;
 
-    public TextareaTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(htmlGenerator, classMerger)
+    public TextareaTagHelper(IHtmlGenerator htmlGenerator)
+        : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
     }
 
     protected override async Task<AutoFieldConfiguration> RenderInput(
@@ -53,7 +51,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge("sa-textarea", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-textarea", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

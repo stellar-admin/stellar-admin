@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     The header region of a popover; typically contains the title and description.
 /// </summary>
 [HtmlTargetElement("sa-popover-header")]
-public class PopoverHeaderTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class PopoverHeaderTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -17,7 +16,7 @@ public class PopoverHeaderTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "popover-header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-popover-header", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-popover-header", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

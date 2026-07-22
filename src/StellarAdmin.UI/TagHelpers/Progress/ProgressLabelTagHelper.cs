@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-progress-label")]
 public class ProgressLabelTagHelper : StellarAdminTagHelperBase
 {
-    public ProgressLabelTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";
@@ -19,7 +16,7 @@ public class ProgressLabelTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "progress-label");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-progress-label", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-progress-label", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

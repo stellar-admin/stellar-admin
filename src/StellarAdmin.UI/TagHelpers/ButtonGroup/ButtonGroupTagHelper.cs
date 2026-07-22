@@ -24,9 +24,6 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("orientation")]
     public ButtonGroupOrientation? Orientation { get; set; }
 
-    public ButtonGroupTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? ButtonGroupOrientation.Horizontal;
@@ -42,7 +39,7 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
+            JoinCssClasses(
                 new string?[] { "sa-button-group" }
                     .Union(OrientationClasses[effectiveOrientation])
                     .Union([output.GetUserSuppliedClass()])

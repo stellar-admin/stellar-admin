@@ -14,8 +14,8 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public ToggleTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(htmlGenerator, classMerger)
+    public ToggleTagHelper(IHtmlGenerator htmlGenerator)
+        : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -125,7 +125,6 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute(
             "class",
             ToggleRenderingHelper.BuildClass(
-                ClassMerger,
                 effectiveVariant,
                 effectiveSize,
                 includeGroupItemToken: false,

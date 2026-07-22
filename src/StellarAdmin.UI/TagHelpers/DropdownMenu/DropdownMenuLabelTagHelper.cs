@@ -6,8 +6,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     A non-interactive label used to caption a section of menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-label")]
-public class DropdownMenuLabelTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class DropdownMenuLabelTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Whether the label is inset, aligning its text with items that have a leading icon.
@@ -28,7 +27,7 @@ public class DropdownMenuLabelTagHelper(ICssClassMerger classMerger)
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dropdown-menu-label", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dropdown-menu-label", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -13,7 +13,7 @@ public class RadioGroupTagHelper(ICssClassMerger classMerger) : StellarAdminTagH
         output.Attributes.SetAttribute("data-slot", "radio-group");
         output.Attributes.SetAttribute(
             "class",
-            classMerger.Merge("grid gap-3", output.GetUserSuppliedClass())
+            JoinCssClasses("grid gap-3", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

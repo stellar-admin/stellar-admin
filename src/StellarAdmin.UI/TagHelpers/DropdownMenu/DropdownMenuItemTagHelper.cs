@@ -16,8 +16,7 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public DropdownMenuItemTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
-        : base(classMerger)
+    public DropdownMenuItemTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -125,7 +124,7 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-dropdown-menu-item",
                 "group/dropdown-menu-item",
                 output.GetUserSuppliedClass()

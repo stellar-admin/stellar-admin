@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-content")]
 public class FieldContentTagHelper : StellarAdminTagHelperBase
 {
-    public FieldContentTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -20,11 +17,7 @@ public class FieldContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                "sa-field-content",
-                "group/field-content",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-field-content", "group/field-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -10,9 +10,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-breadcrumb")]
 public class BreadcrumbTagHelper : StellarAdminTagHelperBase
 {
-    public BreadcrumbTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "nav";
@@ -22,7 +19,7 @@ public class BreadcrumbTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "breadcrumb");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-breadcrumb", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-breadcrumb", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

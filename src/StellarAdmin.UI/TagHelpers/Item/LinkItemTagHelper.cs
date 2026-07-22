@@ -30,8 +30,7 @@ public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
-    public LinkItemTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public LinkItemTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -57,6 +56,6 @@ public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
         };
         await anchorTagHelper.ProcessAsync(context, output);
 
-        await ItemRenderingHelper.RenderAsync(output, ClassMerger, Size, Variant);
+        await ItemRenderingHelper.RenderAsync(output, Size, Variant);
     }
 }

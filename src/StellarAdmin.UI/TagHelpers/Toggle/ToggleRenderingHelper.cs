@@ -36,7 +36,6 @@ internal static class ToggleRenderingHelper
      * lives on the inner input, so this is the has-[:focus-visible] form (matching the ring).
      */
     public static string BuildClass(
-        ICssClassMerger classMerger,
         ToggleVariant variant,
         ToggleSize size,
         bool includeGroupItemToken,
@@ -59,6 +58,6 @@ internal static class ToggleRenderingHelper
         // User-supplied class goes last so authoring overrides win in the merge.
         elements.Add(userClass);
 
-        return classMerger.Merge(elements.ToArray()) ?? string.Empty;
+        return StellarAdminTagHelperBase.JoinCssClasses(elements.ToArray()) ?? string.Empty;
     }
 }

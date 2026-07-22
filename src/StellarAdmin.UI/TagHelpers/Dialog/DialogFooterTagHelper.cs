@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-dialog-footer")]
 public class DialogFooterTagHelper : StellarAdminTagHelperBase
 {
-    public DialogFooterTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class DialogFooterTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-footer");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-dialog-footer", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dialog-footer", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -17,12 +17,8 @@ public class SelectTagHelper : FieldInputBaseTagHelper
     private readonly IIconManager _iconManager;
     private FrameworkSelectTagHelper? _frameworkTagHelper;
 
-    public SelectTagHelper(
-        IHtmlGenerator htmlGenerator,
-        ICssClassMerger classMerger,
-        IIconManager iconManager
-    )
-        : base(htmlGenerator, classMerger)
+    public SelectTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+        : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconManager = iconManager;
@@ -83,7 +79,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
                     .Union([
                         new TagHelperAttribute("data-slot", "native-select"),
                         new TagHelperAttribute("data-size", effectiveSize.GetDataAttributeText()),
-                        new TagHelperAttribute("class", ClassMerger.Merge("sa-native-select")),
+                        new TagHelperAttribute("class", JoinCssClasses("sa-native-select")),
                     ])
             ),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -105,13 +101,13 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         var iconTagHelperOutput = new TagHelperOutput(
             string.Empty,
             [
-                new TagHelperAttribute("class", ClassMerger.Merge("sa-native-select-icon")),
+                new TagHelperAttribute("class", JoinCssClasses("sa-native-select-icon")),
                 new TagHelperAttribute("aria-hidden", "true"),
                 new TagHelperAttribute("data-slot", "native-select-icon"),
             ],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(ClassMerger, _iconManager) { Name = "chevron-down" };
+        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "chevron-down" };
         await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
         output.Content.AppendHtml(iconTagHelperOutput);
@@ -126,7 +122,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         output.Attributes.Add("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-native-select-wrapper", "group/native-select", userSuppliedClass)
+            JoinCssClasses("sa-native-select-wrapper", "group/native-select", userSuppliedClass)
         );
 
         return new AutoFieldConfiguration(AutoFieldLayout.Vertical);

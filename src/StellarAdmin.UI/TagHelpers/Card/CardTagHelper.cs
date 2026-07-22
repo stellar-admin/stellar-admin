@@ -18,9 +18,6 @@ public class CardTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("size")]
     public CardSize? Size { get; set; }
 
-    public CardTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? CardSize.Default;
@@ -32,7 +29,7 @@ public class CardTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-card", "group/card", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-card", "group/card", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

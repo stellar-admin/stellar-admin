@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-field-legend")]
 public class FieldLegendTagHelper : StellarAdminTagHelperBase
 {
-    public FieldLegendTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     /// <summary>
     ///     The visual style applied to the legend.
     /// </summary>
@@ -31,7 +28,7 @@ public class FieldLegendTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-field-legend", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-legend", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

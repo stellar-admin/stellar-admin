@@ -20,7 +20,6 @@ internal static class ItemRenderingHelper
 
     public static async Task RenderAsync(
         TagHelperOutput output,
-        ICssClassMerger classMerger,
         ItemSize? size,
         ItemVariant? variant
     )
@@ -34,7 +33,7 @@ internal static class ItemRenderingHelper
 
         output.Attributes.SetAttribute(
             "class",
-            classMerger.Merge(
+            StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-item",
                 "group/item",
                 ItemSizeClasses[effectiveSize],

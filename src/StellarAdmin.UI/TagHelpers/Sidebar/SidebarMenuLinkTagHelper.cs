@@ -41,8 +41,7 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// </remarks>
     public SidebarMenuLinkVariant? Variant { get; set; }
 
-    public SidebarMenuLinkTagHelper(ICssClassMerger classMerger, IHtmlGenerator htmlGenerator)
-        : base(classMerger)
+    public SidebarMenuLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -81,7 +80,7 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-sidebar-menu-button",
                 "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],

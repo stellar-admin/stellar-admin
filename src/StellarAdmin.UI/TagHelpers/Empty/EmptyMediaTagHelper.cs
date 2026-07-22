@@ -26,9 +26,6 @@ public class EmptyMediaTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public EmptyMediaVariant? Variant { get; set; }
 
-    public EmptyMediaTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? EmptyMediaVariant.Default;
@@ -40,7 +37,7 @@ public class EmptyMediaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-empty-media",
                 VariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-empty-title")]
 public class EmptyTitleTagHelper : StellarAdminTagHelperBase
 {
-    public EmptyTitleTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class EmptyTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "empty-title");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-empty-title", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-empty-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

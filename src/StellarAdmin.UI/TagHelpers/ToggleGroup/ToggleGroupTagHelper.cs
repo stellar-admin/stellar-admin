@@ -11,8 +11,8 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-toggle-group")]
 public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 {
-    public ToggleGroupTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(htmlGenerator, classMerger) { }
+    public ToggleGroupTagHelper(IHtmlGenerator htmlGenerator)
+        : base(htmlGenerator) { }
 
     /// <summary>
     ///     Whether a single item (radio-backed, scalar binding) or multiple items
@@ -133,7 +133,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-toggle-group", "group/toggle-group", userClass)
+            JoinCssClasses("sa-toggle-group", "group/toggle-group", userClass)
         );
 
         output.Content.AppendHtml(childContent);

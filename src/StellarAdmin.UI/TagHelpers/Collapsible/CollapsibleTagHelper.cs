@@ -9,9 +9,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-collapsible")]
 public class CollapsibleTagHelper : StellarAdminTagHelperBase
 {
-    public CollapsibleTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "sel-collapsible";

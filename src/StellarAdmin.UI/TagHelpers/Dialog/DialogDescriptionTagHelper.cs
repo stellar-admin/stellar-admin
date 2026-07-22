@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-dialog-description")]
 public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public DialogDescriptionTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";
@@ -19,7 +16,7 @@ public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-description");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge("sa-dialog-description", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dialog-description", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

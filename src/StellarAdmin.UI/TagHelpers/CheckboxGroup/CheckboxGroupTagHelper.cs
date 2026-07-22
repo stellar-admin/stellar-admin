@@ -2,7 +2,7 @@
 
 /*
 [HtmlTargetElement("sa-checkbox-group")]
-public class CheckboxGroupTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelperBase
+public class CheckboxGroupTagHelper : StellarAdminTagHelperBase
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -13,7 +13,7 @@ public class CheckboxGroupTagHelper(ICssClassMerger classMerger) : StellarAdminT
         output.Attributes.SetAttribute("data-slot", "checkbox-group");
         output.Attributes.SetAttribute(
             "class",
-            classMerger.Merge("grid gap-3", output.GetUserSuppliedClass())
+            JoinCssClasses("grid gap-3", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

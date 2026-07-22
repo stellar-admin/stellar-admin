@@ -10,8 +10,7 @@ namespace StellarAdmin.UI.TagHelpers;
 ///     backdrop.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog")]
-public class AlertDialogTagHelper(ICssClassMerger classMerger)
-    : StellarAdminTagHelperBase(classMerger)
+public class AlertDialogTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     The size of the alert dialog.
@@ -42,7 +41,7 @@ public class AlertDialogTagHelper(ICssClassMerger classMerger)
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 "sa-alert-dialog-content",
                 // Establishes the named group the header/title/media tokens react to.
                 "group/alert-dialog-content",

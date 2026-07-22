@@ -18,8 +18,7 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuSubTriggerTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public DropdownMenuSubTriggerTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -53,7 +52,7 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dropdown-menu-sub-trigger", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dropdown-menu-sub-trigger", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();
@@ -61,7 +60,6 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
         output.Content.AppendHtml(
             DropdownMenuInternals.RenderIcon(
                 context,
-                ClassMerger,
                 _iconManager,
                 "chevron-right",
                 "ml-auto size-4"

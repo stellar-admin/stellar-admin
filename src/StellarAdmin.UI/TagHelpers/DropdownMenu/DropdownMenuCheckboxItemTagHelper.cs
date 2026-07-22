@@ -41,8 +41,7 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuCheckboxItemTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public DropdownMenuCheckboxItemTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -81,17 +80,17 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dropdown-menu-checkbox-item", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dropdown-menu-checkbox-item", output.GetUserSuppliedClass())
         );
 
         var indicator = new TagBuilder("span");
         indicator.Attributes["data-slot"] = "dropdown-menu-checkbox-item-indicator";
-        indicator.Attributes["class"] = ClassMerger.Merge(
+        indicator.Attributes["class"] = JoinCssClasses(
             "sa-dropdown-menu-item-indicator",
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, ClassMerger, _iconManager, "check", "size-4")
+            DropdownMenuInternals.RenderIcon(context, _iconManager, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

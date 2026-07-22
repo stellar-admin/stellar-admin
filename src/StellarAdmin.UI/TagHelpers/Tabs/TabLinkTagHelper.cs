@@ -28,8 +28,7 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("is-active")]
     public bool? IsActive { get; set; }
 
-    public TabLinkTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public TabLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -78,7 +77,7 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-tabs-trigger", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-tabs-trigger", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

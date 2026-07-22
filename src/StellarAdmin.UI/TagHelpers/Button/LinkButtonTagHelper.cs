@@ -11,13 +11,10 @@ namespace StellarAdmin.UI.TagHelpers;
 public class LinkButtonTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly ICssClassMerger _classMerger;
 
-    public LinkButtonTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public LinkButtonTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _classMerger = classMerger ?? throw new ArgumentNullException(nameof(classMerger));
     }
 
     /// <summary>
@@ -62,11 +59,6 @@ public class LinkButtonTagHelper : StellarAdminAnchorTagHelperBase
         };
         await anchorTagHelper.ProcessAsync(context, output);
 
-        ButtonRenderingHelper.RenderAttributes(
-            output,
-            _classMerger,
-            effectiveVariant,
-            effectiveSize
-        );
+        ButtonRenderingHelper.RenderAttributes(output, effectiveVariant, effectiveSize);
     }
 }

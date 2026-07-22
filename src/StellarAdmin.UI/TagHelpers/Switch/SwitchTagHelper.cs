@@ -16,8 +16,8 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public SwitchTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(htmlGenerator, classMerger)
+    public SwitchTagHelper(IHtmlGenerator htmlGenerator)
+        : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -103,7 +103,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
 
         inputOutput.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 classNames
                     .Union([inputOutput.GetUserSuppliedClass(), output.GetUserSuppliedClass()])
                     .ToArray()
@@ -120,12 +120,12 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-switch-wrapper", "group/switch")
+            JoinCssClasses("sa-switch-wrapper", "group/switch")
         );
 
         var thumb = new TagBuilder("span");
         thumb.Attributes.Add("data-slot", "switch-thumb");
-        thumb.Attributes.Add("class", ClassMerger.Merge("sa-switch-thumb"));
+        thumb.Attributes.Add("class", JoinCssClasses("sa-switch-thumb"));
         output.Content.AppendHtml(thumb);
 
         return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));

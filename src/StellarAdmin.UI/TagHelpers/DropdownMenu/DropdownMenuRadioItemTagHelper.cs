@@ -33,8 +33,7 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    public DropdownMenuRadioItemTagHelper(ICssClassMerger classMerger, IIconManager iconManager)
-        : base(classMerger)
+    public DropdownMenuRadioItemTagHelper(IIconManager iconManager)
     {
         _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
     }
@@ -79,17 +78,17 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("sa-dropdown-menu-radio-item", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-dropdown-menu-radio-item", output.GetUserSuppliedClass())
         );
 
         var indicator = new TagBuilder("span");
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
-        indicator.Attributes["class"] = ClassMerger.Merge(
+        indicator.Attributes["class"] = JoinCssClasses(
             "sa-dropdown-menu-item-indicator",
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, ClassMerger, _iconManager, "check", "size-4")
+            DropdownMenuInternals.RenderIcon(context, _iconManager, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

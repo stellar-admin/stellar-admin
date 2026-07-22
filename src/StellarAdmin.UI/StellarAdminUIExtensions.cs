@@ -13,9 +13,9 @@ public static class StellarAdminUIExtensions
         public StellarAdminUIBuilder AddUI()
         {
             stellarAdminBuilder.Services.AddOptions<StellarAdminUIOptions>();
-            stellarAdminBuilder
-                .Services.AddSingleton<ICssClassMerger, DefaultCssClassMerger>()
-                .AddSingleton<IIconManager>(_ => DefaultIconManager.Instance);
+            stellarAdminBuilder.Services.AddSingleton<IIconManager>(_ =>
+                DefaultIconManager.Instance
+            );
 
             var builder = new StellarAdminUIBuilder(stellarAdminBuilder.Services);
             builder.AddIconPack<LucideIconPack>();

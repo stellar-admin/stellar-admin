@@ -8,9 +8,6 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button-group-text")]
 public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
 {
-    public ButtonGroupTextTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
@@ -19,7 +16,7 @@ public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "button-group-text");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-button-group-text", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-button-group-text", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

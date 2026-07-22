@@ -13,8 +13,7 @@ public class BreadcrumbLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public BreadcrumbLinkTagHelper(IHtmlGenerator htmlGenerator, ICssClassMerger classMerger)
-        : base(classMerger)
+    public BreadcrumbLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
@@ -43,7 +42,7 @@ public class BreadcrumbLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute("data-slot", "breadcrumb-link");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("sa-breadcrumb-link", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-breadcrumb-link", output.GetUserSuppliedClass())
         );
     }
 }

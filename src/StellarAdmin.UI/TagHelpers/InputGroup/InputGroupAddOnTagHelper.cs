@@ -29,9 +29,6 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("align")]
     public InputGroupAddOnVariantAlignment? Alignment { get; set; }
 
-    public InputGroupAddOnTagHelper(ICssClassMerger classMerger)
-        : base(classMerger) { }
-
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlignment = Alignment ?? InputGroupAddOnVariantAlignment.InlineStart;
@@ -57,7 +54,7 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
+            JoinCssClasses(
                 new string?[] { "sa-input-group-addon" }
                     .Union(AlignmentClasses[effectiveAlignment])
                     .Append(output.GetUserSuppliedClass())
