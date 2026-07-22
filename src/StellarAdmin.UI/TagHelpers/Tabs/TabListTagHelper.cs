@@ -49,7 +49,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-tabs"),
-                "group/tabs flex data-[orientation=horizontal]:flex-col",
+                "group/tabs",
                 output.GetUserSuppliedClass()
             )
         );
@@ -61,7 +61,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-tabs-list"),
-                "group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col",
+                "group/tabs-list",
                 effectiveVariant == TabListVariant.Default
                     ? new ThemeToken("sa-tabs-list-variant-default")
                     : new ThemeToken("sa-tabs-list-variant-line"),

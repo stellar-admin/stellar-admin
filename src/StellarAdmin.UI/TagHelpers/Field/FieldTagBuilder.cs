@@ -10,17 +10,15 @@ internal class FieldTagBuilder : TagBuilder
         [FieldOrientation.Vertical] =
         [
             new ThemeToken("sa-field-orientation-vertical"),
-            "flex-col [&>*]:w-full [&>.sr-only]:w-auto",
+            // Child-width forcing stays in the utilities layer: it must override the
+            // children's own component classes (e.g. a toggle group's w-fit).
+            "[&>*]:w-full [&>.sr-only]:w-auto",
         ],
-        [FieldOrientation.Horizontal] =
-        [
-            new ThemeToken("sa-field-orientation-horizontal"),
-            "flex-row items-center [&>[data-slot=field-label]]:flex-auto has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
-        ],
+        [FieldOrientation.Horizontal] = [new ThemeToken("sa-field-orientation-horizontal")],
         [FieldOrientation.Responsive] =
         [
             new ThemeToken("sa-field-orientation-responsive"),
-            "flex-col [&>*]:w-full [&>.sr-only]:w-auto @md/field-group:flex-row @md/field-group:items-center @md/field-group:[&>*]:w-auto @md/field-group:[&>[data-slot=field-label]]:flex-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
+            "[&>*]:w-full [&>.sr-only]:w-auto @md/field-group:[&>*]:w-auto",
         ],
     };
 
@@ -36,7 +34,7 @@ internal class FieldTagBuilder : TagBuilder
         Attributes.Add(
             "class",
             classMerger.Merge(
-                new ClassElement[] { new ThemeToken("sa-field"), "group/field flex w-full" }
+                new ClassElement[] { new ThemeToken("sa-field"), "group/field" }
                     .Union(OrientationClasses[orientation])
                     .Append(userSuppliedClass)
                     .ToArray()

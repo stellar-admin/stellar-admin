@@ -45,11 +45,8 @@ public class AlertDialogTagHelper(ICssClassMerger classMerger)
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-alert-dialog-content"),
-                // `group/alert-dialog-content` establishes the named group the header/title/media
-                // tokens react to; `data-open:grid` (not plain `grid`) so the closed dialog keeps
-                // the UA `display: none`.
-                "group/alert-dialog-content fixed inset-0 m-auto outline-none data-open:grid",
-                "backdrop:supports-backdrop-filter:backdrop-blur-xs",
+                // Establishes the named group the header/title/media tokens react to.
+                "group/alert-dialog-content",
                 output.GetUserSuppliedClass()
             )
         );

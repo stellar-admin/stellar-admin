@@ -50,28 +50,11 @@ public class SheetTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute("data-slot", "sheet-content");
         output.Attributes.SetAttribute("data-side", effectiveSide.GetDataAttributeText());
+        // Structural styling (including the per-side placement, keyed off data-side) lives in
+        // tailwind/components.css.
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                // "m-0 max-h-full max-w-full p-0 border-0", // UA style resets for dialog element
-                new ThemeToken("sa-sheet-content"),
-                // We define all the necessary styles below
-                "transition ease-in-out data-open:animate-in data-closed:animate-out data-closed:duration-300 data-open:duration-500",
-                effectiveSide switch
-                {
-                    SheetSide.Top =>
-                        "bottom-auto inset-x-0 top-0 w-full max-w-full h-3/4 border-b data-closed:slide-out-to-top data-open:slide-in-from-top",
-                    SheetSide.Right =>
-                        "left-auto inset-y-0 right-0 h-full max-h-full w-3/4 border-l data-closed:slide-out-to-right data-open:slide-in-from-right",
-                    SheetSide.Bottom =>
-                        "top-auto inset-x-0 bottom-0 w-full max-w-full h-3/4 border-t data-closed:slide-out-to-bottom data-open:slide-in-from-bottom",
-                    SheetSide.Left =>
-                        "right-auto inset-y-0 left-0 h-full max-h-full w-3/4 border-r data-closed:slide-out-to-left data-open:slide-in-from-left",
-                    _ => string.Empty,
-                },
-                "backdrop:supports-backdrop-filter:backdrop-blur-xs",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sheet-content"), output.GetUserSuppliedClass())
         );
 
         // Wrap inside web component
@@ -125,7 +108,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
 
         // Add content wrapper
         var contentTagBuilder = new TagBuilder("div");
-        contentTagBuilder.Attributes.Add("class", "flex flex-col h-full");
+        contentTagBuilder.Attributes.Add("class", "sa-sheet-body");
         contentTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
         output.Content.AppendHtml(contentTagBuilder);
     }

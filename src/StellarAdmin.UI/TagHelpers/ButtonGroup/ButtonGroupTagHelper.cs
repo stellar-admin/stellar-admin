@@ -55,11 +55,7 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                new ClassElement[]
-                {
-                    new ThemeToken("sa-button-group"),
-                    "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1",
-                }
+                new ClassElement[] { new ThemeToken("sa-button-group") }
                     .Union(OrientationClasses[effectiveOrientation])
                     .Union([output.GetUserSuppliedClass()])
                     .ToArray()

@@ -20,11 +20,7 @@ public class DialogHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-header");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dialog-header"),
-                "flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-dialog-header"), output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

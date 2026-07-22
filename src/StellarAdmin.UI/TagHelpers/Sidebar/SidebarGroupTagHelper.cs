@@ -19,11 +19,7 @@ public class SidebarGroupTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "group");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-group"),
-                "relative flex w-full min-w-0 flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-group"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -59,12 +59,7 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-error");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-field-error"),
-                "font-normal",
-                "hidden [&.field-validation-error]:block",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-field-error"), output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

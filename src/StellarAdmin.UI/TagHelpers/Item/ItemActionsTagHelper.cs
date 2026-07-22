@@ -20,11 +20,7 @@ public class ItemActionsTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-actions");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-item-actions"),
-                "flex items-center",
-                GetUserSpecifiedClass(output)
-            )
+            ClassMerger.Merge(new ThemeToken("sa-item-actions"), GetUserSpecifiedClass(output))
         );
 
         return Task.CompletedTask;

@@ -21,11 +21,7 @@ public class BreadcrumbItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "breadcrumb-item");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-breadcrumb-item"),
-                "inline-flex items-center",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-breadcrumb-item"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

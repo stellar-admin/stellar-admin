@@ -28,12 +28,12 @@ internal static class GroupAlignExtensions
         public string GetClass() =>
             align switch
             {
-                GroupAlign.Stretch => "items-stretch",
-                GroupAlign.Center => "items-center",
-                GroupAlign.Start => "items-start",
-                GroupAlign.End => "items-end",
-                GroupAlign.Baseline => "items-baseline",
-                _ => "items-start",
+                GroupAlign.Stretch => "sa-group-align-stretch",
+                GroupAlign.Center => "sa-group-align-center",
+                GroupAlign.Start => "sa-group-align-start",
+                GroupAlign.End => "sa-group-align-end",
+                GroupAlign.Baseline => "sa-group-align-baseline",
+                _ => "sa-group-align-start",
             };
     }
 }

@@ -19,11 +19,7 @@ public class SidebarContentTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-content"),
-                "flex min-h-0 flex-1 flex-col overflow-auto group-data-[collapsible=icon]:overflow-hidden",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-content"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

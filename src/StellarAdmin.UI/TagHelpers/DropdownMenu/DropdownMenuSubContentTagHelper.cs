@@ -63,11 +63,8 @@ public class DropdownMenuSubContentTagHelper(
                 MenuSurfaceInternals.ColorToken(menuOptions.Color),
                 MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
                 MenuSurfaceInternals.AccentToken(menuOptions.Accent),
-                DropdownMenuInternals.ContentStaticClasses,
-                "w-auto",
                 effectivePosition.GetTailwindClassName(),
                 DropdownMenuInternals.GetMarginClassName(effectivePosition),
-                DropdownMenuInternals.ContentTransitionClasses,
                 output.GetUserSuppliedClass()
             )
         );

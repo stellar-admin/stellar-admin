@@ -47,7 +47,7 @@ internal static class ButtonRenderingHelper
             "class",
             classMerger.Merge(
                 new ThemeToken("sa-button"),
-                "inline-flex items-center justify-center whitespace-nowrap  transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none",
+                "group/button",
                 ButtonVariantClasses[variant],
                 ButtonSizeClasses[size],
                 output.GetUserSuppliedClass()

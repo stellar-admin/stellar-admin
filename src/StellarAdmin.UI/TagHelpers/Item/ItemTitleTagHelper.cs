@@ -20,11 +20,7 @@ public class ItemTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-title");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-item-title"),
-                "line-clamp-1 flex w-fit items-center",
-                GetUserSpecifiedClass(output)
-            )
+            ClassMerger.Merge(new ThemeToken("sa-item-title"), GetUserSpecifiedClass(output))
         );
 
         return Task.CompletedTask;

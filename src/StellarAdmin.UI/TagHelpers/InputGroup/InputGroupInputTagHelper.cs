@@ -69,11 +69,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "input-group-control");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-input-group-input"),
-                "flex-1",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-input-group-input"), output.GetUserSuppliedClass())
         );
 
         var inputTagHelper = new InputTagHelper(_htmlGenerator, ClassMerger, _iconManager)

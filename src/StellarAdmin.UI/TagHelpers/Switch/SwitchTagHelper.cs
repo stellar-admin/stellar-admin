@@ -125,18 +125,12 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("relative inline-flex items-center group/switch")
+            ClassMerger.Merge(new ThemeToken("sa-switch-wrapper"), "group/switch")
         );
 
         var thumb = new TagBuilder("span");
         thumb.Attributes.Add("data-slot", "switch-thumb");
-        thumb.Attributes.Add(
-            "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-switch-thumb"),
-                "pointer-events-none absolute left-px top-1/2 block ring-0 -translate-y-1/2 transition-transform"
-            )
-        );
+        thumb.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-switch-thumb")));
         output.Content.AppendHtml(thumb);
 
         return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));

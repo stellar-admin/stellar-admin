@@ -20,11 +20,7 @@ public class EmptyDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "empty-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-empty-description"),
-                "text-muted-foreground [&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-empty-description"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

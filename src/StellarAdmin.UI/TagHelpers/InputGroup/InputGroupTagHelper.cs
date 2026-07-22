@@ -25,7 +25,7 @@ public class InputGroupTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-input-group"),
-                "group/input-group relative flex w-full min-w-0 items-center outline-none has-[>textarea]:h-auto",
+                "group/input-group",
                 output.GetUserSuppliedClass()
             )
         );

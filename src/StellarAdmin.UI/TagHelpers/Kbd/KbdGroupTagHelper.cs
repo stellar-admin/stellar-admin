@@ -20,11 +20,7 @@ public class KbdGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "kbd-group");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-kbd-group"),
-                "inline-flex items-center",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-kbd-group"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

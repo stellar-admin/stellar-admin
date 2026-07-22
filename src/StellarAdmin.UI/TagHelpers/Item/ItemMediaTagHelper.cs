@@ -42,7 +42,6 @@ public class ItemMediaTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-item-media"),
-                "flex shrink-0 items-center justify-center [&_svg]:pointer-events-none",
                 ItemVariantClasses[effectiveVariant],
                 GetUserSpecifiedClass(output)
             )

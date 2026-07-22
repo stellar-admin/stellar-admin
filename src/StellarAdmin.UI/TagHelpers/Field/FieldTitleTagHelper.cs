@@ -20,11 +20,7 @@ public class FieldTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-label");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-field-title"),
-                "flex w-fit items-center leading-snug",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-field-title"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

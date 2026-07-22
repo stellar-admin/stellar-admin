@@ -154,27 +154,19 @@ public class InputTagHelper : FieldInputBaseTagHelper
                 output.TagName = "span";
                 output.TagMode = TagMode.StartTagAndEndTag;
 
-                output.Attributes.SetAttribute("class", "relative flex items-center");
+                output.Attributes.SetAttribute("class", "sa-input-control-wrapper");
 
                 // Add the span
                 var checkboxSpan = new TagBuilder("span");
                 checkboxSpan.Attributes.Add(
                     "class",
-                    ClassMerger.Merge(
-                        new ThemeToken("sa-checkbox-indicator"),
-                        "invisible peer-checked:visible"
-                    )
+                    ClassMerger.Merge(new ThemeToken("sa-checkbox-indicator"))
                 );
 
                 // Add the icon
                 var checkboxIconOutput = new TagHelperOutput(
                     "svg",
-                    [
-                        new TagHelperAttribute(
-                            "class",
-                            "pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-100 dark:text-black"
-                        ),
-                    ],
+                    [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
                 var checkboxIconTagHelper = new IconTagHelper(ClassMerger, _iconManager)
@@ -191,17 +183,13 @@ public class InputTagHelper : FieldInputBaseTagHelper
                 output.TagName = "span";
                 output.TagMode = TagMode.StartTagAndEndTag;
 
-                output.Attributes.SetAttribute("class", "relative flex items-center");
+                output.Attributes.SetAttribute("class", "sa-input-control-wrapper");
 
                 // Add the span
                 var spanTagBuilder = new TagBuilder("span");
                 spanTagBuilder.Attributes.Add(
                     "class",
-                    ClassMerger.Merge(
-                        new ThemeToken("sa-radiobutton-indicator"),
-                        "size-0",
-                        "invisible peer-checked:visible"
-                    )
+                    ClassMerger.Merge(new ThemeToken("sa-radiobutton-indicator"))
                 );
 
                 // Add the icon
@@ -210,10 +198,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     [
                         new TagHelperAttribute(
                             "class",
-                            ClassMerger.Merge(
-                                new ThemeToken("sa-radiobutton-indicator-icon"),
-                                "pointer-events-none"
-                            )
+                            ClassMerger.Merge(new ThemeToken("sa-radiobutton-indicator-icon"))
                         ),
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())

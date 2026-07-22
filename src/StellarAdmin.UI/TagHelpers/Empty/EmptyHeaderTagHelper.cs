@@ -20,11 +20,7 @@ public class EmptyHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "empty-header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-empty-header"),
-                "flex max-w-sm flex-col items-center",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-empty-header"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

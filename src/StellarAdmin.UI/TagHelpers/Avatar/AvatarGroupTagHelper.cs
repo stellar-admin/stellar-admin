@@ -22,7 +22,7 @@ public class AvatarGroupTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-avatar-group"),
-                "*:data-[slot=avatar]:ring-background group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2",
+                "group/avatar-group",
                 output.GetUserSuppliedClass()
             )
         );

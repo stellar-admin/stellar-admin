@@ -19,11 +19,7 @@ public class SidebarMenuSubTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "menu-sub");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-menu-sub"),
-                "flex min-w-0 flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-menu-sub"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -75,11 +75,7 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ClassElement[]
-                {
-                    new ThemeToken("sa-input-group-addon"),
-                    "flex cursor-text items-center justify-center select-none",
-                }
+                new ClassElement[] { new ThemeToken("sa-input-group-addon") }
                     .Union(AlignmentClasses[effectiveAlignment])
                     .Append(output.GetUserSuppliedClass())
                     .ToArray()

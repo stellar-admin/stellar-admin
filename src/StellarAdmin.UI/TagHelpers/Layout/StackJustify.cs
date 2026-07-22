@@ -28,12 +28,12 @@ internal static class StackJustifyExtensions
         public string GetClass() =>
             justify switch
             {
-                StackJustify.Center => "justify-center",
-                StackJustify.Start => "justify-start",
-                StackJustify.End => "justify-end",
-                StackJustify.SpaceBetween => "justify-between",
-                StackJustify.SpaceAround => "justify-around",
-                _ => "justify-start",
+                StackJustify.Center => "sa-stack-justify-center",
+                StackJustify.Start => "sa-stack-justify-start",
+                StackJustify.End => "sa-stack-justify-end",
+                StackJustify.SpaceBetween => "sa-stack-justify-between",
+                StackJustify.SpaceAround => "sa-stack-justify-around",
+                _ => "sa-stack-justify-start",
             };
     }
 }

@@ -20,11 +20,7 @@ public class AlertDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "alert-description");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-alert-description"),
-                "[&_a]:hover:text-foreground [&_a]:underline [&_a]:underline-offset-3",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-alert-description"), output.GetUserSuppliedClass())
         );
 
         output.Content.SetHtmlContent(await output.GetChildContentAsync());

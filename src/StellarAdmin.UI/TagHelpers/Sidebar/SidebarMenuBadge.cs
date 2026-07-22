@@ -20,7 +20,6 @@ public class SidebarMenuBadge(ICssClassMerger classMerger) : StellarAdminTagHelp
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-sidebar-menu-badge"),
-                "flex items-center justify-center tabular-nums select-none group-data-[collapsible=icon]:hidden",
                 output.GetUserSuppliedClass()
             )
         );

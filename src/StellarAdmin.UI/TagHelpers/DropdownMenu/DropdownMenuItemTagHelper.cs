@@ -128,7 +128,7 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-dropdown-menu-item"),
-                "group/dropdown-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+                "group/dropdown-menu-item",
                 output.GetUserSuppliedClass()
             )
         );

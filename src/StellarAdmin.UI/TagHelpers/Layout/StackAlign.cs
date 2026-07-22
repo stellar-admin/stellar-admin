@@ -25,11 +25,11 @@ internal static class StackAlignExtensions
         public string GetClass() =>
             align switch
             {
-                StackAlign.Stretch => "items-stretch",
-                StackAlign.Center => "items-center",
-                StackAlign.Start => "items-start",
-                StackAlign.End => "items-end",
-                _ => "items-stretch",
+                StackAlign.Stretch => "sa-stack-align-stretch",
+                StackAlign.Center => "sa-stack-align-center",
+                StackAlign.Start => "sa-stack-align-start",
+                StackAlign.End => "sa-stack-align-end",
+                _ => "sa-stack-align-stretch",
             };
     }
 }

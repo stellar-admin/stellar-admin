@@ -22,9 +22,7 @@ public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-accordion-trigger"),
-                "group/accordion-trigger relative flex flex-1 items-start justify-between border border-transparent transition-all outline-none disabled:pointer-events-none disabled:opacity-50",
-                "cursor-default",
-                "details-disabled:pointer-events-none details-disabled:opacity-50",
+                "group/accordion-trigger",
                 output.GetUserSuppliedClass()
             )
         );
@@ -34,10 +32,10 @@ public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
 
         // Render the icon
         var iconTagBuilder = new TagBuilder("div");
-        iconTagBuilder.AddCssClass("text-muted-foreground");
+        iconTagBuilder.AddCssClass("sa-accordion-trigger-icon");
         iconTagBuilder.InnerHtml.AppendHtml(
             """
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-4 w-4 transition-all duration-300 group-open:rotate-180">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="">
                 <path d="m6 9 6 6 6-6"/>
             </svg>
             """

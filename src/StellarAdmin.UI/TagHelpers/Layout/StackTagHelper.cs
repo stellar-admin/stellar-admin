@@ -52,7 +52,7 @@ public class StackTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                "flex flex-col",
+                new ThemeToken("sa-stack"),
                 effectiveAlign.GetClass(),
                 effectiveGap.GetThemeToken(),
                 effectiveJustify.GetClass(),

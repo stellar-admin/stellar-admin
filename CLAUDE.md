@@ -124,3 +124,10 @@ The two sample apps deliberately run in **different modes**, so both paths stay 
 - `sandbox/ComponentPlayground` — single-build mode (its own Tailwind build importing `obj/stellaradmin-ui/tailwind/index.css` + `themes/vega.css`; no `_content` link).
 
 If you change anything under `tailwind/`, check the generated bundles still agree. The cheapest meaningful check is a **selector-set diff** between `src/StellarAdmin.UI/wwwroot/stellar-admin-ui.vega.css` and `sandbox/ComponentPlayground/wwwroot/css/site.css` — the app's set should be a superset. Visual inspection of ComponentPlayground proves little; its Index page has one component.
+
+### Visual-regression tool
+For CSS/theming refactors that must not change rendering, `util/visual-regression/vrt.mjs` (dependency-free Node + system chromium over CDP) snapshots every DocsSamples page at two viewports — curated computed styles + rects per element (keyed by DOM path + `data-slot`, never `class`), plus overlay open-state scenarios and human-review screenshots. Capture a baseline before the risky work, re-capture after, and compare; the diff is property-level and exact. Baselines are on-demand and gitignored (`util/visual-regression/snapshots/`).
+```bash
+node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out util/visual-regression/snapshots/<name>   # DocsSamples must be running
+node util/visual-regression/vrt.mjs compare util/visual-regression/snapshots/<baseline> util/visual-regression/snapshots/<current>
+```

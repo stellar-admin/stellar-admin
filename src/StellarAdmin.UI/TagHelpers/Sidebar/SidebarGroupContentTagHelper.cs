@@ -21,7 +21,6 @@ public class SidebarGroupContentTagHelper(ICssClassMerger classMerger)
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-sidebar-group-content"),
-                "w-full",
                 output.GetUserSuppliedClass()
             )
         );

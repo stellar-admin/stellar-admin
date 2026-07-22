@@ -69,28 +69,21 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "progress");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-progress-root"),
-                "flex flex-wrap gap-3",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-progress-root"), output.GetUserSuppliedClass())
         );
 
         var trackTagBuilder = new TagBuilder("div");
         trackTagBuilder.Attributes.Add("data-slot", "progress-track");
         trackTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-progress-track"),
-                "relative flex w-full items-center overflow-x-hidden"
-            )
+            ClassMerger.Merge(new ThemeToken("sa-progress-track"))
         );
 
         var indicatorTagBuilder = new TagBuilder("div");
         indicatorTagBuilder.Attributes.Add("data-slot", "progress-indicator");
         indicatorTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-progress-indicator"), "h-full transition-all")
+            ClassMerger.Merge(new ThemeToken("sa-progress-indicator"))
         );
         indicatorTagBuilder.Attributes.Add(
             "style",

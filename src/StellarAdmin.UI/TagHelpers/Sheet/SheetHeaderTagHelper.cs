@@ -18,11 +18,7 @@ public class SheetHeaderTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sheet-header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sheet-header"),
-                "flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sheet-header"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

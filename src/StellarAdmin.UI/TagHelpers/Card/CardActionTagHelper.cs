@@ -21,11 +21,7 @@ public class CardActionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "card-action");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-card-action"),
-                "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-card-action"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -112,7 +112,6 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 
         // The group-item token's orientation variants (group-data-horizontal/vertical) resolve
         // to [data-orientation="..."] in Tailwind v4, so that is the attribute we set here.
-        var isHorizontal = effectiveOrientation == ToggleGroupOrientation.Horizontal;
         output.Attributes.SetAttribute(
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()
@@ -122,13 +121,6 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
         // live here. When joined (spacing 0) collapse the 1px seam between outline items;
         // otherwise honour the numeric spacing as a real gap, driving
         // gap-[--spacing(var(--gap))] from a --gap CSS var (so spacing="2" -> 0.5rem, etc.).
-        var layout = isHorizontal
-            ? "inline-flex w-fit items-center"
-            : "inline-flex w-fit flex-col items-stretch";
-        var spacingClass =
-            effectiveSpacing == 0
-                ? (isHorizontal ? "gap-0 -space-x-px" : "gap-0 -space-y-px")
-                : "gap-[--spacing(var(--gap))]";
 
         if (effectiveSpacing != 0)
         {
@@ -142,13 +134,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-toggle-group"),
-                "group/toggle-group",
-                layout,
-                spacingClass,
-                userClass
-            )
+            ClassMerger.Merge(new ThemeToken("sa-toggle-group"), "group/toggle-group", userClass)
         );
 
         output.Content.AppendHtml(childContent);

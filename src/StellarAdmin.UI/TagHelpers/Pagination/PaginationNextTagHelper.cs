@@ -66,7 +66,7 @@ public class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
         {
             // Render the text
             var textBlockTagBuilder = new TagBuilder("span");
-            textBlockTagBuilder.AddCssClass("hidden sm:block");
+            textBlockTagBuilder.AddCssClass("sa-pagination-link-label");
             textBlockTagBuilder.InnerHtml.AppendHtml("Next");
             output.Content.AppendHtml(textBlockTagBuilder);
 

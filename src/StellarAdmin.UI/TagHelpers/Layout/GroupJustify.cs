@@ -28,12 +28,12 @@ internal static class GroupJustifyExtensions
         public string GetClass() =>
             justify switch
             {
-                GroupJustify.Center => "justify-center",
-                GroupJustify.Start => "justify-start",
-                GroupJustify.End => "justify-end",
-                GroupJustify.SpaceBetween => "justify-between",
-                GroupJustify.SpaceAround => "justify-around",
-                _ => "justify-start",
+                GroupJustify.Center => "sa-group-justify-center",
+                GroupJustify.Start => "sa-group-justify-start",
+                GroupJustify.End => "sa-group-justify-end",
+                GroupJustify.SpaceBetween => "sa-group-justify-between",
+                GroupJustify.SpaceAround => "sa-group-justify-around",
+                _ => "sa-group-justify-start",
             };
     }
 }

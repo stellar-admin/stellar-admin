@@ -19,11 +19,7 @@ public class SidebarHeaderTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-header"),
-                "flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-header"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

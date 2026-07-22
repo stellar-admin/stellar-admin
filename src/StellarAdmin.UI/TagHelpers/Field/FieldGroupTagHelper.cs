@@ -26,7 +26,7 @@ public class FieldGroupTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-field-group"),
-                "group/field-group @container/field-group flex w-full flex-col",
+                "group/field-group",
                 output.GetUserSuppliedClass()
             )
         );

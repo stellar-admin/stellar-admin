@@ -41,8 +41,7 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-field-label"),
-                "group/field-label peer/field-label flex w-fit leading-snug",
-                "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
+                "group/field-label peer/field-label",
                 output.GetUserSuppliedClass()
             )
         );

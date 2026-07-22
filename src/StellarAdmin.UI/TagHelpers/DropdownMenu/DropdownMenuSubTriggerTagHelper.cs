@@ -56,7 +56,6 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-dropdown-menu-sub-trigger"),
-                "flex cursor-default items-center outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
                 output.GetUserSuppliedClass()
             )
         );

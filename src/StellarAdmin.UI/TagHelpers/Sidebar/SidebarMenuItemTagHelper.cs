@@ -19,7 +19,11 @@ public class SidebarMenuItemTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "menu-item");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge("group/menu-item relative", output.GetUserSuppliedClass())
+            ClassMerger.Merge(
+                new ThemeToken("sa-sidebar-menu-item"),
+                "group/menu-item",
+                output.GetUserSuppliedClass()
+            )
         );
 
         return Task.CompletedTask;

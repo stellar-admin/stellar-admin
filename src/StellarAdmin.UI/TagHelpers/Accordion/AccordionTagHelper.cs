@@ -19,11 +19,7 @@ public class AccordionTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-accordion"),
-                "flex w-full flex-col",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-accordion"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

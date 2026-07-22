@@ -33,11 +33,7 @@ public class CardTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-card"),
-                "group/card flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-card"), "group/card", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

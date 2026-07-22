@@ -20,11 +20,7 @@ public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "button-group-text");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-button-group-text"),
-                "flex items-center [&_svg]:pointer-events-none",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-button-group-text"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

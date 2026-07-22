@@ -21,10 +21,7 @@ public class AvatarGroupCount : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "avatar-group-count");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-avatar-group-count"),
-                "ring-background relative flex shrink-0 items-center justify-center ring-2"
-            )
+            BuildClassString(new ThemeToken("sa-avatar-group-count"))
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

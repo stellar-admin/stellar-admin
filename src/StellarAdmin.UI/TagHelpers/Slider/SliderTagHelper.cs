@@ -147,11 +147,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper
         }
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-slider"),
-                "relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col",
-                userClass
-            )
+            ClassMerger.Merge(new ThemeToken("sa-slider"), userClass)
         );
 
         // Track + filled range. For a single thumb the range fills from the start; for a range
@@ -162,24 +158,12 @@ public class SliderTagHelper : FieldInputBaseTagHelper
         var track = new TagBuilder("span");
         track.Attributes.Add("data-slot", "slider-track");
         track.Attributes.Add("data-orientation", orientationText);
-        track.Attributes.Add(
-            "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-slider-track"),
-                "relative grow overflow-hidden select-none"
-            )
-        );
+        track.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-slider-track")));
 
         var range = new TagBuilder("span");
         range.Attributes.Add("data-slot", "slider-range");
         range.Attributes.Add("data-orientation", orientationText);
-        range.Attributes.Add(
-            "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-slider-range"),
-                "absolute select-none data-horizontal:h-full data-vertical:w-full"
-            )
-        );
+        range.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-slider-range")));
         range.Attributes.Add("style", RangeStyle(effectiveOrientation, lowPercent, highPercent));
         track.InnerHtml.AppendHtml(range);
         output.Content.AppendHtml(track);
@@ -214,13 +198,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper
                 // host wrapper only, so per-thumb disabled utilities are left inert here.
                 thumb.Attributes.Add("aria-disabled", "true");
             }
-            thumb.Attributes.Add(
-                "class",
-                ClassMerger.Merge(
-                    new ThemeToken("sa-slider-thumb"),
-                    "absolute block shrink-0 select-none"
-                )
-            );
+            thumb.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-slider-thumb")));
             thumb.Attributes.Add(
                 "style",
                 ThumbStyle(

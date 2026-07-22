@@ -20,11 +20,7 @@ public class ItemContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-item-content"),
-                "flex flex-1 flex-col [&+[data-slot=item-content]]:flex-none",
-                GetUserSpecifiedClass(output)
-            )
+            ClassMerger.Merge(new ThemeToken("sa-item-content"), GetUserSpecifiedClass(output))
         );
 
         return Task.CompletedTask;

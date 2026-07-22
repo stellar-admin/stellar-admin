@@ -20,12 +20,7 @@ public class DialogTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelpe
         output.Attributes.SetAttribute("data-slot", "dialog-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dialog-content"),
-                "fixed inset-0 m-auto outline-none",
-                "backdrop:supports-backdrop-filter:backdrop-blur-xs",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-dialog-content"), output.GetUserSuppliedClass())
         );
 
         // Wrap inside web component

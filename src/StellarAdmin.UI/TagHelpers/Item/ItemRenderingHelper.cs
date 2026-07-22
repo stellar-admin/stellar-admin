@@ -37,7 +37,7 @@ internal static class ItemRenderingHelper
             "class",
             classMerger.Merge(
                 new ThemeToken("sa-item"),
-                "w-full group/item focus-visible:border-ring focus-visible:ring-ring/50 flex items-center flex-wrap outline-none transition-colors duration-100 focus-visible:ring-[3px] [a]:transition-colors",
+                "group/item",
                 ItemSizeClasses[effectiveSize],
                 ItemVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

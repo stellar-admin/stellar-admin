@@ -53,7 +53,6 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-input-group-button"),
-                "shadow-none flex items-center",
                 SizeClasses[effectiveSize],
                 output.GetUserSuppliedClass()
             )

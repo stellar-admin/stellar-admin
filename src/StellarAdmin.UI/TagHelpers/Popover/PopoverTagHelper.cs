@@ -39,11 +39,8 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-popover-content"),
-                "w-72 outline-hidden",
-                "try-flip-all",
                 effectivePositionArea.GetTailwindClassName(),
                 GetMarginClassName(effectivePositionArea),
-                "duration-200 ease-in opacity-100 not-open:opacity-0 starting:open:opacity-0 [transition-property:opacity,display,overlay] [transition-behavior:allow-discrete]",
                 output.GetUserSuppliedClass()
             )
         );

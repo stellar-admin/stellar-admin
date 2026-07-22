@@ -86,10 +86,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
                         new TagHelperAttribute("data-size", effectiveSize.GetDataAttributeText()),
                         new TagHelperAttribute(
                             "class",
-                            ClassMerger.Merge(
-                                new ThemeToken("sa-native-select"),
-                                "outline-none disabled:pointer-events-none disabled:cursor-not-allowed"
-                            )
+                            ClassMerger.Merge(new ThemeToken("sa-native-select"))
                         ),
                     ])
             ),
@@ -114,10 +111,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
             [
                 new TagHelperAttribute(
                     "class",
-                    ClassMerger.Merge(
-                        new ThemeToken("sa-native-select-icon"),
-                        "pointer-events-none absolute select-none"
-                    )
+                    ClassMerger.Merge(new ThemeToken("sa-native-select-icon"))
                 ),
                 new TagHelperAttribute("aria-hidden", "true"),
                 new TagHelperAttribute("data-slot", "native-select-icon"),
@@ -141,7 +135,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-native-select-wrapper"),
-                "group/native-select relative w-fit has-[select:disabled]:opacity-50",
+                "group/native-select",
                 userSuppliedClass
             )
         );

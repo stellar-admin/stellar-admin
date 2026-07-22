@@ -66,12 +66,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             );
             output.Attributes.SetAttribute(
                 "class",
-                ClassMerger.Merge(
-                    new ThemeToken("sa-sidebar-inner"),
-                    "text-sidebar-foreground flex h-svh w-(--sidebar-width) flex-col",
-                    effectiveSide == SidebarSide.Left ? "border-r" : "border-l",
-                    output.GetUserSuppliedClass()
-                )
+                ClassMerger.Merge(new ThemeToken("sa-sidebar-inner"), output.GetUserSuppliedClass())
             );
 
             output.Content.AppendHtml(await output.GetChildContentAsync());
@@ -88,10 +83,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             "data-collapsible-config",
             effectiveCollapsible.GetDataAttributeText()
         );
-        output.Attributes.SetAttribute(
-            "class",
-            "group peer text-sidebar-foreground data-[side=right]:order-last"
-        );
+        output.Attributes.SetAttribute("class", "sa-sidebar group peer");
 
         /* Backdrop — mobile only. Fades in behind the drawer and closes it on click.
            A <button> so the native command API fires; targets the parent sel-sidebar. */
@@ -105,28 +97,13 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             backdropTagBuilder.Attributes.Add("command", "--close-mobile");
             backdropTagBuilder.Attributes.Add("commandfor", sidebarId);
         }
-        backdropTagBuilder.Attributes.Add(
-            "class",
-            "fixed inset-0 z-20 bg-black/50 opacity-0 transition-opacity duration-200 ease-linear "
-                + "pointer-events-none md:hidden "
-                + "group-data-[mobile=open]:opacity-100 group-data-[mobile=open]:pointer-events-auto"
-        );
+        backdropTagBuilder.Attributes.Add("class", "sa-sidebar-backdrop");
         output.Content.AppendHtml(backdropTagBuilder);
 
         /* Gap — desktop-only spacer that pushes the inset content. */
         var gapTagBuilder = new TagBuilder("div");
         gapTagBuilder.Attributes.Add("data-slot", "sidebar-gap");
-        gapTagBuilder.Attributes.Add(
-            "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-gap"),
-                "relative hidden h-svh w-(--sidebar-width) bg-transparent md:block",
-                "group-data-[collapsible=offcanvas]:w-0",
-                isFloatingOrInset
-                    ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
-                    : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
-            )
-        );
+        gapTagBuilder.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-sidebar-gap")));
         output.Content.AppendHtml(gapTagBuilder);
 
         /* Sidebar container — desktop panel + mobile drawer in one element.
@@ -138,23 +115,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         sidebarContainerTagBuilder.Attributes.Add("data-slot", "sidebar-container");
         sidebarContainerTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                "fixed inset-y-0 z-30 flex h-svh w-(--sidebar-width-mobile) transition-[left,right,width,transform] duration-200 ease-linear md:w-(--sidebar-width)",
-                // Anchor edge per side.
-                "group-data-[side=left]:left-0 group-data-[side=right]:right-0",
-                // Mobile drawer (max-md): slide toward the anchored edge when closed.
-                "max-md:group-data-[mobile=closed]:group-data-[side=left]:-translate-x-full",
-                "max-md:group-data-[mobile=closed]:group-data-[side=right]:translate-x-full",
-                "max-md:group-data-[mobile=open]:translate-x-0",
-                // Desktop offcanvas: slide off-screen toward the anchored edge.
-                "group-data-[collapsible=offcanvas]:group-data-[side=left]:left-[calc(var(--sidebar-width)*-1)]",
-                "group-data-[collapsible=offcanvas]:group-data-[side=right]:right-[calc(var(--sidebar-width)*-1)]",
-                // Desktop icon-rail width + padding/border per variant.
-                isFloatingOrInset
-                    ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-                    : "group-data-[side=left]:border-r group-data-[side=right]:border-l group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-container"), output.GetUserSuppliedClass())
         );
 
         /* Sidebar inner */
@@ -163,7 +124,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         sidebarInnerTagBuilder.Attributes.Add("data-slot", "sidebar-inner");
         sidebarInnerTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-sidebar-inner"), "flex size-full flex-col")
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-inner"))
         );
         sidebarInnerTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 

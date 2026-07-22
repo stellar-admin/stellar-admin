@@ -32,7 +32,6 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-breadcrumb-ellipsis"),
-                "flex items-center justify-center",
                 output.GetUserSuppliedClass()
             )
         );

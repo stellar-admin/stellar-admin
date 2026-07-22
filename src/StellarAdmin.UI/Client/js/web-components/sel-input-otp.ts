@@ -38,8 +38,8 @@ export class InputOtp extends LitElement {
   #maxLength = 0;
   #pattern: RegExp | null = null;
   #lastValid = "";
-  #caretClass = "pointer-events-none absolute inset-0 flex items-center justify-center";
-  #caretLineClass = "animate-caret-blink bg-foreground h-4 w-px duration-1000";
+  #caretClass = "sa-input-otp-caret";
+  #caretLineClass = "sa-input-otp-caret-line";
   #resizeObserver: ResizeObserver | null = null;
 
   override connectedCallback() {

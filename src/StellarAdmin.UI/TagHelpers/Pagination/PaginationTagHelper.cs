@@ -22,11 +22,7 @@ public class PaginationTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "pagination");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-pagination"),
-                "mx-auto flex w-full justify-center",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-pagination"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

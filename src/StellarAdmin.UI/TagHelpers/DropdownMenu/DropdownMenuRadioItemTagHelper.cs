@@ -82,7 +82,6 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-dropdown-menu-radio-item"),
-                "relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
                 output.GetUserSuppliedClass()
             )
         );
@@ -91,7 +90,6 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
         indicator.Attributes["class"] = ClassMerger.Merge(
             new ThemeToken("sa-dropdown-menu-item-indicator"),
-            "pointer-events-none",
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(

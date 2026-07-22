@@ -41,7 +41,6 @@ public class EmptyMediaTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-empty-media"),
-                "flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
                 VariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()
             )

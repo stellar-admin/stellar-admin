@@ -21,11 +21,7 @@ public class AccordionItemContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "accordion-content");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-accordion-content"),
-                "overflow-hidden",
-                "details-disabled-closed-content:hidden"
-            )
+            BuildClassString(new ThemeToken("sa-accordion-content"))
         );
 
         var innerTagBuilder = new TagBuilder("div");
@@ -33,7 +29,6 @@ public class AccordionItemContentTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-accordion-content-inner"),
-                "[&_a]:hover:text-foreground h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4",
                 output.GetUserSuppliedClass()
             )
         );

@@ -23,7 +23,7 @@ public class FieldContentTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-field-content"),
-                "group/field-content flex flex-1 flex-col leading-snug",
+                "group/field-content",
                 output.GetUserSuppliedClass()
             )
         );

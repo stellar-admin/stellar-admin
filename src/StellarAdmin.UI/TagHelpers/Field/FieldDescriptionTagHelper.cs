@@ -38,13 +38,7 @@ public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-field-description"),
-                "leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance",
-                "last:mt-0 nth-last-2:-mt-1",
-                "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-field-description"), output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

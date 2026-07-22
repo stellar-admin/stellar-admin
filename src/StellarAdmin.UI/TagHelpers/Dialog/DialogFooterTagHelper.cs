@@ -20,11 +20,7 @@ public class DialogFooterTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-footer");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dialog-footer"),
-                "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-dialog-footer"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -18,11 +18,7 @@ public class SidebarInsetTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sidebar-inset");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-inset"),
-                "relative flex w-full flex-1 flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-inset"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

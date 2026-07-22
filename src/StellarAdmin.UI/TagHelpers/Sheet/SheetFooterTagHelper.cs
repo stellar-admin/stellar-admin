@@ -18,11 +18,7 @@ public class SheetFooterTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sheet-footer");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sheet-footer"),
-                "mt-auto flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sheet-footer"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

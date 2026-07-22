@@ -1,20 +1,22 @@
 /* StellarAdmin.UI — Tailwind source entry.
  *
  * Single-build mode: import this from your own Tailwind entry stylesheet, after
- * `@import "tailwindcss"`. Don't also link _content/StellarAdmin.UI/stellar-admin-ui.css —
- * that's the prebuilt bundle for two-bundle mode, and you'd get every rule twice.
+ * `@import "tailwindcss"`, followed by the theme of your choice (themes/<theme>.css). Don't
+ * also link a prebuilt _content/StellarAdmin.UI/stellar-admin-ui.<theme>.css bundle — that's
+ * two-bundle mode, and you'd get every rule twice.
  *
  * This file deliberately does not `@import "tailwindcss"` itself, and deliberately does not
  * declare the `stellar-admin` cascade layer: with a single bundle there is no second bundle
  * to out-rank.
  *
- * The library's own build (Client/css/stellar-admin-ui.css) imports this same file, so there
- * is one source of truth for both modes. */
+ * The library's own bundle entries (Client/css/themes/) import this same file, so there is
+ * one source of truth for both modes. */
 
 @import "./vendor/tw-animate.css";
 @import "./theme.css";
 @import "./shadcn-tailwind.css";
 @import "./anchors.css";
+@import "./components.css";
 
 /* Every Tailwind candidate used by the tag helpers and theme packs, extracted at build time by
    Client/scripts/gen-utility-classes.mjs. Resolved relative to THIS file, so it travels with the folder

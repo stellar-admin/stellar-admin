@@ -21,11 +21,7 @@ public class EmptyTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "empty");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-empty"),
-                "flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center text-balance",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-empty"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

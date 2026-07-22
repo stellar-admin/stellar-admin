@@ -16,11 +16,7 @@ public class SidebarSeparatorTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "separator");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-separator"),
-                "w-auto",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-sidebar-separator"), output.GetUserSuppliedClass())
         );
 
         var separatorTagHelper = new SeparatorTagHelper(ClassMerger)

@@ -49,7 +49,8 @@ public class SidebarWrapperTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+                new ThemeToken("sa-sidebar-wrapper"),
+                "group/sidebar-wrapper",
                 output.GetUserSuppliedClass()
             )
         );

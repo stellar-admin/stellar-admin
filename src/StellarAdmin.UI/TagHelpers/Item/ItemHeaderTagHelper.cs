@@ -20,11 +20,7 @@ public class ItemHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-header");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-item-header"),
-                "flex basis-full items-center justify-between",
-                GetUserSpecifiedClass(output)
-            )
+            ClassMerger.Merge(new ThemeToken("sa-item-header"), GetUserSpecifiedClass(output))
         );
 
         return Task.CompletedTask;

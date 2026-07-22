@@ -52,7 +52,7 @@ public class GroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                "flex flex-row",
+                new ThemeToken("sa-group"),
                 effectiveAlign.GetClass(),
                 effectiveGap.GetThemeToken(),
                 effectiveJustify.GetClass(),

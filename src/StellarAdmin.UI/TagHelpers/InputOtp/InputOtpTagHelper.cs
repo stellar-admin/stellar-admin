@@ -134,11 +134,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("data-pattern", effectivePattern);
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-input-otp"),
-                "flex items-center has-disabled:opacity-50",
-                userClass
-            )
+            ClassMerger.Merge(new ThemeToken("sa-input-otp"), userClass)
         );
         // Inline container styles: the
         // positioning context for the absolutely-overlaid input, the text-field affordances, and
@@ -156,10 +152,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         // themepack tokens itself.
         output.Attributes.SetAttribute(
             "data-caret-class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-input-otp-caret"),
-                "pointer-events-none absolute inset-0 flex items-center justify-center"
-            )
+            ClassMerger.Merge(new ThemeToken("sa-input-otp-caret"))
         );
         output.Attributes.SetAttribute(
             "data-caret-line-class",
@@ -266,7 +259,6 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-input-otp-input"),
-                "disabled:cursor-not-allowed",
                 inputOutput.Attributes["class"]?.Value?.ToString()
             )
         );

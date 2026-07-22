@@ -20,11 +20,7 @@ public class SkeletonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "skeleton");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-skeleton"),
-                "animate-pulse",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-skeleton"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

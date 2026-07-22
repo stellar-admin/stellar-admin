@@ -55,7 +55,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-avatar"),
-                "after:border-border group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten",
+                "group/avatar",
                 output.GetUserSuppliedClass()
             )
         );
@@ -68,10 +68,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             imageTagBuilder.Attributes.Add("alt", Name);
             imageTagBuilder.Attributes.Add(
                 "class",
-                BuildClassString(
-                    new ThemeToken("sa-avatar-image"),
-                    "aspect-square size-full object-cover"
-                )
+                BuildClassString(new ThemeToken("sa-avatar-image"))
             );
             output.Content.AppendHtml(imageTagBuilder);
         }
@@ -82,10 +79,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             fallbackTagBuilder.Attributes.Add("data-slot", "avatar-fallback");
             fallbackTagBuilder.Attributes.Add(
                 "class",
-                BuildClassString(
-                    new ThemeToken("sa-avatar-fallback"),
-                    "flex size-full items-center justify-center text-sm group-data-[size=sm]/avatar:text-xs"
-                )
+                BuildClassString(new ThemeToken("sa-avatar-fallback"))
             );
             fallbackTagBuilder.InnerHtml.AppendHtml(textToRender);
             output.Content.AppendHtml(fallbackTagBuilder);

@@ -59,11 +59,7 @@ public class LabelTagHelper : StellarAdminTagHelperBase
         }
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-label"),
-                "flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-label"), output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

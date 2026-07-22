@@ -30,7 +30,6 @@ public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-button-group-separator"),
-                "relative self-stretch data-[orientation=horizontal]:mx-px data-[orientation=horizontal]:w-auto data-[orientation=vertical]:my-px data-[orientation=vertical]:h-auto",
                 output.GetUserSuppliedClass()
             )
         );

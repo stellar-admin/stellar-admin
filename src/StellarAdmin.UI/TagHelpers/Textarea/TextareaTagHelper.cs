@@ -54,11 +54,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge(
-                new ThemeToken("sa-textarea"),
-                "placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full outline-none disabled:cursor-not-allowed disabled:opacity-50",
-                output.GetUserSuppliedClass()
-            )
+            _classMerger.Merge(new ThemeToken("sa-textarea"), output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

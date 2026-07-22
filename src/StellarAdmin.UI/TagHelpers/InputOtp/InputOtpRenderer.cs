@@ -14,19 +14,13 @@ namespace StellarAdmin.UI.TagHelpers;
 internal static class InputOtpRenderer
 {
     internal static string GroupClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(new ThemeToken("sa-input-otp-group"), "flex items-center", userClass)
-        ?? string.Empty;
+        classMerger.Merge(new ThemeToken("sa-input-otp-group"), userClass) ?? string.Empty;
 
     internal static string SlotClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(
-            new ThemeToken("sa-input-otp-slot"),
-            "relative flex items-center justify-center data-[active=true]:z-10",
-            userClass
-        ) ?? string.Empty;
+        classMerger.Merge(new ThemeToken("sa-input-otp-slot"), userClass) ?? string.Empty;
 
     internal static string SeparatorClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(new ThemeToken("sa-input-otp-separator"), "flex items-center", userClass)
-        ?? string.Empty;
+        classMerger.Merge(new ThemeToken("sa-input-otp-separator"), userClass) ?? string.Empty;
 
     /// <summary>
     ///     Builds a single presentational slot cell. The character (if any) seeds the first paint;

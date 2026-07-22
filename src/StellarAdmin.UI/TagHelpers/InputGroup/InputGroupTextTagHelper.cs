@@ -19,11 +19,7 @@ public class InputGroupTextTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-input-group-text"),
-                "flex items-center [&_svg]:pointer-events-none",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-input-group-text"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

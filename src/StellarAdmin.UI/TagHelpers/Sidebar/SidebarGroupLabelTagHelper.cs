@@ -21,7 +21,6 @@ public class SidebarGroupLabelTagHelper(ICssClassMerger classMerger)
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-sidebar-group-label"),
-                "flex shrink-0 items-center outline-hidden [&>svg]:shrink-0",
                 output.GetUserSuppliedClass()
             )
         );

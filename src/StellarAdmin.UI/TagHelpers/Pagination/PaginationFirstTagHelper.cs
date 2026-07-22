@@ -82,7 +82,7 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
 
             // Render the text
             var textBlockTagBuilder = new TagBuilder("span");
-            textBlockTagBuilder.AddCssClass("hidden sm:block");
+            textBlockTagBuilder.AddCssClass("sa-pagination-link-label");
             textBlockTagBuilder.InnerHtml.AppendHtml("First");
             output.Content.AppendHtml(textBlockTagBuilder);
         }

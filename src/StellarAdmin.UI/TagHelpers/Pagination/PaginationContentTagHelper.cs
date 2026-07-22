@@ -22,7 +22,6 @@ public class PaginationContentTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-pagination-content"),
-                "flex items-center",
                 output.GetUserSuppliedClass()
             )
         );

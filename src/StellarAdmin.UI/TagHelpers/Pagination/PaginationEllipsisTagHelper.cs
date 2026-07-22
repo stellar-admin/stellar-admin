@@ -30,7 +30,6 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-pagination-ellipsis"),
-                "flex items-center justify-center",
                 output.GetUserSuppliedClass()
             )
         );

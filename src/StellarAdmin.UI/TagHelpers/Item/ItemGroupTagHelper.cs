@@ -23,7 +23,7 @@ public class ItemGroupTagHelper : StellarAdminTagHelperBase
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-item-group"),
-                "group/item-group flex w-full flex-col",
+                "group/item-group",
                 GetUserSpecifiedClass(output)
             )
         );

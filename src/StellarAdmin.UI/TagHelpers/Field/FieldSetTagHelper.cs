@@ -20,11 +20,7 @@ public class FieldSetTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-set");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-field-set"),
-                "flex flex-col",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString(new ThemeToken("sa-field-set"), output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

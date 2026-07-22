@@ -12,23 +12,9 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </summary>
 internal static class DropdownMenuInternals
 {
-    /// <summary>
-    ///     Static (cross-theme) utility classes for a menu content popup. Anchor-positioning
-    ///     vars (<c>max-h-(--available-height)</c> etc.) are dropped — StellarAdmin.UI uses the native
-    ///     <c>popover</c> + CSS anchor positioning instead (justified divergence, same as
-    ///     <see cref="PopoverTagHelper" />).
-    /// </summary>
-    public const string ContentStaticClasses =
-        "z-50 overflow-x-hidden overflow-y-auto outline-hidden try-flip-all";
-
-    /// <summary>
-    ///     Native-popover open/close transition. Keyed off the <c>:popover-open</c> state via
-    ///     the <c>open:</c>/<c>not-open:</c> variants, matching <see cref="PopoverTagHelper" />.
-    ///     The token's <c>data-open:animate-in</c> slide animations stay inert (we don't set
-    ///     <c>data-open</c>); the directional slide is the justified divergence.
-    /// </summary>
-    public const string ContentTransitionClasses =
-        "duration-200 ease-in opacity-100 not-open:opacity-0 starting:open:opacity-0 [transition-property:opacity,display,overlay] [transition-behavior:allow-discrete]";
+    // The shared popover-surface styling (positioning, overflow, open/close transition —
+    // including the justified divergences from shadcn documented there) lives in
+    // tailwind/components.css under .sa-dropdown-menu-content / .sa-dropdown-menu-sub-content.
 
     /// <summary>The gap between the trigger and the panel, on the appropriate side.</summary>
     public static string GetMarginClassName(PositionArea area) =>

@@ -72,7 +72,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
             "class",
             BuildClassString(
                 new ThemeToken("sa-alert"),
-                "w-full relative group/alert",
+                "group/alert",
                 AlertVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()
             )

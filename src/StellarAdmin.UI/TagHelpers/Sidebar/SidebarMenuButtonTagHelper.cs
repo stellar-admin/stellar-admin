@@ -77,7 +77,7 @@ public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
             "class",
             ClassMerger.Merge(
                 new ThemeToken("sa-sidebar-menu-button"),
-                "peer/menu-button flex w-full items-center  overflow-hidden outline-hidden group/menu-button disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&_svg]:size-4 [&_svg]:shrink-0",
+                "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],
                 VariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

@@ -20,7 +20,7 @@ public class ContainerTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString("container mx-auto sm:px-6 lg:px-8", output.GetUserSuppliedClass())
+            BuildClassString(new ThemeToken("sa-container"), output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

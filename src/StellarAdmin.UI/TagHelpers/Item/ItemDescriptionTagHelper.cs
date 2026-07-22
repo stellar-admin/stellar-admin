@@ -20,11 +20,7 @@ public class ItemDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-item-description"),
-                "[&>a:hover]:text-primary line-clamp-2 font-normal [&>a]:underline [&>a]:underline-offset-4",
-                GetUserSpecifiedClass(output)
-            )
+            ClassMerger.Merge(new ThemeToken("sa-item-description"), GetUserSpecifiedClass(output))
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

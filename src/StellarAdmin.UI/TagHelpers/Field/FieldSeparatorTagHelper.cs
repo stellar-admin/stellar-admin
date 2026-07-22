@@ -27,17 +27,13 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-field-separator"),
-                "relative",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge(new ThemeToken("sa-field-separator"), output.GetUserSuppliedClass())
         );
 
         /* Add the actual separator */
         var separatorOutput = new TagHelperOutput(
             "",
-            [new TagHelperAttribute("class", "absolute inset-0 top-1/2")],
+            [new TagHelperAttribute("class", "sa-field-separator-line")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
         var separatorTagHelper = new SeparatorTagHelper(ClassMerger)
@@ -54,10 +50,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
             contentWrapperTagBuilder.Attributes.Add("data-slot", "field-separator-content");
             contentWrapperTagBuilder.Attributes.Add(
                 "class",
-                ClassMerger.Merge(
-                    new ThemeToken("sa-field-separator-content"),
-                    "bg-background relative mx-auto block w-fit"
-                )
+                ClassMerger.Merge(new ThemeToken("sa-field-separator-content"))
             );
 
             contentWrapperTagBuilder.InnerHtml.AppendHtml(childContent);

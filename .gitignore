@@ -517,3 +517,6 @@ $RECYCLE.BIN/
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+
+# Visual-regression snapshots (on-demand, machine-specific — see util/visual-regression/vrt.mjs)
+util/visual-regression/snapshots/
