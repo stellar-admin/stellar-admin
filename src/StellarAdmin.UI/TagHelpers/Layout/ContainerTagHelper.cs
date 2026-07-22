@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class ContainerTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-container"), output.GetUserSuppliedClass())
+            BuildClassString("sa-container", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

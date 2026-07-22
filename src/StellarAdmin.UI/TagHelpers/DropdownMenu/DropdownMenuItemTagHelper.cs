@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -127,7 +126,7 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-item"),
+                "sa-dropdown-menu-item",
                 "group/dropdown-menu-item",
                 output.GetUserSuppliedClass()
             )

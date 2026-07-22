@@ -1,8 +1,6 @@
-﻿using StellarAdmin.UI.Theming;
-
 namespace StellarAdmin.UI;
 
 public interface ICssClassMerger
 {
-    string? Merge(params ClassElement?[] classes);
+    string? Merge(params string?[] classes);
 }

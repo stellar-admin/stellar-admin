@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -42,10 +41,7 @@ public class AlertDialogCancelTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "alert-dialog-cancel");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-alert-dialog-cancel"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-alert-dialog-cancel", output.GetUserSuppliedClass())
         );
 
         ButtonRenderingHelper.RenderAttributes(

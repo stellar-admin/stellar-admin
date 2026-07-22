@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,10 +18,7 @@ public class AvatarGroupCount : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "avatar-group-count");
-        output.Attributes.SetAttribute(
-            "class",
-            BuildClassString(new ThemeToken("sa-avatar-group-count"))
-        );
+        output.Attributes.SetAttribute("class", BuildClassString("sa-avatar-group-count"));
 
         output.Content.AppendHtml(await output.GetChildContentAsync());
     }

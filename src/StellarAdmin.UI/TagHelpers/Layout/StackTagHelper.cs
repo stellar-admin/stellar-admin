@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -52,9 +51,9 @@ public class StackTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                new ThemeToken("sa-stack"),
+                "sa-stack",
                 effectiveAlign.GetClass(),
-                effectiveGap.GetThemeToken(),
+                effectiveGap.GetClassName(),
                 effectiveJustify.GetClass(),
                 output.GetUserSuppliedClass()
             )

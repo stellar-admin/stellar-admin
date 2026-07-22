@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -40,7 +39,7 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-field-label"),
+                "sa-field-label",
                 "group/field-label peer/field-label",
                 output.GetUserSuppliedClass()
             )

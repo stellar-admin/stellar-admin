@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 using FrameworkSelectTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -84,10 +83,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
                     .Union([
                         new TagHelperAttribute("data-slot", "native-select"),
                         new TagHelperAttribute("data-size", effectiveSize.GetDataAttributeText()),
-                        new TagHelperAttribute(
-                            "class",
-                            ClassMerger.Merge(new ThemeToken("sa-native-select"))
-                        ),
+                        new TagHelperAttribute("class", ClassMerger.Merge("sa-native-select")),
                     ])
             ),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -109,10 +105,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         var iconTagHelperOutput = new TagHelperOutput(
             string.Empty,
             [
-                new TagHelperAttribute(
-                    "class",
-                    ClassMerger.Merge(new ThemeToken("sa-native-select-icon"))
-                ),
+                new TagHelperAttribute("class", ClassMerger.Merge("sa-native-select-icon")),
                 new TagHelperAttribute("aria-hidden", "true"),
                 new TagHelperAttribute("data-slot", "native-select-icon"),
             ],
@@ -133,11 +126,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         output.Attributes.Add("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-native-select-wrapper"),
-                "group/native-select",
-                userSuppliedClass
-            )
+            ClassMerger.Merge("sa-native-select-wrapper", "group/native-select", userSuppliedClass)
         );
 
         return new AutoFieldConfiguration(AutoFieldLayout.Vertical);

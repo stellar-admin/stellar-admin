@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class DialogFooterTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-footer");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-dialog-footer"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-dialog-footer", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

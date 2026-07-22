@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -53,11 +52,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveAvatarSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-avatar"),
-                "group/avatar",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-avatar", "group/avatar", output.GetUserSuppliedClass())
         );
 
         if (Source != null)
@@ -66,10 +61,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             imageTagBuilder.Attributes.Add("data-slot", "avatar-image");
             imageTagBuilder.Attributes.Add("src", Source);
             imageTagBuilder.Attributes.Add("alt", Name);
-            imageTagBuilder.Attributes.Add(
-                "class",
-                BuildClassString(new ThemeToken("sa-avatar-image"))
-            );
+            imageTagBuilder.Attributes.Add("class", BuildClassString("sa-avatar-image"));
             output.Content.AppendHtml(imageTagBuilder);
         }
         else
@@ -77,10 +69,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
             var textToRender = GetInitials() ?? "&nbsp";
             var fallbackTagBuilder = new TagBuilder("span");
             fallbackTagBuilder.Attributes.Add("data-slot", "avatar-fallback");
-            fallbackTagBuilder.Attributes.Add(
-                "class",
-                BuildClassString(new ThemeToken("sa-avatar-fallback"))
-            );
+            fallbackTagBuilder.Attributes.Add("class", BuildClassString("sa-avatar-fallback"));
             fallbackTagBuilder.InnerHtml.AppendHtml(textToRender);
             output.Content.AppendHtml(fallbackTagBuilder);
         }

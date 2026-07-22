@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class FieldSetTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-set");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-field-set"), output.GetUserSuppliedClass())
+            BuildClassString("sa-field-set", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

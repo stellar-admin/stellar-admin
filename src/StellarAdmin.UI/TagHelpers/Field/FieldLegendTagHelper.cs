@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -32,7 +31,7 @@ public class FieldLegendTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-field-legend"), output.GetUserSuppliedClass())
+            BuildClassString("sa-field-legend", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

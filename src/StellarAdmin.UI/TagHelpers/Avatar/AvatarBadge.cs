@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class AvatarBadge : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "avatar-badge");
         output.Attributes.Add(
             "class",
-            BuildClassString(new ThemeToken("sa-avatar-badge"), output.GetUserSuppliedClass())
+            BuildClassString("sa-avatar-badge", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

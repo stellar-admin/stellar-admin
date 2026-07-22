@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -18,7 +17,7 @@ public class SheetDescriptionTagHelper(ICssClassMerger classMerger)
         output.Attributes.Add("data-slot", "sheet-description");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-sheet-description"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-sheet-description", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

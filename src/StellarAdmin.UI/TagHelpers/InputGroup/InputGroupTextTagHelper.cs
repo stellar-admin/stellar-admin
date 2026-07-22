@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,7 +18,7 @@ public class InputGroupTextTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-input-group-text"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-input-group-text", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

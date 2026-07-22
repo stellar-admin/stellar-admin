@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 

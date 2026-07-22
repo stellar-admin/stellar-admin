@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -62,8 +61,8 @@ public class DropdownMenuSubContentTagHelper(
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-sub-content"),
-                new ThemeToken("sa-dropdown-menu-subcontent"),
+                "sa-dropdown-menu-sub-content",
+                "sa-dropdown-menu-subcontent",
                 MenuSurfaceInternals.ColorToken(menuOptions.Color),
                 MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
                 MenuSurfaceInternals.AccentToken(menuOptions.Accent),

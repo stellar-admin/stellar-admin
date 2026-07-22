@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -21,7 +20,7 @@ public class EmptyContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "empty-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-empty-content"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-empty-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

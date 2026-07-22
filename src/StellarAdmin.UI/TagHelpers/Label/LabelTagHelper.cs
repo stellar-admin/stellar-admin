@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -59,7 +58,7 @@ public class LabelTagHelper : StellarAdminTagHelperBase
         }
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-label"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-label", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

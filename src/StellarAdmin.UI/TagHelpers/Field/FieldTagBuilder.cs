@@ -1,23 +1,22 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
 internal class FieldTagBuilder : TagBuilder
 {
-    private static readonly Dictionary<FieldOrientation, ClassElement[]> OrientationClasses = new()
+    private static readonly Dictionary<FieldOrientation, string?[]> OrientationClasses = new()
     {
         [FieldOrientation.Vertical] =
         [
-            new ThemeToken("sa-field-orientation-vertical"),
+            "sa-field-orientation-vertical",
             // Child-width forcing stays in the utilities layer: it must override the
             // children's own component classes (e.g. a toggle group's w-fit).
             "[&>*]:w-full [&>.sr-only]:w-auto",
         ],
-        [FieldOrientation.Horizontal] = [new ThemeToken("sa-field-orientation-horizontal")],
+        [FieldOrientation.Horizontal] = ["sa-field-orientation-horizontal"],
         [FieldOrientation.Responsive] =
         [
-            new ThemeToken("sa-field-orientation-responsive"),
+            "sa-field-orientation-responsive",
             "[&>*]:w-full [&>.sr-only]:w-auto @md/field-group:[&>*]:w-auto",
         ],
     };
@@ -34,7 +33,7 @@ internal class FieldTagBuilder : TagBuilder
         Attributes.Add(
             "class",
             classMerger.Merge(
-                new ClassElement[] { new ThemeToken("sa-field"), "group/field" }
+                new string?[] { "sa-field", "group/field" }
                     .Union(OrientationClasses[orientation])
                     .Append(userSuppliedClass)
                     .ToArray()

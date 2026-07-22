@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -44,7 +43,7 @@ public class AlertDialogTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-alert-dialog-content"),
+                "sa-alert-dialog-content",
                 // Establishes the named group the header/title/media tokens react to.
                 "group/alert-dialog-content",
                 output.GetUserSuppliedClass()

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -17,7 +16,7 @@ public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-separator");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-item-separator"), GetUserSpecifiedClass(output))
+            ClassMerger.Merge("sa-item-separator", GetUserSpecifiedClass(output))
         );
 
         var separatorTagHelper = new SeparatorTagHelper(ClassMerger)

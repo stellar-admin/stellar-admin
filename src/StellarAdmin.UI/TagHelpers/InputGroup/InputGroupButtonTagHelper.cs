@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -9,16 +8,16 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-input-group-button")]
 public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<InputGroupButtonSize, ThemeToken> SizeClasses =
-        new Dictionary<InputGroupButtonSize, ThemeToken>
-        {
-            [InputGroupButtonSize.ExtraSmall] = new ThemeToken("sa-input-group-button-size-xs"),
-            [InputGroupButtonSize.Small] = new ThemeToken("sa-input-group-button-size-sm"),
-            [InputGroupButtonSize.IconExtraSmall] = new ThemeToken(
-                "sa-input-group-button-size-icon-xs"
-            ),
-            [InputGroupButtonSize.IconSmall] = new ThemeToken("sa-input-group-button-size-icon-sm"),
-        };
+    private static readonly Dictionary<InputGroupButtonSize, string> SizeClasses = new Dictionary<
+        InputGroupButtonSize,
+        string
+    >
+    {
+        [InputGroupButtonSize.ExtraSmall] = "sa-input-group-button-size-xs",
+        [InputGroupButtonSize.Small] = "sa-input-group-button-size-sm",
+        [InputGroupButtonSize.IconExtraSmall] = "sa-input-group-button-size-icon-xs",
+        [InputGroupButtonSize.IconSmall] = "sa-input-group-button-size-icon-sm",
+    };
 
     /// <summary>
     ///     The size of the button.
@@ -52,7 +51,7 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-input-group-button"),
+                "sa-input-group-button",
                 SizeClasses[effectiveSize],
                 output.GetUserSuppliedClass()
             )

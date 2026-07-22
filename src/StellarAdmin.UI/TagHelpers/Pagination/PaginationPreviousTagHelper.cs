@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -36,10 +35,7 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
     {
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-pagination-previous"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-pagination-previous", output.GetUserSuppliedClass())
         );
         var linkTagHelper = new PaginationLinkTagHelper(_htmlGenerator, ClassMerger)
         {

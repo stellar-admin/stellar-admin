@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -18,7 +17,7 @@ public class SidebarInsetTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "sidebar-inset");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-sidebar-inset"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-sidebar-inset", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

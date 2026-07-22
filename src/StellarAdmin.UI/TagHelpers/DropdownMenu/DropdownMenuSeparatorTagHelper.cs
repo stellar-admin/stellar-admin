@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,10 +19,7 @@ public class DropdownMenuSeparatorTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "dropdown-menu-separator");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-separator"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dropdown-menu-separator", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

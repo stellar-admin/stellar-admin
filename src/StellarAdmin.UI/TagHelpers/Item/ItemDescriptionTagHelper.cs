@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class ItemDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-item-description"), GetUserSpecifiedClass(output))
+            ClassMerger.Merge("sa-item-description", GetUserSpecifiedClass(output))
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

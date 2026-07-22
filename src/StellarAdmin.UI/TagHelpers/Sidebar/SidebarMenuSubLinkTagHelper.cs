@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -60,10 +59,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-menu-sub-button"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-sidebar-menu-sub-button", output.GetUserSuppliedClass())
         );
     }
 }

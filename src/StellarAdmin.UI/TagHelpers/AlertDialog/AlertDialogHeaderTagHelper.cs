@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,10 +19,7 @@ public class AlertDialogHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "alert-dialog-header");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-alert-dialog-header"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-alert-dialog-header", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

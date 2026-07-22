@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "button-group-text");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-button-group-text"), output.GetUserSuppliedClass())
+            BuildClassString("sa-button-group-text", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

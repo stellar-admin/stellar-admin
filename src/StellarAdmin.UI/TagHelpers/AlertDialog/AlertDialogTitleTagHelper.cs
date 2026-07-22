@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -21,8 +20,8 @@ public class AlertDialogTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-alert-dialog-title"),
-                new ThemeToken("sa-font-heading"),
+                "sa-alert-dialog-title",
+                "sa-font-heading",
                 "font-heading",
                 output.GetUserSuppliedClass()
             )

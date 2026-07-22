@@ -2,7 +2,6 @@ using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -14,13 +13,13 @@ namespace StellarAdmin.UI.TagHelpers;
 internal static class InputOtpRenderer
 {
     internal static string GroupClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(new ThemeToken("sa-input-otp-group"), userClass) ?? string.Empty;
+        classMerger.Merge("sa-input-otp-group", userClass) ?? string.Empty;
 
     internal static string SlotClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(new ThemeToken("sa-input-otp-slot"), userClass) ?? string.Empty;
+        classMerger.Merge("sa-input-otp-slot", userClass) ?? string.Empty;
 
     internal static string SeparatorClass(ICssClassMerger classMerger, string? userClass) =>
-        classMerger.Merge(new ThemeToken("sa-input-otp-separator"), userClass) ?? string.Empty;
+        classMerger.Merge("sa-input-otp-separator", userClass) ?? string.Empty;
 
     /// <summary>
     ///     Builds a single presentational slot cell. The character (if any) seeds the first paint;

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -30,10 +29,7 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-hidden", "true");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-breadcrumb-ellipsis"),
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-breadcrumb-ellipsis", output.GetUserSuppliedClass())
         );
 
         /* Render the ellipsis icon */

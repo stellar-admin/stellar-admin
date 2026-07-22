@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -10,10 +9,10 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-separator")]
 public class SeparatorTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<SeparatorOrientation, ThemeToken> OrientationClasses = new()
+    private static readonly Dictionary<SeparatorOrientation, string> OrientationClasses = new()
     {
-        [SeparatorOrientation.Horizontal] = new ThemeToken("sa-separator-horizontal"),
-        [SeparatorOrientation.Vertical] = new ThemeToken("sa-separator-vertical"),
+        [SeparatorOrientation.Horizontal] = "sa-separator-horizontal",
+        [SeparatorOrientation.Vertical] = "sa-separator-vertical",
     };
 
     public SeparatorTagHelper(ICssClassMerger classMerger)
@@ -49,7 +48,7 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-separator"),
+                "sa-separator",
                 OrientationClasses[effectiveOrientation],
                 output.GetUserSuppliedClass()
             )

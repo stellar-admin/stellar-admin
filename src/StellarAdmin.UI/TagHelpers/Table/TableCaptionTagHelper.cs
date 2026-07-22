@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -21,7 +20,7 @@ public class TableCaptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-caption");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-table-caption"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-table-caption", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

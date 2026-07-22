@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,8 +18,8 @@ public class SheetTitleTagHelper(ICssClassMerger classMerger)
         output.Attributes.Add(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-sheet-title"),
-                new ThemeToken("sa-font-heading"),
+                "sa-sheet-title",
+                "sa-font-heading",
                 "font-heading",
                 output.GetUserSuppliedClass()
             )

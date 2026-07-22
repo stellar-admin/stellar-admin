@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -27,7 +26,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
         tableTagBuilder.Attributes.Add("data-slot", "table");
         tableTagBuilder.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-table"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-table", output.GetUserSuppliedClass())
         );
         tableTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 

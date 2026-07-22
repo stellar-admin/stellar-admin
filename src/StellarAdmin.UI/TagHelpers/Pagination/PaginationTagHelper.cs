@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -22,7 +21,7 @@ public class PaginationTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "pagination");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-pagination"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-pagination", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class ProgressLabelTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "progress-label");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-progress-label"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-progress-label", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

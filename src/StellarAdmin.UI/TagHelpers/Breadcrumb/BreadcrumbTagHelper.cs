@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -23,7 +22,7 @@ public class BreadcrumbTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "breadcrumb");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-breadcrumb"), output.GetUserSuppliedClass())
+            BuildClassString("sa-breadcrumb", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

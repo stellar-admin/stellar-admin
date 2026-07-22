@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -18,11 +17,7 @@ public class PopoverTitleTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "popover-title");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-popover-title"),
-                new ThemeToken("sa-font-heading"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-popover-title", "sa-font-heading", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

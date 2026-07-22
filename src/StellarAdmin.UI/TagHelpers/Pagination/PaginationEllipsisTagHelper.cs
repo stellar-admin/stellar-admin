@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -28,10 +27,7 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "pagination-ellipsis");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-pagination-ellipsis"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-pagination-ellipsis", output.GetUserSuppliedClass())
         );
 
         var content = await output.GetChildContentAsync();

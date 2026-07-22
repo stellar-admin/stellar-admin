@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -38,7 +37,7 @@ public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-description");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-field-description"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-field-description", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

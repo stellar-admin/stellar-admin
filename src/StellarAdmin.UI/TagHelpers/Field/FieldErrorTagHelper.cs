@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -59,7 +58,7 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-error");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-field-error"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-field-error", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

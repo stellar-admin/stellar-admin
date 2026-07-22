@@ -2,7 +2,6 @@ using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -134,7 +133,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-toggle-group"), "group/toggle-group", userClass)
+            ClassMerger.Merge("sa-toggle-group", "group/toggle-group", userClass)
         );
 
         output.Content.AppendHtml(childContent);

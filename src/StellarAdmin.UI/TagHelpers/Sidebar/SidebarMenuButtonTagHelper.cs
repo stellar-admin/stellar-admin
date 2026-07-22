@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -10,21 +9,17 @@ namespace StellarAdmin.UI.TagHelpers;
 public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
     : StellarAdminTagHelperBase(classMerger)
 {
-    private static readonly Dictionary<SidebarMenuButtonSize, ThemeToken> SizeClasses = new()
+    private static readonly Dictionary<SidebarMenuButtonSize, string> SizeClasses = new()
     {
-        [SidebarMenuButtonSize.Default] = new ThemeToken("sa-sidebar-menu-button-size-default"),
-        [SidebarMenuButtonSize.Small] = new ThemeToken("sa-sidebar-menu-button-size-sm"),
-        [SidebarMenuButtonSize.Large] = new ThemeToken("sa-sidebar-menu-button-size-lg"),
+        [SidebarMenuButtonSize.Default] = "sa-sidebar-menu-button-size-default",
+        [SidebarMenuButtonSize.Small] = "sa-sidebar-menu-button-size-sm",
+        [SidebarMenuButtonSize.Large] = "sa-sidebar-menu-button-size-lg",
     };
 
-    private static readonly Dictionary<SidebarMenuButtonVariant, ThemeToken> VariantClasses = new()
+    private static readonly Dictionary<SidebarMenuButtonVariant, string> VariantClasses = new()
     {
-        [SidebarMenuButtonVariant.Default] = new ThemeToken(
-            "sa-sidebar-menu-button-variant-default"
-        ),
-        [SidebarMenuButtonVariant.Outline] = new ThemeToken(
-            "sa-sidebar-menu-button-variant-outline"
-        ),
+        [SidebarMenuButtonVariant.Default] = "sa-sidebar-menu-button-variant-default",
+        [SidebarMenuButtonVariant.Outline] = "sa-sidebar-menu-button-variant-outline",
     };
 
     /// <summary>
@@ -76,7 +71,7 @@ public class SidebarMenuButtonTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-menu-button"),
+                "sa-sidebar-menu-button",
                 "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],
                 VariantClasses[effectiveVariant],

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -132,10 +131,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
             maxLength.ToString(CultureInfo.InvariantCulture)
         );
         output.Attributes.SetAttribute("data-pattern", effectivePattern);
-        output.Attributes.SetAttribute(
-            "class",
-            ClassMerger.Merge(new ThemeToken("sa-input-otp"), userClass)
-        );
+        output.Attributes.SetAttribute("class", ClassMerger.Merge("sa-input-otp", userClass));
         // Inline container styles: the
         // positioning context for the absolutely-overlaid input, the text-field affordances, and
         // --root-height, which the input's font-size keys off so the transparent text lines up with
@@ -150,13 +146,10 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         // Resolve the fake-caret classes server-side (theme token + cross-theme statics) and hand
         // them to the web component, which builds the caret element on hydration and can't resolve
         // themepack tokens itself.
-        output.Attributes.SetAttribute(
-            "data-caret-class",
-            ClassMerger.Merge(new ThemeToken("sa-input-otp-caret"))
-        );
+        output.Attributes.SetAttribute("data-caret-class", ClassMerger.Merge("sa-input-otp-caret"));
         output.Attributes.SetAttribute(
             "data-caret-line-class",
-            ClassMerger.Merge(new ThemeToken("sa-input-otp-caret-line"))
+            ClassMerger.Merge("sa-input-otp-caret-line")
         );
 
         // Publish the shared state before rendering children so authored slots can read it.
@@ -258,7 +251,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         inputOutput.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-input-otp-input"),
+                "sa-input-otp-input",
                 inputOutput.Attributes["class"]?.Value?.ToString()
             )
         );

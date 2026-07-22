@@ -1,5 +1,3 @@
-﻿using StellarAdmin.UI.Theming;
-
 namespace StellarAdmin.UI.TagHelpers;
 
 /// <summary>
@@ -27,15 +25,15 @@ internal static class GroupGapExtensions
 {
     extension(GroupGap gap)
     {
-        public ThemeToken GetThemeToken() =>
+        public string GetClassName() =>
             gap switch
             {
-                GroupGap.ExtraSmall => new ThemeToken("sa-group-gap-xs"),
-                GroupGap.Small => new ThemeToken("sa-group-gap-sm"),
-                GroupGap.Default => new ThemeToken("sa-group-gap-md"),
-                GroupGap.Large => new ThemeToken("sa-group-gap-lg"),
-                GroupGap.ExtraLarge => new ThemeToken("sa-group-gap-xl"),
-                _ => new ThemeToken("sa-group-gap-md"),
+                GroupGap.ExtraSmall => "sa-group-gap-xs",
+                GroupGap.Small => "sa-group-gap-sm",
+                GroupGap.Default => "sa-group-gap-md",
+                GroupGap.Large => "sa-group-gap-lg",
+                GroupGap.ExtraLarge => "sa-group-gap-xl",
+                _ => "sa-group-gap-md",
             };
     }
 }

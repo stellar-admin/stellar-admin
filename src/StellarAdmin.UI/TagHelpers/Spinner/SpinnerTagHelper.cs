@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -29,7 +28,7 @@ public class SpinnerTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-label", "Loading");
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge(new ThemeToken("sa-spinner"), output.GetUserSuppliedClass())
+            _classMerger.Merge("sa-spinner", output.GetUserSuppliedClass())
         );
     }
 }

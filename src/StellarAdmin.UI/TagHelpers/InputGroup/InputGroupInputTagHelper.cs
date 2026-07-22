@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -69,7 +68,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "input-group-control");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-input-group-input"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-input-group-input", output.GetUserSuppliedClass())
         );
 
         var inputTagHelper = new InputTagHelper(_htmlGenerator, ClassMerger, _iconManager)

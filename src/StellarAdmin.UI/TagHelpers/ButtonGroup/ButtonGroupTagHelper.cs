@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -9,17 +8,11 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-button-group")]
 public class ButtonGroupTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<ButtonGroupOrientation, ClassElement[]> OrientationClasses =
-        new Dictionary<ButtonGroupOrientation, ClassElement[]>
+    private static readonly Dictionary<ButtonGroupOrientation, string?[]> OrientationClasses =
+        new Dictionary<ButtonGroupOrientation, string?[]>
         {
-            [ButtonGroupOrientation.Horizontal] =
-            [
-                new ThemeToken("sa-button-group-orientation-horizontal"),
-            ],
-            [ButtonGroupOrientation.Vertical] =
-            [
-                new ThemeToken("sa-button-group-orientation-vertical"),
-            ],
+            [ButtonGroupOrientation.Horizontal] = ["sa-button-group-orientation-horizontal"],
+            [ButtonGroupOrientation.Vertical] = ["sa-button-group-orientation-vertical"],
         };
 
     /// <summary>
@@ -50,7 +43,7 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                new ClassElement[] { new ThemeToken("sa-button-group") }
+                new string?[] { "sa-button-group" }
                     .Union(OrientationClasses[effectiveOrientation])
                     .Union([output.GetUserSuppliedClass()])
                     .ToArray()

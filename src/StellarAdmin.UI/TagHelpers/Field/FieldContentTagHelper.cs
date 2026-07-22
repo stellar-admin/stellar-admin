@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -22,7 +21,7 @@ public class FieldContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-field-content"),
+                "sa-field-content",
                 "group/field-content",
                 output.GetUserSuppliedClass()
             )

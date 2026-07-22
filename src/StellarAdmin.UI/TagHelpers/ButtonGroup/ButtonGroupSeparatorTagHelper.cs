@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -28,10 +27,7 @@ public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "button-group-separator");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-button-group-separator"),
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-button-group-separator", output.GetUserSuppliedClass())
         );
 
         var separatorTagHelper = new SeparatorTagHelper(ClassMerger)

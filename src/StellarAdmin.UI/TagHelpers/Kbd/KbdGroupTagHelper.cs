@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class KbdGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "kbd-group");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-kbd-group"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-kbd-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

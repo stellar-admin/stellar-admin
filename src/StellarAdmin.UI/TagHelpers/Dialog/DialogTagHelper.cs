@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class DialogTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelpe
         output.Attributes.SetAttribute("data-slot", "dialog-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-dialog-content"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-dialog-content", output.GetUserSuppliedClass())
         );
 
         // Wrap inside web component

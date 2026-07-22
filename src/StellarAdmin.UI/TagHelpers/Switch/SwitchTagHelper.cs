@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -100,7 +99,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
             inputOutput.Attributes.SetAttribute("data-slot", "switch-input");
         }
 
-        ClassElement[] classNames = [new ThemeToken("sa-switch"), "peer"];
+        string?[] classNames = ["sa-switch", "peer"];
 
         inputOutput.Attributes.SetAttribute(
             "class",
@@ -121,12 +120,12 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-switch-wrapper"), "group/switch")
+            ClassMerger.Merge("sa-switch-wrapper", "group/switch")
         );
 
         var thumb = new TagBuilder("span");
         thumb.Attributes.Add("data-slot", "switch-thumb");
-        thumb.Attributes.Add("class", ClassMerger.Merge(new ThemeToken("sa-switch-thumb")));
+        thumb.Attributes.Add("class", ClassMerger.Merge("sa-switch-thumb"));
         output.Content.AppendHtml(thumb);
 
         return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));

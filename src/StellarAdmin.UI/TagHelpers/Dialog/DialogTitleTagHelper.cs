@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -21,8 +20,8 @@ public class DialogTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-dialog-title"),
-                new ThemeToken("sa-font-heading"),
+                "sa-dialog-title",
+                "sa-font-heading",
                 "font-heading",
                 output.GetUserSuppliedClass()
             )

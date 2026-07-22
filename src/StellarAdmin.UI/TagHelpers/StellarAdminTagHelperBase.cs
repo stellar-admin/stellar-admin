@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -56,19 +55,9 @@ public class StellarAdminTagHelperBase : TagHelper
         return _namedSlots.TryGetValue(name, out content);
     }
 
-    protected string BuildClassString(params ClassElement[] classes)
+    protected string BuildClassString(params string?[] classes)
     {
         return ClassMerger.Merge(classes) ?? string.Empty;
-    }
-
-    protected string? BuildClassString(string? themeTokenName, string?[] additionalClasses)
-    {
-        if (themeTokenName == null)
-        {
-            return ClassMerger.Merge([.. additionalClasses]);
-        }
-
-        return ClassMerger.Merge([new ThemeToken(themeTokenName), .. additionalClasses]);
     }
 
     /// <summary>

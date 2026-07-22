@@ -1,26 +1,24 @@
-using StellarAdmin.UI.Theming;
-
 namespace StellarAdmin.UI.TagHelpers;
 
 internal static class ToggleRenderingHelper
 {
-    private static readonly Dictionary<ToggleVariant, ThemeToken> VariantClasses = new Dictionary<
+    private static readonly Dictionary<ToggleVariant, string> VariantClasses = new Dictionary<
         ToggleVariant,
-        ThemeToken
+        string
     >
     {
-        [ToggleVariant.Default] = new ThemeToken("sa-toggle-variant-default"),
-        [ToggleVariant.Outline] = new ThemeToken("sa-toggle-variant-outline"),
+        [ToggleVariant.Default] = "sa-toggle-variant-default",
+        [ToggleVariant.Outline] = "sa-toggle-variant-outline",
     };
 
-    private static readonly Dictionary<ToggleSize, ThemeToken> SizeClasses = new Dictionary<
+    private static readonly Dictionary<ToggleSize, string> SizeClasses = new Dictionary<
         ToggleSize,
-        ThemeToken
+        string
     >
     {
-        [ToggleSize.Default] = new ThemeToken("sa-toggle-size-default"),
-        [ToggleSize.Small] = new ThemeToken("sa-toggle-size-sm"),
-        [ToggleSize.Large] = new ThemeToken("sa-toggle-size-lg"),
+        [ToggleSize.Default] = "sa-toggle-size-default",
+        [ToggleSize.Small] = "sa-toggle-size-sm",
+        [ToggleSize.Large] = "sa-toggle-size-lg",
     };
 
     /*
@@ -45,9 +43,9 @@ internal static class ToggleRenderingHelper
         string? userClass
     )
     {
-        var elements = new List<ClassElement?>
+        var elements = new List<string?>
         {
-            new ThemeToken("sa-toggle"),
+            "sa-toggle",
             BaseLayout,
             VariantClasses[variant],
             SizeClasses[size],
@@ -55,7 +53,7 @@ internal static class ToggleRenderingHelper
 
         if (includeGroupItemToken)
         {
-            elements.Add(new ThemeToken("sa-toggle-group-item"));
+            elements.Add("sa-toggle-group-item");
         }
 
         // User-supplied class goes last so authoring overrides win in the merge.

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -11,17 +10,17 @@ namespace StellarAdmin.UI.TagHelpers;
 [HtmlTargetElement("sa-sidebar-menu-link")]
 public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
-    private static readonly Dictionary<SidebarMenuLinkSize, ThemeToken> SizeClasses = new()
+    private static readonly Dictionary<SidebarMenuLinkSize, string> SizeClasses = new()
     {
-        [SidebarMenuLinkSize.Default] = new ThemeToken("sa-sidebar-menu-button-size-default"),
-        [SidebarMenuLinkSize.Small] = new ThemeToken("sa-sidebar-menu-button-size-sm"),
-        [SidebarMenuLinkSize.Large] = new ThemeToken("sa-sidebar-menu-button-size-lg"),
+        [SidebarMenuLinkSize.Default] = "sa-sidebar-menu-button-size-default",
+        [SidebarMenuLinkSize.Small] = "sa-sidebar-menu-button-size-sm",
+        [SidebarMenuLinkSize.Large] = "sa-sidebar-menu-button-size-lg",
     };
 
-    private static readonly Dictionary<SidebarMenuLinkVariant, ThemeToken> VariantClasses = new()
+    private static readonly Dictionary<SidebarMenuLinkVariant, string> VariantClasses = new()
     {
-        [SidebarMenuLinkVariant.Default] = new ThemeToken("sa-sidebar-menu-button-variant-default"),
-        [SidebarMenuLinkVariant.Outline] = new ThemeToken("sa-sidebar-menu-button-variant-outline"),
+        [SidebarMenuLinkVariant.Default] = "sa-sidebar-menu-button-variant-default",
+        [SidebarMenuLinkVariant.Outline] = "sa-sidebar-menu-button-variant-outline",
     };
 
     private readonly IHtmlGenerator _htmlGenerator;
@@ -83,7 +82,7 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-menu-button"),
+                "sa-sidebar-menu-button",
                 "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],
                 VariantClasses[effectiveVariant],

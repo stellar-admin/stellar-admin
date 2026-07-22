@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -37,10 +36,7 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "input-group-control");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-input-group-textarea"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-input-group-textarea", output.GetUserSuppliedClass())
         );
 
         var textareaTagHelper = new TextareaTagHelper(_htmlGenerator, ClassMerger)

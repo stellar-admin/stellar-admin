@@ -1,22 +1,21 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
 internal static class ItemRenderingHelper
 {
-    private static readonly Dictionary<ItemSize, ThemeToken> ItemSizeClasses = new()
+    private static readonly Dictionary<ItemSize, string> ItemSizeClasses = new()
     {
-        [ItemSize.Default] = new ThemeToken("sa-item-size-default"),
-        [ItemSize.Small] = new ThemeToken("sa-item-size-sm"),
-        [ItemSize.ExtraSmall] = new ThemeToken("sa-item-size-xs"),
+        [ItemSize.Default] = "sa-item-size-default",
+        [ItemSize.Small] = "sa-item-size-sm",
+        [ItemSize.ExtraSmall] = "sa-item-size-xs",
     };
 
-    private static readonly Dictionary<ItemVariant, ThemeToken> ItemVariantClasses = new()
+    private static readonly Dictionary<ItemVariant, string> ItemVariantClasses = new()
     {
-        [ItemVariant.Default] = new ThemeToken("sa-item-variant-default"),
-        [ItemVariant.Outline] = new ThemeToken("sa-item-variant-outline"),
-        [ItemVariant.Muted] = new ThemeToken("sa-item-variant-muted"),
+        [ItemVariant.Default] = "sa-item-variant-default",
+        [ItemVariant.Outline] = "sa-item-variant-outline",
+        [ItemVariant.Muted] = "sa-item-variant-muted",
     };
 
     public static async Task RenderAsync(
@@ -36,7 +35,7 @@ internal static class ItemRenderingHelper
         output.Attributes.SetAttribute(
             "class",
             classMerger.Merge(
-                new ThemeToken("sa-item"),
+                "sa-item",
                 "group/item",
                 ItemSizeClasses[effectiveSize],
                 ItemVariantClasses[effectiveVariant],

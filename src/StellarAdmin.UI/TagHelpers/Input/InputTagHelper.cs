@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -105,11 +104,11 @@ public class InputTagHelper : FieldInputBaseTagHelper
             ? typeAttribute.Value?.ToString()
             : null;
 
-        ClassElement[] classNames = type switch
+        string?[] classNames = type switch
         {
-            "checkbox" => [new ThemeToken("sa-checkbox"), "peer"],
-            "radio" => [new ThemeToken("sa-radiobutton"), "peer"],
-            _ => [new ThemeToken("sa-input")],
+            "checkbox" => ["sa-checkbox", "peer"],
+            "radio" => ["sa-radiobutton", "peer"],
+            _ => ["sa-input"],
         };
 
         if (!inputOutput.Attributes.ContainsName("data-slot"))
@@ -140,10 +139,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
 
                 // Add the span
                 var checkboxSpan = new TagBuilder("span");
-                checkboxSpan.Attributes.Add(
-                    "class",
-                    ClassMerger.Merge(new ThemeToken("sa-checkbox-indicator"))
-                );
+                checkboxSpan.Attributes.Add("class", ClassMerger.Merge("sa-checkbox-indicator"));
 
                 // Add the icon
                 var checkboxIconOutput = new TagHelperOutput(
@@ -171,7 +167,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                 var spanTagBuilder = new TagBuilder("span");
                 spanTagBuilder.Attributes.Add(
                     "class",
-                    ClassMerger.Merge(new ThemeToken("sa-radiobutton-indicator"))
+                    ClassMerger.Merge("sa-radiobutton-indicator")
                 );
 
                 // Add the icon
@@ -180,7 +176,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     [
                         new TagHelperAttribute(
                             "class",
-                            ClassMerger.Merge(new ThemeToken("sa-radiobutton-indicator-icon"))
+                            ClassMerger.Merge("sa-radiobutton-indicator-icon")
                         ),
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())

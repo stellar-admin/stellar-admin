@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -80,16 +79,13 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-radio-item"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dropdown-menu-radio-item", output.GetUserSuppliedClass())
         );
 
         var indicator = new TagBuilder("span");
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
         indicator.Attributes["class"] = ClassMerger.Merge(
-            new ThemeToken("sa-dropdown-menu-item-indicator"),
+            "sa-dropdown-menu-item-indicator",
             isChecked ? string.Empty : "hidden"
         );
         indicator.InnerHtml.AppendHtml(

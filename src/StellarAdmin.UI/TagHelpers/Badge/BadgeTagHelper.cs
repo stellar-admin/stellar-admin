@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -12,14 +11,14 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
     public BadgeTagHelper(ICssClassMerger classMerger)
         : base(classMerger) { }
 
-    private static readonly Dictionary<BadgeVariant, ThemeToken> BadgeVariantClasses = new()
+    private static readonly Dictionary<BadgeVariant, string> BadgeVariantClasses = new()
     {
-        [BadgeVariant.Default] = new ThemeToken("sa-badge-variant-default"),
-        [BadgeVariant.Secondary] = new ThemeToken("sa-badge-variant-secondary"),
-        [BadgeVariant.Destructive] = new ThemeToken("sa-badge-variant-destructive"),
-        [BadgeVariant.Outline] = new ThemeToken("sa-badge-variant-outline"),
-        [BadgeVariant.Ghost] = new ThemeToken("sa-badge-variant-ghost"),
-        [BadgeVariant.Link] = new ThemeToken("sa-badge-variant-link"),
+        [BadgeVariant.Default] = "sa-badge-variant-default",
+        [BadgeVariant.Secondary] = "sa-badge-variant-secondary",
+        [BadgeVariant.Destructive] = "sa-badge-variant-destructive",
+        [BadgeVariant.Outline] = "sa-badge-variant-outline",
+        [BadgeVariant.Ghost] = "sa-badge-variant-ghost",
+        [BadgeVariant.Link] = "sa-badge-variant-link",
     };
 
     /// <summary>
@@ -42,7 +41,7 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                new ThemeToken("sa-badge"),
+                "sa-badge",
                 "group/badge",
                 BadgeVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

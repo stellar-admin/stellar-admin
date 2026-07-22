@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -54,10 +53,7 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-sub-trigger"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dropdown-menu-sub-trigger", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

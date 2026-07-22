@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,7 +18,7 @@ public class AccordionTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-accordion"), output.GetUserSuppliedClass())
+            BuildClassString("sa-accordion", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

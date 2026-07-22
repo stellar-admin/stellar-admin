@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -24,7 +23,7 @@ public class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-current", "page");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-breadcrumb-page"), output.GetUserSuppliedClass())
+            BuildClassString("sa-breadcrumb-page", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

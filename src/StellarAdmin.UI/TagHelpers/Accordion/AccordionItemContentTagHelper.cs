@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,18 +18,12 @@ public class AccordionItemContentTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "accordion-content");
-        output.Attributes.SetAttribute(
-            "class",
-            BuildClassString(new ThemeToken("sa-accordion-content"))
-        );
+        output.Attributes.SetAttribute("class", BuildClassString("sa-accordion-content"));
 
         var innerTagBuilder = new TagBuilder("div");
         innerTagBuilder.Attributes.Add(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-accordion-content-inner"),
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-accordion-content-inner", output.GetUserSuppliedClass())
         );
         innerTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 

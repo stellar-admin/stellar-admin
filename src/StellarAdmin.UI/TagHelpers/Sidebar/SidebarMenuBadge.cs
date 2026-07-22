@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -18,10 +17,7 @@ public class SidebarMenuBadge(ICssClassMerger classMerger) : StellarAdminTagHelp
         output.Attributes.SetAttribute("data-sidebar", "menu-badge");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-menu-badge"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-sidebar-menu-badge", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

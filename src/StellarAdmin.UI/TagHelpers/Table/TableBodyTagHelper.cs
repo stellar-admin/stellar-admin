@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,7 +19,7 @@ public class TableBodyTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "table-body");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-table-body"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-table-body", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

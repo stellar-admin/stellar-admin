@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -16,7 +15,7 @@ public class SidebarSeparatorTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "separator");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-sidebar-separator"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-sidebar-separator", output.GetUserSuppliedClass())
         );
 
         var separatorTagHelper = new SeparatorTagHelper(ClassMerger)

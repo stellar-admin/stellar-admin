@@ -1,34 +1,35 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
 internal static class ButtonRenderingHelper
 {
-    private static readonly Dictionary<ButtonVariant, ThemeToken> ButtonVariantClasses =
-        new Dictionary<ButtonVariant, ThemeToken>
-        {
-            [ButtonVariant.Default] = new ThemeToken("sa-button-variant-default"),
-            [ButtonVariant.Destructive] = new ThemeToken("sa-button-variant-destructive"),
-            [ButtonVariant.Outline] = new ThemeToken("sa-button-variant-outline"),
-            [ButtonVariant.Secondary] = new ThemeToken("sa-button-variant-secondary"),
-            [ButtonVariant.Ghost] = new ThemeToken("sa-button-variant-ghost"),
-            [ButtonVariant.Link] = new ThemeToken("sa-button-variant-link"),
-        };
-
-    private static readonly Dictionary<ButtonSize, ThemeToken> ButtonSizeClasses = new Dictionary<
-        ButtonSize,
-        ThemeToken
+    private static readonly Dictionary<ButtonVariant, string> ButtonVariantClasses = new Dictionary<
+        ButtonVariant,
+        string
     >
     {
-        [ButtonSize.Default] = new ThemeToken("sa-button-size-default"),
-        [ButtonSize.ExtraSmall] = new ThemeToken("sa-button-size-xs"),
-        [ButtonSize.Small] = new ThemeToken("sa-button-size-sm"),
-        [ButtonSize.Large] = new ThemeToken("sa-button-size-lg"),
-        [ButtonSize.Icon] = new ThemeToken("sa-button-size-icon"),
-        [ButtonSize.IconExtraSmall] = new ThemeToken("sa-button-size-icon-xs"),
-        [ButtonSize.IconSmall] = new ThemeToken("sa-button-size-icon-sm"),
-        [ButtonSize.IconLarge] = new ThemeToken("sa-button-size-icon-lg"),
+        [ButtonVariant.Default] = "sa-button-variant-default",
+        [ButtonVariant.Destructive] = "sa-button-variant-destructive",
+        [ButtonVariant.Outline] = "sa-button-variant-outline",
+        [ButtonVariant.Secondary] = "sa-button-variant-secondary",
+        [ButtonVariant.Ghost] = "sa-button-variant-ghost",
+        [ButtonVariant.Link] = "sa-button-variant-link",
+    };
+
+    private static readonly Dictionary<ButtonSize, string> ButtonSizeClasses = new Dictionary<
+        ButtonSize,
+        string
+    >
+    {
+        [ButtonSize.Default] = "sa-button-size-default",
+        [ButtonSize.ExtraSmall] = "sa-button-size-xs",
+        [ButtonSize.Small] = "sa-button-size-sm",
+        [ButtonSize.Large] = "sa-button-size-lg",
+        [ButtonSize.Icon] = "sa-button-size-icon",
+        [ButtonSize.IconExtraSmall] = "sa-button-size-icon-xs",
+        [ButtonSize.IconSmall] = "sa-button-size-icon-sm",
+        [ButtonSize.IconLarge] = "sa-button-size-icon-lg",
     };
 
     public static void RenderAttributes(
@@ -46,7 +47,7 @@ internal static class ButtonRenderingHelper
         output.Attributes.SetAttribute(
             "class",
             classMerger.Merge(
-                new ThemeToken("sa-button"),
+                "sa-button",
                 "group/button",
                 ButtonVariantClasses[variant],
                 ButtonSizeClasses[size],

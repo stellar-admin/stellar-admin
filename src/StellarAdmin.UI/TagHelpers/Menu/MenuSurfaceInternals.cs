@@ -1,5 +1,3 @@
-using StellarAdmin.UI.Theming;
-
 namespace StellarAdmin.UI.TagHelpers;
 
 /// <summary>
@@ -15,15 +13,10 @@ namespace StellarAdmin.UI.TagHelpers;
 /// </remarks>
 internal static class MenuSurfaceInternals
 {
-    public static ClassElement? ColorToken(MenuColor color) =>
-        color.GetSurfaceClass() is { } surfaceClass ? new ClassList(surfaceClass) : null;
+    public static string? ColorToken(MenuColor color) => color.GetSurfaceClass();
 
-    public static ClassElement? AppearanceToken(MenuAppearance appearance) =>
-        ToToken(appearance.GetSurfaceTokenName());
+    public static string? AppearanceToken(MenuAppearance appearance) =>
+        appearance.GetSurfaceTokenName();
 
-    public static ClassElement? AccentToken(MenuAccent accent) =>
-        ToToken(accent.GetSurfaceTokenName());
-
-    private static ClassElement? ToToken(string? tokenName) =>
-        tokenName is null ? null : new ThemeToken(tokenName);
+    public static string? AccentToken(MenuAccent accent) => accent.GetSurfaceTokenName();
 }

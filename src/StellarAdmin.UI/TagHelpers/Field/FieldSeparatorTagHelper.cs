@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -27,7 +26,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-field-separator"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-field-separator", output.GetUserSuppliedClass())
         );
 
         /* Add the actual separator */
@@ -50,7 +49,7 @@ public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
             contentWrapperTagBuilder.Attributes.Add("data-slot", "field-separator-content");
             contentWrapperTagBuilder.Attributes.Add(
                 "class",
-                ClassMerger.Merge(new ThemeToken("sa-field-separator-content"))
+                ClassMerger.Merge("sa-field-separator-content")
             );
 
             contentWrapperTagBuilder.InnerHtml.AppendHtml(childContent);

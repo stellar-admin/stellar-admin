@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -23,10 +22,10 @@ public class AlertTagHelper : StellarAdminTagHelperBase
     private const string IconAttributeName = "icon";
     private const string TitleAttributeName = "title";
 
-    private static readonly Dictionary<AlertVariant, ThemeToken> AlertVariantClasses = new()
+    private static readonly Dictionary<AlertVariant, string> AlertVariantClasses = new()
     {
-        [AlertVariant.Default] = new ThemeToken("sa-alert-variant-default"),
-        [AlertVariant.Destructive] = new ThemeToken("sa-alert-variant-destructive"),
+        [AlertVariant.Default] = "sa-alert-variant-default",
+        [AlertVariant.Destructive] = "sa-alert-variant-destructive",
     };
 
     /// <summary>
@@ -71,7 +70,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             BuildClassString(
-                new ThemeToken("sa-alert"),
+                "sa-alert",
                 "group/alert",
                 AlertVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

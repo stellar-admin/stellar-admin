@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -21,7 +20,7 @@ public class CardActionTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "card-action");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(new ThemeToken("sa-card-action"), output.GetUserSuppliedClass())
+            BuildClassString("sa-card-action", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

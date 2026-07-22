@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -69,22 +68,16 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "progress");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-progress-root"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-progress-root", output.GetUserSuppliedClass())
         );
 
         var trackTagBuilder = new TagBuilder("div");
         trackTagBuilder.Attributes.Add("data-slot", "progress-track");
-        trackTagBuilder.Attributes.Add(
-            "class",
-            ClassMerger.Merge(new ThemeToken("sa-progress-track"))
-        );
+        trackTagBuilder.Attributes.Add("class", ClassMerger.Merge("sa-progress-track"));
 
         var indicatorTagBuilder = new TagBuilder("div");
         indicatorTagBuilder.Attributes.Add("data-slot", "progress-indicator");
-        indicatorTagBuilder.Attributes.Add(
-            "class",
-            ClassMerger.Merge(new ThemeToken("sa-progress-indicator"))
-        );
+        indicatorTagBuilder.Attributes.Add("class", ClassMerger.Merge("sa-progress-indicator"));
         indicatorTagBuilder.Attributes.Add(
             "style",
             $"inset-inline-start: 0px; height: inherit; width: {GetPercentageCompleted(effectiveMinimum, effectiveMaximum, effectiveValue)}%;"

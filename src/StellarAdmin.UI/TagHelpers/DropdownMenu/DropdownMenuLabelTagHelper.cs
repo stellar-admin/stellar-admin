@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -29,10 +28,7 @@ public class DropdownMenuLabelTagHelper(ICssClassMerger classMerger)
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-label"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dropdown-menu-label", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,10 +19,7 @@ public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "dialog-description");
         output.Attributes.Add(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dialog-description"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dialog-description", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

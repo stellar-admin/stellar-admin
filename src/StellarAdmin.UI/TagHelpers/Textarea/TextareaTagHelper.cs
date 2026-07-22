@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -54,7 +53,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            _classMerger.Merge(new ThemeToken("sa-textarea"), output.GetUserSuppliedClass())
+            _classMerger.Merge("sa-textarea", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

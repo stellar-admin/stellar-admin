@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
 namespace StellarAdmin.UI.TagHelpers;
@@ -69,7 +68,7 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.Attributes.SetAttribute("data-active", effectiveIsActive ? "true" : "false");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-pagination-link"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-pagination-link", output.GetUserSuppliedClass())
         );
 
         ButtonRenderingHelper.RenderAttributes(

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -79,7 +78,7 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-tabs-trigger"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-tabs-trigger", output.GetUserSuppliedClass())
         );
 
         output.Content.AppendHtml(await output.GetChildContentAsync());

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -47,11 +46,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-tabs"),
-                "group/tabs",
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-tabs", "group/tabs", output.GetUserSuppliedClass())
         );
 
         var tabListTagBuilder = new TagBuilder("div");
@@ -60,11 +55,11 @@ public class TabListTagHelper : StellarAdminTagHelperBase
         tabListTagBuilder.Attributes.Add(
             "class",
             ClassMerger.Merge(
-                new ThemeToken("sa-tabs-list"),
+                "sa-tabs-list",
                 "group/tabs-list",
                 effectiveVariant == TabListVariant.Default
-                    ? new ThemeToken("sa-tabs-list-variant-default")
-                    : new ThemeToken("sa-tabs-list-variant-line"),
+                    ? "sa-tabs-list-variant-default"
+                    : "sa-tabs-list-variant-line",
                 output.GetUserSuppliedClass()
             )
         );

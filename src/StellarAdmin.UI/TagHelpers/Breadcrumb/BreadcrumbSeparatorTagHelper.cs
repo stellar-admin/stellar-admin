@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -29,10 +28,7 @@ public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("aria-hidden", "true");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-breadcrumb-separator"),
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-breadcrumb-separator", output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

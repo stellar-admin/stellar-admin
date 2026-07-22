@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.UI.Icons;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -54,7 +53,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
         // tailwind/components.css.
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(new ThemeToken("sa-sheet-content"), output.GetUserSuppliedClass())
+            ClassMerger.Merge("sa-sheet-content", output.GetUserSuppliedClass())
         );
 
         // Wrap inside web component

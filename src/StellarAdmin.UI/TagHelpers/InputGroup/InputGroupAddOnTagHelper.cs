@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -12,25 +11,13 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<
         InputGroupAddOnVariantAlignment,
-        ClassElement[]
-    > AlignmentClasses = new Dictionary<InputGroupAddOnVariantAlignment, ClassElement[]>
+        string?[]
+    > AlignmentClasses = new Dictionary<InputGroupAddOnVariantAlignment, string?[]>
     {
-        [InputGroupAddOnVariantAlignment.InlineStart] =
-        [
-            new ThemeToken("sa-input-group-addon-align-inline-start"),
-        ],
-        [InputGroupAddOnVariantAlignment.InlineEnd] =
-        [
-            new ThemeToken("sa-input-group-addon-align-inline-end"),
-        ],
-        [InputGroupAddOnVariantAlignment.BlockStart] =
-        [
-            new ThemeToken("sa-input-group-addon-align-block-start"),
-        ],
-        [InputGroupAddOnVariantAlignment.BlockEnd] =
-        [
-            new ThemeToken("sa-input-group-addon-align-block-end"),
-        ],
+        [InputGroupAddOnVariantAlignment.InlineStart] = ["sa-input-group-addon-align-inline-start"],
+        [InputGroupAddOnVariantAlignment.InlineEnd] = ["sa-input-group-addon-align-inline-end"],
+        [InputGroupAddOnVariantAlignment.BlockStart] = ["sa-input-group-addon-align-block-start"],
+        [InputGroupAddOnVariantAlignment.BlockEnd] = ["sa-input-group-addon-align-block-end"],
     };
 
     /// <summary>
@@ -71,7 +58,7 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute(
             "class",
             ClassMerger.Merge(
-                new ClassElement[] { new ThemeToken("sa-input-group-addon") }
+                new string?[] { "sa-input-group-addon" }
                     .Union(AlignmentClasses[effectiveAlignment])
                     .Append(output.GetUserSuppliedClass())
                     .ToArray()

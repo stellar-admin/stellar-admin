@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -19,10 +18,7 @@ public class SidebarGroupContentTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-sidebar", "group-content");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-sidebar-group-content"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-sidebar-group-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

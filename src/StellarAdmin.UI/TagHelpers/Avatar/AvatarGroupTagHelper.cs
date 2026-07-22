@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -20,11 +19,7 @@ public class AvatarGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.Add("data-slot", "avatar-group");
         output.Attributes.SetAttribute(
             "class",
-            BuildClassString(
-                new ThemeToken("sa-avatar-group"),
-                "group/avatar-group",
-                output.GetUserSuppliedClass()
-            )
+            BuildClassString("sa-avatar-group", "group/avatar-group", output.GetUserSuppliedClass())
         );
 
         await base.ProcessAsync(context, output);

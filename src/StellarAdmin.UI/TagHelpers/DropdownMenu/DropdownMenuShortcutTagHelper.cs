@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.UI.Theming;
 
 namespace StellarAdmin.UI.TagHelpers;
 
@@ -18,10 +17,7 @@ public class DropdownMenuShortcutTagHelper(ICssClassMerger classMerger)
         output.Attributes.SetAttribute("data-slot", "dropdown-menu-shortcut");
         output.Attributes.SetAttribute(
             "class",
-            ClassMerger.Merge(
-                new ThemeToken("sa-dropdown-menu-shortcut"),
-                output.GetUserSuppliedClass()
-            )
+            ClassMerger.Merge("sa-dropdown-menu-shortcut", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;
