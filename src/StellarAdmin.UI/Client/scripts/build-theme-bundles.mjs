@@ -2,7 +2,7 @@
 // ../wwwroot/stellar-admin-ui.<theme>.css. The theme list is derived from css/themes/, and the
 // per-theme entry (css/base.css + the theme file) is synthesized here and fed to the Tailwind CLI
 // over stdin — there are no checked-in entry files. Adding a theme is: generate
-// css/themes/<theme>.css with util/ThemePackGenerator and add it to ClientOutput in
+// css/themes/<theme>.css with util/ThemeGenerator and add it to ClientOutput in
 // StellarAdmin.UI.csproj.
 //
 //   node ./scripts/build-theme-bundles.mjs

@@ -17,8 +17,8 @@ internal static class MenuAccentExtensions
     extension(MenuAccent accent)
     {
         /// <summary>
-        ///     The themepack token that renders this accent, or <c>null</c> when no token is
-        ///     needed (<see cref="MenuAccent.Subtle" /> is the absence of a token — the default
+        ///     The class name whose theme rule renders this accent, or <c>null</c> when none is
+        ///     needed (<see cref="MenuAccent.Subtle" /> is the absence of a class — the default
         ///     <c>accent</c> highlight already applies).
         /// </summary>
         public string? GetSurfaceTokenName() =>

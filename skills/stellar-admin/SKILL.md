@@ -48,8 +48,8 @@ The detail lives in `references/`, loaded on demand — open only what the task 
 
 1. **Enums are written fully-qualified in Razor**, not as bare strings:
    `variant="ButtonVariant.Outline"`, not `variant="outline"`.
-2. **`class` always wins.** Any `class` you add is merged *last* (via
-   TailwindMerge), so it overrides the component's defaults — use it to tweak,
+2. **`class` always wins.** Utilities you add out-rank the component's own
+   rules (cascade layers put author utilities last), so use `class` to tweak,
    don't fight it.
 3. **Overlays (Sheet, Dialog, Popover, DropdownMenu, AlertDialog) open via the
    native Invoker Commands API** — a trigger button carries `commandfor="<id>"`

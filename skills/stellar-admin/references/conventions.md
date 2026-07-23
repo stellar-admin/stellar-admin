@@ -26,9 +26,10 @@ A bound C# property maps to a kebab-case HTML attribute:
 
 ## 3. `class` is merged last and always wins
 
-Every component composes its own theme classes plus utilities, and folds your
-`class` attribute in **last**. Merging is done with TailwindMerge, so a
-conflicting utility you supply overrides the default:
+Every component styles itself through its own component classes, and your
+`class` attribute is appended alongside them. Tailwind's cascade layers put
+utilities above component rules, so a conflicting utility you supply overrides
+the default:
 
 ```razor
 <!-- w-full overrides whatever width the button would default to -->

@@ -139,9 +139,8 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
                 + "--root-height: 32px;"
         );
 
-        // Resolve the fake-caret classes server-side (theme token + cross-theme statics) and hand
-        // them to the web component, which builds the caret element on hydration and can't resolve
-        // themepack tokens itself.
+        // Hand the fake-caret classes to the web component, which builds the caret element on
+        // hydration and can't compose classes itself.
         output.Attributes.SetAttribute("data-caret-class", JoinCssClasses("sa-input-otp-caret"));
         output.Attributes.SetAttribute(
             "data-caret-line-class",

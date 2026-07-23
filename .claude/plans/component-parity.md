@@ -12,10 +12,13 @@ don't apply — not everything needs a web component or a form-posting playgroun
 - [ ] `TagHelper` under `src/StellarAdmin.UI/TagHelpers/<Component>/` — inherit `StellarAdminTagHelperBase`
       (or `FieldInputBaseTagHelper` for form fields); enum→data-attr via `extension(...)`;
       nullable bound props resolved at the top of `ProcessAsync`; emit `data-slot`. Replicate
-      shadcn's class names, tokens, and `data-*` attributes faithfully (see
+      shadcn's class names, styling, and `data-*` attributes faithfully (see
       [Stay faithful to shadcn](#stay-faithful-to-shadcn)).
-- [ ] Themepack tokens — usually already generated from shadcn into `Theming/ThemePacks/*.themepack`
-      (verify, like Slider's `sa-slider*` were); only regenerate via `util/ThemePackGenerator` if missing.
+- [ ] Component CSS — structural `.sa-<component>*` rules in `src/StellarAdmin.UI/Client/css/components.css`
+      (`@layer components`); themed rules are usually already generated from shadcn into
+      `Client/css/themes/*.css` (verify); only regenerate via `util/ThemeGenerator` if missing.
+      **No styling literals in C#** beyond the sanctioned set in the `@source inline()` safelist
+      at the top of `components.css` (see CLAUDE.md).
 - [ ] `sel-*` Lit web component (light DOM) + `import` in `Client/js/stellar-admin-ui.ts` — only if
       HTML/CSS can't do it. Prefer the Invoker Commands API over click handlers.
 - [ ] `npm run build` (js + css) from `src/StellarAdmin.UI/Client/`; format with CSharpier + oxfmt.
@@ -35,21 +38,26 @@ don't apply — not everything needs a web component or a form-posting playgroun
 **Mirror shadcn as closely as possible** — this is not cosmetic, it's load-bearing. When porting a
 component, open its source (`apps/v4/registry/bases/base/ui/<component>.tsx`) and replicate:
 
-- **Class names / Tailwind utilities** — copy the *static* (cross-theme) utility classes into the
-  tag helper **verbatim**, in the same order. These drive layout and responsive behavior, e.g. Alert
-  Dialog's footer needs `group-data-[size=sm]/alert-dialog-content:grid grid-cols-2` for the small
-  size to lay out correctly. Don't borrow a sibling component's classes (Dialog ≠ Alert Dialog) or
-  invent your own — diff against the real source.
-- **Tokens** — every `cn-<name>` in shadcn maps to a `sa-<name>` themepack token. Reference the
-  matching `new ThemeToken("sa-...")` for **each** slot, even sub-elements like `*-action` /
-  `*-cancel`. Keep the theme token vs static-utility split shadcn uses: the token carries
-  theme-specific styling, the static classes are constant across themes — pass both, with the token
-  before the user-supplied class so authors can still override. A token that isn't generated yet
-  resolves to `""` (harmless); still reference it so it lights up when the pack is regenerated.
+- **Class names / Tailwind utilities** — the tag helper emits only `sa-*` class names
+  (`JoinCssClasses("sa-...", output.GetUserSuppliedClass())`); the *static* (cross-theme) utility
+  classes from shadcn go **verbatim**, in the same order, into that name's `@apply` rule in
+  `Client/css/components.css`. These drive layout and responsive behavior, e.g. Alert Dialog's
+  footer needs `group-data-[size=sm]/alert-dialog-content:grid grid-cols-2` for the small size to
+  lay out correctly. Don't borrow a sibling component's classes (Dialog ≠ Alert Dialog) or invent
+  your own — diff against the real source. (Marker classes like `group/x` / `peer/x` stay as C#
+  literals — they must exist in the HTML — and anything else that must stay literal needs an entry
+  in the `@source inline()` safelist.)
+- **Theme rules** — every `cn-<name>` in shadcn maps to a `sa-<name>` class whose theme-specific
+  half lives in the generated `Client/css/themes/*.css`. Emit the class name for **each** slot,
+  even sub-elements like `*-action` / `*-cancel`. Keep shadcn's themed vs static split: themed
+  declarations come from the theme files, structural ones from `components.css`, both under the
+  same class name (structural wins conflicts — see CLAUDE.md's precedence contract). A name with
+  no generated rule yet renders as a harmless dead class; still emit it so it lights up when the
+  themes are regenerated.
 - **`data-*` attributes** — emit the same `data-slot` (and `data-size`, `data-state`, …) values
   shadcn sets, including where a wrapped primitive *overrides* the inner element's slot (e.g. Alert
   Dialog's action/cancel set `data-slot="alert-dialog-action"`/`"-cancel"`, **not** `"button"`). The
-  themepack selectors key off these (`group-data-[size=...]`, `has-data-[slot=...]`), so a wrong or
+  theme rules key off these (`group-data-[size=...]`, `has-data-[slot=...]`), so a wrong or
   missing `data-*` silently breaks styling.
 
 Justified divergences (the native `<dialog>` having no overlay element / using `closedby` /

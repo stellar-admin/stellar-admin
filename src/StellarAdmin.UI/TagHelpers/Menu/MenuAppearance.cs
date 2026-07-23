@@ -18,8 +18,8 @@ internal static class MenuAppearanceExtensions
     extension(MenuAppearance appearance)
     {
         /// <summary>
-        ///     The themepack token that renders this appearance, or <c>null</c> when no token is
-        ///     needed (<see cref="MenuAppearance.Solid" /> is the absence of a token).
+        ///     The class name whose theme rule renders this appearance, or <c>null</c> when none is
+        ///     needed (<see cref="MenuAppearance.Solid" /> is the absence of a class).
         /// </summary>
         public string? GetSurfaceTokenName() =>
             appearance switch
