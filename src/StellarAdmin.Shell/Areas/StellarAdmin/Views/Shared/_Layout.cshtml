@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StellarAdmin</title>
+    <meta name="description" content="StellarAdmin">
+    @await RenderSectionAsync("Styles", required: false)
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin-ui.nova.css" asp-append-version="true"/>
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin-ui.js" asp-append-version="true"></script>
+</head>
+<body>
+<sa-sidebar-wrapper>
+    <vc:sidebar></vc:sidebar>
+
+    <sa-sidebar-inset>
+        <header class="flex h-14 items-center gap-2 border-b px-4">
+            <sa-sidebar-trigger></sa-sidebar-trigger>
+            <sa-separator orientation="SeparatorOrientation.Vertical" class="mx-1 h-4"/>
+            <span class="text-sm font-medium">StellarAdmin</span>
+        </header>
+        @RenderBody()
+    </sa-sidebar-inset>
+</sa-sidebar-wrapper>
+</body>
+</html>
