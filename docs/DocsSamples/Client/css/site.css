@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../../../src/StellarAdmin.UI/Client/css/theme-tokens.css";
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
 
 @source "../../Pages/";
 @source "../../TagHelpers/";

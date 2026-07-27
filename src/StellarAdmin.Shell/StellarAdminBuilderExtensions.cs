@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.UI;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Shell;
 

@@ -2,8 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using StellarAdmin;
-using StellarAdmin.UI;
-using StellarAdmin.UI.TagHelpers;
+using StellarAdmin.TagHelpers;
 
 namespace DocsSamples;
 

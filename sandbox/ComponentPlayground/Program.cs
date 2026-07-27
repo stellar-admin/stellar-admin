@@ -1,5 +1,5 @@
 using StellarAdmin;
-using StellarAdmin.UI;
+using StellarAdmin.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

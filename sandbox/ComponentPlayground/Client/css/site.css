@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "../../../../src/StellarAdmin.UI/Client/css/theme-tokens.css";
 
 @plugin "@tailwindcss/forms" {
     strategy: "class";

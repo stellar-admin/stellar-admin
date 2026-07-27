@@ -13,6 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StellarAdmin.Core\StellarAdmin.Core.csproj" />
-    <ProjectReference Include="..\StellarAdmin.UI\StellarAdmin.UI.csproj" />
+    <ProjectReference Include="..\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
 </Project>

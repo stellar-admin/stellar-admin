@@ -61,6 +61,9 @@
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-bold: 700;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
     --default-transition-duration: 150ms;
@@ -732,16 +735,16 @@
     border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
   }
   .rounded-md {
-    border-radius: calc(var(--radius) - 2px);
+    border-radius: var(--radius-md);
   }
   .rounded-none {
     border-radius: 0;
   }
   .rounded-xl {
-    border-radius: calc(var(--radius) + 4px);
+    border-radius: var(--radius-xl);
   }
   .border {
     border-style: var(--tw-border-style);
@@ -936,9 +939,6 @@
   .text-lime-800 {
     color: var(--color-lime-800);
   }
-  .text-muted-foreground {
-    color: var(--muted-foreground);
-  }
   .text-orange-800 {
     color: var(--color-orange-800);
   }
@@ -1029,7 +1029,7 @@
     }
   }
   .dark\:bg-blue-600 {
-    &:is(.dark *) {
+    @media (prefers-color-scheme: dark) {
       background-color: var(--color-blue-600);
     }
   }

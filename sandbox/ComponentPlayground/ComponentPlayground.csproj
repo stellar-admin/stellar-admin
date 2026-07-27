@@ -8,10 +8,10 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
   <!--
-    Two-bundle mode: the layout links the prebuilt _content/StellarAdmin.UI bundle (vega), and
+    Two-bundle mode: the layout links the prebuilt _content/StellarAdmin.TagHelpers bundle (vega), and
     this Tailwind build covers only the app's own markup — importing theme-tokens.css so
     token-named utilities (bg-primary, …) resolve to the bundle's runtime variables.
   -->

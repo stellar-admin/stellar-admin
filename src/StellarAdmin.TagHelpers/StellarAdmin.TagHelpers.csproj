@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Description>A collection of beautifully designed components you can use to create CRUD screens in ASP.NET Core MVC and Razor Pages applications</Description>
+    <!-- Ship XML documentation so consumers get IntelliSense on the tag helpers.
+         The SDK packs the generated .xml alongside the assembly automatically. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA2264</NoWarn>
+    <!-- CS1591 (missing XML comment) also fires on DI constructors and ProcessAsync
+         overrides, which never appear in Razor IntelliSense. The consumer-facing surface
+         (tag-helper classes, [HtmlAttributeName] properties, enums) is documented; the rest
+         is intentionally suppressed rather than filled with boilerplate. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\gen\StellarAdmin.TagHelpers.Generators\StellarAdmin.TagHelpers.Generators.csproj"
+      ReferenceOutputAssembly="false"
+      OutputItemType="Analyzer"
+    />
+    <ProjectReference Include="..\StellarAdmin.Core\StellarAdmin.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <!-- Configure namespace provider for TagHelpers -->
+  <ItemGroup>
+    <Folder Include="TagHelpers\**\" NamespaceProvider="False" />
+    <Folder Remove="TagHelpers\" />
+  </ItemGroup>
+
+  <!-- Icon packs -->
+  <ItemGroup>
+    <Content Update="Icons/Definitions/**/*.*" Pack="false" />
+    <!--<AdditionalFiles Include="Icons\Definitions\*.json" />-->
+    <AdditionalFiles Include="Icons\Definitions\Lucide.json" />
+  </ItemGroup>
+
+  <!-- Client -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" Pack="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/js/**/*.ts" />
+    <ClientInput Include="Client/js/**/*.js" />
+    <ClientInput Include="Client/scripts/*.mjs" />
+    <ClientInput Include="Client/rolldown.config.js" />
+    <ClientInput Include="Client/tsconfig.json" />
+    <ClientInput Include="Client/package.json" />
+  </ItemGroup>
+
+  <!-- Trigger client build -->
+  <Target
+    Name="Client"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+    Inputs="@(Compile);@(ClientInput)"
+    Outputs="@(ClientOutput)"
+  >
+    <Exec
+      Command="npm install"
+      WorkingDirectory="Client"
+      Condition=" !Exists('Client/node_modules') "
+    />
+    <Exec Command="npm run build" WorkingDirectory="Client" />
+
+    <!-- Tailwind and rolldown skip the write when output is unchanged, leaving it older than the
+         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <Touch Files="@(ClientOutput)" />
+
+    <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+</Project>
