@@ -26,7 +26,7 @@ public partial class Program
                 "..",
                 "..",
                 "src",
-                "StellarAdmin.UI",
+                "StellarAdmin.TagHelpers",
                 "Client",
                 "css",
                 "themes"

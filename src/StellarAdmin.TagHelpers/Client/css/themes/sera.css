@@ -1155,4 +1155,13 @@
   .sa-group-gap-xl {
     @apply gap-x-14;
   }
+  .sa-header {
+    @apply h-14 border-b px-4 gap-x-3;
+  }
+  .sa-header-actions {
+    @apply gap-x-1.5;
+  }
+  .sa-header-separator {
+    @apply mx-1;
+  }
 }

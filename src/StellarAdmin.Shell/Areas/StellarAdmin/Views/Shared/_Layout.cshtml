@@ -14,11 +14,11 @@
     <vc:sidebar></vc:sidebar>
 
     <sa-sidebar-inset>
-        <header class="flex h-14 items-center gap-2 border-b px-4">
+        <sa-header>
             <sa-sidebar-trigger></sa-sidebar-trigger>
-            <sa-separator orientation="SeparatorOrientation.Vertical" class="mx-1 h-4"/>
+            <sa-header-separator/>
             <span class="text-sm font-medium">StellarAdmin</span>
-        </header>
+        </sa-header>
         @RenderBody()
     </sa-sidebar-inset>
 </sa-sidebar-wrapper>
