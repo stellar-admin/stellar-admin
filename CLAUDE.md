@@ -32,7 +32,7 @@ services.AddStellarAdmin()   // StellarAdmin.Core — returns StellarAdminBuilde
 | `src/StellarAdmin.UI/Client/js/web-components/` | The `sel-*` Lit components. |
 | `docs/DocsSamples/` | Razor Pages sample site; pages under `Pages/<Component>/` demo each component. |
 | `gen/`, `util/`, gen projects | Source generators (icons) and `util/ThemeGenerator`, the manual-run console app that regenerates `Client/css/themes/*.css` from upstream shadcn styles. |
-| `sandbox/` | Throwaway prototypes (e.g. `sandbox/html/*.html` for validating CSS approaches). |
+| `sandbox/` | Throwaway prototypes (e.g. `sandbox/html/*.html` for validating CSS approaches). New component visuals are designed here first — follow the `prototype-component` skill (workspace `.claude/skills/`); prototypes are point-in-time artifacts, code flows prototype → library only. |
 
 Solution file: `StellarAdmin.slnx`. SDK pinned in `global.json` (`.NET 10`). Packages are centrally managed in `Directory.Packages.props`.
 
