@@ -1,4 +1,8 @@
-namespace ShellPlayground;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
+namespace StellarAdmin.Shell;
 
 public static class StellarAdminEndpointRouteBuilderExtensions
 {
