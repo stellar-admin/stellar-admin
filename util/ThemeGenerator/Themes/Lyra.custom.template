@@ -28,11 +28,11 @@
 -sa-group-gap-xl
 --sa-token-gap-x-xl
 
--sa-header
+-sa-app-header
 h-14 border-b px-4 --sa-token-gap-x-sm
 
--sa-header-actions
+-sa-app-header-actions
 --sa-token-gap-x-xs
 
--sa-header-separator
+-sa-app-header-separator
 mx-1

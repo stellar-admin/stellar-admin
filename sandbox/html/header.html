@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Header prototype — sa-header candidate visuals (nova)</title>
+    <title>Header prototype — sa-app-header candidate visuals (nova)</title>
 
     <!-- Geist, same link the docs layout uses -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -214,19 +214,19 @@
       <main data-slot="sidebar-inset" class="sa-sidebar-inset">
         <!--
           ======================================================================
-          LIVE CANDIDATE — the proposed sa-header, in its real position.
+          LIVE CANDIDATE — the proposed sa-app-header, in its real position.
             structural (theme-independent):  flex shrink-0 items-center
             themed (per-theme values):       h-14 gap-2 border-b px-4
-          Children: sa-sidebar-trigger | sa-header-separator | sa-breadcrumb,
-          then sa-header-actions (ml-auto).
+          Children: sa-sidebar-trigger | sa-app-header-separator | sa-breadcrumb,
+          then sa-app-header-actions (ml-auto).
           ======================================================================
         -->
         <!-- Now the REAL compiled component classes from the built bundle. -->
-        <header data-slot="header" class="sa-header">
+        <header data-slot="app-header" class="sa-app-header">
           <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">
             <svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg>
           </button>
-          <div class="sa-separator sa-separator-vertical sa-header-separator" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+          <div class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
           <nav aria-label="breadcrumb" data-slot="breadcrumb" class="sa-breadcrumb">
             <ol data-slot="breadcrumb-list" class="sa-breadcrumb-list">
               <li data-slot="breadcrumb-item" class="sa-breadcrumb-item">
@@ -242,7 +242,7 @@
               </li>
             </ol>
           </nav>
-          <div data-slot="header-actions" class="sa-header-actions">
+          <div data-slot="app-header-actions" class="sa-app-header-actions">
             <button type="button" aria-label="Search" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">
               <svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
             </button>
@@ -269,9 +269,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">h-12 px-4 gap-2</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-12 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-12 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -280,9 +280,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">h-14 px-4 gap-2 (current hand-rolled baseline)</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -291,9 +291,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">h-16 px-4 gap-2 (used by the dialog sample)</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-16 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-16 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -309,9 +309,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">separator h-4 mx-1 (current)</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                 </div>
@@ -319,9 +319,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">separator h-5 mx-1</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-5" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-5" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                 </div>
@@ -336,9 +336,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">border-b (current)</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -347,9 +347,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">no edge</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -358,9 +358,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">shadow-sm, no border</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 px-4 shadow-sm">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 px-4 shadow-sm">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="h-10"></div>
@@ -374,9 +374,9 @@
             <h2 class="text-sm font-semibold">Right-side trigger (markup order + ml-auto)</h2>
             <figure class="flex flex-col gap-1.5">
               <div class="overflow-hidden rounded-lg border border-border bg-background">
-                <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                   <span class="text-sm font-medium">Flight Reservations</span>
-                  <div data-slot="header-actions" class="ml-auto flex items-center gap-1">
+                  <div data-slot="app-header-actions" class="ml-auto flex items-center gap-1">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
                   </div>
                 </header>
@@ -391,9 +391,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">px-4 (aligns with p-4 content)</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-4">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="p-4 text-sm text-muted-foreground">Content padded p-4 — check left edge alignment with the trigger icon.</div>
@@ -402,9 +402,9 @@
               <figure class="flex flex-col gap-1.5">
                 <figcaption class="text-xs text-muted-foreground">px-6</figcaption>
                 <div class="overflow-hidden rounded-lg border border-border bg-background">
-                  <header data-slot="header" class="flex shrink-0 items-center h-14 gap-2 border-b px-6">
+                  <header data-slot="app-header" class="flex shrink-0 items-center h-14 gap-2 border-b px-6">
                     <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
-                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="header-separator" data-orientation="vertical"></div>
+                    <div class="sa-separator sa-separator-vertical mx-1 h-4" role="separator" aria-orientation="vertical" data-slot="app-header-separator" data-orientation="vertical"></div>
                     <span class="text-sm font-medium">Flight Reservations</span>
                   </header>
                   <div class="p-4 text-sm text-muted-foreground">Content padded p-4 — header indented deeper than content.</div>

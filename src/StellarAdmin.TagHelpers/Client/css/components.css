@@ -86,6 +86,15 @@
   .sa-alert-title {
     @apply [&_a]:hover:text-foreground [&_a]:underline [&_a]:underline-offset-3;
   }
+  .sa-app-header {
+    @apply flex shrink-0 items-center;
+  }
+  .sa-app-header-actions {
+    @apply ml-auto flex items-center;
+  }
+  .sa-app-header-separator {
+    @apply h-4;
+  }
   .sa-avatar {
     @apply after:border-border relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten;
   }
@@ -277,15 +286,6 @@
   }
   .sa-group-justify-start {
     @apply justify-start;
-  }
-  .sa-header {
-    @apply flex shrink-0 items-center;
-  }
-  .sa-header-actions {
-    @apply ml-auto flex items-center;
-  }
-  .sa-header-separator {
-    @apply h-4;
   }
   .sa-input {
     @apply file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive;
