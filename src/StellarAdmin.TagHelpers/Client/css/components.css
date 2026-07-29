@@ -166,9 +166,6 @@
   .sa-checkbox-indicator-icon {
     @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-100 dark:text-black;
   }
-  .sa-container {
-    @apply container mx-auto sm:px-6 lg:px-8;
-  }
   .sa-dialog-content {
     @apply fixed inset-0 m-auto outline-none backdrop:supports-backdrop-filter:backdrop-blur-xs;
   }
@@ -405,6 +402,18 @@
   }
   .sa-native-select-wrapper {
     @apply relative w-fit has-[select:disabled]:opacity-50;
+  }
+  .sa-page-container {
+    @apply mx-auto flex w-full flex-col gap-(--sa-gap-lg) p-(--sa-gap-lg) md:p-(--sa-gap-xl);
+  }
+  .sa-page-container-width-large {
+    @apply max-w-6xl;
+  }
+  .sa-page-container-width-medium {
+    @apply max-w-4xl;
+  }
+  .sa-page-container-width-small {
+    @apply max-w-2xl;
   }
   .sa-page-header {
     @apply grid grid-cols-1 items-start gap-x-(--sa-gap-md) gap-y-1.5 sm:grid-cols-[1fr_auto];
