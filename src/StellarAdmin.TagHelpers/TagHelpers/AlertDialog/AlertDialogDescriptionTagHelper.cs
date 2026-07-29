@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-alert-dialog-description")]
 public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -19,6 +19,6 @@ public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-alert-dialog-description", output.GetUserSuppliedClass())
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

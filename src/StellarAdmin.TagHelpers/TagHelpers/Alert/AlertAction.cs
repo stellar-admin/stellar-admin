@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-alert-action")]
 public class AlertAction : StellarAdminTagHelperBase
 {
-    public override async void Process(TagHelperContext context, TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -18,7 +18,5 @@ public class AlertAction : StellarAdminTagHelperBase
             "class",
             JoinCssClasses("sa-alert-action", output.GetUserSuppliedClass())
         );
-
-        output.Content.SetHtmlContent(await output.GetChildContentAsync());
     }
 }

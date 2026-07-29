@@ -27,7 +27,7 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public BadgeVariant? Variant { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? BadgeVariant.Default;
 
@@ -45,6 +45,6 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        output.Content.SetHtmlContent(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

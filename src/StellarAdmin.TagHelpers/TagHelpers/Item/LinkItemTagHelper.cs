@@ -56,6 +56,6 @@ public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
         };
         await anchorTagHelper.ProcessAsync(context, output);
 
-        await ItemRenderingHelper.RenderAsync(output, Size, Variant);
+        ItemRenderingHelper.Render(output, Size, Variant);
     }
 }

@@ -9,7 +9,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-avatar-group-count")]
 public class AvatarGroupCount : StellarAdminTagHelperBase
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -17,6 +17,6 @@ public class AvatarGroupCount : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "avatar-group-count");
         output.Attributes.SetAttribute("class", JoinCssClasses("sa-avatar-group-count"));
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

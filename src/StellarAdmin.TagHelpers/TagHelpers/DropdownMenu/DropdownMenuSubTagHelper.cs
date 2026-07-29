@@ -9,7 +9,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-dropdown-menu-sub")]
 public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var subId =
             output.Attributes.TryGetAttribute("id", out var idAttribute)
@@ -20,6 +20,7 @@ public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
         SetContext(context, new DropdownMenuContext { MenuId = subId });
 
         output.TagName = null;
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+
+        return Task.CompletedTask;
     }
 }

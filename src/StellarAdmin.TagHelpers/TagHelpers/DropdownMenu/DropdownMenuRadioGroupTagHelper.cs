@@ -15,7 +15,7 @@ public class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var groupName = $"--sa-dropdown-menu-radio-{context.UniqueId}";
         SetContext(
@@ -36,6 +36,6 @@ public class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("class", userClass);
         }
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

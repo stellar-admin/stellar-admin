@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-dialog-description")]
 public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -19,6 +19,6 @@ public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-dialog-description", output.GetUserSuppliedClass())
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

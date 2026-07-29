@@ -36,7 +36,7 @@ public class StackTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("justify")]
     public StackJustify? Justify { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? StackAlign.Stretch;
         var effectiveGap = Gap ?? StackGap.Default;
@@ -56,6 +56,6 @@ public class StackTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

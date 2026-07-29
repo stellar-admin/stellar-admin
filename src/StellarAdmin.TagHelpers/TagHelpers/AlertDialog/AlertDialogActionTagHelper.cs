@@ -20,7 +20,7 @@ public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ButtonVariant.Default;
 
@@ -43,6 +43,6 @@ public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
 
         ButtonRenderingHelper.RenderAttributes(output, effectiveVariant, ButtonSize.Default);
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

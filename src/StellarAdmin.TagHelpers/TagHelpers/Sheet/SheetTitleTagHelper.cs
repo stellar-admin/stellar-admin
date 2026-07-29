@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-sheet-title")]
 public class SheetTitleTagHelper : StellarAdminTagHelperBase
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "h2";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -24,6 +24,6 @@ public class SheetTitleTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

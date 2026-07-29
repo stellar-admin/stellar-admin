@@ -26,11 +26,13 @@ public class ItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        await ItemRenderingHelper.RenderAsync(output, Size, Variant);
+        ItemRenderingHelper.Render(output, Size, Variant);
+
+        return Task.CompletedTask;
     }
 }

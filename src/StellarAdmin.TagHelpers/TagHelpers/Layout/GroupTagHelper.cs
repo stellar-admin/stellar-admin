@@ -36,7 +36,7 @@ public class GroupTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("justify")]
     public GroupJustify? Justify { get; set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? GroupAlign.Start;
         var effectiveGap = Gap ?? GroupGap.Default;
@@ -56,6 +56,6 @@ public class GroupTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

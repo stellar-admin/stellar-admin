@@ -21,7 +21,7 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeNotBound]
     public string? SidebarId { get; private set; }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // The wrapper renders the `sel-sidebar` web component, which acts as the
         // state provider. Nested triggers toggle it via the native command API.
@@ -53,6 +53,6 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
             )
         );
 
-        output.Content.AppendHtml(await output.GetChildContentAsync());
+        return Task.CompletedTask;
     }
 }

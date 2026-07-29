@@ -18,11 +18,7 @@ internal static class ItemRenderingHelper
         [ItemVariant.Muted] = "sa-item-variant-muted",
     };
 
-    public static async Task RenderAsync(
-        TagHelperOutput output,
-        ItemSize? size,
-        ItemVariant? variant
-    )
+    public static void Render(TagHelperOutput output, ItemSize? size, ItemVariant? variant)
     {
         var effectiveSize = size ?? ItemSize.Default;
         var effectiveVariant = variant ?? ItemVariant.Default;
@@ -41,7 +37,5 @@ internal static class ItemRenderingHelper
                 output.GetUserSuppliedClass()
             )
         );
-
-        output.Content.AppendHtml(await output.GetChildContentAsync());
     }
 }
