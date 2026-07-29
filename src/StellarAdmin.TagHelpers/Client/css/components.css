@@ -26,7 +26,9 @@
    - anchored-* / try-flip-all: CSS anchor positioning (PositionArea, anchors.css), picked
      per position at render time.
    - font-heading: an escape hatch that only resolves when a consumer defines a
-     --font-heading theme variable; inert otherwise. */
+     --font-heading theme variable; inert otherwise. NEVER @apply font-heading in
+     this file — the token doesn't exist in the library build, so it fails every
+     theme-bundle compile. Emit it as a C# literal instead (DialogTitleTagHelper). */
 @source inline("size-4");
 @source inline("sr-only");
 @source inline("[&>*]:w-full");
@@ -403,6 +405,33 @@
   }
   .sa-native-select-wrapper {
     @apply relative w-fit has-[select:disabled]:opacity-50;
+  }
+  .sa-page-header {
+    @apply grid grid-cols-1 items-start gap-x-(--sa-gap-md) gap-y-1.5 sm:grid-cols-[1fr_auto];
+  }
+  .sa-page-header > [data-slot="breadcrumb"] {
+    @apply col-span-full mb-1;
+  }
+  .sa-page-header-actions {
+    @apply mt-2 flex items-center gap-x-(--sa-gap-sm) sm:col-start-2 sm:row-start-1 sm:mt-0 sm:self-start sm:justify-self-end;
+  }
+  /* row-span-* compiles to the grid-row shorthand, which resets grid-row-start —
+     so the span rule restates its start, and the breadcrumb rule must come after
+     it for its start override to win. */
+  .sa-page-header:has(> [data-slot="page-header-description"]) .sa-page-header-actions {
+    @apply sm:row-span-2 sm:row-start-1;
+  }
+  .sa-page-header:has(> [data-slot="breadcrumb"]) .sa-page-header-actions {
+    @apply sm:row-start-2;
+  }
+  .sa-page-header-description {
+    @apply text-muted-foreground text-sm sm:col-start-1;
+  }
+  .sa-page-header-nav {
+    @apply col-span-full mt-3 overflow-x-auto pb-1;
+  }
+  .sa-page-header-title {
+    @apply text-xl font-semibold tracking-tight;
   }
   .sa-pagination {
     @apply mx-auto flex w-full justify-center;
