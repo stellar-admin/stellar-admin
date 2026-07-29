@@ -87,13 +87,13 @@
     @apply [&_a]:hover:text-foreground [&_a]:underline [&_a]:underline-offset-3;
   }
   .sa-app-header {
-    @apply flex shrink-0 items-center;
+    @apply flex h-14 shrink-0 items-center gap-x-(--sa-gap-sm) border-b px-4;
   }
   .sa-app-header-actions {
-    @apply ml-auto flex items-center;
+    @apply ml-auto flex items-center gap-x-(--sa-gap-xs);
   }
   .sa-app-header-separator {
-    @apply h-4;
+    @apply mx-1 h-4;
   }
   .sa-avatar {
     @apply after:border-border relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten;
@@ -271,6 +271,21 @@
   }
   .sa-group-align-stretch {
     @apply items-stretch;
+  }
+  .sa-group-gap-xs {
+    @apply gap-x-(--sa-gap-xs);
+  }
+  .sa-group-gap-sm {
+    @apply gap-x-(--sa-gap-sm);
+  }
+  .sa-group-gap-md {
+    @apply gap-x-(--sa-gap-md);
+  }
+  .sa-group-gap-lg {
+    @apply gap-x-(--sa-gap-lg);
+  }
+  .sa-group-gap-xl {
+    @apply gap-x-(--sa-gap-xl);
   }
   .sa-group-justify-around {
     @apply justify-around;
@@ -547,6 +562,21 @@
   }
   .sa-stack-align-stretch {
     @apply items-stretch;
+  }
+  .sa-stack-gap-xs {
+    @apply gap-y-(--sa-gap-xs);
+  }
+  .sa-stack-gap-sm {
+    @apply gap-y-(--sa-gap-sm);
+  }
+  .sa-stack-gap-md {
+    @apply gap-y-(--sa-gap-md);
+  }
+  .sa-stack-gap-lg {
+    @apply gap-y-(--sa-gap-lg);
+  }
+  .sa-stack-gap-xl {
+    @apply gap-y-(--sa-gap-xl);
   }
   .sa-stack-justify-around {
     @apply justify-around;

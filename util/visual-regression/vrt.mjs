@@ -13,7 +13,10 @@
 //   node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out snapshots/baseline
 //   node util/visual-regression/vrt.mjs compare snapshots/baseline snapshots/after [--tolerance 0.5]
 //
-// The DocsSamples app must already be running (dotnet run in docs/DocsSamples). Requires the
+// The DocsSamples app must already be running. It now lives in the stellar-admin-pro repo, so
+// point page discovery at its Pages folder with
+// --pages ../stellar-admin-pro/docs/DocsSamples/Pages (defaults to this repo's old
+// docs/DocsSamples/Pages location). Requires the
 // system `chromium` binary and network access for the Geist webfont (load status is recorded
 // in each snapshot's metadata).
 //
@@ -32,7 +35,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const pagesDir = join(repoRoot, "docs", "DocsSamples", "Pages");
+const defaultPagesDir = join(repoRoot, "docs", "DocsSamples", "Pages");
 
 const VIEWPORTS = [
   { name: "desktop", width: 1280, height: 900 },
@@ -267,7 +270,7 @@ const SNAPSHOT_FN = `(() => {
 // ---------------------------------------------------------------------------------------------
 // capture
 
-function listPages() {
+function listPages(pagesDir) {
   const pages = readdirSync(pagesDir)
     .filter((name) => {
       const full = join(pagesDir, name);
@@ -278,10 +281,10 @@ function listPages() {
   return ["", ...pages]; // "" = Index
 }
 
-async function capture(baseUrl, outDir) {
+async function capture(baseUrl, outDir, pagesDir) {
   mkdirSync(outDir, { recursive: true });
   const { chrome, send, waitForEvent, evaluate } = await launchChromium();
-  const pages = listPages();
+  const pages = listPages(pagesDir);
   let hadError = false;
 
   try {
@@ -498,7 +501,7 @@ if (command === "capture") {
     console.error("capture requires --out <dir>");
     process.exit(2);
   }
-  await capture(url, resolve(out));
+  await capture(url, resolve(out), resolve(argValue(rest, "--pages", defaultPagesDir)));
 } else if (command === "compare") {
   const positional = rest.filter((a) => !a.startsWith("--") && a !== argValue(rest, "--tolerance"));
   if (positional.length !== 2) {
@@ -507,6 +510,8 @@ if (command === "capture") {
   }
   compare(resolve(positional[0]), resolve(positional[1]), Number(argValue(rest, "--tolerance", "0")));
 } else {
-  console.error("usage: vrt.mjs capture --url <url> --out <dir> | compare <baseline> <current> [--tolerance px]");
+  console.error(
+    "usage: vrt.mjs capture --url <url> --out <dir> [--pages <PagesDir>] | compare <baseline> <current> [--tolerance px]",
+  );
   process.exit(2);
 }

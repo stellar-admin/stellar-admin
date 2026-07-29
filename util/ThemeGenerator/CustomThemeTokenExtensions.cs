@@ -1,26 +1,10 @@
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace ThemeGenerator;
 
 public static partial class CustomThemeTokenExtensions
 {
-    private static readonly string TemplateFolder = GetTemplateFolder();
-
-    // The templates sit in ThemePacks/ alongside this source file. [CallerFilePath] is resolved at
-    // compile time, so they are read straight from the source tree rather than copied to the output.
-    private static string GetTemplateFolder([CallerFilePath] string sourceFilePath = "") =>
-        Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "Themes");
-
-    /// <summary>
-    ///     A token declaration in a template — a single leading dash followed by the token name. The
-    ///     value on the next line may itself start with dashes (placeholders are written
-    ///     <c>--sa-token-*</c>), which this deliberately does not match.
-    /// </summary>
-    [GeneratedRegex(@"^-(?<name>sa-\S+)\s*$")]
-    public static partial Regex TemplateTokenDeclarationRegex();
-
     /// <summary>
     ///     A gap-N applied to the element itself. The lookbehind rejects variant-prefixed forms such as
     ///     has-[&gt;[data-slot=checkbox-group]]:gap-3, which sit in the same class string but describe a
@@ -38,56 +22,63 @@ public static partial class CustomThemeTokenExtensions
     extension(Dictionary<string, string> tokens)
     {
         /// <summary>
-        ///     Appends the tokens for StellarAdmin.UI's own components, which have no upstream
-        ///     <c>.cn-*</c> block to extract.
+        ///     Derives a five-step spacing ladder for StellarAdmin's own components (sa-stack,
+        ///     sa-group, sa-app-header), which have no upstream .cn-* block to extract, and returns
+        ///     it as CSS custom properties (<c>--sa-gap-xs</c> … <c>--sa-gap-xl</c>) for the theme
+        ///     file's <c>:root</c> block. The structural rules in components.css consume them via
+        ///     <c>var(--sa-gap-*)</c>, so adding a theme-aware component is a components.css edit
+        ///     rather than a generator change.
         ///     <para>
-        ///         The values come from the theme itself (see
-        ///         <see cref="ExtractSpacingScaleVariables" />), but which component uses which step is
-        ///         authored by hand in <c>Themes/&lt;theme&gt;.custom.template</c>. A template
-        ///         references a step as <c>--sa-token-*</c> and this substitutes the theme's class for
-        ///         it, so adding a theme-aware component is a template edit rather than a code change.
+        ///         Each shadcn theme encodes its density in places that move together, so rather than
+        ///         inventing numbers we read the decisions the theme already made:
+        ///         <list type="bullet">
+        ///             <item>xs — sa-card-header gap: inside one labelled unit (title / description).</item>
+        ///             <item>sm — sa-field gap: a control and its label or help text.</item>
+        ///             <item>md — sa-field-set gap: sibling items in a list or form. The default.</item>
+        ///             <item>lg — sa-field-group gap: distinct groups or sections.</item>
+        ///             <item>xl — three ladder steps above lg; no upstream equivalent exists.</item>
+        ///         </list>
+        ///         The ladder is forced monotonic afterwards: in some themes sa-field-group ties
+        ///         sa-field-set, which would leave lg and md indistinguishable.
         ///     </para>
         /// </summary>
-        public Dictionary<string, string> AppendCustomThemeTokens(string themeName)
+        public Dictionary<string, string> ExtractSpacingVariables()
         {
-            var spacingScaleVariables = ExtractSpacingScaleVariables(tokens);
-            var templateFile = Path.Combine(TemplateFolder, $"{themeName}.custom.template");
+            var variables = new Dictionary<string, string>();
 
-            if (!File.Exists(templateFile))
+            double[] values =
+            [
+                DetectGap(tokens, "sa-card-header"),
+                DetectGap(tokens, "sa-field"),
+                DetectGap(tokens, "sa-field-set"),
+                DetectGap(tokens, "sa-field-group"),
+            ];
+
+            for (var i = 1; i < values.Length; i++)
             {
-                throw new FileNotFoundException(
-                    $"No theme template for {themeName}. Every theme needs one.",
-                    templateFile
-                );
+                if (values[i] <= values[i - 1])
+                {
+                    values[i] = StepLadder(values[i - 1], 1);
+                }
             }
 
-            // Longest name first, so a shorter one that prefixes a longer one cannot consume part of it.
-            var variables = spacingScaleVariables
-                .OrderByDescending(variable => variable.Key.Length)
-                .ToArray();
+            string[] names = ["xs", "sm", "md", "lg", "xl"];
+            double[] ladder = [.. values, StepLadder(values[^1], 3)];
 
-            var output = new Dictionary<string, string>(tokens);
-
-            foreach (var (name, value) in ParseTemplate(templateFile))
+            for (var i = 0; i < names.Length; i++)
             {
-                var classes = value;
-
-                foreach (var (variable, replacement) in variables)
-                {
-                    classes = classes.Replace($"--{variable}", replacement);
-                }
-
-                if (classes.Contains("--sa-token-"))
-                {
-                    throw new InvalidOperationException(
-                        $"{themeName}: token '{name}' references an unknown scale variable: {classes}"
-                    );
-                }
-
-                output[name] = classes;
+                variables[$"--sa-gap-{names[i]}"] = $"--spacing({Format(ladder[i])})";
             }
 
-            return output;
+            /*// The page gutter is a different axis to the gap ladder, so it comes from --card-spacing —
+            // each theme's chrome-padding number — and ramps two ladder steps either side of it.
+            var padding = DetectCardSpacing(tokens);
+            variables["sa-container-padding"] =
+                $"px-{Format(StepLadder(padding, -2))} "
+                + $"sm:px-{Format(padding)} "
+                + $"lg:px-{Format(StepLadder(padding, 2))}";*/
+
+            return variables;
         }
     }
 
@@ -113,47 +104,6 @@ public static partial class CustomThemeTokenExtensions
         14,
         16,
     ];
-
-    /// <summary>Tailwind's per-side and logical-side radius segments, which we never treat as the element's own radius.</summary>
-    private static readonly string[] RadiusSides =
-    [
-        "t",
-        "r",
-        "b",
-        "l",
-        "s",
-        "e",
-        "ss",
-        "se",
-        "es",
-        "ee",
-        "tl",
-        "tr",
-        "bl",
-        "br",
-    ];
-
-    /// <summary>
-    ///     Reads a template using the same grammar as a generated theme pack: a declaration line names
-    ///     the token, the line below it holds the value.
-    /// </summary>
-    private static IEnumerable<KeyValuePair<string, string>> ParseTemplate(string templateFile)
-    {
-        var lines = File.ReadAllLines(templateFile);
-
-        for (var i = 0; i < lines.Length - 1; i++)
-        {
-            var match = TemplateTokenDeclarationRegex().Match(lines[i]);
-
-            if (match.Success)
-            {
-                yield return new KeyValuePair<string, string>(
-                    match.Groups["name"].Value,
-                    lines[i + 1].Trim()
-                );
-            }
-        }
-    }
 
     private static string Format(double value) =>
         value.ToString("0.##", CultureInfo.InvariantCulture);
@@ -186,66 +136,6 @@ public static partial class CustomThemeTokenExtensions
         }
 
         throw new ArgumentException("Could not detect gap", nameof(token));
-    }
-
-    /// <summary>
-    ///     Derives a five-step spacing ladder for the layout primitives (sa-stack, sa-group,
-    ///     sa-container), which are StellarAdmin.UI's own components and have no upstream
-    ///     .cn-* block to extract.
-    ///     <para>
-    ///         Each shadcn theme encodes its density in places that move together, so rather than
-    ///         inventing numbers we read the decisions the theme already made:
-    ///         <list type="bullet">
-    ///             <item>xs — sa-card-header gap: inside one labelled unit (title / description).</item>
-    ///             <item>sm — sa-field gap: a control and its label or help text.</item>
-    ///             <item>md — sa-field-set gap: sibling items in a list or form. The default.</item>
-    ///             <item>lg — sa-field-group gap: distinct groups or sections.</item>
-    ///             <item>xl — three ladder steps above lg; no upstream equivalent exists.</item>
-    ///         </list>
-    ///         The ladder is forced monotonic afterwards: in some themes sa-field-group ties
-    ///         sa-field-set, which would leave lg and md indistinguishable.
-    ///     </para>
-    /// </summary>
-    private static Dictionary<string, string> ExtractSpacingScaleVariables(
-        Dictionary<string, string> input
-    )
-    {
-        var scaleVariables = new Dictionary<string, string>();
-
-        double[] values =
-        [
-            DetectGap(input, "sa-card-header"),
-            DetectGap(input, "sa-field"),
-            DetectGap(input, "sa-field-set"),
-            DetectGap(input, "sa-field-group"),
-        ];
-
-        for (var i = 1; i < values.Length; i++)
-        {
-            if (values[i] <= values[i - 1])
-            {
-                values[i] = StepLadder(values[i - 1], 1);
-            }
-        }
-
-        string[] names = ["xs", "sm", "md", "lg", "xl"];
-        double[] ladder = [.. values, StepLadder(values[^1], 3)];
-
-        for (var i = 0; i < names.Length; i++)
-        {
-            scaleVariables[$"sa-token-gap-y-{names[i]}"] = $"gap-y-{Format(ladder[i])}";
-            scaleVariables[$"sa-token-gap-x-{names[i]}"] = $"gap-x-{Format(ladder[i])}";
-        }
-
-        /*// The page gutter is a different axis to the gap ladder, so it comes from --card-spacing —
-        // each theme's chrome-padding number — and ramps two ladder steps either side of it.
-        var padding = DetectCardSpacing(input);
-        scaleVariables["sa-container-padding"] =
-            $"px-{Format(StepLadder(padding, -2))} "
-            + $"sm:px-{Format(padding)} "
-            + $"lg:px-{Format(StepLadder(padding, 2))}";*/
-
-        return scaleVariables;
     }
 
     /// <summary>Moves <paramref name="value" /> <paramref name="steps" /> places along the spacing ladder, clamped at both ends.</summary>
