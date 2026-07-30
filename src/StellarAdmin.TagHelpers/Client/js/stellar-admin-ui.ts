@@ -4,6 +4,7 @@ import "./web-components/sel-dropdown-menu";
 import "./web-components/sel-input-otp";
 import "./web-components/sel-sidebar";
 import "./web-components/sel-slider";
+import "./web-components/sel-table-selection";
 
 import { alertDialog } from "./wrappers/alert-dialog";
 import { dialog } from "./wrappers/dialog";

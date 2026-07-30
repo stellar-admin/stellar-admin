@@ -16,7 +16,10 @@
 
 /* Neutralises the [popover] defaults above, which would otherwise fight anchor positioning. */
 @utility try-flip-all {
-  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  position-try-fallbacks:
+    flip-block,
+    flip-inline,
+    flip-block flip-inline;
   --sa-popover-inset: auto;
   --sa-popover-background: transparent;
   --sa-popover-color: inherit;

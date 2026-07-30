@@ -159,6 +159,10 @@
   }
   .sa-checkbox {
     @apply relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none;
+    /* Indeterminate (some-selected) state: filled box with a centered dash, drawn in CSS
+       because `indeterminate` is a DOM property scripts set (e.g. sel-table-selection) —
+       the check-icon indicator span only reacts to peer-checked. */
+    @apply indeterminate:bg-primary indeterminate:border-primary before:absolute before:top-1/2 before:left-1/2 before:hidden before:h-0.5 before:w-2 before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-primary-foreground indeterminate:before:block;
   }
   .sa-checkbox-indicator {
     @apply invisible peer-checked:visible;
@@ -305,7 +309,10 @@
     @apply file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive;
   }
   .sa-input-control-wrapper {
-    @apply relative flex items-center;
+    /* inline-flex so the wrapper shrink-wraps to the control in any container: the
+       absolutely-positioned indicator icon centers on this wrapper, so a stretched
+       (block-level) wrapper — e.g. in a table cell — would drag the icon off the box. */
+    @apply relative inline-flex items-center;
   }
   .sa-input-group {
     @apply relative flex w-full min-w-0 items-center outline-none has-[>textarea]:h-auto;
