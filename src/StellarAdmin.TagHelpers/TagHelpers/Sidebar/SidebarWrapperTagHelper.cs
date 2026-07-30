@@ -35,7 +35,7 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
             : null;
         if (SidebarId == null)
         {
-            SidebarId = $"--sa-sidebar-{context.UniqueId}";
+            SidebarId = $"--sa-sidebar-{GetUniqueId(context)}";
             output.Attributes.SetAttribute("id", SidebarId);
         }
 

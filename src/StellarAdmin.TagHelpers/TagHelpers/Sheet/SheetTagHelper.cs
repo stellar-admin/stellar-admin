@@ -68,7 +68,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
 
             if (id == null)
             {
-                id = $"--sa-sheet-{context.UniqueId}";
+                id = $"--sa-sheet-{GetUniqueId(context)}";
                 output.Attributes.SetAttribute("id", id);
             }
 

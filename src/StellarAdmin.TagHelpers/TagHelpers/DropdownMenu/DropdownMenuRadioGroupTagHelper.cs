@@ -17,7 +17,7 @@ public class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var groupName = $"--sa-dropdown-menu-radio-{context.UniqueId}";
+        var groupName = $"--sa-dropdown-menu-radio-{GetUniqueId(context)}";
         SetContext(
             context,
             new DropdownMenuRadioGroupContext { GroupName = groupName, SelectedValue = Value }

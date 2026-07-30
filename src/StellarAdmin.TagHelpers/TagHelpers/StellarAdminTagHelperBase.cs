@@ -76,6 +76,44 @@ public class StellarAdminTagHelperBase : TagHelper
         return context.Items.TryGetValue(typeof(T), out var value) ? value as T : null;
     }
 
+    /// <summary>
+    ///     Returns an identifier unique to this element, for minting DOM ids. Equal to
+    ///     <see cref="TagHelperContext.UniqueId" /> (a per-source-tag compile-time literal)
+    ///     unless an ancestor repeating container published a <see cref="UniqueIdDiscriminator" />,
+    ///     in which case the discriminator is appended so ids stay unique when the same markup
+    ///     is executed multiple times.
+    /// </summary>
+    protected string GetUniqueId(TagHelperContext context)
+    {
+        return GetContext<UniqueIdDiscriminator>(context)?.Value is { Length: > 0 } discriminator
+            ? $"{context.UniqueId}-{discriminator}"
+            : context.UniqueId;
+    }
+
+    /// <summary>
+    ///     Captures the current ancestor stack so a repeating container can install a pristine
+    ///     copy with <see cref="RestoreAncestorStack" /> before each re-execution of its child
+    ///     content, preventing unbounded growth and stale parents across passes.
+    /// </summary>
+    protected Stack<StellarAdminTagHelperBase> CaptureAncestorStack(TagHelperContext context)
+    {
+        return new Stack<StellarAdminTagHelperBase>(GetParentTagHelperStack(context).Reverse());
+    }
+
+    /// <summary>
+    ///     Replaces the ancestor stack for subsequent child executions with a fresh copy of a
+    ///     snapshot taken by <see cref="CaptureAncestorStack" />.
+    /// </summary>
+    protected void RestoreAncestorStack(
+        TagHelperContext context,
+        Stack<StellarAdminTagHelperBase> snapshot
+    )
+    {
+        context.Items[ParentTagHelperStackKey] = new Stack<StellarAdminTagHelperBase>(
+            snapshot.Reverse()
+        );
+    }
+
     protected T? GetParentTagHelper<T>()
         where T : StellarAdminTagHelperBase
     {

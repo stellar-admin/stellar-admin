@@ -15,7 +15,7 @@ public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
             output.Attributes.TryGetAttribute("id", out var idAttribute)
             && idAttribute.Value?.ToString() is { Length: > 0 } userId
                 ? userId
-                : $"--sa-dropdown-menu-sub-{context.UniqueId}";
+                : $"--sa-dropdown-menu-sub-{GetUniqueId(context)}";
 
         SetContext(context, new DropdownMenuContext { MenuId = subId });
 
