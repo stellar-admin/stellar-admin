@@ -170,6 +170,28 @@
   .sa-checkbox-indicator-icon {
     @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-100 dark:text-black;
   }
+  .sa-data-grid {
+    /* The grid rides the card chassis (the tag helper also emits sa-card): the theme
+       supplies surface, ring/shadow, and --card-spacing; these rules zero the card's own
+       padding/gap so the table bleeds to the panel edges (py-0, not pt-0 — nova zeroes
+       its bottom padding via has-[card-footer] itself, vega does not), and pad the edge
+       cells to the card's spacing token so cell content tracks the theme's footer padding. */
+    @apply gap-0 py-0 [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing);
+  }
+  .sa-data-grid-footer {
+    /* Rides sa-card-footer (theme background + horizontal padding); the top border and
+       tight vertical padding are deliberately uniform across themes. justify-end keeps
+       the range/pager right-aligned; a leading child (e.g. a future page-size selector)
+       claims the left with mr-auto. The pagination nav is w-full mx-auto for standalone
+       centering; in-footer it must shrink and sit in flow. */
+    @apply justify-end gap-4 border-t py-2 [&_[data-slot=data-grid-pager]]:m-0 [&_[data-slot=data-grid-pager]]:w-auto;
+  }
+  .sa-data-grid-range {
+    @apply text-muted-foreground text-sm tabular-nums;
+  }
+  .sa-data-grid-range-value {
+    @apply text-foreground font-medium;
+  }
   .sa-dialog-content {
     @apply fixed inset-0 m-auto outline-none backdrop:supports-backdrop-filter:backdrop-blur-xs;
   }
