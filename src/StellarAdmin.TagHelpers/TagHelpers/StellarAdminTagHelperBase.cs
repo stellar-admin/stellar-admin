@@ -4,7 +4,7 @@ namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Base class for all StellarAdmin tag helpers. Provides class-string composition,
-///     named-slot support, and tracks the ancestor tag-helper stack so children can
+///     named-slot support, and tracks the parent tag-helper stack so children can
 ///     locate their parents.
 /// </summary>
 public class StellarAdminTagHelperBase : TagHelper
@@ -91,20 +91,21 @@ public class StellarAdminTagHelperBase : TagHelper
     }
 
     /// <summary>
-    ///     Captures the current ancestor stack so a repeating container can install a pristine
-    ///     copy with <see cref="RestoreAncestorStack" /> before each re-execution of its child
-    ///     content, preventing unbounded growth and stale parents across passes.
+    ///     Captures the current parent tag-helper stack so a repeating container can install a
+    ///     pristine copy with <see cref="RestoreParentTagHelperStack" /> before each
+    ///     re-execution of its child content, preventing unbounded growth and stale parents
+    ///     across passes.
     /// </summary>
-    protected Stack<StellarAdminTagHelperBase> CaptureAncestorStack(TagHelperContext context)
+    protected Stack<StellarAdminTagHelperBase> CaptureParentTagHelperStack(TagHelperContext context)
     {
         return new Stack<StellarAdminTagHelperBase>(GetParentTagHelperStack(context).Reverse());
     }
 
     /// <summary>
-    ///     Replaces the ancestor stack for subsequent child executions with a fresh copy of a
-    ///     snapshot taken by <see cref="CaptureAncestorStack" />.
+    ///     Replaces the parent tag-helper stack for subsequent child executions with a fresh
+    ///     copy of a snapshot taken by <see cref="CaptureParentTagHelperStack" />.
     /// </summary>
-    protected void RestoreAncestorStack(
+    protected void RestoreParentTagHelperStack(
         TagHelperContext context,
         Stack<StellarAdminTagHelperBase> snapshot
     )
