@@ -335,12 +335,392 @@
             </div>
           </div>
 
+          <!--
+            ======================================================================
+            LIVE CANDIDATE 2 — list-page composition (Identity Users index).
+            New exploration: search (filter by username/email) + all/active/
+            inactive status filter, fitted into the EXISTING sa-page-header.
+            Key point: no new component surface is needed — the nav slot is
+            already a plain positioning container, so the author composes one
+            toolbar row inside it:
+
+              <sa-page-header-nav>
+                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <sa-tab-list variant="Line"> …status filter links… </sa-tab-list>
+                  <sa-input-group class="w-full sm:w-64"> …search… </sa-input-group>
+                </div>
+              </sa-page-header-nav>
+
+            sa-tabs-list (horizontal) and sa-input-group are both h-8, so the
+            row aligns with plain items-center. On narrow screens flex-wrap
+            drops the search below the tabs at full width (wrap-order strip
+            below explores the alternative). A future Linear-style filter bar
+            composes BELOW the header as page content (see its strip) — it
+            does not change sa-page-header.
+            ======================================================================
+          -->
+          <div class="border-t border-dashed pt-4 text-xs text-muted-foreground">
+            Live candidate 2 — the same sa-page-header on a list page (Users), with the new
+            search + status-filter toolbar composed in the nav slot.
+          </div>
+          <header data-slot="page-header" class="grid grid-cols-1 items-start gap-x-4 gap-y-1.5 sm:grid-cols-[1fr_auto]">
+            <h1 data-slot="page-header-title" class="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-heading text-xl font-semibold tracking-tight">Users</h1>
+            <p data-slot="page-header-description" class="text-sm text-muted-foreground sm:col-start-1">
+              Staff accounts that can sign in to the Voyager Travel admin console.
+            </p>
+            <div data-slot="page-header-actions" class="mt-2 flex items-center gap-2 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mt-0 sm:justify-self-end sm:self-start">
+              <button type="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">
+                <svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                Invite user
+              </button>
+            </div>
+            <nav data-slot="page-header-nav" aria-label="Filter users" class="col-span-full mt-3">
+              <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                  <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                    <a href="?status=all" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                    <a href="?status=active" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                    <a href="?status=inactive" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                  </div>
+                </div>
+                <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full sm:w-64">
+                  <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                  <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                    <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </header>
+
+          <!-- list content below candidate 2, to judge the toolbar → table relation -->
+          <div data-slot="table-container" class="sa-table-container">
+            <table class="sa-table sa-table-container" data-slot="table">
+              <thead data-slot="table-header" class="sa-table-header">
+                <tr data-slot="table-row" class="sa-table-row">
+                  <th data-slot="table-head" class="sa-table-head">Username</th>
+                  <th data-slot="table-head" class="sa-table-head">Email</th>
+                  <th data-slot="table-head" class="sa-table-head">Roles</th>
+                  <th data-slot="table-head" class="sa-table-head">Status</th>
+                </tr>
+              </thead>
+              <tbody data-slot="table-body" class="sa-table-body">
+                <tr data-slot="table-row" class="sa-table-row">
+                  <td class="sa-table-cell font-medium" data-slot="table-cell">amelia.hart</td>
+                  <td data-slot="table-cell" class="sa-table-cell">amelia@voyager.travel</td>
+                  <td data-slot="table-cell" class="sa-table-cell">Administrator</td>
+                  <td data-slot="table-cell" class="sa-table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Active</span></td>
+                </tr>
+                <tr data-slot="table-row" class="sa-table-row">
+                  <td class="sa-table-cell font-medium" data-slot="table-cell">diego.marchetti</td>
+                  <td data-slot="table-cell" class="sa-table-cell">diego@voyager.travel</td>
+                  <td data-slot="table-cell" class="sa-table-cell">Bookings</td>
+                  <td data-slot="table-cell" class="sa-table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Active</span></td>
+                </tr>
+                <tr data-slot="table-row" class="sa-table-row">
+                  <td class="sa-table-cell font-medium" data-slot="table-cell">mei.tanaka</td>
+                  <td data-slot="table-cell" class="sa-table-cell">mei@voyager.travel</td>
+                  <td data-slot="table-cell" class="sa-table-cell">Support</td>
+                  <td data-slot="table-cell" class="sa-table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Active</span></td>
+                </tr>
+                <tr data-slot="table-row" class="sa-table-row">
+                  <td class="sa-table-cell font-medium" data-slot="table-cell">lars.nielsen</td>
+                  <td data-slot="table-cell" class="sa-table-cell">lars@voyager.travel</td>
+                  <td data-slot="table-cell" class="sa-table-cell">Destinations</td>
+                  <td data-slot="table-cell" class="sa-table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-outline">Inactive</span></td>
+                </tr>
+                <tr data-slot="table-row" class="sa-table-row">
+                  <td class="sa-table-cell font-medium" data-slot="table-cell">priya.raman</td>
+                  <td data-slot="table-cell" class="sa-table-cell">priya@voyager.travel</td>
+                  <td data-slot="table-cell" class="sa-table-cell">Support, Bookings</td>
+                  <td data-slot="table-cell" class="sa-table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
           <!-- ================= comparison strips ================= -->
           <p class="max-w-prose text-sm text-muted-foreground">
-            The header above is the live candidate in its real position. Below are
-            variations to compare — use the control bar (bottom right) to switch the
-            sidebar variant, theme, and dark mode, and resize the window for the
-            responsive strips.
+            The headers above are the live candidates in their real position — the
+            detail page (Flight Reservations) and the new list page (Users). Below
+            are variations to compare: the new list-page toolbar strips first, then
+            the earlier (settled) page-header strips kept as the record. Use the
+            control bar (bottom right) to switch the sidebar variant, theme, and
+            dark mode, and resize the window for the responsive strips.
+          </p>
+
+          <!-- Search placement -->
+          <section class="flex flex-col gap-3">
+            <h2 class="text-sm font-semibold">Search placement — nav row / actions slot / separate toolbar row</h2>
+            <div class="flex flex-col gap-4">
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">in the nav row, right-aligned opposite the tabs — flex flex-wrap items-center justify-between in the nav slot (candidate)</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <header data-slot="page-header" class="grid grid-cols-1 items-start gap-x-4 gap-y-1.5 sm:grid-cols-[1fr_auto]">
+                    <h1 class="font-heading text-xl font-semibold tracking-tight">Users</h1>
+                    <div class="mt-2 flex items-center gap-2 sm:col-start-2 sm:row-start-1 sm:mt-0 sm:justify-self-end sm:self-start">
+                      <button type="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Invite user</button>
+                    </div>
+                    <nav data-slot="page-header-nav" aria-label="Filter users" class="col-span-full mt-3">
+                      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                        <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                          <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                          </div>
+                        </div>
+                        <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full sm:w-64">
+                          <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                          <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                            <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                          </div>
+                        </div>
+                      </div>
+                    </nav>
+                  </header>
+                  <p class="mt-6 text-sm text-muted-foreground">Table starts here…</p>
+                </div>
+              </figure>
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">in the actions slot, next to the primary button — tabs alone in the nav row (search sits far from the list it filters; competes with actions)</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <header data-slot="page-header" class="grid grid-cols-1 items-start gap-x-4 gap-y-1.5 sm:grid-cols-[1fr_auto]">
+                    <h1 class="font-heading text-xl font-semibold tracking-tight">Users</h1>
+                    <div class="mt-2 flex items-center gap-2 sm:col-start-2 sm:row-start-1 sm:mt-0 sm:justify-self-end sm:self-start">
+                      <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-56">
+                        <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                        <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                          <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                        </div>
+                      </div>
+                      <button type="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Invite user</button>
+                    </div>
+                    <nav data-slot="page-header-nav" aria-label="Filter users" class="col-span-full mt-3">
+                      <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                        <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                          <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                          <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                          <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                        </div>
+                      </div>
+                    </nav>
+                  </header>
+                  <p class="mt-6 text-sm text-muted-foreground">Table starts here…</p>
+                </div>
+              </figure>
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">separate toolbar row BELOW the header (not part of sa-page-header) — tabs in the nav row, search leads the toolbar; this row is where a Linear-style filter bar would grow</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-col gap-4">
+                    <header data-slot="page-header" class="grid grid-cols-1 items-start gap-x-4 gap-y-1.5 sm:grid-cols-[1fr_auto]">
+                      <h1 class="font-heading text-xl font-semibold tracking-tight">Users</h1>
+                      <div class="mt-2 flex items-center gap-2 sm:col-start-2 sm:row-start-1 sm:mt-0 sm:justify-self-end sm:self-start">
+                        <button type="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Invite user</button>
+                      </div>
+                      <nav data-slot="page-header-nav" aria-label="Filter users" class="col-span-full mt-3">
+                        <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                          <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                            <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                          </div>
+                        </div>
+                      </nav>
+                    </header>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full sm:w-64">
+                        <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                        <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                          <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                        </div>
+                      </div>
+                      <button type="button" class="sa-button group/button sa-button-variant-outline sa-button-size-sm">
+                        <svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"></path></svg>
+                        Filter
+                      </button>
+                    </div>
+                    <p class="text-sm text-muted-foreground">Table starts here…</p>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          <!-- Search width -->
+          <section class="flex flex-col gap-3">
+            <h2 class="text-sm font-semibold">Search width in the nav row — w-48 / w-64 / w-80</h2>
+            <div class="flex flex-col gap-4">
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">w-48 — placeholder must shorten ("Search users…")</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                      <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                      </div>
+                    </div>
+                    <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-48">
+                      <input placeholder="Search users…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                      <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                        <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">w-64 (candidate) — fits "Search username or email…"</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                      <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                      </div>
+                    </div>
+                    <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-64">
+                      <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                      <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                        <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">w-80 — roomier, but starts reading as a page-level search</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                      <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                      </div>
+                    </div>
+                    <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-80">
+                      <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                      <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                        <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          <!-- Future direction: Linear-style filter bar -->
+          <section class="flex flex-col gap-3">
+            <h2 class="text-sm font-semibold">Future direction — Linear-style filter bar (NOT part of this extraction)</h2>
+            <div class="flex flex-col gap-4">
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">candidate nav row unchanged; a chips row composes below the header as page content — funnel trigger + active-filter chips (outline badges) + clear; later a proper component, likely pro-tier</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-col gap-3">
+                    <header data-slot="page-header" class="grid grid-cols-1 items-start gap-x-4 gap-y-1.5 sm:grid-cols-[1fr_auto]">
+                      <h1 class="font-heading text-xl font-semibold tracking-tight">Users</h1>
+                      <div class="mt-2 flex items-center gap-2 sm:col-start-2 sm:row-start-1 sm:mt-0 sm:justify-self-end sm:self-start">
+                        <button type="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Invite user</button>
+                      </div>
+                      <nav data-slot="page-header-nav" aria-label="Filter users" class="col-span-full mt-3">
+                        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                          <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                            <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                              <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                              <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                              <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                            </div>
+                          </div>
+                          <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full sm:w-64">
+                            <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                            <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                              <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                            </div>
+                          </div>
+                        </div>
+                      </nav>
+                    </header>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button type="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm">
+                        <svg class="size-4" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"></path></svg>
+                        Filter
+                      </button>
+                      <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-outline">
+                        Role: Support
+                        <button type="button" aria-label="Remove filter" class="-mr-0.5 inline-flex items-center rounded-sm hover:text-foreground">
+                          <svg class="size-3" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                        </button>
+                      </span>
+                      <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-outline">
+                        Last sign-in: 30 days
+                        <button type="button" aria-label="Remove filter" class="-mr-0.5 inline-flex items-center rounded-sm hover:text-foreground">
+                          <svg class="size-3" stroke="currentColor" stroke-linejoin="round" fill="none" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                        </button>
+                      </span>
+                      <button type="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm text-muted-foreground">Clear all</button>
+                    </div>
+                    <p class="text-sm text-muted-foreground">Table starts here…</p>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          <!-- Narrow wrap order -->
+          <section class="flex flex-col gap-3">
+            <h2 class="text-sm font-semibold">Narrow behavior of the nav row — resize the window to compare wrap order</h2>
+            <div class="flex flex-col gap-4">
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">markup order: tabs stay first, search wraps below at full width — w-full sm:w-64 (candidate)</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                      <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                      </div>
+                    </div>
+                    <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full sm:w-64">
+                      <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                      <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                        <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <figure class="flex flex-col gap-1.5">
+                <figcaption class="text-xs text-muted-foreground">search first on mobile: max-sm:order-first w-full — thumb-reachable search above the tabs</figcaption>
+                <div class="overflow-hidden rounded-lg border border-border bg-background p-6">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+                      <div data-slot="tabs-list" data-variant="line" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line">
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active aria-disabled="false" class="sa-tabs-trigger">All <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">248</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Active <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">231</span></a>
+                        <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Inactive <span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">17</span></a>
+                      </div>
+                    </div>
+                    <div role="group" data-slot="input-group" class="sa-input-group group/input-group w-full max-sm:order-first sm:w-64">
+                      <input placeholder="Search username or email…" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                      <div role="group" data-slot="input-group-addon" data-align="inline-start" onclick="(function(e) { if ((e.target).closest('button')) { return; } e.currentTarget.parentElement?.querySelector('input')?.focus(); })(event);" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                        <svg stroke-linejoin="round" width="24" stroke="currentColor" height="24" fill="none" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </section>
+
+          <!-- ================= earlier strips (settled) ================= -->
+          <p class="border-t border-dashed pt-4 text-xs text-muted-foreground">
+            Earlier exploration below — settled with the original candidate; kept as the record.
           </p>
 
           <!-- Composition ladder -->
