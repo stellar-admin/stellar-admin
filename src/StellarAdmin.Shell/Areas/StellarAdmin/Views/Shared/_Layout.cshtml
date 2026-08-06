@@ -1,3 +1,4 @@
+@inject StellarAdminShellOptions ShellOptions
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,6 +8,10 @@
     <meta name="description" content="StellarAdmin">
     @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.nova.css" asp-append-version="true"/>
+    @foreach (var stylesheet in ShellOptions.Stylesheets)
+    {
+        <link rel="stylesheet" href="@Url.Content(stylesheet)" asp-append-version="true"/>
+    }
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>

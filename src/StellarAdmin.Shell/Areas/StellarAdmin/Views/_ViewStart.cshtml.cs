@@ -4,8 +4,5 @@ namespace StellarAdmin.Shell.Areas.StellarAdmin.Views;
 
 public class _ViewStart : PageModel
 {
-    public void OnGet()
-    {
-        
-    }
+    public void OnGet() { }
 }
