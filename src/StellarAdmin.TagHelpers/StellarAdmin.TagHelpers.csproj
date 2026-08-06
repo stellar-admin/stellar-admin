@@ -64,9 +64,29 @@
     <ClientInput Include="Client/package.json" />
   </ItemGroup>
 
+  <!-- Declared at execution time rather than in a top-level ItemGroup: Rider silently strips
+       evaluation-time items that reference a file deleted in the IDE — which is how these went
+       missing in the StellarAdmin.UI rename, leaving Outputs empty and the Client target
+       silently skipped on every build. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientOutput Include="wwwroot/stellar-admin.js" />
+
+      <ClientOutput Include="wwwroot/stellar-admin.luma.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.lyra.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.maia.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.mira.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.nova.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.rhea.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.sera.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.vega.css" />
+    </ItemGroup>
+  </Target>
+
   <!-- Trigger client build -->
   <Target
     Name="Client"
+    DependsOnTargets="ClientItems"
     BeforeTargets="ResolveProjectStaticWebAssets"
     Inputs="@(Compile);@(ClientInput)"
     Outputs="@(ClientOutput)"

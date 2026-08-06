@@ -58,7 +58,7 @@ npm run fmt                   # oxfmt (format TS/JS)
 ```bash
 dotnet run --project util/ThemeGenerator   # downloads shadcn style-*.css -> Client/css/themes/*.css
 ```
-Adding a theme: generate its `Client/css/themes/<name>.css` and add a `ClientOutput` line for its bundle in `StellarAdmin.UI.csproj`. (Keep these as literal per-file lines — an item-transform over a name list makes Rider show the names as phantom files in the solution explorer.)
+Adding a theme: generate its `Client/css/themes/<name>.css` and add a `ClientOutput` line for its bundle inside the `ClientItems` target in `StellarAdmin.TagHelpers.csproj`. The `ClientOutput` items are declared in that target rather than a top-level `ItemGroup` on purpose: Rider silently strips evaluation-time items whose file is deleted in the IDE (that's how they once went missing, leaving the `Client` target's `Outputs` empty — and MSBuild *skips* a target with inputs but no outputs, so client builds silently stopped running). Execution-time items are invisible to Rider but fully visible to the `Client` target's up-to-date check.
 
 `dotnet build` runs `npm run build` for you via the `Client` target, which skips when none of its inputs changed. It hooks `ResolveProjectStaticWebAssets` rather than `Build`: `wwwroot/` is gitignored, so on a clean checkout a `BeforeTargets="Build"` target would run *after* static web asset discovery had already found the folder empty — leaving the first build with no `_content/` assets.
 
