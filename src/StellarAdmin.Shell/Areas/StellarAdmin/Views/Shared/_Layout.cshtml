@@ -13,6 +13,10 @@
         <link rel="stylesheet" href="@Url.Content(stylesheet)" asp-append-version="true"/>
     }
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+    @foreach (var script in ShellOptions.Scripts)
+    {
+        <script defer src="@Url.Content(script)" asp-append-version="true"></script>
+    }
 </head>
 <body>
 <sa-sidebar-wrapper>

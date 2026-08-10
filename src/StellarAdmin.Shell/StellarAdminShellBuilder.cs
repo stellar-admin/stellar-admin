@@ -18,6 +18,27 @@ public class StellarAdminShellBuilder
     }
 
     /// <summary>
+    ///     Links an additional script on every shell page. The script loads deferred, in
+    ///     registration order.
+    /// </summary>
+    /// <param name="path">
+    ///     The app-relative path of the script, e.g. <c>~/js/admin.js</c>. Registering the
+    ///     same path more than once links it only once.
+    /// </param>
+    /// <exception cref="ArgumentException"></exception>
+    public StellarAdminShellBuilder AddScript(string path)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+        if (!_options.Scripts.Contains(path))
+        {
+            _options.Scripts.Add(path);
+        }
+
+        return this;
+    }
+
+    /// <summary>
     ///     Links an additional stylesheet on every shell page.
     /// </summary>
     /// <param name="path">
