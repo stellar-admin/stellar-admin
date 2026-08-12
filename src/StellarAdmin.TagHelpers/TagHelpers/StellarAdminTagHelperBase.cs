@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.TagHelpers;
@@ -28,18 +29,25 @@ public class StellarAdminTagHelperBase : TagHelper
         ParentTagHelper = parentStack.Count == 0 ? null : parentStack.Peek();
 
         // Push the current component to the stack (if not a slot)
-        if (this is not SlotTagHelper)
+        if (this is not SlotContentTagHelper)
         {
             parentStack.Push(this);
         }
     }
 
+    /// <summary>
+    ///     Stores content under a slot name. Returns <c>false</c> when the slot has already
+    ///     been filled.
+    /// </summary>
     public bool TryAddNamedSlot(string name, TagHelperContent childContent)
     {
         return _namedSlots.TryAdd(name, childContent);
     }
 
-    public bool TryGetNamedSlot(string name, out TagHelperContent? content)
+    /// <summary>
+    ///     Gets the content a child <c>&lt;sa-slot-content&gt;</c> assigned to a named slot.
+    /// </summary>
+    public bool TryGetNamedSlot(string name, [NotNullWhen(true)] out TagHelperContent? content)
     {
         return _namedSlots.TryGetValue(name, out content);
     }

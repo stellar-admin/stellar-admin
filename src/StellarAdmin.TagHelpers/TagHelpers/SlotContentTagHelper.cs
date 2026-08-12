@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
-///     Assigns its child content to a named slot on the parent StellarAdmin tag helper, letting a
-///     parent render caller-supplied content in a specific location.
+///     Assigns its child content to a named slot on the nearest StellarAdmin tag helper,
+///     letting that tag helper render caller-supplied content in a specific location.
 /// </summary>
-[HtmlTargetElement("sa-slot", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class SlotTagHelper : StellarAdminTagHelperBase
+[HtmlTargetElement("sa-slot-content", TagStructure = TagStructure.NormalOrSelfClosing)]
+public class SlotContentTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The name of the slot to populate on the parent tag helper.
+    ///     The name of the slot to populate on the nearest StellarAdmin tag helper.
     /// </summary>
     [HtmlAttributeName("name")]
     public required string Name { get; set; }
@@ -19,13 +19,13 @@ public class SlotTagHelper : StellarAdminTagHelperBase
     {
         if (string.IsNullOrWhiteSpace(Name))
         {
-            throw new ArgumentException("The 'name' attribute is required on a slot.");
+            throw new ArgumentException("The 'name' attribute is required on <sa-slot-content>.");
         }
 
         if (ParentTagHelper is null)
         {
             throw new InvalidOperationException(
-                "A slot Tag Helper can only be used inside a StellarAdmin Tag Helper."
+                "<sa-slot-content> can only be used inside a StellarAdmin Tag Helper."
             );
         }
 
