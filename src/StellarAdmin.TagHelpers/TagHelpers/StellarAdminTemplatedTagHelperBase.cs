@@ -12,6 +12,8 @@ namespace StellarAdmin.TagHelpers;
 /// </summary>
 public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelperBase
 {
+    internal const string SlotHostViewDataKey = "__StellarAdminSlotHost";
+
     private readonly ICompositeViewEngine _viewEngine;
 
     /// <summary>
@@ -35,6 +37,10 @@ public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelper
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        // Executing the child content runs any <sa-slot-content> children, which assign
+        // themselves to this tag helper; any other child output is discarded.
+        await output.GetChildContentAsync();
+
         var viewName = View ?? ViewName;
         var view = ResolveView(viewName);
 
@@ -45,6 +51,10 @@ public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelper
         {
             Model = model,
         };
+
+        // The view's <sa-slot-outlet> elements read the assigned slot content back from
+        // this entry. Always set, so a nested templated render cannot see an outer host.
+        viewData[SlotHostViewDataKey] = this;
 
         using var writer = new StringWriter();
         await view.RenderAsync(new ViewContext(ViewContext, view, viewData, writer));
