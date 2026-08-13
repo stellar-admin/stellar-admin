@@ -63,11 +63,8 @@ public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelper
         output.Content.SetHtmlContent(writer.ToString());
     }
 
-    /// <summary>Returns the model of the view. Defaults to the model of the calling view.</summary>
-    protected virtual object? GetViewModel()
-    {
-        return ViewContext.ViewData.Model;
-    }
+    /// <summary>Returns the model of the view.</summary>
+    protected abstract object? GetViewModel();
 
     private IView ResolveView(string viewName)
     {
