@@ -4,19 +4,19 @@ Guidance for working in this repository.
 
 ## What this is
 
-**StellarAdmin.UI** is a library of ASP.NET Core **Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/) components, for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.UI` NuGet package. Consumers register it, add the tag helpers to `_ViewImports.cshtml`, link **one per-theme stylesheet** (`stellar-admin-ui.<theme>.css` — vega, nova, luma, lyra, maia, mira, rhea, sera), and reference `stellar-admin-ui.js`. **A theme is a CSS file**: switching themes is switching the `<link>`, with no server-side involvement.
+**StellarAdmin.TagHelpers** is a library of ASP.NET Core **Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/) components, for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.TagHelpers` NuGet package. Consumers register it, add the tag helpers to `_ViewImports.cshtml`, link **one per-theme stylesheet** (`stellar-admin.<theme>.css` — vega, nova, luma, lyra, maia, mira, rhea, sera), and reference `stellar-admin.js`. **A theme is a CSS file**: switching themes is switching the `<link>`, with no server-side involvement.
 
-Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **Lit web components** (`<sel-*>`) bundled into `stellar-admin-ui.js`.
+Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **Lit web components** (`<sel-*>`) bundled into `stellar-admin.js`.
 
 **This repo is the free, open-source layer.** Closed-source paid extensions build on top of it in separate repos, so keep additions here to what belongs in the OSS package.
 
 ### Registration
 
-`StellarAdmin.Core` owns the shared entry point; `StellarAdmin.UI` layers onto it:
+The package owns both the shared entry point and the UI layer (the former `StellarAdmin.Core` project folded into it 2026-08-16):
 
 ```csharp
-services.AddStellarAdmin()   // StellarAdmin.Core — returns StellarAdminBuilder
-        .AddUI();            // StellarAdmin.UI  — returns StellarAdminUIBuilder
+services.AddStellarAdmin()   // namespace StellarAdmin — returns StellarAdminBuilder
+        .AddUI();            // namespace StellarAdmin.TagHelpers — returns StellarAdminUIBuilder
 ```
 
 `AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddUI()` is what registers `IIconManager` and applies the Lucide icon pack default — `AddStellarAdmin()` on its own does not pull in the UI services. Theme selection is **not** part of registration: it's whichever theme stylesheet the app links.
@@ -25,12 +25,10 @@ services.AddStellarAdmin()   // StellarAdmin.Core — returns StellarAdminBuilde
 
 | Path | What |
 |------|------|
-| `src/StellarAdmin.Core/` | Shared DI entry point — `StellarAdminBuilder`, `AddStellarAdmin()` (namespace `StellarAdmin`). |
-| `src/StellarAdmin.UI/` | The library. Tag helpers, theming, icons, client assets. |
-| `src/StellarAdmin.UI/TagHelpers/<Component>/` | One folder per component (e.g. `Sidebar/`, `Button/`, `Sheet/`). |
-| `src/StellarAdmin.UI/Client/` | All client sources: TypeScript and the CSS (`css/theme.css`, `css/theme-tokens.css`, `css/components.css`, `css/anchors.css`, `css/themes/<name>.css` — the generated per-theme `.sa-*` rules), built into `src/StellarAdmin.UI/wwwroot/`. |
-| `src/StellarAdmin.UI/Client/js/web-components/` | The `sel-*` Lit components. |
-| `docs/DocsSamples/` | Razor Pages sample site; pages under `Pages/<Component>/` demo each component. |
+| `src/StellarAdmin.TagHelpers/` | The library. Tag helpers, theming, icons, client assets — and the shared DI entry point (`StellarAdminBuilder`, `AddStellarAdmin()`, namespace `StellarAdmin`). |
+| `src/StellarAdmin.TagHelpers/TagHelpers/<Component>/` | One folder per component (e.g. `Sidebar/`, `Button/`, `Sheet/`). |
+| `src/StellarAdmin.TagHelpers/Client/` | All client sources: TypeScript and the CSS (`css/theme.css`, `css/theme-tokens.css`, `css/components.css`, `css/anchors.css`, `css/themes/<name>.css` — the generated per-theme `.sa-*` rules), built into `src/StellarAdmin.TagHelpers/wwwroot/`. |
+| `src/StellarAdmin.TagHelpers/Client/js/web-components/` | The `sel-*` Lit components. |
 | `gen/`, `util/`, gen projects | Source generators (icons) and `util/ThemeGenerator`, the manual-run console app that regenerates `Client/css/themes/*.css` from upstream shadcn styles. |
 | `sandbox/` | Throwaway prototypes (e.g. `sandbox/html/*.html` for validating CSS approaches). New component visuals are designed here first — follow the `prototype-component` skill (workspace `.claude/skills/`); prototypes are point-in-time artifacts, code flows prototype → library only. |
 
@@ -40,14 +38,14 @@ Solution file: `StellarAdmin.slnx`. SDK pinned in `global.json` (`.NET 10`). Pac
 
 ### .NET
 ```bash
-dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj
+dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj
 ```
 
-### Client assets (run from `src/StellarAdmin.UI/Client/`)
+### Client assets (run from `src/StellarAdmin.TagHelpers/Client/`)
 ```bash
 npm run build                 # build:js + build:css
-npm run build:js              # rolldown -> ../wwwroot/stellar-admin-ui.js  (IIFE, minified)
-npm run build:css             # Tailwind v4 CLI x8 -> ../wwwroot/stellar-admin-ui.<theme>.css
+npm run build:js              # rolldown -> ../wwwroot/stellar-admin.js  (IIFE, minified)
+npm run build:css             # Tailwind v4 CLI x8 -> ../wwwroot/stellar-admin.<theme>.css
 npm run fmt                   # oxfmt (format TS/JS)
 ```
 `build:css` (`Client/scripts/build-theme-bundles.mjs`) derives the theme list from `Client/css/themes/` and compiles one self-contained bundle per theme, synthesizing each entry (`css/base.css` + the theme file) over stdin — there are no checked-in per-theme entry files. **Nothing scans source files** (`base.css` uses `@import "tailwindcss" source(none)`): the bundle is fully determined by the `.sa-*` rules in `Client/css/components.css` + `css/themes/<theme>.css` and the `@source inline()` safelist at the top of `components.css` (the few utility classes tag helpers still emit as literals). If a tag helper gains a new sanctioned literal, add it to that safelist or it will silently not exist.
@@ -93,11 +91,11 @@ Adding a theme: generate its `Client/css/themes/<name>.css` and add a `ClientOut
 - **Rendering a button:** prefer calling `ButtonRenderingHelper.RenderAttributes(output, variant, size)` directly on the element you're rendering, rather than instantiating a `ButtonTagHelper` and suppressing a wrapper. Reference: `InputGroupButtonTagHelper`, `PaginationLinkTagHelper`, `SidebarTriggerTagHelper`. (`RenderAttributes` only sets `data-slot="button"` if none is already present, and folds in the user class.)
 
 ### CSS consumption model
-The prebuilt per-theme bundle is the **only** consumption mode: a consumer links exactly one `_content/StellarAdmin.UI/stellar-admin-ui.<theme>.css`. There is no "single-build" mode where an app's own Tailwind build compiles the library's styles, and nothing CSS-related is shipped in the nupkg besides the bundles — no packed sources, no `.targets`.
+The prebuilt per-theme bundle is the **only** consumption mode: a consumer links exactly one `_content/StellarAdmin.TagHelpers/stellar-admin.<theme>.css`. There is no "single-build" mode where an app's own Tailwind build compiles the library's styles, and nothing CSS-related is shipped in the nupkg besides the bundles — no packed sources, no `.targets`.
 
 - Each bundle is compiled from `Client/css/base.css` (`@import "tailwindcss" source(none)`, `tw-animate-css` from npm, then theme.css / shadcn-tailwind.css / anchors.css / components.css) plus one `Client/css/themes/<theme>.css`.
 - **Theming customization is plain CSS**: an app redeclares the custom properties (`:root { --primary: …; --radius: … }`) in its own stylesheet — no imports needed; every compiled declaration references `var(--…)`.
-- An app whose *own markup* uses token-named utilities (`bg-background`, …) adds `Client/css/theme-tokens.css` (the `@theme` vocabulary + `dark:` variant, no values) to its own Tailwind build so those utilities can be generated. External consumers copy the file (or the token block from the docs) into their project; the in-repo sample apps import it repo-relatively (see `docs/DocsSamples/Client/css/site.css`).
+- An app whose *own markup* uses token-named utilities (`bg-background`, …) adds `Client/css/theme-tokens.css` (the `@theme` vocabulary + `dark:` variant, no values) to its own Tailwind build so those utilities can be generated. External consumers copy the file (or the token block from the docs) into their project; the sample apps import it repo-relatively (see the pro repo's `docs/DocsSamples/Client/css/site.css`).
 
 ### Cascade layers
 Tailwind's stock layer order applies (`theme, base, components, utilities`); layer names unify across same-document stylesheets, so the app's utilities out-rank the library's component rules no matter the `<link>` order. Within `components`, the generated theme rules sit in the nested `@layer components.theme`, which loses to the structural rules declared directly in `components` (see Theming above). The library emits so few utilities (the `@source inline()` safelist) that no special layer machinery is needed anymore — the old `stellar-admin` promotion layer is gone.
@@ -111,13 +109,13 @@ The Geist webfont is linked from the layout, **not** `@import`ed in CSS. A remot
 - State is exposed to CSS by reflecting it onto `data-*` attributes that Tailwind `group-data-[...]` variants react to.
 
 ## Verifying changes
-There is no unit-test project yet (xunit + `Microsoft.AspNetCore.Mvc.Testing` are available centrally for when one is added). Verify component work by running the `docs/DocsSamples` site and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
+There is no unit-test project yet (xunit + `Microsoft.AspNetCore.Mvc.Testing` are available centrally for when one is added). Verify component work by running the DocsSamples site (in the pro repo: `../stellar-admin-pro/docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
 
 Both sample apps consume the prebuilt bundles, with deliberate variation — DocsSamples links the nova theme, ComponentPlayground links vega and additionally runs the `@tailwindcss/forms` plugin in its own build. Both import `theme-tokens.css` into their own Tailwind builds, keeping the token-vocabulary consumer path exercised.
 
 ### Visual-regression tool
 For CSS/theming refactors that must not change rendering, `util/visual-regression/vrt.mjs` (dependency-free Node + system chromium over CDP) snapshots every DocsSamples page at two viewports — curated computed styles + rects per element (keyed by DOM path + `data-slot`, never `class`), plus overlay open-state scenarios and human-review screenshots. Capture a baseline before the risky work, re-capture after, and compare; the diff is property-level and exact. Baselines are on-demand and gitignored (`util/visual-regression/snapshots/`).
 ```bash
-node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out util/visual-regression/snapshots/<name>   # DocsSamples must be running
+node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --pages ../stellar-admin-pro/docs/DocsSamples/Pages --out util/visual-regression/snapshots/<name>   # DocsSamples must be running
 node util/visual-regression/vrt.mjs compare util/visual-regression/snapshots/<baseline> util/visual-regression/snapshots/<current>
 ```
