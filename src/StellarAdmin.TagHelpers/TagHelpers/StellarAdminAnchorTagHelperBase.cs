@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
 namespace StellarAdmin.TagHelpers;
 
@@ -119,9 +120,56 @@ public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <summary>
+    ///     Whether a routing target (<c>asp-page</c>, <c>asp-action</c>, <c>asp-controller</c>,
+    ///     <c>asp-route</c>, <c>asp-area</c>, <c>asp-page-handler</c> or <c>asp-route-*</c>) is set.
+    ///     <c>asp-fragment</c>, <c>asp-host</c> and <c>asp-protocol</c> are modifiers and only apply
+    ///     alongside a target.
+    /// </summary>
+    protected bool HasRouteTarget =>
+        Page != null
+        || Action != null
+        || Controller != null
+        || Route != null
+        || Area != null
+        || PageHandler != null
+        || RouteValues.Count > 0;
+
+    /// <summary>
+    ///     Lets the framework anchor tag helper resolve the <c>href</c> from the routing attributes.
+    ///     Does nothing when no routing target is set, so an anchor without one keeps (or lacks)
+    ///     the author's <c>href</c> instead of linking to the current action.
+    /// </summary>
+    protected async Task ApplyRouteAttributesAsync(
+        IHtmlGenerator htmlGenerator,
+        TagHelperContext context,
+        TagHelperOutput output
+    )
+    {
+        if (!HasRouteTarget)
+        {
+            return;
+        }
+
+        var anchorTagHelper = new FrameworkAnchorTagHelper(htmlGenerator)
+        {
+            ViewContext = ViewContext,
+            Action = Action,
+            Area = Area,
+            Controller = Controller,
+            Fragment = Fragment,
+            Host = Host,
+            Page = Page,
+            PageHandler = PageHandler,
+            Protocol = Protocol,
+            Route = Route,
+            RouteValues = RouteValues,
+        };
+        await anchorTagHelper.ProcessAsync(context, output);
+    }
+
     protected bool IsActiveRoute()
     {
-        var isRouteLink = Route != null;
         var isActionLink = Controller != null || Action != null;
         var isPageLink = Page != null || PageHandler != null;
 
@@ -129,16 +177,43 @@ public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
         {
             return ViewContext.RouteData.Values["area"]?.ToString() == Area
                 && ViewContext.RouteData.Values["page"]?.ToString() == Page
-                && ViewContext.RouteData.Values["handler"]?.ToString() == PageHandler;
+                && ViewContext.RouteData.Values["handler"]?.ToString() == PageHandler
+                && MatchesRouteValues();
         }
 
         if (isActionLink)
         {
             return ViewContext.RouteData.Values["area"]?.ToString() == Area
                 && ViewContext.RouteData.Values["controller"]?.ToString() == Controller
-                && ViewContext.RouteData.Values["action"]?.ToString() == Action;
+                && ViewContext.RouteData.Values["action"]?.ToString() == Action
+                && MatchesRouteValues();
         }
 
         return false;
+    }
+
+    /// <summary>
+    ///     Compares the link's <c>asp-route-*</c> values with the current request, so links to the
+    ///     same page or action that differ only by a route value (a category, an id) don't all
+    ///     count as active. A value the framework put in the query string is matched there.
+    /// </summary>
+    private bool MatchesRouteValues()
+    {
+        foreach (var (key, value) in RouteValues)
+        {
+            var currentValue =
+                ViewContext.RouteData.Values.TryGetValue(key, out var routeValue)
+                    ? routeValue?.ToString()
+                : ViewContext.HttpContext.Request.Query.TryGetValue(key, out var queryValue)
+                    ? queryValue.ToString()
+                : null;
+
+            if (!string.Equals(currentValue, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

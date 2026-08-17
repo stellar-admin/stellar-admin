@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -32,21 +32,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.TagName = "a";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        var anchorTagHelper = new AnchorTagHelper(_htmlGenerator)
-        {
-            ViewContext = ViewContext,
-            Action = Action,
-            Area = Area,
-            Controller = Controller,
-            Fragment = Fragment,
-            Host = Host,
-            Page = Page,
-            PageHandler = PageHandler,
-            Protocol = Protocol,
-            Route = Route,
-            RouteValues = RouteValues,
-        };
-        await anchorTagHelper.ProcessAsync(context, output);
+        await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
 
         output.Attributes.SetAttribute("data-slot", "sidebar-menu-sub-button");
         output.Attributes.SetAttribute("data-sidebar", "menu-sub-button");

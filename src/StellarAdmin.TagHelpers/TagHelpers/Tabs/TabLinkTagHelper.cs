@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -40,21 +40,7 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
         output.TagName = "a";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        var anchorTagHelper = new AnchorTagHelper(_htmlGenerator)
-        {
-            ViewContext = ViewContext,
-            Action = Action,
-            Area = Area,
-            Controller = Controller,
-            Fragment = Fragment,
-            Host = Host,
-            Page = Page,
-            PageHandler = PageHandler,
-            Protocol = Protocol,
-            Route = Route,
-            RouteValues = RouteValues,
-        };
-        await anchorTagHelper.ProcessAsync(context, output);
+        await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
 
         var isActive = IsActive ?? IsActiveRoute();
         output.Attributes.SetAttribute("role", "tab");

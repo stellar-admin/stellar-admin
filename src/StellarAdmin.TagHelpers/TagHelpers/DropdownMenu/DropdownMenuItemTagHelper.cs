@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
 namespace StellarAdmin.TagHelpers;
 
@@ -59,39 +58,15 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
     {
         var effectiveVariant = Variant ?? DropdownMenuItemVariant.Default;
 
-        // A routing target (asp-page / asp-action / asp-controller / asp-route / asp-area /
-        // asp-page-handler / asp-route-*) makes the item a link the framework resolves; a raw href
-        // does too. asp-fragment/host/protocol are modifiers and only apply alongside a target.
-        var hasRouteTarget =
-            Page != null
-            || Action != null
-            || Controller != null
-            || Route != null
-            || Area != null
-            || PageHandler != null
-            || RouteValues.Count > 0;
-        var isLink = Href != null || hasRouteTarget;
+        // A routing target makes the item a link the framework resolves; a raw href does too.
+        var isLink = Href != null || HasRouteTarget;
 
         output.TagName = isLink ? "a" : "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        if (hasRouteTarget)
+        if (HasRouteTarget)
         {
-            // Let the framework anchor helper emit the href from the routing attributes.
-            await new FrameworkAnchorTagHelper(_htmlGenerator)
-            {
-                ViewContext = ViewContext,
-                Action = Action,
-                Area = Area,
-                Controller = Controller,
-                Fragment = Fragment,
-                Host = Host,
-                Page = Page,
-                PageHandler = PageHandler,
-                Protocol = Protocol,
-                Route = Route,
-                RouteValues = RouteValues,
-            }.ProcessAsync(context, output);
+            await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
         }
         else if (Href != null)
         {

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.TagHelpers;
@@ -41,6 +41,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
             effectiveOrientation.GetDataAttributeText()
         );
 
+        // The author's class belongs to the host only; the inner list carries its own classes.
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-tabs", "group/tabs", output.GetUserSuppliedClass())
@@ -56,8 +57,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
                 "group/tabs-list",
                 effectiveVariant == TabListVariant.Default
                     ? "sa-tabs-list-variant-default"
-                    : "sa-tabs-list-variant-line",
-                output.GetUserSuppliedClass()
+                    : "sa-tabs-list-variant-line"
             )
         );
         tabListTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
