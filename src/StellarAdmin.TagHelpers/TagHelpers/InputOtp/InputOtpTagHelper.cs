@@ -114,8 +114,14 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         );
 
         // The host becomes <sel-input-otp>, the flex container. Drop the name the base copied onto
-        // the host: the value posts through the real input, not the host element.
+        // the host: the value posts through the real input, not the host element. The id moves
+        // there too, so a label targeting it reaches the focusable control.
         output.Attributes.RemoveAll("name");
+        if (For == null && output.Attributes["id"]?.Value is { } hostId)
+        {
+            inputOutput.Attributes.SetAttribute("id", hostId);
+            output.Attributes.RemoveAll("id");
+        }
         output.TagName = "sel-input-otp";
         output.TagMode = TagMode.StartTagAndEndTag;
 

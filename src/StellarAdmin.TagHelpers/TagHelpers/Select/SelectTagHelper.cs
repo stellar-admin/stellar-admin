@@ -113,8 +113,10 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         output.Content.AppendHtml(iconTagHelperOutput);
 
         /*
-         * Finally, render the wrapper
+         * Finally, render the wrapper. Everything the author wrote (id, name, disabled, aria-*)
+         * has moved onto the <select>; the wrapper carries only its own attributes and class.
          */
+        output.Attributes.Clear();
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 

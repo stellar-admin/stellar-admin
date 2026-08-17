@@ -45,6 +45,13 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     public string? Label { get; set; }
 
     /// <summary>
+    ///     The <c>id</c> of the element the automatically rendered label targets. Set by default
+    ///     from the host's <c>id</c> when the input is not model-bound; derived classes may
+    ///     override it when the labelled control gets a different id.
+    /// </summary>
+    protected string? LabelForId { get; set; }
+
+    /// <summary>
     ///     The name of the &lt;input&gt; element.
     /// </summary>
     /// <remarks>
@@ -92,6 +99,23 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         if (Name != null)
         {
             output.CopyHtmlAttribute(nameof(Name), context);
+        }
+
+        // Without asp-for the framework generates no id, so an implicit label would have nothing
+        // to point at: mint one from the tag's unique id (unless the author supplied one) and
+        // target it from the label. Model-bound inputs get their id and label from the framework.
+        if (For == null)
+        {
+            if (
+                Label != null
+                && !output.Attributes.ContainsName("id")
+                && ShouldRenderFieldWrapper()
+            )
+            {
+                output.Attributes.SetAttribute("id", $"sa-{GetUniqueId(context)}");
+            }
+
+            LabelForId = output.Attributes["id"]?.Value?.ToString();
         }
 
         IDictionary<string, object?>? htmlAttributes = null;
@@ -247,7 +271,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var labelTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                [],
+                LabelForId == null ? [] : [new TagHelperAttribute("for", LabelForId)],
                 (_, _) =>
                     Label == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())

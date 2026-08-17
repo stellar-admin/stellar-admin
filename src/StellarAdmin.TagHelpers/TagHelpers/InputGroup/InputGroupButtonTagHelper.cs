@@ -44,6 +44,13 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
         output.TagName = "button";
         output.TagMode = TagMode.StartTagAndEndTag;
 
+        // Input-group buttons are in-field actions (clear, copy, toggle), so they must not submit
+        // the enclosing form unless the author asks for it.
+        if (!output.Attributes.ContainsName("type"))
+        {
+            output.Attributes.SetAttribute("type", "button");
+        }
+
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",

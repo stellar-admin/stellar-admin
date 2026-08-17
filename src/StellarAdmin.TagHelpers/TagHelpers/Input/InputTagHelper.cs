@@ -103,6 +103,21 @@ public class InputTagHelper : FieldInputBaseTagHelper
             ? typeAttribute.Value?.ToString()
             : null;
 
+        // The framework gives every radio bound to the same property the same id, so their labels
+        // all target the first one. Suffix the value to keep each radio and its label paired.
+        if (
+            For != null
+            && type == "radio"
+            && Value != null
+            && !output.Attributes.ContainsName("id")
+            && inputOutput.Attributes["id"]?.Value?.ToString() is { Length: > 0 } radioId
+        )
+        {
+            var perValueId = TagBuilder.CreateSanitizedId($"{radioId}_{Value}", "_");
+            inputOutput.Attributes.SetAttribute("id", perValueId);
+            LabelForId = perValueId;
+        }
+
         string?[] classNames = type switch
         {
             "checkbox" => ["sa-checkbox", "peer"],
