@@ -63,7 +63,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         }
         else
         {
-            var textToRender = GetInitials() ?? "&nbsp";
+            var textToRender = GetInitials() ?? "&nbsp;";
             var fallbackTagBuilder = new TagBuilder("span");
             fallbackTagBuilder.Attributes.Add("data-slot", "avatar-fallback");
             fallbackTagBuilder.Attributes.Add("class", JoinCssClasses("sa-avatar-fallback"));
@@ -72,16 +72,6 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         }
 
         output.Content.AppendHtml(await output.GetChildContentAsync());
-    }
-
-    private string? GetFontSizeClass(AvatarSize avatarSize)
-    {
-        return avatarSize switch
-        {
-            AvatarSize.Small => "text-sm",
-            AvatarSize.Large => "text-xl",
-            _ => null,
-        };
     }
 
     private string? GetInitials()
@@ -97,7 +87,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         {
             var splitName = name.Split(
                 ' ',
-                StringSplitOptions.TrimEntries | StringSplitOptions.TrimEntries
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
 
             return splitName switch

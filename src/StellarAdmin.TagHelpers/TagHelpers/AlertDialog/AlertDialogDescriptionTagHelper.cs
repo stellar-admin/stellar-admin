@@ -13,8 +13,8 @@ public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
         output.TagName = "p";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "alert-dialog-description");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-description");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-alert-dialog-description", output.GetUserSuppliedClass())
         );

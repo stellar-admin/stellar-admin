@@ -299,7 +299,6 @@ export class DropdownMenu extends LitElement {
   #setItemState(item: HTMLElement, checked: boolean) {
     item.setAttribute("aria-checked", String(checked));
     item.setAttribute("data-state", checked ? "checked" : "unchecked");
-    item.querySelector('[data-slot$="-indicator"]')?.classList.toggle("hidden", !checked);
   }
 
   #toggleCheckbox(item: HTMLElement) {

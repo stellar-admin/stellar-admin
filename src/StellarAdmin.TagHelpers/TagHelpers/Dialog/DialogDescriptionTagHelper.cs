@@ -13,8 +13,8 @@ public class DialogDescriptionTagHelper : StellarAdminTagHelperBase
         output.TagName = "p";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "dialog-description");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "dialog-description");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-dialog-description", output.GetUserSuppliedClass())
         );

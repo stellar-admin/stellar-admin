@@ -13,7 +13,7 @@ public class AvatarGroupTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "avatar-group");
+        output.Attributes.SetAttribute("data-slot", "avatar-group");
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-avatar-group", "group/avatar-group", output.GetUserSuppliedClass())

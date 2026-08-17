@@ -14,8 +14,8 @@ public class ProgressValueTagHelper : StellarAdminTagHelperBase
         output.TagName = "span";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "progress-value");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "progress-value");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-progress-value", output.GetUserSuppliedClass())
         );

@@ -64,7 +64,10 @@ public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
             "input",
             new TagHelperAttributeList(output.Attributes),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
+        )
+        {
+            TagMode = TagMode.StartTagOnly,
+        };
         inputOutput.Attributes.SetAttribute(
             "type",
             type == ToggleGroupType.Single ? "radio" : "checkbox"

@@ -71,7 +71,10 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
             "input",
             new TagHelperAttributeList(output.Attributes),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-        );
+        )
+        {
+            TagMode = TagMode.StartTagOnly,
+        };
         if (For == null)
         {
             if (Value != null)

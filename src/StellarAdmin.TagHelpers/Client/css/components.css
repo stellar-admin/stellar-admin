@@ -168,7 +168,7 @@
     @apply invisible peer-checked:visible;
   }
   .sa-checkbox-indicator-icon {
-    @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-100 dark:text-black;
+    @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary-foreground;
   }
   .sa-data-grid {
     /* The grid rides the card chassis (the tag helper also emits sa-card): the theme
@@ -220,7 +220,7 @@
     @apply relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0;
   }
   .sa-dropdown-menu-item-indicator {
-    @apply pointer-events-none;
+    @apply pointer-events-none in-data-[state=unchecked]:hidden;
   }
   .sa-dropdown-menu-radio-item {
     @apply relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0;
@@ -229,7 +229,7 @@
     @apply z-50 overflow-x-hidden overflow-y-auto outline-hidden try-flip-all duration-200 ease-in opacity-100 not-open:opacity-0 starting:open:opacity-0 [transition-property:opacity,display,overlay] [transition-behavior:allow-discrete] w-auto;
   }
   .sa-dropdown-menu-sub-trigger {
-    @apply flex cursor-default items-center outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0;
+    @apply flex cursor-default items-center outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&>svg:last-child]:ml-auto;
   }
   .sa-empty {
     @apply flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center text-balance;

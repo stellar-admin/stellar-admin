@@ -13,8 +13,8 @@ public class AlertDialogTitleTagHelper : StellarAdminTagHelperBase
         output.TagName = "h2";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "alert-dialog-title");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-title");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
                 "sa-alert-dialog-title",

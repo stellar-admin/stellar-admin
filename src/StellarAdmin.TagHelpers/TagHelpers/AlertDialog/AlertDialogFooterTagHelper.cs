@@ -13,8 +13,8 @@ public class AlertDialogFooterTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "alert-dialog-footer");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-footer");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-alert-dialog-footer", output.GetUserSuppliedClass())
         );

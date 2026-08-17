@@ -36,7 +36,7 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
             "aria-orientation",
             effectiveOrientation.GetDataAttributeText()
         );
-        output.Attributes.Add("data-slot", "separator");
+        output.Attributes.SetAttribute("data-slot", "separator");
         output.Attributes.SetAttribute(
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()

@@ -13,8 +13,8 @@ public class AlertDialogHeaderTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "alert-dialog-header");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-header");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-alert-dialog-header", output.GetUserSuppliedClass())
         );

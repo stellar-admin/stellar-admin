@@ -45,6 +45,10 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
 
         var isFloatingOrInset = effectiveVariant is SidebarVariant.Floating or SidebarVariant.Inset;
 
+        // Capture before the wrapper's own class is set below, otherwise the container
+        // would inherit "sa-sidebar group peer" instead of the author's class.
+        var userSuppliedClass = output.GetUserSuppliedClass();
+
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
@@ -62,7 +66,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             );
             output.Attributes.SetAttribute(
                 "class",
-                JoinCssClasses("sa-sidebar-inner", output.GetUserSuppliedClass())
+                JoinCssClasses("sa-sidebar-inner", userSuppliedClass)
             );
 
             output.Content.AppendHtml(await output.GetChildContentAsync());
@@ -111,7 +115,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         sidebarContainerTagBuilder.Attributes.Add("data-slot", "sidebar-container");
         sidebarContainerTagBuilder.Attributes.Add(
             "class",
-            JoinCssClasses("sa-sidebar-container", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-sidebar-container", userSuppliedClass)
         );
 
         /* Sidebar inner */

@@ -15,7 +15,10 @@ public class AvatarGroupCount : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "avatar-group-count");
-        output.Attributes.SetAttribute("class", JoinCssClasses("sa-avatar-group-count"));
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-avatar-group-count", output.GetUserSuppliedClass())
+        );
 
         return Task.CompletedTask;
     }

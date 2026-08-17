@@ -118,9 +118,9 @@ public class SelectTagHelper : FieldInputBaseTagHelper
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "native-select-wrapper");
-        output.Attributes.Add("data-size", effectiveSize.GetDataAttributeText());
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "native-select-wrapper");
+        output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-native-select-wrapper", "group/native-select", userSuppliedClass)
         );

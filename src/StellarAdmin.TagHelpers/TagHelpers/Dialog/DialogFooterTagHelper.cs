@@ -13,8 +13,8 @@ public class DialogFooterTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "dialog-footer");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "dialog-footer");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-dialog-footer", output.GetUserSuppliedClass())
         );

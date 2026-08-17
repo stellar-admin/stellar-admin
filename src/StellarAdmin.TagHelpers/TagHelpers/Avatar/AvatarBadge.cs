@@ -13,8 +13,8 @@ public class AvatarBadge : StellarAdminTagHelperBase
         output.TagName = "span";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "avatar-badge");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "avatar-badge");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-avatar-badge", output.GetUserSuppliedClass())
         );

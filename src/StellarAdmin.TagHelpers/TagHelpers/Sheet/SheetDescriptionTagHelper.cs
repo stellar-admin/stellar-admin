@@ -13,8 +13,8 @@ public class SheetDescriptionTagHelper : StellarAdminTagHelperBase
         output.TagName = "p";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "sheet-description");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "sheet-description");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-sheet-description", output.GetUserSuppliedClass())
         );

@@ -13,8 +13,8 @@ public class SheetTitleTagHelper : StellarAdminTagHelperBase
         output.TagName = "h2";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "sheet-title");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "sheet-title");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
                 "sa-sheet-title",

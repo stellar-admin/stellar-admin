@@ -83,10 +83,7 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
 
         var indicator = new TagBuilder("span");
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
-        indicator.Attributes["class"] = JoinCssClasses(
-            "sa-dropdown-menu-item-indicator",
-            isChecked ? string.Empty : "hidden"
-        );
+        indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
         indicator.InnerHtml.AppendHtml(
             DropdownMenuInternals.RenderIcon(context, _iconManager, "check", "size-4")
         );

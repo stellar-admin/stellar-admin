@@ -13,8 +13,8 @@ public class ProgressLabelTagHelper : StellarAdminTagHelperBase
         output.TagName = "span";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "progress-label");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "progress-label");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-progress-label", output.GetUserSuppliedClass())
         );

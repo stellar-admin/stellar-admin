@@ -13,8 +13,8 @@ public class DialogHeaderTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.Add("data-slot", "dialog-header");
-        output.Attributes.Add(
+        output.Attributes.SetAttribute("data-slot", "dialog-header");
+        output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-dialog-header", output.GetUserSuppliedClass())
         );
