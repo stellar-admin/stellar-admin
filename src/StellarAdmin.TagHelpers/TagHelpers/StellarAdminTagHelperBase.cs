@@ -10,7 +10,7 @@ namespace StellarAdmin.TagHelpers;
 /// </summary>
 public class StellarAdminTagHelperBase : TagHelper
 {
-    private const string ParentTagHelperStackKey = "stellar-admin-parent-tag-helper-stack";
+    private const string ParentTagHelperKey = "stellar-admin-parent-tag-helper";
 
     private readonly Dictionary<string, TagHelperContent> _namedSlots =
         new Dictionary<string, TagHelperContent>();
@@ -23,15 +23,19 @@ public class StellarAdminTagHelperBase : TagHelper
 
     public override void Init(TagHelperContext context)
     {
-        var parentStack = GetParentTagHelperStack(context);
+        // Razor gives every tag helper scope its own copy-on-write view of Items, so a value
+        // set here is visible to descendants only: siblings and ancestors keep seeing their
+        // own parent. That per-scope copy is what makes this a stack without any popping.
+        ParentTagHelper =
+            context.Items.TryGetValue(ParentTagHelperKey, out var parent)
+            && parent is StellarAdminTagHelperBase parentTagHelper
+                ? parentTagHelper
+                : null;
 
-        // Get the current parent, if any
-        ParentTagHelper = parentStack.Count == 0 ? null : parentStack.Peek();
-
-        // Push the current component to the stack (if not a slot)
+        // Slots are transparent: their content belongs to the enclosing host.
         if (this is not SlotContentTagHelper)
         {
-            parentStack.Push(this);
+            context.Items[ParentTagHelperKey] = this;
         }
     }
 
@@ -98,31 +102,6 @@ public class StellarAdminTagHelperBase : TagHelper
             : context.UniqueId;
     }
 
-    /// <summary>
-    ///     Captures the current parent tag-helper stack so a repeating container can install a
-    ///     pristine copy with <see cref="RestoreParentTagHelperStack" /> before each
-    ///     re-execution of its child content, preventing unbounded growth and stale parents
-    ///     across passes.
-    /// </summary>
-    protected Stack<StellarAdminTagHelperBase> CaptureParentTagHelperStack(TagHelperContext context)
-    {
-        return new Stack<StellarAdminTagHelperBase>(GetParentTagHelperStack(context).Reverse());
-    }
-
-    /// <summary>
-    ///     Replaces the parent tag-helper stack for subsequent child executions with a fresh
-    ///     copy of a snapshot taken by <see cref="CaptureParentTagHelperStack" />.
-    /// </summary>
-    protected void RestoreParentTagHelperStack(
-        TagHelperContext context,
-        Stack<StellarAdminTagHelperBase> snapshot
-    )
-    {
-        context.Items[ParentTagHelperStackKey] = new Stack<StellarAdminTagHelperBase>(
-            snapshot.Reverse()
-        );
-    }
-
     protected T? GetParentTagHelper<T>()
         where T : StellarAdminTagHelperBase
     {
@@ -151,21 +130,5 @@ public class StellarAdminTagHelperBase : TagHelper
         }
 
         return null;
-    }
-
-    private Stack<StellarAdminTagHelperBase> GetParentTagHelperStack(TagHelperContext context)
-    {
-        if (
-            context.Items.TryGetValue(ParentTagHelperStackKey, out var stack)
-            && stack is Stack<StellarAdminTagHelperBase> parentTagHelperStack
-        )
-        {
-            return parentTagHelperStack;
-        }
-
-        parentTagHelperStack = new Stack<StellarAdminTagHelperBase>();
-        context.Items[ParentTagHelperStackKey] = parentTagHelperStack;
-
-        return parentTagHelperStack;
     }
 }
