@@ -490,7 +490,7 @@
     @apply flex items-center justify-center;
   }
   .sa-pagination-link-label {
-    @apply hidden sm:block;
+    @apply sr-only sm:not-sr-only;
   }
   .sa-popover-content {
     @apply w-72 outline-hidden try-flip-all duration-200 ease-in opacity-100 not-open:opacity-0 starting:open:opacity-0 [transition-property:opacity,display,overlay] [transition-behavior:allow-discrete];
