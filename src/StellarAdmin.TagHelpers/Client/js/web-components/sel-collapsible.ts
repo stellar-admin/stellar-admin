@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("sel-collapsible")
@@ -7,21 +7,19 @@ export class Collapsible extends LitElement {
     return [...super.observedAttributes, "hidden"];
   }
 
-  #invokers: Element[] = [];
+  override createRenderRoot() {
+    return this;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
     this.addEventListener("command", this.#onCommand);
-    setTimeout(() => {
-      this.#cacheInvokers();
-      this.#syncState();
-    });
+    this.#syncState();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("command", this.#onCommand);
-    this.#invokers = [];
   }
 
   override attributeChangedCallback(name: string, old: string | null, value: string | null) {
@@ -31,21 +29,19 @@ export class Collapsible extends LitElement {
     }
   }
 
-  #cacheInvokers() {
-    if (!this.id) {
-      return;
-    }
-    this.#invokers = Array.from(document.querySelectorAll(`[commandfor="${this.id}"]`));
-  }
-
   #syncState() {
     this.dataset.state = this.hidden ? "closed" : "open";
     this.#syncInvokers();
   }
 
   #syncInvokers() {
+    if (!this.id) {
+      return;
+    }
+    // Resolved on every sync rather than cached once, so triggers rendered later (htmx swaps,
+    // late-rendered buttons) are kept in step too.
     const expanded = String(!this.hidden);
-    for (const invoker of this.#invokers) {
+    for (const invoker of document.querySelectorAll(`[commandfor="${CSS.escape(this.id)}"]`)) {
       invoker.setAttribute("aria-expanded", expanded);
     }
   }
@@ -74,11 +70,5 @@ export class Collapsible extends LitElement {
 
   hide() {
     this.hidden = true;
-  }
-
-  override render() {
-    return html`
-      <slot></slot>
-    `;
   }
 }

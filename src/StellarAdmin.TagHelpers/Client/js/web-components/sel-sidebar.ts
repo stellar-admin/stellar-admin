@@ -65,9 +65,11 @@ export class Sidebar extends LitElement {
   }
 
   #syncState() {
-    if (!this.#sidebarEl) return;
+    // A collapsible="none" sidebar renders without a collapse config: it is static, so leave
+    // its server-rendered attributes alone instead of turning it collapsible again.
+    const mode = this.#sidebarEl?.dataset.collapsibleConfig;
+    if (!this.#sidebarEl || !mode) return;
     const collapsed = !this.#open;
-    const mode = this.#sidebarEl.dataset.collapsibleConfig || "offcanvas";
 
     this.#sidebarEl.dataset.state = this.#open ? "expanded" : "collapsed";
     this.#sidebarEl.dataset.mobile = this.#openMobile ? "open" : "closed";

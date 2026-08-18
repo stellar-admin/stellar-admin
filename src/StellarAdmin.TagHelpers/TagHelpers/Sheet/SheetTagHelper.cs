@@ -81,27 +81,26 @@ public class SheetTagHelper : StellarAdminTagHelperBase
             var iconTagHelper = new IconTagHelper(_iconManager) { Name = "x" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
 
-            // Render the button
-            var buttonTagHelperOutput = new TagHelperOutput(
-                string.Empty,
+            // Render the button. Icon-only, so it carries a visually hidden accessible name.
+            var closeButtonOutput = new TagHelperOutput(
+                "button",
                 [
+                    new TagHelperAttribute("type", "button"),
                     new TagHelperAttribute("class", "sa-sheet-close"),
                     new TagHelperAttribute("commandfor", id),
                     new TagHelperAttribute("command", "close"),
                 ],
-                (_, _) =>
-                    Task.FromResult<TagHelperContent>(
-                        new DefaultTagHelperContent().AppendHtml(iconOutput)
-                    )
+                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var buttonTagHelper = new ButtonTagHelper()
-            {
-                Size = ButtonSize.IconSmall,
-                Variant = ButtonVariant.Ghost,
-            };
-            await buttonTagHelper.ProcessAsync(context, buttonTagHelperOutput);
+            ButtonRenderingHelper.RenderAttributes(
+                closeButtonOutput,
+                ButtonVariant.Ghost,
+                ButtonSize.IconSmall
+            );
+            closeButtonOutput.Content.AppendHtml(iconOutput);
+            closeButtonOutput.Content.AppendHtml("<span class=\"sr-only\">Close</span>");
 
-            output.Content.AppendHtml(buttonTagHelperOutput);
+            output.Content.AppendHtml(closeButtonOutput);
         }
 
         // Add content wrapper

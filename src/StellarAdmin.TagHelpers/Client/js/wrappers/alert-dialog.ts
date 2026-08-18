@@ -12,8 +12,8 @@ import { dialog } from "./dialog";
  * }
  * ```
  *
- * `confirmAsync()` resolves `true` when the user activates the action button
- * (`returnValue !== "cancel"`) and `false` on cancel or Esc dismissal. `confirm()` / `cancel()`
+ * `confirmAsync()` resolves `true` when the user activates the action button (a non-empty
+ * `returnValue` other than `"cancel"`) and `false` on cancel, Esc dismissal or a plain close. `confirm()` / `cancel()`
  * are passed through for manual resolution.
  */
 export function alertDialog(selector: string | HTMLDialogElement) {

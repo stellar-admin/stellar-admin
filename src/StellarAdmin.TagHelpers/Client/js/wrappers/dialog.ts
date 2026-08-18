@@ -29,7 +29,9 @@ export function dialog<TData = Record<string, any>>(
           "close",
           () => {
             if (!_resolve) return;
-            if (dismissed || el.returnValue === "cancel") {
+            // A close without a returnValue (a command="close" button, the sheet's X) is a
+            // dismissal, not a confirmation: only an explicit non-"cancel" value confirms.
+            if (dismissed || el.returnValue === "" || el.returnValue === "cancel") {
               _resolve({ confirmed: false, returnValue: el.returnValue, data: null });
             } else {
               const form = el.querySelector("form");
