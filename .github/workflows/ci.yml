@@ -1,36 +1,34 @@
-name: Build, Test, and Publish
+name: Build and Test
+
+# Push/PR build for the OSS repo. Releases are cut by the cross-repo release workflow in
+# the stellar-admin/workspace repo, which builds this repo together with the pro repo,
+# packs every package with one version, publishes, and creates the GitHub Release here.
 
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  release:
-    types: [ "published" ]
-    
+
 env:
   DOTNET_NOLOGO: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  IS_RELEASE: ${{ github.event_name == 'release' && github.event.action == 'published' }}
-  TAG_VERSION: ${{ github.event.release.tag_name }}
-  
+
 jobs:
   build-and-test:
     permissions:
-      contents: write
-      packages: write
-      id-token: write
+      contents: read
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
         node-version: '20.x'
-        
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
 
@@ -39,48 +37,3 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore --configuration Release
-
-    - name: Pack NuGet package
-      if: env.IS_RELEASE == 'true'
-      run: |
-        dotnet pack --configuration Release -o ./artifacts \
-          -p:Version=${{ env.TAG_VERSION }} \
-          -p:PackageVersion=${{ env.TAG_VERSION }} \
-          -p:IncludeSymbols=true \
-          -p:PackOnlyWhenPackable=true \
-          -p:SymbolPackageFormat=snupkg
-
-    - name: Upload packages to GitHub Release
-      if: env.IS_RELEASE == 'true'
-      run: |
-        for file in ./artifacts/*.nupkg ./artifacts/*.snupkg; do
-          [ -f "$file" ] || continue
-          filename=$(basename "$file")
-          echo "Uploading $filename to release assets..."
-          gh release upload "${{ env.TAG_VERSION }}" "$file" --clobber
-        done
-      env:
-        GH_TOKEN: ${{ github.token }}
-      
-    - name: NuGet login (OIDC → temp API key)
-      if: env.IS_RELEASE == 'true'
-      uses: NuGet/login@v1
-      id: login
-      with:
-        user: ${{ secrets.NUGET_USER }}
-
-    - name: Push to NuGet.org
-      if: env.IS_RELEASE == 'true'
-      run: |
-        dotnet nuget push ./artifacts/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
-          --skip-duplicate
-
-    - name: Push symbols to NuGet.org
-      if: env.IS_RELEASE == 'true'
-      run: |
-        dotnet nuget push "./artifacts/*.snupkg" \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
-          --skip-duplicate
