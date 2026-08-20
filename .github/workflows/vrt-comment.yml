@@ -1,0 +1,86 @@
+name: Visual Regression Comment
+
+# Posts/updates the sticky PR comment for a finished Visual Regression run. Split out of
+# vrt.yml because fork PRs run vrt.yml with a read-only token; this workflow runs in the
+# base repository's context with permission to comment, and consumes the vrt run's report
+# artifact strictly as data (markdown text and a PR number — nothing from the artifact is
+# executed).
+
+on:
+  workflow_run:
+    workflows: ["Visual Regression"]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download report artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: vrt-report
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ github.token }}
+        path: vrt-report
+
+    - name: Post or update sticky comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const marker = '<!-- stellar-admin-vrt-report -->';
+
+          const prNumber = parseInt(fs.readFileSync('vrt-report/pr-number', 'utf8').trim(), 10);
+          if (!Number.isInteger(prNumber) || prNumber <= 0) {
+            core.setFailed(`artifact contained an invalid PR number`);
+            return;
+          }
+          // The PR number arrives via the artifact (workflow_run carries no PR context for
+          // fork PRs) — verify it belongs to the head SHA the triggering run actually built,
+          // so a crafted artifact can't redirect the comment to an unrelated PR.
+          const headSha = context.payload.workflow_run.head_sha;
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: prNumber,
+          });
+          if (pr.head.sha !== headSha) {
+            core.setFailed(`PR #${prNumber} head ${pr.head.sha} does not match run head ${headSha}`);
+            return;
+          }
+
+          let body = fs.readFileSync('vrt-report/comment.md', 'utf8');
+          if (!body.startsWith(marker)) body = marker + '\n' + body;
+          const limit = 60000;
+          if (body.length > limit) {
+            body = body.slice(0, limit) + '\n\n... truncated — see the run artifact for the full report.\n';
+          }
+
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            per_page: 100,
+          });
+          const existing = comments.find((c) => c.body && c.body.startsWith(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existing.id,
+              body,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
+          }

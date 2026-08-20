@@ -1,0 +1,146 @@
+name: Visual Regression
+
+# Ephemeral base-vs-head visual comparison for PRs (no committed baselines, no secrets —
+# safe for fork PRs). Both captures run on this one runner so browser build and font
+# rasterization cancel out; the diff answers "what did this PR change visually".
+#
+# The job is advisory: it succeeds whether or not visual diffs exist and fails only on
+# errors. The report is published as a sticky PR comment by the companion
+# vrt-comment.yml workflow (fork PRs get a read-only token here, so the comment is
+# posted from a workflow_run job that consumes this job's artifact as data) and the
+# full base/head/diff screenshots are uploaded as an artifact for human review.
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - 'src/**'
+      - 'gen/**'
+      - 'docs/DocsSamples/**'
+      - 'util/visual-regression/**'
+      - '.github/workflows/vrt.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vrt-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Separate ports so a base app that outlives its kill can never answer the head
+  # capture's readiness probe.
+  VRT_BASE_URL: http://localhost:5205
+  VRT_HEAD_URL: http://localhost:5206
+
+jobs:
+  vrt:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # Full history so the merge-base with the base branch exists for the worktree.
+        fetch-depth: 0
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+
+    - name: Add base worktree at the merge-base
+      run: |
+        base=$(git merge-base "origin/$GITHUB_BASE_REF" HEAD)
+        echo "comparing against merge-base $base"
+        git worktree add ../base "$base"
+
+    - name: Install comparison dependencies
+      run: npm ci
+      working-directory: util/visual-regression
+
+    - name: Capture base
+      run: |
+        if [ ! -d ../base/docs/DocsSamples/Pages ]; then
+          echo "base has no docs/DocsSamples — skipping visual comparison"
+          echo "VRT_SKIPPED=true" >> "$GITHUB_ENV"
+          exit 0
+        fi
+        dotnet build ../base/docs/DocsSamples/DocsSamples.csproj
+        ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=$VRT_BASE_URL \
+          dotnet run --project ../base/docs/DocsSamples --no-build --no-launch-profile &
+        echo $! > /tmp/base-app.pid
+        for i in $(seq 1 120); do
+          curl -sf -o /dev/null "$VRT_BASE_URL" && break
+          sleep 1
+        done
+        curl -sf -o /dev/null "$VRT_BASE_URL"
+        node util/visual-regression/vrt.mjs capture \
+          --url "$VRT_BASE_URL" \
+          --pages ../base/docs/DocsSamples/Pages \
+          --browser google-chrome \
+          --out snapshots/base
+        kill "$(cat /tmp/base-app.pid)"
+
+    - name: Capture head
+      if: env.VRT_SKIPPED != 'true'
+      run: |
+        dotnet build docs/DocsSamples/DocsSamples.csproj
+        ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=$VRT_HEAD_URL \
+          dotnet run --project docs/DocsSamples --no-build --no-launch-profile &
+        echo $! > /tmp/head-app.pid
+        for i in $(seq 1 120); do
+          curl -sf -o /dev/null "$VRT_HEAD_URL" && break
+          sleep 1
+        done
+        curl -sf -o /dev/null "$VRT_HEAD_URL"
+        node util/visual-regression/vrt.mjs capture \
+          --url "$VRT_HEAD_URL" \
+          --pages docs/DocsSamples/Pages \
+          --browser google-chrome \
+          --out snapshots/head
+        kill "$(cat /tmp/head-app.pid)"
+
+    - name: Compare
+      if: env.VRT_SKIPPED != 'true'
+      run: |
+        set +e
+        node util/visual-regression/vrt.mjs compare snapshots/base snapshots/head --out snapshots/diff
+        code=$?
+        set -e
+        # 0 = no diffs, 1 = diffs (advisory, not a failure), anything else is a real error.
+        if [ "$code" -gt 1 ]; then exit "$code"; fi
+        echo "VRT_DIFF=$code" >> "$GITHUB_ENV"
+
+    - name: Write PR comment body
+      run: |
+        node util/visual-regression/write-pr-comment.mjs \
+          --summary snapshots/diff/summary.json \
+          --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+          --out snapshots/comment.md
+        echo "${{ github.event.pull_request.number }}" > snapshots/pr-number
+        cat snapshots/comment.md >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: vrt-report
+        path: |
+          snapshots/comment.md
+          snapshots/pr-number
+          snapshots/diff/
+        if-no-files-found: error
+
+    - name: Upload screenshots artifact
+      if: env.VRT_DIFF == '1'
+      uses: actions/upload-artifact@v4
+      with:
+        name: vrt-screenshots
+        path: |
+          snapshots/base/
+          snapshots/head/
