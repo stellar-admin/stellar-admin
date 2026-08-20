@@ -203,7 +203,7 @@
     @apply bg-popover text-popover-foreground ring-foreground/10 gap-1.5 px-2.5 py-1.5 text-xs shadow-sm ring-1;
   }
   .sa-checkbox {
-    @apply border-input bg-transparent checked:bg-primary checked:text-primary-foreground dark:checked:bg-primary checked:border-primary aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4.5 items-center justify-center rounded-none border transition-shadow group-has-disabled/field:opacity-50 focus-visible:ring-2 [&.input-validation-error]:aria-checked:border-primary [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40;
+    @apply border-input bg-transparent checked:bg-primary checked:text-primary-foreground dark:checked:bg-primary checked:border-primary aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4.5 items-center justify-center rounded-none border transition-shadow group-has-disabled/field:opacity-50 focus-visible:ring-2 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-checked:border-input group-has-[:focus-visible]/field-label:checked:border-primary [&.input-validation-error]:aria-checked:border-primary [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40;
   }
   .sa-checkbox-indicator {
     @apply [&>svg]:size-3.5;
@@ -452,7 +452,7 @@
     @apply gap-1;
   }
   .sa-field-label {
-    @apply has-data-checked:bg-primary/5 has-data-checked:border-primary/30 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10 gap-2 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-none has-[>[data-slot=field]]:border *:data-[slot=field]:p-4 leading-relaxed;
+    @apply has-data-checked:bg-primary/5 has-data-checked:border-primary/30 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10 gap-2 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-none has-[>[data-slot=field]]:border has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50 has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/30 has-[>[data-slot=field]]:has-[:focus-visible]:ring-2 *:data-[slot=field]:p-4 leading-relaxed;
   }
   .sa-field-title {
     @apply gap-2 group-data-[disabled=true]/field:opacity-50 leading-normal font-semibold uppercase in-data-[slot=field-label]:font-semibold text-xs;
@@ -686,7 +686,7 @@
     @apply grid gap-3;
   }
   .sa-radio-group-item {
-    @apply border-input bg-transparent checked:border-foreground aria-invalid:aria-checked:border-foreground aria-invalid:border-destructive focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:aria-invalid:border-destructive/50 flex size-4.5 rounded-full border focus-visible:ring-2 [&.input-validation-error]:aria-checked:border-foreground [&.input-validation-error]:border-destructive [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 dark:[&.input-validation-error]:border-destructive/50;
+    @apply border-input bg-transparent checked:border-foreground aria-invalid:aria-checked:border-foreground aria-invalid:border-destructive focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:aria-invalid:border-destructive/50 flex size-4.5 rounded-full border focus-visible:ring-2 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-checked:border-input group-has-[:focus-visible]/field-label:checked:border-foreground [&.input-validation-error]:aria-checked:border-foreground [&.input-validation-error]:border-destructive [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 dark:[&.input-validation-error]:border-destructive/50;
   }
   .sa-radio-group-indicator {
     @apply flex size-4.5 items-center justify-center;
@@ -872,7 +872,7 @@
     @apply rounded-none!;
   }
   .sa-switch {
-    @apply checked:bg-primary bg-input checked:border-primary border border-input/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 shrink-0 rounded-none focus-visible:ring-2 group-data-[size=default]/switch:h-4.5 group-data-[size=default]/switch:w-8.25 group-data-[size=sm]/switch:h-3.5 group-data-[size=sm]/switch:w-6.25 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50;
+    @apply checked:bg-primary bg-input checked:border-primary border border-input/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 shrink-0 rounded-none focus-visible:ring-2 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:border-input/50 group-has-[:focus-visible]/field-label:checked:border-primary group-data-[size=default]/switch:h-4.5 group-data-[size=default]/switch:w-8.25 group-data-[size=sm]/switch:h-3.5 group-data-[size=sm]/switch:w-6.25 [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50;
   }
   .sa-switch-thumb {
     @apply bg-background dark:bg-foreground dark:peer-checked:bg-primary-foreground group-data-[size=default]/switch:size-3.5 group-data-[size=sm]/switch:size-2.5 peer-checked:translate-x-[calc(100%+2px)] translate-x-0.25;
@@ -1099,6 +1099,57 @@
   .sa-marker-content {
     @apply group-data-[variant=separator]/marker:flex-none group-data-[variant=separator]/marker:text-center *:[a]:hover:text-foreground *:[a]:underline *:[a]:underline-offset-3;
   }
+  .sa-questionnaire {
+    @apply gap-6;
+  }
+  .sa-questionnaire-progress {
+    @apply text-xs uppercase tracking-wide;
+  }
+  .sa-questionnaire-item {
+    @apply flex flex-col gap-5;
+  }
+  .sa-questionnaire-title {
+    @apply text-xs font-semibold uppercase tracking-wide [&:not(:has(~[data-slot=questionnaire-description]))]:mb-5;
+  }
+  .sa-questionnaire-description {
+    @apply text-sm normal-case tracking-normal;
+  }
+  .sa-questionnaire-choices {
+    @apply gap-3;
+  }
+  .sa-questionnaire-choice {
+    @apply hover:bg-muted/50 data-checked:bg-primary/5 data-checked:border-primary/30 dark:data-checked:border-primary/20 dark:data-checked:bg-primary/10 data-invalid:border-destructive has-[>input:focus-visible]:ring-ring/30 gap-3 rounded-none border border-input bg-transparent px-4 py-4 text-sm has-[>input:focus-visible]:ring-2;
+  }
+  .sa-questionnaire-choice-indicator {
+    @apply border-input group-data-checked/questionnaire-choice:border-foreground group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:bg-primary group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:text-primary-foreground group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:border-primary size-4.5 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5;
+  }
+  .sa-questionnaire-choice-indicator-dot {
+    @apply bg-foreground size-2;
+  }
+  .sa-questionnaire-choice-indicator-check {
+    @apply size-3.5;
+  }
+  .sa-questionnaire-choice-content {
+    @apply gap-1;
+  }
+  .sa-questionnaire-choice-description {
+    @apply text-muted-foreground;
+  }
+  .sa-questionnaire-shortcut {
+    @apply border-input bg-background text-muted-foreground size-5 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 items-center justify-center rounded-none border font-mono text-[0.625rem] font-medium leading-none;
+  }
+  .sa-questionnaire-input-wrapper {
+    @apply w-full;
+  }
+  .sa-questionnaire-input {
+    @apply border-transparent border-b-input bg-transparent focus-visible:border-b-ring aria-invalid:border-b-destructive dark:aria-invalid:border-b-destructive/50 h-10 border px-0 py-1 text-base md:text-sm [&.input-validation-error]:border-b-destructive dark:[&.input-validation-error]:border-b-destructive/50;
+  }
+  .sa-questionnaire-error {
+    @apply mt-2 text-sm;
+  }
+  .sa-questionnaire-actions {
+    @apply gap-2 sm:min-h-10;
+  }
   .sa-message-scroller-content {
     @apply gap-8;
   }
@@ -1121,7 +1172,7 @@
     @apply gap-2;
   }
   .sa-radiobutton {
-    @apply border-input bg-transparent checked:border-foreground aria-invalid:aria-checked:border-foreground aria-invalid:border-destructive focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:aria-invalid:border-destructive/50 flex size-4.5 rounded-full border focus-visible:ring-2 [&.input-validation-error]:aria-checked:border-foreground [&.input-validation-error]:border-destructive [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 dark:[&.input-validation-error]:border-destructive/50;
+    @apply border-input bg-transparent checked:border-foreground aria-invalid:aria-checked:border-foreground aria-invalid:border-destructive focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:aria-invalid:border-destructive/50 flex size-4.5 rounded-full border focus-visible:ring-2 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-checked:border-input group-has-[:focus-visible]/field-label:checked:border-foreground [&.input-validation-error]:aria-checked:border-foreground [&.input-validation-error]:border-destructive [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 dark:[&.input-validation-error]:border-destructive/50;
   }
   .sa-radiobutton-indicator {
     @apply flex size-4.5 items-center justify-center;
