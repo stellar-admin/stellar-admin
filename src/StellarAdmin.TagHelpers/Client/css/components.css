@@ -721,3 +721,5 @@
     @apply w-fit max-w-xs origin-(--transform-origin) bg-foreground text-background try-flip-all duration-200 ease-in opacity-100 not-open:opacity-0 starting:open:opacity-0 [transition-property:opacity,display,overlay] [transition-behavior:allow-discrete];
   }
 }
+
+/* VRT trial: no-op comment so the PR has a net src diff that triggers the paths filter. */
