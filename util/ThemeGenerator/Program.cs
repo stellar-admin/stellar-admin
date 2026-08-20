@@ -90,6 +90,7 @@ public partial class Program
                 .CreateInputValidationErrorClassesFromAriaInvalid()
                 .ReplaceDuiCheckboxDataChecked()
                 .ReplaceDuiRadioGroupItemDataChecked()
+                .ReplaceFieldLabelDataChecked()
                 .CleanSwitchClasses()
                 .CleanToggleClasses()
                 .CreateRadioButtonStyles()

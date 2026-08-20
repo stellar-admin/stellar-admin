@@ -283,6 +283,25 @@ public static partial class Processors
         }
 
         /// <summary>
+        ///     sa-field-label tints itself when it wraps a checked control (the choice-card
+        ///     pattern) via the data-checked attribute BaseUI/Radix puts on the control. Native
+        ///     inputs never carry that attribute, so the label reacts to the standard checked
+        ///     pseudo class instead.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> ReplaceFieldLabelDataChecked()
+        {
+            var tokens = new Dictionary<string, string>(input);
+
+            if (tokens.TryGetValue("sa-field-label", out var classes))
+            {
+                tokens["sa-field-label"] = classes.Replace("has-data-checked:", "has-[:checked]:");
+            }
+
+            return tokens;
+        }
+
+        /// <summary>
         ///     sa-switch uses the data-checked/data-unchecked attributes to style the on/off state since that is
         ///     what is being used by BaseUI. Since we render a native checkbox as the switch track (so the value
         ///     posts back), we drive the state purely from CSS instead:
