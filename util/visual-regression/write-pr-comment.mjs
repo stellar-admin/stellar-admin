@@ -2,7 +2,7 @@
 // run's summary.json. Kept out of the workflow YAML so the format is versioned and
 // testable alongside the tool.
 //
-//   node util/visual-regression/write-pr-comment.mjs --summary <summary.json> --run-url <url> --out <comment.md>
+//   node util/visual-regression/write-pr-comment.mjs --summary <summary.json> --run-url <url> [--artifact-url <url>] --out <comment.md>
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
@@ -18,6 +18,9 @@ function argValue(args, name) {
 const args = process.argv.slice(2);
 const summaryPath = argValue(args, "--summary");
 const runUrl = argValue(args, "--run-url");
+// Direct-download URL of the screenshots artifact; GitHub cannot deep-link individual
+// files inside an artifact, so a one-click zip download is the closest thing.
+const artifactUrl = argValue(args, "--artifact-url");
 const outPath = argValue(args, "--out");
 if (!summaryPath || !outPath) {
   console.error("usage: write-pr-comment.mjs --summary <summary.json> --run-url <url> --out <comment.md>");
@@ -42,7 +45,9 @@ if (!existsSync(summaryPath)) {
         ".",
       "",
       "This check is advisory — intentional visual changes are fine; the reviewer compares the",
-      `base/head screenshot pairs and highlighted diffs in the [run's artifacts](${runUrl}).`,
+      artifactUrl
+        ? `base/head screenshot pairs and highlighted diffs in the [screenshots artifact](${artifactUrl}) (direct zip download; [run](${runUrl})).`
+        : `base/head screenshot pairs and highlighted diffs in the [run's artifacts](${runUrl}).`,
       "",
     );
     if (summary.changed.length) {

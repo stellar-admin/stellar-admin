@@ -117,11 +117,25 @@ jobs:
         if [ "$code" -gt 1 ]; then exit "$code"; fi
         echo "VRT_DIFF=$code" >> "$GITHUB_ENV"
 
+    # Uploaded before the comment body is written so its direct-download URL can be
+    # linked from the comment.
+    - name: Upload screenshots artifact
+      id: screenshots
+      if: env.VRT_DIFF == '1'
+      uses: actions/upload-artifact@v4
+      with:
+        name: vrt-screenshots
+        path: |
+          snapshots/base/
+          snapshots/head/
+          snapshots/diff/
+
     - name: Write PR comment body
       run: |
         node util/visual-regression/write-pr-comment.mjs \
           --summary snapshots/diff/summary.json \
           --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+          --artifact-url "${{ steps.screenshots.outputs.artifact-url }}" \
           --out snapshots/comment.md
         echo "${{ github.event.pull_request.number }}" > snapshots/pr-number
         cat snapshots/comment.md >> "$GITHUB_STEP_SUMMARY"
@@ -135,12 +149,3 @@ jobs:
           snapshots/pr-number
           snapshots/diff/
         if-no-files-found: error
-
-    - name: Upload screenshots artifact
-      if: env.VRT_DIFF == '1'
-      uses: actions/upload-artifact@v4
-      with:
-        name: vrt-screenshots
-        path: |
-          snapshots/base/
-          snapshots/head/
