@@ -1,4 +1,4 @@
-# StellarAdmin Tag Helpers
+﻿# StellarAdmin Tag Helpers
 
 <div align="center">
     <img src="assets/logo/stellar-admin-logo.svg">
@@ -43,9 +43,13 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 @addTagHelper *, StellarAdmin.TagHelpers
 ```
 
-### 4. Add stylesheet and JavaScript file
+### 4. Link a theme stylesheet and JavaScript file
 
-StellarAdmin ships one stylesheet per theme. Add exactly one theme stylesheet (`/_content/StellarAdmin.TagHelpers/stellar-admin.<theme>.css`) and the JavaScript file (`/_content/StellarAdmin.TagHelpers/stellar-admin.js`) to your Razor layout. A theme is just a stylesheet — pick one of `vega`, `nova`, `luma`, `lyra`, `maia`, `mira`, `rhea` or `sera`, and switch themes by switching the `<link>`.
+StellarAdmin Tag Helpers comes with the same themes as shadcn/ui, namely Vega, Nova, Maia, Lyra, Mira, Luma, Sera, and Rhea. You must add the stylesheet for the theme you want to use to your Razor layout. The URL for the theme is in the format (`/_content/StellarAdmin.TagHelpers/stellar-admin.<theme>.css`). 
+
+StellarAdmin TagHelpers also comes with minimal JavaScript which adds interactivity to some of the Tag Helpers via Web Components. To enable this, you must also include the `stellar-admin.js` script in your layout.
+
+The example below demonstrates how to include the script and the stylesheet for the **Nova** theme.
 
 ```razor
 <!DOCTYPE html>
@@ -61,13 +65,12 @@ StellarAdmin ships one stylesheet per theme. Add exactly one theme stylesheet (`
 </html>
 ```
 
-### 5. (Optional) Remove 3rd party stylesheets
+> [!TIP]
+> All the Tag Helper examples on our [documentation website](https://www.stellaradmin.com/docs/tag-helpers) allows you to preview the examples in each of the different themes. Just select the _Theme_ picker above any of the examples.
+> 
+> You can also go the [shadcn/ui Create page](https://ui.shadcn.com/create) and use their _Style_ picker, which correspond with the StellarAdmin themes. This will give you a good idea of the look-and-feel of each of the themes. 
 
-Using StellarAdmin along with 3rd party CSS libraries like Bootstrap will almost certainly result in incorrect rendering of the StellarAdmin components, since these libraries apply their own styling which may override the styling applied by StellarAdmin.
-
-As such, we **strongly recommend** that you remove 3rd party stylesheets and only depend on the CSS styling applied by StellarAdmin.
-
-### 6. Start using the Tag Helpers
+### 5. Start using the Tag Helpers
 
 Start using the StellarAdmin Tag Helpers inside your Razor Pages or MVC Views. For example, the code snippet below adds an alert to your page.
 
@@ -76,35 +79,6 @@ Start using the StellarAdmin Tag Helpers inside your Razor Pages or MVC Views. F
     <sa-alert-title>Success! You have configured StellarAdmin correctly.</sa-alert-title>
 </sa-alert>
 ```
-
-## Customizing the theme
-
-Every color and radius in the stylesheet is a CSS custom property. To customize a theme, redeclare
-the properties in your own CSS — no build tooling required:
-
-```css
-:root {
-  --primary: oklch(0.55 0.2 260);
-  --radius: 0.5rem;
-}
-```
-
-## Using the design tokens in your own markup
-
-The stylesheet above styles the `<sa-*>` components. If you also want to write
-`class="bg-primary"` or `dark:...` in your *own* Razor and have it match, and your app runs a
-Tailwind v4 build, copy
-[`theme-tokens.css`](src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css) into your project and import
-it from your Tailwind entry stylesheet:
-
-```css
-@import "tailwindcss";
-@import "./theme-tokens.css";
-```
-
-It contains only the token *vocabulary* — the utilities it enables compile to `var(--…)`
-references whose values come from the StellarAdmin stylesheet at runtime. Keep the `<link>`
-from step 4 in place.
 
 ## Documentation
 
