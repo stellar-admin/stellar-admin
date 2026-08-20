@@ -1,0 +1,10 @@
+{
+  "name": "stellar-admin-vrt",
+  "private": true,
+  "type": "module",
+  "description": "Pixel-based visual-regression tool for the DocsSamples site (vrt.mjs).",
+  "dependencies": {
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0"
+  }
+}

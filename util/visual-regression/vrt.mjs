@@ -1,38 +1,45 @@
 // Visual-regression tool for the DocsSamples site.
 //
-// Captures a per-element style snapshot (curated computed styles + bounding rect +
-// ::before/::after/::placeholder) and a full-page screenshot for every sample page at two
-// viewports, then diffs two capture runs property-by-property. The pass/fail signal is the
-// style/rect data — screenshots are saved for human review only, since pixel comparison adds
-// font-rasterization noise without adding precision.
+// Captures a full-page screenshot for every sample page at two viewports (plus scripted
+// overlay open-state scenarios), then pixel-diffs two capture runs with pixelmatch. Pixels
+// are exhaustive by construction — any change visible in a default-state screenshot produces
+// a signal — where the tool's earlier curated computed-style comparison could always be
+// missing the next property (the radio stroke regression was invisible to it).
 //
-// Elements are keyed by structural DOM path + data-slot, never by the class attribute: the
-// tool exists to guard CSS refactors where every class attribute changes but the rendered
-// result must not.
+// Pixel comparison is only deterministic when both runs share one environment (browser
+// build, fonts, rasterizer). Capture base and head on the same machine in one sitting —
+// the PR workflow does exactly that on a single CI runner. Comparing captures from
+// different machines or browser versions will drown in rasterization noise.
 //
-//   node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out snapshots/baseline
-//   node util/visual-regression/vrt.mjs compare snapshots/baseline snapshots/after [--tolerance 0.5]
+//   node util/visual-regression/vrt.mjs capture --url http://localhost:5205 --out snapshots/base
+//   node util/visual-regression/vrt.mjs compare snapshots/base snapshots/head [--out snapshots/diff]
 //
-// The DocsSamples app must already be running. It now lives in the stellar-admin-pro repo, so
-// point page discovery at its Pages folder with
-// --pages ../stellar-admin-pro/docs/DocsSamples/Pages (defaults to this repo's old
-// docs/DocsSamples/Pages location). Requires the
-// system `chromium` binary and network access for the Geist webfont (load status is recorded
-// in each snapshot's metadata).
+// The DocsSamples app must already be running; page discovery reads this repo's
+// docs/DocsSamples/Pages (override with --pages). The browser binary defaults to `chromium`;
+// override with --browser <path> or the CHROME_PATH env var (GitHub runners ship Google
+// Chrome, e.g. --browser google-chrome). Requires network access for the Geist webfont.
 //
 // Determinism controls, applied identically to every run: animations/transitions/caret are
 // disabled; external image hosts (unsplash, dicebear) are blocked; fonts are awaited; fixed
-// chromium flags and viewport metrics.
+// browser flags and viewport metrics. Same-environment captures are byte-identical in
+// practice (selftest.mjs asserts this), so pixels flagged as anti-aliasing are still real
+// changes — they are reported in a separate "AA-only" count (hairline changes) rather than
+// counted into the headline changed-pixel number.
+//
+// compare exits 0 when the runs match, 1 when any page differs (report.md, summary.json,
+// and per-page diff images land in the --out dir), 2 on usage or capture errors.
 //
 // Known limits: hover/focus-visible states are not swept (headless chromium reports
 // hover:none; force them ad hoc with --blink-settings=primaryHoverType=2,... and
-// CSS.forcePseudoState). Only pages with a DocsSamples sample are covered.
+// CSS.forcePseudoState); only pages with a DocsSamples sample are covered; content clipped
+// inside scrollable containers or stacked under overlays is not composited into screenshots.
 
 import { spawn } from "node:child_process";
-import { gzipSync, gunzipSync } from "node:zlib";
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const defaultPagesDir = join(repoRoot, "docs", "DocsSamples", "Pages");
@@ -50,7 +57,7 @@ const FREEZE_CSS = `*, *::before, *::after {
   caret-color: transparent !important;
 }`;
 
-// Scenario snapshots: interactions performed after the initial snapshot, captured as
+// Scenario screenshots: interactions performed after the initial screenshot, captured as
 // "<page>__<name>" at the desktop viewport. `trigger` is a CSS selector clicked in page
 // context (first match). Overlay open-states are otherwise invisible to the sweep.
 const SCENARIOS = [
@@ -63,48 +70,17 @@ const SCENARIOS = [
   { page: "Sidebar", name: "open", trigger: 'button[command="show-modal"]' },
 ];
 
-// The curated computed-style properties compared per element. Geometry is additionally
-// covered exactly by the bounding rect, so this list targets paint/typography/stacking.
-const STYLE_PROPS = [
-  "display", "position", "top", "right", "bottom", "left", "z-index", "float",
-  "overflow-x", "overflow-y", "visibility", "opacity", "box-sizing",
-  "flex-direction", "flex-wrap", "flex-grow", "flex-shrink", "flex-basis",
-  "grid-template-columns", "grid-template-rows", "grid-auto-flow",
-  "grid-column-start", "grid-column-end", "grid-row-start", "grid-row-end",
-  "align-items", "align-self", "align-content", "justify-content", "justify-items", "justify-self",
-  "gap", "order", "place-items", "place-content",
-  "margin-top", "margin-right", "margin-bottom", "margin-left",
-  "padding-top", "padding-right", "padding-bottom", "padding-left",
-  "width", "height", "min-width", "min-height", "max-width", "max-height",
-  "border-top-width", "border-right-width", "border-bottom-width", "border-left-width",
-  "border-top-style", "border-right-style", "border-bottom-style", "border-left-style",
-  "border-top-color", "border-right-color", "border-bottom-color", "border-left-color",
-  "border-top-left-radius", "border-top-right-radius",
-  "border-bottom-left-radius", "border-bottom-right-radius",
-  "outline-width", "outline-style", "outline-color", "outline-offset",
-  "background-color", "background-image", "background-position", "background-size",
-  "background-repeat", "background-clip", "background-origin",
-  "color", "accent-color", "caret-color",
-  "font-family", "font-size", "font-weight", "font-style", "font-stretch",
-  "line-height", "letter-spacing", "word-spacing",
-  "text-align", "text-decoration-line", "text-decoration-color", "text-decoration-style",
-  "text-decoration-thickness", "text-underline-offset", "text-transform", "text-overflow",
-  "text-wrap-mode", "text-wrap-style", "white-space-collapse", "vertical-align",
-  "box-shadow", "text-shadow", "transform", "translate", "rotate", "scale",
-  "filter", "backdrop-filter", "mix-blend-mode", "isolation",
-  "cursor", "pointer-events", "user-select", "touch-action", "appearance",
-  "object-fit", "object-position", "aspect-ratio",
-  "list-style-type", "list-style-position", "border-collapse", "border-spacing", "table-layout",
-  "content", "clip-path", "mask-image", "scrollbar-width", "color-scheme",
-];
+// pixelmatch per-channel color distance threshold (0 = exact). 0.1 tolerates sub-perceptual
+// rounding while its separate anti-aliasing detection absorbs rasterization edges.
+const DEFAULT_THRESHOLD = 0.1;
 
 // ---------------------------------------------------------------------------------------------
 // CDP plumbing
 
-async function launchChromium() {
+async function launchBrowser(browserBinary) {
   const port = 9222 + Math.floor(Math.random() * 500);
   const chrome = spawn(
-    "chromium",
+    browserBinary,
     [
       "--headless=new",
       `--remote-debugging-port=${port}`,
@@ -113,6 +89,7 @@ async function launchChromium() {
       "--disable-gpu",
       "--force-color-profile=srgb",
       "--hide-scrollbars",
+      "--font-render-hinting=none",
       "--window-size=1400,1000",
       "about:blank",
     ],
@@ -131,7 +108,7 @@ async function launchChromium() {
   }
   if (!wsUrl) {
     chrome.kill();
-    throw new Error("chromium did not expose a debugging endpoint");
+    throw new Error(`${browserBinary} did not expose a debugging endpoint`);
   }
 
   const ws = new WebSocket(wsUrl);
@@ -199,75 +176,6 @@ async function launchChromium() {
 const sleep = (ms) => new Promise((resolveSleep) => setTimeout(resolveSleep, ms));
 
 // ---------------------------------------------------------------------------------------------
-// Snapshot script, executed in page context
-
-const SNAPSHOT_FN = `(() => {
-  const props = ${JSON.stringify(STYLE_PROPS)};
-
-  const styleDict = new Map();
-  const internStyles = (styleText) => {
-    let id = styleDict.get(styleText);
-    if (id === undefined) {
-      id = styleDict.size;
-      styleDict.set(styleText, id);
-    }
-    return id;
-  };
-
-  const styleText = (computed) => props.map((p) => computed.getPropertyValue(p)).join("|");
-
-  const pathOf = (element) => {
-    const segments = [];
-    let node = element;
-    while (node && node !== document.documentElement) {
-      const tag = node.tagName.toLowerCase();
-      let index = 1;
-      let sibling = node.previousElementSibling;
-      while (sibling) {
-        if (sibling.tagName === node.tagName) index++;
-        sibling = sibling.previousElementSibling;
-      }
-      segments.unshift(tag + (index > 1 ? ":" + index : ""));
-      node = node.parentElement;
-    }
-    return segments.join(">");
-  };
-
-  const elements = [];
-  for (const element of document.documentElement.querySelectorAll("*")) {
-    if (["SCRIPT", "STYLE", "LINK", "META", "TITLE", "TEMPLATE"].includes(element.tagName)) continue;
-    const rect = element.getBoundingClientRect();
-    const entry = {
-      p: pathOf(element),
-      r: [rect.x, rect.y, rect.width, rect.height].map((v) => Math.round(v * 100) / 100),
-      s: internStyles(styleText(getComputedStyle(element))),
-    };
-    const slot = element.getAttribute("data-slot");
-    if (slot) entry.slot = slot;
-    for (const pseudo of ["::before", "::after"]) {
-      const computed = getComputedStyle(element, pseudo);
-      if (computed.content !== "none" && computed.content !== "") {
-        entry[pseudo === "::before" ? "b" : "a"] = internStyles(styleText(computed));
-      }
-    }
-    if (element.matches("input, textarea")) {
-      entry.ph = internStyles(styleText(getComputedStyle(element, "::placeholder")));
-    }
-    elements.push(entry);
-  }
-
-  return {
-    elements,
-    styles: [...styleDict.keys()],
-    meta: {
-      fontsLoaded: document.fonts.status === "loaded",
-      elementCount: elements.length,
-      title: document.title,
-    },
-  };
-})()`;
-
-// ---------------------------------------------------------------------------------------------
 // capture
 
 function listPages(pagesDir) {
@@ -281,11 +189,19 @@ function listPages(pagesDir) {
   return ["", ...pages]; // "" = Index
 }
 
-async function capture(baseUrl, outDir, pagesDir) {
+async function capture(baseUrl, outDir, pagesDir, browserBinary) {
   mkdirSync(outDir, { recursive: true });
-  const { chrome, send, waitForEvent, evaluate } = await launchChromium();
+  const { chrome, send, waitForEvent, evaluate } = await launchBrowser(browserBinary);
   const pages = listPages(pagesDir);
   let hadError = false;
+
+  const screenshotTo = async (file) => {
+    const screenshot = await send("Page.captureScreenshot", {
+      format: "png",
+      captureBeyondViewport: true,
+    });
+    writeFileSync(join(outDir, file), Buffer.from(screenshot.data, "base64"));
+  };
 
   try {
     await send("Page.enable");
@@ -320,26 +236,10 @@ async function capture(baseUrl, outDir, pagesDir) {
           mobile: viewport.name === "mobile",
         });
         await sleep(250);
-
-        const snapshot = await evaluate(SNAPSHOT_FN);
-        snapshot.meta.page = pageName;
-        snapshot.meta.viewport = viewport.name;
-        writeFileSync(
-          join(outDir, `${pageName}.${viewport.name}.json.gz`),
-          gzipSync(JSON.stringify(snapshot)),
-        );
-
-        const screenshot = await send("Page.captureScreenshot", {
-          format: "png",
-          captureBeyondViewport: true,
-        });
-        writeFileSync(
-          join(outDir, `${pageName}.${viewport.name}.png`),
-          Buffer.from(screenshot.data, "base64"),
-        );
+        await screenshotTo(`${pageName}.${viewport.name}.png`);
       }
 
-      // Scenario snapshots (open states etc.) at desktop viewport.
+      // Scenario screenshots (open states etc.) at desktop viewport.
       for (const scenario of SCENARIOS.filter((s) => s.page === pageName)) {
         await send("Emulation.setDeviceMetricsOverride", {
           width: VIEWPORTS[0].width,
@@ -355,21 +255,7 @@ async function capture(baseUrl, outDir, pagesDir) {
           continue;
         }
         await sleep(scenario.settleMs ?? 600);
-        const snapshot = await evaluate(SNAPSHOT_FN);
-        snapshot.meta.page = `${pageName}__${scenario.name}`;
-        snapshot.meta.viewport = "desktop";
-        writeFileSync(
-          join(outDir, `${pageName}__${scenario.name}.desktop.json.gz`),
-          gzipSync(JSON.stringify(snapshot)),
-        );
-        const screenshot = await send("Page.captureScreenshot", {
-          format: "png",
-          captureBeyondViewport: true,
-        });
-        writeFileSync(
-          join(outDir, `${pageName}__${scenario.name}.desktop.png`),
-          Buffer.from(screenshot.data, "base64"),
-        );
+        await screenshotTo(`${pageName}__${scenario.name}.desktop.png`);
       }
 
       console.log(`captured ${pageName}`);
@@ -387,99 +273,140 @@ async function capture(baseUrl, outDir, pagesDir) {
 // ---------------------------------------------------------------------------------------------
 // compare
 
-function loadSnapshot(dir, file) {
-  return JSON.parse(gunzipSync(readFileSync(join(dir, file))).toString());
+// Pads an image onto a white canvas so differently-sized captures stay comparable —
+// the size delta itself then shows up as changed pixels along the grown edge.
+function padTo(png, width, height) {
+  if (png.width === width && png.height === height) return png;
+  const padded = new PNG({ width, height });
+  padded.data.fill(255);
+  PNG.bitblt(png, padded, 0, 0, png.width, png.height, 0, 0);
+  return padded;
 }
 
-function keyOf(entry) {
-  return entry.slot ? `${entry.p} [data-slot=${entry.slot}]` : entry.p;
+function comparePair(baseFile, headFile, diffFile, threshold) {
+  const base = PNG.sync.read(readFileSync(baseFile));
+  const head = PNG.sync.read(readFileSync(headFile));
+
+  const width = Math.max(base.width, head.width);
+  const height = Math.max(base.height, head.height);
+  const paddedBase = padTo(base, width, height);
+  const paddedHead = padTo(head, width, height);
+
+  // The diff image marks gated changes red and anti-aliasing-classified ones yellow.
+  const diff = new PNG({ width, height });
+  const changedPixels = pixelmatch(paddedBase.data, paddedHead.data, diff.data, width, height, {
+    threshold,
+  });
+  // Second, count-only pass including AA-classified pixels: renders are deterministic per
+  // environment, so any AA-only delta is a real (hairline) change, not rasterization noise.
+  const allChangedPixels = pixelmatch(paddedBase.data, paddedHead.data, null, width, height, {
+    threshold,
+    includeAA: true,
+  });
+  const aaOnlyPixels = Math.max(0, allChangedPixels - changedPixels);
+
+  if (changedPixels > 0 || aaOnlyPixels > 0) writeFileSync(diffFile, PNG.sync.write(diff));
+
+  return {
+    changedPixels,
+    aaOnlyPixels,
+    totalPixels: width * height,
+    resized:
+      base.width !== head.width || base.height !== head.height
+        ? { base: [base.width, base.height], head: [head.width, head.height] }
+        : null,
+  };
 }
 
-function diffStyles(props, beforeText, afterText) {
-  const before = beforeText.split("|");
-  const after = afterText.split("|");
-  const changes = [];
-  for (let i = 0; i < props.length; i++) {
-    if (before[i] !== after[i]) changes.push(`${props[i]}: '${before[i]}' -> '${after[i]}'`);
-  }
-  return changes;
+// Percentage for display; a real diff must never print as "0".
+function pctOf({ changedPixels, totalPixels }) {
+  const pct = (changedPixels / totalPixels) * 100;
+  return pct >= 0.01 ? pct.toFixed(2) : "<0.01";
 }
 
-function compare(baselineDir, currentDir, tolerance) {
-  const baselineFiles = readdirSync(baselineDir).filter((f) => f.endsWith(".json.gz")).sort();
-  const currentFiles = new Set(readdirSync(currentDir).filter((f) => f.endsWith(".json.gz")));
+function compare(baseDir, headDir, diffDir, threshold) {
+  const baseFiles = readdirSync(baseDir).filter((f) => f.endsWith(".png")).sort();
+  const headFiles = new Set(readdirSync(headDir).filter((f) => f.endsWith(".png")));
+  mkdirSync(diffDir, { recursive: true });
 
-  const report = [];
-  let diffCount = 0;
+  const changed = [];
+  const removed = [];
+  let comparedCount = 0;
 
-  for (const file of baselineFiles) {
-    if (!currentFiles.has(file)) {
-      report.push(`## ${file}\n- MISSING in current run`);
-      diffCount++;
+  for (const file of baseFiles) {
+    if (!headFiles.has(file)) {
+      removed.push(file);
       continue;
     }
-    currentFiles.delete(file);
+    headFiles.delete(file);
+    comparedCount++;
 
-    const baseline = loadSnapshot(baselineDir, file);
-    const current = loadSnapshot(currentDir, file);
-    const currentByKey = new Map(current.elements.map((e) => [keyOf(e), e]));
-    const lines = [];
+    const result = comparePair(
+      join(baseDir, file),
+      join(headDir, file),
+      join(diffDir, file.replace(/\.png$/, ".diff.png")),
+      threshold,
+    );
+    if (result.changedPixels > 0 || result.aaOnlyPixels > 0) {
+      changed.push({ file, ...result });
+      console.log(
+        `DIFF ${file}: ${result.changedPixels} pixels (${pctOf(result)}%), ${result.aaOnlyPixels} AA-only`,
+      );
+    }
+  }
+  const added = [...headFiles].sort();
 
-    for (const baseEntry of baseline.elements) {
-      const key = keyOf(baseEntry);
-      const currentEntry = currentByKey.get(key);
-      if (!currentEntry) {
-        lines.push(`- element removed: ${key}`);
-        continue;
-      }
-      currentByKey.delete(key);
+  const summary = {
+    comparedCount,
+    changed: changed.map(({ file, changedPixels, aaOnlyPixels, totalPixels, resized }) => ({
+      file,
+      changedPixels,
+      aaOnlyPixels,
+      totalPixels,
+      pct: pctOf({ changedPixels, totalPixels }),
+      resized,
+    })),
+    added,
+    removed,
+  };
+  writeFileSync(join(diffDir, "summary.json"), JSON.stringify(summary, null, 2) + "\n");
 
-      const rectDelta = baseEntry.r.map((v, i) => Math.abs(v - currentEntry.r[i]));
-      if (rectDelta.some((d) => d > tolerance)) {
+  const lines = [
+    "# Visual regression report",
+    "",
+    `Base: ${baseDir}`,
+    `Head: ${headDir}`,
+    `Threshold: ${threshold} (AA-classified pixels counted separately as hairline changes)`,
+    "",
+  ];
+  if (!changed.length && !added.length && !removed.length) {
+    lines.push(`No differences across ${comparedCount} screenshots.`);
+  } else {
+    if (changed.length) {
+      lines.push(`## Changed (${changed.length} of ${comparedCount} screenshots)`, "");
+      lines.push("| Screenshot | Changed pixels | % of page | AA-only pixels | Size change |");
+      lines.push("|---|---:|---:|---:|---|");
+      for (const entry of summary.changed) {
+        const size = entry.resized
+          ? `${entry.resized.base.join("x")} -> ${entry.resized.head.join("x")}`
+          : "";
         lines.push(
-          `- ${key}\n  rect: [${baseEntry.r.join(", ")}] -> [${currentEntry.r.join(", ")}]`,
+          `| ${entry.file} | ${entry.changedPixels} | ${entry.pct}% | ${entry.aaOnlyPixels} | ${size} |`,
         );
       }
-      for (const [field, label] of [["s", ""], ["b", "::before "], ["a", "::after "], ["ph", "::placeholder "]]) {
-        const baseStyle = baseEntry[field] !== undefined ? baseline.styles[baseEntry[field]] : null;
-        const currentStyle =
-          currentEntry[field] !== undefined ? current.styles[currentEntry[field]] : null;
-        if (baseStyle === currentStyle) continue;
-        if (baseStyle === null || currentStyle === null) {
-          lines.push(`- ${key}\n  ${label}pseudo-element ${baseStyle === null ? "added" : "removed"}`);
-          continue;
-        }
-        const changes = diffStyles(STYLE_PROPS, baseStyle, currentStyle);
-        if (changes.length) {
-          lines.push(`- ${key}\n  ${changes.map((c) => `${label}${c}`).join("\n  ")}`);
-        }
-      }
+      lines.push("");
     }
-    for (const key of currentByKey.keys()) lines.push(`- element added: ${key}`);
-
-    if (lines.length) {
-      report.push(`## ${file}\n${lines.join("\n")}`);
-      diffCount += lines.length;
-      console.log(`DIFF ${file}: ${lines.length} element(s)`);
-    }
+    if (added.length) lines.push(`## New screenshots (not in base)`, "", ...added.map((f) => `- ${f}`), "");
+    if (removed.length) lines.push(`## Removed screenshots (missing in head)`, "", ...removed.map((f) => `- ${f}`), "");
   }
-  for (const file of currentFiles) {
-    report.push(`## ${file}\n- NEW in current run (not in baseline)`);
-    diffCount++;
-  }
+  const reportPath = join(diffDir, "report.md");
+  writeFileSync(reportPath, lines.join("\n") + "\n");
 
-  const reportPath = join(currentDir, "report.md");
-  writeFileSync(
-    reportPath,
-    `# Visual regression report\n\nBaseline: ${baselineDir}\nCurrent: ${currentDir}\nTolerance: ${tolerance}px\n\n` +
-      (report.length ? report.join("\n\n") : "No differences.") +
-      "\n",
-  );
-
+  const diffCount = changed.length + added.length + removed.length;
   if (diffCount === 0) {
-    console.log(`OK: ${baselineFiles.length} snapshots compared, no differences`);
+    console.log(`OK: ${comparedCount} screenshots compared, no differences`);
   } else {
-    console.log(`\nFAIL: ${diffCount} difference(s) across ${report.length} snapshot(s) -> ${reportPath}`);
+    console.log(`\n${diffCount} screenshot(s) differ -> ${reportPath}`);
     process.exit(1);
   }
 }
@@ -494,6 +421,16 @@ function argValue(args, name, fallback) {
   return index >= 0 ? args[index + 1] : fallback;
 }
 
+const flagsWithValues = ["--url", "--out", "--pages", "--browser", "--threshold"];
+function positionals(args) {
+  const result = [];
+  for (let i = 0; i < args.length; i++) {
+    if (flagsWithValues.includes(args[i])) i++;
+    else if (!args[i].startsWith("--")) result.push(args[i]);
+  }
+  return result;
+}
+
 if (command === "capture") {
   const url = argValue(rest, "--url", "http://localhost:5205").replace(/\/$/, "");
   const out = argValue(rest, "--out");
@@ -501,17 +438,21 @@ if (command === "capture") {
     console.error("capture requires --out <dir>");
     process.exit(2);
   }
-  await capture(url, resolve(out), resolve(argValue(rest, "--pages", defaultPagesDir)));
+  const browserBinary = argValue(rest, "--browser", process.env.CHROME_PATH || "chromium");
+  await capture(url, resolve(out), resolve(argValue(rest, "--pages", defaultPagesDir)), browserBinary);
 } else if (command === "compare") {
-  const positional = rest.filter((a) => !a.startsWith("--") && a !== argValue(rest, "--tolerance"));
+  const positional = positionals(rest);
   if (positional.length !== 2) {
-    console.error("compare requires <baselineDir> <currentDir>");
+    console.error("compare requires <baseDir> <headDir>");
     process.exit(2);
   }
-  compare(resolve(positional[0]), resolve(positional[1]), Number(argValue(rest, "--tolerance", "0")));
+  const baseDir = resolve(positional[0]);
+  const headDir = resolve(positional[1]);
+  const diffDir = resolve(argValue(rest, "--out", join(dirname(headDir), "diff")));
+  compare(baseDir, headDir, diffDir, Number(argValue(rest, "--threshold", String(DEFAULT_THRESHOLD))));
 } else {
   console.error(
-    "usage: vrt.mjs capture --url <url> --out <dir> [--pages <PagesDir>] | compare <baseline> <current> [--tolerance px]",
+    "usage: vrt.mjs capture --url <url> --out <dir> [--pages <PagesDir>] [--browser <path>] | compare <baseDir> <headDir> [--out <diffDir>] [--threshold n]",
   );
   process.exit(2);
 }
