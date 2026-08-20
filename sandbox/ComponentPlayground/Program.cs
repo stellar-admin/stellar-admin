@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddStellarAdmin().AddUI();
+builder.Services.AddStellarAdmin().AddTagHelpers();
 
 var app = builder.Build();
 

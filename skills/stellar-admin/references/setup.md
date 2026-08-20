@@ -16,12 +16,12 @@ dotnet add package StellarAdmin.UI
 using StellarAdmin;
 using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin().AddUI();
+builder.Services.AddStellarAdmin().AddTagHelpers();
 ```
 
-`AddStellarAdmin()` (from `StellarAdmin.Core`) creates the shared builder; `.AddUI()` registers
-the UI services — the icon manager, with the **Lucide** icon pack as the default. Without
-`.AddUI()`, tag helpers that render icons fail to resolve their services. Theme selection is
+`AddStellarAdmin()` (from `StellarAdmin.Core`) creates the shared builder; `.AddTagHelpers()` registers
+the tag helper services — the icon manager, with the **Lucide** icon pack as the default. Without
+`.AddTagHelpers()`, tag helpers that render icons fail to resolve their services. Theme selection is
 not part of registration: the theme is whichever stylesheet the layout links (step 4).
 
 ## 3. Register the tag helpers (`_ViewImports.cshtml`)

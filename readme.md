@@ -31,7 +31,7 @@ Update your `Program.cs` (or `Startup.cs`) to register the StellarAdmin services
 using StellarAdmin;
 using StellarAdmin.TagHelpers;
 
-builder.Services.AddStellarAdmin().AddUI();
+builder.Services.AddStellarAdmin().AddTagHelpers();
 ```
 
 ### 3. Update imports

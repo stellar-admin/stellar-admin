@@ -7,7 +7,7 @@ namespace StellarAdmin.TagHelpers;
 ///     The popover panel that holds a dropdown menu's items, positioned relative to its trigger.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-content")]
-public class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions> options)
+public class DropdownMenuContentTagHelper(IOptions<StellarAdminTagHelpersOptions> options)
     : StellarAdminTagHelperBase()
 {
     /// <summary>

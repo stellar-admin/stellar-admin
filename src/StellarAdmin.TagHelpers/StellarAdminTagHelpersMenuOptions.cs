@@ -2,9 +2,9 @@ namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Application-wide settings for floating menu surfaces (Dropdown Menu, and future menu
-///     families). Configured via <see cref="StellarAdminUIBuilder.ConfigureMenu" />.
+///     families). Configured via <see cref="StellarAdminTagHelpersBuilder.ConfigureMenu" />.
 /// </summary>
-public class StellarAdminUIMenuOptions
+public class StellarAdminTagHelpersMenuOptions
 {
     /// <summary>The color scheme of menu surfaces. Defaults to <see cref="MenuColor.Default" />.</summary>
     public MenuColor Color { get; set; } = MenuColor.Default;

@@ -4,20 +4,20 @@ using StellarAdmin.TagHelpers.Icons;
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
-/// Exposes extensions allowing to register the StellarAdmin UI services.
+/// Exposes extensions allowing to register the StellarAdmin tag helper services.
 /// </summary>
-public static class StellarAdminUIExtensions
+public static class StellarAdminTagHelpersExtensions
 {
     extension(StellarAdminBuilder stellarAdminBuilder)
     {
-        public StellarAdminUIBuilder AddUI()
+        public StellarAdminTagHelpersBuilder AddTagHelpers()
         {
-            stellarAdminBuilder.Services.AddOptions<StellarAdminUIOptions>();
+            stellarAdminBuilder.Services.AddOptions<StellarAdminTagHelpersOptions>();
             stellarAdminBuilder.Services.AddSingleton<IIconManager>(_ =>
                 DefaultIconManager.Instance
             );
 
-            var builder = new StellarAdminUIBuilder(stellarAdminBuilder.Services);
+            var builder = new StellarAdminTagHelpersBuilder(stellarAdminBuilder.Services);
             builder.AddIconPack<LucideIconPack>();
             return builder;
         }

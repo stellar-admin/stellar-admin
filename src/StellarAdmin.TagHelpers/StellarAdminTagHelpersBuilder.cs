@@ -5,9 +5,9 @@ using StellarAdmin.TagHelpers.Icons;
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
-/// Exposes the necessary methods required to configure the StellarAdmin UI services.
+/// Exposes the necessary methods required to configure the StellarAdmin tag helper services.
 /// </summary>
-public class StellarAdminUIBuilder
+public class StellarAdminTagHelpersBuilder
 {
     /// <summary>
     ///     Gets the services collection.
@@ -16,11 +16,11 @@ public class StellarAdminUIBuilder
     public IServiceCollection Services { get; }
 
     /// <summary>
-    ///     Creates a new instance of <see cref="StellarAdminUIBuilder" />.
+    ///     Creates a new instance of <see cref="StellarAdminTagHelpersBuilder" />.
     /// </summary>
     /// <param name="services">The services collection.</param>
     /// <exception cref="ArgumentNullException"></exception>
-    public StellarAdminUIBuilder(IServiceCollection services)
+    public StellarAdminTagHelpersBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
     }
@@ -30,8 +30,8 @@ public class StellarAdminUIBuilder
     /// </summary>
     /// <param name="name">The name of the icon.</param>
     /// <param name="iconDefinition">The icon definition.</param>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
-    public StellarAdminUIBuilder AddIcon(string name, IconDefinition iconDefinition)
+    /// <returns>The <see cref="StellarAdminTagHelpersBuilder" /> instance.</returns>
+    public StellarAdminTagHelpersBuilder AddIcon(string name, IconDefinition iconDefinition)
     {
         DefaultIconManager.Instance.AddIcon(name, iconDefinition);
 
@@ -42,8 +42,8 @@ public class StellarAdminUIBuilder
     ///     Registers a new icon pack.
     /// </summary>
     /// <typeparam name="TIconPack">The icon pack to register.</typeparam>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
-    public StellarAdminUIBuilder AddIconPack<TIconPack>()
+    /// <returns>The <see cref="StellarAdminTagHelpersBuilder" /> instance.</returns>
+    public StellarAdminTagHelpersBuilder AddIconPack<TIconPack>()
         where TIconPack : IIconPack, new()
     {
         DefaultIconManager.Instance.AddIconPack<TIconPack>();
@@ -55,14 +55,14 @@ public class StellarAdminUIBuilder
     ///     Configures the application-wide defaults for floating menu surfaces (color,
     ///     appearance and accent).
     /// </summary>
-    /// <param name="configure">A callback for configuring <see cref="StellarAdminUIMenuOptions" />.</param>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
+    /// <param name="configure">A callback for configuring <see cref="StellarAdminTagHelpersMenuOptions" />.</param>
+    /// <returns>The <see cref="StellarAdminTagHelpersBuilder" /> instance.</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public StellarAdminUIBuilder ConfigureMenu(Action<StellarAdminUIMenuOptions> configure)
+    public StellarAdminTagHelpersBuilder ConfigureMenu(Action<StellarAdminTagHelpersMenuOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        Services.Configure<StellarAdminUIOptions>(options => configure(options.Menu));
+        Services.Configure<StellarAdminTagHelpersOptions>(options => configure(options.Menu));
 
         return this;
     }

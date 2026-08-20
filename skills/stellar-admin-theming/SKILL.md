@@ -47,7 +47,7 @@ Override by redeclaring properties in the app's own stylesheet — no build tool
 ## Menu appearance (`Program.cs`)
 
 Floating menu surfaces (Dropdown Menu, and future menu families) have app-wide options, chained
-off `.AddUI()`:
+off `.AddTagHelpers()`:
 
 ```csharp
 using StellarAdmin;
@@ -55,7 +55,7 @@ using StellarAdmin.UI;
 using StellarAdmin.UI.TagHelpers;
 
 builder.Services.AddStellarAdmin()
-    .AddUI()
+    .AddTagHelpers()
     .ConfigureMenu(menu =>
     {
         menu.Color = MenuColor.Inverted;              // Default | Inverted
@@ -115,7 +115,7 @@ Also available: the `sidebar-*` and `chart-*` token families and the `--radius` 
    switching the `<link>`. No C# theme configuration exists.
 2. Customize theme values by redeclaring the CSS custom properties (`--primary`, `--radius`, …)
    in the app's own stylesheet.
-3. Configure menu options once via `ConfigureMenu`, chained off `.AddUI()` in `Program.cs`.
+3. Configure menu options once via `ConfigureMenu`, chained off `.AddTagHelpers()` in `Program.cs`.
 4. Enable dark mode with the `dark` class on an ancestor; don't add your own dark CSS — the
    tokens are already themed for both modes.
 5. Prefer semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-card`, `border`,

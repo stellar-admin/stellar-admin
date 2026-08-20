@@ -16,10 +16,10 @@ The package owns both the shared entry point and the UI layer (the former `Stell
 
 ```csharp
 services.AddStellarAdmin()   // namespace StellarAdmin — returns StellarAdminBuilder
-        .AddUI();            // namespace StellarAdmin.TagHelpers — returns StellarAdminUIBuilder
+        .AddTagHelpers();            // namespace StellarAdmin.TagHelpers — returns StellarAdminTagHelpersBuilder
 ```
 
-`AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddUI()` is what registers `IIconManager` and applies the Lucide icon pack default — `AddStellarAdmin()` on its own does not pull in the UI services. Theme selection is **not** part of registration: it's whichever theme stylesheet the app links.
+`AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddTagHelpers()` is what registers `IIconManager` and applies the Lucide icon pack default — `AddStellarAdmin()` on its own does not pull in the tag helper services. Theme selection is **not** part of registration: it's whichever theme stylesheet the app links.
 
 ## Repository layout
 
