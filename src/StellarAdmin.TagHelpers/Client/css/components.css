@@ -511,7 +511,7 @@
     @apply size-0 invisible peer-checked:visible;
   }
   .sa-radiobutton-indicator-icon {
-    @apply pointer-events-none stroke-none;
+    @apply pointer-events-none;
   }
   .sa-sheet-body {
     @apply flex h-full flex-col;
