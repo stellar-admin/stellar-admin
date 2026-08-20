@@ -1,0 +1,86 @@
+<!-- code begin -->
+<sa-page-container width="PageContainerWidth.Large">
+    <sa-page-header>
+        <sa-page-header-title>Dashboard</sa-page-header-title>
+        <sa-page-header-description>
+            Performance across all Voyager Travel routes this month.
+        </sa-page-header-description>
+        <sa-page-header-actions>
+            <sa-button variant="ButtonVariant.Outline">
+                <sa-icon name="calendar"/>
+                Last 30 days
+            </sa-button>
+        </sa-page-header-actions>
+    </sa-page-header>
+    <div class="grid gap-4 md:grid-cols-3">
+        <sa-card>
+            <sa-card-header>
+                <sa-card-description>Reservations today</sa-card-description>
+                <sa-card-title class="text-2xl tabular-nums">1,284</sa-card-title>
+            </sa-card-header>
+        </sa-card>
+        <sa-card>
+            <sa-card-header>
+                <sa-card-description>Seats sold</sa-card-description>
+                <sa-card-title class="text-2xl tabular-nums">87.4%</sa-card-title>
+            </sa-card-header>
+        </sa-card>
+        <sa-card>
+            <sa-card-header>
+                <sa-card-description>Revenue (MTD)</sa-card-description>
+                <sa-card-title class="text-2xl tabular-nums">$2.31M</sa-card-title>
+            </sa-card-header>
+        </sa-card>
+    </div>
+    <div class="grid gap-4 lg:grid-cols-2">
+        <sa-card>
+            <sa-card-header>
+                <sa-card-title>Top destinations</sa-card-title>
+                <sa-card-description>By confirmed bookings this month.</sa-card-description>
+            </sa-card-header>
+            <sa-card-content>
+                <div class="flex flex-col gap-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <span>Kyoto, Japan</span>
+                        <span class="text-muted-foreground tabular-nums">312 bookings</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Lisbon, Portugal</span>
+                        <span class="text-muted-foreground tabular-nums">287 bookings</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Cape Town, South Africa</span>
+                        <span class="text-muted-foreground tabular-nums">243 bookings</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Cusco, Peru</span>
+                        <span class="text-muted-foreground tabular-nums">198 bookings</span>
+                    </div>
+                </div>
+            </sa-card-content>
+        </sa-card>
+        <sa-card>
+            <sa-card-header>
+                <sa-card-title>Booking status</sa-card-title>
+                <sa-card-description>Current state of this month&apos;s bookings.</sa-card-description>
+            </sa-card-header>
+            <sa-card-content>
+                <div class="flex flex-col gap-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <span>Confirmed</span>
+                        <sa-badge>1,082</sa-badge>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Pending payment</span>
+                        <sa-badge variant="BadgeVariant.Secondary">146</sa-badge>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span>Cancelled</span>
+                        <sa-badge variant="BadgeVariant.Destructive">56</sa-badge>
+                    </div>
+                </div>
+            </sa-card-content>
+        </sa-card>
+    </div>
+</sa-page-container>
+<!-- code end -->

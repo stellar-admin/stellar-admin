@@ -1,0 +1,43 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-group justify="GroupJustify.Center">
+        <sa-button variant="ButtonVariant.Outline" id="--sheet-js-api-show-modal-button">
+            Show Modal
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" id="--sheet-js-api-show-button">
+            Show
+        </sa-button>
+    </sa-group>
+    <sa-sheet id="--sheet-js-api-sheet">
+        <sa-sheet-header>
+            <sa-sheet-title>JavaScript API</sa-sheet-title>
+            <sa-sheet-description>You can open and close this sheet using the dialog JS API</sa-sheet-description>
+        </sa-sheet-header>
+        <sa-sheet-footer>
+            <sa-button variant="ButtonVariant.Outline" id="--sheet-js-api-close-button">
+                Close via JS
+            </sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <script>
+        (function() {
+            const sheet = document.getElementById("--sheet-js-api-sheet");
+            const showModalButton = document.getElementById("--sheet-js-api-show-modal-button");
+            const showButton = document.getElementById("--sheet-js-api-show-button");
+            const closeButton = document.getElementById("--sheet-js-api-close-button");
+
+            showModalButton.addEventListener("click", () => {
+                sheet.showModal();
+            });
+
+            showButton.addEventListener("click", () => {
+                sheet.show();
+            });
+
+            closeButton.addEventListener("click", () => {
+                sheet.close();
+            });
+        })();
+    </script>
+    <!-- code end -->
+</div>

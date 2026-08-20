@@ -1,0 +1,61 @@
+﻿<sa-card class="mx-auto w-full max-w-sm">
+    <sa-card-header>
+        <sa-card-title>Trip Notes</sa-card-title>
+        <sa-card-description>
+            Notes from the planning call with the Okonkwo family.
+        </sa-card-description>
+        <sa-card-action>
+            <sa-dropdown-menu>
+                <sa-dropdown-menu-trigger variant="ButtonVariant.Ghost" size="ButtonSize.Icon">
+                    <sa-icon name="ellipsis" class="text-muted-foreground"/>
+                    <span class="sr-only">More options</span>
+                </sa-dropdown-menu-trigger>
+                <sa-dropdown-menu-content class="w-44">
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="captions"/>
+                        Transcribe call
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-separator/>
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="copy"/>
+                        Copy notes
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="share"/>
+                        Share with client
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="download"/>
+                        Export as PDF
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-separator/>
+                    <sa-dropdown-menu-item variant="DropdownMenuItemVariant.Destructive">
+                        <sa-icon name="trash-2"/>
+                        Delete
+                    </sa-dropdown-menu-item>
+                </sa-dropdown-menu-content>
+            </sa-dropdown-menu>
+        </sa-card-action>
+    </sa-card-header>
+    <sa-card-content>
+        <p>
+            The family would like a two-week Japan itinerary in April, timed
+            for cherry blossom season.
+        </p>
+        <ol class="mt-4 flex list-decimal flex-col gap-2 pl-6">
+            <li>Fly into Tokyo, out of Osaka</li>
+            <li>Three nights in a Kyoto ryokan</li>
+            <li>Rail passes for all four travellers</li>
+            <li>Budget: 12,000 EUR</li>
+            <li>Follow-up call scheduled for next Tuesday</li>
+        </ol>
+    </sa-card-content>
+    <sa-card-footer>
+        <sa-avatar-group>
+            <sa-avatar src="/avatars/avatar-3.jpg" />
+            <sa-avatar src="/avatars/avatar-2.jpg" />
+            <sa-avatar src="/avatars/avatar-1.jpg" />
+            <sa-avatar-group-count>+8</sa-avatar-group-count>
+        </sa-avatar-group>
+    </sa-card-footer>
+</sa-card>

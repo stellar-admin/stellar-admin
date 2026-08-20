@@ -1,0 +1,13 @@
+@* The <sa-slot-content> child of the templated <docs-booking-card> fills the "actions"
+   slot; the <sa-slot-outlet name="actions"> in the card's footer
+   (Pages/Shared/_BookingCard.cshtml) renders it. *@
+<!-- code begin -->
+<docs-booking-card booking="StaticData.Bookings[2]">
+    <sa-slot-content name="actions">
+        <sa-group gap="GroupGap.Small">
+            <sa-button size="ButtonSize.Small">Check in</sa-button>
+            <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline">Cancel trip</sa-button>
+        </sa-group>
+    </sa-slot-content>
+</docs-booking-card>
+<!-- code end -->

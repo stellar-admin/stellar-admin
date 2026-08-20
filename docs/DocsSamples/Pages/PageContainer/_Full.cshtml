@@ -1,0 +1,57 @@
+<!-- code begin -->
+<sa-page-container>
+    <sa-page-header>
+        <sa-page-header-title>Bookings</sa-page-header-title>
+        <sa-page-header-description>
+            All bookings across Voyager Travel destinations, including pending and cancelled reservations.
+        </sa-page-header-description>
+        <sa-page-header-actions>
+            <sa-button variant="ButtonVariant.Outline">
+                <sa-icon name="download"/>
+                Export
+            </sa-button>
+            <sa-button>
+                <sa-icon name="plus"/>
+                New booking
+            </sa-button>
+        </sa-page-header-actions>
+    </sa-page-header>
+    <sa-table>
+        <sa-table-header>
+            <sa-table-row>
+                <sa-table-head class="w-[100px]">Booking #</sa-table-head>
+                <sa-table-head>Status</sa-table-head>
+                <sa-table-head>Destination</sa-table-head>
+                <sa-table-head class="text-right">Amount</sa-table-head>
+            </sa-table-row>
+        </sa-table-header>
+        <sa-table-body>
+            @foreach (var booking in StaticData.Bookings)
+            {
+                <sa-table-row>
+                    <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                    <sa-table-cell>
+                        <sa-badge variant="@GetBadgeVariant(booking.Status)">
+                            @booking.Status.ToString()
+                        </sa-badge>
+                    </sa-table-cell>
+                    <sa-table-cell>@booking.Destination</sa-table-cell>
+                    <sa-table-cell class="text-right">
+                        @booking.Amount.ToString("N")
+                    </sa-table-cell>
+                </sa-table-row>
+            }
+        </sa-table-body>
+    </sa-table>
+</sa-page-container>
+<!-- code end -->
+
+@functions
+{
+    BadgeVariant GetBadgeVariant(BookingStatus status) => status switch
+    {
+        BookingStatus.Cancelled => BadgeVariant.Destructive,
+        BookingStatus.Pending => BadgeVariant.Secondary,
+        _ => BadgeVariant.Default
+    };
+}

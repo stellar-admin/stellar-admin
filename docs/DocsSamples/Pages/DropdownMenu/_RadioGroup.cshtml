@@ -1,0 +1,21 @@
+<div class="min-h-[260px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger variant="ButtonVariant.Outline">
+                <sa-icon name="filter" class="text-muted-foreground"/>
+                Booking Status
+            </sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content class="w-56">
+                <sa-dropdown-menu-label>Filter by Status</sa-dropdown-menu-label>
+                <sa-dropdown-menu-separator/>
+                <sa-dropdown-menu-radio-group value="confirmed">
+                    <sa-dropdown-menu-radio-item value="confirmed">Confirmed</sa-dropdown-menu-radio-item>
+                    <sa-dropdown-menu-radio-item value="pending">Pending</sa-dropdown-menu-radio-item>
+                    <sa-dropdown-menu-radio-item value="cancelled">Cancelled</sa-dropdown-menu-radio-item>
+                </sa-dropdown-menu-radio-group>
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+        <!-- code end -->
+    </sa-group>
+</div>

@@ -1,0 +1,50 @@
+﻿<sa-table-selection id="booking-selection">
+    <sa-table>
+        <sa-table-header>
+            <sa-table-row>
+                <sa-table-head class="w-12">
+                    <sa-input type="checkbox" aria-label="Select all bookings"/>
+                </sa-table-head>
+                <sa-table-head class="w-[100px]">Booking #</sa-table-head>
+                <sa-table-head>Status</sa-table-head>
+                <sa-table-head>Destination</sa-table-head>
+                <sa-table-head class="text-right">Amount</sa-table-head>
+            </sa-table-row>
+        </sa-table-header>
+        <sa-table-body>
+            @foreach (var booking in StaticData.Bookings)
+            {
+                <sa-table-row>
+                    <sa-table-cell>
+                        <sa-input type="checkbox" name="selectedBookings" value="@booking.Id"
+                                  checked="@(booking.Status == BookingStatus.Pending)"
+                                  aria-label="Select booking @booking.Id"/>
+                    </sa-table-cell>
+                    <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                    <sa-table-cell>@booking.Status.ToString()</sa-table-cell>
+                    <sa-table-cell>@booking.Destination</sa-table-cell>
+                    <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
+                </sa-table-row>
+            }
+        </sa-table-body>
+    </sa-table>
+</sa-table-selection>
+<sa-button id="booking-selection-delete" variant="ButtonVariant.Destructive" class="mt-4" hidden>
+    Delete selected
+</sa-button>
+<script>
+    (() => {
+        const selection = document.getElementById("booking-selection");
+        const deleteButton = document.getElementById("booking-selection-delete");
+
+        const syncButton = () => deleteButton.hidden = selection.selectedValues.length === 0;
+
+        // selection-change fires on every user-driven change; the initial
+        // server-rendered selection is read once the component is defined.
+        selection.addEventListener("selection-change", syncButton);
+        customElements.whenDefined("sel-table-selection").then(syncButton);
+
+        deleteButton.addEventListener("click", () =>
+            alert(`Delete bookings:\n${selection.selectedValues.join("\n")}`));
+    })();
+</script>

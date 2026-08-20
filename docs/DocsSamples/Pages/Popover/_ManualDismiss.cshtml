@@ -1,0 +1,19 @@
+﻿<div class="min-h-[120px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-button variant="ButtonVariant.Outline" popovertarget="--popover-manual-dismiss" popovertargetaction="show">
+            Open Popover
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" popovertarget="--popover-manual-dismiss"
+                    popovertargetaction="toggle">
+            Toggle Popover
+        </sa-button>
+        <sa-popover id="--popover-manual-dismiss" popover="manual">
+            <sa-button variant="ButtonVariant.Outline" popovertarget="--popover-manual-dismiss"
+                        popovertargetaction="hide">
+                Close Popover
+            </sa-button>
+        </sa-popover>
+        <!-- code end -->
+    </sa-group>
+</div>

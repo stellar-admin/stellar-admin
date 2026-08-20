@@ -1,0 +1,36 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex justify-center">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-sticky-footer" command="show-modal">
+            Open
+        </sa-button>
+    </div>
+    <sa-dialog id="--dialog-sticky-footer">
+        <sa-dialog-header>
+            <sa-dialog-title>Sticky Footer</sa-dialog-title>
+            <sa-dialog-description>
+                This dialog has a sticky footer that stays visible while the content
+                scrolls.
+            </sa-dialog-description>
+        </sa-dialog-header>
+        <div class="-mx-4 max-h-[300px] overflow-y-auto px-4">
+            @for (int i = 0; i < 10; i++)
+            {
+                <p class="mb-4 leading-normal">
+                    Bookings are confirmed once full payment has been received. Fares are quoted per
+                    traveller in the currency shown at checkout and include all mandatory taxes and
+                    carrier surcharges known at the time of booking. Changes to travel dates, routing
+                    or traveller names are subject to the fare rules of the airline and may attract a
+                    change fee. Refunds, where permitted, are processed to the original form of payment
+                    within fourteen days of the request being approved.
+                </p>
+            }
+        </div>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-sticky-footer" command="close">
+                Close
+            </sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <!-- code end -->
+</div>

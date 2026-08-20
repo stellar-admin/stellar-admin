@@ -1,0 +1,14 @@
+﻿@page
+@model DocsSamples.Pages.DocsStatic
+@{
+    Layout = Model.Layout ?? "_DemoLayout";
+}
+
+@if (Model.PartialModel == null)
+{
+    <partial name="@Model.PartialName"/>
+}
+else
+{
+    <partial name="@Model.PartialName" for="PartialModel"/>
+}

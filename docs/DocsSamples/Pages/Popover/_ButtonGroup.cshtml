@@ -1,0 +1,37 @@
+﻿<div class="min-h-[260px]">
+    <sa-group justify="GroupJustify.Center">
+        <!-- code begin -->
+        <sa-button-group>
+            <sa-button variant="ButtonVariant.Outline">
+                <sa-icon name="bot"/>
+                Trip Assistant
+            </sa-button>
+            <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" popovertarget="--popover-button-group" aria-label="More options">
+                <sa-icon name="chevron-down"/>
+            </sa-button>
+        </sa-button-group>
+        <sa-popover id="--popover-button-group" position="PositionArea.BottomSpanLeft">
+            <sa-stack gap="StackGap.Small">
+                <sa-popover-header>
+                    <sa-popover-title>Ask the trip assistant</sa-popover-title>
+                    <sa-popover-description>
+                        Describe what you need in plain language.
+                    </sa-popover-description>
+                </sa-popover-header>
+                <sa-field>
+                    <sa-field-label for="--popopver-button-group-task" class="sr-only">
+                        Request
+                    </sa-field-label>
+                    <sa-textarea
+                        id="--popopver-button-group-task"
+                        placeholder="I need to..."
+                        class="resize-none"/>
+                    <sa-field-description>
+                        The assistant will draft an itinerary for you to review.
+                    </sa-field-description>
+                </sa-field>
+            </sa-stack>
+        </sa-popover>
+        <!-- code end -->
+    </sa-group>
+</div>

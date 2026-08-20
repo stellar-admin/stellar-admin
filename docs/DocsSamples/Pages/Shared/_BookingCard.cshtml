@@ -1,0 +1,19 @@
+@model DocsSamples.Booking
+
+<sa-card class="w-full max-w-sm">
+    <sa-card-header>
+        <sa-card-title>@Model.Destination</sa-card-title>
+        <sa-card-description>Booking @Model.Id</sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        <div class="flex items-center justify-between text-sm">
+            <sa-badge variant="BadgeVariant.Outline">@Model.Status</sa-badge>
+            <span class="font-medium">@Model.Amount.ToString("C")</span>
+        </div>
+    </sa-card-content>
+    <sa-card-footer>
+        <sa-slot-outlet name="actions">
+            <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline">View details</sa-button>
+        </sa-slot-outlet>
+    </sa-card-footer>
+</sa-card>

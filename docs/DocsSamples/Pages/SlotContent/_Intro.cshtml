@@ -1,0 +1,11 @@
+@* <sa-slot-content> assigns its children to a named slot on the nearest StellarAdmin
+   tag helper. The <docs-booking-summary> tag helper reads the "actions" slot with
+   TryGetNamedSlot and renders it in its header; the remaining children form the body. *@
+<!-- code begin -->
+<docs-booking-summary booking="StaticData.Bookings[0]">
+    <sa-slot-content name="actions">
+        <sa-button size="ButtonSize.ExtraSmall" variant="ButtonVariant.Outline">Edit</sa-button>
+    </sa-slot-content>
+    <p>Two travelers, departing 12 October. Payment received in full.</p>
+</docs-booking-summary>
+<!-- code end -->

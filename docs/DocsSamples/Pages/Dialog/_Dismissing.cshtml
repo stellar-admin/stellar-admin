@@ -1,0 +1,55 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-group justify="GroupJustify.Center">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-default" command="show-modal">
+            Default Dismiss
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-light" command="show-modal">
+            Light Dismiss
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-manual" command="show-modal">
+            Manual Dismiss
+        </sa-button>
+    </sa-group>
+    <sa-dialog id="--dialog-dismiss-default">
+        <sa-dialog-header>
+            <sa-dialog-title>Default Dismiss</sa-dialog-title>
+        </sa-dialog-header>
+        <p>This dialog can be closed by pressing the
+            <sa-kbd>Esc</sa-kbd>
+            key or clicking the close button below.
+        </p>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-default" command="close">
+                Close
+            </sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <sa-dialog id="--dialog-dismiss-light" closedby="any">
+        <sa-dialog-header>
+            <sa-dialog-title>Light Dismiss</sa-dialog-title>
+        </sa-dialog-header>
+        <p>This dialog can be closed by pressing the
+            <sa-kbd>Esc</sa-kbd>
+            key, clicking on the backdrop, or clicking the close button below.
+        </p>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-light" command="close">
+                Close
+            </sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <sa-dialog id="--dialog-dismiss-manual" closedby="none">
+        <sa-dialog-header>
+            <sa-dialog-title>Manual Dismiss</sa-dialog-title>
+        </sa-dialog-header>
+        <p>This dialog can only be closed by clicking the close button below.
+        </p>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--dialog-dismiss-manual" command="close">
+                Close
+            </sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <!-- code end -->
+</div>

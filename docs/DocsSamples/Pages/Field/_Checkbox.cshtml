@@ -1,0 +1,61 @@
+﻿<div class="w-full max-w-md">
+  <!-- code begin -->
+  <sa-field-group>
+    <sa-field-set>
+      <sa-field-legend variant="FieldLegendVariant.Label">
+        Show on the destination map
+      </sa-field-legend>
+      <sa-field-description>
+        Select the places you want to see on the destination map.
+      </sa-field-description>
+      <sa-field-group class="gap-3">
+        <sa-field orientation="FieldOrientation.Horizontal">
+          <sa-input type="checkbox" id="map-pref-landmarks"/>
+          <sa-field-label
+            for="map-pref-landmarks"
+            class="font-normal">
+            Landmarks and attractions
+          </sa-field-label>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal">
+          <sa-input type="checkbox" id="map-pref-restaurants"/>
+          <sa-field-label
+            for="map-pref-restaurants"
+            class="font-normal">
+            Restaurants and bars
+          </sa-field-label>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal">
+          <sa-input type="checkbox" id="map-pref-transit"/>
+          <sa-field-label
+            for="map-pref-transit"
+            class="font-normal">
+            Transit stations
+          </sa-field-label>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal">
+          <sa-input type="checkbox" id="map-pref-guides"/>
+          <sa-field-label
+            for="map-pref-guides"
+            class="font-normal">
+            Local tour guides
+          </sa-field-label>
+        </sa-field>
+      </sa-field-group>
+    </sa-field-set>
+    <sa-field-separator/>
+    <sa-field orientation="FieldOrientation.Horizontal">
+      <sa-input type="checkbox" id="map-pref-sync-itinerary" checked="checked"/>
+      <sa-field-content>
+        <sa-field-label for="map-pref-sync-itinerary">
+          Sync map with the itinerary
+        </sa-field-label>
+        <sa-field-description>
+          Places from the itinerary are shown on the map automatically. Changes you make here are visible to all
+          travellers on the booking.
+        </sa-field-description>
+      </sa-field-content>
+    </sa-field>
+  </sa-field-group>
+  <!-- code end -->
+</div>

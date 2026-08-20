@@ -1,0 +1,30 @@
+﻿<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-field-set>
+        <sa-field-legend variant="FieldLegendVariant.Label">Travel insurance</sa-field-legend>
+        <sa-field-description>
+            Annual cover works out cheaper if you take more than two trips a year.
+        </sa-field-description>
+        <sa-field-group data-slot="radio-group">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input type="radio" name="cover" value="single" id="cover-single"/>
+                <sa-field-label for="cover-single" class="font-normal">
+                    Single trip ($29.99)
+                </sa-field-label>
+            </sa-field>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input type="radio" name="cover" value="annual" id="cover-annual" checked/>
+                <sa-field-label for="cover-annual" class="font-normal">
+                    Annual multi-trip ($89.99/year)
+                </sa-field-label>
+            </sa-field>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input type="radio" name="cover" value="family" id="cover-family"/>
+                <sa-field-label for="cover-family" class="font-normal">
+                    Annual family ($149.99/year)
+                </sa-field-label>
+            </sa-field>
+        </sa-field-group>
+    </sa-field-set>
+    <!-- code end -->
+</div>

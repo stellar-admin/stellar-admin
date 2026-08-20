@@ -1,0 +1,40 @@
+﻿<sa-card class="mx-auto w-full max-w-sm">
+    <sa-card-header>
+        <sa-card-title>Sign in to Voyager Travel</sa-card-title>
+        <sa-card-description>
+            Enter your email below to sign in to your account
+        </sa-card-description>
+    </sa-card-header>
+    <sa-card-content>
+        <form>
+            <sa-field-group>
+                <sa-field>
+                    <sa-field-label for="email">Email</sa-field-label>
+                    <sa-input id="email" type="email" placeholder="ibn.battuta@rihlah.travel" required/>
+                </sa-field>
+                <sa-field>
+                    <div class="flex items-center">
+                        <sa-field-label for="password">Password</sa-field-label>
+                        <a href="#" class="ml-auto inline-block underline-offset-4 hover:underline">
+                            Forgot your password?
+                        </a>
+                    </div>
+                    <sa-input id="password" type="password" required/>
+                </sa-field>
+            </sa-field-group>
+        </form>
+    </sa-card-content>
+    <sa-card-footer class="flex-col gap-2">
+        <sa-button type="submit" class="w-full">
+            Sign in
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" class="w-full">
+            Sign in with Google
+        </sa-button>
+        <div class="mt-4 text-center">
+            Don&apos;t have an account? <a href="#" class="underline underline-offset-4">
+                Sign up
+            </a>
+        </div>
+    </sa-card-footer>
+</sa-card>

@@ -1,0 +1,34 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex justify-center">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-intro" command="show-modal">
+            Open
+        </sa-button>
+    </div>
+    <sa-sheet id="--sheet-intro">
+        <sa-sheet-header>
+            <sa-sheet-title>Edit traveller</sa-sheet-title>
+            <sa-sheet-description>Update the traveller's details here. Click save when you're done.
+            </sa-sheet-description>
+        </sa-sheet-header>
+        <sa-field-group class="grid gap-6 px-4">
+            <sa-field>
+                <sa-label for="--sheet-intro-name">Name</sa-label>
+                <sa-input id="--sheet-intro-name" name="name" value="Ibn Battuta"/>
+            </sa-field>
+            <sa-field>
+                <sa-label for="--sheet-intro-username">Username</sa-label>
+                <sa-input id="--sheet-intro-username" name="username" value="@@ibnbattuta"/>
+            </sa-field>
+        </sa-field-group>
+        <sa-sheet-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--sheet-intro" command="close">
+                Cancel
+            </sa-button>
+            <sa-button commandfor="--sheet-intro" command="close">
+                Save Changes
+            </sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <!-- code end -->
+</div>

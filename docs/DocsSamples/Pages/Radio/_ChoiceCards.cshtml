@@ -1,0 +1,41 @@
+﻿<sa-field-set class="w-full max-w-md">
+    <sa-field-legend>Fare Type</sa-field-legend>
+    <sa-field-description>
+        Choose the fare that fits your travel plans.
+    </sa-field-description>
+    <sa-field-group data-slot="radio-group">
+        <sa-field-label for="fare-saver">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Economy Saver</sa-field-title>
+                    <sa-field-description>
+                        Lowest fare, no changes or refunds
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="radio" name="fare-type" value="saver" id="fare-saver"/>
+            </sa-field>
+        </sa-field-label>
+        <sa-field-label for="fare-flex">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Economy Flex</sa-field-title>
+                    <sa-field-description>
+                        Free date changes up to 24 hours before departure
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="radio" name="fare-type" value="flex" id="fare-flex" checked/>
+            </sa-field>
+        </sa-field-label>
+        <sa-field-label for="fare-business">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Business</sa-field-title>
+                    <sa-field-description>
+                        Priority boarding, lounge access, and full refunds
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="radio" name="fare-type" value="business" id="fare-business"/>
+            </sa-field>
+        </sa-field-label>
+    </sa-field-group>
+</sa-field-set>

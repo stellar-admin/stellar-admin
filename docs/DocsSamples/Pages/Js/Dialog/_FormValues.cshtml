@@ -1,0 +1,51 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-stack align="StackAlign.Start" class="min-w-md">
+        <sa-button variant="ButtonVariant.Outline" id="--js-dialog-form-values-button">
+            Open Dialog
+        </sa-button>
+        <label class="text-sm font-bold">Result:</label>
+        <div class="font-mono w-full h-40 overflow-y-auto bg-gray-50" id="--js-dialog-form-values-result">-</div>
+    </sa-stack>
+    <sa-dialog id="--dialog-return-form-value-helper">
+        <form method="dialog" asp-antiforgery="false" class="grid gap-4">
+            <sa-dialog-header>
+                <sa-dialog-title>Edit traveller</sa-dialog-title>
+                <sa-dialog-description>Update the traveller's details here. Click save when you're done.
+                </sa-dialog-description>
+            </sa-dialog-header>
+            <sa-field-group>
+                <sa-field>
+                    <sa-label for="--js-dialog-form-values-name">Name</sa-label>
+                    <sa-input id="--js-dialog-form-values-name" name="name" value="Ibn Battuta" required/>
+                </sa-field>
+                <sa-field>
+                    <sa-label for="--js-dialog-form-values-username">Username</sa-label>
+                    <sa-input id="--js-dialog-form-values-username" name="username" value="@@ibnbattuta"
+                               required/>
+                </sa-field>
+            </sa-field-group>
+            <sa-dialog-footer>
+                <sa-button variant="ButtonVariant.Outline" type="submit" value="cancel" formnovalidate>
+                    Cancel
+                </sa-button>
+                <sa-button type="submit" value="confirm" value="confirm">
+                    Save Changes
+                </sa-button>
+            </sa-dialog-footer>
+        </form>
+    </sa-dialog>
+    <script type="module">
+        (function () {
+            const dialog = window.stellarAdmin.dialog(document.getElementById("--dialog-return-form-value-helper"));
+            const button = document.getElementById("--js-dialog-form-values-button");
+            const resultDisplay = document.getElementById("--js-dialog-form-values-result");
+
+            button.addEventListener("click", async (event) => {
+                const result = await dialog.showAsync();
+                resultDisplay.innerHTML = JSON.stringify(result, null, 4);
+            });
+        })();
+    </script>
+    <!-- code end -->
+</div>

@@ -1,0 +1,47 @@
+<!-- code begin -->
+<sa-page-container width="PageContainerWidth.Small">
+    <sa-page-header>
+        <sa-page-header-title>Add destination</sa-page-header-title>
+        <sa-page-header-description>
+            Create a new destination that customers can book through Voyager Travel.
+        </sa-page-header-description>
+    </sa-page-header>
+    <form>
+        <sa-field-group>
+            <sa-field>
+                <sa-field-label for="destination-name">Name</sa-field-label>
+                <sa-input id="destination-name" type="text" placeholder="e.g. Kyoto, Japan"/>
+                <sa-field-description>Shown to customers when browsing destinations.</sa-field-description>
+            </sa-field>
+            <sa-field>
+                <sa-field-label for="destination-region">Region</sa-field-label>
+                <sa-select id="destination-region">
+                    <option value="africa">Africa</option>
+                    <option value="asia-pacific" selected>Asia-Pacific</option>
+                    <option value="europe">Europe</option>
+                    <option value="north-america">North America</option>
+                    <option value="south-america">South America</option>
+                </sa-select>
+            </sa-field>
+            <sa-field>
+                <sa-field-label for="destination-description">Description</sa-field-label>
+                <sa-textarea id="destination-description"
+                             placeholder="What makes this destination worth the trip?"/>
+                <sa-field-description>
+                    Appears on the destination page and in package brochures.
+                </sa-field-description>
+            </sa-field>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input type="checkbox" id="destination-featured"/>
+                <sa-field-label for="destination-featured" class="font-normal">
+                    Feature on the home page
+                </sa-field-label>
+            </sa-field>
+        </sa-field-group>
+        <sa-group justify="GroupJustify.End" class="mt-6">
+            <sa-button variant="ButtonVariant.Outline">Cancel</sa-button>
+            <sa-button>Save destination</sa-button>
+        </sa-group>
+    </form>
+</sa-page-container>
+<!-- code end -->

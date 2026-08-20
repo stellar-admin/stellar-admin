@@ -1,0 +1,45 @@
+<div class="min-h-[300px]">
+    <!-- code begin -->
+    <div class="flex w-[350px] flex-col gap-2 group/collapsible">
+        <div class="flex items-center justify-between gap-4">
+            <h4 class="text-sm font-semibold">
+                Included in your package
+            </h4>
+            <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Icon" commandfor="expanded-collapsible" command="--toggle" class="size-8">
+                <sa-icon name="chevrons-up-down" class="in-aria-expanded:hidden"/>
+                <sa-icon name="chevrons-down-up" class="not-in-aria-expanded:hidden"/>
+                <span class="sr-only">Toggle</span>
+            </sa-button>
+        </div>
+        <sa-item variant="ItemVariant.Outline" size="ItemSize.Small">
+            <sa-item-media variant="ItemMediaVariant.Icon">
+                <sa-icon name="plane"/>
+            </sa-item-media>
+            <sa-item-content>
+                <sa-item-title>Return flights</sa-item-title>
+                <sa-item-description>Economy, 23kg checked baggage</sa-item-description>
+            </sa-item-content>
+        </sa-item>
+        <sa-collapsible id="expanded-collapsible" class="flex flex-col gap-2">
+            <sa-item variant="ItemVariant.Outline" size="ItemSize.Small">
+                <sa-item-media variant="ItemMediaVariant.Icon">
+                    <sa-icon name="bed"/>
+                </sa-item-media>
+                <sa-item-content>
+                    <sa-item-title>7 nights accommodation</sa-item-title>
+                    <sa-item-description>Breakfast included</sa-item-description>
+                </sa-item-content>
+            </sa-item>
+            <sa-item variant="ItemVariant.Outline" size="ItemSize.Small">
+                <sa-item-media variant="ItemMediaVariant.Icon">
+                    <sa-icon name="car"/>
+                </sa-item-media>
+                <sa-item-content>
+                    <sa-item-title>Airport transfers</sa-item-title>
+                    <sa-item-description>Private car, both directions</sa-item-description>
+                </sa-item-content>
+            </sa-item>
+        </sa-collapsible>
+    </div>
+    <!-- code end -->
+</div>

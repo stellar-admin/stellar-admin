@@ -1,0 +1,17 @@
+﻿@model RadioImplicitModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-field-set>
+        <sa-field-legend variant="FieldLegendVariant.Label">Travel insurance</sa-field-legend>
+        <sa-field-description>
+            Annual cover works out cheaper if you take more than two trips a year.
+        </sa-field-description>
+        <sa-field-group data-slot="radio-group">
+            <sa-input asp-for="InsuranceCover" label="Single trip ($29.99)" type="radio" value="single"/>
+            <sa-input asp-for="InsuranceCover" label="Annual multi-trip ($89.99/year)" type="radio" value="annual"/>
+            <sa-input asp-for="InsuranceCover" label="Annual family ($149.99/year)" type="radio" value="family"/>
+        </sa-field-group>
+    </sa-field-set>
+    <!-- code end -->
+</div>

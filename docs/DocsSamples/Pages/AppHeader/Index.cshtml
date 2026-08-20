@@ -1,0 +1,20 @@
+@page
+@model DocsSamples.Pages.AppHeader.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro">
+        <partial name="_Intro"/>
+    </docs-example>
+    <docs-example title="Trailing Actions">
+        <partial name="_Actions"/>
+    </docs-example>
+    <docs-example title="Custom Height">
+        <partial name="_CustomHeight"/>
+    </docs-example>
+    <docs-example title="With Sidebar">
+        <sa-linkbutton variant="ButtonVariant.Outline" asp-page="/DocsStatic" asp-route-name="AppHeader/_WithSidebar"
+                        asp-route-layout="_CleanLayout" target="_blank">
+            Open
+        </sa-linkbutton>
+    </docs-example>
+</docs-example-wrapper>

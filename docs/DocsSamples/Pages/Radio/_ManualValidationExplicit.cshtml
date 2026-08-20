@@ -1,0 +1,42 @@
+﻿<sa-field-set class="w-full">
+    <sa-field-legend>Bed Preference</sa-field-legend>
+    <sa-field-description>
+        Choose your preferred bed configuration.
+    </sa-field-description>
+    <sa-field-group data-slot="radio-group">
+        <sa-field orientation="FieldOrientation.Horizontal">
+            <sa-input type="radio" name="validation-bed-preference" value="king" id="validation-bed-king" aria-invalid="true" />
+            <sa-field-content>
+                <sa-field-label for="validation-bed-king">
+                    1 King
+                </sa-field-label>
+                <sa-field-description>
+                    Large bed for couples or solo travelers
+                </sa-field-description>
+            </sa-field-content>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal">
+            <sa-input type="radio" name="validation-bed-preference" value="queen" id="validation-bed-queen" aria-invalid="true" />
+            <sa-field-content>
+                <sa-field-label for="validation-bed-queen">
+                    1 Queen
+                </sa-field-label>
+                <sa-field-description>
+                    Standard bed for up to two people
+                </sa-field-description>
+            </sa-field-content>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal">
+            <sa-input type="radio" name="validation-bed-preference" value="single" id="validation-bed-single" aria-invalid="true" />
+            <sa-field-content>
+                <sa-field-label for="validation-bed-single">
+                    2 Single
+                </sa-field-label>
+                <sa-field-description>
+                    Ideal for friends or colleagues
+                </sa-field-description>
+            </sa-field-content>
+        </sa-field>
+        <sa-field-error>Please select a bed type</sa-field-error>
+    </sa-field-group>
+</sa-field-set>

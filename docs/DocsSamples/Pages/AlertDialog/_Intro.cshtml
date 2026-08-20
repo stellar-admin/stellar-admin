@@ -1,0 +1,23 @@
+<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex justify-center">
+        <sa-button variant="ButtonVariant.Outline" commandfor="--alert-dialog-intro" command="show-modal">
+            Show Dialog
+        </sa-button>
+    </div>
+    <sa-alert-dialog id="--alert-dialog-intro">
+        <sa-alert-dialog-header>
+            <sa-alert-dialog-title>Discard unsaved changes?</sa-alert-dialog-title>
+            <sa-alert-dialog-description>
+                You have unsaved changes to your itinerary for Trip #TRV-987. If you continue, your edits will be lost.
+            </sa-alert-dialog-description>
+        </sa-alert-dialog-header>
+        <form method="dialog">
+            <sa-alert-dialog-footer>
+                <sa-alert-dialog-cancel>Keep editing</sa-alert-dialog-cancel>
+                <sa-alert-dialog-action>Continue</sa-alert-dialog-action>
+            </sa-alert-dialog-footer>
+        </form>
+    </sa-alert-dialog>
+    <!-- code end -->
+</div>

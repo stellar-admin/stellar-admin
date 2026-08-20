@@ -1,0 +1,42 @@
+﻿<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-field-group>
+        <sa-field-set>
+            <sa-field-label>Booking updates</sa-field-label>
+            <sa-field-description>
+                Get notified when a booking you manage is confirmed, changed, or
+                cancelled.
+            </sa-field-description>
+            <sa-field-group data-slot="checkbox-group">
+                <sa-field orientation="FieldOrientation.Horizontal">
+                    <sa-input type="checkbox" id="push-bookings" checked disabled/>
+                    <sa-field-label for="push-bookings" class="font-normal">
+                        Push notifications
+                    </sa-field-label>
+                </sa-field>
+            </sa-field-group>
+        </sa-field-set>
+        <sa-field-separator/>
+        <sa-field-set>
+            <sa-field-label>Flight alerts</sa-field-label>
+            <sa-field-description>
+                Get notified about gate changes and delays for upcoming flights. <a href="#">Manage flights</a>
+            </sa-field-description>
+            <sa-field-group data-slot="checkbox-group">
+                <sa-field orientation="FieldOrientation.Horizontal">
+                    <sa-input type="checkbox" id="push-flights"/>
+                    <sa-field-label for="push-flights" class="font-normal">
+                        Push notifications
+                    </sa-field-label>
+                </sa-field>
+                <sa-field orientation="FieldOrientation.Horizontal">
+                    <sa-input type="checkbox" id="email-flights"/>
+                    <sa-field-label for="email-flights" class="font-normal">
+                        Email notifications
+                    </sa-field-label>
+                </sa-field>
+            </sa-field-group>
+        </sa-field-set>
+    </sa-field-group>
+    <!-- code end -->
+</div>

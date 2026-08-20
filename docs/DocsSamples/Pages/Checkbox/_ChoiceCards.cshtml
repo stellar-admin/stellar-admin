@@ -1,0 +1,41 @@
+﻿<sa-field-set class="w-full max-w-md">
+    <sa-field-legend>Trip Add-ons</sa-field-legend>
+    <sa-field-description>
+        Enhance your trip with optional extras.
+    </sa-field-description>
+    <sa-field-group data-slot="checkbox-group">
+        <sa-field-label for="addon-insurance">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Travel Insurance</sa-field-title>
+                    <sa-field-description>
+                        Covers cancellations, medical costs, and lost luggage
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="checkbox" name="addons" value="insurance" id="addon-insurance" checked/>
+            </sa-field>
+        </sa-field-label>
+        <sa-field-label for="addon-transfer">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Airport Transfer</sa-field-title>
+                    <sa-field-description>
+                        Private pickup from the airport to your hotel
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="checkbox" name="addons" value="transfer" id="addon-transfer"/>
+            </sa-field>
+        </sa-field-label>
+        <sa-field-label for="addon-excursions">
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-field-content>
+                    <sa-field-title>Guided Excursions</sa-field-title>
+                    <sa-field-description>
+                        Local guided tours at your destination
+                    </sa-field-description>
+                </sa-field-content>
+                <sa-input type="checkbox" name="addons" value="excursions" id="addon-excursions"/>
+            </sa-field>
+        </sa-field-label>
+    </sa-field-group>
+</sa-field-set>

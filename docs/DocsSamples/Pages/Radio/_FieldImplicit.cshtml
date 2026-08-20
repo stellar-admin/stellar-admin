@@ -1,0 +1,18 @@
+﻿<sa-field-set class="w-full">
+    <sa-field-legend>Bed Preference</sa-field-legend>
+    <sa-field-description>
+        Choose your preferred bed configuration.
+    </sa-field-description>
+    <sa-field-group data-slot="radio-group">
+        <sa-input type="radio" name="implicit-bed-preference" value="king"
+                   label="1 King"
+                   description="Large bed for couples or solo travelers"/>
+        <sa-input type="radio" name="implicit-bed-preference" value="queen"
+                   label="1 Queen"
+                   description="Standard bed for up to two people"/>
+        <sa-input type="radio" name="implicit-bed-preference" value="single"
+                   label="2 Single"
+                   description="Ideal for friends or colleagues"
+                   checked/>
+    </sa-field-group>
+</sa-field-set>
