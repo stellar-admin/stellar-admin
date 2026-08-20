@@ -185,7 +185,10 @@ public partial class Program
         return css.ToString();
     }
 
-    [GeneratedRegex(@".cn-(?<name>\S+).*{\n(\s)*@apply(\s)+(?<value>.*);")]
+    // The name group captures the full selector up to the opening brace, not just a bare class
+    // name — shadcn rules like `.cn-card-content:has(> [data-slot=questionnaire-choices])`
+    // contain whitespace and must survive intact.
+    [GeneratedRegex(@"\.cn-(?<name>[^{\n]+?)\s*\{\n\s*@apply\s+(?<value>.*);")]
     public static partial Regex StyleRegex();
 
     private static Dictionary<string, string> ExtractComponentsFromThemeStyle(string input)
@@ -194,7 +197,9 @@ public partial class Program
 
         foreach (Match match in StyleRegex().Matches(input))
         {
-            tokens.Add($"sa-{match.Groups["name"].Value}", match.Groups["value"].Value);
+            var name = match.Groups["name"].Value.Replace(".cn-", ".sa-");
+
+            tokens.Add($"sa-{name}", match.Groups["value"].Value);
         }
 
         return tokens;
