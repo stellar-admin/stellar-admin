@@ -85,6 +85,11 @@
                         new DemoItem("Slot Content", "/SlotContent/Index"),
                         new DemoItem("Slot Outlet", "/SlotOutlet/Index"),
                         new DemoItem("Templated Tag Helper", "/TemplatedTagHelper/Index"),
+                    ]),
+                    new DemoGroup("Theme Overrides",
+                    [
+                        new DemoItem("Standard", "/ThemeOverride/Standard"),
+                        new DemoItem("Override", "/ThemeOverride/Override"),
                     ])
                 ];
             }
@@ -115,6 +120,11 @@
         </div>
     </sa-sidebar-inset>
 </sa-sidebar-wrapper>
+
 @section Scripts {
     @await RenderSectionAsync("Scripts", false)
+}
+
+@section Styles {
+    @await RenderSectionAsync("Styles", false)
 }
