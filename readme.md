@@ -88,11 +88,11 @@ Documentation and code examples for all the Tag Helpers [can be found online](ht
 
 StellarAdmin ships a set of [Claude Code](https://claude.com/claude-code) skills that teach an AI agent how to build UIs with StellarAdmin — the component catalog, the library's conventions, and task workflows for forms, layout, and theming.
 
-Install them from this repository, which doubles as a plugin marketplace:
+The skills live in the [stellar-admin/skills](https://github.com/stellar-admin/skills) repository, which doubles as a plugin marketplace:
 
 ```bash
-/plugin marketplace add stellar-admin/stellar-admin
+/plugin marketplace add stellar-admin/skills
 /plugin install stellar-admin@stellar-admin
 ```
 
-This adds the `stellar-admin` skill (auto-activates when you edit `.cshtml` / `.razor` files) along with `stellar-admin-forms`, `stellar-admin-layout`, and `stellar-admin-theming`.
+This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.razor` files) along with `forms`, `layout`, and `theming`.
