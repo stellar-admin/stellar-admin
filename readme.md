@@ -8,8 +8,7 @@ StellarAdmin Tag Helpers is a collection of beautifully designed components base
 
 <div align="center">
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![NuGet](https://img.shields.io/nuget/v/StellarAdmin.TagHelpers)](https://www.nuget.org/packages/StellarAdmin.TagHelpers/)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![NuGet](https://img.shields.io/nuget/v/StellarAdmin.TagHelpers)](https://www.nuget.org/packages/StellarAdmin.TagHelpers/)
 
 </div>
 
@@ -45,7 +44,7 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 
 ### 4. Link a theme stylesheet and JavaScript file
 
-StellarAdmin Tag Helpers comes with the same themes as shadcn/ui, namely Vega, Nova, Maia, Lyra, Mira, Luma, Sera, and Rhea. You must add the stylesheet for the theme you want to use to your Razor layout. The URL for the theme is in the format (`/_content/StellarAdmin.TagHelpers/stellar-admin.<theme>.css`). 
+StellarAdmin Tag Helpers comes with the same themes as shadcn/ui, namely Vega, Nova, Maia, Lyra, Mira, Luma, Sera, and Rhea. You must add the stylesheet for the theme you want to use to your Razor layout. The URL for the theme is in the format (`/_content/StellarAdmin.TagHelpers/stellar-admin.<theme>.css`).
 
 StellarAdmin TagHelpers also comes with minimal JavaScript which adds interactivity to some of the Tag Helpers via Web Components. To enable this, you must also include the `stellar-admin.js` script in your layout.
 
@@ -67,8 +66,8 @@ The example below demonstrates how to include the script and the stylesheet for 
 
 > [!TIP]
 > All the Tag Helper examples on our [documentation website](https://www.stellaradmin.com/docs/tag-helpers) allows you to preview the examples in each of the different themes. Just select the _Theme_ picker above any of the examples.
-> 
-> You can also go the [shadcn/ui Create page](https://ui.shadcn.com/create) and use their _Style_ picker, which correspond with the StellarAdmin themes. This will give you a good idea of the look-and-feel of each of the themes. 
+>
+> You can also go the [shadcn/ui Create page](https://ui.shadcn.com/create) and use their _Style_ picker, which correspond with the StellarAdmin themes. This will give you a good idea of the look-and-feel of each of the themes.
 
 ### 5. Start using the Tag Helpers
 
