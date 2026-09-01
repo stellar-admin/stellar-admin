@@ -127,6 +127,18 @@
   .sa-breadcrumb-list {
     @apply flex flex-wrap items-center break-words;
   }
+  .sa-bubble {
+    @apply relative flex w-fit min-w-0 flex-col;
+  }
+  .sa-bubble-content {
+    @apply w-fit max-w-full min-w-0 overflow-hidden wrap-break-word [button]:text-left [button,a]:transition-colors;
+  }
+  .sa-bubble-group {
+    @apply flex min-w-0 flex-col;
+  }
+  .sa-bubble-reactions {
+    @apply absolute z-10 flex w-fit items-center justify-center;
+  }
   .sa-button {
     @apply inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none select-none;
   }

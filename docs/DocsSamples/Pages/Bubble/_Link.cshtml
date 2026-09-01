@@ -1,0 +1,39 @@
+<sa-bubble-group class="w-full">
+    <!-- code begin -->
+    <sa-bubble align="BubbleAlign.End">
+        <sa-bubble-content>
+            Could you send me the travel documents?
+        </sa-bubble-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Secondary">
+        <sa-bubble-content>
+            All three are ready:
+        </sa-bubble-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Outline">
+        <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="e-ticket">
+            E-ticket — Cape Town to Osaka
+        </sa-bubble-link-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Outline">
+        <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="hotel-voucher">
+            Hotel voucher — Kyoto, 12 to 19 April
+        </sa-bubble-link-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Outline">
+        <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="transfer">
+            Airport transfer confirmation
+        </sa-bubble-link-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Secondary">
+        <sa-bubble-content>
+            Worth a read before you fly:
+        </sa-bubble-content>
+    </sa-bubble>
+    <sa-bubble variant="BubbleVariant.Outline">
+        <sa-bubble-link-content href="https://www.japan.travel/" target="_blank" rel="noopener noreferrer">
+            Japan entry requirements
+        </sa-bubble-link-content>
+    </sa-bubble>
+    <!-- code end -->
+</sa-bubble-group>
