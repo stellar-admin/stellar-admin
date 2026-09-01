@@ -7,8 +7,8 @@ namespace StellarAdmin.TagHelpers;
 /// <summary>
 ///     An item rendered as an anchor, making the entire row a clickable link.
 /// </summary>
-[HtmlTargetElement("sa-link-item")]
-public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-item-link")]
+public class ItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
@@ -30,7 +30,7 @@ public class LinkItemTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
-    public LinkItemTagHelper(IHtmlGenerator htmlGenerator)
+    public ItemLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
