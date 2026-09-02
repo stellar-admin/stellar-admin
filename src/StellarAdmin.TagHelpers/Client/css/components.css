@@ -444,6 +444,15 @@
   .sa-label {
     @apply flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed;
   }
+  .sa-marker {
+    @apply relative flex w-full items-center;
+  }
+  .sa-marker-content {
+    @apply min-w-0 wrap-break-word;
+  }
+  .sa-marker-icon {
+    @apply shrink-0;
+  }
   .sa-message {
     @apply relative flex w-full min-w-0 data-[align=end]:flex-row-reverse;
   }
