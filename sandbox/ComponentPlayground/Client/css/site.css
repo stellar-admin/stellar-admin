@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/*
+  Two-bundle mode: the theme bundle supplies the component CSS and the runtime token variables,
+  so this build only needs the token/utility definitions to resolve token-named utilities
+  (text-muted-foreground, ...) and the custom utilities (scroll-fade-b, ...) in this app's markup.
+*/
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/shadcn-tailwind.css";
+
 @plugin "@tailwindcss/forms" {
     strategy: "class";
 }

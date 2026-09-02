@@ -1,0 +1,45 @@
+@model ComponentPlayground.Pages.Demo.JobLogChunk
+@using ComponentPlayground.Pages.Demo
+
+@switch (Model.Entry.Kind)
+{
+    case JobLogEntryKind.Log:
+        <div class="font-mono text-xs text-muted-foreground">@Model.Entry.Text</div>
+        break;
+
+    case JobLogEntryKind.Warning:
+        <sa-marker variant="MarkerVariant.Border" class="text-destructive">
+            <sa-marker-icon>
+                <sa-icon name="@Model.Entry.Icon"/>
+            </sa-marker-icon>
+            <sa-marker-content>@Model.Entry.Text</sa-marker-content>
+        </sa-marker>
+        break;
+
+    case JobLogEntryKind.Done:
+        <sa-marker variant="MarkerVariant.Separator">
+            <sa-marker-icon>
+                <sa-icon name="@Model.Entry.Icon"/>
+            </sa-marker-icon>
+            <sa-marker-content>@Model.Entry.Text</sa-marker-content>
+        </sa-marker>
+        break;
+
+    default:
+        <sa-marker>
+            <sa-marker-icon>
+                <sa-icon name="@Model.Entry.Icon"/>
+            </sa-marker-icon>
+            <sa-marker-content>@Model.Entry.Text</sa-marker-content>
+        </sa-marker>
+        break;
+}
+
+@if (Model.HasMore)
+{
+    <!-- Self-perpetuating cursor: htmx replaces this element with the next chunk, which carries the next cursor. -->
+    <div class="hidden"
+         hx-get="?handler=JobLog&index=@Model.NextIndex"
+         hx-trigger="load delay:600ms"
+         hx-swap="outerHTML"></div>
+}

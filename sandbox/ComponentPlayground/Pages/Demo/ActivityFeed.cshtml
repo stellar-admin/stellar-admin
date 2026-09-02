@@ -1,0 +1,163 @@
+@page
+@model ComponentPlayground.Pages.Demo.ActivityFeed
+
+@*
+    Feasibility demo: can the chat components (message / bubble / marker) carry the
+    non-chat surfaces an admin actually needs - an activity feed and a job log tail?
+
+    Both panels hand-write the layout frame the message-scroller would own:
+      outer     relative flex h-... min-h-0 flex-col overflow-hidden
+      viewport  size-full min-h-0 overflow-y-auto overscroll-contain scroll-fade-b
+      content   flex h-max min-h-full flex-col
+*@
+
+<div class="flex max-w-3xl flex-col gap-12 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Activity feed</h1>
+        <p class="text-sm text-muted-foreground">
+            Admin surfaces built out of the chat components, with the message-scroller's layout frame written by hand.
+        </p>
+    </div>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- Panel 1 - audit / activity feed, fully server-rendered            -->
+    <!-- ----------------------------------------------------------------- -->
+    <section class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-semibold">Booking pipeline activity</h2>
+            <p class="text-sm text-muted-foreground">
+                Markers carry the system events, separator markers divide the days, and a message plus bubble drops an
+                operator's comment into the same timeline.
+            </p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground">
+            <div class="border-b border-border px-4 py-3 text-sm font-medium">Last 24 hours</div>
+
+            <div class="relative flex h-[26rem] min-h-0 flex-col overflow-hidden">
+                <div class="size-full min-h-0 overflow-y-auto overscroll-contain scroll-fade-b px-4 py-4">
+                    <div class="flex h-max min-h-full flex-col gap-6">
+
+                        <sa-marker variant="MarkerVariant.Separator">
+                            <sa-marker-content>Yesterday</sa-marker-content>
+                        </sa-marker>
+
+                        <sa-marker>
+                            <sa-marker-icon>
+                                <sa-icon name="cloud-upload"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>Nightly supplier sync imported 1,284 fares</sa-marker-content>
+                            <span class="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">23:04</span>
+                        </sa-marker>
+
+                        <sa-marker>
+                            <sa-marker-icon>
+                                <sa-icon name="database"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>Kyoto campaign index rebuilt</sa-marker-content>
+                            <span class="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">23:06</span>
+                        </sa-marker>
+
+                        <sa-marker variant="MarkerVariant.Border" class="text-destructive">
+                            <sa-marker-icon>
+                                <sa-icon name="triangle-alert"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>3 fares rejected - missing fare basis code</sa-marker-content>
+                            <span class="ml-auto shrink-0 text-xs tabular-nums">23:06</span>
+                        </sa-marker>
+
+                        <sa-marker variant="MarkerVariant.Separator">
+                            <sa-marker-content>Today</sa-marker-content>
+                        </sa-marker>
+
+                        <sa-marker>
+                            <sa-marker-icon>
+                                <sa-icon name="user"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>Mika Tanaka reprocessed the rejected fares</sa-marker-content>
+                            <span class="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">08:12</span>
+                        </sa-marker>
+
+                        <sa-message>
+                            <sa-message-avatar>
+                                <sa-avatar name="Mika Tanaka"/>
+                            </sa-message-avatar>
+                            <sa-message-content>
+                                <sa-message-header>Mika Tanaka</sa-message-header>
+                                <sa-bubble variant="BubbleVariant.Muted">
+                                    <sa-bubble-content>
+                                        The three rejects were all Heathrow departures - the supplier dropped the fare
+                                        basis on the overnight feed. Re-imported by hand, no action needed.
+                                    </sa-bubble-content>
+                                </sa-bubble>
+                                <sa-message-footer>08:14</sa-message-footer>
+                            </sa-message-content>
+                        </sa-message>
+
+                        <sa-marker>
+                            <sa-marker-icon>
+                                <sa-icon name="circle-check"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>All 3 fares published to the Kyoto campaign</sa-marker-content>
+                            <span class="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">08:15</span>
+                        </sa-marker>
+
+                        <sa-marker-link href="#">
+                            <sa-marker-icon>
+                                <sa-icon name="file-text"/>
+                            </sa-marker-icon>
+                            <sa-marker-content>Open the import report</sa-marker-content>
+                        </sa-marker-link>
+
+                        <sa-marker role="status">
+                            <sa-marker-icon>
+                                <sa-spinner/>
+                            </sa-marker-icon>
+                            <sa-marker-content>Recalculating availability for 42 packages</sa-marker-content>
+                        </sa-marker>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- Panel 2 - job log tail, appended from the server by htmx          -->
+    <!-- ----------------------------------------------------------------- -->
+    <section class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-semibold">Job run log</h2>
+            <p class="text-sm text-muted-foreground">
+                Each line arrives from the server: htmx swaps in one chunk, and the chunk carries the cursor that
+                fetches the next. Markers mark the milestones; the raw output lines are plain monospace text, not chat
+                components. Scroll up while it runs to see what a scroller would have to handle.
+            </p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground">
+            <div class="flex items-center justify-between border-b border-border px-4 py-3">
+                <div class="text-sm font-medium">Supplier sync #2471</div>
+                <sa-button size="ButtonSize.Small"
+                           variant="ButtonVariant.Outline"
+                           hx-get="?handler=JobLog&index=0"
+                           hx-target="#job-log-content"
+                           hx-swap="beforeend"
+                           hx-trigger="click once">
+                    <sa-icon name="play"/>
+                    Run job
+                </sa-button>
+            </div>
+
+            <div class="relative flex h-[22rem] min-h-0 flex-col overflow-hidden">
+                <div class="size-full min-h-0 overflow-y-auto overscroll-contain scroll-fade-b px-4 py-4">
+                    <div id="job-log-content" class="flex h-max min-h-full flex-col gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="/js/htmx.min.js"></script>
+}
