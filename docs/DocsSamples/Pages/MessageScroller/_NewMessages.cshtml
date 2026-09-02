@@ -1,0 +1,85 @@
+<!-- code begin -->
+<div class="flex h-[26rem] w-full flex-col gap-3">
+    <div class="min-h-0 flex-1">
+        <sa-message-scroller>
+            <sa-message-scroller-viewport aria-label="Conversation with Mika Tanaka">
+                <sa-message-scroller-content id="--message-scroller-transcript" class="px-1 py-2">
+                    <sa-message-scroller-item>
+                        <sa-message align="MessageAlign.End">
+                            <sa-message-avatar>
+                                <sa-avatar src="/avatars/avatar-1.jpg" name="Priya Raman"/>
+                            </sa-message-avatar>
+                            <sa-message-content>
+                                <sa-bubble>
+                                    <sa-bubble-content>
+                                        Could you check whether the Sagano railway still has seats on the 14:00?
+                                    </sa-bubble-content>
+                                </sa-bubble>
+                            </sa-message-content>
+                        </sa-message>
+                    </sa-message-scroller-item>
+                    <sa-message-scroller-item>
+                        <sa-message>
+                            <sa-message-avatar>
+                                <sa-avatar src="/avatars/avatar-2.jpg" name="Mika Tanaka"/>
+                            </sa-message-avatar>
+                            <sa-message-content>
+                                <sa-bubble variant="BubbleVariant.Secondary">
+                                    <sa-bubble-content>
+                                        Checking with the operator now - one moment.
+                                    </sa-bubble-content>
+                                </sa-bubble>
+                            </sa-message-content>
+                        </sa-message>
+                    </sa-message-scroller-item>
+                </sa-message-scroller-content>
+            </sa-message-scroller-viewport>
+            <sa-message-scroller-button/>
+        </sa-message-scroller>
+    </div>
+    <div class="flex justify-center">
+        <sa-button id="--message-scroller-receive" variant="ButtonVariant.Outline" size="ButtonSize.Small">
+            <sa-icon name="message-circle"/>
+            Receive a message
+        </sa-button>
+    </div>
+</div>
+
+<template id="--message-scroller-template">
+    <sa-message-scroller-item>
+        <sa-message>
+            <sa-message-avatar>
+                <sa-avatar src="/avatars/avatar-2.jpg" name="Mika Tanaka"/>
+            </sa-message-avatar>
+            <sa-message-content>
+                <sa-bubble variant="BubbleVariant.Secondary">
+                    <sa-bubble-content></sa-bubble-content>
+                </sa-bubble>
+            </sa-message-content>
+        </sa-message>
+    </sa-message-scroller-item>
+</template>
+
+<script>
+    (() => {
+        const transcript = document.getElementById("--message-scroller-transcript");
+        const template = document.getElementById("--message-scroller-template");
+        const replies = [
+            "Two seats are still open on the 14:00 - carriage 3.",
+            "Held them under booking VYG-4471-KX for the next hour.",
+            "E-tickets are on their way to your inbox now.",
+            "Anything else you would like me to sort out before you fly?",
+        ];
+        let next = 0;
+
+        // Appending to the transcript is all the scroller needs: it watches the DOM, so the
+        // same code works whether the markup comes from a fetch, an htmx swap or a template.
+        document.getElementById("--message-scroller-receive").addEventListener("click", () => {
+            const item = template.content.cloneNode(true);
+            item.querySelector('[data-slot="bubble-content"]').textContent = replies[next % replies.length];
+            transcript.append(item);
+            next++;
+        });
+    })();
+</script>
+<!-- code end -->

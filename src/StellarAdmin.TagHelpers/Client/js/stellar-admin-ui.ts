@@ -2,6 +2,7 @@
 import "./web-components/sel-dialog";
 import "./web-components/sel-dropdown-menu";
 import "./web-components/sel-input-otp";
+import "./web-components/sel-message-scroller";
 import "./web-components/sel-sidebar";
 import "./web-components/sel-slider";
 import "./web-components/sel-table-selection";
