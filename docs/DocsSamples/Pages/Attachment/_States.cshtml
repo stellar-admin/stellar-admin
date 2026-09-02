@@ -1,0 +1,66 @@
+<div class="w-full max-w-sm">
+    <!-- code begin -->
+    <div class="flex flex-col gap-3">
+        <sa-attachment state="AttachmentState.Idle">
+            <sa-attachment-media>
+                <sa-icon name="upload"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>Attach a travel document</sa-attachment-title>
+                <sa-attachment-description>PDF, JPG or PNG up to 10 MB</sa-attachment-description>
+            </sa-attachment-content>
+        </sa-attachment>
+        <sa-attachment state="AttachmentState.Uploading">
+            <sa-attachment-media>
+                <sa-spinner/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>flight-confirmation.pdf</sa-attachment-title>
+                <sa-attachment-description>Uploading · 64%</sa-attachment-description>
+            </sa-attachment-content>
+            <sa-attachment-actions>
+                <sa-attachment-action aria-label="Cancel uploading flight-confirmation.pdf">
+                    <sa-icon name="x"/>
+                </sa-attachment-action>
+            </sa-attachment-actions>
+        </sa-attachment>
+        <sa-attachment state="AttachmentState.Processing">
+            <sa-attachment-media>
+                <sa-icon name="id-card"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>passport-priya.jpg</sa-attachment-title>
+                <sa-attachment-description>Checking the expiry date</sa-attachment-description>
+            </sa-attachment-content>
+        </sa-attachment>
+        <sa-attachment state="AttachmentState.Error">
+            <sa-attachment-media>
+                <sa-icon name="circle-alert"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>hotel-invoice.pdf</sa-attachment-title>
+                <sa-attachment-description>Upload failed — the file is over 10 MB</sa-attachment-description>
+            </sa-attachment-content>
+            <sa-attachment-actions>
+                <sa-attachment-action aria-label="Retry uploading hotel-invoice.pdf">
+                    <sa-icon name="rotate-cw"/>
+                </sa-attachment-action>
+            </sa-attachment-actions>
+        </sa-attachment>
+        <sa-attachment state="AttachmentState.Done">
+            <sa-attachment-media>
+                <sa-icon name="file-text"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>kyoto-itinerary.pdf</sa-attachment-title>
+                <sa-attachment-description>PDF · 2.4 MB</sa-attachment-description>
+            </sa-attachment-content>
+            <sa-attachment-actions>
+                <sa-attachment-action aria-label="Remove kyoto-itinerary.pdf">
+                    <sa-icon name="x"/>
+                </sa-attachment-action>
+            </sa-attachment-actions>
+        </sa-attachment>
+    </div>
+    <!-- code end -->
+</div>

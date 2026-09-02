@@ -1,0 +1,50 @@
+<div class="w-full max-w-sm min-h-[420px]">
+    <!-- code begin -->
+    <div class="flex flex-col gap-3">
+        <sa-attachment>
+            <sa-attachment-media>
+                <sa-icon name="file-text"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>kyoto-itinerary.pdf</sa-attachment-title>
+                <sa-attachment-description>PDF · 2.4 MB</sa-attachment-description>
+            </sa-attachment-content>
+            <sa-attachment-actions>
+                <sa-attachment-action aria-label="Remove kyoto-itinerary.pdf">
+                    <sa-icon name="x"/>
+                </sa-attachment-action>
+            </sa-attachment-actions>
+            <sa-attachment-button-trigger commandfor="--attachment-preview" command="show-modal"
+                                          aria-label="Preview kyoto-itinerary.pdf"/>
+        </sa-attachment>
+        <sa-attachment>
+            <sa-attachment-media>
+                <sa-icon name="plane"/>
+            </sa-attachment-media>
+            <sa-attachment-content>
+                <sa-attachment-title>flight-confirmation.pdf</sa-attachment-title>
+                <sa-attachment-description>PDF · 180 KB</sa-attachment-description>
+            </sa-attachment-content>
+            <sa-attachment-actions>
+                <sa-attachment-action aria-label="Remove flight-confirmation.pdf">
+                    <sa-icon name="x"/>
+                </sa-attachment-action>
+            </sa-attachment-actions>
+            <sa-attachment-link-trigger href="/gradients/gradient-1.jpg"
+                                        aria-label="Download flight-confirmation.pdf"/>
+        </sa-attachment>
+    </div>
+    <sa-dialog id="--attachment-preview">
+        <sa-dialog-header>
+            <sa-dialog-title>kyoto-itinerary.pdf</sa-dialog-title>
+            <sa-dialog-description>12 to 19 April · 2 travellers · PDF · 2.4 MB</sa-dialog-description>
+        </sa-dialog-header>
+        <img src="/gradients/gradient-1.jpg" alt="First page of the Kyoto itinerary" class="w-full rounded-md"/>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="--attachment-preview" command="close">
+                Close
+            </sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <!-- code end -->
+</div>

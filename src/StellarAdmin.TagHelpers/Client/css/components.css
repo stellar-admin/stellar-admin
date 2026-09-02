@@ -97,6 +97,39 @@
   .sa-app-header-separator {
     @apply mx-1 h-4;
   }
+  .sa-attachment {
+    @apply relative flex max-w-full min-w-0 shrink-0 flex-wrap border bg-card text-card-foreground transition-colors has-[>a,>button]:hover:bg-muted/50 data-[state=error]:border-destructive/30 data-[state=idle]:border-dashed;
+  }
+  .sa-attachment-actions {
+    @apply flex shrink-0 items-center;
+  }
+  .sa-attachment-content {
+    @apply max-w-full min-w-0 flex-1;
+  }
+  .sa-attachment-description {
+    @apply block max-w-full min-w-0 truncate text-muted-foreground group-data-[state=error]/attachment:text-destructive/80;
+  }
+  .sa-attachment-group {
+    @apply flex min-w-0 scroll-fade-x snap-x snap-mandatory no-scrollbar overflow-x-auto overscroll-x-contain *:data-[slot=attachment]:flex-none *:data-[slot=attachment]:snap-start;
+  }
+  .sa-attachment-media {
+    @apply relative flex aspect-square shrink-0 items-center justify-center overflow-hidden group-data-[state=error]/attachment:bg-destructive/10 group-data-[state=error]/attachment:text-destructive [&_svg]:pointer-events-none;
+  }
+  .sa-attachment-media-variant-image {
+    @apply *:[img]:aspect-square *:[img]:w-full *:[img]:object-cover;
+  }
+  .sa-attachment-orientation-horizontal {
+    @apply items-center;
+  }
+  .sa-attachment-orientation-vertical {
+    @apply flex-col;
+  }
+  .sa-attachment-title {
+    @apply block max-w-full min-w-0 truncate group-data-[state=processing]/attachment:shimmer group-data-[state=uploading]/attachment:shimmer;
+  }
+  .sa-attachment-trigger {
+    @apply absolute inset-0 z-10 outline-none;
+  }
   .sa-avatar {
     @apply after:border-border relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:mix-blend-darken dark:after:mix-blend-lighten;
   }
