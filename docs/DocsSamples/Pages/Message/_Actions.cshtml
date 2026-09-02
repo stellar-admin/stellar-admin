@@ -1,0 +1,42 @@
+<!-- code begin -->
+<div class="flex w-full flex-col gap-6">
+    <sa-message>
+        <sa-message-avatar>
+            <sa-avatar src="/avatars/avatar-2.jpg" name="Mika Tanaka"/>
+        </sa-message-avatar>
+        <sa-message-content>
+            <sa-bubble variant="BubbleVariant.Secondary">
+                <sa-bubble-content>
+                    Booking reference VYG-4471-KX. Quote it at the ryokan front desk.
+                </sa-bubble-content>
+            </sa-bubble>
+            <sa-message-footer class="gap-1">
+                <sa-button size="ButtonSize.IconExtraSmall" variant="ButtonVariant.Ghost" aria-label="Copy booking reference">
+                    <sa-icon name="copy"/>
+                </sa-button>
+                <sa-button size="ButtonSize.IconExtraSmall" variant="ButtonVariant.Ghost" aria-label="Pin message">
+                    <sa-icon name="pin"/>
+                </sa-button>
+            </sa-message-footer>
+        </sa-message-content>
+    </sa-message>
+    <sa-message align="MessageAlign.End">
+        <sa-message-avatar>
+            <sa-avatar src="/avatars/avatar-1.jpg" name="Priya Raman"/>
+        </sa-message-avatar>
+        <sa-message-content>
+            <sa-bubble variant="BubbleVariant.Destructive">
+                <sa-bubble-content>
+                    Can you add the airport lounge pass to the booking?
+                </sa-bubble-content>
+            </sa-bubble>
+            <sa-message-footer class="gap-1">
+                <span>Failed to send</span>
+                <sa-button size="ButtonSize.IconExtraSmall" variant="ButtonVariant.Ghost" aria-label="Retry sending message">
+                    <sa-icon name="refresh-cw"/>
+                </sa-button>
+            </sa-message-footer>
+        </sa-message-content>
+    </sa-message>
+</div>
+<!-- code end -->

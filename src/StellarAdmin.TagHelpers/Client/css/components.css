@@ -444,6 +444,24 @@
   .sa-label {
     @apply flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed;
   }
+  .sa-message {
+    @apply relative flex w-full min-w-0 data-[align=end]:flex-row-reverse;
+  }
+  .sa-message-avatar {
+    @apply flex w-fit shrink-0 items-center justify-center self-end overflow-hidden rounded-full bg-muted;
+  }
+  .sa-message-content {
+    @apply flex w-full min-w-0 flex-col wrap-break-word;
+  }
+  .sa-message-footer {
+    @apply flex max-w-full min-w-0 items-center group-data-[align=end]/message:justify-end;
+  }
+  .sa-message-group {
+    @apply flex min-w-0 flex-col;
+  }
+  .sa-message-header {
+    @apply flex max-w-full min-w-0 items-center;
+  }
   .sa-native-select {
     @apply outline-none disabled:pointer-events-none disabled:cursor-not-allowed;
   }
