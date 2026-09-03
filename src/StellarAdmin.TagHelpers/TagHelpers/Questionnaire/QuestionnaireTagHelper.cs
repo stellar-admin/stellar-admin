@@ -7,8 +7,9 @@ namespace StellarAdmin.TagHelpers;
 ///     <c>&lt;form&gt;</c>.
 /// </summary>
 /// <remarks>
-///     Handles the shortcut keys assigned by <c>sa-questionnaire-choices</c>, which needs
-///     <c>stellar-admin.js</c>.
+///     Handles the shortcut keys assigned by <c>sa-questionnaire-choices</c>, the arrow keys that
+///     move between a question's answers, and a free-text answer replacing the choice a
+///     single-answer question holds. All of it needs <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire")]
 public class QuestionnaireTagHelper : StellarAdminTagHelperBase
