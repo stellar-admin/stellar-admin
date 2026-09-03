@@ -9,13 +9,23 @@ const ITEM = '[data-slot="questionnaire-item"]';
 /** Every control that records an answer: the choices and the free-text answer. */
 const ANSWER = `${CHOICE_INPUT}, ${INPUT}`;
 
+/** A free-text answer that stands in for the question's choices rather than adding to them. */
+const REPLACING_INPUT = `${INPUT}[data-replaces-choices]`;
+
 /** Input types whose value the arrow keys move a caret through. */
 const TEXTUAL_TYPES = ["email", "password", "search", "tel", "text", "url"];
 
 /**
+ * The form a free-text answer belongs to, remembered while it is out of that
+ * form so it can go back to exactly what the author wrote - which is usually
+ * no attribute at all, the input simply sitting inside the form.
+ */
+const formOwner = new WeakMap<HTMLInputElement, string | null>();
+
+/**
  * Questionnaire keyboard behaviour: the shortcut keys the choices carry, the
- * arrow keys that move between answers, and the free-text answer replacing the
- * choice a single-answer question holds.
+ * arrow keys that move between answers, and the free-text answer standing in
+ * for the choice a single-answer question holds.
  *
  * The listeners sit on this element rather than on the document, so they only
  * apply once focus is somewhere inside the questionnaire. Items render with
@@ -33,7 +43,8 @@ const TEXTUAL_TYPES = ["email", "password", "search", "tel", "text", "url"];
  * checkbox, so the change event, the label pairing and validation all behave
  * as if the choice had been clicked. Nothing is stored here: the inputs remain
  * the only record of what is selected, and they post as ordinary form data.
- * Without this script the questionnaire still works; only the keys go away.
+ * Without this script the questionnaire still works; the keys go away, and a
+ * question whose answers stand in for each other posts both.
  */
 @customElement("sel-questionnaire")
 export class Questionnaire extends LitElement {
@@ -43,14 +54,25 @@ export class Questionnaire extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener("keydown", this.#onKeyDown);
+    this.addEventListener("change", this.#onChange);
     this.addEventListener("input", this.#onInput);
+    this.addEventListener("keydown", this.#onKeyDown);
+
+    // The element can upgrade while its own children are still being parsed, so
+    // the first pass waits for a document that holds all of them.
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", this.#syncItems, { once: true });
+    } else {
+      this.#syncItems();
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener("keydown", this.#onKeyDown);
+    this.removeEventListener("change", this.#onChange);
     this.removeEventListener("input", this.#onInput);
+    this.removeEventListener("keydown", this.#onKeyDown);
+    document.removeEventListener("DOMContentLoaded", this.#syncItems);
   }
 
   get #items(): HTMLElement[] {
@@ -145,17 +167,59 @@ export class Questionnaire extends LitElement {
   }
 
   /**
-   * A question that takes one answer takes it from one place: typing an answer of
-   * your own clears the choice that was selected. A question that takes several
-   * keeps them, since the free text adds to the answer rather than replacing it.
+   * Keeps every free-text answer in the question that stands in for its choices
+   * either in the form or out of it. It is in the form when it is the answer -
+   * something typed into it, and no choice selected - and out of it otherwise,
+   * so exactly one of the two answers ever posts. What was typed is never
+   * thrown away: an answer out of the form still reads back on the page, ready
+   * to be returned to.
    */
-  #onInput = (event: Event) => {
-    const input = event.target;
-    if (!(input instanceof HTMLInputElement) || input.dataset.slot !== "questionnaire-input") {
+  #syncItem(item: HTMLElement) {
+    const chosen = Array.from(item.querySelectorAll<HTMLInputElement>(CHOICE_INPUT)).some(
+      (choice) => choice.checked,
+    );
+
+    for (const input of item.querySelectorAll<HTMLInputElement>(REPLACING_INPUT)) {
+      if (!formOwner.has(input)) {
+        formOwner.set(input, input.getAttribute("form"));
+      }
+
+      if (!chosen && input.value.trim().length > 0) {
+        setAttribute(input, "form", formOwner.get(input)!);
+        continue;
+      }
+
+      // A form attribute naming no form is how an element leaves the one it sits
+      // in: it stops posting, and it drops out of that form's validation, while
+      // keeping the name and the rules it was set up with for when it returns.
+      input.setAttribute("form", "");
+    }
+  }
+
+  #syncItems = () => {
+    for (const item of this.#items) {
+      this.#syncItem(item);
+    }
+  };
+
+  #onChange = (event: Event) => {
+    const choice = event.target;
+    if (
+      !(choice instanceof HTMLInputElement) ||
+      choice.dataset.slot !== "questionnaire-choice-input"
+    ) {
       return;
     }
 
-    if (input.value.trim().length === 0) {
+    const item = choice.closest<HTMLElement>(ITEM);
+    if (item && this.contains(item)) {
+      this.#syncItem(item);
+    }
+  };
+
+  #onInput = (event: Event) => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || !input.matches(REPLACING_INPUT)) {
       return;
     }
 
@@ -164,13 +228,15 @@ export class Questionnaire extends LitElement {
       return;
     }
 
-    // Only a single-answer question renders radios, so clearing them is the whole
-    // of the rule; the checkboxes of a multiple-answer question never match.
-    for (const answer of this.#answers(item)) {
-      if (isRadio(answer)) {
-        answer.checked = false;
+    // Typing an answer of your own is answering the question, so the choice that
+    // was selected stands down.
+    if (input.value.trim().length > 0) {
+      for (const choice of item.querySelectorAll<HTMLInputElement>(CHOICE_INPUT)) {
+        choice.checked = false;
       }
     }
+
+    this.#syncItem(item);
   };
 
   #onKeyDown = (event: KeyboardEvent) => {
@@ -252,6 +318,15 @@ function isEmptyTextAnswer(answer: HTMLInputElement | undefined): boolean {
   return (
     answer !== undefined && TEXTUAL_TYPES.includes(answer.type) && answer.value.trim().length === 0
   );
+}
+
+/** Restores an attribute to what it was, which for an absent one is absence. */
+function setAttribute(element: HTMLElement, name: string, value: string | null) {
+  if (value === null) {
+    element.removeAttribute(name);
+  } else {
+    element.setAttribute(name, value);
+  }
 }
 
 /** Whether the answer is a choice in a question that takes one answer. */

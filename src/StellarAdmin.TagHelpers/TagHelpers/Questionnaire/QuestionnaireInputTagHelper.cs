@@ -53,6 +53,17 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
     public bool? RenderError { get; set; }
 
     /// <summary>
+    ///     Whether this answer and the item's choices replace one another: typing here clears the
+    ///     selected choice, and selecting a choice takes this answer out of the form so only one
+    ///     of the two posts. Set this to <c>false</c> to let both stand and post together.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>true</c>, or to <c>false</c> when the item accepts multiple answers.
+    /// </remarks>
+    [HtmlAttributeName("replaces-choices")]
+    public bool? ReplacesChoices { get; set; }
+
+    /// <summary>
     ///     The value of the input.
     /// </summary>
     [HtmlAttributeName("value")]
@@ -110,6 +121,15 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
         }
 
         inputOutput.Attributes.SetAttribute("data-slot", "questionnaire-input");
+
+        // A question that takes one answer takes it from one place, so the free text and the
+        // choices stand in for each other. A question that takes several is already collecting
+        // more than one answer, and the free text adds to them.
+        if (ReplacesChoices ?? !(GetContext<QuestionnaireItemContext>(context)?.Multiple ?? false))
+        {
+            inputOutput.Attributes.SetAttribute("data-replaces-choices", "");
+        }
+
         inputOutput.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
