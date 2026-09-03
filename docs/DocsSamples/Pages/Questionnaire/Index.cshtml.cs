@@ -13,6 +13,10 @@ public class Index : PageModel
             "Model.Validation.CabinClass",
             "Choose a cabin class to continue."
         );
+        ModelState.AddModelError(
+            "Model.Validation.OtherOccasion",
+            "Tell us a little more about the occasion."
+        );
     }
 
     public class IndexModel
@@ -81,5 +85,10 @@ public class Index : PageModel
     {
         [Required(ErrorMessage = "Choose a cabin class to continue.")]
         public string? CabinClass { get; set; }
+
+        public string? Occasion { get; set; }
+
+        [MinLength(15, ErrorMessage = "Tell us a little more about the occasion.")]
+        public string? OtherOccasion { get; set; } = "eclipse";
     }
 }

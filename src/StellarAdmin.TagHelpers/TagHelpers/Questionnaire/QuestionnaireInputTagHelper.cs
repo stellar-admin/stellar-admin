@@ -42,6 +42,17 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
     public string? InputTypeName { get; set; }
 
     /// <summary>
+    ///     Whether to render this answer's validation message after the input. Set it to
+    ///     <c>false</c> to place the message yourself.
+    /// </summary>
+    /// <remarks>
+    ///     The message reports the property this input is bound to, which is not the one the
+    ///     question's choices post.
+    /// </remarks>
+    [HtmlAttributeName("render-error")]
+    public bool? RenderError { get; set; }
+
+    /// <summary>
     ///     The value of the input.
     /// </summary>
     [HtmlAttributeName("value")]
@@ -54,7 +65,7 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var inputOutput = new TagHelperOutput(
             "input",
@@ -118,6 +129,31 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
         );
         output.Content.SetHtmlContent(inputOutput);
 
-        return Task.CompletedTask;
+        // The question's own message reports the choices; this one reports the property typed
+        // into here, so it sits with the input rather than at the end of the question.
+        if (For != null && RenderError != false)
+        {
+            output.PostElement.AppendHtml(await BuildErrorAsync(context));
+        }
+    }
+
+    private async Task<TagHelperOutput> BuildErrorAsync(TagHelperContext context)
+    {
+        var errorOutput = new TagHelperOutput(
+            string.Empty,
+            [],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+
+        var errorTagHelper = new QuestionnaireErrorTagHelper(_htmlGenerator)
+        {
+            Automatic = true,
+            For = For,
+            ViewContext = ViewContext,
+        };
+
+        await errorTagHelper.ProcessAsync(context, errorOutput);
+
+        return errorOutput;
     }
 }

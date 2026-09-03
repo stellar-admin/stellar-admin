@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
-///     Displays the validation error for a questionnaire item. When the item is bound with
-///     <c>asp-for</c>, it shows that answer's validation message and appears only when the
-///     answer is invalid.
+///     Displays the validation message for a questionnaire item's answer. A bound item renders
+///     one automatically, so place this only to position the message yourself or to write your
+///     own text.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-error")]
 public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
@@ -20,13 +20,13 @@ public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
-    /// <summary>
-    ///     An expression to be evaluated against the current model. Defaults to the expression
-    ///     the item is bound to; set it to report a different answer, such as the one a
-    ///     <c>sa-questionnaire-input</c> posts.
-    /// </summary>
-    [HtmlAttributeName("asp-for")]
-    public ModelExpression? For { get; set; }
+    /// Set on the messages the item and the input render for themselves, so that they are not
+    /// mistaken for one the author placed.
+    internal bool Automatic { get; set; }
+
+    /// The answer to report, for the input rendering its own message. Otherwise the answer the
+    /// item is bound to.
+    internal ModelExpression? For { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="ViewContext" /> of the executing view.
@@ -37,7 +37,15 @@ public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var expression = For ?? GetContext<QuestionnaireItemContext>(context)?.For;
+        var itemContext = GetContext<QuestionnaireItemContext>(context);
+        var expression = For ?? itemContext?.For;
+
+        // Placing one by hand is how the author takes the message over, so record it before the
+        // item runs and renders a second.
+        if (!Automatic && itemContext != null)
+        {
+            itemContext.ErrorRendered = true;
+        }
 
         var tagBuilder =
             expression == null

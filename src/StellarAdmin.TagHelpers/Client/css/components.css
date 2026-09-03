@@ -635,6 +635,11 @@
   .sa-questionnaire-error {
     @apply text-destructive;
   }
+  /* A bound answer renders its message even while it is valid, so unobtrusive validation has
+     somewhere to write into. Hide it until it says something, or it eats a gap in the item. */
+  .sa-questionnaire-error:empty {
+    @apply hidden;
+  }
   .sa-questionnaire-input {
     @apply min-h-11 w-full min-w-0 transition-[color,box-shadow,background-color] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0 selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground;
   }

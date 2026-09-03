@@ -20,7 +20,26 @@
                         Business
                     </sa-questionnaire-choice>
                 </sa-questionnaire-choices>
-                <sa-questionnaire-error/>
+            </sa-questionnaire-item>
+            <sa-questionnaire-item asp-for="Occasion">
+                <sa-questionnaire-title>What is the trip built around?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    We time the itinerary around whatever you are travelling for.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice value="festival">
+                        A festival or event
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice value="wedding">
+                        A wedding
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice value="birthday">
+                        A big birthday
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-input asp-for="OtherOccasion"
+                                            aria-label="Something else"
+                                            placeholder="Something else..."/>
+                </sa-questionnaire-choices>
             </sa-questionnaire-item>
         </sa-questionnaire>
     </form>
