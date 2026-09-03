@@ -5,10 +5,10 @@ namespace StellarAdmin.TagHelpers;
 /// </summary>
 public enum QuestionnaireShortcuts
 {
-    /// <summary>Assigns the letters A, B, C, and so on.</summary>
+    /// <summary>Assigns the letters A through Z.</summary>
     Letters,
 
-    /// <summary>Assigns the numbers 1, 2, 3, and so on.</summary>
+    /// <summary>Assigns the numbers 1 through 9.</summary>
     Numbers,
 }
 

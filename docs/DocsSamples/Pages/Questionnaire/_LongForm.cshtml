@@ -6,7 +6,7 @@
         <sa-questionnaire>
             <sa-questionnaire-item required="true">
                 <sa-questionnaire-title>What is your budget per person?</sa-questionnaire-title>
-                <sa-questionnaire-choices>
+                <sa-questionnaire-choices shortcuts="QuestionnaireShortcuts.Letters">
                     <sa-questionnaire-choice asp-for="Budget" value="under-2000">
                         Under $2,000
                     </sa-questionnaire-choice>
@@ -20,7 +20,7 @@
             </sa-questionnaire-item>
             <sa-questionnaire-item required="true">
                 <sa-questionnaire-title>Where would you like to stay?</sa-questionnaire-title>
-                <sa-questionnaire-choices>
+                <sa-questionnaire-choices shortcuts="QuestionnaireShortcuts.Letters">
                     <sa-questionnaire-choice asp-for="Accommodation" value="hotel">
                         International hotels
                     </sa-questionnaire-choice>
@@ -30,11 +30,14 @@
                     <sa-questionnaire-choice asp-for="Accommodation" value="apartment">
                         Self-catering apartments
                     </sa-questionnaire-choice>
+                    <sa-questionnaire-input asp-for="OtherAccommodation"
+                                            aria-label="Something else"
+                                            placeholder="Something else..."/>
                 </sa-questionnaire-choices>
             </sa-questionnaire-item>
             <sa-questionnaire-item multiple="true">
                 <sa-questionnaire-title>What would you like to build the trip around?</sa-questionnaire-title>
-                <sa-questionnaire-choices>
+                <sa-questionnaire-choices shortcuts="QuestionnaireShortcuts.Letters">
                     <sa-questionnaire-choice asp-for="Interests" value="food">
                         Food and markets
                     </sa-questionnaire-choice>

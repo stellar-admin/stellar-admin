@@ -596,8 +596,9 @@
      of the checked/disabled state. BaseUI drives those states from data-* attributes it sets
      in JavaScript; these rules (and the matching theme rules, rewritten by ThemeGenerator's
      CleanQuestionnaireClasses) read the input directly instead, so a server-rendered
-     questionnaire needs no script. data-type and data-shortcut stay attributes — the renderer
-     knows both at render time. */
+     questionnaire styles itself with no script. data-type and data-shortcut stay attributes —
+     the renderer knows both at render time, and sel-questionnaire reads data-shortcut to find
+     the choice a key press selects. */
   .sa-questionnaire {
     @apply flex w-full min-w-0 flex-col;
   }

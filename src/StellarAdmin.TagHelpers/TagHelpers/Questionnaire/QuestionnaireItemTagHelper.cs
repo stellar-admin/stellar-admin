@@ -36,6 +36,14 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute("data-slot", "questionnaire-item");
 
+        // Focusable by click but not by tab: clicking anywhere in the question - its title, its
+        // description, the space around them - focuses it, which is what puts its shortcut keys
+        // in reach without adding a tab stop of its own.
+        if (!output.Attributes.ContainsName("tabindex"))
+        {
+            output.Attributes.SetAttribute("tabindex", "-1");
+        }
+
         if (Multiple)
         {
             output.Attributes.SetAttribute("data-multiple", string.Empty);

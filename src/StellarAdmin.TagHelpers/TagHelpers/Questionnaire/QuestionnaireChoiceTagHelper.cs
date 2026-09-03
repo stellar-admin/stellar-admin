@@ -49,10 +49,12 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     public string? Name { get; set; }
 
     /// <summary>
-    ///     The shortcut key shown beside the choice.
+    ///     The shortcut key shown beside the choice, which selects it when pressed.
     /// </summary>
     /// <remarks>
-    ///     The badge is presentational: bind the key yourself if you want it to select the choice.
+    ///     Overrides the key the choices container would assign, and requires
+    ///     <c>stellar-admin.js</c>. Use a single character, since the key is matched against one
+    ///     key press.
     /// </remarks>
     [HtmlAttributeName("shortcut")]
     public string? Shortcut { get; set; }
@@ -76,13 +78,19 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         var type = isMultiple ? "checkbox" : "radio";
 
         // Only fall back to the container's running sequence when this choice sets no key of its
-        // own, so an explicit shortcut never consumes an auto-assigned one.
+        // own, so an explicit shortcut never consumes an auto-assigned one. A disabled choice
+        // takes no key either, leaving the sequence unbroken over the choices that can be picked.
         var shortcut =
-            Shortcut ?? GetContext<QuestionnaireChoicesContext>(context)?.TakeNextShortcut();
+            Shortcut
+            ?? (
+                Disabled
+                    ? null
+                    : GetContext<QuestionnaireChoicesContext>(context)?.TakeNextShortcut()
+            );
 
         var childContent = await output.GetChildContentAsync();
 
-        var input = BuildInput(context, type);
+        var input = BuildInput(context, type, shortcut);
         // BuildInput always mints an id, so the label always has something to target.
         var inputId = input.Attributes["id"]!;
 
@@ -116,7 +124,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         }
     }
 
-    private TagBuilder BuildInput(TagHelperContext context, string type)
+    private TagBuilder BuildInput(TagHelperContext context, string type, string? shortcut)
     {
         TagBuilder input;
 
@@ -189,6 +197,12 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             string.IsNullOrEmpty(Value) ? idSeed : $"{idSeed}_{Value}",
             "_"
         );
+
+        // The badge is decorative, so the key is announced from the control it operates.
+        if (!string.IsNullOrEmpty(shortcut))
+        {
+            input.Attributes["aria-keyshortcuts"] = shortcut;
+        }
 
         input.Attributes["data-slot"] = "questionnaire-choice-input";
         input.AddCssClass("sa-questionnaire-choice-input");

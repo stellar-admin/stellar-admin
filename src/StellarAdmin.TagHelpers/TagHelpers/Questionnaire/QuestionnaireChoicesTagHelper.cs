@@ -9,10 +9,13 @@ namespace StellarAdmin.TagHelpers;
 public class QuestionnaireChoicesTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Assigns a shortcut badge to each choice that does not set one itself.
+    ///     Assigns a shortcut key to each choice that does not set one itself, selecting the
+    ///     choice when pressed.
     /// </summary>
     /// <remarks>
-    ///     The badge is presentational: bind the keys yourself if you want them to select a choice.
+    ///     Keys are assigned in order over the choices that can be picked, skipping any that are
+    ///     disabled, and they need <c>stellar-admin.js</c>. They apply once focus is inside the
+    ///     questionnaire, which clicking anywhere in the question does.
     /// </remarks>
     [HtmlAttributeName("shortcuts")]
     public QuestionnaireShortcuts? Shortcuts { get; set; }

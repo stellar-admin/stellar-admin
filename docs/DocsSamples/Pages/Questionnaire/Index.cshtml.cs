@@ -58,6 +58,8 @@ public class Index : PageModel
         public string? Budget { get; set; }
 
         public string[] Interests { get; set; } = ["food"];
+
+        public string? OtherAccommodation { get; set; }
     }
 
     public class MultipleModel
