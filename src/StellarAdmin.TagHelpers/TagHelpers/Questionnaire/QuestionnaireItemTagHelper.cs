@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.TagHelpers;
@@ -10,11 +11,25 @@ namespace StellarAdmin.TagHelpers;
 public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
+    ///     An expression to be evaluated against the current model, naming the answer to this
+    ///     question. Its choices take their name and selected state from it, and its error shows
+    ///     that answer's validation message.
+    /// </summary>
+    [HtmlAttributeName("asp-for")]
+    public ModelExpression? For { get; set; }
+
+    /// <summary>
     ///     Whether the question accepts more than one answer. Its choices render as checkboxes
     ///     instead of radio buttons.
     /// </summary>
     [HtmlAttributeName("multiple")]
     public bool Multiple { get; set; }
+
+    /// <summary>
+    ///     The name the answer posts under. Set automatically when bound with <c>asp-for</c>.
+    /// </summary>
+    [HtmlAttributeName("name")]
+    public string? Name { get; set; }
 
     /// <summary>
     ///     Whether the question must be answered.
@@ -26,7 +41,18 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     {
         base.Init(context);
 
-        SetContext(context, new QuestionnaireItemContext { Multiple = Multiple });
+        // The question owns the answer, so the choices and the error read the expression from
+        // here rather than each repeating it. This has to happen in Init: the children run
+        // before the item's own ProcessAsync does.
+        SetContext(
+            context,
+            new QuestionnaireItemContext
+            {
+                For = For,
+                Multiple = Multiple,
+                Name = Name,
+            }
+        );
     }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

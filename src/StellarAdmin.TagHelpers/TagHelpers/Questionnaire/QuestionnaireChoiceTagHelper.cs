@@ -24,8 +24,8 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     Whether the choice is selected. Ignored when the choice is bound with <c>asp-for</c>,
-    ///     which takes its state from the model.
+    ///     Whether the choice is selected. Ignored when the question is bound with
+    ///     <c>asp-for</c>, which takes its state from the model.
     /// </summary>
     [HtmlAttributeName("checked")]
     public bool? Checked { get; set; }
@@ -35,18 +35,6 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     /// </summary>
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
-
-    /// <summary>
-    ///     An expression to be evaluated against the current model.
-    /// </summary>
-    [HtmlAttributeName("asp-for")]
-    public ModelExpression? For { get; set; }
-
-    /// <summary>
-    ///     The name the answer posts under. Set automatically when bound with <c>asp-for</c>.
-    /// </summary>
-    [HtmlAttributeName("name")]
-    public string? Name { get; set; }
 
     /// <summary>
     ///     The shortcut key shown beside the choice, which selects it when pressed.
@@ -74,8 +62,8 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var isMultiple = GetContext<QuestionnaireItemContext>(context)?.Multiple ?? false;
-        var type = isMultiple ? "checkbox" : "radio";
+        var itemContext = GetContext<QuestionnaireItemContext>(context);
+        var type = itemContext?.Multiple ?? false ? "checkbox" : "radio";
 
         // Only fall back to the container's running sequence when this choice sets no key of its
         // own, so an explicit shortcut never consumes an auto-assigned one. A disabled choice
@@ -90,7 +78,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 
         var childContent = await output.GetChildContentAsync();
 
-        var input = BuildInput(context, type, shortcut);
+        var input = BuildInput(context, itemContext, type, shortcut);
         // BuildInput always mints an id, so the label always has something to target.
         var inputId = input.Attributes["id"]!;
 
@@ -124,18 +112,26 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         }
     }
 
-    private TagBuilder BuildInput(TagHelperContext context, string type, string? shortcut)
+    private TagBuilder BuildInput(
+        TagHelperContext context,
+        QuestionnaireItemContext? itemContext,
+        string type,
+        string? shortcut
+    )
     {
+        // The question this choice belongs to names the answer; the choice only says which value
+        // that answer takes.
+        var expression = itemContext?.For;
         TagBuilder input;
 
-        if (For != null && type == "radio")
+        if (expression != null && type == "radio")
         {
             // The framework generator resolves the name, the checked state and the validation
             // class from the model for us.
             input = _htmlGenerator.GenerateRadioButton(
                 ViewContext,
-                For.ModelExplorer,
-                For.Name,
+                expression.ModelExplorer,
+                expression.Name,
                 Value,
                 null,
                 null
@@ -147,11 +143,11 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             input.Attributes["type"] = type;
 
             var name =
-                Name
+                itemContext?.Name
                 ?? (
-                    For == null
+                    expression == null
                         ? null
-                        : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name)
+                        : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expression.Name)
                 );
 
             if (!string.IsNullOrEmpty(name))
@@ -161,7 +157,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
                 // A checkbox posting into a collection has no framework generator, so the
                 // validation class the choice styles off has to be applied by hand.
                 if (
-                    For != null
+                    expression != null
                     && ViewContext.ViewData.ModelState.TryGetValue(name, out var entry)
                     && entry.Errors.Count > 0
                 )
@@ -175,7 +171,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
                 input.Attributes["value"] = Value;
             }
 
-            if (IsChecked())
+            if (IsChecked(expression))
             {
                 input.Attributes["checked"] = "checked";
             }
@@ -270,14 +266,14 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         return badge;
     }
 
-    private bool IsChecked()
+    private bool IsChecked(ModelExpression? expression)
     {
         if (Checked is { } isChecked)
         {
             return isChecked;
         }
 
-        return For?.Model switch
+        return expression?.Model switch
         {
             null => false,
             string text => string.Equals(text, Value, StringComparison.Ordinal),

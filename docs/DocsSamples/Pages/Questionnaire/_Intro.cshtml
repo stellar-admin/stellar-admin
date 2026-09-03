@@ -4,25 +4,25 @@
     <!-- code begin -->
     <form method="post">
         <sa-questionnaire>
-            <sa-questionnaire-item required="true">
+            <sa-questionnaire-item asp-for="TravelStyle" required="true">
                 <sa-questionnaire-title>How would you like to travel?</sa-questionnaire-title>
                 <sa-questionnaire-description>
                     We will shape the rest of your itinerary around this.
                 </sa-questionnaire-description>
                 <sa-questionnaire-choices>
-                    <sa-questionnaire-choice asp-for="TravelStyle" value="direct">
+                    <sa-questionnaire-choice value="direct">
                         Direct flights only
                         <sa-questionnaire-choice-description>
                             Fewest connections, usually the highest fare.
                         </sa-questionnaire-choice-description>
                     </sa-questionnaire-choice>
-                    <sa-questionnaire-choice asp-for="TravelStyle" value="one-stop">
+                    <sa-questionnaire-choice value="one-stop">
                         One stop is fine
                         <sa-questionnaire-choice-description>
                             A good balance of price and travel time.
                         </sa-questionnaire-choice-description>
                     </sa-questionnaire-choice>
-                    <sa-questionnaire-choice asp-for="TravelStyle" value="cheapest">
+                    <sa-questionnaire-choice value="cheapest">
                         Cheapest route, any stops
                         <sa-questionnaire-choice-description>
                             Longer journeys in exchange for the lowest fare.

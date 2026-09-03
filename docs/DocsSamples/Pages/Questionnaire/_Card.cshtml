@@ -7,19 +7,19 @@
             <form method="post">
                 <sa-questionnaire>
                     <sa-questionnaire-progress current="3" total="5"/>
-                    <sa-questionnaire-item required="true">
+                    <sa-questionnaire-item asp-for="SeatPreference" required="true">
                         <sa-questionnaire-title>Where would you like to sit?</sa-questionnaire-title>
                         <sa-questionnaire-description>
                             We will request this seat on every flight in your itinerary.
                         </sa-questionnaire-description>
                         <sa-questionnaire-choices shortcuts="QuestionnaireShortcuts.Numbers">
-                            <sa-questionnaire-choice asp-for="SeatPreference" value="window">
+                            <sa-questionnaire-choice value="window">
                                 Window
                             </sa-questionnaire-choice>
-                            <sa-questionnaire-choice asp-for="SeatPreference" value="aisle">
+                            <sa-questionnaire-choice value="aisle">
                                 Aisle
                             </sa-questionnaire-choice>
-                            <sa-questionnaire-choice asp-for="SeatPreference" value="any">
+                            <sa-questionnaire-choice value="any">
                                 No preference
                             </sa-questionnaire-choice>
                         </sa-questionnaire-choices>

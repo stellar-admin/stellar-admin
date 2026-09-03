@@ -4,19 +4,19 @@
     <!-- code begin -->
     <form method="post">
         <sa-questionnaire>
-            <sa-questionnaire-item>
+            <sa-questionnaire-item asp-for="Destination">
                 <sa-questionnaire-title>Where would you like to go next?</sa-questionnaire-title>
                 <sa-questionnaire-description>
                     Pick one of our most requested trips, or tell us somewhere else.
                 </sa-questionnaire-description>
                 <sa-questionnaire-choices>
-                    <sa-questionnaire-choice asp-for="Destination" value="kyoto">
+                    <sa-questionnaire-choice value="kyoto">
                         Kyoto, Japan
                     </sa-questionnaire-choice>
-                    <sa-questionnaire-choice asp-for="Destination" value="patagonia">
+                    <sa-questionnaire-choice value="patagonia">
                         Patagonia, Chile
                     </sa-questionnaire-choice>
-                    <sa-questionnaire-choice asp-for="Destination" value="lisbon">
+                    <sa-questionnaire-choice value="lisbon">
                         Lisbon, Portugal
                     </sa-questionnaire-choice>
                     <sa-questionnaire-input asp-for="OtherDestination"
