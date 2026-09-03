@@ -1,0 +1,55 @@
+@model Index.LongFormModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-item required="true">
+                <sa-questionnaire-title>What is your budget per person?</sa-questionnaire-title>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Budget" value="under-2000">
+                        Under $2,000
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Budget" value="2000-5000">
+                        $2,000 to $5,000
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Budget" value="over-5000">
+                        Over $5,000
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+            <sa-questionnaire-item required="true">
+                <sa-questionnaire-title>Where would you like to stay?</sa-questionnaire-title>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Accommodation" value="hotel">
+                        International hotels
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Accommodation" value="boutique">
+                        Boutique guesthouses
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Accommodation" value="apartment">
+                        Self-catering apartments
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+            <sa-questionnaire-item multiple="true">
+                <sa-questionnaire-title>What would you like to build the trip around?</sa-questionnaire-title>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Interests" value="food">
+                        Food and markets
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Interests" value="history">
+                        History and museums
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Interests" value="outdoors">
+                        Hiking and the outdoors
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+            <sa-questionnaire-actions>
+                <sa-questionnaire-submit>Save preferences</sa-questionnaire-submit>
+            </sa-questionnaire-actions>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

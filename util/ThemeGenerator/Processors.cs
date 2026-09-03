@@ -375,5 +375,44 @@ public static partial class Processors
 
             return tokens;
         }
+
+        /// <summary>
+        ///     sa-questionnaire-choice wraps a native radio or checkbox that covers the whole card, so the
+        ///     checked and invalid states live on that input rather than on the choice itself. BaseUI sets
+        ///     <c>data-checked</c> and <c>data-invalid</c> on the choice from JavaScript; we drive both from
+        ///     CSS instead:
+        ///     <list type="bullet">
+        ///         <item>
+        ///             The choice is the input's parent, so it reacts through <c>has-[&gt;input:checked]</c>.
+        ///             The indicator is a descendant and reacts through the matching
+        ///             <c>group-has-[&gt;input:checked]/questionnaire-choice</c> form.
+        ///         </item>
+        ///         <item>
+        ///             The invalid state comes from the <c>input-validation-error</c> class ASP.NET Core adds
+        ///             to a bound input that failed validation, so nothing has to set an attribute by hand.
+        ///         </item>
+        ///     </list>
+        /// </summary>
+        public Dictionary<string, string> CleanQuestionnaireClasses()
+        {
+            var tokens = new Dictionary<string, string>(input);
+
+            if (tokens.TryGetValue("sa-questionnaire-choice", out var choiceClasses))
+            {
+                tokens["sa-questionnaire-choice"] = choiceClasses
+                    .Replace("data-checked:", "has-[>input:checked]:")
+                    .Replace("data-invalid:", "has-[>input.input-validation-error]:");
+            }
+
+            if (tokens.TryGetValue("sa-questionnaire-choice-indicator", out var indicatorClasses))
+            {
+                tokens["sa-questionnaire-choice-indicator"] = indicatorClasses.Replace(
+                    "group-data-checked/questionnaire-choice:",
+                    "group-has-[>input:checked]/questionnaire-choice:"
+                );
+            }
+
+            return tokens;
+        }
     }
 }

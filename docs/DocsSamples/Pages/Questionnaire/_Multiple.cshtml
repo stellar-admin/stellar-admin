@@ -1,0 +1,30 @@
+@model Index.MultipleModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-item multiple="true">
+                <sa-questionnaire-title>What should we add to your booking?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    Select everything you would like included. You can remove extras later.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Extras" value="transfers">
+                        Airport transfers
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Extras" value="insurance">
+                        Travel insurance
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Extras" value="tours">
+                        Guided day tours
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Extras" value="lounge">
+                        Airport lounge access
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

@@ -21,10 +21,7 @@ public class DocsStatic : PageModel
             "Checkbox/_GroupModelBinding" => new Checkbox.Index.GroupModel(),
             "Checkbox/_ModelBinding" => new Checkbox.Index.ModelBindingModel(),
             "Checkbox/_Validation" => new Checkbox.Index.ValidationModel(),
-            "Field/_CheckboxImplicit" => new CheckboxImplicitModel
-            {
-                SyncMapWithItinerary = true,
-            },
+            "Field/_CheckboxImplicit" => new CheckboxImplicitModel { SyncMapWithItinerary = true },
             "Field/_FieldGroupImplicit" => new FieldGroupImplicitModel
             {
                 EnableBookingPushNotifications = true,
@@ -42,6 +39,14 @@ public class DocsStatic : PageModel
             "InputOtp/_Validation" => new Pages.InputOtp.Index.ValidationModel(),
             "Label/_ModelBinding" => new Label.Index.ModelBindingModel(),
             "Progress/_FileUploadList" => Pages.Progress.Index.Files,
+            "Questionnaire/_Card" => new Questionnaire.Index.CardModel(),
+            "Questionnaire/_Freeform" => new Questionnaire.Index.FreeformModel(),
+            "Questionnaire/_Intro" => new Questionnaire.Index.IntroModel(),
+            "Questionnaire/_LongForm" => new Questionnaire.Index.LongFormModel(),
+            "Questionnaire/_Multiple" => new Questionnaire.Index.MultipleModel(),
+            "Questionnaire/_Shortcuts" => new Questionnaire.Index.ShortcutsModel(),
+            "Questionnaire/_Steps" => new Questionnaire.Index.StepsModel(),
+            "Questionnaire/_Validation" => new Questionnaire.Index.ValidationModel(),
             "Radio/_ModelBinding" => new Radio.Index.ModelBindingModel(),
             "Radio/_Validation" => new Radio.Index.ValidationModel(),
             "Select/_ModelBinding" => new Select.Index.BookingFormModel(),
@@ -72,6 +77,12 @@ public class DocsStatic : PageModel
                 ModelState.AddModelError(
                     "PartialModel.OneTimePassword",
                     "Enter the complete 6-digit code"
+                );
+                break;
+            case "Questionnaire/_Validation":
+                ModelState.AddModelError(
+                    "PartialModel.CabinClass",
+                    "Choose a cabin class to continue."
                 );
                 break;
             case "Radio/_Validation":

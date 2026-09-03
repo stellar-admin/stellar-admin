@@ -1,0 +1,42 @@
+@model Index.StepsModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-progress current="2" total="4"/>
+            <sa-questionnaire-item required="true">
+                <sa-questionnaire-title>What pace suits this trip?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    You can still adjust individual days once the itinerary is drafted.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Pace" value="relaxed">
+                        Relaxed
+                        <sa-questionnaire-choice-description>
+                            Two or three plans a day, with time to wander.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Pace" value="balanced">
+                        Balanced
+                        <sa-questionnaire-choice-description>
+                            A full morning and afternoon, evenings left open.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Pace" value="packed">
+                        Packed
+                        <sa-questionnaire-choice-description>
+                            See as much as possible, early starts included.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+            <sa-questionnaire-actions>
+                <sa-questionnaire-previous name="step" value="back"/>
+                <sa-questionnaire-skip name="step" value="skip"/>
+                <sa-questionnaire-next name="step" value="next"/>
+            </sa-questionnaire-actions>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

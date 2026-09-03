@@ -1,0 +1,28 @@
+@model Index.ValidationModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-item required="true">
+                <sa-questionnaire-title>Which cabin class should we book?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    Fares are held for 20 minutes once you continue.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="CabinClass" value="economy">
+                        Economy
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="CabinClass" value="premium">
+                        Premium economy
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="CabinClass" value="business">
+                        Business
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+                <sa-questionnaire-error asp-for="CabinClass"/>
+            </sa-questionnaire-item>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

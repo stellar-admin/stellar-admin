@@ -1118,10 +1118,10 @@
     @apply gap-3;
   }
   .sa-questionnaire-choice {
-    @apply hover:bg-muted/50 data-checked:bg-primary/5 data-checked:border-primary/30 dark:data-checked:border-primary/20 dark:data-checked:bg-primary/10 data-invalid:border-destructive has-[>input:focus-visible]:ring-ring/30 gap-3 rounded-none border border-input bg-transparent px-4 py-4 text-sm has-[>input:focus-visible]:ring-2;
+    @apply hover:bg-muted/50 has-[>input:checked]:bg-primary/5 has-[>input:checked]:border-primary/30 dark:has-[>input:checked]:border-primary/20 dark:has-[>input:checked]:bg-primary/10 has-[>input.input-validation-error]:border-destructive has-[>input:focus-visible]:ring-ring/30 gap-3 rounded-none border border-input bg-transparent px-4 py-4 text-sm has-[>input:focus-visible]:ring-2;
   }
   .sa-questionnaire-choice-indicator {
-    @apply border-input group-data-checked/questionnaire-choice:border-foreground group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:bg-primary group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:text-primary-foreground group-data-[type=checkbox]/questionnaire-choice:group-data-checked/questionnaire-choice:border-primary size-4.5 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5;
+    @apply border-input group-has-[>input:checked]/questionnaire-choice:border-foreground group-data-[type=checkbox]/questionnaire-choice:group-has-[>input:checked]/questionnaire-choice:bg-primary group-data-[type=checkbox]/questionnaire-choice:group-has-[>input:checked]/questionnaire-choice:text-primary-foreground group-data-[type=checkbox]/questionnaire-choice:group-has-[>input:checked]/questionnaire-choice:border-primary size-4.5 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5;
   }
   .sa-questionnaire-choice-indicator-dot {
     @apply bg-foreground size-2;

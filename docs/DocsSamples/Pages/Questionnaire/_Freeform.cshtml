@@ -1,0 +1,30 @@
+@model Index.FreeformModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-item>
+                <sa-questionnaire-title>Where would you like to go next?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    Pick one of our most requested trips, or tell us somewhere else.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="Destination" value="kyoto">
+                        Kyoto, Japan
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Destination" value="patagonia">
+                        Patagonia, Chile
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="Destination" value="lisbon">
+                        Lisbon, Portugal
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-input asp-for="OtherDestination"
+                                            aria-label="Somewhere else"
+                                            placeholder="Somewhere else..."/>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

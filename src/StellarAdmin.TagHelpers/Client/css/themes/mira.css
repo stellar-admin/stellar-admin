@@ -1127,10 +1127,10 @@
     @apply gap-1.5;
   }
   .sa-questionnaire-choice {
-    @apply border-input hover:bg-input/40 data-checked:border-primary/40 data-checked:bg-primary/10 data-invalid:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/30 gap-2.5 rounded-xl border px-3 py-2.5 text-xs/relaxed has-[>input:focus-visible]:ring-2;
+    @apply border-input hover:bg-input/40 has-[>input:checked]:border-primary/40 has-[>input:checked]:bg-primary/10 has-[>input.input-validation-error]:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/30 gap-2.5 rounded-xl border px-3 py-2.5 text-xs/relaxed has-[>input:focus-visible]:ring-2;
   }
   .sa-questionnaire-choice-indicator {
-    @apply border-input dark:bg-input/30 group-data-checked/questionnaire-choice:bg-primary dark:group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground group-data-checked/questionnaire-choice:border-primary size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-[4px];
+    @apply border-input dark:bg-input/30 group-has-[>input:checked]/questionnaire-choice:bg-primary dark:group-has-[>input:checked]/questionnaire-choice:bg-primary group-has-[>input:checked]/questionnaire-choice:text-primary-foreground group-has-[>input:checked]/questionnaire-choice:border-primary size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-[4px];
   }
   .sa-questionnaire-choice-indicator-dot {
     @apply bg-primary-foreground size-2;

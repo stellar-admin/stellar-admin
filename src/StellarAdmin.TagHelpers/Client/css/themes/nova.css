@@ -1124,10 +1124,10 @@
     @apply gap-2;
   }
   .sa-questionnaire-choice {
-    @apply border-input dark:bg-input/20 hover:bg-muted/50 data-checked:border-primary/40 data-checked:bg-muted dark:data-checked:bg-muted data-invalid:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/50 gap-2.5 rounded-lg border bg-transparent px-3 py-2.5 text-sm has-[>input:focus-visible]:ring-3;
+    @apply border-input dark:bg-input/20 hover:bg-muted/50 has-[>input:checked]:border-primary/40 has-[>input:checked]:bg-muted dark:has-[>input:checked]:bg-muted has-[>input.input-validation-error]:border-destructive has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring/50 gap-2.5 rounded-lg border bg-transparent px-3 py-2.5 text-sm has-[>input:focus-visible]:ring-3;
   }
   .sa-questionnaire-choice-indicator {
-    @apply border-input dark:bg-input/30 group-data-checked/questionnaire-choice:bg-primary dark:group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground group-data-checked/questionnaire-choice:border-primary size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-[4px];
+    @apply border-input dark:bg-input/30 group-has-[>input:checked]/questionnaire-choice:bg-primary dark:group-has-[>input:checked]/questionnaire-choice:bg-primary group-has-[>input:checked]/questionnaire-choice:text-primary-foreground group-has-[>input:checked]/questionnaire-choice:border-primary size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-[4px];
   }
   .sa-questionnaire-choice-indicator-dot {
     @apply bg-primary-foreground size-2;

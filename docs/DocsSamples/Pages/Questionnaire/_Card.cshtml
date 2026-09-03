@@ -1,0 +1,36 @@
+@model Index.CardModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-card>
+        <sa-card-content>
+            <form method="post">
+                <sa-questionnaire>
+                    <sa-questionnaire-progress current="3" total="5"/>
+                    <sa-questionnaire-item required="true">
+                        <sa-questionnaire-title>Where would you like to sit?</sa-questionnaire-title>
+                        <sa-questionnaire-description>
+                            We will request this seat on every flight in your itinerary.
+                        </sa-questionnaire-description>
+                        <sa-questionnaire-choices shortcuts="QuestionnaireShortcuts.Numbers">
+                            <sa-questionnaire-choice asp-for="SeatPreference" value="window">
+                                Window
+                            </sa-questionnaire-choice>
+                            <sa-questionnaire-choice asp-for="SeatPreference" value="aisle">
+                                Aisle
+                            </sa-questionnaire-choice>
+                            <sa-questionnaire-choice asp-for="SeatPreference" value="any">
+                                No preference
+                            </sa-questionnaire-choice>
+                        </sa-questionnaire-choices>
+                    </sa-questionnaire-item>
+                    <sa-questionnaire-actions>
+                        <sa-questionnaire-previous name="step" value="back"/>
+                        <sa-questionnaire-next name="step" value="next"/>
+                    </sa-questionnaire-actions>
+                </sa-questionnaire>
+            </form>
+        </sa-card-content>
+    </sa-card>
+    <!-- code end -->
+</div>

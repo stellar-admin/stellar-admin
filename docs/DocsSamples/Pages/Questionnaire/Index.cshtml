@@ -1,0 +1,29 @@
+@page
+@model DocsSamples.Pages.Questionnaire.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro">
+        <partial name="_Intro" for="Model.Intro"/>
+    </docs-example>
+    <docs-example title="Steps">
+        <partial name="_Steps" for="Model.Steps"/>
+    </docs-example>
+    <docs-example title="Multiple Selection">
+        <partial name="_Multiple" for="Model.Multiple"/>
+    </docs-example>
+    <docs-example title="Freeform Answer">
+        <partial name="_Freeform" for="Model.Freeform"/>
+    </docs-example>
+    <docs-example title="Shortcuts">
+        <partial name="_Shortcuts" for="Model.Shortcuts"/>
+    </docs-example>
+    <docs-example title="Validation">
+        <partial name="_Validation" for="Model.Validation"/>
+    </docs-example>
+    <docs-example title="Long Form">
+        <partial name="_LongForm" for="Model.LongForm"/>
+    </docs-example>
+    <docs-example title="Card">
+        <partial name="_Card" for="Model.Card"/>
+    </docs-example>
+</docs-example-wrapper>

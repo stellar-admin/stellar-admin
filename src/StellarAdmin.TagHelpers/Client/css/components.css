@@ -591,6 +591,76 @@
   .sa-progress-track {
     @apply relative flex w-full items-center overflow-x-hidden;
   }
+  /* Questionnaire renders a native radio or checkbox inside every choice. The input is
+     absolutely positioned over the whole card, so it is both the click target and the source
+     of the checked/disabled state. BaseUI drives those states from data-* attributes it sets
+     in JavaScript; these rules (and the matching theme rules, rewritten by ThemeGenerator's
+     CleanQuestionnaireClasses) read the input directly instead, so a server-rendered
+     questionnaire needs no script. data-type and data-shortcut stay attributes — the renderer
+     knows both at render time. */
+  .sa-questionnaire {
+    @apply flex w-full min-w-0 flex-col;
+  }
+  .sa-questionnaire-actions {
+    @apply grid min-h-11 w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center;
+  }
+  .sa-questionnaire-choice {
+    @apply relative flex min-h-11 cursor-pointer items-start text-start transition-colors outline-none select-none has-[>input:disabled]:pointer-events-none has-[>input:disabled]:cursor-not-allowed has-[>input:disabled]:opacity-50;
+  }
+  .sa-questionnaire-choice-indicator {
+    @apply pointer-events-none relative flex shrink-0 items-center justify-center border group-data-[type=radio]/questionnaire-choice:rounded-full;
+  }
+  .sa-questionnaire-choice-indicator-check {
+    @apply hidden group-data-[type=radio]/questionnaire-choice:hidden group-has-[>input:checked]/questionnaire-choice:block;
+  }
+  .sa-questionnaire-choice-indicator-dot {
+    @apply hidden rounded-full group-data-[type=checkbox]/questionnaire-choice:hidden group-has-[>input:checked]/questionnaire-choice:block;
+  }
+  .sa-questionnaire-choice-input {
+    @apply absolute inset-0 z-10 size-full cursor-pointer opacity-0;
+  }
+  .sa-questionnaire-choice-label {
+    @apply flex min-w-0 flex-1 flex-col leading-snug;
+  }
+  .sa-questionnaire-choice-shortcut {
+    @apply pointer-events-none ms-auto hidden shrink-0 group-data-[shortcut]/questionnaire-choice:inline-flex;
+  }
+  .sa-questionnaire-choices {
+    @apply grid min-w-0;
+  }
+  .sa-questionnaire-description {
+    @apply text-pretty text-muted-foreground;
+  }
+  .sa-questionnaire-error {
+    @apply text-destructive;
+  }
+  .sa-questionnaire-input {
+    @apply min-h-11 w-full min-w-0 transition-[color,box-shadow,background-color] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0 selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground;
+  }
+  .sa-questionnaire-input-wrapper {
+    @apply relative min-w-0;
+  }
+  .sa-questionnaire-item {
+    @apply min-w-0 border-0 p-0 outline-none;
+  }
+  .sa-questionnaire-next {
+    @apply col-start-3 row-start-1 min-h-11 justify-self-end sm:min-h-0;
+  }
+  .sa-questionnaire-previous {
+    @apply col-start-1 row-start-1 min-h-11 justify-self-start sm:min-h-0;
+  }
+  .sa-questionnaire-progress {
+    @apply min-h-[1lh] w-fit min-w-[14ch] font-medium text-muted-foreground tabular-nums;
+  }
+  .sa-questionnaire-skip {
+    @apply col-start-2 row-start-1 min-h-11 justify-self-end sm:min-h-0;
+  }
+  .sa-questionnaire-submit {
+    @apply col-start-3 row-start-1 min-h-11 justify-self-end sm:min-h-0;
+  }
+  .sa-questionnaire-title {
+    @apply text-pretty;
+  }
   .sa-radiobutton {
     @apply relative aspect-square shrink-0 border outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none rounded-full;
   }

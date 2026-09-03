@@ -93,6 +93,7 @@ public partial class Program
                 .ReplaceFieldLabelDataChecked()
                 .CleanSwitchClasses()
                 .CleanToggleClasses()
+                .CleanQuestionnaireClasses()
                 .CreateRadioButtonStyles()
                 .CreateMenuSurfaceStyles()
                 .CleanDialogClasses()

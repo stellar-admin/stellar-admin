@@ -1,0 +1,36 @@
+@model Index.IntroModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-item required="true">
+                <sa-questionnaire-title>How would you like to travel?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    We will shape the rest of your itinerary around this.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice asp-for="TravelStyle" value="direct">
+                        Direct flights only
+                        <sa-questionnaire-choice-description>
+                            Fewest connections, usually the highest fare.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="TravelStyle" value="one-stop">
+                        One stop is fine
+                        <sa-questionnaire-choice-description>
+                            A good balance of price and travel time.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice asp-for="TravelStyle" value="cheapest">
+                        Cheapest route, any stops
+                        <sa-questionnaire-choice-description>
+                            Longer journeys in exchange for the lowest fare.
+                        </sa-questionnaire-choice-description>
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>
