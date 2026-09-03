@@ -10,13 +10,10 @@ public class QuestionnaireChoicesTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Assigns a shortcut key to each choice that does not set one itself, selecting the
-    ///     choice when pressed.
+    ///     choice when pressed. Keys are assigned in order over the choices that can be picked,
+    ///     skipping any that are disabled, and they need <c>stellar-admin.js</c>. They apply once
+    ///     focus is inside the questionnaire, which clicking anywhere in the question does.
     /// </summary>
-    /// <remarks>
-    ///     Keys are assigned in order over the choices that can be picked, skipping any that are
-    ///     disabled, and they need <c>stellar-admin.js</c>. They apply once focus is inside the
-    ///     questionnaire, which clicking anywhere in the question does.
-    /// </remarks>
     [HtmlAttributeName("shortcuts")]
     public QuestionnaireShortcuts? Shortcuts { get; set; }
 

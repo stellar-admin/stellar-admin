@@ -1,0 +1,43 @@
+@model Index.CustomProgressModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <form method="post">
+        <sa-questionnaire>
+            <sa-questionnaire-progress current="@Model.Current"
+                                       total="@Model.Total"
+                                       aria-valuetext="Step @Model.Current of @Model.Total"
+                                       class="flex w-full flex-col gap-2">
+                <span class="flex gap-1.5" aria-hidden="true">
+                    @for (var step = 1; step <= Model.Total; step++)
+                    {
+                        <span class="h-1.5 flex-1 rounded-full @(step <= Model.Current ? "bg-primary" : "bg-muted")"></span>
+                    }
+                </span>
+                <span>Step @Model.Current of @Model.Total</span>
+            </sa-questionnaire-progress>
+            <sa-questionnaire-item asp-for="Travellers" required="true">
+                <sa-questionnaire-title>Who is travelling?</sa-questionnaire-title>
+                <sa-questionnaire-description>
+                    We hold seats together wherever the airline allows it.
+                </sa-questionnaire-description>
+                <sa-questionnaire-choices>
+                    <sa-questionnaire-choice value="solo">
+                        Just me
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice value="couple">
+                        Two of us
+                    </sa-questionnaire-choice>
+                    <sa-questionnaire-choice value="family">
+                        A family
+                    </sa-questionnaire-choice>
+                </sa-questionnaire-choices>
+            </sa-questionnaire-item>
+            <sa-questionnaire-actions>
+                <sa-questionnaire-previous name="step" value="back"/>
+                <sa-questionnaire-next name="step" value="next"/>
+            </sa-questionnaire-actions>
+        </sa-questionnaire>
+    </form>
+    <!-- code end -->
+</div>

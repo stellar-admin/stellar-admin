@@ -64,7 +64,13 @@ public class QuestionnaireProgressTagHelper : StellarAdminTagHelperBase
             "aria-valuemax",
             total.ToString(CultureInfo.InvariantCulture)
         );
-        output.Attributes.SetAttribute("aria-valuetext", text);
+
+        // Content of your own replaces the default wording, so the announced text has to be
+        // yours too, or the progress reads back as something the reader cannot see.
+        if (!output.Attributes.ContainsName("aria-valuetext"))
+        {
+            output.Attributes.SetAttribute("aria-valuetext", text);
+        }
 
         if (
             !output.Attributes.ContainsName("aria-label")

@@ -42,12 +42,12 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
     public string? InputTypeName { get; set; }
 
     /// <summary>
-    ///     Whether to render this answer's validation message after the input. Set it to
-    ///     <c>false</c> to place the message yourself.
+    ///     Whether to render this answer's validation message after the input. The message
+    ///     reports the property this input is bound to, which is not the one the question's
+    ///     choices post; set this to <c>false</c> to place the message yourself.
     /// </summary>
     /// <remarks>
-    ///     The message reports the property this input is bound to, which is not the one the
-    ///     question's choices post.
+    ///     Defaults to <c>true</c>.
     /// </remarks>
     [HtmlAttributeName("render-error")]
     public bool? RenderError { get; set; }

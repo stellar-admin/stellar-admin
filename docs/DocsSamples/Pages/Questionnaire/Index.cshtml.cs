@@ -23,6 +23,8 @@ public class Index : PageModel
     {
         public CardModel Card { get; set; } = new CardModel();
 
+        public CustomProgressModel CustomProgress { get; set; } = new CustomProgressModel();
+
         public FreeformModel Freeform { get; set; } = new FreeformModel();
 
         public IntroModel Intro { get; set; } = new IntroModel();
@@ -41,6 +43,15 @@ public class Index : PageModel
     public class CardModel
     {
         public string? SeatPreference { get; set; } = "window";
+    }
+
+    public class CustomProgressModel
+    {
+        public int Current { get; set; } = 2;
+
+        public int Total { get; set; } = 4;
+
+        public string? Travellers { get; set; } = "couple";
     }
 
     public class FreeformModel

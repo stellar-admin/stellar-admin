@@ -40,12 +40,12 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     public string? Name { get; set; }
 
     /// <summary>
-    ///     Whether to render the answer's validation message at the end of the question. Set it
-    ///     to <c>false</c> to leave the message out.
+    ///     Whether to render the answer's validation message at the end of the question. A bound
+    ///     question renders one unless a <c>sa-questionnaire-error</c> inside it already does;
+    ///     set this to <c>false</c> to leave the message out.
     /// </summary>
     /// <remarks>
-    ///     A bound question renders one unless a <c>sa-questionnaire-error</c> inside it already
-    ///     does.
+    ///     Defaults to <c>true</c>.
     /// </remarks>
     [HtmlAttributeName("render-error")]
     public bool? RenderError { get; set; }

@@ -37,13 +37,10 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     public bool Disabled { get; set; }
 
     /// <summary>
-    ///     The shortcut key shown beside the choice, which selects it when pressed.
+    ///     The shortcut key shown beside the choice, which selects it when pressed. Overrides
+    ///     the key the choices container would assign, and requires <c>stellar-admin.js</c>. Use
+    ///     a single character, since the key is matched against one key press.
     /// </summary>
-    /// <remarks>
-    ///     Overrides the key the choices container would assign, and requires
-    ///     <c>stellar-admin.js</c>. Use a single character, since the key is matched against one
-    ///     key press.
-    /// </remarks>
     [HtmlAttributeName("shortcut")]
     public string? Shortcut { get; set; }
 
