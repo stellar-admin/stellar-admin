@@ -40,6 +40,7 @@ public class DocsStatic : PageModel
             "Label/_ModelBinding" => new Label.Index.ModelBindingModel(),
             "Progress/_FileUploadList" => Pages.Progress.Index.Files,
             "Questionnaire/_Card" => new Questionnaire.Index.CardModel(),
+            "Questionnaire/_CustomProgress" => new Questionnaire.Index.CustomProgressModel(),
             "Questionnaire/_Freeform" => new Questionnaire.Index.FreeformModel(),
             "Questionnaire/_Intro" => new Questionnaire.Index.IntroModel(),
             "Questionnaire/_LongForm" => new Questionnaire.Index.LongFormModel(),
