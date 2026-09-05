@@ -1,4 +1,5 @@
-﻿import "./web-components/sel-collapsible";
+﻿import "./web-components/sel-carousel";
+import "./web-components/sel-collapsible";
 import "./web-components/sel-dialog";
 import "./web-components/sel-dropdown-menu";
 import "./web-components/sel-input-otp";

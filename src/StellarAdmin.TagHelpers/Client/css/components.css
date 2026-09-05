@@ -217,6 +217,78 @@
   .sa-card-header {
     @apply @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto];
   }
+  .sa-carousel {
+    @apply relative grid min-w-0;
+    grid-template-columns: minmax(0, 1fr);
+    --carousel-spacing: 1rem;
+  }
+  .sa-carousel[data-ready]:has(> .sa-carousel-previous):has(> .sa-carousel-next) > .sa-carousel-content {
+    scrollbar-width: none;
+  }
+  .sa-carousel-content {
+    @apply flex min-w-0 overflow-auto;
+    grid-area: 1 / 1;
+    gap: var(--carousel-spacing);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    outline-offset: 4px;
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior-y: contain;
+    }
+  }
+  .sa-carousel-item {
+    @apply min-w-0 shrink-0 grow-0 basis-full p-px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .sa-carousel-previous,
+  .sa-carousel-next {
+    @apply absolute touch-manipulation;
+    grid-area: 1 / 1;
+    top: 50%;
+    transform: translateY(-50%);
+    &[data-orientation="vertical"] {
+      top: auto;
+      left: 50%;
+      transform: translateX(-50%) rotate(90deg);
+    }
+    &:dir(rtl):not([data-orientation="vertical"]) > svg {
+      transform: rotate(180deg);
+    }
+  }
+  .sa-carousel-previous {
+    &[data-orientation="horizontal"] { inset-inline-start: -3rem; }
+    &[data-orientation="vertical"] {
+      top: -3rem;
+    }
+  }
+  .sa-carousel-next {
+    &[data-orientation="horizontal"] { inset-inline-end: -3rem; }
+    &[data-orientation="vertical"] {
+      bottom: -3rem;
+    }
+  }
+  .sa-carousel-indicators {
+    @apply flex flex-wrap justify-center gap-1 pt-3;
+    grid-area: 2 / 1;
+  }
+  .sa-carousel-indicator {
+    @apply flex size-6 items-center justify-center rounded-full outline-offset-2;
+    &::before {
+      content: "";
+      @apply bg-muted-foreground/40 size-2 rounded-full;
+    }
+    &[aria-current="true"]::before {
+      @apply bg-foreground;
+    }
+  }
+  .sa-carousel:not([data-ready]) > .sa-carousel-previous,
+  .sa-carousel:not([data-ready]) > .sa-carousel-next,
+  .sa-carousel:not([data-ready]) > .sa-carousel-indicators {
+    visibility: hidden;
+  }
   .sa-checkbox {
     @apply relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none;
     /* Indeterminate (some-selected) state: filled box with a centered dash, drawn in CSS
