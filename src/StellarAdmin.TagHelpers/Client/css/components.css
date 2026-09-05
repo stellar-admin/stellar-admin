@@ -179,10 +179,25 @@
     @apply flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1;
   }
   .sa-button-group-orientation-horizontal {
-    @apply [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>[data-slot]]:rounded-r-none [&>[data-slot]>[data-slot]]:rounded-r-none [&>[data-slot]~[data-slot]>[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]>[data-slot]]:border-l-0;
+    @apply [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>[data-slot]]:rounded-r-none;
+
+    /* Native selects carry their visible border inside a wrapper. */
+    & > [data-slot=native-select-wrapper]:has(~ [data-slot]) > [data-slot=native-select] {
+      @apply rounded-r-none;
+    }
+    & > [data-slot] ~ [data-slot=native-select-wrapper] > [data-slot=native-select] {
+      @apply rounded-l-none border-l-0;
+    }
   }
   .sa-button-group-orientation-vertical {
     @apply flex-col [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>[data-slot]]:rounded-b-none;
+
+    & > [data-slot=native-select-wrapper]:has(~ [data-slot]) > [data-slot=native-select] {
+      @apply rounded-b-none;
+    }
+    & > [data-slot] ~ [data-slot=native-select-wrapper] > [data-slot=native-select] {
+      @apply rounded-t-none border-t-0;
+    }
   }
   .sa-button-group-separator {
     @apply relative self-stretch data-[orientation=horizontal]:mx-px data-[orientation=horizontal]:w-auto data-[orientation=vertical]:my-px data-[orientation=vertical]:h-auto;
