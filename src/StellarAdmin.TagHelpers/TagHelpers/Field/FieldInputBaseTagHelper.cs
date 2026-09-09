@@ -33,12 +33,6 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     public string? Error { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the automatically rendered field wrapper.
-    /// </summary>
-    [HtmlAttributeName("field-class")]
-    public string? FieldClass { get; set; }
-
-    /// <summary>
     ///     An expression to be evaluated against the current model.
     /// </summary>
     [HtmlAttributeName(ForAttributeName)]
@@ -182,7 +176,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
             autoFieldConfiguration.Layout == AutoFieldLayout.Vertical
                 ? FieldOrientation.Vertical
                 : FieldOrientation.Horizontal,
-            JoinCssClasses(FieldClass, FieldClasses?.Root)
+            FieldClasses?.Root
         );
 
         // Render the opening tag of the Field wrapper
