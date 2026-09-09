@@ -9,14 +9,4 @@ public class SwitchClassNames : FieldClassNames
     ///     Additional CSS classes for the switch container.
     /// </summary>
     public string? Control { get; set; }
-
-    /// <summary>
-    ///     Additional CSS classes for the checkbox input.
-    /// </summary>
-    public string? Input { get; set; }
-
-    /// <summary>
-    ///     Additional CSS classes for the switch thumb.
-    /// </summary>
-    public string? Thumb { get; set; }
 }

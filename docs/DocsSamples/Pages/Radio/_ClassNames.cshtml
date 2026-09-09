@@ -1,0 +1,21 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new InputClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-radio-control",
+        };
+    }
+
+    <sa-field-set>
+        <sa-field-legend>Bed preference</sa-field-legend>
+        <sa-field-group>
+            <sa-input type="radio" name="classes-bed" id="classes-king" value="king" label="King bed" description="A spacious bed for two." checked class-names="@partClasses" />
+            <sa-input type="radio" name="classes-bed" id="classes-twin" value="twin" label="Twin beds" description="Separate beds for traveling friends." class-names="@partClasses" />
+        </sa-field-group>
+    </sa-field-set>
+    <!-- code end -->
+</div>

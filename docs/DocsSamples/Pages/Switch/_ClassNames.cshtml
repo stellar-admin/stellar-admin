@@ -1,0 +1,15 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new SwitchClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-switch-control",
+        };
+    }
+
+    <sa-switch id="classes-alerts" label="Flight alerts" description="Receive updates when your itinerary changes." checked class-names="@partClasses" />
+    <!-- code end -->
+</div>

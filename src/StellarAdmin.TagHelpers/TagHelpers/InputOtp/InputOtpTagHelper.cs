@@ -150,14 +150,8 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
 
         // Hand the fake-caret classes to the web component, which builds the caret element on
         // hydration and can't compose classes itself.
-        output.Attributes.SetAttribute(
-            "data-caret-class",
-            JoinCssClasses("sa-input-otp-caret", ClassNames?.Caret)
-        );
-        output.Attributes.SetAttribute(
-            "data-caret-line-class",
-            JoinCssClasses("sa-input-otp-caret-line", ClassNames?.CaretLine)
-        );
+        output.Attributes.SetAttribute("data-caret-class", "sa-input-otp-caret");
+        output.Attributes.SetAttribute("data-caret-line-class", "sa-input-otp-caret-line");
 
         // Publish the shared state before rendering children so authored slots can read it.
         SetContext(
@@ -258,11 +252,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
         // any class the framework input helper added (e.g. .input-validation-error on error).
         inputOutput.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-input-otp-input",
-                ClassNames?.Input,
-                inputOutput.Attributes["class"]?.Value?.ToString()
-            )
+            JoinCssClasses("sa-input-otp-input", inputOutput.Attributes["class"]?.Value?.ToString())
         );
         // Drive the group's has-aria-invalid styling from the server-rendered validation state.
         if (hasError)

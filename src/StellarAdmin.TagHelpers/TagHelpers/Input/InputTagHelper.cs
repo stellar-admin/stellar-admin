@@ -137,7 +137,7 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                     .Union([
                         inputOutput.GetUserSuppliedClass(),
                         output.GetUserSuppliedClass(),
-                        ClassNames?.Input,
+                        type is "checkbox" or "radio" ? null : ClassNames?.Control,
                     ])
                     .ToArray()
             )
@@ -160,20 +160,12 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 
                 // Add the span
                 var checkboxSpan = new TagBuilder("span");
-                checkboxSpan.Attributes.Add(
-                    "class",
-                    JoinCssClasses("sa-checkbox-indicator", ClassNames?.Indicator)
-                );
+                checkboxSpan.Attributes.Add("class", "sa-checkbox-indicator");
 
                 // Add the icon
                 var checkboxIconOutput = new TagHelperOutput(
                     "svg",
-                    [
-                        new TagHelperAttribute(
-                            "class",
-                            JoinCssClasses("sa-checkbox-indicator-icon", ClassNames?.Icon)
-                        ),
-                    ],
+                    [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
                 var checkboxIconTagHelper = new IconTagHelper(_iconManager) { Name = "check" };
@@ -194,20 +186,12 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 
                 // Add the span
                 var spanTagBuilder = new TagBuilder("span");
-                spanTagBuilder.Attributes.Add(
-                    "class",
-                    JoinCssClasses("sa-radiobutton-indicator", ClassNames?.Indicator)
-                );
+                spanTagBuilder.Attributes.Add("class", "sa-radiobutton-indicator");
 
                 // Add the icon
                 var iconOutput = new TagHelperOutput(
                     "svg",
-                    [
-                        new TagHelperAttribute(
-                            "class",
-                            JoinCssClasses("sa-radiobutton-indicator-icon", ClassNames?.Icon)
-                        ),
-                    ],
+                    [new TagHelperAttribute("class", "sa-radiobutton-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
                 var iconTagHelper = new IconTagHelper(_iconManager) { Name = "circle" };

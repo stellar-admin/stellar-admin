@@ -41,9 +41,6 @@ var inputClasses = new InputClassNames
     Error = "custom-error",
     Content = "custom-content",
     Control = "custom-control",
-    Input = "custom-input",
-    Indicator = "custom-indicator",
-    Icon = "custom-icon",
 };
 
 foreach (var type in new[] { "text", "checkbox", "radio" })
@@ -64,11 +61,9 @@ foreach (var type in new[] { "text", "checkbox", "radio" })
     Expect(html, "custom-error", "div", "sa-field-error");
     Expect(
         html,
-        "custom-input",
-        "input",
-        type == "text" ? "sa-input"
-            : type == "radio" ? "sa-radiobutton"
-            : "sa-checkbox"
+        "custom-control",
+        type == "text" ? "input" : "span",
+        type == "text" ? "sa-input" : "sa-input-control-wrapper"
     );
     Expect(
         html,
@@ -83,18 +78,6 @@ foreach (var type in new[] { "text", "checkbox", "radio" })
     {
         Expect(html, "custom-content", "div", "sa-field-content");
         Expect(html, "custom-control", "span", "sa-input-control-wrapper");
-        Expect(
-            html,
-            "custom-indicator",
-            "span",
-            type == "radio" ? "sa-radiobutton-indicator" : "sa-checkbox-indicator"
-        );
-        Expect(
-            html,
-            "custom-icon",
-            "svg",
-            type == "radio" ? "sa-radiobutton-indicator-icon" : "sa-checkbox-indicator-icon"
-        );
     }
 
     helper.ShouldRenderField = false;
@@ -105,35 +88,26 @@ foreach (var type in new[] { "text", "checkbox", "radio" })
     );
     Expect(
         html,
-        "custom-input",
-        "input",
-        type == "text" ? "sa-input"
-            : type == "radio" ? "sa-radiobutton"
-            : "sa-checkbox"
+        "custom-control",
+        type == "text" ? "input" : "span",
+        type == "text" ? "sa-input" : "sa-input-control-wrapper"
     );
 }
 
 var select = new StellarAdmin.TagHelpers.SelectTagHelper(generator, icons)
 {
     ViewContext = viewContext,
-    ClassNames = new SelectClassNames
-    {
-        Control = "select-control",
-        Input = "select-input",
-        Icon = "select-icon",
-    },
+    ClassNames = new SelectClassNames { Control = "select-control" },
 };
 var selectHtml = await Render(select);
 Expect(selectHtml, "select-control", "div", "sa-native-select-wrapper");
-Expect(selectHtml, "select-input", "select", "sa-native-select");
-Expect(selectHtml, "select-icon", "svg", "sa-native-select-icon");
 Expect(selectHtml, "existing-class", "div", "sa-native-select-wrapper");
 
 var textareaHtml = await Render(
     new StellarAdmin.TagHelpers.TextareaTagHelper(generator)
     {
         ViewContext = viewContext,
-        ClassNames = new TextareaClassNames { Input = "textarea-input" },
+        ClassNames = new TextareaClassNames { Control = "textarea-input" },
     }
 );
 Expect(textareaHtml, "textarea-input", "textarea", "sa-textarea");
@@ -142,17 +116,10 @@ var switchHtml = await Render(
     new SwitchTagHelper(generator)
     {
         ViewContext = viewContext,
-        ClassNames = new SwitchClassNames
-        {
-            Control = "switch-control",
-            Input = "switch-input",
-            Thumb = "switch-thumb",
-        },
+        ClassNames = new SwitchClassNames { Control = "switch-control" },
     }
 );
 Expect(switchHtml, "switch-control", "span", "sa-switch-wrapper");
-Expect(switchHtml, "switch-input", "input", "sa-switch");
-Expect(switchHtml, "switch-thumb", "span", "sa-switch-thumb");
 
 var sliderHtml = await Render(
     new SliderTagHelper(generator)
@@ -181,12 +148,9 @@ foreach (var composed in new[] { false, true })
         ClassNames = new InputOtpClassNames
         {
             Control = "otp-control",
-            Input = "otp-input",
             Group = "otp-group",
             Slot = "otp-slot",
             Separator = "otp-separator",
-            Caret = "otp-caret",
-            CaretLine = "otp-caret-line",
         },
     };
     var otpHtml = await Render(
@@ -203,16 +167,15 @@ foreach (var composed in new[] { false, true })
             : null
     );
     Expect(otpHtml, "otp-control", "sel-input-otp", "sa-input-otp");
-    Expect(otpHtml, "otp-input", "input", "sa-input-otp-input");
     Expect(otpHtml, "otp-group", "div", "sa-input-otp-group", composed ? 1 : 2);
     Expect(otpHtml, "otp-slot", "div", "sa-input-otp-slot", composed ? 1 : 4);
     Expect(otpHtml, "otp-separator", "div", "sa-input-otp-separator");
     Require(
-        otpHtml.Contains("data-caret-class=\"sa-input-otp-caret otp-caret\""),
+        otpHtml.Contains("data-caret-class=\"sa-input-otp-caret\""),
         "OTP caret classes missing."
     );
     Require(
-        otpHtml.Contains("data-caret-line-class=\"sa-input-otp-caret-line otp-caret-line\""),
+        otpHtml.Contains("data-caret-line-class=\"sa-input-otp-caret-line\""),
         "OTP caret line classes missing."
     );
 }
@@ -245,7 +208,7 @@ var boundHtml = await Render(
         ClassNames = inputClasses,
     }
 );
-Expect(boundHtml, "custom-input", "input", "sa-input");
+Expect(boundHtml, "custom-control", "input", "sa-input");
 Expect(boundHtml, "custom-error", "div", "sa-field-error");
 Require(boundHtml.Contains("value=\"submitted\""), "ModelState value was lost.");
 Require(boundHtml.Contains("field-validation-error"), "MVC validation classes were lost.");

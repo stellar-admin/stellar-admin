@@ -51,7 +51,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-textarea", ClassNames?.Input, output.GetUserSuppliedClass())
+            JoinCssClasses("sa-textarea", ClassNames?.Control, output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

@@ -6,22 +6,7 @@ namespace StellarAdmin.TagHelpers;
 public class InputClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the checkbox or radio container.
+    ///     Additional CSS classes for the input element or checkbox or radio container.
     /// </summary>
     public string? Control { get; set; }
-
-    /// <summary>
-    ///     Additional CSS classes for the checkbox or radio indicator icon.
-    /// </summary>
-    public string? Icon { get; set; }
-
-    /// <summary>
-    ///     Additional CSS classes for the checkbox or radio indicator.
-    /// </summary>
-    public string? Indicator { get; set; }
-
-    /// <summary>
-    ///     Additional CSS classes for the input element.
-    /// </summary>
-    public string? Input { get; set; }
 }

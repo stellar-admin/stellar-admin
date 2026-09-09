@@ -1,0 +1,18 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new InputOtpClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-input-otp-control",
+            Group = "travel-input-otp-group",
+            Slot = "travel-input-otp-slot",
+            Separator = "travel-input-otp-separator",
+        };
+    }
+
+    <sa-input-otp id="classes-code" label="Booking verification" description="Enter the six-digit code we sent you." groups="3,3" class-names="@partClasses" />
+    <!-- code end -->
+</div>

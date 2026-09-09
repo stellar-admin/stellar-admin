@@ -1,0 +1,15 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new TextareaClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-textarea-control",
+        };
+    }
+
+    <sa-textarea id="classes-requests" label="Special requests" description="Tell us how we can make your stay comfortable." class-names="@partClasses" />
+    <!-- code end -->
+</div>

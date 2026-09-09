@@ -1,0 +1,20 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new ToggleGroupClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-toggle-group-control",
+            Item = "travel-toggle-group-item",
+        };
+    }
+
+    <sa-toggle-group name="classes-view" label="Results view" description="Choose how to browse your stays." type="ToggleGroupType.Single" class-names="@partClasses">
+        <sa-toggle-group-item value="list" selected="true">List</sa-toggle-group-item>
+        <sa-toggle-group-item value="grid">Grid</sa-toggle-group-item>
+        <sa-toggle-group-item value="map">Map</sa-toggle-group-item>
+    </sa-toggle-group>
+    <!-- code end -->
+</div>

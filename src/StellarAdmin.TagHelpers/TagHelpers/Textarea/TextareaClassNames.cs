@@ -8,5 +8,5 @@ public class TextareaClassNames : FieldClassNames
     /// <summary>
     ///     Additional CSS classes for the textarea element.
     /// </summary>
-    public string? Input { get; set; }
+    public string? Control { get; set; }
 }

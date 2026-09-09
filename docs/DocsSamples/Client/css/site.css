@@ -38,3 +38,126 @@
     font-size: 0.8125rem;
     font-style: italic;
 }
+
+
+.travel-field {
+    --travel-accent: #0f766e;
+    padding: 1rem;
+    border-left: 4px solid var(--travel-accent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--travel-accent) 8%, transparent);
+}
+
+.dark .travel-field {
+    --travel-accent: #5eead4;
+}
+
+.travel-label {
+    color: var(--travel-accent);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.travel-help {
+    color: var(--travel-accent);
+    font-style: italic;
+}
+
+.travel-input-control {
+    border: 2px solid var(--travel-accent);
+    border-radius: 0.75rem;
+}
+
+.travel-textarea-control {
+    min-height: 8rem;
+    border: 2px solid var(--travel-accent);
+    border-radius: 0.75rem;
+}
+
+.travel-checkbox-control {
+    --primary: var(--travel-accent);
+    --primary-foreground: var(--background);
+    outline: 2px solid var(--travel-accent);
+    outline-offset: 4px;
+    border-radius: 0.25rem;
+}
+
+.travel-radio-control {
+    --primary: var(--travel-accent);
+    --primary-foreground: var(--background);
+    outline: 2px solid var(--travel-accent);
+    outline-offset: 4px;
+    border-radius: 50%;
+}
+
+.travel-select-control {
+    outline: 2px solid var(--travel-accent);
+    outline-offset: 2px;
+    border-radius: 0.75rem;
+}
+
+.travel-switch-control {
+    --primary: var(--travel-accent);
+    --primary-foreground: var(--background);
+    outline: 2px solid var(--travel-accent);
+    outline-offset: 4px;
+    border-radius: 999px;
+}
+
+.travel-switch-control .sa-switch:checked {
+    background-color: var(--primary);
+}
+
+.travel-slider-control {
+    padding-block: 0.75rem;
+}
+
+.travel-slider-track {
+    height: 0.75rem;
+    background: color-mix(in srgb, var(--travel-accent) 20%, transparent);
+}
+
+.travel-slider-range {
+    background: var(--travel-accent);
+}
+
+.travel-slider-thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid var(--travel-accent);
+}
+
+.travel-input-otp-control {
+    gap: 0.75rem;
+}
+
+.travel-input-otp-group {
+    gap: 0.25rem;
+}
+
+.travel-input-otp-slot {
+    border: 2px solid var(--travel-accent);
+    border-radius: 0.5rem;
+    color: var(--travel-accent);
+}
+
+.travel-input-otp-separator {
+    color: var(--travel-accent);
+    padding-inline: 0.25rem;
+}
+
+.travel-toggle-group-control {
+    gap: 0.5rem;
+}
+
+.travel-toggle-group-item {
+    border: 2px solid var(--travel-accent);
+    border-radius: 0.75rem;
+    color: var(--travel-accent);
+}
+
+.travel-toggle-group-item:has(input:checked) {
+    background: var(--travel-accent);
+    color: var(--background);
+}

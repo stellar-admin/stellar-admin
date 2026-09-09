@@ -1,0 +1,15 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new InputClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-input-control",
+        };
+    }
+
+    <sa-input id="classes-destination" label="Destination" description="Where would you like to travel?" placeholder="Cape Town" class-names="@partClasses" />
+    <!-- code end -->
+</div>

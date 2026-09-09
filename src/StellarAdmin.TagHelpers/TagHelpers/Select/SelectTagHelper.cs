@@ -79,10 +79,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
                     .Union([
                         new TagHelperAttribute("data-slot", "native-select"),
                         new TagHelperAttribute("data-size", effectiveSize.GetDataAttributeText()),
-                        new TagHelperAttribute(
-                            "class",
-                            JoinCssClasses("sa-native-select", ClassNames?.Input)
-                        ),
+                        new TagHelperAttribute("class", "sa-native-select"),
                     ])
             ),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -104,10 +101,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         var iconTagHelperOutput = new TagHelperOutput(
             string.Empty,
             [
-                new TagHelperAttribute(
-                    "class",
-                    JoinCssClasses("sa-native-select-icon", ClassNames?.Icon)
-                ),
+                new TagHelperAttribute("class", "sa-native-select-icon"),
                 new TagHelperAttribute("aria-hidden", "true"),
                 new TagHelperAttribute("data-slot", "native-select-icon"),
             ],

@@ -1,0 +1,19 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new SelectClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-select-control",
+        };
+    }
+
+    <sa-select id="classes-cabin" label="Cabin class" description="Choose your preferred cabin." class-names="@partClasses">
+        <option value="economy">Economy</option>
+        <option value="business">Business</option>
+        <option value="first">First</option>
+    </sa-select>
+    <!-- code end -->
+</div>

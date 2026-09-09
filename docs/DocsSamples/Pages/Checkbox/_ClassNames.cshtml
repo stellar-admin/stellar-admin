@@ -1,0 +1,15 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var partClasses = new InputClassNames
+        {
+            Root = "travel-field",
+            Label = "travel-label",
+            Description = "travel-help",
+            Control = "travel-checkbox-control",
+        };
+    }
+
+    <sa-input type="checkbox" id="classes-flexible" label="Flexible dates" description="Find fares around your selected dates." checked class-names="@partClasses" />
+    <!-- code end -->
+</div>

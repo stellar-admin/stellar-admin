@@ -108,11 +108,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
             "class",
             JoinCssClasses(
                 classNames
-                    .Union([
-                        inputOutput.GetUserSuppliedClass(),
-                        output.GetUserSuppliedClass(),
-                        ClassNames?.Input,
-                    ])
+                    .Union([inputOutput.GetUserSuppliedClass(), output.GetUserSuppliedClass()])
                     .ToArray()
             )
         );
@@ -132,7 +128,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
 
         var thumb = new TagBuilder("span");
         thumb.Attributes.Add("data-slot", "switch-thumb");
-        thumb.Attributes.Add("class", JoinCssClasses("sa-switch-thumb", ClassNames?.Thumb));
+        thumb.Attributes.Add("class", "sa-switch-thumb");
         output.Content.AppendHtml(thumb);
 
         return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));
