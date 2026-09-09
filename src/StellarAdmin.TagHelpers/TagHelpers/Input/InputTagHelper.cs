@@ -13,7 +13,7 @@ namespace StellarAdmin.TagHelpers;
 ///     <c>radio</c>. Supports model binding via <c>asp-for</c>.
 /// </summary>
 [HtmlTargetElement("sa-input", TagStructure = TagStructure.WithoutEndTag)]
-public class InputTagHelper : FieldInputBaseTagHelper
+public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IIconManager _iconManager;
@@ -134,7 +134,11 @@ public class InputTagHelper : FieldInputBaseTagHelper
             "class",
             JoinCssClasses(
                 classNames
-                    .Union([inputOutput.GetUserSuppliedClass(), output.GetUserSuppliedClass()])
+                    .Union([
+                        inputOutput.GetUserSuppliedClass(),
+                        output.GetUserSuppliedClass(),
+                        ClassNames?.Input,
+                    ])
                     .ToArray()
             )
         );
@@ -149,16 +153,27 @@ public class InputTagHelper : FieldInputBaseTagHelper
                 output.TagName = "span";
                 output.TagMode = TagMode.StartTagAndEndTag;
 
-                output.Attributes.SetAttribute("class", "sa-input-control-wrapper");
+                output.Attributes.SetAttribute(
+                    "class",
+                    JoinCssClasses("sa-input-control-wrapper", ClassNames?.Control)
+                );
 
                 // Add the span
                 var checkboxSpan = new TagBuilder("span");
-                checkboxSpan.Attributes.Add("class", JoinCssClasses("sa-checkbox-indicator"));
+                checkboxSpan.Attributes.Add(
+                    "class",
+                    JoinCssClasses("sa-checkbox-indicator", ClassNames?.Indicator)
+                );
 
                 // Add the icon
                 var checkboxIconOutput = new TagHelperOutput(
                     "svg",
-                    [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
+                    [
+                        new TagHelperAttribute(
+                            "class",
+                            JoinCssClasses("sa-checkbox-indicator-icon", ClassNames?.Icon)
+                        ),
+                    ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
                 var checkboxIconTagHelper = new IconTagHelper(_iconManager) { Name = "check" };
@@ -172,11 +187,17 @@ public class InputTagHelper : FieldInputBaseTagHelper
                 output.TagName = "span";
                 output.TagMode = TagMode.StartTagAndEndTag;
 
-                output.Attributes.SetAttribute("class", "sa-input-control-wrapper");
+                output.Attributes.SetAttribute(
+                    "class",
+                    JoinCssClasses("sa-input-control-wrapper", ClassNames?.Control)
+                );
 
                 // Add the span
                 var spanTagBuilder = new TagBuilder("span");
-                spanTagBuilder.Attributes.Add("class", JoinCssClasses("sa-radiobutton-indicator"));
+                spanTagBuilder.Attributes.Add(
+                    "class",
+                    JoinCssClasses("sa-radiobutton-indicator", ClassNames?.Indicator)
+                );
 
                 // Add the icon
                 var iconOutput = new TagHelperOutput(
@@ -184,7 +205,7 @@ public class InputTagHelper : FieldInputBaseTagHelper
                     [
                         new TagHelperAttribute(
                             "class",
-                            JoinCssClasses("sa-radiobutton-indicator-icon")
+                            JoinCssClasses("sa-radiobutton-indicator-icon", ClassNames?.Icon)
                         ),
                     ],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())

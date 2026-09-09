@@ -26,7 +26,12 @@ internal static class InputOtpRenderer
     ///     Builds a single presentational slot cell. The character (if any) seeds the first paint;
     ///     the web component re-distributes the live value once hydrated.
     /// </summary>
-    internal static TagBuilder BuildSlot(int index, string? character, bool hasError)
+    internal static TagBuilder BuildSlot(
+        int index,
+        string? character,
+        bool hasError,
+        string? className
+    )
     {
         var slot = new TagBuilder("div");
         slot.Attributes.Add("data-slot", "input-otp-slot");
@@ -36,7 +41,7 @@ internal static class InputOtpRenderer
         {
             slot.Attributes.Add("aria-invalid", "true");
         }
-        slot.Attributes.Add("class", SlotClass(null));
+        slot.Attributes.Add("class", SlotClass(className));
         if (!string.IsNullOrEmpty(character))
         {
             slot.InnerHtml.Append(character);

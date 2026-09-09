@@ -20,7 +20,7 @@ namespace StellarAdmin.TagHelpers;
 ///     <c>sa-input-otp-slot</c>, and <c>sa-input-otp-separator</c> children.
 /// </remarks>
 [HtmlTargetElement("sa-input-otp")]
-public class InputOtpTagHelper : FieldInputBaseTagHelper
+public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IIconManager _iconManager;
@@ -133,7 +133,10 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
             maxLength.ToString(CultureInfo.InvariantCulture)
         );
         output.Attributes.SetAttribute("data-pattern", effectivePattern);
-        output.Attributes.SetAttribute("class", JoinCssClasses("sa-input-otp", userClass));
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-input-otp", ClassNames?.Control, userClass)
+        );
         // Inline container styles: the
         // positioning context for the absolutely-overlaid input, the text-field affordances, and
         // --root-height, which the input's font-size keys off so the transparent text lines up with
@@ -147,10 +150,13 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
 
         // Hand the fake-caret classes to the web component, which builds the caret element on
         // hydration and can't compose classes itself.
-        output.Attributes.SetAttribute("data-caret-class", JoinCssClasses("sa-input-otp-caret"));
+        output.Attributes.SetAttribute(
+            "data-caret-class",
+            JoinCssClasses("sa-input-otp-caret", ClassNames?.Caret)
+        );
         output.Attributes.SetAttribute(
             "data-caret-line-class",
-            JoinCssClasses("sa-input-otp-caret-line")
+            JoinCssClasses("sa-input-otp-caret-line", ClassNames?.CaretLine)
         );
 
         // Publish the shared state before rendering children so authored slots can read it.
@@ -158,6 +164,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
             context,
             new InputOtpContext
             {
+                ClassNames = ClassNames,
                 Code = code,
                 MaxLength = maxLength,
                 Disabled = effectiveDisabled,
@@ -251,7 +258,11 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         // any class the framework input helper added (e.g. .input-validation-error on error).
         inputOutput.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-input-otp-input", inputOutput.Attributes["class"]?.Value?.ToString())
+            JoinCssClasses(
+                "sa-input-otp-input",
+                ClassNames?.Input,
+                inputOutput.Attributes["class"]?.Value?.ToString()
+            )
         );
         // Drive the group's has-aria-invalid styling from the server-rendered validation state.
         if (hasError)
@@ -292,12 +303,14 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
         {
             var group = new TagBuilder("div");
             group.Attributes.Add("data-slot", "input-otp-group");
-            group.Attributes.Add("class", InputOtpRenderer.GroupClass(null));
+            group.Attributes.Add("class", InputOtpRenderer.GroupClass(ClassNames?.Group));
 
             for (var slot = 0; slot < groupSizes[groupIndex]; slot++)
             {
                 var character = index < code.Length ? code[index].ToString() : null;
-                group.InnerHtml.AppendHtml(InputOtpRenderer.BuildSlot(index, character, hasError));
+                group.InnerHtml.AppendHtml(
+                    InputOtpRenderer.BuildSlot(index, character, hasError, ClassNames?.Slot)
+                );
                 index++;
             }
 
@@ -315,7 +328,10 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper
                 };
                 separator.Attributes.SetAttribute("data-slot", "input-otp-separator");
                 separator.Attributes.SetAttribute("role", "separator");
-                separator.Attributes.SetAttribute("class", InputOtpRenderer.SeparatorClass(null));
+                separator.Attributes.SetAttribute(
+                    "class",
+                    InputOtpRenderer.SeparatorClass(ClassNames?.Separator)
+                );
                 await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                     separator.Content,
                     context,

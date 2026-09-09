@@ -17,6 +17,11 @@ public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "input-otp-group");
-        output.Attributes.SetAttribute("class", InputOtpRenderer.GroupClass(userClass));
+        output.Attributes.SetAttribute(
+            "class",
+            InputOtpRenderer.GroupClass(
+                JoinCssClasses(GetContext<InputOtpContext>(context)?.ClassNames?.Group, userClass)
+            )
+        );
     }
 }

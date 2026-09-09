@@ -12,7 +12,7 @@ namespace StellarAdmin.TagHelpers;
 ///     visuals driven entirely by CSS.
 /// </summary>
 [HtmlTargetElement("sa-switch", TagStructure = TagStructure.WithoutEndTag)]
-public class SwitchTagHelper : FieldInputBaseTagHelper
+public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
@@ -108,7 +108,11 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
             "class",
             JoinCssClasses(
                 classNames
-                    .Union([inputOutput.GetUserSuppliedClass(), output.GetUserSuppliedClass()])
+                    .Union([
+                        inputOutput.GetUserSuppliedClass(),
+                        output.GetUserSuppliedClass(),
+                        ClassNames?.Input,
+                    ])
                     .ToArray()
             )
         );
@@ -123,12 +127,12 @@ public class SwitchTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-switch-wrapper", "group/switch")
+            JoinCssClasses("sa-switch-wrapper", "group/switch", ClassNames?.Control)
         );
 
         var thumb = new TagBuilder("span");
         thumb.Attributes.Add("data-slot", "switch-thumb");
-        thumb.Attributes.Add("class", JoinCssClasses("sa-switch-thumb"));
+        thumb.Attributes.Add("class", JoinCssClasses("sa-switch-thumb", ClassNames?.Thumb));
         output.Content.AppendHtml(thumb);
 
         return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));

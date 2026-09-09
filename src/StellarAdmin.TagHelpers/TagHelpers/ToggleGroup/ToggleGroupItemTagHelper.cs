@@ -122,7 +122,7 @@ public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
                 effectiveVariant,
                 effectiveSize,
                 includeGroupItemToken: true,
-                userClass
+                JoinCssClasses(toggleGroupContext?.ClassNames?.Item, userClass)
             )
         );
 

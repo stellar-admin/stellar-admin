@@ -6,3 +6,35 @@
 
 @custom-variant in-aria-expanded (:where([aria-expanded="true"]) &);
 @custom-variant not-in-aria-expanded (&:not(:where([aria-expanded="true"]) *));
+
+/* Field / Part Classes: style the wrapper, input, label, and help independently. */
+.account-field {
+    --account-accent: #0f766e;
+    padding: 1rem;
+    border-left: 4px solid var(--account-accent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--account-accent) 8%, transparent);
+}
+
+.dark .account-field {
+    --account-accent: #5eead4;
+}
+
+.account-input {
+    border: 2px solid var(--account-accent);
+    border-radius: 0.5rem;
+    background: var(--background);
+}
+
+.account-label {
+    color: var(--account-accent);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.account-help {
+    color: var(--account-accent);
+    font-size: 0.8125rem;
+    font-style: italic;
+}

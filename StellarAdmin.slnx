@@ -8,6 +8,9 @@
   <Folder Name="/sandbox/">
     <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
+  </Folder>
   <Folder Name="/util/">
     <Project Path="util\ThemeGenerator\ThemeGenerator.csproj" />
   </Folder>

@@ -11,7 +11,7 @@ namespace StellarAdmin.TagHelpers;
 ///     <c>asp-for</c>.
 /// </summary>
 [HtmlTargetElement("sa-textarea")]
-public class TextareaTagHelper : FieldInputBaseTagHelper
+public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
@@ -51,7 +51,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-textarea", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-textarea", ClassNames?.Input, output.GetUserSuppliedClass())
         );
 
         var childContent = await output.GetChildContentAsync();

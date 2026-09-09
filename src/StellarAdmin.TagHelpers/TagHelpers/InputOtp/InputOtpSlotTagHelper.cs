@@ -51,7 +51,9 @@ public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
         }
         output.Attributes.SetAttribute(
             "class",
-            InputOtpRenderer.SlotClass(output.GetUserSuppliedClass())
+            InputOtpRenderer.SlotClass(
+                JoinCssClasses(inputOtpContext?.ClassNames?.Slot, output.GetUserSuppliedClass())
+            )
         );
 
         // Render the character and the specified index

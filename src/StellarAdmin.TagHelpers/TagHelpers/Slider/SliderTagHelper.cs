@@ -11,7 +11,7 @@ namespace StellarAdmin.TagHelpers;
 ///     thumbs along a track.
 /// </summary>
 [HtmlTargetElement("sa-slider", TagStructure = TagStructure.WithoutEndTag)]
-public class SliderTagHelper : FieldInputBaseTagHelper
+public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
 {
     public SliderTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
@@ -144,7 +144,10 @@ public class SliderTagHelper : FieldInputBaseTagHelper
         {
             output.Attributes.SetAttribute("data-disabled", "true");
         }
-        output.Attributes.SetAttribute("class", JoinCssClasses("sa-slider", userClass));
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-slider", ClassNames?.Control, userClass)
+        );
 
         // Track + filled range. For a single thumb the range fills from the start; for a range
         // slider it spans between the lowest and highest thumb.
@@ -154,12 +157,12 @@ public class SliderTagHelper : FieldInputBaseTagHelper
         var track = new TagBuilder("span");
         track.Attributes.Add("data-slot", "slider-track");
         track.Attributes.Add("data-orientation", orientationText);
-        track.Attributes.Add("class", JoinCssClasses("sa-slider-track"));
+        track.Attributes.Add("class", JoinCssClasses("sa-slider-track", ClassNames?.Track));
 
         var range = new TagBuilder("span");
         range.Attributes.Add("data-slot", "slider-range");
         range.Attributes.Add("data-orientation", orientationText);
-        range.Attributes.Add("class", JoinCssClasses("sa-slider-range"));
+        range.Attributes.Add("class", JoinCssClasses("sa-slider-range", ClassNames?.Range));
         range.Attributes.Add("style", RangeStyle(effectiveOrientation, lowPercent, highPercent));
         track.InnerHtml.AppendHtml(range);
         output.Content.AppendHtml(track);
@@ -194,7 +197,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper
                 // host wrapper only, so per-thumb disabled utilities are left inert here.
                 thumb.Attributes.Add("aria-disabled", "true");
             }
-            thumb.Attributes.Add("class", JoinCssClasses("sa-slider-thumb"));
+            thumb.Attributes.Add("class", JoinCssClasses("sa-slider-thumb", ClassNames?.Thumb));
             thumb.Attributes.Add(
                 "style",
                 ThumbStyle(

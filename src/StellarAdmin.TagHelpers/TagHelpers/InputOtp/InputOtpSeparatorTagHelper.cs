@@ -25,7 +25,15 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.SetAttribute("data-slot", "input-otp-separator");
         output.Attributes.SetAttribute("role", "separator");
-        output.Attributes.SetAttribute("class", InputOtpRenderer.SeparatorClass(userClass));
+        output.Attributes.SetAttribute(
+            "class",
+            InputOtpRenderer.SeparatorClass(
+                JoinCssClasses(
+                    GetContext<InputOtpContext>(context)?.ClassNames?.Separator,
+                    userClass
+                )
+            )
+        );
 
         var childContent = await output.GetChildContentAsync();
         if (!childContent.IsEmptyOrWhiteSpace)

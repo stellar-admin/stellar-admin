@@ -28,7 +28,7 @@ public class DocsStatic : PageModel
             },
             "Field/_FieldsetImplicit" => new FieldsetImplicitModel(),
             "Field/_Implicit" => new ImplicitModel(),
-            "Field/_InputImplicit" => new InputImplicitModel(),
+            "Field/_ClassNames" or "Field/_InputImplicit" => new InputImplicitModel(),
             "Field/_RadioImplicit" => new RadioImplicitModel { InsuranceCover = "annual" },
             "Field/_SelectImplicit" => new SelectImplicitModel { TravelStyle = "beach" },
             "Field/_TextareaImplicit" => new TextareaImplicitModel(),

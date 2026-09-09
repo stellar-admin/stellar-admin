@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 ///     Groups a set of toggle items into a single-select or multi-select control.
 /// </summary>
 [HtmlTargetElement("sa-toggle-group")]
-public class ToggleGroupTagHelper : FieldInputBaseTagHelper
+public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
 {
     public ToggleGroupTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
@@ -75,6 +75,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
             context,
             new ToggleGroupContext
             {
+                ClassNames = ClassNames,
                 Type = effectiveType,
                 Variant = effectiveVariant,
                 Size = effectiveSize,
@@ -132,7 +133,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-toggle-group", "group/toggle-group", userClass)
+            JoinCssClasses("sa-toggle-group", "group/toggle-group", ClassNames?.Control, userClass)
         );
 
         output.Content.AppendHtml(childContent);

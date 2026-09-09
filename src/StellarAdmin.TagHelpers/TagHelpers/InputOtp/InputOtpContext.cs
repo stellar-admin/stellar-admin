@@ -8,6 +8,8 @@ namespace StellarAdmin.TagHelpers;
 /// </summary>
 internal sealed class InputOtpContext
 {
+    public InputOtpClassNames? ClassNames { get; init; }
+
     /// <summary>
     ///     The resolved one-time-code used to seed the slots for the initial (pre-hydration)
     ///     server render. May be shorter than <see cref="MaxLength" /> or empty.

@@ -1,0 +1,29 @@
+@model InputImplicitModel
+
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    @{
+        var inputClasses = new InputClassNames
+        {
+            Root = "account-field",
+            Input = "account-input",
+            Label = "account-label",
+            Description = "account-help"
+        };
+    }
+
+    <sa-field-group>
+        <sa-input asp-for="Email" description="Used for account notifications."
+                  class-names="@inputClasses" />
+
+        <sa-field class="@inputClasses.Root">
+            <sa-field-label asp-for="Password" class="@inputClasses.Label" />
+            <sa-input asp-for="Password" render-field="false"
+                      class-names="@inputClasses" />
+            <sa-field-description class="@inputClasses.Description">
+                Use a password you have not used elsewhere.
+            </sa-field-description>
+        </sa-field>
+    </sa-field-group>
+    <!-- code end -->
+</div>

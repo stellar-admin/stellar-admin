@@ -33,6 +33,12 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     public string? Error { get; set; }
 
     /// <summary>
+    ///     Additional CSS classes for the automatically rendered field wrapper.
+    /// </summary>
+    [HtmlAttributeName("field-class")]
+    public string? FieldClass { get; set; }
+
+    /// <summary>
     ///     An expression to be evaluated against the current model.
     /// </summary>
     [HtmlAttributeName(ForAttributeName)]
@@ -43,6 +49,8 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     /// </summary>
     [HtmlAttributeName("label")]
     public string? Label { get; set; }
+
+    protected virtual FieldClassNames? FieldClasses => null;
 
     /// <summary>
     ///     The <c>id</c> of the element the automatically rendered label targets. Set by default
@@ -147,7 +155,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var descriptionTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                [],
+                [new TagHelperAttribute("class", FieldClasses?.Description ?? string.Empty)],
                 (_, _) =>
                     Description == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -174,7 +182,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
             autoFieldConfiguration.Layout == AutoFieldLayout.Vertical
                 ? FieldOrientation.Vertical
                 : FieldOrientation.Horizontal,
-            null
+            JoinCssClasses(FieldClass, FieldClasses?.Root)
         );
 
         // Render the opening tag of the Field wrapper
@@ -194,7 +202,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
 
             var fieldContentOutput = new TagHelperOutput(
                 string.Empty,
-                [],
+                [new TagHelperAttribute("class", FieldClasses?.Content ?? string.Empty)],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
 
@@ -244,7 +252,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var errorTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                [],
+                [new TagHelperAttribute("class", FieldClasses?.Error ?? string.Empty)],
                 (_, _) =>
                     Error == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -271,7 +279,13 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var labelTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                LabelForId == null ? [] : [new TagHelperAttribute("for", LabelForId)],
+                LabelForId == null
+                    ? [new TagHelperAttribute("class", FieldClasses?.Label ?? string.Empty)]
+                    :
+                    [
+                        new TagHelperAttribute("for", LabelForId),
+                        new TagHelperAttribute("class", FieldClasses?.Label ?? string.Empty),
+                    ],
                 (_, _) =>
                     Label == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())

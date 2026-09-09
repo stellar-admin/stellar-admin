@@ -36,6 +36,8 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        var userClass = output.GetUserSuppliedClass();
+
         var tagBuilder =
             For == null
                 ? GenerateValidationMessageTagBuilder()
@@ -57,13 +59,17 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-error");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-field-error", output.GetUserSuppliedClass())
+            JoinCssClasses(
+                "sa-field-error",
+                tagBuilder?.Attributes.GetValueOrDefault("class"),
+                userClass
+            )
         );
 
         var childContent = await output.GetChildContentAsync();
         if (childContent.IsEmptyOrWhiteSpace)
         {
-            if (tagBuilder.HasInnerHtml)
+            if (tagBuilder?.HasInnerHtml == true)
             {
                 output.Content.SetHtmlContent(tagBuilder.InnerHtml);
             }
