@@ -1,0 +1,20 @@
+@page
+@model DocsSamples.Pages.FormSection.Index
+
+<docs-example-wrapper>
+    <docs-example title="Split (app default)" container-class="md:col-span-2 max-w-none">
+        <partial name="_Intro" />
+    </docs-example>
+    <docs-example title="Stacked" container-class="md:col-span-2 max-w-none">
+        <partial name="_Stacked" />
+    </docs-example>
+    <docs-example title="Card" container-class="md:col-span-2 max-w-none">
+        <partial name="_Card" />
+    </docs-example>
+    <docs-example title="Split in a narrow container">
+        <partial name="_Narrow" />
+    </docs-example>
+    <docs-example title="Without a description">
+        <partial name="_WithoutDescription" />
+    </docs-example>
+</docs-example-wrapper>

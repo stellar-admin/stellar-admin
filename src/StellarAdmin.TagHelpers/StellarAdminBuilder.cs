@@ -23,4 +23,18 @@ public class StellarAdminBuilder
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
     }
+
+    /// <summary>
+    ///     Configures the application-wide defaults for forms.
+    /// </summary>
+    public StellarAdminBuilder ConfigureForms(Action<StellarAdminFormsBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        Services.Configure<StellarAdminFormsOptions>(options =>
+            configure(new StellarAdminFormsBuilder(options))
+        );
+
+        return this;
+    }
 }

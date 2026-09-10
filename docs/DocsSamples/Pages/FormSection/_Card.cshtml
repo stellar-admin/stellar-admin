@@ -1,0 +1,41 @@
+<sa-page-container width="PageContainerWidth.Medium">
+    <div class="w-full">
+        <!-- code begin -->
+        <sa-form-section title="Trip details" description="How this trip appears in the Voyager catalog." layout="FormSectionLayout.Card">
+            <sa-field-group>
+                <sa-form-row>
+                    <sa-field>
+                        <sa-field-label for="card-name">Trip name</sa-field-label>
+                        <sa-input id="card-name" name="TripName" value="A week in Kyoto" />
+                        <sa-field-description>The name travelers see.</sa-field-description>
+                    </sa-field>
+                    <sa-field>
+                        <sa-field-label for="card-code">Booking code</sa-field-label>
+                        <sa-input id="card-code" name="BookingCode" value="KYO-07" />
+                    </sa-field>
+                </sa-form-row>
+                <sa-field>
+                    <sa-field-label for="card-description">Description</sa-field-label>
+                    <sa-textarea id="card-description" name="Description" rows="4" class="min-h-28">Explore Kyoto's temples, gardens, and local food.</sa-textarea>
+                    <sa-field-description>Describe the trip and its highlights.</sa-field-description>
+                </sa-field>
+            </sa-field-group>
+        </sa-form-section>
+        <sa-form-section title="Availability" description="Set the number of places travelers can book." layout="FormSectionLayout.Card">
+            <sa-field-group>
+                <sa-field>
+                    <sa-field-label for="card-places">Available places</sa-field-label>
+                    <sa-input id="card-places" name="AvailablePlaces" type="number" min="0" value="12" />
+                </sa-field>
+                <sa-field orientation="FieldOrientation.Horizontal">
+                    <sa-input type="checkbox" id="card-waitlist" name="AllowWaitlist" />
+                    <sa-field-content>
+                        <sa-field-label for="card-waitlist">Allow waitlist</sa-field-label>
+                        <sa-field-description>Accept requests when the trip is full.</sa-field-description>
+                    </sa-field-content>
+                </sa-field>
+            </sa-field-group>
+        </sa-form-section>
+        <!-- code end -->
+    </div>
+</sa-page-container>

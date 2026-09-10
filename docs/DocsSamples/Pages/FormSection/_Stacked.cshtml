@@ -1,0 +1,41 @@
+<sa-page-container width="PageContainerWidth.Medium">
+    <div class="w-full">
+        <!-- code begin -->
+        <sa-form-section title="Trip details" description="How this trip appears in the Voyager catalog." layout="FormSectionLayout.Stacked">
+            <sa-field-group>
+                <sa-form-row>
+                    <sa-field>
+                        <sa-field-label for="stacked-name">Trip name</sa-field-label>
+                        <sa-input id="stacked-name" name="TripName" value="A week in Kyoto" />
+                        <sa-field-description>The name travelers see.</sa-field-description>
+                    </sa-field>
+                    <sa-field>
+                        <sa-field-label for="stacked-code">Booking code</sa-field-label>
+                        <sa-input id="stacked-code" name="BookingCode" value="KYO-07" />
+                    </sa-field>
+                </sa-form-row>
+                <sa-field>
+                    <sa-field-label for="stacked-description">Description</sa-field-label>
+                    <sa-textarea id="stacked-description" name="Description" rows="4" class="min-h-28">Explore Kyoto's temples, gardens, and local food.</sa-textarea>
+                    <sa-field-description>Describe the trip and its highlights.</sa-field-description>
+                </sa-field>
+            </sa-field-group>
+        </sa-form-section>
+        <sa-form-section title="Availability" description="Set the number of places travelers can book." layout="FormSectionLayout.Stacked">
+            <sa-field-group>
+                <sa-field>
+                    <sa-field-label for="stacked-places">Available places</sa-field-label>
+                    <sa-input id="stacked-places" name="AvailablePlaces" type="number" min="0" value="12" />
+                </sa-field>
+                <sa-field orientation="FieldOrientation.Horizontal">
+                    <sa-input type="checkbox" id="stacked-waitlist" name="AllowWaitlist" />
+                    <sa-field-content>
+                        <sa-field-label for="stacked-waitlist">Allow waitlist</sa-field-label>
+                        <sa-field-description>Accept requests when the trip is full.</sa-field-description>
+                    </sa-field-content>
+                </sa-field>
+            </sa-field-group>
+        </sa-form-section>
+        <!-- code end -->
+    </div>
+</sa-page-container>

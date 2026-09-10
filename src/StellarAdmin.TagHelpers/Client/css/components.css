@@ -420,6 +420,66 @@
   .sa-field[data-orientation="vertical"] {
     @apply flex-col;
   }
+  .sa-form-row {
+    @apply w-full min-w-0 gap-(--sa-gap-md);
+    container: form-row / inline-size;
+  }
+  .sa-form-row-content {
+    @apply grid grid-cols-1 items-start;
+    gap: inherit;
+  }
+  .sa-form-row-content > * {
+    @apply min-w-0;
+  }
+  @container form-row (min-width: 40rem) {
+    .sa-form-row > .sa-form-row-content {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+  .sa-form-section {
+    @apply w-full min-w-0;
+    container: form-section / inline-size;
+  }
+  .sa-form-section-inner {
+    @apply grid min-w-0 grid-cols-1 items-start gap-x-(--sa-gap-xl) gap-y-(--sa-gap-lg);
+  }
+  .sa-form-section-header {
+    @apply flex min-w-0 flex-col gap-(--sa-gap-sm);
+  }
+  .sa-form-section-title {
+    @apply text-base leading-snug font-semibold;
+  }
+  .sa-form-section-description {
+    @apply text-muted-foreground text-sm leading-relaxed;
+  }
+  .sa-form-section-content {
+    @apply flex min-w-0 flex-col gap-(--sa-gap-lg);
+  }
+  .sa-form-section + .sa-form-section {
+    @apply mt-(--sa-gap-xl);
+  }
+  .sa-form-section + .sa-form-section:not([data-layout="card"]) {
+    @apply border-t pt-(--sa-gap-xl);
+  }
+  .sa-form-section[data-layout="card"] {
+    @apply bg-card text-card-foreground rounded-xl border;
+  }
+  .sa-form-section[data-layout="card"] > .sa-form-section-inner {
+    @apply gap-0;
+  }
+  .sa-form-section[data-layout="card"] > .sa-form-section-inner > .sa-form-section-header {
+    @apply border-b p-(--sa-gap-lg);
+  }
+  .sa-form-section[data-layout="card"] > .sa-form-section-inner > .sa-form-section-content {
+    @apply p-(--sa-gap-lg);
+  }
+  @container form-section (min-width: 48rem) {
+    .sa-form-section[data-layout="split"] > .sa-form-section-inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr);
+    }
+  }
   .sa-group {
     @apply flex flex-row;
   }
