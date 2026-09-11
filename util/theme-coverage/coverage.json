@@ -30,6 +30,9 @@
     },
     "vega": {
       "source": "upstream"
+    },
+    "ice": {
+      "source": "custom"
     }
   },
   "components": {
@@ -143,6 +146,17 @@
             "sa-accordion-content-inner",
             "sa-accordion-item",
             "sa-accordion-trigger"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger",
+            "sa-accordion-trigger-icon"
           ]
         }
       }
@@ -264,6 +278,16 @@
             "sa-alert-description",
             "sa-alert-title",
             "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
             "sa-alert-variant-destructive"
           ]
         }
@@ -395,6 +419,17 @@
             "sa-alert-dialog-media",
             "sa-alert-dialog-title"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
         }
       }
     },
@@ -444,6 +479,12 @@
         "vega": {
           "status": "shared-only",
           "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-app-header"
+          ]
         }
       }
     },
@@ -666,6 +707,24 @@
             "sa-attachment-title",
             "sa-attachment-trigger"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
         }
       }
     },
@@ -772,6 +831,16 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-avatar",
@@ -915,6 +984,18 @@
             "sa-badge-variant-outline",
             "sa-badge-variant-secondary"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
         }
       }
     },
@@ -1039,6 +1120,17 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-breadcrumb-ellipsis",
@@ -1276,6 +1368,25 @@
             "sa-bubble-variant-secondary",
             "sa-bubble-variant-tinted"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
         }
       }
     },
@@ -1498,6 +1609,25 @@
             "sa-button-variant-outline",
             "sa-button-variant-secondary"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
         }
       }
     },
@@ -1597,6 +1727,16 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-button-group",
@@ -1738,6 +1878,17 @@
             "sa-card-header",
             "sa-card-title"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
         }
       }
     },
@@ -1802,6 +1953,13 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         }
       }
     },
@@ -1849,6 +2007,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Composes the Field group and native checkbox styles."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Ice native checkbox controls."
         }
       }
     },
@@ -1896,6 +2058,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         }
       }
     },
@@ -2007,6 +2173,16 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-dialog-content",
@@ -2216,6 +2392,21 @@
             "sa-dropdown-menu-sub-trigger",
             "sa-dropdown-menu-subcontent"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
         }
       }
     },
@@ -2362,6 +2553,17 @@
             "sa-empty-header",
             "sa-empty-media",
             "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
             "sa-empty-media-icon",
             "sa-empty-title"
           ]
@@ -2559,6 +2761,22 @@
             "sa-field-set",
             "sa-field-title"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
         }
       }
     },
@@ -2606,6 +2824,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "The responsive shared grid consumes Ice gap tokens; children provide field appearance."
         }
       }
     },
@@ -2659,6 +2881,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Shared section structure consumes Ice semantic surface, radius and gap tokens; native section typography remains structural."
         }
       }
     },
@@ -2706,6 +2932,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Inherits size and current colour from the containing component or consumer classes."
         }
       }
     },
@@ -2828,6 +3058,17 @@
             "sa-input",
             "sa-radiobutton",
             "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
             "sa-radiobutton-indicator-icon"
           ]
         }
@@ -3034,6 +3275,21 @@
             "sa-input-group-text",
             "sa-input-group-textarea"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
         }
       }
     },
@@ -3141,6 +3397,16 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-input-otp",
@@ -3424,6 +3690,28 @@
             "sa-item-variant-muted",
             "sa-item-variant-outline"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
         }
       }
     },
@@ -3474,6 +3762,13 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         }
       }
     },
@@ -3523,6 +3818,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-label"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-label"
+          ]
         }
       }
     },
@@ -3607,6 +3908,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Shared stack/group/container structure consumes Ice gap tokens; nested components own surfaces."
         }
       }
     },
@@ -3719,6 +4024,16 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-marker",
@@ -3858,6 +4173,17 @@
             "sa-message-group",
             "sa-message-header"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
         }
       }
     },
@@ -3919,6 +4245,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-message-scroller-content"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         }
       }
     },
@@ -3979,6 +4311,12 @@
         "vega": {
           "status": "shared-only",
           "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-page-header-nav"
+          ]
         }
       }
     },
@@ -4088,6 +4426,14 @@
             "sa-pagination-next",
             "sa-pagination-previous"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
         }
       }
     },
@@ -4191,6 +4537,15 @@
             "sa-popover-header",
             "sa-popover-title"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
         }
       }
     },
@@ -4287,6 +4642,15 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-progress-indicator",
@@ -4561,6 +4925,27 @@
             "sa-questionnaire-shortcut",
             "sa-questionnaire-title"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
         }
       }
     },
@@ -4608,6 +4993,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Composes the Field group and native radio styles."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Ice native radio controls."
         }
       }
     },
@@ -4658,6 +5047,13 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         }
       }
     },
@@ -4742,6 +5138,13 @@
             "sa-segmented-control",
             "sa-segmented-control-item"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
         }
       }
     },
@@ -4793,6 +5196,14 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         }
       }
     },
@@ -4915,6 +5326,17 @@
           ]
         },
         "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "ice": {
           "status": "reviewed",
           "rules": [
             "sa-sheet-close",
@@ -5224,6 +5646,29 @@
             "sa-sidebar-menu-sub-button",
             "sa-sidebar-separator"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
         }
       }
     },
@@ -5273,6 +5718,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-skeleton"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-skeleton"
+          ]
         }
       }
     },
@@ -5325,6 +5776,15 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         }
       }
     },
@@ -5372,6 +5832,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Registers content without rendering a visual element."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering its own visual element."
         }
       }
     },
@@ -5419,6 +5883,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Renders supplied content, whose nested components own appearance."
         }
       }
     },
@@ -5466,6 +5934,10 @@
         "vega": {
           "status": "shared-only",
           "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Shared geometry inherits current colour and animation; Ice scopes reduced-motion handling to library elements."
         }
       }
     },
@@ -5517,6 +5989,14 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
         }
       }
     },
@@ -5684,6 +6164,20 @@
             "sa-table-header",
             "sa-table-row"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
         }
       }
     },
@@ -5743,6 +6237,16 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-default",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
         }
       }
     },
@@ -5792,6 +6296,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-textarea"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-textarea"
+          ]
         }
       }
     },
@@ -5923,6 +6433,16 @@
             "sa-toggle-variant-default",
             "sa-toggle-variant-outline"
           ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
         }
       }
     },
@@ -5972,6 +6492,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-toggle-group"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle-group"
+          ]
         }
       }
     },
@@ -6021,6 +6547,12 @@
         "vega": {
           "status": "reviewed",
           "rules": ["sa-tooltip-content"]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tooltip-content"
+          ]
         }
       }
     }

@@ -13,4 +13,4 @@ When a component, subcomponent, variant hook, or theme is added:
 
 The checker detects missing declarations, inventory changes, and removed rule evidence. It does not judge visual quality or prove that every CSS state is correct. A review must inspect the implementation and rendered examples before updating the manifest; do not satisfy a failure with placeholder rules.
 
-Concourse and Ledger are hand-authored in `Client/css/themes/concourse.css` and `Client/css/themes/ledger.css`. ThemeGenerator owns only the upstream-derived theme files. Its hardcoded source list must never include Concourse or Ledger. Consumer applications select either theme by linking its bundle; there is no separate tag helper API.
+Ice, Concourse and Ledger are hand-authored in `Client/css/themes/ice.css`, `Client/css/themes/concourse.css` and `Client/css/themes/ledger.css`. ThemeGenerator owns only the upstream-derived theme files. Its hardcoded source list must never include Concourse or Ledger. Consumer applications select a theme by linking its bundle; there is no separate tag helper API.

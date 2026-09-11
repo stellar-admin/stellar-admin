@@ -1,6 +1,6 @@
 ﻿@{
     var theme = Context.Request.Query["theme"].ToString();
-    string[] themes = ["concourse", "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"];
+    string[] themes = ["concourse", "ice", "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"];
     if (!themes.Contains(theme)) { theme = "ledger"; }
     var dark = Context.Request.Query["mode"] == "dark";
 }
@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap"/>

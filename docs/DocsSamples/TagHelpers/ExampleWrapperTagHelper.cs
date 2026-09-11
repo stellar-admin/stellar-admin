@@ -24,7 +24,7 @@ public class ExampleWrapperTagHelper : TagHelper
         );
         innerTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 
-        output.Attributes.SetAttribute("class", "bg-background w-full");
+        output.Attributes.SetAttribute("class", "w-full");
         output.Content.AppendHtml(innerTagBuilder);
     }
 }

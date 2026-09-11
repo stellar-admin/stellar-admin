@@ -11,6 +11,7 @@ try {
   await browser.send("Page.enable");
   for (const theme of [
     "concourse",
+    "ice",
     "ledger",
     "luma",
     "lyra",
@@ -29,11 +30,13 @@ try {
           deviceScaleFactor: 1,
           mobile: false,
         });
+        const loaded = browser.waitForEvent("Page.loadEventFired", 15000);
         await browser.send("Page.navigate", {
           url: `${url}/SegmentedControl?theme=${theme}&mode=${mode}`,
         });
-        await sleep(250);
+        assert.ok(await loaded, `${theme}: sample loaded`);
         await browser.evaluate("document.fonts.ready");
+        await sleep(350);
         const comparison = await browser.evaluate(`(() => {
           const group = document.querySelector('.sa-sidebar-inset .sa-segmented-control');
           const tabs = document.querySelector('.sa-tabs-list');
@@ -71,7 +74,7 @@ try {
       }
     }
   }
-  console.log("PASS: tab appearance matches across 10 themes, light/dark, desktop/mobile");
+  console.log("PASS: tab appearance matches across 11 themes, light/dark, desktop/mobile");
 
   const interaction = await browser.evaluate(`(() => {
     const group = document.querySelector('input[name="trip-view"]').closest('[role=radiogroup]');
