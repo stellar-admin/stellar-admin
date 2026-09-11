@@ -1168,6 +1168,12 @@
   .sa-radiobutton-indicator-icon {
     @apply bg-primary-foreground absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full;
   }
+  .sa-segmented-control {
+    @apply rounded-none p-[3px] h-8;
+  }
+  .sa-segmented-control-item {
+    @apply gap-1.5 rounded-none border border-transparent px-1.5 py-0.5 text-xs font-medium [&_svg:not([class*='size-'])]:size-4 has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1;
+  }
   .sa-menu-accent-bold {
     @apply [--accent:var(--primary)] [--accent-foreground:var(--primary-foreground)];
   }

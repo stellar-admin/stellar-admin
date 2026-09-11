@@ -4269,6 +4269,83 @@
         }
       }
     },
+    "SegmentedControl": {
+      "tags": [
+        "sa-segmented-control",
+        "sa-segmented-control-item"
+      ],
+      "hooks": [
+        "sa-segmented-control",
+        "sa-segmented-control-input",
+        "sa-segmented-control-item"
+      ],
+      "example": "docs/DocsSamples/Pages/SegmentedControl/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        }
+      }
+    },
     "Separator": {
       "tags": ["sa-separator"],
       "hooks": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"],

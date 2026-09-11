@@ -95,6 +95,7 @@ public partial class Program
                 .CleanToggleClasses()
                 .CleanQuestionnaireClasses()
                 .CreateRadioButtonStyles()
+                .CreateSegmentedControlStyles()
                 .CreateMenuSurfaceStyles()
                 .CleanDialogClasses()
                 .CleanPopoverClasses()

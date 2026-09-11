@@ -50,6 +50,11 @@ public class DocsStatic : PageModel
             "Questionnaire/_Validation" => new Questionnaire.Index.ValidationModel(),
             "Radio/_ModelBinding" => new Radio.Index.ModelBindingModel(),
             "Radio/_Validation" => new Radio.Index.ValidationModel(),
+            "SegmentedControl/_Validation" => new SegmentedControl.Index.BookingModel
+            {
+                Cabin = null,
+            },
+            "SegmentedControl/_ModelBinding" => new SegmentedControl.Index.BookingModel(),
             "Select/_ModelBinding" => new Select.Index.BookingFormModel(),
             "Select/_Validation" => new Select.Index.BookingFormValidationModel(),
             "Slider/_ModelBinding" => new Slider.Index.ModelBindingModel(),
@@ -88,6 +93,9 @@ public class DocsStatic : PageModel
                 break;
             case "Radio/_Validation":
                 ModelState.AddModelError("PartialModel.BedType", "Please select a bed type");
+                break;
+            case "SegmentedControl/_Validation":
+                ModelState.AddModelError("PartialModel.Cabin", "Choose a cabin class.");
                 break;
             case "Select/_Validation":
                 ModelState.AddModelError(

@@ -992,6 +992,15 @@
   .sa-switch-wrapper {
     @apply relative inline-flex items-center;
   }
+  .sa-segmented-control {
+    @apply bg-muted text-muted-foreground inline-flex w-fit max-w-full items-center justify-center aria-invalid:ring-2 aria-invalid:ring-destructive;
+  }
+  .sa-segmented-control-input {
+    @apply sr-only;
+  }
+  .sa-segmented-control-item {
+    @apply has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 has-[:focus-visible]:outline-ring text-foreground/60 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap transition-all has-[:focus-visible]:ring-[3px] has-[:focus-visible]:outline-1 has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 has-[:checked]:bg-[var(--sa-segmented-control-active-background,var(--background))] dark:has-[:checked]:text-foreground dark:has-[:checked]:border-input dark:has-[:checked]:bg-[var(--sa-segmented-control-active-background,color-mix(in_oklab,var(--input)_30%,transparent))] has-[:checked]:text-foreground cursor-pointer has-[:disabled]:cursor-not-allowed;
+  }
   .sa-tabs {
     @apply flex data-[orientation=horizontal]:flex-col;
   }

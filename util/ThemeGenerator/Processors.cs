@@ -85,6 +85,45 @@ public static partial class Processors
         }
 
         /// <summary>
+        ///     Derives segmented control styles from horizontal default tabs.
+        /// </summary>
+        public Dictionary<string, string> CreateSegmentedControlStyles()
+        {
+            var tokens = new Dictionary<string, string>(input);
+            foreach (
+                var (source, target) in new[]
+                {
+                    ("sa-tabs-list", "sa-segmented-control"),
+                    ("sa-tabs-trigger", "sa-segmented-control-item"),
+                }
+            )
+            {
+                // Indexing deliberately fails if upstream removes a source token.
+                tokens[target] = string.Join(
+                    " ",
+                    input[source]
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Where(value =>
+                            !value.Contains("variant=line")
+                            && !value.Contains("group-data-vertical/tabs:")
+                            && !value.Contains("group-data-[orientation=vertical]/tabs:")
+                        )
+                        .Select(value =>
+                            value
+                                .Replace("group-data-horizontal/tabs:", "")
+                                .Replace("group-data-[orientation=horizontal]/tabs:", "")
+                                .Replace("group-data-[variant=default]/tabs-list:", "")
+                                .Replace("data-active:", "has-[:checked]:")
+                                .Replace("focus-visible:", "has-[:focus-visible]:")
+                                .Replace("disabled:", "has-[:disabled]:")
+                        )
+                );
+            }
+
+            return tokens;
+        }
+
+        /// <summary>
         ///     Creates sa-radiobutton* styles based on the existing radio-group-item* styles that exists
         ///     in shadcn
         /// </summary>

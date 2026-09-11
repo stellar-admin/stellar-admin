@@ -1,0 +1,8 @@
+<sa-stack>
+    <sa-segmented-control name="trip-view" value="List" aria-label="Trip view"
+                          onchange="document.getElementById('trip-view-result').textContent = event.target.value">
+        <sa-segmented-control-item value="List">List</sa-segmented-control-item>
+        <sa-segmented-control-item value="Map">Map</sa-segmented-control-item>
+    </sa-segmented-control>
+    <p>Selected view: <output id="trip-view-result" aria-live="polite">List</output></p>
+</sa-stack>

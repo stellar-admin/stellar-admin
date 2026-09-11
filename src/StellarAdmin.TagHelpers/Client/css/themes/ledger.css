@@ -3,6 +3,7 @@
 
 :root {
   --sa-tabs-active-background: var(--card);
+  --sa-segmented-control-active-background: var(--card);
   --sa-page-header-title-size: 28px;
   --sa-page-header-title-leading: 1.2;
   --sa-gap-xs: 4px;
@@ -1305,6 +1306,28 @@
     border-color: var(--sa-ledger-primary-border);
     background: var(--primary);
     color: var(--primary-foreground);
+  }
+  .sa-segmented-control {
+    gap: 3px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--sa-ledger-radius-lg);
+  }
+  .sa-segmented-control-item {
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--sa-ledger-radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+    &:has(:checked) {
+      border-color: var(--border);
+      box-shadow: var(--sa-ledger-shadow-card);
+    }
   }
   .sa-tabs {
     gap: 16px;

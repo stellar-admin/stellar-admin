@@ -1,0 +1,36 @@
+@page
+@model DocsSamples.Pages.SegmentedControl.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro">
+        <partial name="_Intro" />
+    </docs-example>
+    <docs-example title="Default tabs comparison">
+        <sa-tab-list>
+            <sa-tab-link href="#" is-active="true">Flights</sa-tab-link>
+            <sa-tab-link href="#" is-active="false">Stays</sa-tab-link>
+            <sa-tab-link href="#" is-active="false">Cars</sa-tab-link>
+        </sa-tab-list>
+    </docs-example>
+    <docs-example title="Change event">
+        <partial name="_ChangeEvent" />
+    </docs-example>
+    <docs-example title="Disabled">
+        <partial name="_Disabled" />
+    </docs-example>
+    <docs-example title="Model binding">
+        <form method="post">
+            <sa-stack>
+                <partial name="_ModelBinding" for="Booking" />
+                <sa-group>
+                    <sa-button type="submit">Save cabin</sa-button>
+                    <sa-button type="reset" variant="ButtonVariant.Outline">Reset</sa-button>
+                </sa-group>
+                <output>@Model.Result</output>
+            </sa-stack>
+        </form>
+    </docs-example>
+    <docs-example title="Validation">
+        <partial name="_Validation" for="Validation" />
+    </docs-example>
+</docs-example-wrapper>
