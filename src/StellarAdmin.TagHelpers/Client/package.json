@@ -7,7 +7,9 @@
     "build:js": "rolldown -c",
     "build:js:watch": "rolldown -c rolldown.config.js -w",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "check:themes": "node ../../../util/theme-coverage/check.mjs",
+    "test:themes": "node --test ../../../util/theme-coverage/check.test.mjs"
   },
   "dependencies": {
     "interestfor": "^1.0.8",

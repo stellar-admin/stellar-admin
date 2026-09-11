@@ -54,6 +54,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClientInput Include="../../util/theme-coverage/*.mjs" />
+    <ClientInput Include="../../util/theme-coverage/*.json" />
     <ClientInput Include="Client/css/**/*.css" />
     <ClientInput Include="Client/js/**/*.ts" />
     <ClientInput Include="Client/js/**/*.js" />
@@ -71,6 +73,7 @@
     <ItemGroup>
       <ClientOutput Include="wwwroot/stellar-admin.js" />
 
+      <ClientOutput Include="wwwroot/stellar-admin.ledger.css" />
       <ClientOutput Include="wwwroot/stellar-admin.luma.css" />
       <ClientOutput Include="wwwroot/stellar-admin.lyra.css" />
       <ClientOutput Include="wwwroot/stellar-admin.maia.css" />

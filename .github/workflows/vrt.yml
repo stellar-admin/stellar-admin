@@ -18,6 +18,7 @@ on:
       - 'gen/**'
       - 'docs/DocsSamples/**'
       - 'util/visual-regression/**'
+      - 'util/theme-coverage/**'
       - '.github/workflows/vrt.yml'
 
 permissions:
@@ -53,6 +54,11 @@ jobs:
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
+
+    - name: Check theme coverage
+      run: |
+        node util/theme-coverage/check.mjs
+        node --test util/theme-coverage/check.test.mjs
 
     - name: Add base worktree at the merge-base
       run: |
@@ -99,6 +105,7 @@ jobs:
           sleep 1
         done
         curl -sf -o /dev/null "$VRT_HEAD_URL"
+        CHROME_PATH=google-chrome node util/visual-regression/verify-ledger.mjs "$VRT_HEAD_URL"
         node util/visual-regression/vrt.mjs capture \
           --url "$VRT_HEAD_URL" \
           --pages docs/DocsSamples/Pages \

@@ -1,0 +1,5423 @@
+{
+  "version": 1,
+  "themes": {
+    "ledger": {
+      "source": "custom"
+    },
+    "luma": {
+      "source": "upstream"
+    },
+    "lyra": {
+      "source": "upstream"
+    },
+    "maia": {
+      "source": "upstream"
+    },
+    "mira": {
+      "source": "upstream"
+    },
+    "nova": {
+      "source": "upstream"
+    },
+    "rhea": {
+      "source": "upstream"
+    },
+    "sera": {
+      "source": "upstream"
+    },
+    "vega": {
+      "source": "upstream"
+    }
+  },
+  "components": {
+    "Accordion": {
+      "tags": [
+        "sa-accordion",
+        "sa-accordion-item",
+        "sa-accordion-item-content",
+        "sa-accordion-item-title"
+      ],
+      "hooks": [
+        "sa-accordion",
+        "sa-accordion-content",
+        "sa-accordion-content-inner",
+        "sa-accordion-item",
+        "sa-accordion-trigger",
+        "sa-accordion-trigger-icon"
+      ],
+      "example": "docs/DocsSamples/Pages/Accordion/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger"
+          ]
+        }
+      }
+    },
+    "Alert": {
+      "tags": ["sa-alert", "sa-alert-action", "sa-alert-description", "sa-alert-title"],
+      "hooks": [
+        "sa-alert",
+        "sa-alert-action",
+        "sa-alert-description",
+        "sa-alert-title",
+        "sa-alert-variant-default",
+        "sa-alert-variant-destructive"
+      ],
+      "example": "docs/DocsSamples/Pages/Alert/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-default",
+            "sa-alert-variant-destructive"
+          ]
+        }
+      }
+    },
+    "AlertDialog": {
+      "tags": [
+        "sa-alert-dialog",
+        "sa-alert-dialog-action",
+        "sa-alert-dialog-cancel",
+        "sa-alert-dialog-description",
+        "sa-alert-dialog-footer",
+        "sa-alert-dialog-header",
+        "sa-alert-dialog-media",
+        "sa-alert-dialog-title"
+      ],
+      "hooks": [
+        "sa-alert-dialog-action",
+        "sa-alert-dialog-cancel",
+        "sa-alert-dialog-content",
+        "sa-alert-dialog-description",
+        "sa-alert-dialog-footer",
+        "sa-alert-dialog-header",
+        "sa-alert-dialog-media",
+        "sa-alert-dialog-title",
+        "sa-font-heading"
+      ],
+      "example": "docs/DocsSamples/Pages/AlertDialog/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        }
+      }
+    },
+    "AppHeader": {
+      "tags": ["sa-app-header", "sa-app-header-actions", "sa-app-header-separator"],
+      "hooks": ["sa-app-header", "sa-app-header-actions", "sa-app-header-separator"],
+      "example": "docs/DocsSamples/Pages/AppHeader/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-app-header"]
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
+        }
+      }
+    },
+    "Attachment": {
+      "tags": [
+        "sa-attachment",
+        "sa-attachment-action",
+        "sa-attachment-actions",
+        "sa-attachment-button-trigger",
+        "sa-attachment-content",
+        "sa-attachment-description",
+        "sa-attachment-group",
+        "sa-attachment-link-trigger",
+        "sa-attachment-media",
+        "sa-attachment-title"
+      ],
+      "hooks": [
+        "sa-attachment",
+        "sa-attachment-actions",
+        "sa-attachment-content",
+        "sa-attachment-description",
+        "sa-attachment-group",
+        "sa-attachment-media",
+        "sa-attachment-media-variant-icon",
+        "sa-attachment-media-variant-image",
+        "sa-attachment-orientation-horizontal",
+        "sa-attachment-orientation-vertical",
+        "sa-attachment-size-default",
+        "sa-attachment-size-sm",
+        "sa-attachment-size-xs",
+        "sa-attachment-title",
+        "sa-attachment-trigger"
+      ],
+      "example": "docs/DocsSamples/Pages/Attachment/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-content",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        }
+      }
+    },
+    "Avatar": {
+      "tags": ["sa-avatar", "sa-avatar-badge", "sa-avatar-group", "sa-avatar-group-count"],
+      "hooks": [
+        "sa-avatar",
+        "sa-avatar-badge",
+        "sa-avatar-fallback",
+        "sa-avatar-group",
+        "sa-avatar-group-count",
+        "sa-avatar-image"
+      ],
+      "example": "docs/DocsSamples/Pages/Avatar/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        }
+      }
+    },
+    "Badge": {
+      "tags": ["sa-badge"],
+      "hooks": [
+        "sa-badge",
+        "sa-badge-variant-default",
+        "sa-badge-variant-destructive",
+        "sa-badge-variant-ghost",
+        "sa-badge-variant-link",
+        "sa-badge-variant-outline",
+        "sa-badge-variant-secondary"
+      ],
+      "example": "docs/DocsSamples/Pages/Badge/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        }
+      }
+    },
+    "Breadcrumb": {
+      "tags": [
+        "sa-breadcrumb",
+        "sa-breadcrumb-ellipsis",
+        "sa-breadcrumb-item",
+        "sa-breadcrumb-link",
+        "sa-breadcrumb-list",
+        "sa-breadcrumb-page",
+        "sa-breadcrumb-separator"
+      ],
+      "hooks": [
+        "sa-breadcrumb",
+        "sa-breadcrumb-ellipsis",
+        "sa-breadcrumb-item",
+        "sa-breadcrumb-link",
+        "sa-breadcrumb-list",
+        "sa-breadcrumb-page",
+        "sa-breadcrumb-separator"
+      ],
+      "example": "docs/DocsSamples/Pages/Breadcrumb/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        }
+      }
+    },
+    "Bubble": {
+      "tags": [
+        "sa-bubble",
+        "sa-bubble-button-content",
+        "sa-bubble-content",
+        "sa-bubble-group",
+        "sa-bubble-link-content",
+        "sa-bubble-reactions"
+      ],
+      "hooks": [
+        "sa-bubble",
+        "sa-bubble-content",
+        "sa-bubble-group",
+        "sa-bubble-reactions",
+        "sa-bubble-reactions-align-end",
+        "sa-bubble-reactions-align-start",
+        "sa-bubble-reactions-side-bottom",
+        "sa-bubble-reactions-side-top",
+        "sa-bubble-variant-default",
+        "sa-bubble-variant-destructive",
+        "sa-bubble-variant-ghost",
+        "sa-bubble-variant-muted",
+        "sa-bubble-variant-outline",
+        "sa-bubble-variant-secondary",
+        "sa-bubble-variant-tinted"
+      ],
+      "example": "docs/DocsSamples/Pages/Bubble/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-default",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        }
+      }
+    },
+    "Button": {
+      "tags": ["sa-button", "sa-linkbutton"],
+      "hooks": [
+        "sa-button",
+        "sa-button-size-default",
+        "sa-button-size-icon",
+        "sa-button-size-icon-lg",
+        "sa-button-size-icon-sm",
+        "sa-button-size-icon-xs",
+        "sa-button-size-lg",
+        "sa-button-size-sm",
+        "sa-button-size-xs",
+        "sa-button-variant-default",
+        "sa-button-variant-destructive",
+        "sa-button-variant-ghost",
+        "sa-button-variant-link",
+        "sa-button-variant-outline",
+        "sa-button-variant-secondary"
+      ],
+      "example": "docs/DocsSamples/Pages/Button/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-default",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        }
+      }
+    },
+    "ButtonGroup": {
+      "tags": ["sa-button-group", "sa-button-group-separator", "sa-button-group-text"],
+      "hooks": [
+        "sa-button-group",
+        "sa-button-group-orientation-horizontal",
+        "sa-button-group-orientation-vertical",
+        "sa-button-group-separator",
+        "sa-button-group-text"
+      ],
+      "example": "docs/DocsSamples/Pages/ButtonGroup/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-button-group", "sa-button-group-separator", "sa-button-group-text"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        }
+      }
+    },
+    "Card": {
+      "tags": [
+        "sa-card",
+        "sa-card-action",
+        "sa-card-content",
+        "sa-card-description",
+        "sa-card-footer",
+        "sa-card-header",
+        "sa-card-title"
+      ],
+      "hooks": [
+        "sa-card",
+        "sa-card-action",
+        "sa-card-content",
+        "sa-card-description",
+        "sa-card-footer",
+        "sa-card-header",
+        "sa-card-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Card/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        }
+      }
+    },
+    "Carousel": {
+      "tags": [
+        "sa-carousel",
+        "sa-carousel-content",
+        "sa-carousel-indicators",
+        "sa-carousel-item",
+        "sa-carousel-next",
+        "sa-carousel-previous"
+      ],
+      "hooks": [
+        "sa-carousel",
+        "sa-carousel-content",
+        "sa-carousel-indicators",
+        "sa-carousel-item",
+        "sa-carousel-next",
+        "sa-carousel-previous"
+      ],
+      "example": "docs/DocsSamples/Pages/Carousel/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Carousel positioning and indicators are structural; previous/next controls use the theme Button styles without an extra radius override."
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Carousel positioning and indicators are structural; previous/next controls use the theme Button styles without an extra radius override."
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+        }
+      }
+    },
+    "CheckboxGroup": {
+      "tags": ["sa-checkbox-group"],
+      "hooks": [],
+      "example": "src/StellarAdmin.TagHelpers/TagHelpers/CheckboxGroup/CheckboxGroupTagHelper.cs",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native checkbox styles."
+        }
+      }
+    },
+    "Collapsible": {
+      "tags": ["sa-collapsible"],
+      "hooks": [],
+      "example": "docs/DocsSamples/Pages/Collapsible/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Only controls visibility of author content; no independent themed surface."
+        }
+      }
+    },
+    "Dialog": {
+      "tags": [
+        "sa-dialog",
+        "sa-dialog-description",
+        "sa-dialog-footer",
+        "sa-dialog-header",
+        "sa-dialog-title"
+      ],
+      "hooks": [
+        "sa-dialog-content",
+        "sa-dialog-description",
+        "sa-dialog-footer",
+        "sa-dialog-header",
+        "sa-dialog-title",
+        "sa-font-heading"
+      ],
+      "example": "docs/DocsSamples/Pages/Dialog/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        }
+      }
+    },
+    "DropdownMenu": {
+      "tags": [
+        "sa-dropdown-menu",
+        "sa-dropdown-menu-checkbox-item",
+        "sa-dropdown-menu-content",
+        "sa-dropdown-menu-group",
+        "sa-dropdown-menu-item",
+        "sa-dropdown-menu-label",
+        "sa-dropdown-menu-radio-group",
+        "sa-dropdown-menu-radio-item",
+        "sa-dropdown-menu-separator",
+        "sa-dropdown-menu-shortcut",
+        "sa-dropdown-menu-sub",
+        "sa-dropdown-menu-sub-content",
+        "sa-dropdown-menu-sub-trigger",
+        "sa-dropdown-menu-trigger"
+      ],
+      "hooks": [
+        "sa-dropdown-menu-checkbox-item",
+        "sa-dropdown-menu-content",
+        "sa-dropdown-menu-content-logical",
+        "sa-dropdown-menu-item",
+        "sa-dropdown-menu-item-indicator",
+        "sa-dropdown-menu-label",
+        "sa-dropdown-menu-radio-item",
+        "sa-dropdown-menu-separator",
+        "sa-dropdown-menu-shortcut",
+        "sa-dropdown-menu-sub-content",
+        "sa-dropdown-menu-sub-trigger",
+        "sa-dropdown-menu-subcontent"
+      ],
+      "example": "docs/DocsSamples/Pages/DropdownMenu/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-content-logical",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger",
+            "sa-dropdown-menu-subcontent"
+          ]
+        }
+      }
+    },
+    "Empty": {
+      "tags": [
+        "sa-empty",
+        "sa-empty-content",
+        "sa-empty-description",
+        "sa-empty-header",
+        "sa-empty-media",
+        "sa-empty-title"
+      ],
+      "hooks": [
+        "sa-empty",
+        "sa-empty-content",
+        "sa-empty-description",
+        "sa-empty-header",
+        "sa-empty-media",
+        "sa-empty-media-default",
+        "sa-empty-media-icon",
+        "sa-empty-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Empty/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media",
+            "sa-empty-media-default",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        }
+      }
+    },
+    "Field": {
+      "tags": [
+        "sa-field",
+        "sa-field-content",
+        "sa-field-description",
+        "sa-field-error",
+        "sa-field-group",
+        "sa-field-label",
+        "sa-field-legend",
+        "sa-field-separator",
+        "sa-field-set",
+        "sa-field-title"
+      ],
+      "hooks": [
+        "sa-field",
+        "sa-field-content",
+        "sa-field-description",
+        "sa-field-error",
+        "sa-field-group",
+        "sa-field-label",
+        "sa-field-legend",
+        "sa-field-orientation-horizontal",
+        "sa-field-orientation-responsive",
+        "sa-field-orientation-vertical",
+        "sa-field-separator",
+        "sa-field-separator-content",
+        "sa-field-separator-line",
+        "sa-field-set",
+        "sa-field-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Field/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        }
+      }
+    },
+    "FormRow": {
+      "tags": ["sa-form-row"],
+      "hooks": ["sa-form-row", "sa-form-row-content"],
+      "example": "docs/DocsSamples/Pages/FormRow/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
+        }
+      }
+    },
+    "FormSection": {
+      "tags": ["sa-form-section"],
+      "hooks": [
+        "sa-form-section",
+        "sa-form-section-content",
+        "sa-form-section-description",
+        "sa-form-section-header",
+        "sa-form-section-inner"
+      ],
+      "example": "docs/DocsSamples/Pages/FormSection/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
+        }
+      }
+    },
+    "Icon": {
+      "tags": ["sa-icon"],
+      "hooks": [],
+      "example": "docs/DocsSamples/Pages/Icon/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Icon dimensions and colour come from the containing component or author classes."
+        }
+      }
+    },
+    "Input": {
+      "tags": ["sa-input"],
+      "hooks": [
+        "sa-checkbox",
+        "sa-checkbox-indicator",
+        "sa-checkbox-indicator-icon",
+        "sa-input",
+        "sa-input-control-wrapper",
+        "sa-radiobutton",
+        "sa-radiobutton-indicator",
+        "sa-radiobutton-indicator-icon"
+      ],
+      "example": "docs/DocsSamples/Pages/Input/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator",
+            "sa-radiobutton-indicator-icon"
+          ]
+        }
+      }
+    },
+    "InputGroup": {
+      "tags": [
+        "sa-input-group",
+        "sa-input-group-addon",
+        "sa-input-group-button",
+        "sa-input-group-input",
+        "sa-input-group-text",
+        "sa-input-group-textarea"
+      ],
+      "hooks": [
+        "sa-input-group",
+        "sa-input-group-addon",
+        "sa-input-group-addon-align-block-end",
+        "sa-input-group-addon-align-block-start",
+        "sa-input-group-addon-align-inline-end",
+        "sa-input-group-addon-align-inline-start",
+        "sa-input-group-button",
+        "sa-input-group-button-size-icon-sm",
+        "sa-input-group-button-size-icon-xs",
+        "sa-input-group-button-size-sm",
+        "sa-input-group-button-size-xs",
+        "sa-input-group-input",
+        "sa-input-group-text",
+        "sa-input-group-textarea"
+      ],
+      "example": "docs/DocsSamples/Pages/InputGroup/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-addon-align-block-end",
+            "sa-input-group-addon-align-block-start",
+            "sa-input-group-addon-align-inline-end",
+            "sa-input-group-addon-align-inline-start",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        }
+      }
+    },
+    "InputOtp": {
+      "tags": ["sa-input-otp", "sa-input-otp-group", "sa-input-otp-separator", "sa-input-otp-slot"],
+      "hooks": [
+        "sa-input-otp",
+        "sa-input-otp-caret",
+        "sa-input-otp-caret-line",
+        "sa-input-otp-group",
+        "sa-input-otp-input",
+        "sa-input-otp-separator",
+        "sa-input-otp-slot"
+      ],
+      "example": "docs/DocsSamples/Pages/InputOtp/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        }
+      }
+    },
+    "Item": {
+      "tags": [
+        "sa-item",
+        "sa-item-actions",
+        "sa-item-content",
+        "sa-item-description",
+        "sa-item-footer",
+        "sa-item-group",
+        "sa-item-header",
+        "sa-item-link",
+        "sa-item-media",
+        "sa-item-separator",
+        "sa-item-title"
+      ],
+      "hooks": [
+        "sa-item",
+        "sa-item-actions",
+        "sa-item-content",
+        "sa-item-description",
+        "sa-item-footer",
+        "sa-item-group",
+        "sa-item-header",
+        "sa-item-media",
+        "sa-item-media-variant-default",
+        "sa-item-media-variant-icon",
+        "sa-item-media-variant-image",
+        "sa-item-separator",
+        "sa-item-size-default",
+        "sa-item-size-sm",
+        "sa-item-size-xs",
+        "sa-item-title",
+        "sa-item-variant-default",
+        "sa-item-variant-muted",
+        "sa-item-variant-outline"
+      ],
+      "example": "docs/DocsSamples/Pages/Item/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-default",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-default",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        }
+      }
+    },
+    "Kbd": {
+      "tags": ["sa-kbd", "sa-kbd-group"],
+      "hooks": ["sa-kbd", "sa-kbd-group"],
+      "example": "docs/DocsSamples/Pages/Kbd/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-kbd", "sa-kbd-group"]
+        }
+      }
+    },
+    "Label": {
+      "tags": ["sa-label"],
+      "hooks": ["sa-label"],
+      "example": "docs/DocsSamples/Pages/Label/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-label"]
+        }
+      }
+    },
+    "Layout": {
+      "tags": ["sa-group", "sa-page-container", "sa-stack"],
+      "hooks": [
+        "sa-group",
+        "sa-group-align-baseline",
+        "sa-group-align-center",
+        "sa-group-align-end",
+        "sa-group-align-start",
+        "sa-group-align-stretch",
+        "sa-group-gap-lg",
+        "sa-group-gap-md",
+        "sa-group-gap-sm",
+        "sa-group-gap-xl",
+        "sa-group-gap-xs",
+        "sa-group-justify-around",
+        "sa-group-justify-between",
+        "sa-group-justify-center",
+        "sa-group-justify-end",
+        "sa-group-justify-start",
+        "sa-page-container",
+        "sa-page-container-width-full",
+        "sa-page-container-width-large",
+        "sa-page-container-width-medium",
+        "sa-page-container-width-small",
+        "sa-stack",
+        "sa-stack-align-center",
+        "sa-stack-align-end",
+        "sa-stack-align-start",
+        "sa-stack-align-stretch",
+        "sa-stack-gap-lg",
+        "sa-stack-gap-md",
+        "sa-stack-gap-sm",
+        "sa-stack-gap-xl",
+        "sa-stack-gap-xs",
+        "sa-stack-justify-around",
+        "sa-stack-justify-between",
+        "sa-stack-justify-center",
+        "sa-stack-justify-end",
+        "sa-stack-justify-start"
+      ],
+      "example": "docs/DocsSamples/Pages/Stack/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
+        }
+      }
+    },
+    "Marker": {
+      "tags": [
+        "sa-marker",
+        "sa-marker-button",
+        "sa-marker-content",
+        "sa-marker-icon",
+        "sa-marker-link"
+      ],
+      "hooks": [
+        "sa-marker",
+        "sa-marker-content",
+        "sa-marker-icon",
+        "sa-marker-variant-border",
+        "sa-marker-variant-default",
+        "sa-marker-variant-separator"
+      ],
+      "example": "docs/DocsSamples/Pages/Marker/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        }
+      }
+    },
+    "Message": {
+      "tags": [
+        "sa-message",
+        "sa-message-avatar",
+        "sa-message-content",
+        "sa-message-footer",
+        "sa-message-group",
+        "sa-message-header"
+      ],
+      "hooks": [
+        "sa-message",
+        "sa-message-avatar",
+        "sa-message-content",
+        "sa-message-footer",
+        "sa-message-group",
+        "sa-message-header"
+      ],
+      "example": "docs/DocsSamples/Pages/Message/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        }
+      }
+    },
+    "MessageScroller": {
+      "tags": [
+        "sa-message-scroller",
+        "sa-message-scroller-button",
+        "sa-message-scroller-content",
+        "sa-message-scroller-item",
+        "sa-message-scroller-viewport"
+      ],
+      "hooks": [
+        "sa-message-scroller",
+        "sa-message-scroller-button",
+        "sa-message-scroller-content",
+        "sa-message-scroller-item",
+        "sa-message-scroller-viewport"
+      ],
+      "example": "docs/DocsSamples/Pages/MessageScroller/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-message-scroller-content"]
+        }
+      }
+    },
+    "PageHeader": {
+      "tags": [
+        "sa-page-header",
+        "sa-page-header-actions",
+        "sa-page-header-description",
+        "sa-page-header-nav",
+        "sa-page-header-title"
+      ],
+      "hooks": [
+        "sa-font-heading",
+        "sa-page-header",
+        "sa-page-header-actions",
+        "sa-page-header-description",
+        "sa-page-header-nav",
+        "sa-page-header-title"
+      ],
+      "example": "docs/DocsSamples/Pages/PageHeader/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
+        }
+      }
+    },
+    "Pagination": {
+      "tags": [
+        "sa-pagination",
+        "sa-pagination-content",
+        "sa-pagination-ellipsis",
+        "sa-pagination-first",
+        "sa-pagination-item",
+        "sa-pagination-last",
+        "sa-pagination-link",
+        "sa-pagination-next",
+        "sa-pagination-previous"
+      ],
+      "hooks": [
+        "sa-pagination",
+        "sa-pagination-content",
+        "sa-pagination-ellipsis",
+        "sa-pagination-link",
+        "sa-pagination-link-label",
+        "sa-pagination-next",
+        "sa-pagination-previous"
+      ],
+      "example": "docs/DocsSamples/Pages/Pagination/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-pagination-content", "sa-pagination-ellipsis", "sa-pagination-link"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-next",
+            "sa-pagination-previous"
+          ]
+        }
+      }
+    },
+    "Popover": {
+      "tags": ["sa-popover", "sa-popover-description", "sa-popover-header", "sa-popover-title"],
+      "hooks": [
+        "sa-font-heading",
+        "sa-popover-content",
+        "sa-popover-description",
+        "sa-popover-header",
+        "sa-popover-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Popover/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        }
+      }
+    },
+    "Progress": {
+      "tags": ["sa-progress", "sa-progress-label", "sa-progress-value"],
+      "hooks": [
+        "sa-progress-indicator",
+        "sa-progress-label",
+        "sa-progress-root",
+        "sa-progress-track",
+        "sa-progress-value"
+      ],
+      "example": "docs/DocsSamples/Pages/Progress/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        }
+      }
+    },
+    "Questionnaire": {
+      "tags": [
+        "sa-questionnaire",
+        "sa-questionnaire-actions",
+        "sa-questionnaire-choice",
+        "sa-questionnaire-choice-description",
+        "sa-questionnaire-choices",
+        "sa-questionnaire-description",
+        "sa-questionnaire-error",
+        "sa-questionnaire-input",
+        "sa-questionnaire-item",
+        "sa-questionnaire-next",
+        "sa-questionnaire-previous",
+        "sa-questionnaire-progress",
+        "sa-questionnaire-skip",
+        "sa-questionnaire-submit",
+        "sa-questionnaire-title"
+      ],
+      "hooks": [
+        "sa-font-heading",
+        "sa-questionnaire",
+        "sa-questionnaire-actions",
+        "sa-questionnaire-choice",
+        "sa-questionnaire-choice-content",
+        "sa-questionnaire-choice-description",
+        "sa-questionnaire-choice-indicator",
+        "sa-questionnaire-choice-indicator-check",
+        "sa-questionnaire-choice-indicator-dot",
+        "sa-questionnaire-choice-input",
+        "sa-questionnaire-choice-label",
+        "sa-questionnaire-choice-shortcut",
+        "sa-questionnaire-choices",
+        "sa-questionnaire-description",
+        "sa-questionnaire-error",
+        "sa-questionnaire-input",
+        "sa-questionnaire-input-wrapper",
+        "sa-questionnaire-item",
+        "sa-questionnaire-next",
+        "sa-questionnaire-previous",
+        "sa-questionnaire-progress",
+        "sa-questionnaire-shortcut",
+        "sa-questionnaire-skip",
+        "sa-questionnaire-submit",
+        "sa-questionnaire-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Questionnaire/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-input-wrapper",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        }
+      }
+    },
+    "RadioGroup": {
+      "tags": ["sa-radio-group"],
+      "hooks": [],
+      "example": "src/StellarAdmin.TagHelpers/TagHelpers/RadioGroup/RadioGroupTagHelper.cs",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Composes the Field group and native radio styles."
+        }
+      }
+    },
+    "Select": {
+      "tags": ["sa-select"],
+      "hooks": ["sa-native-select", "sa-native-select-icon", "sa-native-select-wrapper"],
+      "example": "docs/DocsSamples/Pages/Select/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-native-select", "sa-native-select-icon"]
+        }
+      }
+    },
+    "Separator": {
+      "tags": ["sa-separator"],
+      "hooks": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"],
+      "example": "docs/DocsSamples/Pages/Separator/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+        }
+      }
+    },
+    "Sheet": {
+      "tags": [
+        "sa-sheet",
+        "sa-sheet-description",
+        "sa-sheet-footer",
+        "sa-sheet-header",
+        "sa-sheet-title"
+      ],
+      "hooks": [
+        "sa-font-heading",
+        "sa-sheet-body",
+        "sa-sheet-close",
+        "sa-sheet-content",
+        "sa-sheet-description",
+        "sa-sheet-footer",
+        "sa-sheet-header",
+        "sa-sheet-title"
+      ],
+      "example": "docs/DocsSamples/Pages/Sheet/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        }
+      }
+    },
+    "Sidebar": {
+      "tags": [
+        "sa-sidebar",
+        "sa-sidebar-content",
+        "sa-sidebar-footer",
+        "sa-sidebar-group",
+        "sa-sidebar-group-content",
+        "sa-sidebar-group-label",
+        "sa-sidebar-header",
+        "sa-sidebar-inset",
+        "sa-sidebar-menu",
+        "sa-sidebar-menu-badge",
+        "sa-sidebar-menu-button",
+        "sa-sidebar-menu-item",
+        "sa-sidebar-menu-link",
+        "sa-sidebar-menu-sub",
+        "sa-sidebar-menu-sub-button",
+        "sa-sidebar-menu-sub-item",
+        "sa-sidebar-menu-sub-link",
+        "sa-sidebar-separator",
+        "sa-sidebar-trigger",
+        "sa-sidebar-wrapper"
+      ],
+      "hooks": [
+        "sa-sidebar-backdrop",
+        "sa-sidebar-container",
+        "sa-sidebar-content",
+        "sa-sidebar-footer",
+        "sa-sidebar-gap",
+        "sa-sidebar-group",
+        "sa-sidebar-group-content",
+        "sa-sidebar-group-label",
+        "sa-sidebar-header",
+        "sa-sidebar-inner",
+        "sa-sidebar-inset",
+        "sa-sidebar-menu",
+        "sa-sidebar-menu-badge",
+        "sa-sidebar-menu-button",
+        "sa-sidebar-menu-button-size-default",
+        "sa-sidebar-menu-button-size-lg",
+        "sa-sidebar-menu-button-size-sm",
+        "sa-sidebar-menu-button-variant-default",
+        "sa-sidebar-menu-button-variant-outline",
+        "sa-sidebar-menu-item",
+        "sa-sidebar-menu-sub",
+        "sa-sidebar-menu-sub-button",
+        "sa-sidebar-menu-sub-item",
+        "sa-sidebar-separator",
+        "sa-sidebar-wrapper"
+      ],
+      "example": "docs/DocsSamples/Pages/Sidebar/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-gap",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-default",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        }
+      }
+    },
+    "Skeleton": {
+      "tags": ["sa-skeleton"],
+      "hooks": ["sa-skeleton"],
+      "example": "docs/DocsSamples/Pages/Skeleton/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-skeleton"]
+        }
+      }
+    },
+    "Slider": {
+      "tags": ["sa-slider"],
+      "hooks": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"],
+      "example": "docs/DocsSamples/Pages/Slider/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+        }
+      }
+    },
+    "SlotContent": {
+      "tags": ["sa-slot-content"],
+      "hooks": [],
+      "example": "docs/DocsSamples/Pages/SlotContent/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering a visual element."
+        }
+      }
+    },
+    "SlotOutlet": {
+      "tags": ["sa-slot-outlet"],
+      "hooks": [],
+      "example": "docs/DocsSamples/Pages/SlotOutlet/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Renders the supplied content; nested components own appearance."
+        }
+      }
+    },
+    "Spinner": {
+      "tags": ["sa-spinner"],
+      "hooks": ["sa-spinner"],
+      "example": "docs/DocsSamples/Pages/Spinner/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "luma": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "lyra": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "maia": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "mira": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "nova": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "rhea": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "sera": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        },
+        "vega": {
+          "status": "shared-only",
+          "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
+        }
+      }
+    },
+    "Switch": {
+      "tags": ["sa-switch"],
+      "hooks": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"],
+      "example": "docs/DocsSamples/Pages/Switch/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-switch", "sa-switch-thumb"]
+        }
+      }
+    },
+    "Table": {
+      "tags": [
+        "sa-table",
+        "sa-table-body",
+        "sa-table-caption",
+        "sa-table-cell",
+        "sa-table-footer",
+        "sa-table-head",
+        "sa-table-header",
+        "sa-table-row",
+        "sa-table-selection"
+      ],
+      "hooks": [
+        "sa-table",
+        "sa-table-body",
+        "sa-table-caption",
+        "sa-table-cell",
+        "sa-table-container",
+        "sa-table-footer",
+        "sa-table-head",
+        "sa-table-header",
+        "sa-table-row"
+      ],
+      "example": "docs/DocsSamples/Pages/Table/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        }
+      }
+    },
+    "Tabs": {
+      "tags": ["sa-tab-link", "sa-tab-list"],
+      "hooks": [
+        "sa-tabs",
+        "sa-tabs-list",
+        "sa-tabs-list-variant-default",
+        "sa-tabs-list-variant-line",
+        "sa-tabs-trigger"
+      ],
+      "example": "docs/DocsSamples/Pages/Tabs/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-list-variant-line", "sa-tabs-trigger"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+        }
+      }
+    },
+    "Textarea": {
+      "tags": ["sa-textarea"],
+      "hooks": ["sa-textarea"],
+      "example": "docs/DocsSamples/Pages/Textarea/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-textarea"]
+        }
+      }
+    },
+    "Toggle": {
+      "tags": ["sa-toggle"],
+      "hooks": [
+        "sa-toggle",
+        "sa-toggle-group-item",
+        "sa-toggle-size-default",
+        "sa-toggle-size-lg",
+        "sa-toggle-size-sm",
+        "sa-toggle-variant-default",
+        "sa-toggle-variant-outline"
+      ],
+      "example": "docs/DocsSamples/Pages/Toggle/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-group-item",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-default",
+            "sa-toggle-variant-outline"
+          ]
+        }
+      }
+    },
+    "ToggleGroup": {
+      "tags": ["sa-toggle-group", "sa-toggle-group-item"],
+      "hooks": ["sa-toggle-group"],
+      "example": "docs/DocsSamples/Pages/ToggleGroup/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-toggle-group"]
+        }
+      }
+    },
+    "Tooltip": {
+      "tags": ["sa-tooltip"],
+      "hooks": ["sa-tooltip-content"],
+      "example": "docs/DocsSamples/Pages/Tooltip/Index.cshtml",
+      "themes": {
+        "ledger": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "luma": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "lyra": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "maia": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "mira": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "nova": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "rhea": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "sera": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        },
+        "vega": {
+          "status": "reviewed",
+          "rules": ["sa-tooltip-content"]
+        }
+      }
+    }
+  }
+}

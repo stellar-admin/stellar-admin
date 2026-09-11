@@ -1,13 +1,23 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    var theme = Context.Request.Query["theme"].ToString();
+    string[] themes = ["ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"];
+    if (!themes.Contains(theme)) { theme = "ledger"; }
+    var dark = Context.Request.Query["mode"] == "dark";
+}
+<!DOCTYPE html>
+<html lang="en" class="@(dark ? "dark" : null)">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"/>
+    @if (theme == "ledger")
+    {
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"/>
+    }
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.nova.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="@($"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme}.css")" asp-append-version="true"/>
     @await RenderSectionAsync("Styles", false)
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>

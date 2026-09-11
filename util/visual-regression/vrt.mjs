@@ -34,7 +34,7 @@
 // CSS.forcePseudoState); only pages with a DocsSamples sample are covered; content clipped
 // inside scrollable containers or stacked under overlays is not composited into screenshots.
 
-import { spawn } from "node:child_process";
+import { launchBrowser, sleep } from "./browser.mjs";
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -77,104 +77,6 @@ const DEFAULT_THRESHOLD = 0.1;
 // ---------------------------------------------------------------------------------------------
 // CDP plumbing
 
-async function launchBrowser(browserBinary) {
-  const port = 9222 + Math.floor(Math.random() * 500);
-  const chrome = spawn(
-    browserBinary,
-    [
-      "--headless=new",
-      `--remote-debugging-port=${port}`,
-      "--no-first-run",
-      "--no-default-browser-check",
-      "--disable-gpu",
-      "--force-color-profile=srgb",
-      "--hide-scrollbars",
-      "--font-render-hinting=none",
-      "--window-size=1400,1000",
-      "about:blank",
-    ],
-    { stdio: "ignore" },
-  );
-
-  let wsUrl;
-  for (let i = 0; i < 100 && !wsUrl; i++) {
-    await sleep(200);
-    try {
-      const targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json();
-      wsUrl = targets.find((t) => t.type === "page")?.webSocketDebuggerUrl;
-    } catch {
-      /* not up yet */
-    }
-  }
-  if (!wsUrl) {
-    chrome.kill();
-    throw new Error(`${browserBinary} did not expose a debugging endpoint`);
-  }
-
-  const ws = new WebSocket(wsUrl);
-  await new Promise((resolveOpen, reject) => {
-    ws.onopen = resolveOpen;
-    ws.onerror = reject;
-  });
-
-  let messageId = 0;
-  const pending = new Map();
-  const eventWaiters = [];
-  ws.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    if (message.id && pending.has(message.id)) {
-      pending.get(message.id)(message);
-      pending.delete(message.id);
-    } else if (message.method) {
-      for (const waiter of [...eventWaiters]) {
-        if (waiter.method === message.method) {
-          eventWaiters.splice(eventWaiters.indexOf(waiter), 1);
-          waiter.resolve(message.params);
-        }
-      }
-    }
-  };
-
-  const send = (method, params = {}) =>
-    new Promise((resolveSend, reject) => {
-      const id = ++messageId;
-      pending.set(id, (message) => {
-        if (message.error) reject(new Error(`${method}: ${message.error.message}`));
-        else resolveSend(message.result);
-      });
-      ws.send(JSON.stringify({ id, method, params }));
-    });
-
-  const waitForEvent = (method, timeoutMs) =>
-    new Promise((resolveWait) => {
-      const waiter = { method, resolve: resolveWait };
-      eventWaiters.push(waiter);
-      setTimeout(() => {
-        const index = eventWaiters.indexOf(waiter);
-        if (index >= 0) {
-          eventWaiters.splice(index, 1);
-          resolveWait(null);
-        }
-      }, timeoutMs);
-    });
-
-  const evaluate = async (expression) => {
-    const result = await send("Runtime.evaluate", {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
-    if (result.exceptionDetails) {
-      throw new Error(`page evaluate failed: ${result.exceptionDetails.text}`);
-    }
-    return result.result?.value;
-  };
-
-  return { chrome, ws, send, waitForEvent, evaluate };
-}
-
-const sleep = (ms) => new Promise((resolveSleep) => setTimeout(resolveSleep, ms));
-
 // ---------------------------------------------------------------------------------------------
 // capture
 
@@ -189,7 +91,7 @@ function listPages(pagesDir) {
   return ["", ...pages]; // "" = Index
 }
 
-async function capture(baseUrl, outDir, pagesDir, browserBinary) {
+async function capture(baseUrl, outDir, pagesDir, browserBinary, theme, mode) {
   mkdirSync(outDir, { recursive: true });
   const { chrome, send, waitForEvent, evaluate } = await launchBrowser(browserBinary);
   const pages = listPages(pagesDir);
@@ -214,7 +116,10 @@ async function capture(baseUrl, outDir, pagesDir, browserBinary) {
     for (const page of pages) {
       const pageName = page === "" ? "Index" : page;
       const loaded = waitForEvent("Page.loadEventFired", 15000);
-      await send("Page.navigate", { url: `${baseUrl}/${page}` });
+      const target = new URL(`${baseUrl}/${page}`);
+      if (theme) target.searchParams.set("theme", theme);
+      if (mode) target.searchParams.set("mode", mode);
+      await send("Page.navigate", { url: target.href });
       await loaded;
 
       // Freeze animations/transitions, then let fonts and layout settle.
@@ -325,7 +230,9 @@ function pctOf({ changedPixels, totalPixels }) {
 }
 
 function compare(baseDir, headDir, diffDir, threshold) {
-  const baseFiles = readdirSync(baseDir).filter((f) => f.endsWith(".png")).sort();
+  const baseFiles = readdirSync(baseDir)
+    .filter((f) => f.endsWith(".png"))
+    .sort();
   const headFiles = new Set(readdirSync(headDir).filter((f) => f.endsWith(".png")));
   mkdirSync(diffDir, { recursive: true });
 
@@ -396,8 +303,15 @@ function compare(baseDir, headDir, diffDir, threshold) {
       }
       lines.push("");
     }
-    if (added.length) lines.push(`## New screenshots (not in base)`, "", ...added.map((f) => `- ${f}`), "");
-    if (removed.length) lines.push(`## Removed screenshots (missing in head)`, "", ...removed.map((f) => `- ${f}`), "");
+    if (added.length)
+      lines.push(`## New screenshots (not in base)`, "", ...added.map((f) => `- ${f}`), "");
+    if (removed.length)
+      lines.push(
+        `## Removed screenshots (missing in head)`,
+        "",
+        ...removed.map((f) => `- ${f}`),
+        "",
+      );
   }
   const reportPath = join(diffDir, "report.md");
   writeFileSync(reportPath, lines.join("\n") + "\n");
@@ -421,7 +335,15 @@ function argValue(args, name, fallback) {
   return index >= 0 ? args[index + 1] : fallback;
 }
 
-const flagsWithValues = ["--url", "--out", "--pages", "--browser", "--threshold"];
+const flagsWithValues = [
+  "--url",
+  "--out",
+  "--pages",
+  "--browser",
+  "--threshold",
+  "--theme",
+  "--mode",
+];
 function positionals(args) {
   const result = [];
   for (let i = 0; i < args.length; i++) {
@@ -439,7 +361,20 @@ if (command === "capture") {
     process.exit(2);
   }
   const browserBinary = argValue(rest, "--browser", process.env.CHROME_PATH || "chromium");
-  await capture(url, resolve(out), resolve(argValue(rest, "--pages", defaultPagesDir)), browserBinary);
+  const theme = argValue(rest, "--theme");
+  const mode = argValue(rest, "--mode");
+  if ((theme && !/^[a-z]+$/.test(theme)) || (mode && !["light", "dark"].includes(mode))) {
+    console.error("Use a lowercase theme name and --mode light|dark");
+    process.exit(2);
+  }
+  await capture(
+    url,
+    resolve(out),
+    resolve(argValue(rest, "--pages", defaultPagesDir)),
+    browserBinary,
+    theme,
+    mode,
+  );
 } else if (command === "compare") {
   const positional = positionals(rest);
   if (positional.length !== 2) {
@@ -449,10 +384,15 @@ if (command === "capture") {
   const baseDir = resolve(positional[0]);
   const headDir = resolve(positional[1]);
   const diffDir = resolve(argValue(rest, "--out", join(dirname(headDir), "diff")));
-  compare(baseDir, headDir, diffDir, Number(argValue(rest, "--threshold", String(DEFAULT_THRESHOLD))));
+  compare(
+    baseDir,
+    headDir,
+    diffDir,
+    Number(argValue(rest, "--threshold", String(DEFAULT_THRESHOLD))),
+  );
 } else {
   console.error(
-    "usage: vrt.mjs capture --url <url> --out <dir> [--pages <PagesDir>] [--browser <path>] | compare <baseDir> <headDir> [--out <diffDir>] [--threshold n]",
+    "usage: vrt.mjs capture --url <url> --out <dir> [--pages <PagesDir>] [--browser <path>] [--theme <name>] [--mode light|dark] | compare <baseDir> <headDir> [--out <diffDir>] [--threshold n]",
   );
   process.exit(2);
 }
