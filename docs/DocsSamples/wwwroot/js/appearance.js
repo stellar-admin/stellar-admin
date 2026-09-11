@@ -19,7 +19,8 @@
   }
 
   let theme = resolve("theme", themes, "ledger");
-  let mode = resolve("mode", ["light", "dark"], "light");
+  let mode = resolve("mode", ["system", "light", "dark"], "system");
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
   function apply() {
     const url = new URL(stylesheet.href);
@@ -29,8 +30,9 @@
       url.search = "";
       stylesheet.href = url.href;
     }
-    document.documentElement.classList.toggle("dark", mode === "dark");
-    document.documentElement.style.colorScheme = mode;
+    const dark = mode === "dark" || (mode === "system" && systemDark.matches);
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
   }
 
   function save(name, value) {
@@ -48,24 +50,43 @@
   // Run in the head so stored preferences apply before the samples render.
   apply();
 
+  systemDark.addEventListener("change", () => {
+    if (mode === "system") apply();
+  });
+
   document.addEventListener("DOMContentLoaded", () => {
-    const themeSelect = document.getElementById("docs-sample-theme-select");
-    const darkSwitch = document.getElementById("docs-sample-dark-mode");
-    if (!themeSelect || !darkSwitch) return;
+    const themeOptions = document.getElementById("docs-sample-theme-options");
+    const themeLabel = document.getElementById("docs-sample-theme-label");
+    const modeControl = document.getElementById("docs-sample-mode");
 
-    for (const value of themes) {
-      themeSelect.add(new Option(value[0].toUpperCase() + value.slice(1), value));
+    if (themeOptions && themeLabel) {
+      function syncTheme() {
+        for (const item of themeOptions.querySelectorAll('[role="menuitemradio"]')) {
+          const checked = item.dataset.value === theme;
+          item.setAttribute("aria-checked", String(checked));
+          item.dataset.state = checked ? "checked" : "unchecked";
+          if (checked) themeLabel.textContent = item.textContent.trim();
+        }
+      }
+
+      syncTheme();
+      themeOptions.addEventListener("valuechange", event => {
+        if (!themes.includes(event.detail.value)) return;
+        theme = event.detail.value;
+        syncTheme();
+        save("theme", theme);
+      });
     }
-    themeSelect.value = theme;
-    darkSwitch.checked = mode === "dark";
 
-    themeSelect.addEventListener("change", () => {
-      theme = themeSelect.value;
-      save("theme", theme);
-    });
-    darkSwitch.addEventListener("change", () => {
-      mode = darkSwitch.checked ? "dark" : "light";
-      save("mode", mode);
-    });
+    if (modeControl) {
+      for (const input of modeControl.querySelectorAll('input[type="radio"]')) {
+        input.checked = input.value === mode;
+      }
+      modeControl.addEventListener("change", event => {
+        if (!event.target.matches('input[type="radio"]')) return;
+        mode = event.target.value;
+        save("mode", mode);
+      });
+    }
   });
 })();

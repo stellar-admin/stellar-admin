@@ -128,15 +128,35 @@
                 </sa-sidebar-group>
             }
         </sa-sidebar-content>
-        <sa-sidebar-footer>
-            <sa-field>
-                <sa-field-label for="docs-sample-theme-select">Theme</sa-field-label>
-                <sa-select id="docs-sample-theme-select" class="w-full"></sa-select>
-            </sa-field>
-            <sa-field orientation="FieldOrientation.Horizontal">
-                <sa-switch id="docs-sample-dark-mode"/>
-                <sa-field-label for="docs-sample-dark-mode">Dark mode</sa-field-label>
-            </sa-field>
+        <sa-sidebar-footer class="border-t border-sidebar-border">
+            <sa-dropdown-menu>
+                <sa-dropdown-menu-trigger id="docs-sample-theme-trigger" variant="ButtonVariant.Outline" class="w-full justify-between">
+                    <span id="docs-sample-theme-label">Ledger</span>
+                    <sa-icon name="chevrons-up-down" aria-hidden="true" />
+                </sa-dropdown-menu-trigger>
+                <sa-dropdown-menu-content class="w-56">
+                    <sa-dropdown-menu-radio-group id="docs-sample-theme-options" value="ledger" aria-label="Theme">
+                        @foreach (var theme in new[] { "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega" })
+                        {
+                            <sa-dropdown-menu-radio-item value="@theme" close-on-click="true">@(char.ToUpperInvariant(theme[0]) + theme[1..])</sa-dropdown-menu-radio-item>
+                        }
+                    </sa-dropdown-menu-radio-group>
+                </sa-dropdown-menu-content>
+            </sa-dropdown-menu>
+            <sa-segmented-control id="docs-sample-mode" name="docs-sample-mode" value="system" render-field="false" aria-label="Appearance" class="w-full">
+                <sa-segmented-control-item value="system" title="System">
+                    <sa-icon name="monitor" aria-hidden="true" />
+                    <span class="sr-only">System</span>
+                </sa-segmented-control-item>
+                <sa-segmented-control-item value="light" title="Light">
+                    <sa-icon name="sun" aria-hidden="true" />
+                    <span class="sr-only">Light</span>
+                </sa-segmented-control-item>
+                <sa-segmented-control-item value="dark" title="Dark">
+                    <sa-icon name="moon" aria-hidden="true" />
+                    <span class="sr-only">Dark</span>
+                </sa-segmented-control-item>
+            </sa-segmented-control>
         </sa-sidebar-footer>
     </sa-sidebar>
     <sa-sidebar-inset>

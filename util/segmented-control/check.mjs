@@ -24,7 +24,7 @@ try {
         await sleep(250);
         await browser.evaluate("document.fonts.ready");
         const comparison = await browser.evaluate(`(() => {
-          const group = document.querySelector('.sa-segmented-control');
+          const group = document.querySelector('.sa-sidebar-inset .sa-segmented-control');
           const tabs = document.querySelector('.sa-tabs-list');
           const styles = el => {
             const s = getComputedStyle(el);
