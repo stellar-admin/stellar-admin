@@ -136,7 +136,7 @@
                 </sa-dropdown-menu-trigger>
                 <sa-dropdown-menu-content class="w-56">
                     <sa-dropdown-menu-radio-group id="docs-sample-theme-options" value="ledger" aria-label="Theme">
-                        @foreach (var theme in new[] { "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega" })
+                        @foreach (var theme in new[] { "concourse", "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega" })
                         {
                             <sa-dropdown-menu-radio-item value="@theme" close-on-click="true">@(char.ToUpperInvariant(theme[0]) + theme[1..])</sa-dropdown-menu-radio-item>
                         }

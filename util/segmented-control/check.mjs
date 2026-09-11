@@ -9,7 +9,18 @@ const browser = await launchBrowser(process.env.CHROME_PATH ?? "chromium");
 mkdirSync(output, { recursive: true });
 try {
   await browser.send("Page.enable");
-  for (const theme of ["ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"]) {
+  for (const theme of [
+    "concourse",
+    "ledger",
+    "luma",
+    "lyra",
+    "maia",
+    "mira",
+    "nova",
+    "rhea",
+    "sera",
+    "vega",
+  ]) {
     for (const mode of ["light", "dark"]) {
       for (const width of [1280, 390]) {
         await browser.send("Emulation.setDeviceMetricsOverride", {
@@ -60,7 +71,7 @@ try {
       }
     }
   }
-  console.log("PASS: tab appearance matches across 9 themes, light/dark, desktop/mobile");
+  console.log("PASS: tab appearance matches across 10 themes, light/dark, desktop/mobile");
 
   const interaction = await browser.evaluate(`(() => {
     const group = document.querySelector('input[name="trip-view"]').closest('[role=radiogroup]');

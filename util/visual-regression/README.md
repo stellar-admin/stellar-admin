@@ -12,4 +12,8 @@ The default theme is Nova and the default mode is light. Pass `--browser google-
 
 Run Ledger's focused interaction and style checks with `node util/visual-regression/verify-ledger.mjs http://localhost:5206`. Set `CHROME_PATH` to choose a browser binary. CI runs this check against the head app. It verifies slider keyboard operation, switch state, OTP entry, composite field focus, pressed/focused buttons, radius customization, reduced motion, and body/primary text contrast in both modes. It complements visual inspection; it is not a comprehensive accessibility audit.
 
+Run Concourse’s focused checks with `node util/visual-regression/verify-concourse.mjs http://localhost:5206`. They exercise persistent selection versus hover, focused/pressed actions, read-only grouped validation, native toggle/slider/OTP input, sheet containment/dismissal, sidebar widths, and reduced motion in both modes at desktop/mobile widths.
+
 Theme inventory and explicit component coverage are checked separately by `node util/theme-coverage/check.mjs`.
+
+Run `node util/visual-regression/verify-concourse-progress.mjs http://localhost:5206` to check all four progress samples in both modes at desktop/mobile widths. Native scrollbars remain visible; the check catches fill overflow inside bordered tracks and verifies proportional fill widths, including empty/full progress. Captures are written to `snapshots/concourse-progress/`.

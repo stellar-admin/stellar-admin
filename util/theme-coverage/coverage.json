@@ -1,6 +1,9 @@
 {
   "version": 1,
   "themes": {
+    "concourse": {
+      "source": "custom"
+    },
     "ledger": {
       "source": "custom"
     },
@@ -47,6 +50,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Accordion/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger",
+            "sa-accordion-trigger-icon"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -146,6 +159,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Alert/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-destructive"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -270,6 +293,17 @@
       ],
       "example": "docs/DocsSamples/Pages/AlertDialog/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -369,6 +403,12 @@
       "hooks": ["sa-app-header", "sa-app-header-actions", "sa-app-header-separator"],
       "example": "docs/DocsSamples/Pages/AppHeader/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-app-header"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-app-header"]
@@ -439,6 +479,24 @@
       ],
       "example": "docs/DocsSamples/Pages/Attachment/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -623,6 +681,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Avatar/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -728,6 +796,18 @@
       ],
       "example": "docs/DocsSamples/Pages/Badge/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -859,6 +939,17 @@
       ],
       "example": "docs/DocsSamples/Pages/Breadcrumb/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -988,6 +1079,25 @@
       ],
       "example": "docs/DocsSamples/Pages/Bubble/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -1190,6 +1300,25 @@
       ],
       "example": "docs/DocsSamples/Pages/Button/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -1383,6 +1512,16 @@
       ],
       "example": "docs/DocsSamples/Pages/ButtonGroup/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -1490,6 +1629,17 @@
       ],
       "example": "docs/DocsSamples/Pages/Card/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -1610,6 +1760,13 @@
       ],
       "example": "docs/DocsSamples/Pages/Carousel/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-carousel-next", "sa-carousel-previous"]
@@ -1653,6 +1810,10 @@
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/CheckboxGroup/CheckboxGroupTagHelper.cs",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Concourse native checkbox controls."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Composes the Field group and native checkbox styles."
@@ -1696,6 +1857,10 @@
       "hooks": [],
       "example": "docs/DocsSamples/Pages/Collapsible/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Controls the visibility of supplied content; it has no independent visual surface."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Only controls visibility of author content; no independent themed surface."
@@ -1752,6 +1917,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Dialog/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -1876,6 +2051,21 @@
       ],
       "example": "docs/DocsSamples/Pages/DropdownMenu/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2050,6 +2240,17 @@
       ],
       "example": "docs/DocsSamples/Pages/Empty/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2199,6 +2400,22 @@
       ],
       "example": "docs/DocsSamples/Pages/Field/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2350,6 +2567,10 @@
       "hooks": ["sa-form-row", "sa-form-row-content"],
       "example": "docs/DocsSamples/Pages/FormRow/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "The responsive shared grid consumes Concourse gap tokens; children provide field appearance."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Structural grid uses the theme spacing scale; fields own control appearance."
@@ -2399,6 +2620,10 @@
       ],
       "example": "docs/DocsSamples/Pages/FormSection/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Shared section structure consumes Concourse semantic surface, radius and gap tokens; native section typography remains structural."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Shared section/card structure consumes semantic colour, radius, and spacing tokens."
@@ -2442,6 +2667,10 @@
       "hooks": [],
       "example": "docs/DocsSamples/Pages/Icon/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Inherits size and current colour from the containing component or consumer classes."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Icon dimensions and colour come from the containing component or author classes."
@@ -2494,6 +2723,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Input/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2621,6 +2860,21 @@
       ],
       "example": "docs/DocsSamples/Pages/InputGroup/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2796,6 +3050,16 @@
       ],
       "example": "docs/DocsSamples/Pages/InputOtp/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -2925,6 +3189,28 @@
       ],
       "example": "docs/DocsSamples/Pages/Item/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -3146,6 +3432,13 @@
       "hooks": ["sa-kbd", "sa-kbd-group"],
       "example": "docs/DocsSamples/Pages/Kbd/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-kbd", "sa-kbd-group"]
@@ -3189,6 +3482,12 @@
       "hooks": ["sa-label"],
       "example": "docs/DocsSamples/Pages/Label/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-label"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-label"]
@@ -3269,6 +3568,10 @@
       ],
       "example": "docs/DocsSamples/Pages/Stack/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Shared stack/group/container structure consumes Concourse gap tokens; nested components own surfaces."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Layout utilities consume the theme spacing scale; child components own their appearance."
@@ -3325,6 +3628,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Marker/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -3436,6 +3749,17 @@
       ],
       "example": "docs/DocsSamples/Pages/Message/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -3554,6 +3878,12 @@
       ],
       "example": "docs/DocsSamples/Pages/MessageScroller/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message-scroller-content"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-message-scroller-content"]
@@ -3610,6 +3940,10 @@
       ],
       "example": "docs/DocsSamples/Pages/PageHeader/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Shared header structure consumes Concourse gaps and its page-title size/line-height hooks."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Shared page header uses semantic typography and spacing; Ledger supplies title size hooks."
@@ -3671,6 +4005,14 @@
       ],
       "example": "docs/DocsSamples/Pages/Pagination/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-pagination-content", "sa-pagination-ellipsis", "sa-pagination-link"]
@@ -3760,6 +4102,15 @@
       ],
       "example": "docs/DocsSamples/Pages/Popover/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -3854,6 +4205,15 @@
       ],
       "example": "docs/DocsSamples/Pages/Progress/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -3984,6 +4344,27 @@
       ],
       "example": "docs/DocsSamples/Pages/Questionnaire/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -4188,6 +4569,10 @@
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/RadioGroup/RadioGroupTagHelper.cs",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Concourse native radio controls."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Composes the Field group and native radio styles."
@@ -4231,6 +4616,13 @@
       "hooks": ["sa-native-select", "sa-native-select-icon", "sa-native-select-wrapper"],
       "example": "docs/DocsSamples/Pages/Select/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-native-select", "sa-native-select-icon"]
@@ -4281,6 +4673,13 @@
       ],
       "example": "docs/DocsSamples/Pages/SegmentedControl/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -4351,6 +4750,14 @@
       "hooks": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"],
       "example": "docs/DocsSamples/Pages/Separator/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
@@ -4409,6 +4816,17 @@
       ],
       "example": "docs/DocsSamples/Pages/Sheet/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -4561,6 +4979,29 @@
       ],
       "example": "docs/DocsSamples/Pages/Sidebar/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -4791,6 +5232,12 @@
       "hooks": ["sa-skeleton"],
       "example": "docs/DocsSamples/Pages/Skeleton/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-skeleton"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-skeleton"]
@@ -4834,6 +5281,15 @@
       "hooks": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"],
       "example": "docs/DocsSamples/Pages/Slider/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
@@ -4877,6 +5333,10 @@
       "hooks": [],
       "example": "docs/DocsSamples/Pages/SlotContent/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering its own visual element."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Registers content without rendering a visual element."
@@ -4920,6 +5380,10 @@
       "hooks": [],
       "example": "docs/DocsSamples/Pages/SlotOutlet/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Renders supplied content, whose nested components own appearance."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Renders the supplied content; nested components own appearance."
@@ -4963,6 +5427,10 @@
       "hooks": ["sa-spinner"],
       "example": "docs/DocsSamples/Pages/Spinner/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Shared geometry inherits current colour and animation; Concourse scopes reduced-motion handling to library elements."
+        },
         "ledger": {
           "status": "shared-only",
           "reason": "Shared spinner geometry inherits current colour and animation; Ledger respects reduced motion."
@@ -5006,6 +5474,14 @@
       "hooks": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"],
       "example": "docs/DocsSamples/Pages/Switch/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"]
@@ -5069,6 +5545,20 @@
       ],
       "example": "docs/DocsSamples/Pages/Table/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -5208,6 +5698,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Tabs/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-default",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-list-variant-line", "sa-tabs-trigger"]
@@ -5251,6 +5751,12 @@
       "hooks": ["sa-textarea"],
       "example": "docs/DocsSamples/Pages/Textarea/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-textarea"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-textarea"]
@@ -5302,6 +5808,16 @@
       ],
       "example": "docs/DocsSamples/Pages/Toggle/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": [
@@ -5415,6 +5931,12 @@
       "hooks": ["sa-toggle-group"],
       "example": "docs/DocsSamples/Pages/ToggleGroup/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle-group"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-toggle-group"]
@@ -5458,6 +5980,12 @@
       "hooks": ["sa-tooltip-content"],
       "example": "docs/DocsSamples/Pages/Tooltip/Index.cshtml",
       "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tooltip-content"
+          ]
+        },
         "ledger": {
           "status": "reviewed",
           "rules": ["sa-tooltip-content"]
