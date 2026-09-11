@@ -127,7 +127,16 @@
                 </sa-sidebar-group>
             }
         </sa-sidebar-content>
-        @*<sa-sidebar-footer>Footer</sa-sidebar-footer>*@
+        <sa-sidebar-footer>
+            <sa-field>
+                <sa-field-label for="docs-sample-theme-select">Theme</sa-field-label>
+                <sa-select id="docs-sample-theme-select" class="w-full"></sa-select>
+            </sa-field>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-switch id="docs-sample-dark-mode"/>
+                <sa-field-label for="docs-sample-dark-mode">Dark mode</sa-field-label>
+            </sa-field>
+        </sa-sidebar-footer>
     </sa-sidebar>
     <sa-sidebar-inset>
         <div class="py-8 flex w-full justify-center">
