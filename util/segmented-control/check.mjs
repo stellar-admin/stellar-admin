@@ -10,6 +10,7 @@ mkdirSync(output, { recursive: true });
 try {
   await browser.send("Page.enable");
   for (const theme of [
+    "aurora",
     "concourse",
     "ice",
     "ledger",

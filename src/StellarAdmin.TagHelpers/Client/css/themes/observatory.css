@@ -2766,6 +2766,10 @@
   .sa-card-content {
     padding: var(--card-spacing);
   }
+  /* The header owns the divider when these sections touch. */
+  .sa-card-header + .sa-card-footer {
+    border-top-width: 0;
+  }
   .sa-card-footer {
     padding: 10px var(--card-spacing);
     font-size: 12px;
