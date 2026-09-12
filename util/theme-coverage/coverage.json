@@ -33,6 +33,9 @@
     },
     "ice": {
       "source": "custom"
+    },
+    "observatory": {
+      "source": "custom"
     }
   },
   "components": {
@@ -152,6 +155,16 @@
           "status": "reviewed",
           "rules": [
             "sa-accordion",
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger",
+            "sa-accordion-trigger-icon"
+          ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
             "sa-accordion-content",
             "sa-accordion-content-inner",
             "sa-accordion-item",
@@ -282,6 +295,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-alert",
@@ -430,6 +453,17 @@
             "sa-alert-dialog-media",
             "sa-alert-dialog-title"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
         }
       }
     },
@@ -481,6 +515,12 @@
           "reason": "Shared header consumes semantic border and spacing tokens; actions use Button."
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-app-header"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-app-header"
@@ -725,6 +765,24 @@
             "sa-attachment-title",
             "sa-attachment-trigger"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
         }
       }
     },
@@ -841,6 +899,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-avatar",
@@ -996,6 +1064,18 @@
             "sa-badge-variant-outline",
             "sa-badge-variant-secondary"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
         }
       }
     },
@@ -1131,6 +1211,17 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-breadcrumb-ellipsis",
@@ -1370,6 +1461,25 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-bubble",
@@ -1628,6 +1738,25 @@
             "sa-button-variant-outline",
             "sa-button-variant-secondary"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
         }
       }
     },
@@ -1737,6 +1866,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-button-group",
@@ -1889,6 +2028,17 @@
             "sa-card-header",
             "sa-card-title"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
         }
       }
     },
@@ -1960,6 +2110,13 @@
             "sa-carousel-next",
             "sa-carousel-previous"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         }
       }
     },
@@ -2011,6 +2168,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Composes Field groups and Ice native checkbox controls."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Observatory native checkbox controls."
         }
       }
     },
@@ -2060,6 +2221,10 @@
           "reason": "Only controls visibility of author content; no independent themed surface."
         },
         "ice": {
+          "status": "shared-only",
+          "reason": "Controls the visibility of supplied content; it has no independent visual surface."
+        },
+        "observatory": {
           "status": "shared-only",
           "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         }
@@ -2183,6 +2348,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-dialog-content",
@@ -2407,6 +2582,21 @@
             "sa-dropdown-menu-sub-content",
             "sa-dropdown-menu-sub-trigger"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
         }
       }
     },
@@ -2558,6 +2748,17 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-empty",
@@ -2777,6 +2978,22 @@
             "sa-field-set",
             "sa-field-title"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
         }
       }
     },
@@ -2828,6 +3045,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "The responsive shared grid consumes Ice gap tokens; children provide field appearance."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "The responsive shared grid consumes Observatory gap tokens; children provide field appearance."
         }
       }
     },
@@ -2885,6 +3106,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Shared section structure consumes Ice semantic surface, radius and gap tokens; native section typography remains structural."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Shared section structure consumes Observatory semantic surface, radius and gap tokens; native section typography remains structural."
         }
       }
     },
@@ -2934,6 +3159,10 @@
           "reason": "Icon dimensions and colour come from the containing component or author classes."
         },
         "ice": {
+          "status": "shared-only",
+          "reason": "Inherits size and current colour from the containing component or consumer classes."
+        },
+        "observatory": {
           "status": "shared-only",
           "reason": "Inherits size and current colour from the containing component or consumer classes."
         }
@@ -3066,6 +3295,16 @@
           "rules": [
             "sa-checkbox",
             "sa-checkbox-indicator",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
             "sa-checkbox-indicator-icon",
             "sa-input",
             "sa-radiobutton",
@@ -3290,6 +3529,21 @@
             "sa-input-group-text",
             "sa-input-group-textarea"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
         }
       }
     },
@@ -3407,6 +3661,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-input-otp",
@@ -3712,6 +3976,28 @@
             "sa-item-variant-muted",
             "sa-item-variant-outline"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
         }
       }
     },
@@ -3769,6 +4055,13 @@
             "sa-kbd",
             "sa-kbd-group"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         }
       }
     },
@@ -3820,6 +4113,12 @@
           "rules": ["sa-label"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-label"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-label"
@@ -3912,6 +4211,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Shared stack/group/container structure consumes Ice gap tokens; nested components own surfaces."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Shared stack/group/container structure consumes Observatory gap tokens; nested components own surfaces."
         }
       }
     },
@@ -4034,6 +4337,16 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-marker",
@@ -4184,6 +4497,17 @@
             "sa-message-group",
             "sa-message-header"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
         }
       }
     },
@@ -4247,6 +4571,12 @@
           "rules": ["sa-message-scroller-content"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message-scroller-content"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-message-scroller-content"
@@ -4317,6 +4647,10 @@
           "rules": [
             "sa-page-header-nav"
           ]
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Shared header structure consumes Observatory gaps and its page-title size/line-height hooks."
         }
       }
     },
@@ -4428,6 +4762,14 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-pagination-content",
@@ -4546,6 +4888,15 @@
             "sa-popover-header",
             "sa-popover-title"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
         }
       }
     },
@@ -4651,6 +5002,15 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-progress-indicator",
@@ -4946,6 +5306,27 @@
             "sa-questionnaire-shortcut",
             "sa-questionnaire-title"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
         }
       }
     },
@@ -4997,6 +5378,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Composes Field groups and Ice native radio controls."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Observatory native radio controls."
         }
       }
     },
@@ -5049,6 +5434,13 @@
           "rules": ["sa-native-select", "sa-native-select-icon"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-native-select",
@@ -5145,6 +5537,13 @@
             "sa-segmented-control",
             "sa-segmented-control-item"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
         }
       }
     },
@@ -5198,6 +5597,14 @@
           "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-separator",
@@ -5337,6 +5744,17 @@
           ]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-sheet-close",
@@ -5669,6 +6087,29 @@
             "sa-sidebar-menu-sub-button",
             "sa-sidebar-separator"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
         }
       }
     },
@@ -5720,6 +6161,12 @@
           "rules": ["sa-skeleton"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-skeleton"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-skeleton"
@@ -5785,6 +6232,15 @@
             "sa-slider-thumb",
             "sa-slider-track"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         }
       }
     },
@@ -5834,6 +6290,10 @@
           "reason": "Registers content without rendering a visual element."
         },
         "ice": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering its own visual element."
+        },
+        "observatory": {
           "status": "shared-only",
           "reason": "Registers content without rendering its own visual element."
         }
@@ -5887,6 +6347,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Renders supplied content, whose nested components own appearance."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Renders supplied content, whose nested components own appearance."
         }
       }
     },
@@ -5938,6 +6402,10 @@
         "ice": {
           "status": "shared-only",
           "reason": "Shared geometry inherits current colour and animation; Ice scopes reduced-motion handling to library elements."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Shared geometry inherits current colour and animation; Observatory scopes reduced-motion handling to library elements."
         }
       }
     },
@@ -5991,6 +6459,14 @@
           "rules": ["sa-switch", "sa-switch-thumb"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-switch",
@@ -6178,6 +6654,20 @@
             "sa-table-header",
             "sa-table-row"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
         }
       }
     },
@@ -6247,6 +6737,16 @@
             "sa-tabs-list-variant-line",
             "sa-tabs-trigger"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-default",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
         }
       }
     },
@@ -6298,6 +6798,12 @@
           "rules": ["sa-textarea"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-textarea"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-textarea"
@@ -6443,6 +6949,16 @@
             "sa-toggle-size-sm",
             "sa-toggle-variant-outline"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
         }
       }
     },
@@ -6498,6 +7014,12 @@
           "rules": [
             "sa-toggle-group"
           ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle-group"
+          ]
         }
       }
     },
@@ -6549,6 +7071,12 @@
           "rules": ["sa-tooltip-content"]
         },
         "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tooltip-content"
+          ]
+        },
+        "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-tooltip-content"

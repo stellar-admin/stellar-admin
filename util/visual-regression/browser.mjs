@@ -1,11 +1,14 @@
 import { spawn } from "node:child_process";
 
-export async function launchBrowser(browserBinary, { hideScrollbars = true } = {}) {
+export async function launchBrowser(
+  browserBinary,
+  { hideScrollbars = true, headless = true, extraArgs = [] } = {},
+) {
   const port = 9222 + Math.floor(Math.random() * 500);
   const chrome = spawn(
     browserBinary,
     [
-      "--headless=new",
+      ...(headless ? ["--headless=new"] : []),
       `--remote-debugging-port=${port}`,
       "--no-first-run",
       "--no-default-browser-check",
@@ -14,6 +17,7 @@ export async function launchBrowser(browserBinary, { hideScrollbars = true } = {
       ...(hideScrollbars ? ["--hide-scrollbars"] : []),
       "--font-render-hinting=none",
       "--window-size=1400,1000",
+      ...extraArgs,
       "about:blank",
     ],
     { stdio: "ignore" },

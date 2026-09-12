@@ -1,9 +1,15 @@
-// Real-component regressions for Ice's selection, focus, and composite geometry.
-// node util/visual-regression/verify-ice.mjs http://localhost:5206
+// Real-component regressions for Observatory's selection, focus, and composite geometry.
+// node util/visual-regression/verify-observatory.mjs http://localhost:5206
 import assert from "node:assert/strict";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { launchBrowser, sleep } from "./browser.mjs";
 
 const base = process.argv[2] ?? "http://localhost:5206";
+const fontCss = process.env.OBSERVATORY_FONT_CSS
+  ? await readFile(process.env.OBSERVATORY_FONT_CSS, "utf8")
+  : null;
+const output = new URL("./snapshots/observatory/", import.meta.url);
+await mkdir(output, { recursive: true });
 const browser = await launchBrowser(process.env.CHROME_PATH ?? "chromium", {
   hideScrollbars: false,
 });
@@ -28,25 +34,48 @@ async function evaluate(expression) {
 async function sample(name, mode) {
   const loaded = waitForEvent("Page.loadEventFired", 15000);
   await send("Page.navigate", {
-    url: `${base}/DocsStatic?name=${name}&layout=_CleanLayout&theme=ice&mode=${mode}`,
+    url: `${base}/DocsStatic?name=${name}&layout=_CleanLayout&theme=observatory&mode=${mode}`,
   });
   assert.ok(await loaded, `${name}: loaded`);
   assert.ok(
-    await evaluate(`!!document.querySelector('link[href*="stellar-admin.ice"]')`),
-    "Ice selected",
+    await evaluate(`!!document.querySelector('link[href*="stellar-admin.observatory"]')`),
+    "Observatory selected",
   );
+  await prepareFonts(name);
+}
+async function prepareFonts(name) {
+  if (fontCss) {
+    await evaluate(`(() => {
+      const style = document.createElement('style');
+      style.textContent = ${JSON.stringify(fontCss)};
+      document.head.append(style);
+      return Promise.all([
+        document.fonts.load('400 13px "IBM Plex Sans"'),
+        document.fonts.load('500 13px "IBM Plex Sans"'),
+        document.fonts.load('600 13px "IBM Plex Sans"'),
+        document.fonts.load('400 13px "IBM Plex Mono"'),
+        document.fonts.load('500 13px "IBM Plex Mono"')
+      ]);
+    })()`);
+  }
   const fontsReady = await evaluate(
     "Promise.race([document.fonts.ready.then(() => true), new Promise(resolve => setTimeout(() => resolve(false), 8000))])",
   );
-  await sleep(350);
   if (!fontsReady) console.warn(`${name}: font loading timed out; continuing behavioral checks`);
+}
+async function capture(name, mode, width) {
+  const shot = await send("Page.captureScreenshot", { format: "png" });
+  await writeFile(
+    new URL(`${name}-${mode}-${width}.png`, output),
+    Buffer.from(shot.data, "base64"),
+  );
 }
 async function force(selector, states) {
   const { root } = await send("DOM.getDocument");
   const { nodeId } = await send("DOM.querySelector", { nodeId: root.nodeId, selector });
   assert.ok(nodeId, selector);
   await send("CSS.forcePseudoState", { nodeId, forcedPseudoClasses: states });
-  await sleep(350);
+  await sleep(180);
 }
 async function key(key, code, virtualKey) {
   for (const type of ["keyDown", "keyUp"]) {
@@ -55,6 +84,12 @@ async function key(key, code, virtualKey) {
 }
 try {
   await send("Page.enable");
+  if (fontCss) {
+    await send("Network.enable");
+    await send("Network.setBlockedURLs", {
+      urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"],
+    });
+  }
   await send("DOM.enable");
   await send("CSS.enable");
   await send("Emulation.setFocusEmulationEnabled", { enabled: true });
@@ -66,22 +101,24 @@ try {
         deviceScaleFactor: 1,
         mobile: false,
       });
-      const navigationLoaded = waitForEvent("Page.loadEventFired", 15000);
-      await send("Page.navigate", { url: `${base}/Sidebar?theme=ice&mode=${mode}` });
-      assert.ok(await navigationLoaded, "DocsSamples navigation loaded");
+      await sample("Empty/_WithBorder", mode);
       assert.equal(
         await evaluate(`(() => {
-          const inset = document.querySelector('.sa-sidebar-inset');
-          const examples = inset.querySelector('[data-slot="example-wrapper"]').parentElement;
-          const surface = getComputedStyle(inset).backgroundColor;
-          for (let element = examples; element !== inset; element = element.parentElement) {
-            const background = getComputedStyle(element).backgroundColor;
-            if (background !== 'rgba(0, 0, 0, 0)' && background !== surface) return false;
-          }
-          return true;
+          const empty = document.querySelector('.sa-empty');
+          const probe = document.createElement('div');
+          probe.style.borderColor = 'var(--sa-observatory-line-strong)';
+          document.body.append(probe);
+          const style = getComputedStyle(empty);
+          const themed = style.borderTopWidth === '1px' &&
+            style.borderTopColor === getComputedStyle(probe).borderTopColor;
+          probe.remove();
+          empty.classList.remove('border');
+          const borderless = getComputedStyle(empty).borderTopWidth === '0px';
+          empty.classList.add('border');
+          return themed && borderless;
         })()`),
         true,
-        "headerless DocsSamples inset and demo canvas share a background without a top strip",
+        "optional empty-state border retains its theme color",
       );
       await sample("PageHeader/_Nav", mode);
       assert.equal(
@@ -122,14 +159,13 @@ try {
         input.setAttribute('aria-invalid', 'true');
         input.focus();
       })()`);
-      await sleep(350);
       const field = await evaluate(`(() => {
         const el = document.activeElement;
         const group = el.closest('.sa-input-group');
         const inner = getComputedStyle(el), outer = getComputedStyle(group);
         return { innerBackground: inner.backgroundColor, innerShadow: inner.boxShadow,
           innerBorder: inner.borderWidth, outerShadow: outer.boxShadow, outerBorder: outer.borderColor,
-          destructive: (() => { const probe=document.createElement('span'); probe.style.color='var(--destructive)'; document.body.append(probe); const color=getComputedStyle(probe).color; probe.remove(); return color; })() };
+          destructive: (() => {const probe=document.createElement('span');probe.style.color='var(--destructive)';document.body.append(probe);const color=getComputedStyle(probe).color;probe.remove();return color;})() };
       })()`);
       assert.equal(
         field.innerBackground,
@@ -144,25 +180,6 @@ try {
         field.destructive.match(/[\d.]+/g).map(Number),
       );
 
-      await sample("Checkbox/_Intro", mode);
-      const checkedInk = await evaluate(`(() => {
-        const checkbox = document.querySelector('.sa-checkbox');
-        const icon = document.querySelector('.sa-checkbox-indicator-icon');
-        return { background: getComputedStyle(checkbox).backgroundColor, ink: getComputedStyle(icon).color };
-      })()`);
-      await evaluate("document.querySelector('.sa-checkbox').indeterminate = true");
-      await sleep(350);
-      const mixedInk = await evaluate(`(() => {
-        const checkbox = document.querySelector('.sa-checkbox');
-        return { background: getComputedStyle(checkbox).backgroundColor, ink: getComputedStyle(checkbox, '::before').backgroundColor };
-      })()`);
-      assert.deepEqual(
-        mixedInk,
-        checkedInk,
-        "checked and mixed checkboxes share the same fill and ink",
-      );
-      assert.equal(checkedInk.ink, "rgb(255, 255, 255)", "checkbox mark is white");
-
       const background = (selector) =>
         evaluate(
           `getComputedStyle(document.querySelector(${JSON.stringify(selector)})).backgroundColor`,
@@ -173,7 +190,7 @@ try {
       ]) {
         await sample(`DropdownMenu/_${name}`, mode);
         await evaluate("document.querySelector('[data-slot=dropdown-menu-trigger]').click()");
-        await sleep(350);
+        await sleep(180);
         await evaluate("document.activeElement.blur()");
         const checked = `${item}[aria-checked="true"]`;
         const unchecked = `${item}[aria-checked="false"]`;
@@ -207,13 +224,63 @@ try {
         );
       }
 
+      await capture("menu-focus", mode, width);
+      for (const name of [
+        "Dialog/_Intro",
+        "Dialog/_StickyFooter",
+        "AlertDialog/_SmallMedia",
+        "AlertDialog/_Size",
+      ]) {
+        await sample(name, mode);
+        await evaluate("document.querySelector('dialog').showModal()");
+        await sleep(220);
+        const layout = await evaluate(`(() => {
+          const dialog = document.querySelector('dialog[open]');
+          const r = dialog.getBoundingClientRect();
+          const footer = dialog.querySelector('[data-slot$="footer"]');
+          const f = footer.getBoundingClientRect();
+          return {inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight,
+            footerVisible: f.top >= r.top && f.bottom <= r.bottom + 1,
+            horizontalOverflow: dialog.scrollWidth > dialog.clientWidth};
+        })()`);
+        assert.ok(
+          layout.inside && layout.footerVisible && !layout.horizontalOverflow,
+          `${name}: dialog and footer contained`,
+        );
+        await capture(name.replaceAll("/", "-"), mode, width);
+      }
+      for (const name of [
+        "InputGroup/_Buttons",
+        "InputGroup/_Text",
+        "InputGroup/_Textarea",
+        "Card/_Intro",
+        "Checkbox/_ChoiceCards",
+        "Radio/_ChoiceCards",
+        "Table/_RowSelection",
+        "Progress/_Intro",
+        "PageHeader/_Nav",
+        "Sidebar/_FloatingVariant",
+      ]) {
+        await sample(name, mode);
+        if (name === "Progress/_Intro") {
+          assert.equal(
+            await evaluate(
+              `Array.from(document.querySelectorAll('.sa-progress-track')).every(t => t.scrollHeight <= t.clientHeight && t.querySelector('.sa-progress-indicator').getBoundingClientRect().height <= t.clientHeight)`,
+            ),
+            true,
+            "progress fits its track",
+          );
+        }
+        await capture(name.replaceAll("/", "-"), mode, width);
+      }
       await sample("Toggle/_ModelBinding", mode);
       await evaluate("document.querySelector('.sa-toggle input[type=checkbox]').checked = true");
+      const selectedToggle = await background(".sa-toggle");
       await force(".sa-toggle", ["hover"]);
-      assert.notEqual(
+      assert.equal(
         await background(".sa-toggle"),
-        "rgba(0, 0, 0, 0)",
-        "hover keeps the selected toggle filled",
+        selectedToggle,
+        "hover preserves model-bound toggle selection",
       );
       await evaluate("document.querySelector('.sa-toggle input[type=checkbox]').focus()");
       await key(" ", "Space", 32);
@@ -265,6 +332,7 @@ try {
             bounds.bottom <= bounds.height + 1,
           `${side} sheet contained at ${width}px`,
         );
+        await capture(`sheet-${side}`, mode, width);
         await key("Escape", "Escape", 27);
         assert.equal(
           await evaluate(`document.getElementById('--sheet-sides-${side}').open`),
@@ -274,24 +342,6 @@ try {
       }
 
       await sample("Sidebar/_InsetVariant", mode);
-      if (width >= 768) {
-        assert.equal(
-          await evaluate(`(() => {
-            const content = document.querySelector('.sa-sidebar-content');
-            const menu = content.querySelector('.sa-sidebar-menu');
-            const item = menu.firstElementChild;
-            for (let index = 0; index < 50; index++) menu.append(item.cloneNode(true));
-            const style = getComputedStyle(content);
-            content.scrollTop = content.scrollHeight;
-            const scrolls = content.scrollTop > 0;
-            content.scrollTop = 0;
-            menu.lastElementChild.querySelector('a').focus();
-            return style.scrollbarWidth === 'none' && scrolls && content.scrollTop > 0;
-          })()`),
-          true,
-          "sidebar hides scrollbar while scrolling and revealing focused navigation",
-        );
-      }
       for (const state of ["expanded", "collapsed"]) {
         await evaluate(`document.querySelector('.sa-sidebar').dataset.state='${state}'`);
         await sleep(220);
@@ -302,7 +352,7 @@ try {
         );
       }
       console.log(
-        `PASS Ice ${mode}/${width}: focus, selection, grouped validation, native inputs and overlay containment`,
+        `PASS Observatory ${mode}/${width}: focus, selection, grouped validation, native inputs and overlay containment`,
       );
     }
   }
@@ -318,21 +368,38 @@ try {
   assert.equal(motion.transition, "0s");
   assert.ok(motion.animation <= 0.00001);
   assert.equal(motion.iterations, "1");
-  console.log("PASS Ice reduced motion");
-  await send("Emulation.setEmulatedMedia", {
-    features: [{ name: "forced-colors", value: "active" }],
-  });
-  await sample("Checkbox/_Intro", "light");
-  await evaluate("document.querySelector('.sa-checkbox').focus()");
-  const forcedOutline = await evaluate(
-    "getComputedStyle(document.querySelector('.sa-checkbox')).outlineStyle",
-  );
-  assert.equal(
-    forcedOutline,
-    "solid",
-    "forced-colors keyboard focus remains visible without box shadows",
-  );
-  console.log("PASS Ice checkbox states and forced-colors focus");
+  console.log("PASS Observatory reduced motion");
+  if (process.env.OBSERVATORY_PRO_URL) {
+    for (const mode of ["light", "dark"]) {
+      for (const width of [1280, 390]) {
+        await send("Emulation.setDeviceMetricsOverride", {
+          width,
+          height: 900,
+          deviceScaleFactor: 1,
+          mobile: false,
+        });
+        const loaded = waitForEvent("Page.loadEventFired", 15000);
+        await send("Page.navigate", {
+          url: `${process.env.OBSERVATORY_PRO_URL}/DataGrid?theme=observatory&mode=${mode}`,
+        });
+        assert.ok(await loaded);
+        await prepareFonts("Pro grid");
+        assert.equal(
+          await evaluate(`(() => {
+          const grid = document.querySelector('.sa-data-grid');
+          const table = grid.querySelector('.sa-table-container');
+          if (table.scrollWidth > table.clientWidth) table.scrollLeft = table.scrollWidth;
+          return grid.getBoundingClientRect().right <= innerWidth && document.documentElement.scrollWidth <= innerWidth &&
+            (table.scrollWidth <= table.clientWidth || table.scrollLeft > 0);
+        })()`),
+          true,
+          "Pro grid stays contained and wide tables remain scrollable",
+        );
+        await capture("pro-grid", mode, width);
+      }
+    }
+    console.log("PASS Observatory Pro grid containment and scrolling");
+  }
 } finally {
   browser.ws.close();
   browser.chrome.kill();

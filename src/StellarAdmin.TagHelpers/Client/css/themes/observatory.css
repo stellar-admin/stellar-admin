@@ -1,187 +1,309 @@
-/* Hand-authored Concourse theme. Do not regenerate from shadcn.
-   Design authority: workspace docs/design/themes/concourse.md. */
+/* Hand-authored Observatory theme. Do not regenerate from shadcn.
+   Design authority: workspace docs/design/themes/observatory.md.
+   Exact foundation values extracted from observatory_handoff/theme.css.
+   Existing component contracts informed the selector/state mapping. */
 
+/* 2. GLOBAL TOKENS ========================================================= */
 :root {
+  /* --- Type families -------------------------------------------------- */
+  --sa-observatory-font-sans:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --sa-observatory-font-mono:
+    "IBM Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+
+  /* --- Type scale ------------------------------------------------------
+     Deliberately narrow. Admin UIs live between 11px and 15px; the display
+     sizes exist only for page titles and single hero metrics.             */
+  --sa-observatory-fs-micro: 9px; /* section eyebrows, table column heads (mono, tracked) */
+  --sa-observatory-fs-2xs: 10px; /* counters inside badges, kbd hints */
+  --sa-observatory-fs-xs: 11px; /* badges, meta, pagination */
+  --sa-observatory-fs-sm: 12px; /* helper text, secondary labels */
+  --sa-observatory-fs-base: 13px; /* DEFAULT control + body size */
+  --sa-observatory-fs-md: 14px; /* card titles, section headings */
+  --sa-observatory-fs-lg: 15px; /* dialog titles, large buttons */
+  --sa-observatory-fs-xl: 17px; /* page/panel titles */
+  --sa-observatory-fs-2xl: 22px; /* mobile page title */
+  --sa-observatory-fs-display: 32px; /* single hero metric */
+
+  --sa-observatory-fw-regular: 400;
+  --sa-observatory-fw-medium: 500; /* every control label, every button */
+  --sa-observatory-fw-semi: 600; /* titles only */
+
+  --sa-observatory-lh-tight: 1.2; /* display metrics, page titles */
+  --sa-observatory-lh-snug: 1.35; /* control labels, single-line UI */
+  --sa-observatory-lh-normal: 1.5; /* helper text */
+  --sa-observatory-lh-prose: 1.6; /* multi-line descriptions and body copy */
+
+  --sa-observatory-tracking-eyebrow: 0.14em; /* uppercase mono eyebrows */
+  --sa-observatory-tracking-colhead: 0.1em; /* uppercase mono table heads */
+  --sa-observatory-tracking-title: -0.02em; /* 17px+ titles */
+  --sa-observatory-tracking-metric: -0.03em; /* display numerals */
+
+  /* --- Space scale (4px base) ------------------------------------------ */
+  --sa-observatory-space-1: 2px;
+  --sa-observatory-space-2: 4px;
+  --sa-observatory-space-3: 6px;
+  --sa-observatory-space-4: 8px;
+  --sa-observatory-space-5: 10px;
+  --sa-observatory-space-6: 12px;
+  --sa-observatory-space-7: 14px;
+  --sa-observatory-space-8: 16px;
+  --sa-observatory-space-10: 20px;
+  --sa-observatory-space-12: 24px;
+  --sa-observatory-space-14: 28px;
+  --sa-observatory-space-16: 32px;
+  --sa-observatory-space-20: 40px;
+  --sa-observatory-space-24: 48px;
+
+  /* --- Control geometry ------------------------------------------------
+     Heights are fixed so that a button, an input and a select placed in the
+     same row align on both edges without per-instance nudging.            */
+  --sa-observatory-control-h-sm: 26px;
+  --sa-observatory-control-h-md: 32px; /* DEFAULT */
+  --sa-observatory-control-h-lg: 40px;
+  --sa-observatory-control-pad-x-sm: 10px;
+  --sa-observatory-control-pad-x-md: 13px;
+  --sa-observatory-control-pad-x-lg: 20px;
+  --sa-observatory-control-gap: 8px; /* between adjacent controls in a toolbar */
+
+  /* Compact density is the default. Table row padding does not change control
+     heights or type sizes. */
+  --sa-observatory-row-pad-y: 7px; /* compact, selected for the shipped theme */
+
+  /* --- Radii -----------------------------------------------------------
+     4px is the theme's signature. Nested elements step DOWN to 3px so an
+     inner chip inside a 4px container never looks rounder than its parent. */
+  --sa-observatory-radius-xs: 2px; /* progress bars, sparkline bars */
+  --sa-observatory-radius-sm: 3px; /* nested: chips, menu rows, small buttons */
+  --sa-observatory-radius-md: 4px; /* DEFAULT: buttons, inputs, cards, dialogs */
+  --sa-observatory-radius-lg: 6px; /* mobile sheets and cards only */
+  --sa-observatory-radius-pill: 999px; /* badges, avatars, switches, sliders */
+
+  /* --- Borders ---------------------------------------------------------- */
+  --sa-observatory-border-width: 1px;
+  --sa-observatory-border-width-strong: 1.5px; /* CSS-drawn glyph strokes */
+  --sa-observatory-border-accent-bar: 3px; /* alert left bar, active line-tab */
+
+  /* --- Motion -----------------------------------------------------------
+     Two durations only. Anything longer than 180ms reads as sluggish in a
+     dense admin surface; anything shorter than 120ms is not perceived.    */
+  --sa-observatory-dur-fast: 120ms; /* colour/border/background changes */
+  --sa-observatory-dur-mid: 180ms; /* size, transform, overlay entrance */
+  --sa-observatory-ease: cubic-bezier(0.2, 0, 0, 1); /* standard */
+  --sa-observatory-ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* overlay entrance */
+  --sa-observatory-spin-duration: 700ms; /* button spinner */
+
+  /* --- Elevation layering ---------------------------------------------- */
+  --sa-observatory-z-sticky: 10;
+  --sa-observatory-z-overlay: 100;
+  --sa-observatory-z-dialog: 200;
+  --sa-observatory-z-toast: 300;
+}
+
+/* 3. LIGHT MODE ============================================================
+   Ground is a cool off-white (#f4f6f9), NOT pure white; cards are pure white
+   and therefore read as lifted without needing a heavy shadow.            */
+:root,
+:root:not(.dark) {
   color-scheme: light;
+
+  /* Surfaces, background to foremost */
+  --sa-observatory-bg: #f4f6f9; /* page ground */
+  --sa-observatory-surface: #ffffff; /* cards, inputs, menus, dialogs */
+  --sa-observatory-surface-subtle: #f7f9fc; /* table head, sidebar, hover rows */
+  --sa-observatory-surface-sunken: #eef2f8; /* segmented track, secondary button, skeleton */
+  --sa-observatory-surface-hover: #f7f9fc; /* row/menu-item hover */
+  --sa-observatory-surface-active: #eef2f8; /* row/menu-item pressed */
+
+  /* Lines */
+  --sa-observatory-line: #dde3ec; /* hairline dividers, card borders */
+  --sa-observatory-line-strong: #c7d1e0; /* control borders; source contrast claims are not verified */
+  --sa-observatory-line-hover: #a9b6c8; /* control border on hover */
+
+  /* Ink */
+  --sa-observatory-fg: #0d1620; /* primary text        — 16.9:1 on surface */
+  --sa-observatory-fg-muted: #5a6b7d; /* secondary text      —  6.0:1 on surface */
+  --sa-observatory-fg-subtle: #66788a; /* captions, disabled-adjacent — 4.9:1 (floor 4.5) */
+  --sa-observatory-fg-on-accent: #ffffff;
+
+  /* Signal — the theme's single accent. One hue, used only for the primary
+     action, the current item, and live/selected state. */
+  --sa-observatory-accent: #0a6ed1;
+  --sa-observatory-accent-hover: #0961b9;
+  --sa-observatory-accent-active: #084f97;
+  --sa-observatory-accent-soft: #e8f1fb; /* tint fill: focus ring, active-descendant */
+  --sa-observatory-accent-border: #b9d5f2; /* border companion to the tint */
+  --sa-observatory-on-accent: #ffffff;
+
+  /* Status. Each has a foreground, a soft fill, and a border for the fill. */
+  --sa-observatory-positive: #0f8a5f;
+  --sa-observatory-positive-soft: #e6f5ee;
+  --sa-observatory-positive-border: rgba(15, 138, 95, 0.2);
+  --sa-observatory-warning: #a9741a;
+  --sa-observatory-warning-soft: #fdf3e3;
+  --sa-observatory-warning-border: rgba(169, 116, 26, 0.2);
+  --sa-observatory-danger: #c23b32;
+  --sa-observatory-danger-hover: #a93028;
+  --sa-observatory-danger-active: #8f2620;
+  --sa-observatory-danger-soft: #fdecea;
+  --sa-observatory-danger-border: rgba(194, 59, 50, 0.25);
+  --sa-observatory-on-danger: #ffffff;
+
+  /* Focus. A 3px soft halo plus an accent border. Never an outline offset —
+     controls sit in dense rows and an offset ring collides with neighbours. */
+  --sa-observatory-focus-ring: 0 0 0 3px var(--sa-observatory-accent-soft);
+  --sa-observatory-focus-ring-color: var(--sa-observatory-accent);
+  --sa-observatory-focus-ring-danger: 0 0 0 3px var(--sa-observatory-danger-soft);
+
+  /* Shadows. In LIGHT mode elevation is carried by shadow. */
+  --sa-observatory-shadow-sm: 0 1px 2px rgba(13, 22, 32, 0.08);
+  --sa-observatory-shadow-md: 0 8px 24px rgba(13, 22, 32, 0.1);
+  --sa-observatory-shadow-lg: 0 16px 40px rgba(13, 22, 32, 0.16);
+  --sa-observatory-scrim: rgba(13, 22, 32, 0.35);
+
+  /* Inverted surface — tooltips and the "urgent" toast. */
+  --sa-observatory-inverse-bg: #0d1620;
+  --sa-observatory-inverse-fg: #ffffff;
+}
+
+/* 4. DARK MODE =============================================================
+   Meaningful differences from light, and why:
+
+   a) ACCENT SHIFTS HUE AND LIGHTNESS. #0A6ED1 on #0D1117 is 2.4:1 — unusable.
+      Dark uses #4CC2FF (8.9:1 on surface) and flips the on-accent ink to a
+      near-black (#04121B) so filled buttons keep 4.5:1 in the other direction.
+   b) ELEVATION IS SURFACE, NOT SHADOW. Shadows are nearly invisible on
+      near-black, so menus/dialogs step UP a surface (#0D1117 -> #121A24) and
+      keep only a faint shadow for edge separation.
+   c) TINTS ARE LOW-CHROMA DEEP COLOURS, not alpha over black — alpha fills
+      compound unpredictably when stacked on raised surfaces.
+   d) INPUT SURFACE. Follow the source value: dark inputs are lighter than cards,
+      despite the handoff prose describing them as darker.
+   e) STATUS COLOURS BRIGHTEN AND DESATURATE (#0F8A5F -> #35D39A).            */
+.dark {
+  color-scheme: dark;
+
+  --sa-observatory-bg: #07090d;
+  --sa-observatory-surface: #0d1117;
+  --sa-observatory-surface-subtle: #121a24;
+  --sa-observatory-surface-sunken: #18222e;
+  --sa-observatory-surface-hover: #121a24;
+  --sa-observatory-surface-active: #18222e;
+  --sa-observatory-surface-input: #121a24; /* see (d) */
+
+  --sa-observatory-line: #1e2833;
+  --sa-observatory-line-strong: #2b3846;
+  --sa-observatory-line-hover: #3c4c5e;
+
+  --sa-observatory-fg: #e4ecf5; /* 14.6:1 on surface */
+  --sa-observatory-fg-muted: #7d8fa3; /*  5.6:1 */
+  --sa-observatory-fg-subtle: #8496a8; /*  6.2:1 — raised above the light-mode analogue
+                                 because dark text-on-dark loses perceived
+                                 contrast faster than the ratio suggests */
+  --sa-observatory-fg-on-accent: #04121b;
+
+  --sa-observatory-accent: #4cc2ff;
+  --sa-observatory-accent-hover: #6bcdff;
+  --sa-observatory-accent-active: #35b4f5;
+  --sa-observatory-accent-soft: #12293a;
+  --sa-observatory-accent-border: #1d3f57;
+  --sa-observatory-on-accent: #04121b;
+
+  --sa-observatory-positive: #35d39a;
+  --sa-observatory-positive-soft: #102b25;
+  --sa-observatory-positive-border: rgba(53, 211, 154, 0.22);
+  --sa-observatory-warning: #f5b942;
+  --sa-observatory-warning-soft: #2c2213;
+  --sa-observatory-warning-border: rgba(245, 185, 66, 0.22);
+  --sa-observatory-danger: #ff6b6b;
+  --sa-observatory-danger-hover: #ff8585;
+  --sa-observatory-danger-active: #e85a5a;
+  --sa-observatory-danger-soft: #2c1618;
+  --sa-observatory-danger-border: rgba(255, 107, 107, 0.3);
+  --sa-observatory-on-danger: #2c1618;
+
+  --sa-observatory-focus-ring: 0 0 0 3px var(--sa-observatory-accent-soft);
+  --sa-observatory-focus-ring-danger: 0 0 0 3px var(--sa-observatory-danger-soft);
+
+  --sa-observatory-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sa-observatory-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --sa-observatory-shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
+  --sa-observatory-scrim: rgba(3, 6, 10, 0.62);
+
+  --sa-observatory-inverse-bg: #e4ecf5;
+  --sa-observatory-inverse-fg: #0d1117;
+}
+
+/* Light mode has no separate input surface; alias it so component rules can
+   reference one token in both modes. */
+:root:not(.dark) {
+  --sa-observatory-surface-input: var(--sa-observatory-surface);
+}
+
+:root,
+.dark {
+  --background: var(--sa-observatory-bg);
+  --foreground: var(--sa-observatory-fg);
+  --card: var(--sa-observatory-surface);
+  --card-foreground: var(--sa-observatory-fg);
+  --popover: var(--sa-observatory-surface);
+  --popover-foreground: var(--sa-observatory-fg);
+  --primary: var(--sa-observatory-accent);
+  --primary-foreground: var(--sa-observatory-on-accent);
+  --secondary: var(--sa-observatory-surface-sunken);
+  --secondary-foreground: var(--sa-observatory-fg);
+  --muted: var(--sa-observatory-surface-sunken);
+  --muted-foreground: var(--sa-observatory-fg-muted);
+  --accent: var(--sa-observatory-accent-soft);
+  --accent-foreground: var(--sa-observatory-fg);
+  --destructive: var(--sa-observatory-danger);
+  --border: var(--sa-observatory-line);
+  --input: var(--sa-observatory-line-strong);
+  --ring: var(--sa-observatory-accent);
+  --sidebar: var(--sa-observatory-surface-subtle);
+  --sidebar-foreground: var(--sa-observatory-fg-muted);
+  --sidebar-primary: var(--sa-observatory-accent);
+  --sidebar-primary-foreground: var(--sa-observatory-on-accent);
+  --sidebar-accent: var(--sa-observatory-accent-soft);
+  --sidebar-accent-foreground: var(--sa-observatory-accent);
+  --sidebar-border: var(--sa-observatory-line);
+  --sidebar-ring: var(--sa-observatory-accent);
+  --chart-1: var(--sa-observatory-accent);
+  --chart-2: var(--sa-observatory-positive);
+  --chart-3: var(--sa-observatory-warning);
+  --chart-4: var(--sa-observatory-danger);
+  --chart-5: var(--sa-observatory-fg-muted);
+  --font-sans: var(--sa-observatory-font-sans);
+  --font-mono: var(--sa-observatory-font-mono);
+  --radius: var(--sa-observatory-radius-md);
+
   --sa-gap-xs: 4px;
   --sa-gap-sm: 8px;
   --sa-gap-md: 16px;
-  --sa-gap-lg: 18px;
-  --sa-gap-xl: 28px;
-  --sa-page-header-title-size: 28px;
+  --sa-gap-lg: 20px;
+  --sa-gap-xl: 24px;
+  --sa-page-header-title-size: var(--sa-observatory-fs-xl);
   --sa-page-header-title-leading: 1.2;
   --sa-tabs-active-background: var(--card);
+  --sa-tabs-active-foreground: var(--foreground);
+  --sa-tabs-active-border: transparent;
   --sa-segmented-control-active-background: var(--card);
+  --sa-segmented-control-active-foreground: var(--foreground);
+  --sa-segmented-control-active-border: transparent;
   --sa-tabs-indicator-background: var(--primary);
-  /* radii — small by design; Concourse reads crisp, not soft */
-  --radius: 0.25rem; /* 4px  — buttons, inputs, cards, badges      */
-  --sa-concourse-radius-sm: calc(
-    var(--radius) / 2
-  ); /* 2px  — menu rows, checkbox, chart bars     */
-  --sa-concourse-radius-lg: calc(
-    var(--radius) + 2px
-  ); /* 6px  — dialogs, code blocks, large panels  */
-  --sa-concourse-radius-pill: 999px; /*      — switch, radio, avatar, progress     */
-
-  /* colour — light */
-  --background: oklch(0.975 0.002 250);
-  --foreground: oklch(0.23 0.012 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.23 0.012 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.012 250);
-  --primary: oklch(0.5 0.14 245);
-  --primary-foreground: oklch(0.99 0.003 250);
-  --secondary: oklch(0.945 0.004 250);
-  --secondary-foreground: oklch(0.23 0.012 250);
-  --muted: oklch(0.945 0.004 250);
-  --muted-foreground: oklch(0.5 0.012 250);
-  --accent: oklch(0.93 0.02 245);
-  --accent-foreground: oklch(0.23 0.012 250);
-  --destructive: oklch(0.52 0.19 27);
-  --sa-concourse-destructive-foreground: oklch(0.99 0.003 250);
-  --border: oklch(0.87 0.006 250);
-  --input: oklch(0.78 0.008 250);
-  --ring: oklch(0.5 0.14 245);
-
-  --chart-1: oklch(0.5 0.14 245);
-  --chart-2: oklch(0.6 0.13 200);
-  --chart-3: oklch(0.62 0.12 150);
-  --chart-4: oklch(0.72 0.14 75);
-  --chart-5: oklch(0.58 0.17 25);
-
-  --sidebar: oklch(0.945 0.004 250);
-  --sidebar-foreground: oklch(0.23 0.012 250);
-  --sidebar-primary: oklch(0.5 0.14 245);
-  --sidebar-primary-foreground: oklch(0.99 0.003 250);
-  --sidebar-accent: oklch(0.93 0.02 245);
-  --sidebar-accent-foreground: oklch(0.23 0.012 250);
-  --sidebar-border: oklch(0.87 0.006 250);
-  --sidebar-ring: oklch(0.5 0.14 245);
-
-  /* Concourse additions — see README "Tokens beyond shadcn" */
-  --sa-concourse-border-strong: oklch(
-    0.78 0.008 250
-  ); /* control edges, one step darker than --border */
-  --sa-concourse-primary-hover: oklch(0.45 0.14 245); /* hover = one step darker  */
-  --sa-concourse-primary-pressed: oklch(0.4 0.13 245); /* press = two steps darker */
-  --sa-concourse-primary-border: oklch(0.42 0.13 245);
-  --sa-concourse-destructive-hover: oklch(0.47 0.19 27);
-  --sa-concourse-destructive-border: oklch(0.44 0.18 27);
-  --sa-concourse-success: oklch(0.52 0.12 150);
-  --sa-concourse-warning: oklch(0.66 0.13 75);
-
-  /* elevation — deliberately shallow; depth comes from colour, not shadow */
-  --sa-concourse-shadow-raise: 0 1px 1px rgb(0 0 0 / 0.05);
-  --sa-concourse-shadow-card: 0 1px 2px rgb(0 0 0 / 0.06);
-  --sa-concourse-shadow-pop: 0 4px 12px rgb(0 0 0 / 0.12), 0 1px 3px rgb(0 0 0 / 0.08);
-  --sa-concourse-shadow-modal: 0 12px 32px rgb(0 0 0 / 0.22), 0 2px 8px rgb(0 0 0 / 0.1);
-
-  /* focus — a 1px background gap then a 3px solid ring, so it survives on any
-     surface including a filled primary button. Inputs use a softer 2px wash. */
-  --sa-concourse-focus-ring: 0 0 0 1px var(--background), 0 0 0 3px var(--ring);
-  --sa-concourse-focus-field: 0 0 0 2px color-mix(in oklch, var(--ring) 30%, transparent);
-
-  /* typography */
-  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
-
-  --sa-concourse-text-display: 2.375rem; /* 38px   / 700 / -0.02em  / 1.1  */
-  --sa-concourse-text-h1: 1.75rem; /* 28px   / 700 / -0.02em  / 1.2  */
-  --sa-concourse-text-h2: 1.375rem; /* 22px   / 700 / -0.015em / 1.25 */
-  --sa-concourse-text-h3: 0.96875rem; /* 15.5px / 700 / 0        / 1.3  */
-  --sa-concourse-text-base: 0.84375rem; /* 13.5px / 400 / 0        / 1.55 */
-  --sa-concourse-text-label: 0.8125rem; /* 13px   / 600 / 0        / 1.2  */
-  --sa-concourse-text-sm: 0.75rem; /* 12px   / 400 / 0        / 1.45 */
-  --sa-concourse-text-xs: 0.6875rem; /* 11px   / 700 / 0.07em caps     */
-  --sa-concourse-text-mono: 0.78125rem; /* 12.5px / 400                   */
-
-  /* spacing — 2px base, used for every gap and pad in this theme */
-  --sa-concourse-space-1: 2px;
-  --sa-concourse-space-2: 4px;
-  --sa-concourse-space-3: 6px;
-  --sa-concourse-space-4: 8px;
-  --sa-concourse-space-5: 10px;
-  --sa-concourse-space-6: 12px;
-  --sa-concourse-space-7: 14px;
-  --sa-concourse-space-8: 16px;
-  --sa-concourse-space-9: 18px;
-  --sa-concourse-space-10: 22px;
-  --sa-concourse-space-11: 28px;
-  --sa-concourse-space-12: 40px;
-
-  /* control geometry */
-  --sa-concourse-control-h-sm: 30px;
-  --sa-concourse-control-h: 34px;
-  --sa-concourse-control-h-lg: 40px;
-  --sa-concourse-control-h-touch: 44px; /* mobile minimum */
-  --sa-concourse-border-width: 1px;
-
-  /* motion — short, because these are state changes not transitions */
-  --sa-concourse-duration-fast: 0.1s; /* background / border / shadow on controls */
-  --sa-concourse-duration-med: 0.15s; /* switch knob, disclosure                  */
-  --sa-concourse-ease: cubic-bezier(0.2, 0, 0.38, 1);
+  --sa-tabs-indicator-bottom: 0px;
+  --sa-tabs-indicator-right: 0px;
+  --sa-observatory-shadow-card: var(--sa-observatory-shadow-sm);
 }
-
 .dark {
-  color-scheme: dark;
-  --background: oklch(0.19 0.006 250);
-  --foreground: oklch(0.94 0.004 250);
-  --card: oklch(0.24 0.008 250);
-  --card-foreground: oklch(0.94 0.004 250);
-  --popover: oklch(0.26 0.009 250); /* popovers step ABOVE cards in dark */
-  --popover-foreground: oklch(0.94 0.004 250);
-  --primary: oklch(0.68 0.13 245);
-  --primary-foreground: oklch(0.17 0.03 250);
-  --secondary: oklch(0.3 0.01 250);
-  --secondary-foreground: oklch(0.94 0.004 250);
-  --muted: oklch(0.28 0.008 250);
-  --muted-foreground: oklch(0.72 0.008 250);
-  --accent: oklch(0.32 0.02 245);
-  --accent-foreground: oklch(0.94 0.004 250);
-  --destructive: oklch(0.66 0.18 27);
-  --sa-concourse-destructive-foreground: oklch(0.17 0.03 250);
-  --border: oklch(0.34 0.01 250);
-  --input: oklch(0.44 0.012 250);
-  --ring: oklch(0.68 0.13 245);
-
-  --chart-1: oklch(0.68 0.13 245);
-  --chart-2: oklch(0.68 0.12 200);
-  --chart-3: oklch(0.7 0.12 150);
-  --chart-4: oklch(0.78 0.13 75);
-  --chart-5: oklch(0.66 0.16 25);
-
-  --sidebar: oklch(0.28 0.008 250);
-  --sidebar-foreground: oklch(0.94 0.004 250);
-  --sidebar-primary: oklch(0.68 0.13 245);
-  --sidebar-primary-foreground: oklch(0.17 0.03 250);
-  --sidebar-accent: oklch(0.32 0.02 245);
-  --sidebar-accent-foreground: oklch(0.94 0.004 250);
-  --sidebar-border: oklch(0.34 0.01 250);
-  --sidebar-ring: oklch(0.68 0.13 245);
-
-  --sa-concourse-border-strong: oklch(0.44 0.012 250);
-  /* In dark, hover goes LIGHTER and press goes back down — the inverse of
-     light mode, because a darker fill on a dark canvas reads as disabled. */
-  --sa-concourse-primary-hover: oklch(0.74 0.12 245);
-  --sa-concourse-primary-pressed: oklch(0.62 0.13 245);
-  --sa-concourse-primary-border: oklch(0.58 0.13 245);
-  --sa-concourse-destructive-hover: oklch(0.71 0.17 27);
-  --sa-concourse-destructive-border: oklch(0.56 0.17 27);
-  --sa-concourse-success: oklch(0.7 0.12 150);
-  --sa-concourse-warning: oklch(0.78 0.13 75);
-
-  /* shadows deepen; cards also gain lightness so they separate without them */
-  --sa-concourse-shadow-raise: 0 1px 1px rgb(0 0 0 / 0.25);
-  --sa-concourse-shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
-  --sa-concourse-shadow-pop: 0 4px 12px rgb(0 0 0 / 0.45), 0 1px 3px rgb(0 0 0 / 0.3);
-  --sa-concourse-shadow-modal: 0 12px 32px rgb(0 0 0 / 0.6), 0 2px 8px rgb(0 0 0 / 0.35);
+  --popover: var(--sa-observatory-surface-subtle);
+  --sa-observatory-shadow-card: none;
 }
 
 @layer base {
   body {
-    font-size: var(--sa-concourse-text-base);
-    line-height: 1.55;
+    font-size: var(--sa-observatory-fs-base);
+    line-height: 1.5;
   }
 }
 
@@ -190,25 +312,25 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-concourse-space-3);
-    height: var(--sa-concourse-control-h);
-    padding: 0 var(--sa-concourse-space-7);
+    gap: var(--sa-observatory-space-3);
+    height: var(--sa-observatory-control-h-md);
+    padding: 0 var(--sa-observatory-space-7);
     font-family: inherit;
-    font-size: var(--sa-concourse-text-base);
-    font-weight: 600;
+    font-size: var(--sa-observatory-fs-base);
+    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
     border-radius: var(--radius);
-    border: var(--sa-concourse-border-width) solid var(--border);
+    border: var(--sa-observatory-border-width) solid var(--border);
     background: var(--card);
     color: var(--foreground);
-    box-shadow: var(--sa-concourse-shadow-raise);
+    box-shadow: var(--sa-observatory-shadow-sm);
     transition:
-      background var(--sa-concourse-duration-fast) var(--sa-concourse-ease),
-      border-color var(--sa-concourse-duration-fast) var(--sa-concourse-ease),
-      box-shadow var(--sa-concourse-duration-fast) var(--sa-concourse-ease);
+      background var(--sa-observatory-dur-fast) var(--sa-observatory-ease),
+      border-color var(--sa-observatory-dur-fast) var(--sa-observatory-ease),
+      box-shadow var(--sa-observatory-dur-fast) var(--sa-observatory-ease);
   }
   .sa-button:hover:not(:disabled, [aria-disabled="true"]) {
     background: var(--muted);
@@ -219,7 +341,7 @@
   }
   .sa-button:focus-visible {
     outline: none;
-    box-shadow: var(--sa-concourse-focus-ring);
+    box-shadow: var(--sa-observatory-focus-ring);
   }
   .sa-button:disabled,
   .sa-button[aria-disabled="true"] {
@@ -231,13 +353,13 @@
   .sa-button-variant-default {
     background: var(--primary);
     color: var(--primary-foreground);
-    border-color: var(--sa-concourse-primary-border);
+    border-color: var(--sa-observatory-accent);
   }
   .sa-button-variant-default:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-concourse-primary-hover);
+    background: var(--sa-observatory-accent-hover);
   }
   .sa-button-variant-default:active:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-concourse-primary-pressed);
+    background: var(--sa-observatory-accent-active);
     box-shadow: none;
   }
 
@@ -250,14 +372,14 @@
   .sa-button-variant-outline {
     background: transparent;
     color: var(--foreground);
-    border-color: var(--sa-concourse-border-strong);
+    border-color: var(--sa-observatory-line-strong);
     box-shadow: none;
   }
   .sa-button-variant-outline:hover:not(:disabled, [aria-disabled="true"]) {
-    background: color-mix(in oklch, var(--foreground) 6%, transparent);
+    background: var(--sa-observatory-surface-hover);
   }
   .sa-button-variant-outline:active:not(:disabled, [aria-disabled="true"]) {
-    background: color-mix(in oklch, var(--foreground) 11%, transparent);
+    background: var(--sa-observatory-surface-active);
   }
 
   .sa-button-variant-ghost {
@@ -267,19 +389,19 @@
     box-shadow: none;
   }
   .sa-button-variant-ghost:hover:not(:disabled, [aria-disabled="true"]) {
-    background: color-mix(in oklch, var(--foreground) 7%, transparent);
+    background: var(--sa-observatory-surface-hover);
   }
   .sa-button-variant-ghost:active:not(:disabled, [aria-disabled="true"]) {
-    background: color-mix(in oklch, var(--foreground) 12%, transparent);
+    background: var(--sa-observatory-surface-active);
   }
 
   .sa-button-variant-destructive {
     background: var(--destructive);
-    color: var(--sa-concourse-destructive-foreground);
-    border-color: var(--sa-concourse-destructive-border);
+    color: var(--sa-observatory-on-danger);
+    border-color: var(--sa-observatory-danger);
   }
   .sa-button-variant-destructive:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-concourse-destructive-hover);
+    background: var(--sa-observatory-danger-hover);
   }
   .sa-button-variant-destructive:active:not(:disabled, [aria-disabled="true"]) {
     background: var(--destructive);
@@ -298,21 +420,21 @@
   }
   .sa-button-variant-link:is(:hover, :active):not(:disabled, [aria-disabled="true"]) {
     background: transparent;
-    color: var(--sa-concourse-primary-hover);
+    color: var(--sa-observatory-accent-hover);
   }
 
   .sa-button-size-sm {
-    height: var(--sa-concourse-control-h-sm);
+    height: var(--sa-observatory-control-h-sm);
     padding: 0 11px;
-    font-size: var(--sa-concourse-text-sm);
+    font-size: var(--sa-observatory-fs-sm);
   }
   .sa-button-size-lg {
-    height: var(--sa-concourse-control-h-lg);
-    padding: 0 var(--sa-concourse-space-9);
+    height: var(--sa-observatory-control-h-lg);
+    padding: 0 var(--sa-observatory-space-10);
     font-size: 0.9375rem;
   }
   .sa-button-size-icon {
-    width: var(--sa-concourse-control-h);
+    width: var(--sa-observatory-control-h-md);
     padding: 0;
   }
 
@@ -320,8 +442,8 @@
      visible when the more specific variant pressed rule removes elevation. */
   .sa-button {
     --sa-button-transition-property: background, border-color, box-shadow;
-    --sa-button-transition-duration: var(--sa-concourse-duration-fast);
-    transition-timing-function: var(--sa-concourse-ease);
+    --sa-button-transition-duration: var(--sa-observatory-dur-fast);
+    transition-timing-function: var(--sa-observatory-ease);
     & svg:not([class*="size-"]) {
       width: 16px;
       height: 16px;
@@ -332,12 +454,12 @@
     padding: 0;
   }
   .sa-button:focus-visible:not(:disabled, [aria-disabled="true"]) {
-    box-shadow: var(--sa-concourse-focus-ring);
+    box-shadow: var(--sa-observatory-focus-ring);
   }
   .sa-button-size-xs {
     height: 26px;
     padding: 0 9px;
-    font-size: var(--sa-concourse-text-xs);
+    font-size: var(--sa-observatory-fs-xs);
   }
   .sa-button-size-icon-xs {
     width: 26px;
@@ -363,10 +485,10 @@
   .sa-native-select,
   .sa-textarea {
     width: 100%;
-    height: var(--sa-concourse-control-h);
+    height: var(--sa-observatory-control-h-md);
     padding: 0 11px;
     font-family: inherit;
-    font-size: var(--sa-concourse-text-base);
+    font-size: var(--sa-observatory-fs-base);
     color: var(--foreground);
     background: var(--card);
     border: 1px solid var(--input);
@@ -374,8 +496,8 @@
     box-shadow: 0 0 #0000;
     outline: none;
     transition:
-      border-color var(--sa-concourse-duration-fast),
-      box-shadow var(--sa-concourse-duration-fast);
+      border-color var(--sa-observatory-dur-fast),
+      box-shadow var(--sa-observatory-dur-fast);
     &::placeholder {
       color: var(--muted-foreground);
     }
@@ -386,7 +508,7 @@
       border-color: var(--ring);
       box-shadow:
         0 0 #0000,
-        var(--sa-concourse-focus-field);
+        var(--sa-observatory-focus-ring);
     }
     &:read-only:not(select) {
       background: var(--muted);
@@ -401,7 +523,7 @@
       border-color: var(--destructive);
       box-shadow:
         0 0 #0000,
-        0 0 0 2px color-mix(in oklch, var(--destructive) 22%, transparent);
+        var(--sa-observatory-focus-ring-danger);
     }
   }
   .sa-textarea {
@@ -414,15 +536,13 @@
   }
   .sa-native-select {
     appearance: none;
-    /* Avoid Chromium's clipped native popup edge at fractional display scales. */
-    font-size: 14px;
-    padding-right: 34px;
+    padding-right: 32px;
     &:disabled {
       opacity: 1;
     }
   }
   .sa-native-select[data-size="sm"] {
-    height: var(--sa-concourse-control-h-sm);
+    height: var(--sa-observatory-control-h-sm);
   }
   .sa-native-select-icon {
     top: 50%;
@@ -436,7 +556,7 @@
   .sa-field-label,
   .sa-field-title {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--foreground);
   }
   .sa-field {
@@ -465,8 +585,8 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-concourse-shadow-card);
-    font-size: var(--sa-concourse-text-base);
+    box-shadow: var(--sa-observatory-shadow-card);
+    font-size: var(--sa-observatory-fs-base);
     &[data-size="sm"] {
       --card-spacing: 16px;
     }
@@ -479,13 +599,13 @@
     padding: 0 var(--card-spacing);
   }
   .sa-card-title {
-    font-size: 15.5px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 1.3;
   }
   .sa-card-description {
-    font-size: 13.5px;
-    line-height: 1.55;
+    font-size: 13px;
+    line-height: 1.5;
     color: var(--muted-foreground);
   }
   .sa-card-content {
@@ -508,21 +628,21 @@
     cursor: pointer;
     &:focus-visible {
       border-color: var(--ring);
-      box-shadow: var(--sa-concourse-focus-field);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
     }
   }
   .sa-checkbox {
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     &:is(:checked, :indeterminate) {
       background: var(--primary);
-      border-color: var(--sa-concourse-primary-border);
+      border-color: var(--sa-observatory-accent);
       box-shadow: none;
     }
     &:is(:checked, :indeterminate):focus-visible {
-      box-shadow: var(--sa-concourse-focus-field);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
   }
   .sa-checkbox-indicator-icon {
@@ -530,7 +650,7 @@
     height: 12px;
   }
   .sa-radiobutton:checked {
-    border-color: var(--sa-concourse-primary-border);
+    border-color: var(--sa-observatory-accent);
   }
   .sa-radiobutton-indicator-icon {
     position: absolute;
@@ -557,10 +677,10 @@
     cursor: pointer;
     &:checked {
       background: var(--primary);
-      border-color: var(--sa-concourse-primary-border);
+      border-color: var(--sa-observatory-accent);
     }
     &:focus-visible {
-      box-shadow: var(--sa-concourse-focus-field);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
@@ -594,7 +714,7 @@
   }
 
   .sa-input-group {
-    min-height: 34px;
+    min-height: 32px;
     border: 1px solid var(--input);
     border-radius: var(--radius);
     background: var(--card);
@@ -603,11 +723,11 @@
       border-color: var(--ring);
       box-shadow:
         0 0 #0000,
-        var(--sa-concourse-focus-field);
+        var(--sa-observatory-focus-ring);
     }
     &:has([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
-      box-shadow: 0 0 0 2px color-mix(in oklch, var(--destructive) 22%, transparent);
+      box-shadow: var(--sa-observatory-focus-ring-danger);
     }
     &:has(:disabled) {
       opacity: 0.5;
@@ -656,13 +776,13 @@
   .sa-input-group-button-size-xs {
     height: 28px;
     padding: 0 8px;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
   }
   .sa-input-group-button-size-icon-xs {
     width: 28px;
     height: 28px;
     padding: 0;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
   }
   .sa-input-group-button-size-icon-sm {
     width: 32px;
@@ -700,8 +820,8 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-concourse-shadow-modal);
-    font-size: 13.5px;
+    box-shadow: var(--sa-observatory-shadow-lg);
+    font-size: 13px;
     &[open] {
       display: grid;
       gap: 20px;
@@ -730,14 +850,14 @@
   .sa-dialog-title,
   .sa-alert-dialog-title {
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.3;
     letter-spacing: -0.01em;
   }
   .sa-dialog-description,
   .sa-alert-dialog-description {
     color: var(--muted-foreground);
-    font-size: 13.5px;
+    font-size: 13px;
     & a {
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -774,9 +894,9 @@
   .sa-radiobutton,
   .sa-switch {
     background: transparent;
-    border-color: var(--sa-concourse-border-strong);
+    border-color: var(--sa-observatory-line-strong);
     &:focus-visible {
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:hover:not(:disabled) {
       border-color: var(--primary);
@@ -787,16 +907,16 @@
   }
   .sa-checkbox:checked:focus-visible,
   .sa-checkbox:indeterminate:focus-visible {
-    box-shadow: var(--sa-concourse-focus-ring);
+    box-shadow: var(--sa-observatory-focus-ring);
   }
   .sa-switch:checked,
   .sa-checkbox:checked {
     background: var(--primary);
-    border-color: var(--sa-concourse-primary-border);
+    border-color: var(--sa-observatory-accent);
   }
   .sa-switch-thumb {
-    --tw-duration: var(--sa-concourse-duration-med);
-    transition-timing-function: var(--sa-concourse-ease);
+    --tw-duration: var(--sa-observatory-dur-mid);
+    transition-timing-function: var(--sa-observatory-ease);
     background: var(--muted-foreground);
     transform: translateX(2px);
     .sa-switch:checked ~ & {
@@ -831,12 +951,12 @@
   }
   .sa-dialog-content,
   .sa-alert-dialog-content {
-    border-radius: var(--sa-concourse-radius-lg);
+    border-radius: var(--sa-observatory-radius-md);
   }
   .sa-dialog-title,
   .sa-alert-dialog-title {
-    font-size: 15.5px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: normal;
   }
   .dark :is(.sa-dialog-content, .sa-alert-dialog-content)::backdrop {
@@ -867,9 +987,9 @@
     border-radius: var(--radius);
     background: var(--popover);
     color: var(--popover-foreground);
-    box-shadow: var(--sa-concourse-shadow-pop);
-    --sa-concourse-menu-hover: color-mix(in oklch, var(--foreground) 7%, transparent);
-    --sa-concourse-menu-hover-foreground: var(--foreground);
+    box-shadow: var(--sa-observatory-shadow-md);
+    --sa-observatory-menu-hover: var(--sa-observatory-surface-hover);
+    --sa-observatory-menu-hover-foreground: var(--foreground);
   }
   .sa-dropdown-menu-item,
   .sa-dropdown-menu-checkbox-item,
@@ -877,26 +997,26 @@
   .sa-dropdown-menu-sub-trigger {
     gap: 10px;
     padding: 7px 10px;
-    border-radius: var(--sa-concourse-radius-sm);
-    font-size: var(--sa-concourse-text-label);
+    border-radius: var(--sa-observatory-radius-sm);
+    font-size: var(--sa-observatory-fs-base);
     & svg:not([class*="size-"]) {
       width: 14px;
       height: 14px;
     }
     &:is(:hover, :focus, [data-open]):not([data-disabled]) {
-      background: var(--sa-concourse-menu-hover);
-      color: var(--sa-concourse-menu-hover-foreground);
+      background: var(--sa-observatory-menu-hover);
+      color: var(--sa-observatory-menu-hover-foreground);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 2px var(--ring);
     }
     &[data-inset] {
-      padding-left: 34px;
+      padding-left: 32px;
     }
     &[data-variant="destructive"] {
       color: var(--destructive);
       &:is(:hover, :focus):not([data-disabled]) {
-        background: color-mix(in oklch, var(--destructive) 12%, transparent);
+        background: var(--sa-observatory-danger-soft);
       }
     }
     &[data-disabled] {
@@ -905,7 +1025,7 @@
   }
   .sa-dropdown-menu-checkbox-item,
   .sa-dropdown-menu-radio-item {
-    padding-right: 34px;
+    padding-right: 32px;
   }
   .sa-dropdown-menu-item-indicator {
     position: absolute;
@@ -913,8 +1033,8 @@
   }
   .sa-dropdown-menu-label {
     padding: 7px 10px 4px;
-    font-size: var(--sa-concourse-text-xs);
-    font-weight: 700;
+    font-size: var(--sa-observatory-fs-xs);
+    font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted-foreground);
@@ -927,12 +1047,12 @@
   .sa-dropdown-menu-shortcut {
     margin-left: auto;
     font-family: var(--font-mono);
-    font-size: var(--sa-concourse-text-xs);
+    font-size: var(--sa-observatory-fs-xs);
     color: var(--muted-foreground);
   }
   .sa-menu-accent-bold {
-    --sa-concourse-menu-hover: var(--primary);
-    --sa-concourse-menu-hover-foreground: var(--primary-foreground);
+    --sa-observatory-menu-hover: var(--primary);
+    --sa-observatory-menu-hover-foreground: var(--primary-foreground);
   }
   .sa-menu-translucent {
     background: color-mix(in oklch, var(--popover) 85%, transparent);
@@ -945,11 +1065,11 @@
   .sa-accordion-trigger {
     gap: 12px;
     padding: 13px 15px;
-    font-size: var(--sa-concourse-text-base);
-    font-weight: 600;
+    font-size: var(--sa-observatory-fs-base);
+    font-weight: 500;
     text-align: left;
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 5%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 2px var(--ring);
@@ -959,8 +1079,8 @@
     margin-left: auto;
   }
   .sa-accordion-content {
-    font-size: var(--sa-concourse-text-label);
-    line-height: 1.55;
+    font-size: var(--sa-observatory-fs-base);
+    line-height: 1.5;
     color: var(--muted-foreground);
   }
   .sa-accordion-content-inner {
@@ -976,8 +1096,8 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-concourse-shadow-card);
-    font-size: var(--sa-concourse-text-label);
+    box-shadow: var(--sa-observatory-shadow-card);
+    font-size: var(--sa-observatory-fs-base);
     &:has(> svg) {
       grid-template-columns: auto 1fr;
     }
@@ -992,7 +1112,7 @@
     }
   }
   .sa-alert-title {
-    font-weight: 700;
+    font-weight: 600;
   }
   .sa-alert-description {
     color: var(--muted-foreground);
@@ -1015,8 +1135,8 @@
     background: var(--card);
     color: var(--card-foreground);
     border-color: var(--border);
-    box-shadow: var(--sa-concourse-shadow-modal);
-    font-size: var(--sa-concourse-text-base);
+    box-shadow: var(--sa-observatory-shadow-lg);
+    font-size: var(--sa-observatory-fs-base);
     &:is([data-side="left"], [data-side="right"]) {
       max-width: 400px;
     }
@@ -1042,12 +1162,12 @@
     border-top: 1px solid var(--border);
   }
   .sa-sheet-title {
-    font-size: var(--sa-concourse-text-h3);
-    font-weight: 700;
+    font-size: var(--sa-observatory-fs-md);
+    font-weight: 600;
   }
   .sa-sheet-description {
     color: var(--muted-foreground);
-    font-size: var(--sa-concourse-text-label);
+    font-size: var(--sa-observatory-fs-base);
   }
   .sa-popover-content {
     gap: 12px;
@@ -1056,8 +1176,8 @@
     border-radius: var(--radius);
     background: var(--popover);
     color: var(--popover-foreground);
-    box-shadow: var(--sa-concourse-shadow-pop);
-    font-size: var(--sa-concourse-text-label);
+    box-shadow: var(--sa-observatory-shadow-md);
+    font-size: var(--sa-observatory-fs-base);
   }
   .sa-popover-header {
     display: flex;
@@ -1065,8 +1185,8 @@
     gap: 6px;
   }
   .sa-popover-title {
-    font-weight: 700;
-    font-size: var(--sa-concourse-text-h3);
+    font-weight: 600;
+    font-size: var(--sa-observatory-fs-md);
   }
   .sa-popover-description {
     color: var(--muted-foreground);
@@ -1075,8 +1195,8 @@
     padding: 5px 9px;
     border-radius: var(--radius);
     font-size: 12px;
-    font-weight: 600;
-    box-shadow: var(--sa-concourse-shadow-pop);
+    font-weight: 500;
+    box-shadow: var(--sa-observatory-shadow-md);
   }
 
   .sa-avatar,
@@ -1101,7 +1221,7 @@
     background: var(--secondary);
     color: var(--foreground);
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
   }
   .sa-avatar-image,
   .sa-avatar-fallback {
@@ -1123,7 +1243,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     font-size: 0.71875rem;
-    font-weight: 600;
+    font-weight: 500;
     & svg {
       width: 12px;
       height: 12px;
@@ -1132,7 +1252,7 @@
   .sa-badge-variant-default {
     background: var(--primary);
     color: var(--primary-foreground);
-    border-color: var(--sa-concourse-primary-border);
+    border-color: var(--sa-observatory-accent);
   }
   .sa-badge-variant-secondary {
     background: var(--secondary);
@@ -1141,17 +1261,17 @@
   .sa-badge-variant-outline {
     background: transparent;
     color: var(--muted-foreground);
-    border-color: var(--sa-concourse-border-strong);
+    border-color: var(--sa-observatory-line-strong);
   }
   .sa-badge-variant-destructive {
-    background: color-mix(in oklch, var(--destructive) 14%, transparent);
+    background: var(--sa-observatory-danger-soft);
     color: var(--destructive);
-    border-color: color-mix(in oklch, var(--destructive) 45%, transparent);
+    border-color: var(--sa-observatory-danger-border);
   }
   .sa-badge-variant-ghost {
     border-color: transparent;
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
   }
   .sa-badge-variant-link {
@@ -1175,7 +1295,7 @@
   }
   .sa-breadcrumb-page {
     color: var(--foreground);
-    font-weight: 600;
+    font-weight: 500;
   }
   .sa-breadcrumb-separator > svg {
     width: 14px;
@@ -1194,8 +1314,8 @@
     gap: 6px;
   }
   .sa-pagination-ellipsis {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1207,7 +1327,7 @@
   .sa-pagination-link[aria-current="page"] {
     background: var(--accent);
     color: var(--accent-foreground);
-    border-color: var(--sa-concourse-border-strong);
+    border-color: var(--sa-observatory-line-strong);
   }
 
   /* Default tabs compose the segmented surface; line tabs retain the source underline. */
@@ -1218,7 +1338,7 @@
   .sa-segmented-control {
     gap: 0;
     padding: 0;
-    border: 1px solid var(--sa-concourse-border-strong);
+    border: 1px solid var(--sa-observatory-line-strong);
     border-radius: var(--radius);
   }
   .sa-tabs-trigger,
@@ -1228,13 +1348,13 @@
     border: 1px solid transparent;
     border-radius: 0;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     & svg {
       width: 14px;
       height: 14px;
     }
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
   }
   .sa-tabs-list-variant-default,
@@ -1246,11 +1366,11 @@
   .sa-tabs-list-variant-default .sa-tabs-trigger,
   .sa-segmented-control-item {
     padding: 6px 10px;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     &[data-active],
     &:has(:checked) {
       border-color: var(--border);
-      box-shadow: var(--sa-concourse-shadow-card);
+      box-shadow: var(--sa-observatory-shadow-card);
     }
   }
   .sa-tabs-list-variant-line {
@@ -1266,10 +1386,10 @@
     margin-right: 16px;
     border: 0;
     border-radius: 0;
-    font-size: var(--sa-concourse-text-base);
+    font-size: var(--sa-observatory-fs-base);
     font-weight: 500;
     &[data-active] {
-      font-weight: 700;
+      font-weight: 600;
     }
   }
   .sa-tabs[data-orientation="vertical"] .sa-tabs-list-variant-line .sa-tabs-trigger {
@@ -1277,13 +1397,13 @@
     padding: 7px 12px;
   }
   .sa-toggle {
-    --sa-toggle-hover-background: color-mix(in oklch, var(--foreground) 7%, transparent);
+    --sa-toggle-hover-background: var(--sa-observatory-surface-hover);
     gap: 6px;
     border: 1px solid transparent;
     border-radius: var(--radius);
     color: var(--foreground);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     & svg:not([class*="size-"]) {
       width: 14px;
       height: 14px;
@@ -1295,19 +1415,19 @@
     }
     &:has(:focus-visible) {
       border-color: var(--ring);
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:has([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
     }
   }
   .sa-toggle-variant-outline {
-    border-color: var(--sa-concourse-border-strong);
+    border-color: var(--sa-observatory-line-strong);
     background: transparent;
   }
   .sa-toggle-size-default {
-    min-width: 34px;
-    height: 34px;
+    min-width: 32px;
+    height: 32px;
     padding: 0 11px;
   }
   .sa-toggle-size-sm {
@@ -1360,13 +1480,13 @@
   }
   .sa-table-body .sa-table-row {
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 5%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
     &[data-state="selected"] {
-      background: color-mix(in oklch, var(--primary) 10%, transparent);
+      background: var(--sa-observatory-accent-soft);
     }
     &[data-state="selected"]:hover {
-      background: color-mix(in oklch, var(--primary) 16%, transparent);
+      background: var(--sa-observatory-accent-soft);
     }
     &:last-child {
       border-bottom: 0;
@@ -1377,7 +1497,7 @@
     text-align: left;
     white-space: nowrap;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted-foreground);
@@ -1389,7 +1509,7 @@
   }
   .sa-table-footer {
     border-top: 1px solid var(--border);
-    font-weight: 600;
+    font-weight: 500;
     & > .sa-table-row:last-child {
       border-bottom: 0;
     }
@@ -1412,7 +1532,7 @@
   }
   .sa-progress-label {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
   }
   .sa-progress-value {
     font-family: var(--font-mono);
@@ -1420,7 +1540,7 @@
     color: var(--muted-foreground);
   }
   .sa-skeleton {
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     background: var(--muted);
   }
   .sa-separator {
@@ -1437,7 +1557,7 @@
   .sa-empty {
     gap: 12px;
     padding: 36px 22px;
-    border: 1px dashed var(--sa-concourse-border-strong);
+    border: 1px dashed var(--sa-observatory-line-strong);
     border-radius: var(--radius);
     background: var(--muted);
   }
@@ -1446,8 +1566,8 @@
     gap: 12px;
   }
   .sa-empty-title {
-    font-size: var(--sa-concourse-text-h3);
-    font-weight: 700;
+    font-size: var(--sa-observatory-fs-md);
+    font-weight: 600;
   }
   .sa-empty-description {
     font-size: 13px;
@@ -1469,7 +1589,7 @@
     gap: 4px;
     padding: 0 5px;
     border: 1px solid var(--border);
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     background: var(--muted);
     color: var(--muted-foreground);
     font-family: var(--font-mono);
@@ -1488,7 +1608,7 @@
   }
 }
 
-/* Composes Concourse surfaces, fields, actions, and navigation. */
+/* Composes Observatory surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-slider {
     min-height: 22px;
@@ -1516,14 +1636,14 @@
   .sa-slider-thumb {
     width: 18px;
     height: 18px;
-    border: 1px solid var(--sa-concourse-primary-border);
+    border: 1px solid var(--sa-observatory-accent);
     border-radius: 999px;
     background: var(--card);
-    box-shadow: var(--sa-concourse-shadow-raise);
+    box-shadow: var(--sa-observatory-shadow-sm);
     cursor: grab;
     &:focus-visible {
       outline: none;
-      box-shadow: var(--sa-concourse-shadow-raise), var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-shadow-sm), var(--sa-observatory-focus-ring);
     }
     &:active {
       cursor: grabbing;
@@ -1536,7 +1656,7 @@
   }
 }
 
-/* Composes Concourse surfaces, fields, actions, and navigation. */
+/* Composes Observatory surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-input-otp {
     gap: 8px;
@@ -1557,7 +1677,7 @@
     box-shadow: none;
     &[data-active="true"] {
       border-color: var(--ring);
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
   }
   .sa-input-otp-caret-line {
@@ -1578,7 +1698,7 @@
   .sa-field-legend {
     margin-bottom: 8px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     &[data-variant="label"] {
       font-size: 13px;
     }
@@ -1595,7 +1715,7 @@
       border-color: var(--primary);
     }
     &:has(:focus-visible) {
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
   }
   .sa-field-title {
@@ -1620,7 +1740,7 @@
   .sa-button-group {
     gap: 0;
     border-radius: var(--radius);
-    box-shadow: var(--sa-concourse-shadow-card);
+    box-shadow: var(--sa-observatory-shadow-card);
     &:has(> [data-slot="button-group"]) {
       gap: 8px;
       box-shadow: none;
@@ -1655,7 +1775,7 @@
   }
 }
 
-/* Composes Concourse surfaces, fields, actions, and navigation. */
+/* Composes Observatory surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-app-header {
     background: var(--card);
@@ -1663,7 +1783,7 @@
   @media (min-width: 48rem) {
     .sa-sidebar[data-variant="floating"] ~ .sa-sidebar-inset > .sa-app-header {
       border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: var(--sa-concourse-shadow-card);
+      box-shadow: var(--sa-observatory-shadow-card);
     }
   }
   .sa-sidebar-inner {
@@ -1672,7 +1792,7 @@
   .sa-sidebar[data-variant="floating"] .sa-sidebar-inner {
     border: 1px solid var(--sidebar-border);
     border-radius: var(--radius);
-    box-shadow: var(--sa-concourse-shadow-card);
+    box-shadow: var(--sa-observatory-shadow-card);
   }
   .sa-sidebar-inset {
     background: var(--background);
@@ -1680,7 +1800,7 @@
       .sa-sidebar[data-variant="inset"] ~ & {
         margin: 8px 8px 8px 0;
         border-radius: var(--radius);
-        box-shadow: var(--sa-concourse-shadow-card);
+        box-shadow: var(--sa-observatory-shadow-card);
         overflow: clip;
       }
       .sa-sidebar[data-variant="inset"][data-state="collapsed"] ~ & {
@@ -1698,8 +1818,12 @@
     gap: 4px;
   }
   .sa-sidebar-content {
-    @apply no-scrollbar;
+    /* Keep navigation scrollable without a visible scrollbar. */
     gap: 4px;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
   .sa-sidebar-group-content {
     font-size: 13px;
@@ -1708,7 +1832,7 @@
     height: 30px;
     padding: 6px 9px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--muted-foreground);
@@ -1721,10 +1845,10 @@
     gap: 10px;
     padding: 7px 9px;
     border: 0;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     color: var(--sidebar-foreground);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     &:hover {
       background: var(--sidebar-accent);
       color: var(--sidebar-accent-foreground);
@@ -1732,7 +1856,7 @@
     &[data-active] {
       background: var(--card);
       border-color: var(--sidebar-border);
-      box-shadow: var(--sa-concourse-shadow-card);
+      box-shadow: var(--sa-observatory-shadow-card);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 3px color-mix(in oklch, var(--sidebar-ring) 35%, transparent);
@@ -1747,7 +1871,7 @@
     background: var(--card);
   }
   .sa-sidebar-menu-button-size-default {
-    height: 34px;
+    height: 32px;
   }
   .sa-sidebar-menu-button-size-sm {
     height: 30px;
@@ -1763,7 +1887,7 @@
     min-width: 20px;
     height: 20px;
     padding: 0 4px;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     font-family: var(--font-mono);
     font-size: 11px;
     background: var(--secondary);
@@ -1806,7 +1930,7 @@
   }
 }
 
-/* Composes Concourse surfaces, fields, actions, and navigation. */
+/* Composes Observatory surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-carousel-previous,
   .sa-carousel-next {
@@ -1815,15 +1939,15 @@
   .sa-item {
     border: 1px solid transparent;
     border-radius: var(--radius);
-    font-size: 13.5px;
+    font-size: 13px;
     &:is(a):hover {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
   }
   .sa-item-variant-outline {
     border-color: var(--border);
     background: var(--card);
-    box-shadow: var(--sa-concourse-shadow-card);
+    box-shadow: var(--sa-observatory-shadow-card);
   }
   .sa-item-variant-muted {
     border-color: var(--border);
@@ -1854,7 +1978,7 @@
   .sa-item-media-variant-image {
     width: 40px;
     height: 40px;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     overflow: hidden;
     & img {
       width: 100%;
@@ -1867,8 +1991,8 @@
   }
   .sa-item-title {
     gap: 8px;
-    font-size: 13.5px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
   }
   .sa-item-description {
     color: var(--muted-foreground);
@@ -1888,7 +2012,7 @@
   }
   .sa-attachment {
     border-radius: var(--radius);
-    box-shadow: var(--sa-concourse-shadow-card);
+    box-shadow: var(--sa-observatory-shadow-card);
     &:focus-within {
       outline: 2px solid var(--ring);
       outline-offset: 1px;
@@ -1917,7 +2041,7 @@
   }
   .sa-attachment-media {
     width: 40px;
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     background: var(--muted);
     & svg {
       width: 16px;
@@ -1940,7 +2064,7 @@
     opacity: 1;
   }
   .sa-attachment-title {
-    font-weight: 600;
+    font-weight: 500;
   }
   .sa-attachment-description {
     margin-top: 4px;
@@ -1982,15 +2106,15 @@
     padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    font-size: 13.5px;
-    line-height: 1.55;
+    font-size: 13px;
+    line-height: 1.5;
     background: var(--card);
     &:is(a, button):hover {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
     &:is(a, button):focus-visible {
       outline: none;
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
   }
   .sa-bubble-variant-secondary > .sa-bubble-content {
@@ -2001,7 +2125,7 @@
     background: var(--muted);
   }
   .sa-bubble-variant-tinted > .sa-bubble-content {
-    background: color-mix(in oklch, var(--primary) 12%, var(--card));
+    background: var(--sa-observatory-accent-soft);
   }
   .sa-bubble-variant-outline > .sa-bubble-content {
     background: transparent;
@@ -2014,8 +2138,8 @@
   }
   .sa-bubble-variant-destructive > .sa-bubble-content {
     color: var(--destructive);
-    background: color-mix(in oklch, var(--destructive) 10%, var(--card));
-    border-color: color-mix(in oklch, var(--destructive) 45%, transparent);
+    background: var(--sa-observatory-danger-soft);
+    border-color: var(--sa-observatory-danger-border);
   }
   .sa-bubble-reactions {
     gap: 4px;
@@ -2049,10 +2173,10 @@
   }
   .sa-message {
     gap: 8px;
-    font-size: 13.5px;
+    font-size: 13px;
   }
   .sa-message-avatar {
-    min-width: 34px;
+    min-width: 32px;
   }
   .sa-message:has(.sa-message-footer) .sa-message-avatar {
     transform: translateY(-28px);
@@ -2121,8 +2245,8 @@
     gap: 16px;
   }
   .sa-questionnaire-title {
-    font-size: var(--sa-concourse-text-h3);
-    font-weight: 700;
+    font-size: var(--sa-observatory-fs-md);
+    font-weight: 600;
     line-height: 1.3;
   }
   .sa-questionnaire-description {
@@ -2137,10 +2261,10 @@
     border: 1px solid var(--input);
     border-radius: var(--radius);
     background: var(--card);
-    box-shadow: var(--sa-concourse-shadow-card);
-    font-size: 13.5px;
+    box-shadow: var(--sa-observatory-shadow-card);
+    font-size: 13px;
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
     &:has(> input:checked) {
       background: var(--accent);
@@ -2148,7 +2272,7 @@
     }
     &:has(> input:focus-visible) {
       border-color: var(--ring);
-      box-shadow: var(--sa-concourse-focus-ring);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:has(> input.input-validation-error) {
       border-color: var(--destructive);
@@ -2159,11 +2283,11 @@
     height: 17px;
     margin-top: 2px;
     border-color: var(--input);
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     background: var(--card);
   }
   .sa-questionnaire-choice:has(> input:checked) .sa-questionnaire-choice-indicator {
-    border-color: var(--sa-concourse-primary-border);
+    border-color: var(--sa-observatory-accent);
     background: var(--primary);
     color: var(--primary-foreground);
   }
@@ -2189,23 +2313,23 @@
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border);
-    border-radius: var(--sa-concourse-radius-sm);
+    border-radius: var(--sa-observatory-radius-sm);
     background: var(--card);
     color: var(--muted-foreground);
     font-family: var(--font-mono);
     font-size: 11px;
   }
   .sa-questionnaire-input {
-    height: 34px;
+    height: 32px;
     padding: 0 12px;
     border: 1px solid var(--input);
     border-radius: var(--radius);
     background: var(--card);
     box-shadow: none;
-    font-size: 13.5px;
+    font-size: 13px;
     &:focus-visible {
       border-color: var(--ring);
-      box-shadow: var(--sa-concourse-focus-field);
+      box-shadow: var(--sa-observatory-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
@@ -2224,7 +2348,7 @@
   .sa-sidebar-menu-button,
   .sa-sidebar-menu-sub-button {
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 6%, transparent);
+      background: var(--sa-observatory-surface-hover);
     }
     &[data-active] {
       border: 0;
@@ -2237,11 +2361,11 @@
     }
   }
   .sa-sidebar-group-label {
-    font-weight: 700;
+    font-weight: 600;
   }
   .sa-questionnaire-choice {
     &:hover {
-      background: color-mix(in oklch, var(--foreground) 7%, var(--card));
+      background: var(--sa-observatory-surface-hover);
     }
     &:has(> input:checked) {
       background: var(--accent);
@@ -2263,7 +2387,7 @@
     box-shadow: none;
   }
   .sa-input-otp-slot {
-    width: 34px;
+    width: 32px;
     height: 40px;
     font-size: 16px;
   }
@@ -2271,8 +2395,8 @@
     gap: 18px;
   }
   .sa-field-legend {
-    font-size: var(--sa-concourse-text-h3);
-    font-weight: 700;
+    font-size: var(--sa-observatory-fs-md);
+    font-weight: 600;
   }
   .sa-field-label:has(:checked) {
     background: var(--accent);
@@ -2291,13 +2415,13 @@
     padding-inline: 11px;
   }
   .sa-questionnaire-input:focus-visible {
-    box-shadow: var(--sa-concourse-focus-field);
+    box-shadow: var(--sa-observatory-focus-ring);
   }
   .sa-questionnaire-choice:has(> input[aria-invalid="true"]) {
     border-color: var(--destructive);
   }
 
-  /* Composite edges belong to the group; inline controls retain a 34px outer height. */
+  /* Composite edges belong to the group; inline controls retain a 32px outer height. */
   .sa-input-group-input {
     height: 32px;
   }
@@ -2343,7 +2467,7 @@
   .sa-input-group:has([aria-invalid="true"], .input-validation-error),
   .sa-input-group[aria-invalid="true"] {
     border-color: var(--destructive);
-    box-shadow: 0 0 0 2px color-mix(in oklch, var(--destructive) 22%, transparent);
+    box-shadow: var(--sa-observatory-focus-ring-danger);
   }
 }
 
@@ -2360,5 +2484,623 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0s !important;
     }
+  }
+}
+
+/* Observatory composition refinements. Preserve the library's wrappers, states,
+   orientation and responsive contracts while applying the handoff geometry. */
+@layer components.theme {
+  .sa-button {
+    gap: 8px;
+    padding-inline: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    box-shadow: none;
+    border-color: transparent;
+  }
+  .sa-button-variant-default {
+    border-color: transparent;
+  }
+  .sa-button-variant-secondary {
+    background: var(--secondary);
+    border-color: transparent;
+    &:hover:not(:disabled, [aria-disabled="true"]) {
+      background: var(--border);
+    }
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      background: var(--input);
+    }
+  }
+  .sa-button-variant-outline {
+    background: var(--card);
+    border-color: var(--input);
+    &:hover:not(:disabled, [aria-disabled="true"]) {
+      border-color: var(--sa-observatory-line-hover);
+    }
+  }
+  .sa-button-variant-ghost {
+    color: var(--muted-foreground);
+    &:hover:not(:disabled, [aria-disabled="true"]) {
+      background: var(--secondary);
+      color: var(--foreground);
+    }
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      background: var(--border);
+    }
+  }
+  .sa-button-variant-destructive {
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      background: var(--sa-observatory-danger-active);
+    }
+    &:focus-visible:not(:disabled, [aria-disabled="true"]) {
+      border-color: var(--destructive);
+      box-shadow: var(--sa-observatory-focus-ring-danger);
+    }
+  }
+  .sa-button:focus-visible {
+    border-color: var(--primary);
+  }
+  .sa-button-size-xs {
+    height: 22px;
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+  .sa-button-size-sm {
+    padding-inline: 10px;
+    font-size: 11px;
+    border-radius: 3px;
+  }
+  .sa-button-size-lg {
+    padding-inline: 20px;
+    font-size: 15px;
+  }
+  .sa-button-size-icon,
+  .sa-button-size-icon-xs,
+  .sa-button-size-icon-sm,
+  .sa-button-size-icon-lg {
+    padding: 0;
+  }
+  .sa-button-size-icon-xs {
+    width: 22px;
+    height: 22px;
+  }
+  .sa-button-size-icon-sm {
+    width: 26px;
+    height: 26px;
+  }
+  .sa-input,
+  .sa-native-select,
+  .sa-textarea {
+    padding-inline: 10px;
+    background: var(--sa-observatory-surface-input);
+    line-height: 1.35;
+    &::placeholder {
+      color: var(--sa-observatory-fg-subtle);
+    }
+    &:hover:not(:disabled) {
+      border-color: var(--sa-observatory-line-hover);
+    }
+    &:read-only:not(select) {
+      background: var(--sa-observatory-surface-subtle);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--destructive);
+      box-shadow: none;
+      &:focus-visible {
+        box-shadow: var(--sa-observatory-focus-ring-danger);
+      }
+    }
+  }
+  .sa-native-select {
+    padding-right: 30px;
+    /* Avoid Chromium's clipped native popup edge at fractional display scales. */
+    font-size: 12.5px;
+  }
+  .sa-textarea {
+    --sa-textarea-min-height: 76px;
+    min-height: 76px;
+    padding-block: 8px;
+    line-height: 1.5;
+  }
+  .sa-label,
+  .sa-field-label,
+  .sa-field-title {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .sa-field-description,
+  .sa-field-error {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .sa-checkbox,
+  .sa-radiobutton {
+    width: 16px;
+    height: 16px;
+    background: var(--sa-observatory-surface-input);
+    &:hover:not(:disabled) {
+      border-color: var(--sa-observatory-line-hover);
+    }
+  }
+  .sa-checkbox:is(:checked, :indeterminate) {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .sa-checkbox:checked:hover:not(:disabled) {
+    background: var(--sa-observatory-accent-hover);
+    border-color: var(--sa-observatory-accent-hover);
+  }
+  .sa-radiobutton:checked {
+    border-color: var(--primary);
+  }
+  .sa-radiobutton-indicator-icon {
+    width: 7px;
+    height: 7px;
+  }
+  .sa-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--input);
+  }
+  .sa-switch:checked {
+    background: var(--primary);
+  }
+  .sa-switch:checked:hover:not(:disabled) {
+    background: var(--sa-observatory-accent-hover);
+  }
+  .sa-switch-thumb {
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    transform: translateX(1px);
+    box-shadow: var(--sa-observatory-shadow-sm);
+    .sa-switch:checked ~ & {
+      transform: translateX(17px);
+    }
+  }
+  .dark .sa-switch:not(:checked) {
+    background: var(--secondary);
+  }
+  .dark .sa-switch:not(:checked) ~ .sa-switch-thumb {
+    background: var(--muted-foreground);
+  }
+  .sa-switch-wrapper[data-size="sm"] {
+    .sa-switch {
+      width: 28px;
+      height: 16px;
+    }
+    .sa-switch-thumb {
+      width: 12px;
+      height: 12px;
+      transform: translateX(1px);
+    }
+    .sa-switch:checked ~ .sa-switch-thumb {
+      transform: translateX(13px);
+    }
+  }
+  .sa-input-group {
+    min-height: 32px;
+    background: var(--sa-observatory-surface-input);
+    &:is([aria-invalid="true"], :has([aria-invalid="true"], .input-validation-error)) {
+      box-shadow: none;
+      &:focus-within {
+        box-shadow: var(--sa-observatory-focus-ring-danger);
+      }
+    }
+  }
+  .sa-input-group .sa-input-group-input,
+  .sa-input-group .sa-input-group-textarea {
+    padding-inline: 10px;
+    background: transparent;
+    &:is(:read-only, :focus-visible, :disabled, [aria-invalid="true"], .input-validation-error) {
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+  .sa-input-group-input {
+    height: 30px;
+  }
+  .sa-input-group:has(> [data-align="inline-start"]) > .sa-input-group-input {
+    padding-left: 8px;
+  }
+  .sa-input-group:has(> [data-align="inline-end"]) > .sa-input-group-input {
+    padding-right: 10px;
+  }
+  .sa-input-group-addon {
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+  .sa-input-group-addon:is([data-align="inline-start"], [data-align="inline-end"]) {
+    &:has(.sa-input-group-button) {
+      padding: 0;
+    }
+    &:has(.sa-input-group-text):not(:has(.sa-input-group-button, svg)) {
+      padding-inline: 10px;
+    }
+  }
+  .sa-input-group-addon[data-align="inline-start"]:has(.sa-input-group-button) {
+    border-right: 1px solid var(--border);
+  }
+  .sa-input-group-addon[data-align="inline-end"]:has(.sa-input-group-button) {
+    border-left: 1px solid var(--border);
+  }
+  .sa-input-group-addon:is([data-align="inline-start"], [data-align="inline-end"])
+    > .sa-input-group-button {
+    height: 30px;
+    border: 0;
+    border-radius: 0;
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: -2px;
+    }
+  }
+  .sa-input-group-addon[data-align="inline-start"] > .sa-input-group-button {
+    border-radius: 3px 0 0 3px;
+  }
+  .sa-input-group-addon[data-align="inline-end"] > .sa-input-group-button {
+    border-radius: 0 3px 3px 0;
+  }
+  .sa-card {
+    --card-spacing: 16px;
+    gap: 0;
+    padding: 0;
+    &[data-size="sm"] {
+      --card-spacing: 12px;
+    }
+  }
+  .sa-card-header {
+    padding: 12px var(--card-spacing);
+    border-bottom: 1px solid var(--border);
+    gap: 3px;
+  }
+  .sa-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .sa-card-description {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .sa-card-content {
+    padding: var(--card-spacing);
+  }
+  .sa-card-footer {
+    padding: 10px var(--card-spacing);
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+  .sa-dialog-content,
+  .sa-alert-dialog-content {
+    max-width: 440px;
+    padding: 16px;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border-color: var(--input);
+    &[open] {
+      gap: 16px;
+    }
+    &::backdrop {
+      background: var(--sa-observatory-scrim);
+    }
+  }
+  .dark :is(.sa-dialog-content, .sa-alert-dialog-content)::backdrop {
+    background: var(--sa-observatory-scrim);
+  }
+  .sa-dialog-title,
+  .sa-alert-dialog-title,
+  .sa-sheet-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .sa-dialog-description,
+  .sa-alert-dialog-description {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .sa-dialog-footer,
+  .sa-alert-dialog-footer {
+    margin: 0 -16px -16px;
+    padding: 10px 16px;
+    background: var(--sa-observatory-surface-subtle);
+    border-radius: 0 0 3px 3px;
+  }
+  .sa-sheet-content {
+    background: var(--popover);
+    border-color: var(--input);
+    &:is([data-side="left"], [data-side="right"]) {
+      max-width: 420px;
+    }
+    &::backdrop {
+      background: var(--sa-observatory-scrim);
+    }
+  }
+  .dark .sa-sheet-content::backdrop {
+    background: var(--sa-observatory-scrim);
+  }
+  .sa-sheet-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sa-sheet-body {
+    padding: 16px;
+  }
+  .sa-sheet-footer {
+    padding: 12px 16px;
+    background: var(--sa-observatory-surface-subtle);
+  }
+  .sa-dropdown-menu-content,
+  .sa-dropdown-menu-sub-content {
+    min-width: 220px;
+    padding: 4px 0;
+    border-color: var(--input);
+  }
+  .sa-dropdown-menu-item,
+  .sa-dropdown-menu-checkbox-item,
+  .sa-dropdown-menu-radio-item,
+  .sa-dropdown-menu-sub-trigger {
+    padding: 6px 12px;
+    border-radius: 0;
+    font-size: 13px;
+    &:focus-visible {
+      box-shadow: inset 2px 0 0 var(--primary);
+    }
+    &[data-inset] {
+      padding-left: 36px;
+    }
+  }
+  .sa-dropdown-menu-checkbox-item,
+  .sa-dropdown-menu-radio-item {
+    padding-left: 12px;
+    padding-right: 36px;
+  }
+  .sa-dropdown-menu-item-indicator {
+    left: auto;
+    right: 12px;
+    width: 16px;
+    color: var(--primary);
+  }
+  .sa-dropdown-menu-label {
+    padding: 6px 12px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+  .sa-accordion-trigger {
+    padding: 10px 0;
+    font-weight: 500;
+    &:hover {
+      color: var(--primary);
+      background: transparent;
+    }
+  }
+  .sa-accordion-content {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .sa-accordion-content-inner {
+    padding: 0 0 10px;
+  }
+  .sa-alert {
+    gap: 3px 12px;
+    padding: 10px 12px;
+    background: var(--sa-observatory-surface-subtle);
+    box-shadow: none;
+  }
+  .sa-alert-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .sa-alert-description {
+    font-size: 12px;
+  }
+  .sa-alert-variant-destructive {
+    background: var(--sa-observatory-danger-soft);
+    border-color: var(--sa-observatory-danger-border);
+    border-left-color: var(--destructive);
+  }
+  .sa-alert-variant-destructive .sa-alert-description {
+    color: var(--destructive);
+  }
+  .sa-badge {
+    gap: 6px;
+    min-height: 0;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .sa-avatar,
+  .sa-avatar-group-count {
+    width: 28px;
+    height: 28px;
+  }
+  .sa-avatar-fallback {
+    background: var(--foreground);
+    color: var(--card);
+    font-weight: 500;
+  }
+  .sa-breadcrumb-list {
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .sa-breadcrumb-item,
+  .sa-breadcrumb-list {
+    gap: 4px;
+  }
+  .sa-pagination {
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .sa-pagination-link[aria-current="page"] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+  }
+  .sa-tabs-list-variant-default,
+  .sa-segmented-control {
+    gap: 3px;
+    padding: 3px;
+    border: 0;
+    background: var(--secondary);
+  }
+  .sa-tabs-list-variant-default .sa-tabs-trigger,
+  .sa-segmented-control-item {
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    &[data-active],
+    &:has(:checked) {
+      box-shadow: var(--sa-observatory-shadow-sm);
+    }
+    &:hover {
+      background: transparent;
+    }
+  }
+  .sa-tabs-list-variant-line {
+    border-bottom: 1px solid var(--border);
+  }
+  .sa-tabs-list-variant-line .sa-tabs-trigger {
+    --sa-tabs-active-foreground: var(--primary);
+    padding: 0 0 8px;
+    margin-right: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    &[data-active] {
+      font-weight: 500;
+    }
+  }
+  .sa-tabs[data-orientation="vertical"] .sa-tabs-list-variant-line {
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+  }
+  .sa-table {
+    font-size: 12.5px;
+  }
+  .sa-table-header,
+  .sa-table-footer {
+    background: var(--sa-observatory-surface-subtle);
+  }
+  .sa-table-head {
+    padding: 8px 16px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+  .sa-table-cell {
+    padding: var(--sa-observatory-row-pad-y) 16px;
+  }
+  .sa-progress-track {
+    border: 0;
+    border-radius: 2px;
+    background: var(--border);
+  }
+  .sa-progress-indicator {
+    border-radius: 2px;
+  }
+  .sa-slider-track {
+    border: 0;
+    background: var(--border);
+  }
+  .sa-slider-track:is([data-horizontal], [data-orientation="horizontal"]) {
+    height: 4px;
+  }
+  .sa-slider-track:is([data-vertical], [data-orientation="vertical"]) {
+    width: 4px;
+  }
+  .sa-slider-thumb {
+    width: 15px;
+    height: 15px;
+    box-shadow: var(--sa-observatory-shadow-sm);
+  }
+  .sa-tooltip-content {
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 400;
+  }
+  .sa-sidebar-group-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+  }
+  .sa-sidebar-menu {
+    gap: 2px;
+  }
+  .sa-sidebar-menu-button,
+  .sa-sidebar-menu-sub-button {
+    gap: 8px;
+    padding: 6px 8px;
+    font-size: 12.5px;
+    font-weight: 400;
+    &:hover {
+      background: var(--sa-observatory-surface-active);
+      color: var(--foreground);
+    }
+    &[data-active] {
+      background: var(--accent);
+      color: var(--primary);
+      font-weight: 500;
+      box-shadow: none;
+    }
+  }
+  .sa-sidebar-menu-button-size-sm {
+    height: 26px;
+  }
+  .sa-sidebar[data-variant="floating"] .sa-sidebar-inner {
+    background: var(--card);
+  }
+  .sa-empty {
+    background: transparent;
+    border-width: 0;
+  }
+  .sa-empty-description {
+    color: var(--sa-observatory-fg-subtle);
+  }
+}
+
+@layer components.theme {
+  .sa-tabs-list-variant-line .sa-tabs-trigger:last-child {
+    margin-right: 0;
+  }
+}
+
+@layer components.theme {
+  /* The sheet body wraps header, content and footer in StellarAdmin. Keep
+     section insets there instead of doubling them on the wrapper. */
+  .sa-sheet-body {
+    padding: 0;
+    gap: 14px;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .sa-sheet-header,
+  .sa-sheet-footer {
+    flex-shrink: 0;
+  }
+  .sa-sheet-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+  }
+}
+
+
+@layer components.theme {
+  .sa-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .sa-data-grid-footer {
+    flex-wrap: wrap;
   }
 }

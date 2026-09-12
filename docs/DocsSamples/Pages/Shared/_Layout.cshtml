@@ -1,6 +1,6 @@
 ﻿@{
     var theme = Context.Request.Query["theme"].ToString();
-    string[] themes = ["concourse", "ice", "ledger", "luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"];
+    string[] themes = ["concourse", "ice", "ledger", "luma", "lyra", "maia", "mira", "nova", "observatory", "rhea", "sera", "vega"];
     if (!themes.Contains(theme)) { theme = "ledger"; }
     var dark = Context.Request.Query["mode"] == "dark";
 }

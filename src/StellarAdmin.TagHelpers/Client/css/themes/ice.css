@@ -2808,14 +2808,15 @@
   }
   .sa-dropdown-menu-checkbox-item,
   .sa-dropdown-menu-radio-item {
-    padding-left: 31px;
+    padding-left: 9px;
+    padding-right: 31px;
     &[data-state="checked"] {
       font-weight: 500;
     }
   }
   .sa-dropdown-menu-item-indicator {
-    left: 9px;
-    right: auto;
+    left: auto;
+    right: 9px;
     width: 14px;
     color: var(--primary);
   }

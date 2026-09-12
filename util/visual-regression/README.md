@@ -16,4 +16,6 @@ Run Concourse’s focused checks with `node util/visual-regression/verify-concou
 
 Theme inventory and explicit component coverage are checked separately by `node util/theme-coverage/check.mjs`.
 
+Run `node util/visual-regression/verify-native-select-popup.mjs http://localhost:5206` on a Hyprland desktop already using 1.6× display scaling to check Observatory and Concourse's native select popup borders. This opens an isolated temporary browser and uses `grim` to capture only that window: headless/CDP captures missed the desktop clipping. The check asserts the light popup's painted bottom edge and keyboard selection, and saves light/dark captures at two vertical positions under `snapshots/native-select-popup/`; inspect the dark captures visually. Load the specified webfonts, or set `OBSERVATORY_FONT_CSS` and `CONCOURSE_FONT_CSS` to local CSS files containing embedded font data for offline checks. Do not change desktop settings to run this check.
+
 Run `node util/visual-regression/verify-concourse-progress.mjs http://localhost:5206` to check all four progress samples in both modes at desktop/mobile widths. Native scrollbars remain visible; the check catches fill overflow inside bordered tracks and verifies proportional fill widths, including empty/full progress. Captures are written to `snapshots/concourse-progress/`.

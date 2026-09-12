@@ -13,4 +13,6 @@ When a component, subcomponent, variant hook, or theme is added:
 
 The checker detects missing declarations, inventory changes, and removed rule evidence. It does not judge visual quality or prove that every CSS state is correct. A review must inspect the implementation and rendered examples before updating the manifest; do not satisfy a failure with placeholder rules.
 
-Ice, Concourse and Ledger are hand-authored in `Client/css/themes/ice.css`, `Client/css/themes/concourse.css` and `Client/css/themes/ledger.css`. ThemeGenerator owns only the upstream-derived theme files. Its hardcoded source list must never include Concourse or Ledger. Consumer applications select a theme by linking its bundle; there is no separate tag helper API.
+Ice, Concourse, Ledger and Observatory are hand-authored in `Client/css/themes/ice.css`, `Client/css/themes/concourse.css`, `Client/css/themes/ledger.css`, and `Client/css/themes/observatory.css`. ThemeGenerator owns only the upstream-derived theme files. Its hardcoded source list must never include Concourse, Ledger, Ice or Observatory. Consumer applications select a theme by linking its bundle; there is no separate tag helper API.
+
+Observatory is hand-authored in `Client/css/themes/observatory.css` and uses compact density. Verify it with `node util/visual-regression/verify-observatory.mjs http://localhost:5206`; optionally set `OBSERVATORY_PRO_URL=http://localhost:5207` to include Pro grid containment and `OBSERVATORY_FONT_CSS` to a local CSS file with embedded Plex font faces for deterministic captures.
