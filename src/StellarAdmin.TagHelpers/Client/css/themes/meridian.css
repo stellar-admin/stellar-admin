@@ -1,288 +1,318 @@
-/* Hand-authored Observatory theme. Do not regenerate from shadcn.
-   Design authority: workspace docs/design/themes/observatory.md.
-   Exact foundation values extracted from observatory_handoff/theme.css.
-   Existing component contracts informed the selector/state mapping. */
+/* Hand-authored Meridian theme. Do not regenerate from shadcn.
+   Authority: workspace docs/design/themes/meridian.md.
+   Foundation values extracted from the Claude Design Meridian handoff.
+   Selector/state mapping follows existing StellarAdmin component contracts. */
 
 /* 2. GLOBAL TOKENS ========================================================= */
 :root {
   /* --- Type families -------------------------------------------------- */
-  --sa-observatory-font-sans:
-    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  --sa-observatory-font-mono:
-    "IBM Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+  --sa-meridian-font-display: 'Instrument Sans', 'Work Sans', -apple-system,
+                      BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --sa-meridian-font-sans:    'Work Sans', -apple-system, BlinkMacSystemFont,
+                      'Segoe UI', system-ui, sans-serif;
+  --sa-meridian-font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular',
+                      'Cascadia Mono', Consolas, monospace;
 
   /* --- Type scale ------------------------------------------------------
      Deliberately narrow. Admin UIs live between 11px and 15px; the display
      sizes exist only for page titles and single hero metrics.             */
-  --sa-observatory-fs-micro: 9px; /* section eyebrows, table column heads (mono, tracked) */
-  --sa-observatory-fs-2xs: 10px; /* counters inside badges, kbd hints */
-  --sa-observatory-fs-xs: 11px; /* badges, meta, pagination */
-  --sa-observatory-fs-sm: 12px; /* helper text, secondary labels */
-  --sa-observatory-fs-base: 13px; /* DEFAULT control + body size */
-  --sa-observatory-fs-md: 14px; /* card titles, section headings */
-  --sa-observatory-fs-lg: 15px; /* dialog titles, large buttons */
-  --sa-observatory-fs-xl: 17px; /* page/panel titles */
-  --sa-observatory-fs-2xl: 22px; /* mobile page title */
-  --sa-observatory-fs-display: 32px; /* single hero metric */
+  --sa-meridian-fs-micro:    9px;   /* section eyebrows, table column heads (mono, tracked) */
+  --sa-meridian-fs-2xs:     10px;   /* counters inside badges, kbd hints */
+  --sa-meridian-fs-xs:      11px;   /* badges, meta, pagination */
+  --sa-meridian-fs-sm:      12px;   /* helper text, secondary labels */
+  --sa-meridian-fs-base:    13px;   /* DEFAULT control + body size */
+  --sa-meridian-fs-md:      14px;   /* card titles, section headings */
+  --sa-meridian-fs-lg:      15px;   /* dialog titles, large buttons */
+  --sa-meridian-fs-xl:      17px;   /* page/panel titles */
+  --sa-meridian-fs-2xl:     22px;   /* mobile page title */
+  --sa-meridian-fs-display: 32px;   /* single hero metric */
 
-  --sa-observatory-fw-regular: 400;
-  --sa-observatory-fw-medium: 500; /* every control label, every button */
-  --sa-observatory-fw-semi: 600; /* titles only */
+  --sa-meridian-fw-regular: 400;
+  --sa-meridian-fw-medium:  500;    /* every control label, every button */
+  --sa-meridian-fw-semi:    600;    /* titles only */
 
-  --sa-observatory-lh-tight: 1.2; /* display metrics, page titles */
-  --sa-observatory-lh-snug: 1.35; /* control labels, single-line UI */
-  --sa-observatory-lh-normal: 1.5; /* helper text */
-  --sa-observatory-lh-prose: 1.6; /* multi-line descriptions and body copy */
+  --sa-meridian-lh-tight:  1.2;     /* display metrics, page titles */
+  --sa-meridian-lh-snug:   1.35;    /* control labels, single-line UI */
+  --sa-meridian-lh-normal: 1.5;     /* helper text */
+  --sa-meridian-lh-prose:  1.6;     /* multi-line descriptions and body copy */
 
-  --sa-observatory-tracking-eyebrow: 0.14em; /* uppercase mono eyebrows */
-  --sa-observatory-tracking-colhead: 0.1em; /* uppercase mono table heads */
-  --sa-observatory-tracking-title: -0.02em; /* 17px+ titles */
-  --sa-observatory-tracking-metric: -0.03em; /* display numerals */
+  --sa-meridian-tracking-eyebrow: 0.14em;  /* uppercase mono eyebrows */
+  --sa-meridian-tracking-colhead: 0.10em;  /* uppercase mono table heads */
+  --sa-meridian-tracking-title:  -0.02em;  /* 17px+ display titles */
+  --sa-meridian-tracking-card:   -0.015em; /* 14-17px display titles (card, dialog) */
+  --sa-meridian-tracking-metric: -0.03em;  /* display numerals */
 
   /* --- Space scale (4px base) ------------------------------------------ */
-  --sa-observatory-space-1: 2px;
-  --sa-observatory-space-2: 4px;
-  --sa-observatory-space-3: 6px;
-  --sa-observatory-space-4: 8px;
-  --sa-observatory-space-5: 10px;
-  --sa-observatory-space-6: 12px;
-  --sa-observatory-space-7: 14px;
-  --sa-observatory-space-8: 16px;
-  --sa-observatory-space-10: 20px;
-  --sa-observatory-space-12: 24px;
-  --sa-observatory-space-14: 28px;
-  --sa-observatory-space-16: 32px;
-  --sa-observatory-space-20: 40px;
-  --sa-observatory-space-24: 48px;
+  --sa-meridian-space-1:   2px;
+  --sa-meridian-space-2:   4px;
+  --sa-meridian-space-3:   6px;
+  --sa-meridian-space-4:   8px;
+  --sa-meridian-space-5:  10px;
+  --sa-meridian-space-6:  12px;
+  --sa-meridian-space-7:  14px;
+  --sa-meridian-space-8:  16px;
+  --sa-meridian-space-10: 20px;
+  --sa-meridian-space-12: 24px;
+  --sa-meridian-space-14: 28px;
+  --sa-meridian-space-16: 32px;
+  --sa-meridian-space-20: 40px;
+  --sa-meridian-space-24: 48px;
 
   /* --- Control geometry ------------------------------------------------
      Heights are fixed so that a button, an input and a select placed in the
      same row align on both edges without per-instance nudging.            */
-  --sa-observatory-control-h-sm: 26px;
-  --sa-observatory-control-h-md: 32px; /* DEFAULT */
-  --sa-observatory-control-h-lg: 40px;
-  --sa-observatory-control-pad-x-sm: 10px;
-  --sa-observatory-control-pad-x-md: 13px;
-  --sa-observatory-control-pad-x-lg: 20px;
-  --sa-observatory-control-gap: 8px; /* between adjacent controls in a toolbar */
+  --sa-meridian-control-h-sm: 26px;
+  --sa-meridian-control-h-md: 32px;   /* DEFAULT */
+  --sa-meridian-control-h-lg: 40px;
+  --sa-meridian-control-pad-x-sm:  10px;
+  --sa-meridian-control-pad-x-md:  13px;
+  --sa-meridian-control-pad-x-lg:  20px;
+  --sa-meridian-control-gap:        8px;  /* between adjacent controls in a toolbar */
 
-  /* Compact density is the default. Table row padding does not change control
-     heights or type sizes. */
-  --sa-observatory-row-pad-y: 7px; /* compact, selected for the shipped theme */
+  /* Density. `[data-density="compact"]` on any ancestor tightens table rows
+     and list padding only — it never changes control heights or type sizes,
+     so alignment across densities is preserved. */
+  --sa-meridian-row-pad-y: 11px;        /* comfortable (default) */
 
   /* --- Radii -----------------------------------------------------------
-     4px is the theme's signature. Nested elements step DOWN to 3px so an
-     inner chip inside a 4px container never looks rounder than its parent. */
-  --sa-observatory-radius-xs: 2px; /* progress bars, sparkline bars */
-  --sa-observatory-radius-sm: 3px; /* nested: chips, menu rows, small buttons */
-  --sa-observatory-radius-md: 4px; /* DEFAULT: buttons, inputs, cards, dialogs */
-  --sa-observatory-radius-lg: 6px; /* mobile sheets and cards only */
-  --sa-observatory-radius-pill: 999px; /* badges, avatars, switches, sliders */
+     2px is the theme's signature: almost square, so edges read as printed
+     rules rather than as soft plastic. There is deliberately NO step-down
+     scale — at 2px a nested element cannot look rounder than its parent, so
+     chips, menu rows and small buttons share the default. Only two things
+     break from 2px: pills (badges, avatars, switch tracks, slider thumbs),
+     which are fully round so they never compete with the square geometry,
+     and the mobile sheet, which takes 4px because a 2px corner disappears
+     at the scale of a full-width bottom sheet.                           */
+  --sa-meridian-radius-xs:   1px;   /* progress bars, sparkline bars */
+  --sa-meridian-radius-sm:   2px;   /* nested: chips, menu rows, small buttons */
+  --sa-meridian-radius-md:   2px;   /* DEFAULT: buttons, inputs, cards, dialogs */
+  --sa-meridian-radius-lg:   4px;   /* mobile sheets only */
+  --sa-meridian-radius-pill: 999px; /* badges, avatars, switches, sliders */
 
   /* --- Borders ---------------------------------------------------------- */
-  --sa-observatory-border-width: 1px;
-  --sa-observatory-border-width-strong: 1.5px; /* CSS-drawn glyph strokes */
-  --sa-observatory-border-accent-bar: 3px; /* alert left bar, active line-tab */
+  --sa-meridian-border-width:        1px;
+  --sa-meridian-border-width-strong: 1.5px;  /* CSS-drawn glyph strokes */
+  --sa-meridian-border-accent-bar:   3px;    /* alert left bar, active line-tab */
 
   /* --- Motion -----------------------------------------------------------
      Two durations only. Anything longer than 180ms reads as sluggish in a
      dense admin surface; anything shorter than 120ms is not perceived.    */
-  --sa-observatory-dur-fast: 120ms; /* colour/border/background changes */
-  --sa-observatory-dur-mid: 180ms; /* size, transform, overlay entrance */
-  --sa-observatory-ease: cubic-bezier(0.2, 0, 0, 1); /* standard */
-  --sa-observatory-ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* overlay entrance */
-  --sa-observatory-spin-duration: 700ms; /* button spinner */
+  --sa-meridian-dur-fast: 120ms;   /* colour/border/background changes */
+  --sa-meridian-dur-mid:  180ms;   /* size, transform, overlay entrance */
+  --sa-meridian-ease:          cubic-bezier(0.2, 0, 0, 1);     /* standard */
+  --sa-meridian-ease-out:      cubic-bezier(0.16, 1, 0.3, 1);  /* overlay entrance */
+  --sa-meridian-spin-duration: 700ms;                          /* button spinner */
 
   /* --- Elevation layering ---------------------------------------------- */
-  --sa-observatory-z-sticky: 10;
-  --sa-observatory-z-overlay: 100;
-  --sa-observatory-z-dialog: 200;
-  --sa-observatory-z-toast: 300;
+  --sa-meridian-z-sticky:  10;
+  --sa-meridian-z-overlay: 100;
+  --sa-meridian-z-dialog:  200;
+  --sa-meridian-z-toast:   300;
 }
 
+
 /* 3. LIGHT MODE ============================================================
-   Ground is a cool off-white (#f4f6f9), NOT pure white; cards are pure white
-   and therefore read as lifted without needing a heavy shadow.            */
+   Ground is warm paper (#F6F2E9), NOT white. Cards are a near-white warm
+   cream (#FFFDF8) and therefore read as lifted off the page with only a very
+   light shadow. Every neutral in this mode carries the same yellow-warm cast
+   (hue ~45-50), which is what keeps the brass accent from looking like an
+   accident: accent and neutrals share a family.                           */
 :root,
 :root:not(.dark) {
   color-scheme: light;
 
   /* Surfaces, background to foremost */
-  --sa-observatory-bg: #f4f6f9; /* page ground */
-  --sa-observatory-surface: #ffffff; /* cards, inputs, menus, dialogs */
-  --sa-observatory-surface-subtle: #f7f9fc; /* table head, sidebar, hover rows */
-  --sa-observatory-surface-sunken: #eef2f8; /* segmented track, secondary button, skeleton */
-  --sa-observatory-surface-hover: #f7f9fc; /* row/menu-item hover */
-  --sa-observatory-surface-active: #eef2f8; /* row/menu-item pressed */
+  --sa-meridian-bg:             #f6f2e9;  /* page ground — warm paper */
+  --sa-meridian-surface:        #fffdf8;  /* cards, inputs, menus, dialogs */
+  --sa-meridian-surface-subtle: #f2ece0;  /* table head, sidebar, hover rows */
+  --sa-meridian-surface-sunken: #eae2d1;  /* segmented track, secondary button, skeleton */
+  --sa-meridian-surface-hover:  #f2ece0;  /* row/menu-item hover */
+  --sa-meridian-surface-active: #eae2d1;  /* row/menu-item pressed */
 
-  /* Lines */
-  --sa-observatory-line: #dde3ec; /* hairline dividers, card borders */
-  --sa-observatory-line-strong: #c7d1e0; /* control borders; source contrast claims are not verified */
-  --sa-observatory-line-hover: #a9b6c8; /* control border on hover */
+  /* Lines. Meridian's borders are one step stronger than a typical light
+     theme: structure here comes from rules, not from shadow. */
+  --sa-meridian-line:        #e0d7c4;  /* hairline dividers, card borders */
+  --sa-meridian-line-strong: #cdbfa4;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-line-hover:  #b0a081;  /* control border on hover */
 
   /* Ink */
-  --sa-observatory-fg: #0d1620; /* primary text        — 16.9:1 on surface */
-  --sa-observatory-fg-muted: #5a6b7d; /* secondary text      —  6.0:1 on surface */
-  --sa-observatory-fg-subtle: #66788a; /* captions, disabled-adjacent — 4.9:1 (floor 4.5) */
-  --sa-observatory-fg-on-accent: #ffffff;
+  --sa-meridian-fg:        #1c1a15;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-fg-muted:  #6b6253;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-fg-subtle: #79705f;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-fg-on-accent: #fffdf8;
 
-  /* Signal — the theme's single accent. One hue, used only for the primary
-     action, the current item, and live/selected state. */
-  --sa-observatory-accent: #0a6ed1;
-  --sa-observatory-accent-hover: #0961b9;
-  --sa-observatory-accent-active: #084f97;
-  --sa-observatory-accent-soft: #e8f1fb; /* tint fill: focus ring, active-descendant */
-  --sa-observatory-accent-border: #b9d5f2; /* border companion to the tint */
-  --sa-observatory-on-accent: #ffffff;
+  /* Signal — brass. One hue, used only for the primary action, the current
+     item, and live/selected state. It is a DARK accent in light mode, which
+     is unusual and deliberate: a saturated bright accent on warm paper reads
+     as a warning, a deep brass reads as ink. */
+  --sa-meridian-accent:        #8a5e18;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-accent-hover:  #744e13;
+  --sa-meridian-accent-active: #5e3f0e;
+  --sa-meridian-accent-soft:   #f3e8d4;  /* tint fill: focus ring, active-descendant */
+  --sa-meridian-accent-border: #dcc79b;  /* border companion to the tint */
+  --sa-meridian-on-accent:     #fffdf8;  /* source palette value; see specification for contrast limits */
 
-  /* Status. Each has a foreground, a soft fill, and a border for the fill. */
-  --sa-observatory-positive: #0f8a5f;
-  --sa-observatory-positive-soft: #e6f5ee;
-  --sa-observatory-positive-border: rgba(15, 138, 95, 0.2);
-  --sa-observatory-warning: #a9741a;
-  --sa-observatory-warning-soft: #fdf3e3;
-  --sa-observatory-warning-border: rgba(169, 116, 26, 0.2);
-  --sa-observatory-danger: #c23b32;
-  --sa-observatory-danger-hover: #a93028;
-  --sa-observatory-danger-active: #8f2620;
-  --sa-observatory-danger-soft: #fdecea;
-  --sa-observatory-danger-border: rgba(194, 59, 50, 0.25);
-  --sa-observatory-on-danger: #ffffff;
+  /* Status. Each has a foreground, a soft fill, and a border for the fill.
+     All three are pulled toward the warm neutral family — the green is olive,
+     the red is iron-oxide, the amber is raw brass — so status colour never
+     looks pasted in from another system. */
+  --sa-meridian-positive:        #4a6f45;
+  --sa-meridian-positive-soft:   #e9efe5;
+  --sa-meridian-positive-border: rgba(74, 111, 69, 0.28);
+  --sa-meridian-warning:         #9a7108;
+  --sa-meridian-warning-soft:    #f8efdb;
+  --sa-meridian-warning-border:  rgba(154, 113, 8, 0.28);
+  --sa-meridian-danger:          #a3382b;
+  --sa-meridian-danger-hover:    #8c2f23;
+  --sa-meridian-danger-active:   #74261c;
+  --sa-meridian-danger-soft:     #f8e8e4;
+  --sa-meridian-danger-border:   rgba(163, 56, 43, 0.28);
+  --sa-meridian-on-danger:       #fffdf8;
 
   /* Focus. A 3px soft halo plus an accent border. Never an outline offset —
      controls sit in dense rows and an offset ring collides with neighbours. */
-  --sa-observatory-focus-ring: 0 0 0 3px var(--sa-observatory-accent-soft);
-  --sa-observatory-focus-ring-color: var(--sa-observatory-accent);
-  --sa-observatory-focus-ring-danger: 0 0 0 3px var(--sa-observatory-danger-soft);
+  --sa-meridian-focus-ring:       0 0 0 3px var(--sa-meridian-accent-soft);
+  --sa-meridian-focus-ring-color: var(--sa-meridian-accent);
+  --sa-meridian-focus-ring-danger: 0 0 0 3px var(--sa-meridian-danger-soft);
 
-  /* Shadows. In LIGHT mode elevation is carried by shadow. */
-  --sa-observatory-shadow-sm: 0 1px 2px rgba(13, 22, 32, 0.08);
-  --sa-observatory-shadow-md: 0 8px 24px rgba(13, 22, 32, 0.1);
-  --sa-observatory-shadow-lg: 0 16px 40px rgba(13, 22, 32, 0.16);
-  --sa-observatory-scrim: rgba(13, 22, 32, 0.35);
+  /* Shadows. In LIGHT mode elevation is carried by shadow, and the shadow is
+     warm (the ink colour at low alpha), never neutral black — a grey shadow
+     on warm paper greys the paper. */
+  --sa-meridian-shadow-sm: 0 1px 2px rgba(28, 26, 21, 0.08);
+  --sa-meridian-shadow-md: 0 8px 24px rgba(28, 26, 21, 0.10);
+  --sa-meridian-shadow-lg: 0 16px 40px rgba(28, 26, 21, 0.16);
+  --sa-meridian-scrim:     rgba(28, 26, 21, 0.35);
 
   /* Inverted surface — tooltips and the "urgent" toast. */
-  --sa-observatory-inverse-bg: #0d1620;
-  --sa-observatory-inverse-fg: #ffffff;
+  --sa-meridian-inverse-bg: #1c1a15;
+  --sa-meridian-inverse-fg: #fffdf8;
 }
+
 
 /* 4. DARK MODE =============================================================
    Meaningful differences from light, and why:
 
-   a) ACCENT SHIFTS HUE AND LIGHTNESS. #0A6ED1 on #0D1117 is 2.4:1 — unusable.
-      Dark uses #4CC2FF (8.9:1 on surface) and flips the on-accent ink to a
-      near-black (#04121B) so filled buttons keep 4.5:1 in the other direction.
-   b) ELEVATION IS SURFACE, NOT SHADOW. Shadows are nearly invisible on
-      near-black, so menus/dialogs step UP a surface (#0D1117 -> #121A24) and
-      keep only a faint shadow for edge separation.
-   c) TINTS ARE LOW-CHROMA DEEP COLOURS, not alpha over black — alpha fills
+   a) THE ACCENT LIGHTS UP. Brass #8A5E18 on #1C1A15 is 1.9:1 — unusable.
+      Dark uses a lit brass #D9A949 (9.1:1 on --sa-meridian-surface) and flips the
+      on-accent ink to the darkest umber (#14120E), so filled buttons keep
+      contrast in the other direction. Same hue family, different lightness:
+      the theme reads as the same brass under lamplight, not as a new colour.
+   b) ELEVATION IS SURFACE, NOT SHADOW. Shadows barely read on deep umber, so
+      menus / dialogs / sheets step UP a surface (#1C1A15 -> #23201A) and
+      cards drop their shadow entirely.
+   c) INPUTS RISE INSTEAD OF RECESSING. This is Meridian's one departure from
+      the usual dark-mode convention, and it is deliberate: the light mode's
+      metaphor is ink on paper, and in dark mode the "paper" is the lit
+      element. An editable field is therefore one surface step ABOVE its card
+      (#23201A on #1C1A15) — a lit well, not a hole. Borders stay strong
+      (--sa-meridian-line-strong) so the field edge is unambiguous either way.
+   d) TINTS ARE LOW-CHROMA DEEP WARMS, not alpha over black — alpha fills
       compound unpredictably when stacked on raised surfaces.
-   d) INPUT SURFACE. Follow the source value: dark inputs are lighter than cards,
-      despite the handoff prose describing them as darker.
-   e) STATUS COLOURS BRIGHTEN AND DESATURATE (#0F8A5F -> #35D39A).            */
+   e) STATUS COLOURS BRIGHTEN AND DESATURATE (#4A6F45 -> #8FC27F), keeping
+      their warm/olive bias rather than reverting to primary green/red.      */
 .dark {
   color-scheme: dark;
 
-  --sa-observatory-bg: #07090d;
-  --sa-observatory-surface: #0d1117;
-  --sa-observatory-surface-subtle: #121a24;
-  --sa-observatory-surface-sunken: #18222e;
-  --sa-observatory-surface-hover: #121a24;
-  --sa-observatory-surface-active: #18222e;
-  --sa-observatory-surface-input: #121a24; /* see (d) */
+  --sa-meridian-bg:             #14120e;
+  --sa-meridian-surface:        #1c1a15;
+  --sa-meridian-surface-subtle: #23201a;
+  --sa-meridian-surface-sunken: #2b2720;
+  --sa-meridian-surface-hover:  #23201a;
+  --sa-meridian-surface-active: #2b2720;
+  --sa-meridian-surface-input:  #23201a;  /* see (c) — raised, not recessed */
 
-  --sa-observatory-line: #1e2833;
-  --sa-observatory-line-strong: #2b3846;
-  --sa-observatory-line-hover: #3c4c5e;
+  --sa-meridian-line:        #332e24;
+  --sa-meridian-line-strong: #47402f;
+  --sa-meridian-line-hover:  #5d543f;
 
-  --sa-observatory-fg: #e4ecf5; /* 14.6:1 on surface */
-  --sa-observatory-fg-muted: #7d8fa3; /*  5.6:1 */
-  --sa-observatory-fg-subtle: #8496a8; /*  6.2:1 — raised above the light-mode analogue
-                                 because dark text-on-dark loses perceived
+  --sa-meridian-fg:        #f0e9db;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-fg-muted:  #9c9280;  /* source palette value; see specification for contrast limits */
+  --sa-meridian-fg-subtle: #a79c88;  /*  6.9:1 — raised above the light-mode analogue
+                                 because warm dark-on-dark loses perceived
                                  contrast faster than the ratio suggests */
-  --sa-observatory-fg-on-accent: #04121b;
+  --sa-meridian-fg-on-accent: #14120e;
 
-  --sa-observatory-accent: #4cc2ff;
-  --sa-observatory-accent-hover: #6bcdff;
-  --sa-observatory-accent-active: #35b4f5;
-  --sa-observatory-accent-soft: #12293a;
-  --sa-observatory-accent-border: #1d3f57;
-  --sa-observatory-on-accent: #04121b;
+  --sa-meridian-accent:        #d9a949;
+  --sa-meridian-accent-hover:  #e4bb68;
+  --sa-meridian-accent-active: #c79a3c;
+  --sa-meridian-accent-soft:   #33291a;
+  --sa-meridian-accent-border: #4d3d1f;
+  --sa-meridian-on-accent:     #14120e;
 
-  --sa-observatory-positive: #35d39a;
-  --sa-observatory-positive-soft: #102b25;
-  --sa-observatory-positive-border: rgba(53, 211, 154, 0.22);
-  --sa-observatory-warning: #f5b942;
-  --sa-observatory-warning-soft: #2c2213;
-  --sa-observatory-warning-border: rgba(245, 185, 66, 0.22);
-  --sa-observatory-danger: #ff6b6b;
-  --sa-observatory-danger-hover: #ff8585;
-  --sa-observatory-danger-active: #e85a5a;
-  --sa-observatory-danger-soft: #2c1618;
-  --sa-observatory-danger-border: rgba(255, 107, 107, 0.3);
-  --sa-observatory-on-danger: #2c1618;
+  --sa-meridian-positive:        #8fc27f;
+  --sa-meridian-positive-soft:   #1f2b1c;
+  --sa-meridian-positive-border: rgba(143, 194, 127, 0.24);
+  --sa-meridian-warning:         #e0bb63;
+  --sa-meridian-warning-soft:    #2f2616;
+  --sa-meridian-warning-border:  rgba(224, 187, 99, 0.24);
+  --sa-meridian-danger:          #e08b7c;
+  --sa-meridian-danger-hover:    #e9a296;
+  --sa-meridian-danger-active:   #cf7767;
+  --sa-meridian-danger-soft:     #2f1d19;
+  --sa-meridian-danger-border:   rgba(224, 139, 124, 0.30);
+  --sa-meridian-on-danger:       #2f1d19;
 
-  --sa-observatory-focus-ring: 0 0 0 3px var(--sa-observatory-accent-soft);
-  --sa-observatory-focus-ring-danger: 0 0 0 3px var(--sa-observatory-danger-soft);
+  --sa-meridian-focus-ring:        0 0 0 3px var(--sa-meridian-accent-soft);
+  --sa-meridian-focus-ring-danger: 0 0 0 3px var(--sa-meridian-danger-soft);
 
-  --sa-observatory-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --sa-observatory-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --sa-observatory-shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
-  --sa-observatory-scrim: rgba(3, 6, 10, 0.62);
+  --sa-meridian-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40);
+  --sa-meridian-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.50);
+  --sa-meridian-shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.60);
+  --sa-meridian-scrim:     rgba(10, 8, 5, 0.62);
 
-  --sa-observatory-inverse-bg: #e4ecf5;
-  --sa-observatory-inverse-fg: #0d1117;
+  --sa-meridian-inverse-bg: #f0e9db;
+  --sa-meridian-inverse-fg: #1c1a15;
 }
 
-/* Light mode has no separate input surface; alias it so component rules can
-   reference one token in both modes. */
+/* Light fields share the card surface. Keep this alias out of dark scope so
+   the raised dark input token is not overwritten by the source's late :root. */
 :root:not(.dark) {
-  --sa-observatory-surface-input: var(--sa-observatory-surface);
+  --sa-meridian-surface-input: var(--sa-meridian-surface);
 }
 
 :root,
 .dark {
-  --background: var(--sa-observatory-bg);
-  --foreground: var(--sa-observatory-fg);
-  --card: var(--sa-observatory-surface);
-  --card-foreground: var(--sa-observatory-fg);
-  --popover: var(--sa-observatory-surface);
-  --popover-foreground: var(--sa-observatory-fg);
-  --primary: var(--sa-observatory-accent);
-  --primary-foreground: var(--sa-observatory-on-accent);
-  --secondary: var(--sa-observatory-surface-sunken);
-  --secondary-foreground: var(--sa-observatory-fg);
-  --muted: var(--sa-observatory-surface-sunken);
-  --muted-foreground: var(--sa-observatory-fg-muted);
-  --accent: var(--sa-observatory-accent-soft);
-  --accent-foreground: var(--sa-observatory-fg);
-  --destructive: var(--sa-observatory-danger);
-  --border: var(--sa-observatory-line);
-  --input: var(--sa-observatory-line-strong);
-  --ring: var(--sa-observatory-accent);
-  --sidebar: var(--sa-observatory-surface-subtle);
-  --sidebar-foreground: var(--sa-observatory-fg-muted);
-  --sidebar-primary: var(--sa-observatory-accent);
-  --sidebar-primary-foreground: var(--sa-observatory-on-accent);
-  --sidebar-accent: var(--sa-observatory-accent-soft);
-  --sidebar-accent-foreground: var(--sa-observatory-accent);
-  --sidebar-border: var(--sa-observatory-line);
-  --sidebar-ring: var(--sa-observatory-accent);
-  --chart-1: var(--sa-observatory-accent);
-  --chart-2: var(--sa-observatory-positive);
-  --chart-3: var(--sa-observatory-warning);
-  --chart-4: var(--sa-observatory-danger);
-  --chart-5: var(--sa-observatory-fg-muted);
-  --font-sans: var(--sa-observatory-font-sans);
-  --font-mono: var(--sa-observatory-font-mono);
-  --radius: var(--sa-observatory-radius-md);
+  --background: var(--sa-meridian-bg);
+  --foreground: var(--sa-meridian-fg);
+  --card: var(--sa-meridian-surface);
+  --card-foreground: var(--sa-meridian-fg);
+  --popover: var(--sa-meridian-surface);
+  --popover-foreground: var(--sa-meridian-fg);
+  --primary: var(--sa-meridian-accent);
+  --primary-foreground: var(--sa-meridian-on-accent);
+  --secondary: var(--sa-meridian-surface-sunken);
+  --secondary-foreground: var(--sa-meridian-fg);
+  --muted: var(--sa-meridian-surface-sunken);
+  --muted-foreground: var(--sa-meridian-fg-muted);
+  --accent: var(--sa-meridian-accent-soft);
+  --accent-foreground: var(--sa-meridian-fg);
+  --destructive: var(--sa-meridian-danger);
+  --border: var(--sa-meridian-line);
+  --input: var(--sa-meridian-line-strong);
+  --ring: var(--sa-meridian-accent);
+  --sidebar: var(--sa-meridian-surface-subtle);
+  --sidebar-foreground: var(--sa-meridian-fg-muted);
+  --sidebar-primary: var(--sa-meridian-accent);
+  --sidebar-primary-foreground: var(--sa-meridian-on-accent);
+  --sidebar-accent: var(--sa-meridian-accent-soft);
+  --sidebar-accent-foreground: var(--sa-meridian-accent);
+  --sidebar-border: var(--sa-meridian-line);
+  --sidebar-ring: var(--sa-meridian-accent);
+  --chart-1: var(--sa-meridian-accent);
+  --chart-2: var(--sa-meridian-positive);
+  --chart-3: var(--sa-meridian-warning);
+  --chart-4: var(--sa-meridian-danger);
+  --chart-5: var(--sa-meridian-fg-muted);
+  --font-sans: var(--sa-meridian-font-sans);
+  --font-mono: var(--sa-meridian-font-mono);
+  --radius: var(--sa-meridian-radius-md);
 
   --sa-gap-xs: 4px;
   --sa-gap-sm: 8px;
   --sa-gap-md: 16px;
   --sa-gap-lg: 20px;
   --sa-gap-xl: 24px;
-  --sa-page-header-title-size: var(--sa-observatory-fs-xl);
+  --sa-page-header-title-size: var(--sa-meridian-fs-xl);
   --sa-page-header-title-leading: 1.2;
   --sa-tabs-active-background: var(--card);
   --sa-tabs-active-foreground: var(--foreground);
@@ -293,16 +323,16 @@
   --sa-tabs-indicator-background: var(--primary);
   --sa-tabs-indicator-bottom: 0px;
   --sa-tabs-indicator-right: 0px;
-  --sa-observatory-shadow-card: var(--sa-observatory-shadow-sm);
+  --sa-meridian-shadow-card: var(--sa-meridian-shadow-sm);
 }
 .dark {
-  --popover: var(--sa-observatory-surface-subtle);
-  --sa-observatory-shadow-card: none;
+  --popover: var(--sa-meridian-surface-subtle);
+  --sa-meridian-shadow-card: none;
 }
 
 @layer base {
   body {
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     line-height: 1.5;
   }
 }
@@ -312,25 +342,25 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-observatory-space-3);
-    height: var(--sa-observatory-control-h-md);
-    padding: 0 var(--sa-observatory-space-7);
+    gap: var(--sa-meridian-space-3);
+    height: var(--sa-meridian-control-h-md);
+    padding: 0 var(--sa-meridian-space-7);
     font-family: inherit;
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
     border-radius: var(--radius);
-    border: var(--sa-observatory-border-width) solid var(--border);
+    border: var(--sa-meridian-border-width) solid var(--border);
     background: var(--card);
     color: var(--foreground);
-    box-shadow: var(--sa-observatory-shadow-sm);
+    box-shadow: var(--sa-meridian-shadow-sm);
     transition:
-      background var(--sa-observatory-dur-fast) var(--sa-observatory-ease),
-      border-color var(--sa-observatory-dur-fast) var(--sa-observatory-ease),
-      box-shadow var(--sa-observatory-dur-fast) var(--sa-observatory-ease);
+      background var(--sa-meridian-dur-fast) var(--sa-meridian-ease),
+      border-color var(--sa-meridian-dur-fast) var(--sa-meridian-ease),
+      box-shadow var(--sa-meridian-dur-fast) var(--sa-meridian-ease);
   }
   .sa-button:hover:not(:disabled, [aria-disabled="true"]) {
     background: var(--muted);
@@ -341,7 +371,7 @@
   }
   .sa-button:focus-visible {
     outline: none;
-    box-shadow: var(--sa-observatory-focus-ring);
+    box-shadow: var(--sa-meridian-focus-ring);
   }
   .sa-button:disabled,
   .sa-button[aria-disabled="true"] {
@@ -353,13 +383,13 @@
   .sa-button-variant-default {
     background: var(--primary);
     color: var(--primary-foreground);
-    border-color: var(--sa-observatory-accent);
+    border-color: var(--sa-meridian-accent);
   }
   .sa-button-variant-default:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-accent-hover);
+    background: var(--sa-meridian-accent-hover);
   }
   .sa-button-variant-default:active:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-accent-active);
+    background: var(--sa-meridian-accent-active);
     box-shadow: none;
   }
 
@@ -372,14 +402,14 @@
   .sa-button-variant-outline {
     background: transparent;
     color: var(--foreground);
-    border-color: var(--sa-observatory-line-strong);
+    border-color: var(--sa-meridian-line-strong);
     box-shadow: none;
   }
   .sa-button-variant-outline:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-surface-hover);
+    background: var(--sa-meridian-surface-hover);
   }
   .sa-button-variant-outline:active:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-surface-active);
+    background: var(--sa-meridian-surface-active);
   }
 
   .sa-button-variant-ghost {
@@ -389,19 +419,19 @@
     box-shadow: none;
   }
   .sa-button-variant-ghost:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-surface-hover);
+    background: var(--sa-meridian-surface-hover);
   }
   .sa-button-variant-ghost:active:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-surface-active);
+    background: var(--sa-meridian-surface-active);
   }
 
   .sa-button-variant-destructive {
     background: var(--destructive);
-    color: var(--sa-observatory-on-danger);
-    border-color: var(--sa-observatory-danger);
+    color: var(--sa-meridian-on-danger);
+    border-color: var(--sa-meridian-danger);
   }
   .sa-button-variant-destructive:hover:not(:disabled, [aria-disabled="true"]) {
-    background: var(--sa-observatory-danger-hover);
+    background: var(--sa-meridian-danger-hover);
   }
   .sa-button-variant-destructive:active:not(:disabled, [aria-disabled="true"]) {
     background: var(--destructive);
@@ -420,21 +450,21 @@
   }
   .sa-button-variant-link:is(:hover, :active):not(:disabled, [aria-disabled="true"]) {
     background: transparent;
-    color: var(--sa-observatory-accent-hover);
+    color: var(--sa-meridian-accent-hover);
   }
 
   .sa-button-size-sm {
-    height: var(--sa-observatory-control-h-sm);
+    height: var(--sa-meridian-control-h-sm);
     padding: 0 11px;
-    font-size: var(--sa-observatory-fs-sm);
+    font-size: var(--sa-meridian-fs-sm);
   }
   .sa-button-size-lg {
-    height: var(--sa-observatory-control-h-lg);
-    padding: 0 var(--sa-observatory-space-10);
+    height: var(--sa-meridian-control-h-lg);
+    padding: 0 var(--sa-meridian-space-10);
     font-size: 0.9375rem;
   }
   .sa-button-size-icon {
-    width: var(--sa-observatory-control-h-md);
+    width: var(--sa-meridian-control-h-md);
     padding: 0;
   }
 
@@ -442,8 +472,8 @@
      visible when the more specific variant pressed rule removes elevation. */
   .sa-button {
     --sa-button-transition-property: background, border-color, box-shadow;
-    --sa-button-transition-duration: var(--sa-observatory-dur-fast);
-    transition-timing-function: var(--sa-observatory-ease);
+    --sa-button-transition-duration: var(--sa-meridian-dur-fast);
+    transition-timing-function: var(--sa-meridian-ease);
     & svg:not([class*="size-"]) {
       width: 16px;
       height: 16px;
@@ -454,12 +484,12 @@
     padding: 0;
   }
   .sa-button:focus-visible:not(:disabled, [aria-disabled="true"]) {
-    box-shadow: var(--sa-observatory-focus-ring);
+    box-shadow: var(--sa-meridian-focus-ring);
   }
   .sa-button-size-xs {
     height: 26px;
     padding: 0 9px;
-    font-size: var(--sa-observatory-fs-xs);
+    font-size: var(--sa-meridian-fs-xs);
   }
   .sa-button-size-icon-xs {
     width: 26px;
@@ -485,10 +515,10 @@
   .sa-native-select,
   .sa-textarea {
     width: 100%;
-    height: var(--sa-observatory-control-h-md);
+    height: var(--sa-meridian-control-h-md);
     padding: 0 11px;
     font-family: inherit;
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     color: var(--foreground);
     background: var(--card);
     border: 1px solid var(--input);
@@ -496,8 +526,8 @@
     box-shadow: 0 0 #0000;
     outline: none;
     transition:
-      border-color var(--sa-observatory-dur-fast),
-      box-shadow var(--sa-observatory-dur-fast);
+      border-color var(--sa-meridian-dur-fast),
+      box-shadow var(--sa-meridian-dur-fast);
     &::placeholder {
       color: var(--muted-foreground);
     }
@@ -508,7 +538,7 @@
       border-color: var(--ring);
       box-shadow:
         0 0 #0000,
-        var(--sa-observatory-focus-ring);
+        var(--sa-meridian-focus-ring);
     }
     &:read-only:not(select) {
       background: var(--muted);
@@ -523,7 +553,7 @@
       border-color: var(--destructive);
       box-shadow:
         0 0 #0000,
-        var(--sa-observatory-focus-ring-danger);
+        var(--sa-meridian-focus-ring-danger);
     }
   }
   .sa-textarea {
@@ -542,7 +572,7 @@
     }
   }
   .sa-native-select[data-size="sm"] {
-    height: var(--sa-observatory-control-h-sm);
+    height: var(--sa-meridian-control-h-sm);
   }
   .sa-native-select-icon {
     top: 50%;
@@ -585,8 +615,8 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-observatory-shadow-card);
-    font-size: var(--sa-observatory-fs-base);
+    box-shadow: var(--sa-meridian-shadow-card);
+    font-size: var(--sa-meridian-fs-base);
     &[data-size="sm"] {
       --card-spacing: 16px;
     }
@@ -628,21 +658,21 @@
     cursor: pointer;
     &:focus-visible {
       border-color: var(--ring);
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
     }
   }
   .sa-checkbox {
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     &:is(:checked, :indeterminate) {
       background: var(--primary);
-      border-color: var(--sa-observatory-accent);
+      border-color: var(--sa-meridian-accent);
       box-shadow: none;
     }
     &:is(:checked, :indeterminate):focus-visible {
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
   }
   .sa-checkbox-indicator-icon {
@@ -650,7 +680,7 @@
     height: 12px;
   }
   .sa-radiobutton:checked {
-    border-color: var(--sa-observatory-accent);
+    border-color: var(--sa-meridian-accent);
   }
   .sa-radiobutton-indicator-icon {
     position: absolute;
@@ -677,10 +707,10 @@
     cursor: pointer;
     &:checked {
       background: var(--primary);
-      border-color: var(--sa-observatory-accent);
+      border-color: var(--sa-meridian-accent);
     }
     &:focus-visible {
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
@@ -723,11 +753,11 @@
       border-color: var(--ring);
       box-shadow:
         0 0 #0000,
-        var(--sa-observatory-focus-ring);
+        var(--sa-meridian-focus-ring);
     }
     &:has([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
-      box-shadow: var(--sa-observatory-focus-ring-danger);
+      box-shadow: var(--sa-meridian-focus-ring-danger);
     }
     &:has(:disabled) {
       opacity: 0.5;
@@ -776,13 +806,13 @@
   .sa-input-group-button-size-xs {
     height: 28px;
     padding: 0 8px;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
   }
   .sa-input-group-button-size-icon-xs {
     width: 28px;
     height: 28px;
     padding: 0;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
   }
   .sa-input-group-button-size-icon-sm {
     width: 32px;
@@ -820,7 +850,7 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-observatory-shadow-lg);
+    box-shadow: var(--sa-meridian-shadow-lg);
     font-size: 13px;
     &[open] {
       display: grid;
@@ -894,9 +924,9 @@
   .sa-radiobutton,
   .sa-switch {
     background: transparent;
-    border-color: var(--sa-observatory-line-strong);
+    border-color: var(--sa-meridian-line-strong);
     &:focus-visible {
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:hover:not(:disabled) {
       border-color: var(--primary);
@@ -907,16 +937,16 @@
   }
   .sa-checkbox:checked:focus-visible,
   .sa-checkbox:indeterminate:focus-visible {
-    box-shadow: var(--sa-observatory-focus-ring);
+    box-shadow: var(--sa-meridian-focus-ring);
   }
   .sa-switch:checked,
   .sa-checkbox:checked {
     background: var(--primary);
-    border-color: var(--sa-observatory-accent);
+    border-color: var(--sa-meridian-accent);
   }
   .sa-switch-thumb {
-    --tw-duration: var(--sa-observatory-dur-mid);
-    transition-timing-function: var(--sa-observatory-ease);
+    --tw-duration: var(--sa-meridian-dur-mid);
+    transition-timing-function: var(--sa-meridian-ease);
     background: var(--muted-foreground);
     transform: translateX(2px);
     .sa-switch:checked ~ & {
@@ -951,7 +981,7 @@
   }
   .sa-dialog-content,
   .sa-alert-dialog-content {
-    border-radius: var(--sa-observatory-radius-md);
+    border-radius: var(--sa-meridian-radius-md);
   }
   .sa-dialog-title,
   .sa-alert-dialog-title {
@@ -987,9 +1017,9 @@
     border-radius: var(--radius);
     background: var(--popover);
     color: var(--popover-foreground);
-    box-shadow: var(--sa-observatory-shadow-md);
-    --sa-observatory-menu-hover: var(--sa-observatory-surface-hover);
-    --sa-observatory-menu-hover-foreground: var(--foreground);
+    box-shadow: var(--sa-meridian-shadow-md);
+    --sa-meridian-menu-hover: var(--sa-meridian-surface-hover);
+    --sa-meridian-menu-hover-foreground: var(--foreground);
   }
   .sa-dropdown-menu-item,
   .sa-dropdown-menu-checkbox-item,
@@ -997,15 +1027,15 @@
   .sa-dropdown-menu-sub-trigger {
     gap: 10px;
     padding: 7px 10px;
-    border-radius: var(--sa-observatory-radius-sm);
-    font-size: var(--sa-observatory-fs-base);
+    border-radius: var(--sa-meridian-radius-sm);
+    font-size: var(--sa-meridian-fs-base);
     & svg:not([class*="size-"]) {
       width: 14px;
       height: 14px;
     }
     &:is(:hover, :focus, [data-open]):not([data-disabled]) {
-      background: var(--sa-observatory-menu-hover);
-      color: var(--sa-observatory-menu-hover-foreground);
+      background: var(--sa-meridian-menu-hover);
+      color: var(--sa-meridian-menu-hover-foreground);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 2px var(--ring);
@@ -1016,7 +1046,7 @@
     &[data-variant="destructive"] {
       color: var(--destructive);
       &:is(:hover, :focus):not([data-disabled]) {
-        background: var(--sa-observatory-danger-soft);
+        background: var(--sa-meridian-danger-soft);
       }
     }
     &[data-disabled] {
@@ -1033,7 +1063,7 @@
   }
   .sa-dropdown-menu-label {
     padding: 7px 10px 4px;
-    font-size: var(--sa-observatory-fs-xs);
+    font-size: var(--sa-meridian-fs-xs);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1047,12 +1077,12 @@
   .sa-dropdown-menu-shortcut {
     margin-left: auto;
     font-family: var(--font-mono);
-    font-size: var(--sa-observatory-fs-xs);
+    font-size: var(--sa-meridian-fs-xs);
     color: var(--muted-foreground);
   }
   .sa-menu-accent-bold {
-    --sa-observatory-menu-hover: var(--primary);
-    --sa-observatory-menu-hover-foreground: var(--primary-foreground);
+    --sa-meridian-menu-hover: var(--primary);
+    --sa-meridian-menu-hover-foreground: var(--primary-foreground);
   }
   .sa-menu-translucent {
     background: color-mix(in oklch, var(--popover) 85%, transparent);
@@ -1065,11 +1095,11 @@
   .sa-accordion-trigger {
     gap: 12px;
     padding: 13px 15px;
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     font-weight: 500;
     text-align: left;
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 2px var(--ring);
@@ -1079,7 +1109,7 @@
     margin-left: auto;
   }
   .sa-accordion-content {
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     line-height: 1.5;
     color: var(--muted-foreground);
   }
@@ -1096,8 +1126,8 @@
     border-radius: var(--radius);
     background: var(--card);
     color: var(--card-foreground);
-    box-shadow: var(--sa-observatory-shadow-card);
-    font-size: var(--sa-observatory-fs-base);
+    box-shadow: var(--sa-meridian-shadow-card);
+    font-size: var(--sa-meridian-fs-base);
     &:has(> svg) {
       grid-template-columns: auto 1fr;
     }
@@ -1135,8 +1165,8 @@
     background: var(--card);
     color: var(--card-foreground);
     border-color: var(--border);
-    box-shadow: var(--sa-observatory-shadow-lg);
-    font-size: var(--sa-observatory-fs-base);
+    box-shadow: var(--sa-meridian-shadow-lg);
+    font-size: var(--sa-meridian-fs-base);
     &:is([data-side="left"], [data-side="right"]) {
       max-width: 400px;
     }
@@ -1162,12 +1192,12 @@
     border-top: 1px solid var(--border);
   }
   .sa-sheet-title {
-    font-size: var(--sa-observatory-fs-md);
+    font-size: var(--sa-meridian-fs-md);
     font-weight: 600;
   }
   .sa-sheet-description {
     color: var(--muted-foreground);
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
   }
   .sa-popover-content {
     gap: 12px;
@@ -1176,8 +1206,8 @@
     border-radius: var(--radius);
     background: var(--popover);
     color: var(--popover-foreground);
-    box-shadow: var(--sa-observatory-shadow-md);
-    font-size: var(--sa-observatory-fs-base);
+    box-shadow: var(--sa-meridian-shadow-md);
+    font-size: var(--sa-meridian-fs-base);
   }
   .sa-popover-header {
     display: flex;
@@ -1186,7 +1216,7 @@
   }
   .sa-popover-title {
     font-weight: 600;
-    font-size: var(--sa-observatory-fs-md);
+    font-size: var(--sa-meridian-fs-md);
   }
   .sa-popover-description {
     color: var(--muted-foreground);
@@ -1196,7 +1226,7 @@
     border-radius: var(--radius);
     font-size: 12px;
     font-weight: 500;
-    box-shadow: var(--sa-observatory-shadow-md);
+    box-shadow: var(--sa-meridian-shadow-md);
   }
 
   .sa-avatar,
@@ -1252,7 +1282,7 @@
   .sa-badge-variant-default {
     background: var(--primary);
     color: var(--primary-foreground);
-    border-color: var(--sa-observatory-accent);
+    border-color: var(--sa-meridian-accent);
   }
   .sa-badge-variant-secondary {
     background: var(--secondary);
@@ -1261,17 +1291,17 @@
   .sa-badge-variant-outline {
     background: transparent;
     color: var(--muted-foreground);
-    border-color: var(--sa-observatory-line-strong);
+    border-color: var(--sa-meridian-line-strong);
   }
   .sa-badge-variant-destructive {
-    background: var(--sa-observatory-danger-soft);
+    background: var(--sa-meridian-danger-soft);
     color: var(--destructive);
-    border-color: var(--sa-observatory-danger-border);
+    border-color: var(--sa-meridian-danger-border);
   }
   .sa-badge-variant-ghost {
     border-color: transparent;
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
   }
   .sa-badge-variant-link {
@@ -1327,7 +1357,7 @@
   .sa-pagination-link[aria-current="page"] {
     background: var(--accent);
     color: var(--accent-foreground);
-    border-color: var(--sa-observatory-line-strong);
+    border-color: var(--sa-meridian-line-strong);
   }
 
   /* Default tabs compose the segmented surface; line tabs retain the source underline. */
@@ -1338,7 +1368,7 @@
   .sa-segmented-control {
     gap: 0;
     padding: 0;
-    border: 1px solid var(--sa-observatory-line-strong);
+    border: 1px solid var(--sa-meridian-line-strong);
     border-radius: var(--radius);
   }
   .sa-tabs-trigger,
@@ -1354,7 +1384,7 @@
       height: 14px;
     }
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
   }
   .sa-tabs-list-variant-default,
@@ -1366,11 +1396,11 @@
   .sa-tabs-list-variant-default .sa-tabs-trigger,
   .sa-segmented-control-item {
     padding: 6px 10px;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     &[data-active],
     &:has(:checked) {
       border-color: var(--border);
-      box-shadow: var(--sa-observatory-shadow-card);
+      box-shadow: var(--sa-meridian-shadow-card);
     }
   }
   .sa-tabs-list-variant-line {
@@ -1386,7 +1416,7 @@
     margin-right: 16px;
     border: 0;
     border-radius: 0;
-    font-size: var(--sa-observatory-fs-base);
+    font-size: var(--sa-meridian-fs-base);
     font-weight: 500;
     &[data-active] {
       font-weight: 600;
@@ -1397,7 +1427,7 @@
     padding: 7px 12px;
   }
   .sa-toggle {
-    --sa-toggle-hover-background: var(--sa-observatory-surface-hover);
+    --sa-toggle-hover-background: var(--sa-meridian-surface-hover);
     gap: 6px;
     border: 1px solid transparent;
     border-radius: var(--radius);
@@ -1415,14 +1445,14 @@
     }
     &:has(:focus-visible) {
       border-color: var(--ring);
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:has([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
     }
   }
   .sa-toggle-variant-outline {
-    border-color: var(--sa-observatory-line-strong);
+    border-color: var(--sa-meridian-line-strong);
     background: transparent;
   }
   .sa-toggle-size-default {
@@ -1480,13 +1510,13 @@
   }
   .sa-table-body .sa-table-row {
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &[data-state="selected"] {
-      background: var(--sa-observatory-accent-soft);
+      background: var(--sa-meridian-accent-soft);
     }
     &[data-state="selected"]:hover {
-      background: var(--sa-observatory-accent-soft);
+      background: var(--sa-meridian-accent-soft);
     }
     &:last-child {
       border-bottom: 0;
@@ -1540,7 +1570,7 @@
     color: var(--muted-foreground);
   }
   .sa-skeleton {
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     background: var(--muted);
   }
   .sa-separator {
@@ -1557,7 +1587,7 @@
   .sa-empty {
     gap: 12px;
     padding: 36px 22px;
-    border: 1px dashed var(--sa-observatory-line-strong);
+    border: 1px dashed var(--sa-meridian-line-strong);
     border-radius: var(--radius);
     background: var(--muted);
   }
@@ -1566,7 +1596,7 @@
     gap: 12px;
   }
   .sa-empty-title {
-    font-size: var(--sa-observatory-fs-md);
+    font-size: var(--sa-meridian-fs-md);
     font-weight: 600;
   }
   .sa-empty-description {
@@ -1589,7 +1619,7 @@
     gap: 4px;
     padding: 0 5px;
     border: 1px solid var(--border);
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     background: var(--muted);
     color: var(--muted-foreground);
     font-family: var(--font-mono);
@@ -1608,7 +1638,7 @@
   }
 }
 
-/* Composes Observatory surfaces, fields, actions, and navigation. */
+/* Composes Meridian surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-slider {
     min-height: 22px;
@@ -1636,14 +1666,14 @@
   .sa-slider-thumb {
     width: 18px;
     height: 18px;
-    border: 1px solid var(--sa-observatory-accent);
+    border: 1px solid var(--sa-meridian-accent);
     border-radius: 999px;
     background: var(--card);
-    box-shadow: var(--sa-observatory-shadow-sm);
+    box-shadow: var(--sa-meridian-shadow-sm);
     cursor: grab;
     &:focus-visible {
       outline: none;
-      box-shadow: var(--sa-observatory-shadow-sm), var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-shadow-sm), var(--sa-meridian-focus-ring);
     }
     &:active {
       cursor: grabbing;
@@ -1656,7 +1686,7 @@
   }
 }
 
-/* Composes Observatory surfaces, fields, actions, and navigation. */
+/* Composes Meridian surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-input-otp {
     gap: 8px;
@@ -1677,7 +1707,7 @@
     box-shadow: none;
     &[data-active="true"] {
       border-color: var(--ring);
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
   }
   .sa-input-otp-caret-line {
@@ -1715,7 +1745,7 @@
       border-color: var(--primary);
     }
     &:has(:focus-visible) {
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
   }
   .sa-field-title {
@@ -1740,7 +1770,7 @@
   .sa-button-group {
     gap: 0;
     border-radius: var(--radius);
-    box-shadow: var(--sa-observatory-shadow-card);
+    box-shadow: var(--sa-meridian-shadow-card);
     &:has(> [data-slot="button-group"]) {
       gap: 8px;
       box-shadow: none;
@@ -1775,7 +1805,7 @@
   }
 }
 
-/* Composes Observatory surfaces, fields, actions, and navigation. */
+/* Composes Meridian surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-app-header {
     background: var(--card);
@@ -1783,7 +1813,7 @@
   @media (min-width: 48rem) {
     .sa-sidebar[data-variant="floating"] ~ .sa-sidebar-inset > .sa-app-header {
       border-radius: 0 0 var(--radius) var(--radius);
-      box-shadow: var(--sa-observatory-shadow-card);
+      box-shadow: var(--sa-meridian-shadow-card);
     }
   }
   .sa-sidebar-inner {
@@ -1792,7 +1822,7 @@
   .sa-sidebar[data-variant="floating"] .sa-sidebar-inner {
     border: 1px solid var(--sidebar-border);
     border-radius: var(--radius);
-    box-shadow: var(--sa-observatory-shadow-card);
+    box-shadow: var(--sa-meridian-shadow-card);
   }
   .sa-sidebar-inset {
     background: var(--background);
@@ -1800,7 +1830,7 @@
       .sa-sidebar[data-variant="inset"] ~ & {
         margin: 8px 8px 8px 0;
         border-radius: var(--radius);
-        box-shadow: var(--sa-observatory-shadow-card);
+        box-shadow: var(--sa-meridian-shadow-card);
         overflow: clip;
       }
       .sa-sidebar[data-variant="inset"][data-state="collapsed"] ~ & {
@@ -1845,7 +1875,7 @@
     gap: 10px;
     padding: 7px 9px;
     border: 0;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     color: var(--sidebar-foreground);
     font-size: 13px;
     font-weight: 500;
@@ -1856,7 +1886,7 @@
     &[data-active] {
       background: var(--card);
       border-color: var(--sidebar-border);
-      box-shadow: var(--sa-observatory-shadow-card);
+      box-shadow: var(--sa-meridian-shadow-card);
     }
     &:focus-visible {
       box-shadow: inset 0 0 0 3px color-mix(in oklch, var(--sidebar-ring) 35%, transparent);
@@ -1887,7 +1917,7 @@
     min-width: 20px;
     height: 20px;
     padding: 0 4px;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     font-family: var(--font-mono);
     font-size: 11px;
     background: var(--secondary);
@@ -1930,7 +1960,7 @@
   }
 }
 
-/* Composes Observatory surfaces, fields, actions, and navigation. */
+/* Composes Meridian surfaces, fields, actions, and navigation. */
 @layer components.theme {
   .sa-carousel-previous,
   .sa-carousel-next {
@@ -1941,13 +1971,13 @@
     border-radius: var(--radius);
     font-size: 13px;
     &:is(a):hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
   }
   .sa-item-variant-outline {
     border-color: var(--border);
     background: var(--card);
-    box-shadow: var(--sa-observatory-shadow-card);
+    box-shadow: var(--sa-meridian-shadow-card);
   }
   .sa-item-variant-muted {
     border-color: var(--border);
@@ -1978,7 +2008,7 @@
   .sa-item-media-variant-image {
     width: 40px;
     height: 40px;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     overflow: hidden;
     & img {
       width: 100%;
@@ -2012,7 +2042,7 @@
   }
   .sa-attachment {
     border-radius: var(--radius);
-    box-shadow: var(--sa-observatory-shadow-card);
+    box-shadow: var(--sa-meridian-shadow-card);
     &:focus-within {
       outline: 2px solid var(--ring);
       outline-offset: 1px;
@@ -2041,7 +2071,7 @@
   }
   .sa-attachment-media {
     width: 40px;
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     background: var(--muted);
     & svg {
       width: 16px;
@@ -2110,11 +2140,11 @@
     line-height: 1.5;
     background: var(--card);
     &:is(a, button):hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &:is(a, button):focus-visible {
       outline: none;
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
   }
   .sa-bubble-variant-secondary > .sa-bubble-content {
@@ -2125,7 +2155,7 @@
     background: var(--muted);
   }
   .sa-bubble-variant-tinted > .sa-bubble-content {
-    background: var(--sa-observatory-accent-soft);
+    background: var(--sa-meridian-accent-soft);
   }
   .sa-bubble-variant-outline > .sa-bubble-content {
     background: transparent;
@@ -2138,8 +2168,8 @@
   }
   .sa-bubble-variant-destructive > .sa-bubble-content {
     color: var(--destructive);
-    background: var(--sa-observatory-danger-soft);
-    border-color: var(--sa-observatory-danger-border);
+    background: var(--sa-meridian-danger-soft);
+    border-color: var(--sa-meridian-danger-border);
   }
   .sa-bubble-reactions {
     gap: 4px;
@@ -2245,7 +2275,7 @@
     gap: 16px;
   }
   .sa-questionnaire-title {
-    font-size: var(--sa-observatory-fs-md);
+    font-size: var(--sa-meridian-fs-md);
     font-weight: 600;
     line-height: 1.3;
   }
@@ -2261,10 +2291,10 @@
     border: 1px solid var(--input);
     border-radius: var(--radius);
     background: var(--card);
-    box-shadow: var(--sa-observatory-shadow-card);
+    box-shadow: var(--sa-meridian-shadow-card);
     font-size: 13px;
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &:has(> input:checked) {
       background: var(--accent);
@@ -2272,7 +2302,7 @@
     }
     &:has(> input:focus-visible) {
       border-color: var(--ring);
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:has(> input.input-validation-error) {
       border-color: var(--destructive);
@@ -2283,11 +2313,11 @@
     height: 17px;
     margin-top: 2px;
     border-color: var(--input);
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     background: var(--card);
   }
   .sa-questionnaire-choice:has(> input:checked) .sa-questionnaire-choice-indicator {
-    border-color: var(--sa-observatory-accent);
+    border-color: var(--sa-meridian-accent);
     background: var(--primary);
     color: var(--primary-foreground);
   }
@@ -2313,7 +2343,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border);
-    border-radius: var(--sa-observatory-radius-sm);
+    border-radius: var(--sa-meridian-radius-sm);
     background: var(--card);
     color: var(--muted-foreground);
     font-family: var(--font-mono);
@@ -2329,7 +2359,7 @@
     font-size: 13px;
     &:focus-visible {
       border-color: var(--ring);
-      box-shadow: var(--sa-observatory-focus-ring);
+      box-shadow: var(--sa-meridian-focus-ring);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
@@ -2348,7 +2378,7 @@
   .sa-sidebar-menu-button,
   .sa-sidebar-menu-sub-button {
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &[data-active] {
       border: 0;
@@ -2365,7 +2395,7 @@
   }
   .sa-questionnaire-choice {
     &:hover {
-      background: var(--sa-observatory-surface-hover);
+      background: var(--sa-meridian-surface-hover);
     }
     &:has(> input:checked) {
       background: var(--accent);
@@ -2395,7 +2425,7 @@
     gap: 18px;
   }
   .sa-field-legend {
-    font-size: var(--sa-observatory-fs-md);
+    font-size: var(--sa-meridian-fs-md);
     font-weight: 600;
   }
   .sa-field-label:has(:checked) {
@@ -2415,7 +2445,7 @@
     padding-inline: 11px;
   }
   .sa-questionnaire-input:focus-visible {
-    box-shadow: var(--sa-observatory-focus-ring);
+    box-shadow: var(--sa-meridian-focus-ring);
   }
   .sa-questionnaire-choice:has(> input[aria-invalid="true"]) {
     border-color: var(--destructive);
@@ -2467,7 +2497,7 @@
   .sa-input-group:has([aria-invalid="true"], .input-validation-error),
   .sa-input-group[aria-invalid="true"] {
     border-color: var(--destructive);
-    box-shadow: var(--sa-observatory-focus-ring-danger);
+    box-shadow: var(--sa-meridian-focus-ring-danger);
   }
 }
 
@@ -2487,7 +2517,7 @@
   }
 }
 
-/* Observatory composition refinements. Preserve the library's wrappers, states,
+/* Meridian composition refinements. Preserve the library's wrappers, states,
    orientation and responsive contracts while applying the handoff geometry. */
 @layer components.theme {
   .sa-button {
@@ -2515,7 +2545,7 @@
     background: var(--card);
     border-color: var(--input);
     &:hover:not(:disabled, [aria-disabled="true"]) {
-      border-color: var(--sa-observatory-line-hover);
+      border-color: var(--sa-meridian-line-hover);
     }
   }
   .sa-button-variant-ghost {
@@ -2530,11 +2560,11 @@
   }
   .sa-button-variant-destructive {
     &:active:not(:disabled, [aria-disabled="true"]) {
-      background: var(--sa-observatory-danger-active);
+      background: var(--sa-meridian-danger-active);
     }
     &:focus-visible:not(:disabled, [aria-disabled="true"]) {
       border-color: var(--destructive);
-      box-shadow: var(--sa-observatory-focus-ring-danger);
+      box-shadow: var(--sa-meridian-focus-ring-danger);
     }
   }
   .sa-button:focus-visible {
@@ -2548,7 +2578,7 @@
   .sa-button-size-sm {
     padding-inline: 10px;
     font-size: 11px;
-    border-radius: 3px;
+    border-radius: 2px;
   }
   .sa-button-size-lg {
     padding-inline: 20px;
@@ -2572,29 +2602,28 @@
   .sa-native-select,
   .sa-textarea {
     padding-inline: 10px;
-    background: var(--sa-observatory-surface-input);
+    background: var(--sa-meridian-surface-input);
     line-height: 1.35;
     &::placeholder {
-      color: var(--sa-observatory-fg-subtle);
+      color: var(--sa-meridian-fg-subtle);
     }
     &:hover:not(:disabled) {
-      border-color: var(--sa-observatory-line-hover);
+      border-color: var(--sa-meridian-line-hover);
     }
     &:read-only:not(select) {
-      background: var(--sa-observatory-surface-subtle);
+      background: var(--sa-meridian-surface-subtle);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--destructive);
       box-shadow: none;
       &:focus-visible {
-        box-shadow: var(--sa-observatory-focus-ring-danger);
+        box-shadow: var(--sa-meridian-focus-ring-danger);
       }
     }
   }
   .sa-native-select {
     padding-right: 30px;
-    /* Avoid Chromium's clipped native popup edge at fractional display scales. */
-    font-size: 12.5px;
+    font-size: var(--sa-meridian-fs-base);
   }
   .sa-textarea {
     --sa-textarea-min-height: 76px;
@@ -2618,9 +2647,9 @@
   .sa-radiobutton {
     width: 16px;
     height: 16px;
-    background: var(--sa-observatory-surface-input);
+    background: var(--sa-meridian-surface-input);
     &:hover:not(:disabled) {
-      border-color: var(--sa-observatory-line-hover);
+      border-color: var(--sa-meridian-line-hover);
     }
   }
   .sa-checkbox:is(:checked, :indeterminate) {
@@ -2628,8 +2657,8 @@
     border-color: var(--primary);
   }
   .sa-checkbox:checked:hover:not(:disabled) {
-    background: var(--sa-observatory-accent-hover);
-    border-color: var(--sa-observatory-accent-hover);
+    background: var(--sa-meridian-accent-hover);
+    border-color: var(--sa-meridian-accent-hover);
   }
   .sa-radiobutton:checked {
     border-color: var(--primary);
@@ -2647,14 +2676,14 @@
     background: var(--primary);
   }
   .sa-switch:checked:hover:not(:disabled) {
-    background: var(--sa-observatory-accent-hover);
+    background: var(--sa-meridian-accent-hover);
   }
   .sa-switch-thumb {
     width: 16px;
     height: 16px;
-    background: #fff;
+    background: #fffdf8;
     transform: translateX(1px);
-    box-shadow: var(--sa-observatory-shadow-sm);
+    box-shadow: var(--sa-meridian-shadow-sm);
     .sa-switch:checked ~ & {
       transform: translateX(17px);
     }
@@ -2681,11 +2710,11 @@
   }
   .sa-input-group {
     min-height: 32px;
-    background: var(--sa-observatory-surface-input);
+    background: var(--sa-meridian-surface-input);
     &:is([aria-invalid="true"], :has([aria-invalid="true"], .input-validation-error)) {
       box-shadow: none;
       &:focus-within {
-        box-shadow: var(--sa-observatory-focus-ring-danger);
+        box-shadow: var(--sa-meridian-focus-ring-danger);
       }
     }
   }
@@ -2736,10 +2765,10 @@
     }
   }
   .sa-input-group-addon[data-align="inline-start"] > .sa-input-group-button {
-    border-radius: 3px 0 0 3px;
+    border-radius: 2px 0 0 2px;
   }
   .sa-input-group-addon[data-align="inline-end"] > .sa-input-group-button {
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 2px 2px 0;
   }
   .sa-card {
     --card-spacing: 16px;
@@ -2782,11 +2811,11 @@
       gap: 16px;
     }
     &::backdrop {
-      background: var(--sa-observatory-scrim);
+      background: var(--sa-meridian-scrim);
     }
   }
   .dark :is(.sa-dialog-content, .sa-alert-dialog-content)::backdrop {
-    background: var(--sa-observatory-scrim);
+    background: var(--sa-meridian-scrim);
   }
   .sa-dialog-title,
   .sa-alert-dialog-title,
@@ -2804,8 +2833,8 @@
   .sa-alert-dialog-footer {
     margin: 0 -16px -16px;
     padding: 10px 16px;
-    background: var(--sa-observatory-surface-subtle);
-    border-radius: 0 0 3px 3px;
+    background: var(--sa-meridian-surface-subtle);
+    border-radius: 0 0 2px 2px;
   }
   .sa-sheet-content {
     background: var(--popover);
@@ -2814,11 +2843,11 @@
       max-width: 420px;
     }
     &::backdrop {
-      background: var(--sa-observatory-scrim);
+      background: var(--sa-meridian-scrim);
     }
   }
   .dark .sa-sheet-content::backdrop {
-    background: var(--sa-observatory-scrim);
+    background: var(--sa-meridian-scrim);
   }
   .sa-sheet-header {
     padding: 16px;
@@ -2829,7 +2858,7 @@
   }
   .sa-sheet-footer {
     padding: 12px 16px;
-    background: var(--sa-observatory-surface-subtle);
+    background: var(--sa-meridian-surface-subtle);
   }
   .sa-dropdown-menu-content,
   .sa-dropdown-menu-sub-content {
@@ -2887,7 +2916,7 @@
   .sa-alert {
     gap: 3px 12px;
     padding: 10px 12px;
-    background: var(--sa-observatory-surface-subtle);
+    background: var(--sa-meridian-surface-subtle);
     box-shadow: none;
   }
   .sa-alert-title {
@@ -2898,8 +2927,8 @@
     font-size: 12px;
   }
   .sa-alert-variant-destructive {
-    background: var(--sa-observatory-danger-soft);
-    border-color: var(--sa-observatory-danger-border);
+    background: var(--sa-meridian-danger-soft);
+    border-color: var(--sa-meridian-danger-border);
     border-left-color: var(--destructive);
   }
   .sa-alert-variant-destructive .sa-alert-description {
@@ -2952,13 +2981,13 @@
   .sa-segmented-control-item {
     padding: 4px 12px;
     border: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     font-size: 12px;
     font-weight: 500;
     line-height: 1.5;
     &[data-active],
     &:has(:checked) {
-      box-shadow: var(--sa-observatory-shadow-sm);
+      box-shadow: var(--sa-meridian-shadow-sm);
     }
     &:hover {
       background: transparent;
@@ -2983,7 +3012,7 @@
   }
   .sa-table-header,
   .sa-table-footer {
-    background: var(--sa-observatory-surface-subtle);
+    background: var(--sa-meridian-surface-subtle);
   }
   .sa-table-head {
     padding: 8px 16px;
@@ -2993,15 +3022,15 @@
     letter-spacing: 0.1em;
   }
   .sa-table-cell {
-    padding: var(--sa-observatory-row-pad-y) 16px;
+    padding: var(--sa-meridian-row-pad-y) 16px;
   }
   .sa-progress-track {
     border: 0;
-    border-radius: 2px;
+    border-radius: var(--sa-meridian-radius-xs);
     background: var(--border);
   }
   .sa-progress-indicator {
-    border-radius: 2px;
+    border-radius: var(--sa-meridian-radius-xs);
   }
   .sa-slider-track {
     border: 0;
@@ -3016,11 +3045,11 @@
   .sa-slider-thumb {
     width: 15px;
     height: 15px;
-    box-shadow: var(--sa-observatory-shadow-sm);
+    box-shadow: var(--sa-meridian-shadow-sm);
   }
   .sa-tooltip-content {
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 2px;
     font-size: 11px;
     font-weight: 400;
   }
@@ -3040,7 +3069,7 @@
     font-size: 12.5px;
     font-weight: 400;
     &:hover {
-      background: var(--sa-observatory-surface-active);
+      background: var(--sa-meridian-surface-active);
       color: var(--foreground);
     }
     &[data-active] {
@@ -3061,7 +3090,7 @@
     border-width: 0;
   }
   .sa-empty-description {
-    color: var(--sa-observatory-fg-subtle);
+    color: var(--sa-meridian-fg-subtle);
   }
 }
 
@@ -3099,5 +3128,37 @@
   }
   .sa-data-grid-footer {
     flex-wrap: wrap;
+  }
+}
+
+/* Meridian's three-family type hierarchy. Consumer font utilities remain higher priority. */
+@layer components.theme {
+  .sa-font-heading,
+  .sa-card-title,
+  .sa-alert-title,
+  .sa-dialog-title,
+  .sa-alert-dialog-title,
+  .sa-sheet-title,
+  .sa-page-header-title,
+  .sa-empty-title,
+  .sa-popover-title,
+  .sa-questionnaire-title {
+    font-family: var(--sa-meridian-font-display);
+    font-weight: var(--sa-meridian-fw-semi);
+    letter-spacing: var(--sa-meridian-tracking-card);
+  }
+  .sa-alert-title {
+    font-size: var(--sa-meridian-fs-md);
+  }
+  .sa-page-header-title {
+    letter-spacing: var(--sa-meridian-tracking-title);
+  }
+  .sa-table {
+    font-size: var(--sa-meridian-fs-base);
+  }
+  .sa-kbd,
+  .sa-progress-value,
+  .sa-input-otp-slot {
+    font-variant-numeric: tabular-nums;
   }
 }

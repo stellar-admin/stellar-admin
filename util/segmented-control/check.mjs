@@ -16,6 +16,7 @@ try {
     "luma",
     "lyra",
     "maia",
+    "meridian",
     "mira",
     "nova",
     "observatory",
@@ -75,7 +76,7 @@ try {
       }
     }
   }
-  console.log("PASS: tab appearance matches across 12 themes, light/dark, desktop/mobile");
+  console.log("PASS: tab appearance matches across 13 themes, light/dark, desktop/mobile");
 
   const interaction = await browser.evaluate(`(() => {
     const group = document.querySelector('input[name="trip-view"]').closest('[role=radiogroup]');

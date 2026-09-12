@@ -1,6 +1,6 @@
 ﻿@{
     var theme = Context.Request.Query["theme"].ToString();
-    string[] themes = ["concourse", "ice", "ledger", "luma", "lyra", "maia", "mira", "nova", "observatory", "rhea", "sera", "vega"];
+    string[] themes = ["concourse", "ice", "ledger", "luma", "lyra", "maia", "meridian", "mira", "nova", "observatory", "rhea", "sera", "vega"];
     if (!themes.Contains(theme)) { theme = "ledger"; }
     var dark = Context.Request.Query["mode"] == "dark";
 }
@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@600&amp;family=Work+Sans:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"/>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
     <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme}.css")" asp-append-version="true"/>
     <script src="/js/appearance.js" asp-append-version="true"></script>

@@ -36,6 +36,9 @@
     },
     "observatory": {
       "source": "custom"
+    },
+    "meridian": {
+      "source": "custom"
     }
   },
   "components": {
@@ -171,11 +174,26 @@
             "sa-accordion-trigger",
             "sa-accordion-trigger-icon"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger",
+            "sa-accordion-trigger-icon"
+          ]
         }
       }
     },
     "Alert": {
-      "tags": ["sa-alert", "sa-alert-action", "sa-alert-description", "sa-alert-title"],
+      "tags": [
+        "sa-alert",
+        "sa-alert-action",
+        "sa-alert-description",
+        "sa-alert-title"
+      ],
       "hooks": [
         "sa-alert",
         "sa-alert-action",
@@ -305,6 +323,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-alert",
@@ -464,12 +492,31 @@
             "sa-alert-dialog-media",
             "sa-alert-dialog-title"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
         }
       }
     },
     "AppHeader": {
-      "tags": ["sa-app-header", "sa-app-header-actions", "sa-app-header-separator"],
-      "hooks": ["sa-app-header", "sa-app-header-actions", "sa-app-header-separator"],
+      "tags": [
+        "sa-app-header",
+        "sa-app-header-actions",
+        "sa-app-header-separator"
+      ],
+      "hooks": [
+        "sa-app-header",
+        "sa-app-header-actions",
+        "sa-app-header-separator"
+      ],
       "example": "docs/DocsSamples/Pages/AppHeader/Index.cshtml",
       "themes": {
         "concourse": {
@@ -480,7 +527,9 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-app-header"]
+          "rules": [
+            "sa-app-header"
+          ]
         },
         "luma": {
           "status": "shared-only",
@@ -521,6 +570,12 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-app-header"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-app-header"
@@ -783,11 +838,34 @@
             "sa-attachment-title",
             "sa-attachment-trigger"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
         }
       }
     },
     "Avatar": {
-      "tags": ["sa-avatar", "sa-avatar-badge", "sa-avatar-group", "sa-avatar-group-count"],
+      "tags": [
+        "sa-avatar",
+        "sa-avatar-badge",
+        "sa-avatar-group",
+        "sa-avatar-group-count"
+      ],
       "hooks": [
         "sa-avatar",
         "sa-avatar-badge",
@@ -917,11 +995,23 @@
             "sa-avatar-group-count",
             "sa-avatar-image"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
         }
       }
     },
     "Badge": {
-      "tags": ["sa-badge"],
+      "tags": [
+        "sa-badge"
+      ],
       "hooks": [
         "sa-badge",
         "sa-badge-variant-default",
@@ -1066,6 +1156,18 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-badge",
@@ -1222,6 +1324,17 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-breadcrumb-ellipsis",
@@ -1497,11 +1610,33 @@
             "sa-bubble-variant-secondary",
             "sa-bubble-variant-tinted"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
         }
       }
     },
     "Button": {
-      "tags": ["sa-button", "sa-linkbutton"],
+      "tags": [
+        "sa-button",
+        "sa-linkbutton"
+      ],
       "hooks": [
         "sa-button",
         "sa-button-size-default",
@@ -1757,11 +1892,34 @@
             "sa-button-variant-outline",
             "sa-button-variant-secondary"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
         }
       }
     },
     "ButtonGroup": {
-      "tags": ["sa-button-group", "sa-button-group-separator", "sa-button-group-text"],
+      "tags": [
+        "sa-button-group",
+        "sa-button-group-separator",
+        "sa-button-group-text"
+      ],
       "hooks": [
         "sa-button-group",
         "sa-button-group-orientation-horizontal",
@@ -1803,7 +1961,11 @@
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-button-group", "sa-button-group-separator", "sa-button-group-text"]
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
         },
         "maia": {
           "status": "reviewed",
@@ -1876,6 +2038,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-button-group",
@@ -2039,6 +2211,17 @@
             "sa-card-header",
             "sa-card-title"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
         }
       }
     },
@@ -2070,11 +2253,17 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "lyra": {
           "status": "shared-only",
@@ -2082,19 +2271,31 @@
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "sera": {
           "status": "shared-only",
@@ -2102,7 +2303,10 @@
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-carousel-next", "sa-carousel-previous"]
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -2117,11 +2321,20 @@
             "sa-carousel-next",
             "sa-carousel-previous"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         }
       }
     },
     "CheckboxGroup": {
-      "tags": ["sa-checkbox-group"],
+      "tags": [
+        "sa-checkbox-group"
+      ],
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/CheckboxGroup/CheckboxGroupTagHelper.cs",
       "themes": {
@@ -2172,11 +2385,17 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Composes Field groups and Observatory native checkbox controls."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Meridian native checkbox controls."
         }
       }
     },
     "Collapsible": {
-      "tags": ["sa-collapsible"],
+      "tags": [
+        "sa-collapsible"
+      ],
       "hooks": [],
       "example": "docs/DocsSamples/Pages/Collapsible/Index.cshtml",
       "themes": {
@@ -2225,6 +2444,10 @@
           "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         },
         "observatory": {
+          "status": "shared-only",
+          "reason": "Controls the visibility of supplied content; it has no independent visual surface."
+        },
+        "meridian": {
           "status": "shared-only",
           "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         }
@@ -2358,6 +2581,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-dialog-content",
@@ -2597,6 +2830,21 @@
             "sa-dropdown-menu-sub-content",
             "sa-dropdown-menu-sub-trigger"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
         }
       }
     },
@@ -2759,6 +3007,17 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-empty",
@@ -2994,12 +3253,33 @@
             "sa-field-set",
             "sa-field-title"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
         }
       }
     },
     "FormRow": {
-      "tags": ["sa-form-row"],
-      "hooks": ["sa-form-row", "sa-form-row-content"],
+      "tags": [
+        "sa-form-row"
+      ],
+      "hooks": [
+        "sa-form-row",
+        "sa-form-row-content"
+      ],
       "example": "docs/DocsSamples/Pages/FormRow/Index.cshtml",
       "themes": {
         "concourse": {
@@ -3049,11 +3329,17 @@
         "observatory": {
           "status": "shared-only",
           "reason": "The responsive shared grid consumes Observatory gap tokens; children provide field appearance."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "The responsive shared grid consumes Meridian gap tokens; children provide field appearance."
         }
       }
     },
     "FormSection": {
-      "tags": ["sa-form-section"],
+      "tags": [
+        "sa-form-section"
+      ],
       "hooks": [
         "sa-form-section",
         "sa-form-section-content",
@@ -3110,11 +3396,17 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Shared section structure consumes Observatory semantic surface, radius and gap tokens; native section typography remains structural."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Shared section structure consumes Meridian semantic surface, radius and gap tokens; the sa-font-heading rule supplies its display family while section sizes remain structural."
         }
       }
     },
     "Icon": {
-      "tags": ["sa-icon"],
+      "tags": [
+        "sa-icon"
+      ],
       "hooks": [],
       "example": "docs/DocsSamples/Pages/Icon/Index.cshtml",
       "themes": {
@@ -3165,11 +3457,17 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Inherits size and current colour from the containing component or consumer classes."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Inherits size and current colour from the containing component or consumer classes."
         }
       }
     },
     "Input": {
-      "tags": ["sa-input"],
+      "tags": [
+        "sa-input"
+      ],
       "hooks": [
         "sa-checkbox",
         "sa-checkbox-indicator",
@@ -3302,6 +3600,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-checkbox",
@@ -3544,11 +3852,31 @@
             "sa-input-group-text",
             "sa-input-group-textarea"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
         }
       }
     },
     "InputOtp": {
-      "tags": ["sa-input-otp", "sa-input-otp-group", "sa-input-otp-separator", "sa-input-otp-slot"],
+      "tags": [
+        "sa-input-otp",
+        "sa-input-otp-group",
+        "sa-input-otp-separator",
+        "sa-input-otp-slot"
+      ],
       "hooks": [
         "sa-input-otp",
         "sa-input-otp-caret",
@@ -3671,6 +3999,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-input-otp",
@@ -3998,12 +4336,40 @@
             "sa-item-variant-muted",
             "sa-item-variant-outline"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
         }
       }
     },
     "Kbd": {
-      "tags": ["sa-kbd", "sa-kbd-group"],
-      "hooks": ["sa-kbd", "sa-kbd-group"],
+      "tags": [
+        "sa-kbd",
+        "sa-kbd-group"
+      ],
+      "hooks": [
+        "sa-kbd",
+        "sa-kbd-group"
+      ],
       "example": "docs/DocsSamples/Pages/Kbd/Index.cshtml",
       "themes": {
         "concourse": {
@@ -4015,39 +4381,66 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-kbd", "sa-kbd-group"]
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -4062,12 +4455,23 @@
             "sa-kbd",
             "sa-kbd-group"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         }
       }
     },
     "Label": {
-      "tags": ["sa-label"],
-      "hooks": ["sa-label"],
+      "tags": [
+        "sa-label"
+      ],
+      "hooks": [
+        "sa-label"
+      ],
       "example": "docs/DocsSamples/Pages/Label/Index.cshtml",
       "themes": {
         "concourse": {
@@ -4078,39 +4482,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-label"]
+          "rules": [
+            "sa-label"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -4123,11 +4545,21 @@
           "rules": [
             "sa-label"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-label"
+          ]
         }
       }
     },
     "Layout": {
-      "tags": ["sa-group", "sa-page-container", "sa-stack"],
+      "tags": [
+        "sa-group",
+        "sa-page-container",
+        "sa-stack"
+      ],
       "hooks": [
         "sa-group",
         "sa-group-align-baseline",
@@ -4215,6 +4647,10 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Shared stack/group/container structure consumes Observatory gap tokens; nested components own surfaces."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Shared stack/group/container structure consumes Meridian gap tokens; nested components own surfaces."
         }
       }
     },
@@ -4347,6 +4783,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-marker",
@@ -4508,6 +4954,17 @@
             "sa-message-group",
             "sa-message-header"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
         }
       }
     },
@@ -4536,39 +4993,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-message-scroller-content"]
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -4577,6 +5052,12 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message-scroller-content"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-message-scroller-content"
@@ -4651,6 +5132,12 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Shared header structure consumes Observatory gaps and its page-title size/line-height hooks."
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-page-header-title"
+          ]
         }
       }
     },
@@ -4687,7 +5174,11 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-pagination-content", "sa-pagination-ellipsis", "sa-pagination-link"]
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
         },
         "luma": {
           "status": "reviewed",
@@ -4776,11 +5267,24 @@
             "sa-pagination-ellipsis",
             "sa-pagination-link"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
         }
       }
     },
     "Popover": {
-      "tags": ["sa-popover", "sa-popover-description", "sa-popover-header", "sa-popover-title"],
+      "tags": [
+        "sa-popover",
+        "sa-popover-description",
+        "sa-popover-header",
+        "sa-popover-title"
+      ],
       "hooks": [
         "sa-font-heading",
         "sa-popover-content",
@@ -4897,11 +5401,24 @@
             "sa-popover-header",
             "sa-popover-title"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
         }
       }
     },
     "Progress": {
-      "tags": ["sa-progress", "sa-progress-label", "sa-progress-value"],
+      "tags": [
+        "sa-progress",
+        "sa-progress-label",
+        "sa-progress-value"
+      ],
       "hooks": [
         "sa-progress-indicator",
         "sa-progress-label",
@@ -5011,6 +5528,15 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-progress-indicator",
@@ -5327,11 +5853,34 @@
             "sa-questionnaire-shortcut",
             "sa-questionnaire-title"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
         }
       }
     },
     "RadioGroup": {
-      "tags": ["sa-radio-group"],
+      "tags": [
+        "sa-radio-group"
+      ],
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/RadioGroup/RadioGroupTagHelper.cs",
       "themes": {
@@ -5382,12 +5931,22 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Composes Field groups and Observatory native radio controls."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Meridian native radio controls."
         }
       }
     },
     "Select": {
-      "tags": ["sa-select"],
-      "hooks": ["sa-native-select", "sa-native-select-icon", "sa-native-select-wrapper"],
+      "tags": [
+        "sa-select"
+      ],
+      "hooks": [
+        "sa-native-select",
+        "sa-native-select-icon",
+        "sa-native-select-wrapper"
+      ],
       "example": "docs/DocsSamples/Pages/Select/Index.cshtml",
       "themes": {
         "concourse": {
@@ -5399,39 +5958,66 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-native-select", "sa-native-select-icon"]
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -5441,6 +6027,13 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-native-select",
@@ -5544,12 +6137,25 @@
             "sa-segmented-control",
             "sa-segmented-control-item"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
         }
       }
     },
     "Separator": {
-      "tags": ["sa-separator"],
-      "hooks": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"],
+      "tags": [
+        "sa-separator"
+      ],
+      "hooks": [
+        "sa-separator",
+        "sa-separator-horizontal",
+        "sa-separator-vertical"
+      ],
       "example": "docs/DocsSamples/Pages/Separator/Index.cshtml",
       "themes": {
         "concourse": {
@@ -5562,39 +6168,75 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-separator", "sa-separator-horizontal", "sa-separator-vertical"]
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -5605,6 +6247,14 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-separator",
@@ -5755,6 +6405,17 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-sheet-close",
@@ -6110,12 +6771,39 @@
             "sa-sidebar-menu-sub-button",
             "sa-sidebar-separator"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
         }
       }
     },
     "Skeleton": {
-      "tags": ["sa-skeleton"],
-      "hooks": ["sa-skeleton"],
+      "tags": [
+        "sa-skeleton"
+      ],
+      "hooks": [
+        "sa-skeleton"
+      ],
       "example": "docs/DocsSamples/Pages/Skeleton/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6126,39 +6814,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-skeleton"]
+          "rules": [
+            "sa-skeleton"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -6171,12 +6877,25 @@
           "rules": [
             "sa-skeleton"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-skeleton"
+          ]
         }
       }
     },
     "Slider": {
-      "tags": ["sa-slider"],
-      "hooks": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"],
+      "tags": [
+        "sa-slider"
+      ],
+      "hooks": [
+        "sa-slider",
+        "sa-slider-range",
+        "sa-slider-thumb",
+        "sa-slider-track"
+      ],
       "example": "docs/DocsSamples/Pages/Slider/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6190,39 +6909,84 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-slider", "sa-slider-range", "sa-slider-thumb", "sa-slider-track"]
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -6241,11 +7005,22 @@
             "sa-slider-thumb",
             "sa-slider-track"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         }
       }
     },
     "SlotContent": {
-      "tags": ["sa-slot-content"],
+      "tags": [
+        "sa-slot-content"
+      ],
       "hooks": [],
       "example": "docs/DocsSamples/Pages/SlotContent/Index.cshtml",
       "themes": {
@@ -6296,11 +7071,17 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Registers content without rendering its own visual element."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering its own visual element."
         }
       }
     },
     "SlotOutlet": {
-      "tags": ["sa-slot-outlet"],
+      "tags": [
+        "sa-slot-outlet"
+      ],
       "hooks": [],
       "example": "docs/DocsSamples/Pages/SlotOutlet/Index.cshtml",
       "themes": {
@@ -6351,12 +7132,20 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Renders supplied content, whose nested components own appearance."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Renders supplied content, whose nested components own appearance."
         }
       }
     },
     "Spinner": {
-      "tags": ["sa-spinner"],
-      "hooks": ["sa-spinner"],
+      "tags": [
+        "sa-spinner"
+      ],
+      "hooks": [
+        "sa-spinner"
+      ],
       "example": "docs/DocsSamples/Pages/Spinner/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6406,12 +7195,22 @@
         "observatory": {
           "status": "shared-only",
           "reason": "Shared geometry inherits current colour and animation; Observatory scopes reduced-motion handling to library elements."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Shared geometry inherits current colour and animation; Meridian scopes reduced-motion handling to library elements."
         }
       }
     },
     "Switch": {
-      "tags": ["sa-switch"],
-      "hooks": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"],
+      "tags": [
+        "sa-switch"
+      ],
+      "hooks": [
+        "sa-switch",
+        "sa-switch-thumb",
+        "sa-switch-wrapper"
+      ],
       "example": "docs/DocsSamples/Pages/Switch/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6424,39 +7223,67 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb", "sa-switch-wrapper"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-switch", "sa-switch-thumb"]
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -6467,6 +7294,14 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-switch",
@@ -6668,11 +7503,28 @@
             "sa-table-header",
             "sa-table-row"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
         }
       }
     },
     "Tabs": {
-      "tags": ["sa-tab-link", "sa-tab-list"],
+      "tags": [
+        "sa-tab-link",
+        "sa-tab-list"
+      ],
       "hooks": [
         "sa-tabs",
         "sa-tabs-list",
@@ -6694,39 +7546,76 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-list-variant-line", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-tabs", "sa-tabs-list", "sa-tabs-trigger"]
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-trigger"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -6739,6 +7628,16 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-default",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-tabs",
@@ -6751,8 +7650,12 @@
       }
     },
     "Textarea": {
-      "tags": ["sa-textarea"],
-      "hooks": ["sa-textarea"],
+      "tags": [
+        "sa-textarea"
+      ],
+      "hooks": [
+        "sa-textarea"
+      ],
       "example": "docs/DocsSamples/Pages/Textarea/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6763,39 +7666,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-textarea"]
+          "rules": [
+            "sa-textarea"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -6808,11 +7729,19 @@
           "rules": [
             "sa-textarea"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-textarea"
+          ]
         }
       }
     },
     "Toggle": {
-      "tags": ["sa-toggle"],
+      "tags": [
+        "sa-toggle"
+      ],
       "hooks": [
         "sa-toggle",
         "sa-toggle-group-item",
@@ -6959,12 +7888,27 @@
             "sa-toggle-size-sm",
             "sa-toggle-variant-outline"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
         }
       }
     },
     "ToggleGroup": {
-      "tags": ["sa-toggle-group", "sa-toggle-group-item"],
-      "hooks": ["sa-toggle-group"],
+      "tags": [
+        "sa-toggle-group",
+        "sa-toggle-group-item"
+      ],
+      "hooks": [
+        "sa-toggle-group"
+      ],
       "example": "docs/DocsSamples/Pages/ToggleGroup/Index.cshtml",
       "themes": {
         "concourse": {
@@ -6975,39 +7919,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-toggle-group"]
+          "rules": [
+            "sa-toggle-group"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -7020,12 +7982,22 @@
           "rules": [
             "sa-toggle-group"
           ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle-group"
+          ]
         }
       }
     },
     "Tooltip": {
-      "tags": ["sa-tooltip"],
-      "hooks": ["sa-tooltip-content"],
+      "tags": [
+        "sa-tooltip"
+      ],
+      "hooks": [
+        "sa-tooltip-content"
+      ],
       "example": "docs/DocsSamples/Pages/Tooltip/Index.cshtml",
       "themes": {
         "concourse": {
@@ -7036,39 +8008,57 @@
         },
         "ledger": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "luma": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "lyra": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "maia": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "mira": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "nova": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "rhea": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "sera": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "vega": {
           "status": "reviewed",
-          "rules": ["sa-tooltip-content"]
+          "rules": [
+            "sa-tooltip-content"
+          ]
         },
         "ice": {
           "status": "reviewed",
@@ -7077,6 +8067,12 @@
           ]
         },
         "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tooltip-content"
+          ]
+        },
+        "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-tooltip-content"

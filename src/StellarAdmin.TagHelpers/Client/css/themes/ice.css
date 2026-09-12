@@ -2929,9 +2929,6 @@
   .dark .sa-segmented-control {
     --sa-segmented-control-active-background: var(--sa-ice-bg-pressed);
   }
-  .sa-tabs-list-variant-line {
-    border-bottom: 1px solid var(--border);
-  }
   .sa-tabs-list-variant-line .sa-tabs-trigger {
     min-height: 32px;
     padding: 0 10px 2px;

@@ -79,6 +79,7 @@
       <ClientOutput Include="wwwroot/stellar-admin.luma.css" />
       <ClientOutput Include="wwwroot/stellar-admin.lyra.css" />
       <ClientOutput Include="wwwroot/stellar-admin.maia.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.meridian.css" />
       <ClientOutput Include="wwwroot/stellar-admin.mira.css" />
       <ClientOutput Include="wwwroot/stellar-admin.nova.css" />
       <ClientOutput Include="wwwroot/stellar-admin.observatory.css" />
