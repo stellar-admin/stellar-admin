@@ -21,7 +21,7 @@
     <link
       id="theme-css"
       rel="stylesheet"
-      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.nova.css"
+      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css"
     />
     <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
 
@@ -427,8 +427,8 @@
       <button type="button" data-set-variant="inset" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">inset</button>
       <button type="button" data-set-variant="floating" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">floating</button>
       <span class="ml-2 text-muted-foreground">theme</span>
-      <button type="button" data-set-theme="nova" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">nova</button>
-      <button type="button" data-set-theme="vega" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">vega</button>
+      <button type="button" data-set-theme="shadcn.nova" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">nova</button>
+      <button type="button" data-set-theme="shadcn.vega" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">vega</button>
       <button type="button" data-toggle-dark class="ml-2 rounded-md border border-border px-2 py-1">dark</button>
     </div>
 
@@ -455,7 +455,7 @@
         .querySelector("[data-toggle-dark]")
         .addEventListener("click", () => document.documentElement.classList.toggle("dark"));
       mark("[data-set-variant]", "sidebar");
-      mark("[data-set-theme]", "nova");
+      mark("[data-set-theme]", "shadcn.nova");
     </script>
   </body>
 </html>

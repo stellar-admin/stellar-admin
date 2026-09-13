@@ -363,8 +363,11 @@ if (command === "capture") {
   const browserBinary = argValue(rest, "--browser", process.env.CHROME_PATH || "chromium");
   const theme = argValue(rest, "--theme");
   const mode = argValue(rest, "--mode");
-  if ((theme && !/^[a-z]+$/.test(theme)) || (mode && !["light", "dark"].includes(mode))) {
-    console.error("Use a lowercase theme name and --mode light|dark");
+  if (
+    (theme && !/^(?:shadcn\.)?[a-z][a-z0-9-]*$/.test(theme)) ||
+    (mode && !["light", "dark"].includes(mode))
+  ) {
+    console.error("Use a lowercase theme name (for example shadcn.nova) and --mode light|dark");
     process.exit(2);
   }
   await capture(

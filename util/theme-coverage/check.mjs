@@ -67,6 +67,10 @@ export function check(root) {
       errors.push(`${theme}: missing ClientOutput registration`);
     if (!["custom", "upstream"].includes(manifest.themes[theme]?.source))
       errors.push(`${theme}: declare custom or upstream ownership`);
+    if (manifest.themes[theme]?.source === "upstream" && !theme.startsWith("shadcn."))
+      errors.push(`${theme}: upstream themes must use the shadcn. prefix`);
+    if (manifest.themes[theme]?.source === "custom" && theme.startsWith("shadcn."))
+      errors.push(`${theme}: the shadcn. prefix is reserved for upstream themes`);
   }
   for (const component of new Set([...Object.keys(sources), ...Object.keys(manifest.components)])) {
     const source = sources[component];

@@ -22,6 +22,12 @@ const themes = readdirSync(resolve(clientRoot, "css/themes"))
   .map((file) => basename(file, ".css"))
   .sort();
 
+// Remove pre-namespace bundles on incremental builds, unless a custom theme now owns the name.
+for (const legacy of ["luma", "lyra", "maia", "mira", "nova", "rhea", "sera", "vega"]) {
+  if (!themes.includes(legacy))
+    rmSync(resolve(clientRoot, `../wwwroot/stellar-admin.${legacy}.css`), { force: true });
+}
+
 const entriesFolder = mkdtempSync(resolve(clientRoot, ".theme-build-"));
 
 function buildTheme(theme) {

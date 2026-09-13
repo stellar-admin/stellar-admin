@@ -50,6 +50,29 @@ function fixture(run) {
 
 test("reviewed theme coverage passes", () =>
   fixture(({ verify }) => assert.deepEqual(verify(), [])));
+test("upstream themes require the reserved prefix", () =>
+  fixture(({ manifest, verify }) => {
+    manifest.themes.ledger.source = "upstream";
+    assert.ok(verify().some((e) => e.includes("upstream themes must use the shadcn. prefix")));
+  }));
+test("custom and upstream themes can share an unqualified name", () =>
+  fixture(({ write, manifest, verify }) => {
+    manifest.themes["shadcn.ledger"] = { source: "upstream" };
+    manifest.components.Button.themes["shadcn.ledger"] = {
+      status: "reviewed",
+      rules: ["sa-button"],
+    };
+    write("src/StellarAdmin.TagHelpers/Client/css/themes/shadcn.ledger.css", ".sa-button {}");
+    write(
+      "src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj",
+      '<ClientOutput Include="wwwroot/stellar-admin.ledger.css" />\n' +
+        '<ClientOutput Include="wwwroot/stellar-admin.shadcn.ledger.css" />',
+    );
+    assert.deepEqual(verify(), []);
+
+    manifest.themes["shadcn.ledger"].source = "custom";
+    assert.ok(verify().some((e) => e.includes("prefix is reserved for upstream themes")));
+  }));
 test("a new component requires explicit coverage", () =>
   fixture(({ write, verify }) => {
     write(

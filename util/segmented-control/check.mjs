@@ -14,16 +14,16 @@ try {
     "concourse",
     "ice",
     "ledger",
-    "luma",
-    "lyra",
-    "maia",
+    "shadcn.luma",
+    "shadcn.lyra",
+    "shadcn.maia",
     "meridian",
-    "mira",
-    "nova",
+    "shadcn.mira",
+    "shadcn.nova",
     "observatory",
-    "rhea",
-    "sera",
-    "vega",
+    "shadcn.rhea",
+    "shadcn.sera",
+    "shadcn.vega",
   ]) {
     for (const mode of ["light", "dark"]) {
       for (const width of [1280, 390]) {
@@ -64,7 +64,7 @@ try {
           comparison.inactive,
           `${theme}/${mode}/${width} unselected matches inactive tab`,
         );
-        if (["ledger", "nova", "vega"].includes(theme)) {
+        if (["ledger", "shadcn.nova", "shadcn.vega"].includes(theme)) {
           const shot = await browser.send("Page.captureScreenshot", {
             format: "png",
             captureBeyondViewport: true,
