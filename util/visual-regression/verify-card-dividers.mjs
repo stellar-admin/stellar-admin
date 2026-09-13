@@ -10,7 +10,7 @@ const browser = await launchBrowser(process.env.CHROME_PATH ?? "chromium", {
 const failures = [];
 try {
   await browser.send("Page.enable");
-  for (const theme of ["aurora", "meridian", "observatory"]) {
+  for (const theme of ["aurora", "meridian", "observatory", "parallax"]) {
     for (const mode of ["light", "dark"]) {
       for (const width of [1280, 390]) {
         await browser.send("Emulation.setDeviceMetricsOverride", {

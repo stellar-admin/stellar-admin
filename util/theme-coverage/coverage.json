@@ -42,6 +42,9 @@
     },
     "aurora": {
       "source": "custom"
+    },
+    "parallax": {
+      "source": "custom"
     }
   },
   "components": {
@@ -189,6 +192,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-accordion-content",
+            "sa-accordion-content-inner",
+            "sa-accordion-item",
+            "sa-accordion-trigger",
+            "sa-accordion-trigger-icon"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-accordion-content",
@@ -356,6 +369,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert",
+            "sa-alert-action",
+            "sa-alert-description",
+            "sa-alert-title",
+            "sa-alert-variant-destructive"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-alert",
@@ -537,6 +560,17 @@
             "sa-alert-dialog-media",
             "sa-alert-dialog-title"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-alert-dialog-content",
+            "sa-alert-dialog-description",
+            "sa-alert-dialog-footer",
+            "sa-alert-dialog-header",
+            "sa-alert-dialog-media",
+            "sa-alert-dialog-title"
+          ]
         }
       }
     },
@@ -616,6 +650,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-app-header"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-app-header"
@@ -914,6 +954,24 @@
             "sa-attachment-title",
             "sa-attachment-trigger"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-attachment",
+            "sa-attachment-actions",
+            "sa-attachment-description",
+            "sa-attachment-group",
+            "sa-attachment-media",
+            "sa-attachment-media-variant-image",
+            "sa-attachment-orientation-horizontal",
+            "sa-attachment-orientation-vertical",
+            "sa-attachment-size-default",
+            "sa-attachment-size-sm",
+            "sa-attachment-size-xs",
+            "sa-attachment-title",
+            "sa-attachment-trigger"
+          ]
         }
       }
     },
@@ -1065,6 +1123,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-avatar",
+            "sa-avatar-badge",
+            "sa-avatar-fallback",
+            "sa-avatar-group-count",
+            "sa-avatar-image"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-avatar",
@@ -1258,6 +1326,18 @@
             "sa-badge-variant-outline",
             "sa-badge-variant-secondary"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-badge",
+            "sa-badge-variant-default",
+            "sa-badge-variant-destructive",
+            "sa-badge-variant-ghost",
+            "sa-badge-variant-link",
+            "sa-badge-variant-outline",
+            "sa-badge-variant-secondary"
+          ]
         }
       }
     },
@@ -1426,6 +1506,17 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-breadcrumb-ellipsis",
+            "sa-breadcrumb-item",
+            "sa-breadcrumb-link",
+            "sa-breadcrumb-list",
+            "sa-breadcrumb-page",
+            "sa-breadcrumb-separator"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-breadcrumb-ellipsis",
@@ -1722,6 +1813,25 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-bubble",
+            "sa-bubble-content",
+            "sa-bubble-group",
+            "sa-bubble-reactions",
+            "sa-bubble-reactions-align-end",
+            "sa-bubble-reactions-align-start",
+            "sa-bubble-reactions-side-bottom",
+            "sa-bubble-reactions-side-top",
+            "sa-bubble-variant-destructive",
+            "sa-bubble-variant-ghost",
+            "sa-bubble-variant-muted",
+            "sa-bubble-variant-outline",
+            "sa-bubble-variant-secondary",
+            "sa-bubble-variant-tinted"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-bubble",
@@ -2040,6 +2150,25 @@
             "sa-button-variant-outline",
             "sa-button-variant-secondary"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button",
+            "sa-button-size-icon",
+            "sa-button-size-icon-lg",
+            "sa-button-size-icon-sm",
+            "sa-button-size-icon-xs",
+            "sa-button-size-lg",
+            "sa-button-size-sm",
+            "sa-button-size-xs",
+            "sa-button-variant-default",
+            "sa-button-variant-destructive",
+            "sa-button-variant-ghost",
+            "sa-button-variant-link",
+            "sa-button-variant-outline",
+            "sa-button-variant-secondary"
+          ]
         }
       }
     },
@@ -2187,6 +2316,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-button-group",
+            "sa-button-group-orientation-horizontal",
+            "sa-button-group-orientation-vertical",
+            "sa-button-group-separator",
+            "sa-button-group-text"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-button-group",
@@ -2372,6 +2511,17 @@
             "sa-card-header",
             "sa-card-title"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-card",
+            "sa-card-content",
+            "sa-card-description",
+            "sa-card-footer",
+            "sa-card-header",
+            "sa-card-title"
+          ]
         }
       }
     },
@@ -2485,6 +2635,13 @@
             "sa-carousel-next",
             "sa-carousel-previous"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-carousel-next",
+            "sa-carousel-previous"
+          ]
         }
       }
     },
@@ -2550,6 +2707,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Composes Field groups and Aurora native checkbox controls."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Parallax native checkbox controls."
         }
       }
     },
@@ -2613,6 +2774,10 @@
           "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         },
         "aurora": {
+          "status": "shared-only",
+          "reason": "Controls the visibility of supplied content; it has no independent visual surface."
+        },
+        "parallax": {
           "status": "shared-only",
           "reason": "Controls the visibility of supplied content; it has no independent visual surface."
         }
@@ -2766,6 +2931,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dialog-content",
+            "sa-dialog-description",
+            "sa-dialog-footer",
+            "sa-dialog-header",
+            "sa-dialog-title"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-dialog-content",
@@ -3035,6 +3210,21 @@
             "sa-dropdown-menu-sub-content",
             "sa-dropdown-menu-sub-trigger"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-dropdown-menu-checkbox-item",
+            "sa-dropdown-menu-content",
+            "sa-dropdown-menu-item",
+            "sa-dropdown-menu-item-indicator",
+            "sa-dropdown-menu-label",
+            "sa-dropdown-menu-radio-item",
+            "sa-dropdown-menu-separator",
+            "sa-dropdown-menu-shortcut",
+            "sa-dropdown-menu-sub-content",
+            "sa-dropdown-menu-sub-trigger"
+          ]
         }
       }
     },
@@ -3219,6 +3409,17 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-empty",
+            "sa-empty-content",
+            "sa-empty-description",
+            "sa-empty-header",
+            "sa-empty-media-icon",
+            "sa-empty-title"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-empty",
@@ -3486,6 +3687,22 @@
             "sa-field-set",
             "sa-field-title"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-field",
+            "sa-field-content",
+            "sa-field-description",
+            "sa-field-error",
+            "sa-field-group",
+            "sa-field-label",
+            "sa-field-legend",
+            "sa-field-separator",
+            "sa-field-separator-content",
+            "sa-field-set",
+            "sa-field-title"
+          ]
         }
       }
     },
@@ -3554,6 +3771,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "The responsive shared grid consumes Aurora gap tokens; children provide field appearance."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "The responsive shared grid consumes Parallax gap tokens; children provide field appearance."
         }
       }
     },
@@ -3625,6 +3846,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Shared section structure consumes Aurora semantic surface, radius and gap tokens; the sa-font-heading rule supplies its display family while section sizes remain structural."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Shared section structure consumes Parallax semantic surface, radius and gap tokens; the sa-font-heading rule supplies its display family while section sizes remain structural."
         }
       }
     },
@@ -3688,6 +3913,10 @@
           "reason": "Inherits size and current colour from the containing component or consumer classes."
         },
         "aurora": {
+          "status": "shared-only",
+          "reason": "Inherits size and current colour from the containing component or consumer classes."
+        },
+        "parallax": {
           "status": "shared-only",
           "reason": "Inherits size and current colour from the containing component or consumer classes."
         }
@@ -3849,6 +4078,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-checkbox",
+            "sa-checkbox-indicator-icon",
+            "sa-input",
+            "sa-radiobutton",
+            "sa-radiobutton-indicator-icon"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-checkbox",
@@ -4121,6 +4360,21 @@
             "sa-input-group-text",
             "sa-input-group-textarea"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-group",
+            "sa-input-group-addon",
+            "sa-input-group-button",
+            "sa-input-group-button-size-icon-sm",
+            "sa-input-group-button-size-icon-xs",
+            "sa-input-group-button-size-sm",
+            "sa-input-group-button-size-xs",
+            "sa-input-group-input",
+            "sa-input-group-text",
+            "sa-input-group-textarea"
+          ]
         }
       }
     },
@@ -4273,6 +4527,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-input-otp",
+            "sa-input-otp-caret-line",
+            "sa-input-otp-group",
+            "sa-input-otp-separator",
+            "sa-input-otp-slot"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-input-otp",
@@ -4644,6 +4908,28 @@
             "sa-item-variant-muted",
             "sa-item-variant-outline"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-item",
+            "sa-item-actions",
+            "sa-item-content",
+            "sa-item-description",
+            "sa-item-footer",
+            "sa-item-group",
+            "sa-item-header",
+            "sa-item-media",
+            "sa-item-media-variant-icon",
+            "sa-item-media-variant-image",
+            "sa-item-separator",
+            "sa-item-size-default",
+            "sa-item-size-sm",
+            "sa-item-size-xs",
+            "sa-item-title",
+            "sa-item-variant-muted",
+            "sa-item-variant-outline"
+          ]
         }
       }
     },
@@ -4755,6 +5041,13 @@
             "sa-kbd",
             "sa-kbd-group"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-kbd",
+            "sa-kbd-group"
+          ]
         }
       }
     },
@@ -4846,6 +5139,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-label"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-label"
@@ -4954,6 +5253,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Shared stack/group/container structure consumes Aurora gap tokens; nested components own surfaces."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Shared stack/group/container structure consumes Parallax gap tokens; nested components own surfaces."
         }
       }
     },
@@ -5106,6 +5409,16 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-marker",
+            "sa-marker-content",
+            "sa-marker-icon",
+            "sa-marker-variant-border",
+            "sa-marker-variant-separator"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-marker",
@@ -5289,6 +5602,17 @@
             "sa-message-group",
             "sa-message-header"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message",
+            "sa-message-avatar",
+            "sa-message-content",
+            "sa-message-footer",
+            "sa-message-group",
+            "sa-message-header"
+          ]
         }
       }
     },
@@ -5392,6 +5716,12 @@
           "rules": [
             "sa-message-scroller-content"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-message-scroller-content"
+          ]
         }
       }
     },
@@ -5470,6 +5800,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-page-header-title"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-page-header-title"
@@ -5613,6 +5949,14 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-pagination-content",
+            "sa-pagination-ellipsis",
+            "sa-pagination-link"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-pagination-content",
@@ -5763,6 +6107,15 @@
             "sa-popover-header",
             "sa-popover-title"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-popover-content",
+            "sa-popover-description",
+            "sa-popover-header",
+            "sa-popover-title"
+          ]
         }
       }
     },
@@ -5899,6 +6252,15 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-progress-indicator",
+            "sa-progress-label",
+            "sa-progress-track",
+            "sa-progress-value"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-progress-indicator",
@@ -6257,6 +6619,27 @@
             "sa-questionnaire-shortcut",
             "sa-questionnaire-title"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-questionnaire",
+            "sa-questionnaire-actions",
+            "sa-questionnaire-choice",
+            "sa-questionnaire-choice-content",
+            "sa-questionnaire-choice-description",
+            "sa-questionnaire-choice-indicator",
+            "sa-questionnaire-choice-indicator-check",
+            "sa-questionnaire-choice-indicator-dot",
+            "sa-questionnaire-choices",
+            "sa-questionnaire-description",
+            "sa-questionnaire-error",
+            "sa-questionnaire-input",
+            "sa-questionnaire-item",
+            "sa-questionnaire-progress",
+            "sa-questionnaire-shortcut",
+            "sa-questionnaire-title"
+          ]
         }
       }
     },
@@ -6322,6 +6705,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Composes Field groups and Aurora native radio controls."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Composes Field groups and Parallax native radio controls."
         }
       }
     },
@@ -6428,6 +6815,13 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-native-select",
+            "sa-native-select-icon"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-native-select",
@@ -6540,6 +6934,13 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-segmented-control",
+            "sa-segmented-control-item"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-segmented-control",
@@ -6664,6 +7065,14 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-separator",
+            "sa-separator-horizontal",
+            "sa-separator-vertical"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-separator",
@@ -6836,6 +7245,17 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sheet-close",
+            "sa-sheet-content",
+            "sa-sheet-description",
+            "sa-sheet-footer",
+            "sa-sheet-header",
+            "sa-sheet-title"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-sheet-close",
@@ -7237,6 +7657,29 @@
             "sa-sidebar-menu-sub-button",
             "sa-sidebar-separator"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-sidebar-content",
+            "sa-sidebar-footer",
+            "sa-sidebar-group",
+            "sa-sidebar-group-content",
+            "sa-sidebar-group-label",
+            "sa-sidebar-header",
+            "sa-sidebar-inner",
+            "sa-sidebar-inset",
+            "sa-sidebar-menu",
+            "sa-sidebar-menu-badge",
+            "sa-sidebar-menu-button",
+            "sa-sidebar-menu-button-size-default",
+            "sa-sidebar-menu-button-size-lg",
+            "sa-sidebar-menu-button-size-sm",
+            "sa-sidebar-menu-button-variant-outline",
+            "sa-sidebar-menu-sub",
+            "sa-sidebar-menu-sub-button",
+            "sa-sidebar-separator"
+          ]
         }
       }
     },
@@ -7328,6 +7771,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-skeleton"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-skeleton"
@@ -7472,6 +7921,15 @@
             "sa-slider-thumb",
             "sa-slider-track"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-slider",
+            "sa-slider-range",
+            "sa-slider-thumb",
+            "sa-slider-track"
+          ]
         }
       }
     },
@@ -7537,6 +7995,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Registers content without rendering its own visual element."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Registers content without rendering its own visual element."
         }
       }
     },
@@ -7600,6 +8062,10 @@
           "reason": "Renders supplied content, whose nested components own appearance."
         },
         "aurora": {
+          "status": "shared-only",
+          "reason": "Renders supplied content, whose nested components own appearance."
+        },
+        "parallax": {
           "status": "shared-only",
           "reason": "Renders supplied content, whose nested components own appearance."
         }
@@ -7669,6 +8135,10 @@
         "aurora": {
           "status": "shared-only",
           "reason": "Shared geometry inherits current colour and animation; Aurora scopes reduced-motion handling to library elements."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Shared geometry inherits current colour and animation; Parallax scopes reduced-motion handling to library elements."
         }
       }
     },
@@ -7780,6 +8250,14 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-switch",
+            "sa-switch-thumb",
+            "sa-switch-wrapper"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-switch",
@@ -8009,6 +8487,20 @@
             "sa-table-header",
             "sa-table-row"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-table",
+            "sa-table-body",
+            "sa-table-caption",
+            "sa-table-cell",
+            "sa-table-container",
+            "sa-table-footer",
+            "sa-table-head",
+            "sa-table-header",
+            "sa-table-row"
+          ]
         }
       }
     },
@@ -8148,6 +8640,16 @@
             "sa-tabs-list-variant-line",
             "sa-tabs-trigger"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tabs",
+            "sa-tabs-list",
+            "sa-tabs-list-variant-default",
+            "sa-tabs-list-variant-line",
+            "sa-tabs-trigger"
+          ]
         }
       }
     },
@@ -8239,6 +8741,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-textarea"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-textarea"
@@ -8416,6 +8924,16 @@
             "sa-toggle-size-sm",
             "sa-toggle-variant-outline"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle",
+            "sa-toggle-size-default",
+            "sa-toggle-size-lg",
+            "sa-toggle-size-sm",
+            "sa-toggle-variant-outline"
+          ]
         }
       }
     },
@@ -8512,6 +9030,12 @@
           "rules": [
             "sa-toggle-group"
           ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toggle-group"
+          ]
         }
       }
     },
@@ -8603,6 +9127,12 @@
           ]
         },
         "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-tooltip-content"
+          ]
+        },
+        "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-tooltip-content"

@@ -74,6 +74,7 @@
       <ClientOutput Include="wwwroot/stellar-admin.js" />
 
       <ClientOutput Include="wwwroot/stellar-admin.aurora.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.parallax.css" />
       <ClientOutput Include="wwwroot/stellar-admin.concourse.css" />
       <ClientOutput Include="wwwroot/stellar-admin.ice.css" />
       <ClientOutput Include="wwwroot/stellar-admin.ledger.css" />
