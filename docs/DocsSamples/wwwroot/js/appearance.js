@@ -18,7 +18,7 @@
     return values.includes(override) ? override : values.includes(saved) ? saved : fallback;
   }
 
-  let theme = resolve("theme", themes, "ledger");
+  let theme = resolve("theme", themes, "observatory");
   let mode = resolve("mode", ["system", "light", "dark"], "system");
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
