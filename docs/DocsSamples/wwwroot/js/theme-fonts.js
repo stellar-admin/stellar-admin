@@ -2,6 +2,14 @@
 // Font loading belongs to the demo application; theme bundles work without it.
 (() => {
   const families = {
+    "shadcn.luma": "Inter:wght@400..700",
+    "shadcn.lyra": "JetBrains+Mono:wght@400..700",
+    "shadcn.maia": "Figtree:wght@400..700",
+    "shadcn.mira": "Inter:wght@400..700",
+    "shadcn.nova": "Geist:wght@400..700",
+    "shadcn.rhea": "Inter:wght@400..700",
+    "shadcn.sera": "Noto+Sans:wght@400..700&family=Playfair+Display:wght@400..700",
+    "shadcn.vega": "Inter:wght@400..700",
     aurora: "Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
     concourse: "Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500",
     ice: "IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700",

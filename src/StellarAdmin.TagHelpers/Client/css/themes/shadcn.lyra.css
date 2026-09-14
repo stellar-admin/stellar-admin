@@ -1177,4 +1177,11 @@
   .sa-menu-accent-bold {
     @apply [--accent:var(--primary)] [--accent-foreground:var(--primary-foreground)];
   }
+
+  /* From Themes/Lyra.custom.css */
+/* Optional web fonts; the app owns loading. Native fallbacks need no downloads. */
+:root {
+  --font-sans: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
+}
 }

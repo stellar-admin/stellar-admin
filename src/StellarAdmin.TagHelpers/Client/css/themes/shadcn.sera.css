@@ -1189,4 +1189,25 @@
   .sa-menu-accent-bold {
     @apply [--accent:var(--primary)] [--accent-foreground:var(--primary-foreground)];
   }
+
+  /* From Themes/Sera.custom.css */
+/* Optional web fonts; the app owns loading. Native fallbacks need no downloads. */
+:root {
+  --font-sans: "Noto Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
+  --sa-sera-font-display: "Playfair Display", Georgia, "Times New Roman", Times, serif;
+}
+
+.sa-font-heading,
+.sa-card-title,
+.sa-alert-title,
+.sa-dialog-title,
+.sa-alert-dialog-title,
+.sa-sheet-title,
+.sa-page-header-title,
+.sa-empty-title,
+.sa-popover-title,
+.sa-questionnaire-title {
+  font-family: var(--sa-sera-font-display);
+}
 }
