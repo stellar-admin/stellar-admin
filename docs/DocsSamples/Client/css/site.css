@@ -177,3 +177,36 @@
     vertical-align: top;
     overflow-wrap: anywhere;
 }
+
+/* Each spectrum tile requests the space its controls need, then shares the row. */
+.showcase-spectrum {
+    container-type: inline-size;
+}
+
+.showcase-spectrum-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.showcase-spectrum-tile {
+    flex: 1 1 220px;
+    min-width: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+}
+
+.showcase-spectrum-tile-medium {
+    flex: 1.2 1 280px;
+}
+
+.showcase-spectrum-tile-wide {
+    flex: 1.5 1 340px;
+}
+
+@container (max-width: 400px) {
+    .showcase-spectrum-tiles {
+        gap: 20px;
+    }
+}
