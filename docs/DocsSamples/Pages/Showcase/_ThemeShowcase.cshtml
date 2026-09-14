@@ -1,0 +1,78 @@
+<main id="gallery" class="mx-auto flex w-full max-w-7xl flex-col gap-5">
+    <header class="flex flex-wrap items-end justify-between gap-3 border-b pb-4">
+        <div>
+            <p class="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">StellarAdmin · Component collection</p>
+            <h1 class="text-2xl font-semibold tracking-tight">The component spectrum</h1>
+            <p class="mt-1 text-sm text-muted-foreground">Explore the essentials, the expressive, and everything in between.</p>
+        </div>
+        <sa-badge variant="BadgeVariant.Outline">Built with tag helpers</sa-badge>
+    </header>
+    <section class="grid gap-4 border-b pb-5 min-[1100px]:grid-cols-[120px_minmax(0,1fr)]">
+        <h2 class="text-xs font-medium text-muted-foreground">01 / Interact</h2>
+        <div class="grid items-start gap-6 min-[900px]:grid-cols-3">
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Actions</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Actions.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Navigation</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Navigation.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Disclosure</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Overlays.cshtml"/>
+            </div>
+        </div>
+    </section>
+    <section class="grid gap-4 border-b pb-5 min-[1100px]:grid-cols-[120px_minmax(0,1fr)]">
+        <h2 class="text-xs font-medium text-muted-foreground">02 / Enter</h2>
+        <div class="grid items-start gap-6 min-[900px]:grid-cols-3">
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Text & selection</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Inputs.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Choice & range</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Choices.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Verification</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Verification.cshtml"/>
+            </div>
+        </div>
+    </section>
+    <section class="grid gap-4 border-b pb-5 min-[1100px]:grid-cols-[120px_minmax(0,1fr)]">
+        <h2 class="text-xs font-medium text-muted-foreground">03 / Inform</h2>
+        <div class="grid items-start gap-6 min-[900px]:grid-cols-3">
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">People & states</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_People.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Feedback & files</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Feedback.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Structured data</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Data.cshtml"/>
+            </div>
+        </div>
+    </section>
+    <section class="grid gap-4 border-b pb-5 min-[1100px]:grid-cols-[120px_minmax(0,1fr)]">
+        <h2 class="text-xs font-medium text-muted-foreground">04 / Express</h2>
+        <div class="grid items-start gap-6 min-[900px]:grid-cols-3">
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Imagery</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Media.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Conversation</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Conversation.cshtml"/>
+            </div>
+            <div class="min-w-0 space-y-3">
+                <h3 class="text-sm font-semibold">Empty states</h3>
+                <partial name="~/Pages/Showcase/GalleryParts/_Empty.cshtml"/>
+            </div>
+        </div>
+    </section>
+</main>

@@ -1,0 +1,19 @@
+@page
+@{
+    if (HttpContext.Request.Query.ContainsKey("clean"))
+    {
+        Layout = "_Layout";
+    }
+}
+
+<div class="w-full min-w-0 p-4 sm:p-6" data-slot="example-content">
+    <header class="mb-6 flex flex-wrap items-end justify-between gap-3 border-b pb-5">
+        <div>
+            <p class="mb-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">StellarAdmin · Masonry</p>
+            <h1 class="text-3xl font-semibold tracking-tight">Anatomy of an interface</h1>
+            <p class="mt-2 max-w-xl text-sm text-muted-foreground">Fourteen studies in interaction, typography, and detail. One coherent visual language.</p>
+        </div>
+        <sa-badge variant="BadgeVariant.Outline">14 component studies</sa-badge>
+    </header>
+    <partial name="_Masonry"/>
+</div>

@@ -1,0 +1,24 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <sa-empty class="p-2">
+        <sa-empty-header>
+            <sa-empty-media variant="EmptyMediaVariant.Icon">
+                <sa-icon name="inbox"/>
+            </sa-empty-media>
+            <sa-empty-title>A clean slate</sa-empty-title>
+            <sa-empty-description>Nothing here yet. Imagine what comes next.</sa-empty-description>
+        </sa-empty-header>
+    </sa-empty>
+    <sa-button variant="ButtonVariant.Outline" commandfor="gallery-alert" command="show-modal">Preview confirmation</sa-button>
+    <sa-alert-dialog id="gallery-alert">
+        <sa-alert-dialog-header>
+            <sa-alert-dialog-title>Start fresh?</sa-alert-dialog-title>
+            <sa-alert-dialog-description>A confirmation gives you a moment to decide.</sa-alert-dialog-description>
+        </sa-alert-dialog-header>
+        <form method="dialog">
+            <sa-alert-dialog-footer>
+                <sa-alert-dialog-cancel>Go back</sa-alert-dialog-cancel>
+                <sa-alert-dialog-action>Continue</sa-alert-dialog-action>
+            </sa-alert-dialog-footer>
+        </form>
+    </sa-alert-dialog>
+</div>

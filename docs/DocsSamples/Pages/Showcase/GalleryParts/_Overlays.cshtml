@@ -1,0 +1,66 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <div class="flex flex-wrap gap-2">
+        <sa-button variant="ButtonVariant.Outline" commandfor="gallery-dialog" command="show-modal">Dialog <sa-icon name="square-arrow-out-up-right"/>
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" commandfor="gallery-sheet" command="show-modal">Sheet <sa-icon name="panel-right"/>
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" popovertarget="gallery-popover">Popover</sa-button>
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger variant="ButtonVariant.Secondary">Menu <sa-icon name="chevron-down"/>
+            </sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content>
+                <sa-dropdown-menu-label>Show in sidebar</sa-dropdown-menu-label>
+                <sa-dropdown-menu-separator/>
+                <sa-dropdown-menu-checkbox-item checked="true">Favourites</sa-dropdown-menu-checkbox-item>
+                <sa-dropdown-menu-checkbox-item checked="true">Recent items</sa-dropdown-menu-checkbox-item>
+                <sa-dropdown-menu-checkbox-item>Archived items</sa-dropdown-menu-checkbox-item>
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+    </div>
+    <sa-accordion>
+        <sa-accordion-item>
+            <sa-accordion-item-title>Little details. Big possibilities.</sa-accordion-item-title>
+            <sa-accordion-item-content>Open a panel, explore a menu, or change a control. Every example uses the same theme.</sa-accordion-item-content>
+        </sa-accordion-item>
+        <sa-accordion-item>
+            <sa-accordion-item-title>Designed to work together</sa-accordion-item-title>
+            <sa-accordion-item-content>Consistent typography, colours, spacing, and interactive states across the library.</sa-accordion-item-content>
+        </sa-accordion-item>
+    </sa-accordion>
+    <sa-dialog id="gallery-dialog">
+        <sa-dialog-header>
+            <sa-dialog-title>A little room to focus</sa-dialog-title>
+            <sa-dialog-description>Dialogs bring an important decision into view.</sa-dialog-description>
+        </sa-dialog-header>
+        <sa-field>
+            <sa-field-label for="gallery-dialog-input">Give it a name</sa-field-label>
+            <sa-input id="gallery-dialog-input" placeholder="Something wonderful"/>
+        </sa-field>
+        <sa-dialog-footer>
+            <sa-button variant="ButtonVariant.Outline" commandfor="gallery-dialog" command="close">Cancel</sa-button>
+            <sa-button commandfor="gallery-dialog" command="close">Done</sa-button>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <sa-sheet id="gallery-sheet">
+        <sa-sheet-header>
+            <sa-sheet-title>A fresh perspective</sa-sheet-title>
+            <sa-sheet-description>Keep extra details close at hand.</sa-sheet-description>
+        </sa-sheet-header>
+        <sa-field-group class="px-4">
+            <sa-field>
+                <sa-field-label for="gallery-sheet-notes">Notes</sa-field-label>
+                <sa-textarea id="gallery-sheet-notes" rows="4" placeholder="Make yourself a little space…"/>
+            </sa-field>
+        </sa-field-group>
+        <sa-sheet-footer>
+            <sa-button commandfor="gallery-sheet" command="close">Done</sa-button>
+        </sa-sheet-footer>
+    </sa-sheet>
+    <sa-popover id="gallery-popover">
+        <div class="space-y-3">
+            <p class="text-sm font-medium">Right where you need it</p>
+            <p class="text-sm text-muted-foreground">A little more context, without leaving the page.</p>
+            <sa-switch aria-label="Enable option" checked/>
+        </div>
+    </sa-popover>
+</div>

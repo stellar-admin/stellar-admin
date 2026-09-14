@@ -1,0 +1,40 @@
+<div class="flex min-w-0 flex-col items-start gap-4">
+    <sa-button-group aria-label="Image tools">
+        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" aria-label="Flip horizontal">
+            <sa-icon name="flip-horizontal"/>
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" aria-label="Flip vertical">
+            <sa-icon name="flip-vertical"/>
+        </sa-button>
+        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" aria-label="Rotate">
+            <sa-icon name="rotate-cw"/>
+        </sa-button>
+    </sa-button-group>
+    <sa-button-group aria-label="Zoom controls">
+        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" aria-label="Zoom out">
+            <sa-icon name="minus"/>
+        </sa-button>
+        <sa-button-group-text>100%</sa-button-group-text>
+        <sa-button variant="ButtonVariant.Outline" size="ButtonSize.Icon" aria-label="Zoom in">
+            <sa-icon name="plus"/>
+        </sa-button>
+    </sa-button-group>
+    <sa-button-group aria-label="Export controls">
+        <sa-button><sa-icon name="download"/> Export</sa-button>
+        <sa-button-group-separator/>
+        <sa-button size="ButtonSize.Icon" popovertarget="editorial-export-options" aria-label="Export options">
+            <sa-icon name="chevron-down"/>
+        </sa-button>
+    </sa-button-group>
+    <sa-popover id="editorial-export-options">
+        <sa-field>
+            <sa-field-label for="editorial-export-format">File format</sa-field-label>
+            <sa-select id="editorial-export-format">
+                <option>PDF document</option>
+                <option>PNG image</option>
+                <option>SVG image</option>
+            </sa-select>
+            <sa-field-description>A split button keeps related options together.</sa-field-description>
+        </sa-field>
+    </sa-popover>
+</div>

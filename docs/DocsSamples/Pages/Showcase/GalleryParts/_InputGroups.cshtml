@@ -1,0 +1,33 @@
+<div class="flex min-w-0 flex-col gap-4">
+    <sa-input-group>
+        <sa-input-group-addon>
+            <sa-input-group-text>$</sa-input-group-text>
+        </sa-input-group-addon>
+        <sa-input-group-input inputmode="decimal" placeholder="0.00" aria-label="Amount in US dollars"/>
+        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+            <sa-input-group-text>USD</sa-input-group-text>
+        </sa-input-group-addon>
+    </sa-input-group>
+    <sa-input-group>
+        <sa-input-group-addon><sa-icon name="search"/></sa-input-group-addon>
+        <sa-input-group-input placeholder="Find something…" aria-label="Search the collection"/>
+        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+            <sa-input-group-button variant="ButtonVariant.Secondary">Search</sa-input-group-button>
+        </sa-input-group-addon>
+    </sa-input-group>
+    <sa-input-group>
+        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.BlockStart" class="border-b">
+            <sa-input-group-text><sa-icon name="file-text"/> A new idea</sa-input-group-text>
+        </sa-input-group-addon>
+        <sa-input-group-textarea rows="2" class="min-h-20" placeholder="Start with a few words…" aria-label="Draft an idea"/>
+        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.BlockEnd" class="border-t">
+            <sa-input-group-text class="text-xs">Plain text</sa-input-group-text>
+            <sa-input-group-button class="ml-auto" size="InputGroupButtonSize.IconExtraSmall" aria-label="Formatting help" popovertarget="editorial-input-help">
+                <sa-icon name="info"/>
+            </sa-input-group-button>
+        </sa-input-group-addon>
+    </sa-input-group>
+    <sa-popover id="editorial-input-help">
+        <p class="text-sm">Input groups can combine text, icons, and buttons on any side of a field.</p>
+    </sa-popover>
+</div>

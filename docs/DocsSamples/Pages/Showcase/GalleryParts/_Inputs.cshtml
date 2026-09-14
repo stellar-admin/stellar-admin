@@ -1,0 +1,27 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <sa-input-group>
+        <sa-input-group-input placeholder="Search anything…" aria-label="Search"/>
+        <sa-input-group-addon>
+            <sa-icon name="search"/>
+        </sa-input-group-addon>
+        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+            <sa-kbd>⌘ K</sa-kbd>
+        </sa-input-group-addon>
+    </sa-input-group>
+    <div class="grid grid-cols-2 gap-3">
+        <sa-field>
+            <sa-field-label for="gallery-name">Name</sa-field-label>
+            <sa-input id="gallery-name" value="Alex Morgan"/>
+        </sa-field>
+        <sa-field>
+            <sa-field-label for="gallery-select">Select</sa-field-label>
+            <sa-select id="gallery-select">
+                <option>Design</option>
+                <option>Engineering</option>
+                <option>Marketing</option>
+            </sa-select>
+        </sa-field>
+    </div>
+    <sa-input type="email" value="alex@@" aria-label="Email with validation error" aria-invalid="true"/>
+    <p class="text-xs text-destructive">Please enter a complete email address.</p>
+</div>

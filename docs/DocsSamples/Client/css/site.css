@@ -161,3 +161,19 @@
     background: var(--travel-accent);
     color: var(--background);
 }
+
+/* Container-sized masonry: keep each study intact and read down each column. */
+.showcase-masonry {
+    columns: 19rem;
+    column-gap: 2rem;
+}
+
+.showcase-masonry-item {
+    display: inline-block;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 2rem;
+    break-inside: avoid;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}

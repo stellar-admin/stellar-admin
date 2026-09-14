@@ -1,0 +1,25 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <sa-avatar-group>
+            <sa-avatar src="/avatars/avatar-1.jpg" name="Priya Raman"/>
+            <sa-avatar src="/avatars/avatar-2.jpg" name="Mika Tanaka"/>
+            <sa-avatar src="/avatars/avatar-3.jpg" name="Alex Morgan"/>
+        </sa-avatar-group>
+        <sa-avatar name="Jamie Lee"/>
+    </div>
+    <div class="flex flex-wrap gap-2">
+        <sa-badge>Published</sa-badge>
+        <sa-badge variant="BadgeVariant.Secondary">Draft</sa-badge>
+        <sa-badge variant="BadgeVariant.Outline">In review</sa-badge>
+        <sa-badge variant="BadgeVariant.Destructive">Archived</sa-badge>
+    </div>
+    <sa-separator/>
+    <div class="flex items-center gap-3">
+        <sa-skeleton class="size-9 shrink-0 rounded-full"/>
+        <div class="flex flex-1 flex-col gap-2">
+            <sa-skeleton class="h-3 w-2/3"/>
+            <sa-skeleton class="h-3 w-1/3"/>
+        </div>
+        <sa-spinner class="text-muted-foreground"/>
+    </div>
+</div>

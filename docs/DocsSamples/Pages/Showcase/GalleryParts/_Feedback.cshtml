@@ -1,0 +1,23 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <sa-alert>
+        <sa-icon name="circle-check"/>
+        <sa-alert-title>You're all set</sa-alert-title>
+        <sa-alert-description>Your changes have been saved.</sa-alert-description>
+    </sa-alert>
+    <div class="space-y-2">
+        <div class="flex justify-between text-xs">
+            <span>Uploading files</span>
+            <span class="text-muted-foreground">64%</span>
+        </div>
+        <sa-progress value="64" aria-label="Upload progress"/>
+    </div>
+    <sa-attachment>
+        <sa-attachment-media>
+            <sa-icon name="file-text"/>
+        </sa-attachment-media>
+        <sa-attachment-content>
+            <sa-attachment-title>brand-guidelines.pdf</sa-attachment-title>
+            <sa-attachment-description>PDF · 2.4 MB</sa-attachment-description>
+        </sa-attachment-content>
+    </sa-attachment>
+</div>

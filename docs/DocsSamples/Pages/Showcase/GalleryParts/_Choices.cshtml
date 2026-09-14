@@ -1,0 +1,27 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <sa-segmented-control name="gallery-period" value="monthly" render-field="false" aria-label="Billing period" class="w-full">
+        <sa-segmented-control-item value="monthly">Monthly</sa-segmented-control-item>
+        <sa-segmented-control-item value="yearly">Yearly</sa-segmented-control-item>
+    </sa-segmented-control>
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <sa-field orientation="FieldOrientation.Horizontal" class="w-auto">
+            <sa-input id="gallery-check" type="checkbox" checked/>
+            <sa-field-label for="gallery-check">Include extras</sa-field-label>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal" class="w-auto">
+            <sa-switch id="gallery-switch" checked/>
+            <sa-field-label for="gallery-switch">Alerts</sa-field-label>
+        </sa-field>
+    </div>
+    <div class="flex flex-wrap items-center gap-4">
+        <sa-field orientation="FieldOrientation.Horizontal" class="w-auto">
+            <sa-input id="gallery-radio-one" type="radio" name="gallery-choice" value="one" checked/>
+            <sa-field-label for="gallery-radio-one">Standard</sa-field-label>
+        </sa-field>
+        <sa-field orientation="FieldOrientation.Horizontal" class="w-auto">
+            <sa-input id="gallery-radio-two" type="radio" name="gallery-choice" value="two"/>
+            <sa-field-label for="gallery-radio-two">Premium</sa-field-label>
+        </sa-field>
+    </div>
+    <sa-slider value="25,75" min="0" max="100" aria-label="Preferred range"/>
+</div>

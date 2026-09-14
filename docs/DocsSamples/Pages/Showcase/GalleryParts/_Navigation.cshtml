@@ -1,0 +1,46 @@
+<div class="flex min-w-0 flex-col gap-3">
+    <sa-breadcrumb>
+        <sa-breadcrumb-list>
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-link href="#gallery">Home</sa-breadcrumb-link>
+            </sa-breadcrumb-item>
+            <sa-breadcrumb-separator/>
+            <sa-breadcrumb-item>
+                <sa-breadcrumb-link href="#gallery">Library</sa-breadcrumb-link>
+            </sa-breadcrumb-item>
+            <sa-breadcrumb-separator/>
+            <sa-breadcrumb-page>Details</sa-breadcrumb-page>
+        </sa-breadcrumb-list>
+    </sa-breadcrumb>
+    <sa-tab-list>
+        <sa-tab-link href="#gallery" is-active="true">Overview</sa-tab-link>
+        <sa-tab-link href="#gallery">Activity</sa-tab-link>
+        <sa-tab-link href="#gallery">Settings</sa-tab-link>
+    </sa-tab-list>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <sa-toggle-group name="gallery-view" type="ToggleGroupType.Single">
+            <sa-toggle-group-item value="list" selected="true" aria-label="List view">
+                <sa-icon name="list"/>
+            </sa-toggle-group-item>
+            <sa-toggle-group-item value="grid" aria-label="Grid view">
+                <sa-icon name="layout-grid"/>
+            </sa-toggle-group-item>
+            <sa-toggle-group-item value="map" aria-label="Map view">
+                <sa-icon name="map"/>
+            </sa-toggle-group-item>
+        </sa-toggle-group>
+        <sa-pagination class="mx-0 w-auto">
+            <sa-pagination-content>
+                <sa-pagination-item>
+                    <sa-pagination-link href="#gallery" is-active="true">1</sa-pagination-link>
+                </sa-pagination-item>
+                <sa-pagination-item>
+                    <sa-pagination-link href="#gallery">2</sa-pagination-link>
+                </sa-pagination-item>
+                <sa-pagination-item>
+                    <sa-pagination-link href="#gallery">3</sa-pagination-link>
+                </sa-pagination-item>
+            </sa-pagination-content>
+        </sa-pagination>
+    </div>
+</div>
