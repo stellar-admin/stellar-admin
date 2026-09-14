@@ -73,8 +73,8 @@
   --sa-ledger-ring-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 35%, transparent);
 
   /* typography */
-  --font-sans: "Lexend", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --font-sans: "Lexend", "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
   --sa-ledger-text-display: 2.375rem; /* 38px / 600 / -0.025em / 1.1  */
   --sa-ledger-text-h1: 1.75rem; /* 28px / 600 / -0.02em  / 1.2  */
   --sa-ledger-text-h2: 1.375rem; /* 22px / 600 / -0.015em / 1.25 */

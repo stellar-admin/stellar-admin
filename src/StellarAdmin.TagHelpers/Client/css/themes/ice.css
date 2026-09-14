@@ -134,8 +134,8 @@
 :root {
   /* Type. Two families only. Mono carries every number, ID, key hint and
      micro-label; sans carries prose and control labels. */
-  --sa-ice-font-ui: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --sa-ice-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --sa-ice-font-ui: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sa-ice-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
 
   --sa-ice-fs-label: 9.5px; /* mono section/column labels, 0.14em tracking, caps */
   --sa-ice-fs-xs: 11px;

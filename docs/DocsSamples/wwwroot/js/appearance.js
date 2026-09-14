@@ -23,6 +23,7 @@
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
   function apply() {
+    window.saLoadThemeFonts(theme);
     const url = new URL(stylesheet.href);
     const pathname = `/_content/StellarAdmin.TagHelpers/stellar-admin.${theme}.css`;
     if (url.pathname !== pathname) {
