@@ -3,11 +3,19 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Description>Shared registration infrastructure for StellarAdmin packages</Description>
+    <Description>Shared registration and icons for StellarAdmin packages</Description>
     <PackageTags>admin;dependency-injection</PackageTags>
     <RootNamespace>StellarAdmin</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference
+      Include="..\..\gen\StellarAdmin.Generators\StellarAdmin.Generators.csproj"
+      ReferenceOutputAssembly="false"
+      OutputItemType="Analyzer"
+    />
+    <AdditionalFiles Include="Icons/Definitions/Lucide.json" />
   </ItemGroup>
 </Project>

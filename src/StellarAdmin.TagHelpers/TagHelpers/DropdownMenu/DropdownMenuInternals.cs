@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers.Icons;
+using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
 

@@ -1,4 +1,4 @@
-﻿namespace StellarAdmin.TagHelpers.Icons;
+﻿namespace StellarAdmin.Icons;
 
 public interface IIconPack
 {

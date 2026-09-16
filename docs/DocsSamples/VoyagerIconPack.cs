@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using StellarAdmin.TagHelpers.Icons;
+using StellarAdmin.Icons;
 
 namespace DocsSamples;
 

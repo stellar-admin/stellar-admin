@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Icons;
 
 namespace StellarAdmin;
 
@@ -15,7 +16,10 @@ public static class StellarAdminExtensions
         /// <returns>The <see cref="StellarAdminBuilder" /> instance.</returns>
         public StellarAdminBuilder AddStellarAdmin()
         {
+            services.AddSingleton<IIconManager>(_ => DefaultIconManager.Instance);
+
             var builder = new StellarAdminBuilder(services);
+            builder.AddIconPack<LucideIconPack>();
 
             return builder;
         }

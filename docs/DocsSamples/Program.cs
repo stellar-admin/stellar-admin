@@ -19,7 +19,7 @@ public class Program
         builder.Services.AddRazorPages();
         var stellarAdmin = builder.Services.AddStellarAdmin();
         // Custom icons for the Icons docs page.
-        stellarAdmin.AddTagHelpers().AddIconPack<VoyagerIconPack>();
+        stellarAdmin.AddIconPack<VoyagerIconPack>().AddTagHelpers();
 
         var app = builder.Build();
 

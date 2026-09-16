@@ -11,8 +11,42 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin;
+using StellarAdmin.Icons;
 using StellarAdmin.TagHelpers;
-using StellarAdmin.TagHelpers.Icons;
+
+var coreServices = new ServiceCollection();
+var coreBuilder = coreServices.AddStellarAdmin();
+using (var coreProvider = coreServices.BuildServiceProvider())
+{
+    var coreIcons = coreProvider.GetRequiredService<IIconManager>();
+    if (!coreIcons.TryGetIcon("check", out var checkIcon) || checkIcon!.Shapes.Count == 0)
+    {
+        throw new InvalidOperationException(
+            "Core registration must provide generated Lucide icons."
+        );
+    }
+
+    coreBuilder.AddIcon("core-test-custom", checkIcon);
+    if (!coreIcons.TryGetIcon("CORE-TEST-CUSTOM", out var customIcon) || customIcon != checkIcon)
+    {
+        throw new InvalidOperationException(
+            "Custom icons must be available through the registered manager."
+        );
+    }
+
+    coreBuilder.AddIconPack<CoreTestIconPack>().AddTagHelpers();
+    if (!coreIcons.TryGetIcon("check", out var replacement) || replacement != CoreTestIconPack.Icon)
+    {
+        throw new InvalidOperationException(
+            "Tag helper registration must preserve icon pack overrides."
+        );
+    }
+
+    // Restore the built-in pack before exercising the existing rendering checks.
+    coreBuilder.AddIconPack<LucideIconPack>();
+}
+
+Console.WriteLine("Core icon registration checks passed.");
 
 var builder = WebApplication.CreateBuilder();
 var services = builder.Services;
@@ -305,5 +339,15 @@ static void Require(bool condition, string message)
     if (!condition)
     {
         throw new InvalidOperationException(message);
+    }
+}
+
+internal sealed class CoreTestIconPack : IIconPack
+{
+    public static IconDefinition Icon { get; } = new(new Dictionary<string, string>(), []);
+
+    public IDictionary<string, IconDefinition> GetIcons()
+    {
+        return new Dictionary<string, IconDefinition> { ["check"] = Icon };
     }
 }

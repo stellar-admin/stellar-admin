@@ -25,11 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../StellarAdmin.Core/StellarAdmin.Core.csproj" />
-    <ProjectReference
-      Include="..\..\gen\StellarAdmin.TagHelpers.Generators\StellarAdmin.TagHelpers.Generators.csproj"
-      ReferenceOutputAssembly="false"
-      OutputItemType="Analyzer"
-    />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,13 +35,6 @@
   <ItemGroup>
     <Folder Include="TagHelpers\**\" NamespaceProvider="False" />
     <Folder Remove="TagHelpers\" />
-  </ItemGroup>
-
-  <!-- Icon packs -->
-  <ItemGroup>
-    <Content Update="Icons/Definitions/**/*.*" Pack="false" />
-    <!--<AdditionalFiles Include="Icons\Definitions\*.json" />-->
-    <AdditionalFiles Include="Icons\Definitions\Lucide.json" />
   </ItemGroup>
 
   <!-- Client -->
