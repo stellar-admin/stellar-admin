@@ -90,6 +90,8 @@ The skills live in the [stellar-admin/skills](https://github.com/stellar-admin/s
 
 This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.razor` files) along with `forms`, `layout`, and `theming`.
 
+`StellarAdmin.Core` supplies the shared `AddStellarAdmin()` entry point and builder. It is installed transitively with TagHelpers or Dashboard; no separate installation is needed.
+
 ## Resource and admin packages
 
 This repository also contains `StellarAdmin.Dashboard` (admin shell and resource screens), `StellarAdmin.Dashboard.Identity` (Identity management), and `StellarAdmin.Dashboard.EntityFrameworkCore` (EF Core resources). All are MIT licensed. Register the integrated admin application with `AddStellarAdmin().AddDashboard()`. There is no paid tier. These packages are available from source; their NuGet publication is a separate release step.

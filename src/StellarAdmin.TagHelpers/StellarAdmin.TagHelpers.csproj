@@ -24,6 +24,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../StellarAdmin.Core/StellarAdmin.Core.csproj" />
     <ProjectReference
       Include="..\..\gen\StellarAdmin.TagHelpers.Generators\StellarAdmin.TagHelpers.Generators.csproj"
       ReferenceOutputAssembly="false"

@@ -12,6 +12,7 @@
     <Project Path="sandbox/IdentitySimplePlayground/IdentitySimplePlayground.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/StellarAdmin.Core/StellarAdmin.Core.csproj" />
     <Project Path="src/StellarAdmin.Dashboard/StellarAdmin.Dashboard.csproj" />
     <Project Path="src/StellarAdmin.Dashboard.Identity/StellarAdmin.Dashboard.Identity.csproj" />
     <Project Path="src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
