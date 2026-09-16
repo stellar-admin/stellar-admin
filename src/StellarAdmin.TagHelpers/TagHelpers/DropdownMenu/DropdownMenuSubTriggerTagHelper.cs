@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -10,7 +11,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-dropdown-menu-sub-trigger")]
 public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     Whether the trigger is inset, aligning its text with items that have a leading icon.
@@ -18,9 +19,9 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuSubTriggerTagHelper(IIconManager iconManager)
+    public DropdownMenuSubTriggerTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -58,7 +59,7 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
         var childContent = await output.GetChildContentAsync();
         output.Content.SetHtmlContent(childContent);
         output.Content.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, _iconManager, "chevron-right", "size-4")
+            DropdownMenuInternals.RenderIcon(context, _iconOptions, "chevron-right", "size-4")
         );
     }
 }

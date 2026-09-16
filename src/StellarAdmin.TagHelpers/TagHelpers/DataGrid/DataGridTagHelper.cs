@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -23,12 +24,12 @@ namespace StellarAdmin.TagHelpers;
 public class DataGridTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public DataGridTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public DataGridTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     [HtmlAttributeNotBound]
@@ -349,7 +350,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             new TagHelperAttributeList(attributes),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var inputTagHelper = new InputTagHelper(_htmlGenerator, _iconManager)
+        var inputTagHelper = new InputTagHelper(_htmlGenerator, _iconOptions)
         {
             ViewContext = ViewContext,
         };

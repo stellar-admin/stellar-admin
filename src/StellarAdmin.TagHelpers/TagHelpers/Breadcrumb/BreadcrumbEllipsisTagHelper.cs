@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -11,11 +12,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-breadcrumb-ellipsis")]
 public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public BreadcrumbEllipsisTagHelper(IIconManager iconManager)
+    public BreadcrumbEllipsisTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -37,7 +38,7 @@ public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
             [new TagHelperAttribute("class", "size-4")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "ellipsis" };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "ellipsis" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         output.Content.AppendHtml(iconOutput);
 

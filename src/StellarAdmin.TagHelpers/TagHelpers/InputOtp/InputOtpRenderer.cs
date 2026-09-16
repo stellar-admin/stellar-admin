@@ -55,7 +55,7 @@ internal static class InputOtpRenderer
     internal static async Task RenderDefaultSeparatorContentAsync(
         TagHelperContent target,
         TagHelperContext context,
-        IIconManager iconManager
+        IconOptions iconOptions
     )
     {
         var iconOutput = new TagHelperOutput(
@@ -63,7 +63,7 @@ internal static class InputOtpRenderer
             [new TagHelperAttribute("class", "size-4")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(iconManager) { Name = "minus" };
+        var iconTagHelper = new IconTagHelper(iconOptions) { Name = "minus" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         target.AppendHtml(iconOutput);
     }

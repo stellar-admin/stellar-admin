@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -9,11 +10,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-message-scroller-button")]
 public class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public MessageScrollerButtonTagHelper(IIconManager iconManager)
+    public MessageScrollerButtonTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -118,7 +119,7 @@ public class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "arrow-down" };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "arrow-down" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         output.Content.AppendHtml(iconOutput);
 

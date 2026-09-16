@@ -1,5 +1,5 @@
 ﻿@page
-@inject IIconManager IconManager
+@inject Microsoft.Extensions.Options.IOptions<IconOptions> IconOptionsAccessor
 @using StellarAdmin.Icons
 @model ComponentPlayground.Pages.Demo.Icon
 
@@ -17,7 +17,7 @@
     <sa-icon name="align-horizontal-justify-center"/>
 
     <div class="flex flex-wrap gap-x-2 gap-y-2">
-        @foreach (var iconName in IconManager.GetIconNames())
+        @foreach (var iconName in IconOptionsAccessor.Value.Icons.Keys)
         {
             <sa-icon name="@iconName" stroke-width="1"/>
         }

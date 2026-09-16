@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -13,7 +14,7 @@ namespace StellarAdmin.TagHelpers;
 public class InputGroupInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     An expression to be evaluated against the current model.
@@ -52,10 +53,10 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public InputGroupInputTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public InputGroupInputTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager;
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -66,7 +67,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-input-group-input", output.GetUserSuppliedClass())
         );
 
-        var inputTagHelper = new InputTagHelper(_htmlGenerator, _iconManager)
+        var inputTagHelper = new InputTagHelper(_htmlGenerator, _iconOptions)
         {
             ViewContext = ViewContext,
             For = For,

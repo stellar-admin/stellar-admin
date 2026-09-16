@@ -16,10 +16,9 @@ public static class StellarAdminExtensions
         /// <returns>The <see cref="StellarAdminBuilder" /> instance.</returns>
         public StellarAdminBuilder AddStellarAdmin()
         {
-            services.AddSingleton<IIconManager>(_ => DefaultIconManager.Instance);
+            services.AddOptions<IconOptions>();
 
             var builder = new StellarAdminBuilder(services);
-            builder.AddIconPack<LucideIconPack>();
 
             return builder;
         }

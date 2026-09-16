@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -9,7 +10,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-carousel-previous")]
 public class CarouselPreviousTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     The button size.
@@ -27,9 +28,9 @@ public class CarouselPreviousTagHelper : StellarAdminTagHelperBase
     /// </remarks>
     public ButtonVariant? Variant { get; set; }
 
-    public CarouselPreviousTagHelper(IIconManager iconManager)
+    public CarouselPreviousTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager;
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -80,7 +81,7 @@ public class CarouselPreviousTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
 
-            new IconTagHelper(_iconManager) { Name = "chevron-left" }.Process(context, icon);
+            new IconTagHelper(_iconOptions) { Name = "chevron-left" }.Process(context, icon);
 
             output.Content.SetHtmlContent(icon);
         }

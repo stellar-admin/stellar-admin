@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -11,7 +12,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-dropdown-menu-checkbox-item")]
 public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     Whether the item is checked.
@@ -41,9 +42,9 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
-    public DropdownMenuCheckboxItemTagHelper(IIconManager iconManager)
+    public DropdownMenuCheckboxItemTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -87,7 +88,7 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
         indicator.Attributes["data-slot"] = "dropdown-menu-checkbox-item-indicator";
         indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, _iconManager, "check", "size-4")
+            DropdownMenuInternals.RenderIcon(context, _iconOptions, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

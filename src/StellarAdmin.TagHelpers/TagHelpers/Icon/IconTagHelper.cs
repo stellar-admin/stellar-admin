@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -12,7 +13,7 @@ namespace StellarAdmin.TagHelpers;
 [OutputElementHint("svg")]
 public class IconTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
     private static readonly IconDefinition NotFoundIcon = new IconDefinition(
         new Dictionary<string, string>
         {
@@ -46,9 +47,12 @@ public class IconTagHelper : StellarAdminTagHelperBase
         ]
     );
 
-    public IconTagHelper(IIconManager iconManager)
+    public IconTagHelper(IOptions<IconOptions> iconOptions)
+        : this(iconOptions.Value) { }
+
+    internal IconTagHelper(IconOptions iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions;
     }
 
     /// <summary>
@@ -61,7 +65,9 @@ public class IconTagHelper : StellarAdminTagHelperBase
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var iconDefinition =
-            Name != null && _iconManager.TryGetIcon(Name, out var foundIcon) && foundIcon != null
+            Name != null
+            && _iconOptions.Icons.TryGetValue(Name, out var foundIcon)
+            && foundIcon != null
                 ? foundIcon
                 : NotFoundIcon;
 

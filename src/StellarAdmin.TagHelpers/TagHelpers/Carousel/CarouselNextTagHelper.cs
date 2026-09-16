@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -9,7 +10,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-carousel-next")]
 public class CarouselNextTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     The button size.
@@ -27,9 +28,9 @@ public class CarouselNextTagHelper : StellarAdminTagHelperBase
     /// </remarks>
     public ButtonVariant? Variant { get; set; }
 
-    public CarouselNextTagHelper(IIconManager iconManager)
+    public CarouselNextTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager;
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -80,7 +81,7 @@ public class CarouselNextTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
 
-            new IconTagHelper(_iconManager) { Name = "chevron-right" }.Process(context, icon);
+            new IconTagHelper(_iconOptions) { Name = "chevron-right" }.Process(context, icon);
 
             output.Content.SetHtmlContent(icon);
         }

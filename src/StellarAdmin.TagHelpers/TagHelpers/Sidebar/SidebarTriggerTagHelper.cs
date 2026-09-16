@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -9,11 +10,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-sidebar-trigger")]
 public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public SidebarTriggerTagHelper(IIconManager iconManager)
+    public SidebarTriggerTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -48,7 +49,7 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "panel-left" };
+            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "panel-left" };
             iconTagHelper.Process(context, iconOutput);
             iconContent = new DefaultTagHelperContent().AppendHtml(iconOutput);
         }

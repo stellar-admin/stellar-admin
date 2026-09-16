@@ -3,6 +3,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -15,12 +16,15 @@ namespace StellarAdmin.TagHelpers;
 public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public QuestionnaireChoiceTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public QuestionnaireChoiceTagHelper(
+        IHtmlGenerator htmlGenerator,
+        IOptions<IconOptions> iconOptions
+    )
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -232,7 +236,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
 
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "check" };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "check" };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         indicator.InnerHtml.AppendHtml(iconOutput);
 

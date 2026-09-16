@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
@@ -26,12 +27,12 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
     private const string DirectionPlaceholder = "{dir}";
 
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public DataGridSortTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public DataGridSortTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -228,7 +229,7 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = name };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = name };
         await iconTagHelper.ProcessAsync(context, iconOutput);
 
         return iconOutput;

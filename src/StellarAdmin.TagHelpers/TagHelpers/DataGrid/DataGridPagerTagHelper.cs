@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -31,12 +32,12 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
     private const string PageSizePlaceholder = "{pageSize}";
 
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public DataGridPagerTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public DataGridPagerTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -597,7 +598,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var ellipsisTagHelper = new PaginationEllipsisTagHelper(_iconManager);
+        var ellipsisTagHelper = new PaginationEllipsisTagHelper(_iconOptions);
         await ellipsisTagHelper.ProcessAsync(context, ellipsisOutput);
 
         return ellipsisOutput;
@@ -610,7 +611,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = name };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = name };
         await iconTagHelper.ProcessAsync(context, iconOutput);
 
         return iconOutput;

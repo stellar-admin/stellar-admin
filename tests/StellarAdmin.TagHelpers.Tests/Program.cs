@@ -10,43 +10,121 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StellarAdmin;
 using StellarAdmin.Icons;
 using StellarAdmin.TagHelpers;
 
 var coreServices = new ServiceCollection();
 var coreBuilder = coreServices.AddStellarAdmin();
+coreBuilder.AddIcon("core-test-custom", CoreTestIconPack.Icon).AddIconPack<CoreTestIconPack>();
+coreServices.AddStellarAdmin().AddTagHelpers();
+
 using (var coreProvider = coreServices.BuildServiceProvider())
 {
-    var coreIcons = coreProvider.GetRequiredService<IIconManager>();
-    if (!coreIcons.TryGetIcon("check", out var checkIcon) || checkIcon!.Shapes.Count == 0)
-    {
-        throw new InvalidOperationException(
-            "Core registration must provide generated Lucide icons."
-        );
-    }
+    var coreIcons = coreProvider.GetRequiredService<IOptions<IconOptions>>().Value;
+    Require(
+        ReferenceEquals(coreIcons, coreProvider.GetRequiredService<IOptions<IconOptions>>().Value),
+        "Icon options must be shared within their provider."
+    );
+    Require(
+        coreIcons.Icons.TryGetValue("CORE-TEST-CUSTOM", out var customIcon)
+            && customIcon == CoreTestIconPack.Icon,
+        "Custom icons must support case-insensitive lookup."
+    );
+    Require(
+        coreIcons.Icons.TryGetValue("check", out var replacement)
+            && replacement == CoreTestIconPack.Icon,
+        "Repeated registration must preserve icon pack overrides."
+    );
+    Require(
+        coreIcons.Icons.Keys.Contains("core-test-custom"),
+        "The icon name list must include custom icons."
+    );
 
-    coreBuilder.AddIcon("core-test-custom", checkIcon);
-    if (!coreIcons.TryGetIcon("CORE-TEST-CUSTOM", out var customIcon) || customIcon != checkIcon)
-    {
-        throw new InvalidOperationException(
-            "Custom icons must be available through the registered manager."
-        );
-    }
+    coreBuilder.AddIcon("registered-later", CoreTestIconPack.Icon);
+    Require(
+        !coreIcons.Icons.TryGetValue("registered-later", out _),
+        "Later registration must not modify an existing provider."
+    );
 
-    coreBuilder.AddIconPack<CoreTestIconPack>().AddTagHelpers();
-    if (!coreIcons.TryGetIcon("check", out var replacement) || replacement != CoreTestIconPack.Icon)
-    {
-        throw new InvalidOperationException(
-            "Tag helper registration must preserve icon pack overrides."
-        );
-    }
+    using var secondProvider = coreServices.BuildServiceProvider();
+    var secondIcons = secondProvider.GetRequiredService<IOptions<IconOptions>>().Value;
+    Require(
+        !ReferenceEquals(coreIcons, secondIcons)
+            && secondIcons.Icons.TryGetValue("registered-later", out _),
+        "Each provider must receive its own options."
+    );
 
-    // Restore the built-in pack before exercising the existing rendering checks.
-    coreBuilder.AddIconPack<LucideIconPack>();
+    var independentServices = new ServiceCollection();
+    independentServices.AddStellarAdmin();
+    using var independentProvider = independentServices.BuildServiceProvider();
+    var independentIcons = independentProvider.GetRequiredService<IOptions<IconOptions>>().Value;
+    Require(
+        !independentIcons.Icons.TryGetValue("core-test-custom", out _),
+        "Icons must not leak between independent service collections."
+    );
+    Require(
+        independentIcons.Icons.TryGetValue("check", out var checkIcon)
+            && checkIcon!.Shapes.Count > 0,
+        "Independent providers must retain generated Lucide defaults."
+    );
 }
 
-Console.WriteLine("Core icon registration checks passed.");
+var orderedServices = new ServiceCollection();
+orderedServices.AddStellarAdmin().AddIconPack<CoreTestIconPack>().AddIconPack<LucideIconPack>();
+orderedServices.Configure<IconOptions>(options => options.Icons.Remove("activity"));
+using (var orderedProvider = orderedServices.BuildServiceProvider())
+{
+    var orderedIcons = orderedProvider.GetRequiredService<IOptions<IconOptions>>().Value;
+    Require(
+        orderedIcons.Icons.TryGetValue("check", out var checkIcon) && checkIcon!.Shapes.Count > 0,
+        "Later icon packs must override earlier packs."
+    );
+    Require(
+        !orderedIcons.Icons.TryGetValue("activity", out _),
+        "Direct options configuration must be honored."
+    );
+}
+
+foreach (var duplicateName in new[] { "CHECK", "duplicate-custom" })
+{
+    var duplicateServices = new ServiceCollection();
+    var duplicateBuilder = duplicateServices.AddStellarAdmin();
+    if (duplicateName == "duplicate-custom")
+    {
+        duplicateBuilder.AddIcon(duplicateName, CoreTestIconPack.Icon);
+    }
+
+    duplicateBuilder.AddIcon(duplicateName, CoreTestIconPack.Icon);
+    using var duplicateProvider = duplicateServices.BuildServiceProvider();
+    var duplicateRejected = false;
+    try
+    {
+        _ = new IconTagHelper(duplicateProvider.GetRequiredService<IOptions<IconOptions>>());
+    }
+    catch (ArgumentException)
+    {
+        duplicateRejected = true;
+    }
+
+    Require(duplicateRejected, "Duplicate icon names must be rejected when options are resolved.");
+}
+
+var trackingOptions = new TrackingIconOptions();
+var iconHelper = new IconTagHelper(trackingOptions) { Name = "check" };
+Require(trackingOptions.ReadCount == 1, "Icon options must resolve during construction.");
+var iconHtml = await Render(iconHelper);
+Require(
+    iconHtml.Contains("<svg") && iconHtml.Contains("<path"),
+    "Configured icons must render as SVG."
+);
+iconHelper.Name = "missing-icon-for-test";
+var fallbackHtml = await Render(iconHelper);
+Require(fallbackHtml.Contains("M12 9v4"), "Missing icons must retain the fallback glyph.");
+Require(trackingOptions.ReadCount == 1, "Rendering must use the already-resolved options.");
+
+Console.WriteLine("Core icon options and isolation checks passed.");
 
 var builder = WebApplication.CreateBuilder();
 var services = builder.Services;
@@ -56,7 +134,7 @@ services.AddStellarAdmin().AddTagHelpers();
 
 using var provider = services.BuildServiceProvider();
 var generator = provider.GetRequiredService<IHtmlGenerator>();
-var icons = provider.GetRequiredService<IIconManager>();
+var icons = provider.GetRequiredService<IOptions<IconOptions>>();
 var metadata = provider.GetRequiredService<IModelMetadataProvider>();
 var viewContext = new ViewContext
 {
@@ -254,7 +332,7 @@ Require(
 Console.WriteLine("Field class name rendering checks passed.");
 
 async Task<string> Render(
-    FieldInputBaseTagHelper helper,
+    TagHelper helper,
     Func<TagHelperContext, Task<string>>? children = null
 )
 {
@@ -349,5 +427,21 @@ internal sealed class CoreTestIconPack : IIconPack
     public IDictionary<string, IconDefinition> GetIcons()
     {
         return new Dictionary<string, IconDefinition> { ["check"] = Icon };
+    }
+}
+
+internal sealed class TrackingIconOptions : IOptions<IconOptions>
+{
+    private readonly IconOptions _value = new();
+
+    public int ReadCount { get; private set; }
+
+    public IconOptions Value
+    {
+        get
+        {
+            ReadCount++;
+            return _value;
+        }
     }
 }

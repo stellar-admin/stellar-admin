@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper;
 
@@ -16,13 +17,16 @@ namespace StellarAdmin.TagHelpers;
 public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public InputTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public InputTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
+        : this(htmlGenerator, iconOptions.Value) { }
+
+    internal InputTagHelper(IHtmlGenerator htmlGenerator, IconOptions iconOptions)
         : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager;
+        _iconOptions = iconOptions;
     }
 
     /// <summary>
@@ -168,7 +172,7 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                     [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var checkboxIconTagHelper = new IconTagHelper(_iconManager) { Name = "check" };
+                var checkboxIconTagHelper = new IconTagHelper(_iconOptions) { Name = "check" };
                 await checkboxIconTagHelper.ProcessAsync(context, checkboxIconOutput);
                 checkboxSpan.InnerHtml.AppendHtml(checkboxIconOutput);
 
@@ -194,7 +198,7 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                     [new TagHelperAttribute("class", "sa-radiobutton-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var iconTagHelper = new IconTagHelper(_iconManager) { Name = "circle" };
+                var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "circle" };
                 await iconTagHelper.ProcessAsync(context, iconOutput);
                 spanTagBuilder.InnerHtml.AppendHtml(iconOutput);
 

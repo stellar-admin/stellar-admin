@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelper;
 
@@ -23,13 +24,13 @@ namespace StellarAdmin.TagHelpers;
 public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public InputOtpTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public InputOtpTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -325,7 +326,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
                 await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                     separator.Content,
                     context,
-                    _iconManager
+                    _iconOptions
                 );
                 output.Content.AppendHtml(separator);
             }

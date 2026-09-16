@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -11,7 +12,7 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-dropdown-menu-radio-item")]
 public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     Whether clicking the item closes the menu. Radio items stay open on click unless this is
@@ -33,9 +34,9 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    public DropdownMenuRadioItemTagHelper(IIconManager iconManager)
+    public DropdownMenuRadioItemTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -85,7 +86,7 @@ public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
         indicator.Attributes["data-slot"] = "dropdown-menu-radio-item-indicator";
         indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, _iconManager, "check", "size-4")
+            DropdownMenuInternals.RenderIcon(context, _iconOptions, "check", "size-4")
         );
 
         var childContent = await output.GetChildContentAsync();

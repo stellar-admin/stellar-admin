@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -10,11 +11,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-input-otp-separator")]
 public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public InputOtpSeparatorTagHelper(IIconManager iconManager)
+    public InputOtpSeparatorTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -45,7 +46,7 @@ public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
             await InputOtpRenderer.RenderDefaultSeparatorContentAsync(
                 output.Content,
                 context,
-                _iconManager
+                _iconOptions
             );
         }
     }

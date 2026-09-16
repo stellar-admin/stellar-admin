@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 using FrameworkSelectTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper;
 
@@ -14,14 +15,14 @@ namespace StellarAdmin.TagHelpers;
 public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
     private FrameworkSelectTagHelper? _frameworkTagHelper;
 
-    public SelectTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public SelectTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager;
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -107,7 +108,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
             ],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "chevron-down" };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-down" };
         await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
         output.Content.AppendHtml(iconTagHelperOutput);

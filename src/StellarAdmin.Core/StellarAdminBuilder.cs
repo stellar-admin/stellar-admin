@@ -33,7 +33,7 @@ public class StellarAdminBuilder
     /// <returns>The <see cref="StellarAdminBuilder" /> instance.</returns>
     public StellarAdminBuilder AddIcon(string name, IconDefinition iconDefinition)
     {
-        DefaultIconManager.Instance.AddIcon(name, iconDefinition);
+        Services.Configure<IconOptions>(options => options.Icons.Add(name, iconDefinition));
 
         return this;
     }
@@ -46,7 +46,13 @@ public class StellarAdminBuilder
     public StellarAdminBuilder AddIconPack<TIconPack>()
         where TIconPack : IIconPack, new()
     {
-        DefaultIconManager.Instance.AddIconPack<TIconPack>();
+        Services.Configure<IconOptions>(options =>
+        {
+            foreach (var (name, definition) in new TIconPack().GetIcons())
+            {
+                options.Icons[name] = definition;
+            }
+        });
 
         return this;
     }

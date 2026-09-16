@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -12,7 +13,7 @@ namespace StellarAdmin.TagHelpers;
 public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
     /// <summary>
     ///     The size of the rendered pagination button.
@@ -20,10 +21,13 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
-    public PaginationPreviousLinkTagHelper(IHtmlGenerator htmlGenerator, IIconManager iconManager)
+    public PaginationPreviousLinkTagHelper(
+        IHtmlGenerator htmlGenerator,
+        IOptions<IconOptions> iconOptions
+    )
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -64,7 +68,7 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "chevron-left" };
+            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-left" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
 

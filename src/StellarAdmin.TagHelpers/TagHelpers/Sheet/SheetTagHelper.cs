@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -13,11 +14,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-sheet")]
 public class SheetTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public SheetTagHelper(IIconManager iconManager)
+    public SheetTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
@@ -78,7 +79,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconManager) { Name = "x" };
+            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "x" };
             await iconTagHelper.ProcessAsync(context, iconOutput);
 
             // Render the button. Icon-only, so it carries a visually hidden accessible name.

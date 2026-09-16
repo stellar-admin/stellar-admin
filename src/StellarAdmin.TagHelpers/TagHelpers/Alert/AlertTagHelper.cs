@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -10,11 +11,11 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-alert")]
 public class AlertTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public AlertTagHelper(IIconManager iconManager)
+    public AlertTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     private const string DescriptionAttributeName = "description";
@@ -108,7 +109,7 @@ public class AlertTagHelper : StellarAdminTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconManager) { Name = Icon };
+            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = Icon };
             await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
             output.Content.AppendHtml(iconTagHelperOutput);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
@@ -9,16 +10,16 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-spinner")]
 public class SpinnerTagHelper : StellarAdminTagHelperBase
 {
-    private readonly IIconManager _iconManager;
+    private readonly IconOptions _iconOptions;
 
-    public SpinnerTagHelper(IIconManager iconManager)
+    public SpinnerTagHelper(IOptions<IconOptions> iconOptions)
     {
-        _iconManager = iconManager ?? throw new ArgumentNullException(nameof(iconManager));
+        _iconOptions = iconOptions.Value;
     }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var iconTagHelper = new IconTagHelper(_iconManager) { Name = "loader-circle" };
+        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "loader-circle" };
         await iconTagHelper.ProcessAsync(context, output);
 
         output.Attributes.SetAttribute("role", "status");
