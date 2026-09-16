@@ -1,6 +1,6 @@
 using IdentitySimplePlayground.Data;
-using StellarAdmin.Pro.Resources.Builders;
-using StellarAdmin.Pro.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Builders;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace IdentitySimplePlayground.Forms;
 

@@ -12,12 +12,12 @@
     <Project Path="sandbox/IdentitySimplePlayground/IdentitySimplePlayground.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/StellarAdmin.Pro/StellarAdmin.Pro.csproj" />
-    <Project Path="src/StellarAdmin.Pro.Identity/StellarAdmin.Pro.Identity.csproj" />
-    <Project Path="src/StellarAdmin.Pro.EntityFrameworkCore/StellarAdmin.Pro.EntityFrameworkCore.csproj" />
+    <Project Path="src/StellarAdmin.Dashboard/StellarAdmin.Dashboard.csproj" />
+    <Project Path="src/StellarAdmin.Dashboard.Identity/StellarAdmin.Dashboard.Identity.csproj" />
+    <Project Path="src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/StellarAdmin.Pro.EntityFrameworkCore.Tests/StellarAdmin.Pro.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
   </Folder>
   <Folder Name="/util/">

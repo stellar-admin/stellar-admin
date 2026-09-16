@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/StellarAdmin.Pro.EntityFrameworkCore/StellarAdmin.Pro.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\StellarAdmin.Pro.Identity\StellarAdmin.Pro.Identity.csproj" />
+    <ProjectReference Include="../../src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.Dashboard.Identity\StellarAdmin.Dashboard.Identity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

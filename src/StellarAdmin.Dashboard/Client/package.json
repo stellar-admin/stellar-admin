@@ -1,0 +1,19 @@
+{
+  "name": "stellar-admin-dashboard",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "tailwindcss -i css/client.css -o ../wwwroot/stellar-admin-dashboard.css",
+    "build:js": "node scripts/copy-js.mjs",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
+  },
+  "dependencies": {
+    "htmx.org": "4.0.0-beta6"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "oxfmt": "^0.36.0",
+    "tailwindcss": "^4.3.3"
+  }
+}

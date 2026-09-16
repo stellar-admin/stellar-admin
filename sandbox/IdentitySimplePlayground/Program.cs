@@ -2,9 +2,9 @@ using IdentitySimplePlayground.Data;
 using IdentitySimplePlayground.Forms;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
-using StellarAdmin.Pro;
-using StellarAdmin.Pro.EntityFrameworkCore;
-using StellarAdmin.Pro.Identity;
+using StellarAdmin.Dashboard;
+using StellarAdmin.Dashboard.EntityFrameworkCore;
+using StellarAdmin.Dashboard.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +29,11 @@ builder
 builder.Services.AddRazorPages();
 builder
     .Services.AddStellarAdmin()
-    .AddPro(pro =>
+    .AddDashboard(dashboard =>
     {
-        pro.AddStylesheet("~/css/admin.css");
+        dashboard.AddStylesheet("~/css/admin.css");
 
-        pro.AddIdentity<ApplicationUser, ApplicationRole>(identityBuilder =>
+        dashboard.AddIdentity<ApplicationUser, ApplicationRole>(identityBuilder =>
         {
             identityBuilder.ConfigureUsers(users =>
             {
@@ -122,7 +122,7 @@ builder
             });*/
         });
 
-        pro.AddEfCoreResource<ApplicationDbContext, Category>(
+        dashboard.AddEfCoreResource<ApplicationDbContext, Category>(
             "categories",
             resource =>
             {
@@ -161,7 +161,7 @@ builder
             }
         );
 
-        pro.AddEfCoreResource<ApplicationDbContext, Product>(
+        dashboard.AddEfCoreResource<ApplicationDbContext, Product>(
             "products",
             resource =>
             {

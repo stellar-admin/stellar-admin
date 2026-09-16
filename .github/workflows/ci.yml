@@ -41,4 +41,4 @@ jobs:
       run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
 
     - name: Run resource integration tests
-      run: dotnet run --project tests/StellarAdmin.Pro.EntityFrameworkCore.Tests --no-build --configuration Release
+      run: dotnet run --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests --no-build --configuration Release
