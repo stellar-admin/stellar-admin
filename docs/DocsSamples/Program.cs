@@ -17,9 +17,10 @@ public class Program
             _ => new DemoUrlHelperFactory(new UrlHelperFactory())
         );
         builder.Services.AddRazorPages();
-        var stellarAdmin = builder.Services.AddStellarAdmin();
-        // Custom icons for the Icons docs page.
-        stellarAdmin.AddIconPack<VoyagerIconPack>().AddTagHelpers();
+        var stellarAdmin = builder.Services.AddStellarAdmin(sa =>
+        {
+            sa.AddIconPack<VoyagerIconPack>().AddTagHelpers();
+        });
 
         var app = builder.Build();
 

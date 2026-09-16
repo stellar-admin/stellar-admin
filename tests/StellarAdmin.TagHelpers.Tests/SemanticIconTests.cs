@@ -1,6 +1,8 @@
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using StellarAdmin;
 using StellarAdmin.Icons;
 using StellarAdmin.TagHelpers;
 
@@ -119,6 +121,73 @@ internal static class SemanticIconTests
         Require(
             options.GetSemanticIconName(SemanticIconRole.Close) == "x",
             "Later packs must replace role overrides."
+        );
+
+        var services = new ServiceCollection();
+        services.AddStellarAdmin().AddIconPack<ReplacementPack>(pack => pack.Prefix = "my:");
+        using var provider = services.BuildServiceProvider();
+        var prefixed = provider.GetRequiredService<IOptions<IconOptions>>().Value;
+        Require(
+            prefixed.TryGetIcon("MY:test-dots", out var prefixedIcon)
+                && prefixedIcon == ReplacementPack.Icon
+                && !prefixed.TryGetIcon("test-dots", out _)
+                && prefixed.GetIconNames().Contains("my:test-dots"),
+            "Prefixes must register only qualified names and preserve case-insensitive lookup."
+        );
+        Require(
+            prefixed.GetSemanticIconName(SemanticIconRole.PaginationEllipsis) == "my:TEST-DOTS",
+            "Imported mapping targets must receive the same literal prefix."
+        );
+        var prefixedHtml = await Render(new PaginationEllipsisTagHelper(Options.Create(prefixed)));
+        Require(
+            prefixedHtml.Contains("data-test-icon=\"replacement\""),
+            "Prefixed semantic icons must render."
+        );
+
+        prefixed.AddIconPack<OverridePack>(pack => pack.Prefix = "other-");
+        Require(
+            prefixed.TryGetIcon("my:test-dots", out var original)
+                && original == ReplacementPack.Icon
+                && prefixed.TryGetIcon("other-test-dots", out _),
+            "Different literal prefixes must let same-named icons coexist."
+        );
+        prefixed.MapSemanticIcon(SemanticIconRole.Close, "my:test-dots");
+        Require(prefixed.RemoveIcon("MY:TEST-DOTS"), "Prefixed removal must ignore casing.");
+        Require(
+            prefixed.GetSemanticIconName(SemanticIconRole.Close) is null
+                && prefixed.GetSemanticIconName(SemanticIconRole.PaginationEllipsis) is null,
+            "Removing a prefixed icon must clear its mappings."
+        );
+
+        var additive = new IconOptions();
+        additive.AddIconPack<ReplacementPack>(pack =>
+        {
+            pack.Prefix = "extra:";
+            pack.ImportSemanticMappings = false;
+        });
+        Require(
+            additive.GetSemanticIconName(SemanticIconRole.PaginationEllipsis) == "ellipsis"
+                && additive.TryGetIcon("extra:test-dots", out _),
+            "Disabling mapping imports must preserve existing mappings while adding icons."
+        );
+        additive.AddIconPack<ReplacementPack>(pack =>
+        {
+            pack.Prefix = "";
+            pack.ImportSemanticMappings = false;
+        });
+        Require(
+            additive.TryGetIcon("test-dots", out _),
+            "An empty prefix must leave names unchanged."
+        );
+        additive.AddIconPack<InvalidPack>(pack => pack.ImportSemanticMappings = false);
+        Require(
+            additive.TryGetIcon("new-icon", out _),
+            "Disabled mappings must not be read or validated."
+        );
+        Reject(() => additive.AddIconPack<InvalidPack>(pack => pack.Prefix = "bad:"));
+        Require(
+            !additive.TryGetIcon("bad:new-icon", out _),
+            "Invalid prefixed mappings must not partially register icons."
         );
 
         Console.WriteLine("Semantic icon registration and rendering checks passed.");

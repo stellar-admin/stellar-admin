@@ -36,37 +36,52 @@ public class IconOptions
     public void AddIconPack<TIconPack>()
         where TIconPack : IIconPack, new()
     {
+        AddIconPack<TIconPack>(_ => { });
+    }
+
+    /// <summary>
+    ///     Adds an icon pack with the specified registration settings.
+    /// </summary>
+    public void AddIconPack<TIconPack>(Action<IconPackOptions> configure)
+        where TIconPack : IIconPack, new()
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var registration = new IconPackOptions();
+        configure(registration);
+
         var pack = new TIconPack();
         var icons = pack.GetIcons();
-        var semanticIconMappings = pack.GetSemanticIconMappings();
-        var incomingIconNames = icons.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        // Validate that each semantic mapping targets an icon supplied by this pack.
-        foreach (var (role, name) in semanticIconMappings)
-        {
-            if (name is null || !incomingIconNames.Contains(name))
-            {
-                throw new ArgumentException(
-                    $"Icon '{name}' for role '{role}' is not supplied by this icon pack."
-                );
-            }
-        }
 
         // Register the icons
         foreach (var (name, definition) in icons)
         {
-            _icons[name] = definition;
+            _icons[registration.Prefix + name] = definition;
         }
 
         // Register the semantic mappings
-        foreach (var (role, name) in semanticIconMappings)
+        var semanticIconMappings = pack.GetSemanticIconMappings();
+        if (registration.ImportSemanticMappings)
         {
-            _semanticIcons[role] = name;
+            var incomingIconNames = icons.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var (role, name) in semanticIconMappings)
+            {
+                // Validate that the semantic mapping targets an icon supplied by this pack.
+                if (name is null || !incomingIconNames.Contains(name))
+                {
+                    throw new ArgumentException(
+                        $"Icon '{name}' for role '{role}' is not supplied by this icon pack."
+                    );
+                }
+
+                _semanticIcons[role] = registration.Prefix + name;
+            }
         }
     }
 
     /// <summary>
-    ///     Removes all registered icons and semantic mappings.
+    ///     Removes all registered icons and semantic icon mappings.
     /// </summary>
     public void ClearIcons()
     {

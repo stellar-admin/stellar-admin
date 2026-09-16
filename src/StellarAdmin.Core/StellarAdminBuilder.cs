@@ -50,4 +50,27 @@ public class StellarAdminBuilder
 
         return this;
     }
+
+    /// <summary>
+    ///     Registers an icon pack with the specified registration settings.
+    /// </summary>
+    public StellarAdminBuilder AddIconPack<TIconPack>(Action<IconPackOptions> configure)
+        where TIconPack : IIconPack, new()
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        Services.Configure<IconOptions>(options => options.AddIconPack<TIconPack>(configure));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Removes all registered icons and semantic icon mappings.
+    /// </summary>
+    public StellarAdminBuilder ClearIcons()
+    {
+        Services.Configure<IconOptions>(options => options.ClearIcons());
+
+        return this;
+    }
 }
