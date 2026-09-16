@@ -65,9 +65,7 @@ public class IconTagHelper : StellarAdminTagHelperBase
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var iconDefinition =
-            Name != null
-            && _iconOptions.Icons.TryGetValue(Name, out var foundIcon)
-            && foundIcon != null
+            Name != null && _iconOptions.TryGetIcon(Name, out var foundIcon)
                 ? foundIcon
                 : NotFoundIcon;
 

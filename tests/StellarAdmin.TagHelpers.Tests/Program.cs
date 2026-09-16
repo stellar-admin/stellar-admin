@@ -28,23 +28,22 @@ using (var coreProvider = coreServices.BuildServiceProvider())
         "Icon options must be shared within their provider."
     );
     Require(
-        coreIcons.Icons.TryGetValue("CORE-TEST-CUSTOM", out var customIcon)
+        coreIcons.TryGetIcon("CORE-TEST-CUSTOM", out var customIcon)
             && customIcon == CoreTestIconPack.Icon,
         "Custom icons must support case-insensitive lookup."
     );
     Require(
-        coreIcons.Icons.TryGetValue("check", out var replacement)
-            && replacement == CoreTestIconPack.Icon,
+        coreIcons.TryGetIcon("check", out var replacement) && replacement == CoreTestIconPack.Icon,
         "Repeated registration must preserve icon pack overrides."
     );
     Require(
-        coreIcons.Icons.Keys.Contains("core-test-custom"),
+        coreIcons.GetIconNames().Contains("core-test-custom"),
         "The icon name list must include custom icons."
     );
 
     coreBuilder.AddIcon("registered-later", CoreTestIconPack.Icon);
     Require(
-        !coreIcons.Icons.TryGetValue("registered-later", out _),
+        !coreIcons.TryGetIcon("registered-later", out _),
         "Later registration must not modify an existing provider."
     );
 
@@ -52,7 +51,7 @@ using (var coreProvider = coreServices.BuildServiceProvider())
     var secondIcons = secondProvider.GetRequiredService<IOptions<IconOptions>>().Value;
     Require(
         !ReferenceEquals(coreIcons, secondIcons)
-            && secondIcons.Icons.TryGetValue("registered-later", out _),
+            && secondIcons.TryGetIcon("registered-later", out _),
         "Each provider must receive its own options."
     );
 
@@ -61,28 +60,27 @@ using (var coreProvider = coreServices.BuildServiceProvider())
     using var independentProvider = independentServices.BuildServiceProvider();
     var independentIcons = independentProvider.GetRequiredService<IOptions<IconOptions>>().Value;
     Require(
-        !independentIcons.Icons.TryGetValue("core-test-custom", out _),
+        !independentIcons.TryGetIcon("core-test-custom", out _),
         "Icons must not leak between independent service collections."
     );
     Require(
-        independentIcons.Icons.TryGetValue("check", out var checkIcon)
-            && checkIcon!.Shapes.Count > 0,
+        independentIcons.TryGetIcon("check", out var checkIcon) && checkIcon!.Shapes.Count > 0,
         "Independent providers must retain generated Lucide defaults."
     );
 }
 
 var orderedServices = new ServiceCollection();
 orderedServices.AddStellarAdmin().AddIconPack<CoreTestIconPack>().AddIconPack<LucideIconPack>();
-orderedServices.Configure<IconOptions>(options => options.Icons.Remove("activity"));
+orderedServices.Configure<IconOptions>(options => options.RemoveIcon("activity"));
 using (var orderedProvider = orderedServices.BuildServiceProvider())
 {
     var orderedIcons = orderedProvider.GetRequiredService<IOptions<IconOptions>>().Value;
     Require(
-        orderedIcons.Icons.TryGetValue("check", out var checkIcon) && checkIcon!.Shapes.Count > 0,
+        orderedIcons.TryGetIcon("check", out var checkIcon) && checkIcon!.Shapes.Count > 0,
         "Later icon packs must override earlier packs."
     );
     Require(
-        !orderedIcons.Icons.TryGetValue("activity", out _),
+        !orderedIcons.TryGetIcon("activity", out _),
         "Direct options configuration must be honored."
     );
 }
@@ -110,6 +108,29 @@ foreach (var duplicateName in new[] { "CHECK", "duplicate-custom" })
 
     Require(duplicateRejected, "Duplicate icon names must be rejected when options are resolved.");
 }
+
+var replacementOptions = new IconOptions();
+var originalNames = replacementOptions.GetIconNames();
+replacementOptions.ClearIcons();
+Require(
+    replacementOptions.GetIconNames().Length == 0,
+    "Clearing icons must remove Lucide defaults."
+);
+Require(originalNames.Length > 0, "Icon names must be returned as an independent snapshot.");
+replacementOptions.AddIconPack<CoreTestIconPack>();
+Require(
+    replacementOptions.TryGetIcon("CHECK", out var replacementIcon)
+        && replacementIcon == CoreTestIconPack.Icon
+        && !replacementOptions.TryGetIcon("activity", out _),
+    "A replacement pack must work without restoring Lucide defaults."
+);
+Require(replacementOptions.RemoveIcon("CHECK"), "Icon removal must be case-insensitive.");
+Require(
+    !replacementOptions.RemoveIcon("check")
+        && !replacementOptions.TryGetIcon("check", out var removedIcon)
+        && removedIcon is null,
+    "Removed icons must no longer be available."
+);
 
 var trackingOptions = new TrackingIconOptions();
 var iconHelper = new IconTagHelper(trackingOptions) { Name = "check" };
@@ -331,10 +352,7 @@ Require(
 
 Console.WriteLine("Field class name rendering checks passed.");
 
-async Task<string> Render(
-    TagHelper helper,
-    Func<TagHelperContext, Task<string>>? children = null
-)
+async Task<string> Render(TagHelper helper, Func<TagHelperContext, Task<string>>? children = null)
 {
     var attributes = new TagHelperAttributeList();
     var context = new TagHelperContext(

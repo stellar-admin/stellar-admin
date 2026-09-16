@@ -17,7 +17,7 @@
     <sa-icon name="align-horizontal-justify-center"/>
 
     <div class="flex flex-wrap gap-x-2 gap-y-2">
-        @foreach (var iconName in IconOptionsAccessor.Value.Icons.Keys)
+        @foreach (var iconName in IconOptionsAccessor.Value.GetIconNames())
         {
             <sa-icon name="@iconName" stroke-width="1"/>
         }
