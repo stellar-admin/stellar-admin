@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.Icons;
 
 namespace StellarAdmin.TagHelpers;
 
@@ -9,6 +11,13 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-accordion-item-title")]
 public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
 {
+    private readonly IconOptions _iconOptions;
+
+    public AccordionItemTitleTagHelper(IOptions<IconOptions> iconOptions)
+    {
+        _iconOptions = iconOptions.Value;
+    }
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "summary";
@@ -29,13 +38,17 @@ public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
         // Render the icon
         var iconTagBuilder = new TagBuilder("div");
         iconTagBuilder.AddCssClass("sa-accordion-trigger-icon");
-        iconTagBuilder.InnerHtml.AppendHtml(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="">
-                <path d="m6 9 6 6 6-6"/>
-            </svg>
-            """
+        var iconOutput = new TagHelperOutput(
+            "svg",
+            [],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.AccordionIndicator),
+        };
+        await iconTagHelper.ProcessAsync(context, iconOutput);
+        iconTagBuilder.InnerHtml.AppendHtml(iconOutput);
         output.Content.AppendHtml(iconTagBuilder);
     }
 }

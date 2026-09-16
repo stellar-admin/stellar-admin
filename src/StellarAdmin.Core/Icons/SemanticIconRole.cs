@@ -6,9 +6,14 @@ namespace StellarAdmin.Icons;
 public enum SemanticIconRole
 {
     /// <summary>
+    ///     An indicator that an accordion item can expand.
+    /// </summary>
+    AccordionIndicator = 23,
+
+    /// <summary>
     ///     Omitted breadcrumb levels.
     /// </summary>
-    BreadcrumbEllipsis,
+    BreadcrumbEllipsis = 0,
 
     /// <summary>
     ///     The separator between breadcrumb levels.

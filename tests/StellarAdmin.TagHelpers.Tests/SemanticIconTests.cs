@@ -61,6 +61,18 @@ internal static class SemanticIconTests
             "Child content must still override the default icon."
         );
 
+        options.MapSemanticIcon(SemanticIconRole.AccordionIndicator, "test-dots");
+        var accordion = await Render(
+            new AccordionItemTitleTagHelper(Options.Create(options)),
+            "Accordion title"
+        );
+        Require(
+            accordion.Contains("data-test-icon=\"replacement\"")
+                && accordion.Contains("sa-accordion-trigger-icon")
+                && accordion.Contains("Accordion title"),
+            "Accordion must use the semantic icon without Lucide and preserve its title and wrapper."
+        );
+
         options.MapSemanticIcon(SemanticIconRole.BreadcrumbEllipsis, "test-dots");
         options.AddIconPack<OverridePack>();
         var overridden = await Render(new BreadcrumbEllipsisTagHelper(Options.Create(options)));

@@ -14,6 +14,7 @@ public class LucideIconPack : IIconPack
     {
         return new Dictionary<SemanticIconRole, string>
         {
+            [SemanticIconRole.AccordionIndicator] = "chevron-down",
             [SemanticIconRole.BreadcrumbEllipsis] = "ellipsis",
             [SemanticIconRole.BreadcrumbSeparator] = "chevron-right",
             [SemanticIconRole.CarouselNext] = "chevron-right",
