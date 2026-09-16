@@ -1,0 +1,10 @@
+@page
+<h1>Spike 6: plain field binding (no templates) + one mixed templated column</h1>
+<spike-grid data="bookings">
+    <spike-column name="Reference" field="Reference"/>
+    <spike-column name="Total" field="Total" format="{0:C}"/>
+    <spike-column name="Status" field="Status"/>
+    <spike-column name="StatusBadge">
+        <spike-item-template><sa-badge>@(Html.SpikeItem<SpikeBooking>()?.Status)</sa-badge></spike-item-template>
+    </spike-column>
+</spike-grid>

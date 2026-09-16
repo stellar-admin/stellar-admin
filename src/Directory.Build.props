@@ -10,6 +10,8 @@
     <!-- Must match the packed file's name exactly; the repo file is lowercase and pack is
          case-sensitive on Linux/macOS. -->
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageIcon>stellar-admin-symbol.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>

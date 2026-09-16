@@ -1,0 +1,8 @@
+@model string?
+
+@{
+    var field = ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
+    var isReadOnly = field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
+}
+
+<sa-textarea class-names="@EditorClassNamesMapper.ForTextarea(field?.Editor)" asp-for="@Model" label="@field?.Title" readonly="@isReadOnly"></sa-textarea>

@@ -1,0 +1,13 @@
+@page
+@model DataGridSpike.Pages.UrlsModel
+<h1>Spike 7: URL generation via IUrlHelper</h1>
+<pre>
+bound: Bookings.PageNo=@Model.Bookings.PageNo Bookings.SortBy=@Model.Bookings.SortBy Users.PageNo=@Model.Users.PageNo
+
+naive-empty:        @(Url.RouteUrl(new { }))
+naive-single:       @(Url.RouteUrl(new { pageNo = 3 }))
+merged-bookings-p3: @Model.GridUrl("Bookings", 3)
+merged-users-p9:    @Model.GridUrl("Users", 9)
+merged-sort:        @Model.GridUrl("Bookings", 1, "Destination")
+page-helper:        @(Url.Page(null, new { pageNo = 3 }))
+</pre>

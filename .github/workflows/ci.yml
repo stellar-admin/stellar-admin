@@ -1,8 +1,7 @@
 name: Build and Test
 
-# Push/PR build for the OSS repo. Releases are cut by the cross-repo release workflow in
-# the stellar-admin/workspace repo, which builds this repo together with the pro repo,
-# packs every package with one version, publishes, and creates the GitHub Release here.
+# Build and test the complete product from this checkout. Releases are orchestrated
+# by the workspace repository.
 
 on:
   push:
@@ -37,3 +36,9 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore --configuration Release
+
+    - name: Run tag helper tests
+      run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
+
+    - name: Run resource integration tests
+      run: dotnet run --project tests/StellarAdmin.Pro.EntityFrameworkCore.Tests --no-build --configuration Release

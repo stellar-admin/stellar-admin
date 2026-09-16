@@ -1,0 +1,32 @@
+@page
+@{
+    var rows = new[]
+    {
+        new SpikeTemplatedBooking("SPK-1", SpikeLevel.High, new DateOnly(2026, 9, 12), 120.50M, 4.5M),
+        new SpikeTemplatedBooking("SPK-2", SpikeLevel.Low, null, 80.00M, 3M),
+    };
+    var channels = new[]
+    {
+        new SpikeChannel { Name = "Email", Enabled = true },
+        new SpikeChannel { Name = "SMS", Enabled = false },
+    };
+}
+<h1>Spike 9: grid display templates ([UIHint] / template attribute / [DisplayFormat])</h1>
+
+<h2>A: [UIHint] field (Level), [UIHint] with a null value (Departure), template attribute
+    beating format (Total), [DisplayFormat] fallback (Rating), format attribute beating
+    [DisplayFormat] (Rating (raw))</h2>
+<sa-data-grid items="rows">
+    <sa-data-grid-column title="Ref" field="Reference"/>
+    <sa-data-grid-column title="Level" field="Level"/>
+    <sa-data-grid-column title="Departure" field="Departure"/>
+    <sa-data-grid-column title="Total" field="Total" template="SpikeMoney" format="{0:C}"/>
+    <sa-data-grid-column title="Rating" field="Rating"/>
+    <sa-data-grid-column title="Rating (raw)" field="Rating" format="{0:0.00}"/>
+</sa-data-grid>
+
+<h2>B: [UIHint] from a [ModelMetadataType] metadata class on an inherited property (Enabled)</h2>
+<sa-data-grid items="channels">
+    <sa-data-grid-column title="Name" field="Name"/>
+    <sa-data-grid-column title="Enabled" field="Enabled"/>
+</sa-data-grid>

@@ -89,3 +89,9 @@ The skills live in the [stellar-admin/skills](https://github.com/stellar-admin/s
 ```
 
 This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.razor` files) along with `forms`, `layout`, and `theming`.
+
+## Resource and admin packages
+
+This repository also contains `StellarAdmin.Pro` (admin shell, resource screens, and data grid), `StellarAdmin.Pro.Identity` (Identity management), and `StellarAdmin.Pro.EntityFrameworkCore` (EF Core resources). All are MIT licensed. The `.Pro*` names and `AddPro()` API are retained temporarily; there is no paid tier. These packages are available from source; their NuGet publication is a separate release step.
+
+The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, and the Identity playground used by the resource integration tests.

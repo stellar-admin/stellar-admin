@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GenerateRazorAssemblyInfo>false</GenerateRazorAssemblyInfo>
+    <Description>StellarAdmin Pro: admin shell, resource layer and pro tag helpers such as the data grid for CRUD screens in ASP.NET Core MVC and Razor Pages applications</Description>
+    <PackageTags>tag helper;admin;crud;data grid</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <!-- Client -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" Pack="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/package.json" />
+    <ClientInput Include="Client/scripts/**/*.mjs" />
+  </ItemGroup>
+
+  <!-- These items are declared at execution time rather than evaluation time on purpose:
+       .cshtml files in a second, custom item type break Rider's Razor analysis for the views,
+       and Rider silently strips an evaluation-time ClientOutput item from this file when the
+       output file it references is deleted in the IDE. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientInput Include="Areas/**/*.cshtml" />
+
+      <ClientOutput Include="wwwroot/htmx.min.js" />
+      <ClientOutput Include="wwwroot/stellar-admin-pro.css" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Trigger client build -->
+  <Target
+    Name="Client"
+    DependsOnTargets="ClientItems"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+    Inputs="@(ClientInput)"
+    Outputs="@(ClientOutput)"
+  >
+    <Exec
+      Command="npm install"
+      WorkingDirectory="Client"
+      Condition=" !Exists('Client/node_modules') "
+    />
+    <Exec Command="npm run build" WorkingDirectory="Client" />
+
+    <!-- Tailwind skips the write when output is unchanged, leaving it older than the
+         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <Touch Files="@(ClientOutput)" />
+
+    <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+</Project>

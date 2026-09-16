@@ -1,0 +1,7 @@
+@model ResourceFormPageViewModel
+
+<sa-form-page model="Model" />
+@if (Model.Delete is not null)
+{
+    <partial name="_FormDeleteDialog" model="Model.Delete"/>
+}

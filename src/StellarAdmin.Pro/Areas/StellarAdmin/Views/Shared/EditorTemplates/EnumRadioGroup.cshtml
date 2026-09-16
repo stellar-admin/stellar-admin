@@ -1,0 +1,65 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@model object?
+
+@{
+    var field = ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
+    var metadata = ViewData.ModelMetadata;
+    var isReadOnly = field?.IsReadOnly == true || metadata.IsReadOnly;
+}
+
+@if (metadata.IsFlagsEnum)
+{
+    <sa-input asp-for="@Model" type="text" class-names="@EditorClassNamesMapper.ForInput(field?.Editor)" label="@field?.Title" readonly="@isReadOnly" />
+}
+else
+{
+    var classes = EditorClassNamesMapper.ForRadio(field?.Editor);
+    var options = Html.GetEnumSelectList(metadata.UnderlyingOrModelType)
+        .Select(option =>
+        {
+            var value = Enum.GetName(
+                metadata.UnderlyingOrModelType,
+                Enum.Parse(metadata.UnderlyingOrModelType, option.Value))!;
+            var description = metadata.UnderlyingOrModelType.GetField(value)!
+                .GetCustomAttribute<DisplayAttribute>()?.GetDescription();
+
+            return new { Value = value, option.Text, Description = description };
+        })
+        .ToList();
+
+    if (metadata.IsNullableValueType)
+    {
+        options.Insert(0, new { Value = "", Text = "Not set", Description = (string?)null });
+    }
+
+    <sa-field-set class="@classes.Root">
+        <sa-field-legend class="@classes.Label" variant="FieldLegendVariant.Label">
+            @(field?.Title ?? metadata.DisplayName ?? metadata.PropertyName)
+        </sa-field-legend>
+        <sa-field-description class="@classes.Description" asp-for="@Model" />
+
+        <sa-field-group class="@classes.Control" data-slot="radio-group">
+            @foreach (var option in options)
+            {
+                var id = Microsoft.AspNetCore.Mvc.Rendering.TagBuilder.CreateSanitizedId(
+                    $"{Html.IdForModel()}_{option.Value}", "_");
+
+                <sa-field class="@classes.Option.Root" orientation="FieldOrientation.Horizontal">
+                    <sa-input asp-for="@Model" type="radio" value="@option.Value" id="@id"
+                              disabled="@isReadOnly" render-field="false" class-names="@classes.Option" />
+                    <sa-field-content class="@classes.Option.Content">
+                        <sa-field-label class="@classes.Option.Label" for="@id">@option.Text</sa-field-label>
+
+                        @if (!string.IsNullOrEmpty(option.Description))
+                        {
+                            <sa-field-description class="@classes.Option.Description">@option.Description</sa-field-description>
+                        }
+                    </sa-field-content>
+                </sa-field>
+            }
+        </sa-field-group>
+
+        <sa-field-error class="@classes.Error" asp-for="@Model" />
+    </sa-field-set>
+}

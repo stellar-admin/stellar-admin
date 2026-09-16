@@ -1,0 +1,12 @@
+@model UserCreateViewModel
+
+<sa-form-page model="Model">
+    <sa-slot-content name="post-form-fields">
+        <sa-field-set>
+            <sa-field-group>
+                @Html.EditorFor(m => m.PasswordInput.Password)
+                @Html.EditorFor(m => m.PasswordInput.ConfirmPassword)
+            </sa-field-group>
+        </sa-field-set>
+    </sa-slot-content>
+</sa-form-page>

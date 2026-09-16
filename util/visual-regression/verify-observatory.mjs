@@ -369,7 +369,7 @@ try {
   assert.ok(motion.animation <= 0.00001);
   assert.equal(motion.iterations, "1");
   console.log("PASS Observatory reduced motion");
-  if (process.env.OBSERVATORY_PRO_URL) {
+  {
     for (const mode of ["light", "dark"]) {
       for (const width of [1280, 390]) {
         await send("Emulation.setDeviceMetricsOverride", {
@@ -380,10 +380,10 @@ try {
         });
         const loaded = waitForEvent("Page.loadEventFired", 15000);
         await send("Page.navigate", {
-          url: `${process.env.OBSERVATORY_PRO_URL}/DataGrid?theme=observatory&mode=${mode}`,
+          url: `${base}/DataGrid?theme=observatory&mode=${mode}`,
         });
         assert.ok(await loaded);
-        await prepareFonts("Pro grid");
+        await prepareFonts("Data grid");
         assert.equal(
           await evaluate(`(() => {
           const grid = document.querySelector('.sa-data-grid');
@@ -393,12 +393,12 @@ try {
             (table.scrollWidth <= table.clientWidth || table.scrollLeft > 0);
         })()`),
           true,
-          "Pro grid stays contained and wide tables remain scrollable",
+          "Data grid stays contained and wide tables remain scrollable",
         );
-        await capture("pro-grid", mode, width);
+        await capture("data-grid", mode, width);
       }
     }
-    console.log("PASS Observatory Pro grid containment and scrolling");
+    console.log("PASS Observatory Data grid containment and scrolling");
   }
 } finally {
   browser.ws.close();

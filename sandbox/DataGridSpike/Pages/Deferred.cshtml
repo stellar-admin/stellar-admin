@@ -1,0 +1,6 @@
+@page
+<h1>Spike 2: deferred per-column delegates (expected to fail: last column wins)</h1>
+<spike-grid mode="deferred">
+    <spike-column name="A" deferred="true"><b>A=@Html.SpikeItem()</b></spike-column>
+    <spike-column name="B" deferred="true"><i>B=@(Html.SpikeItem()?.ToUpperInvariant())</i></spike-column>
+</spike-grid>

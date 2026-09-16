@@ -1,0 +1,19 @@
+@model ResourceFormDeleteDialogViewModel
+
+@* Fully server-rendered: the cancel form closes the dialog and the confirm form posts
+   the delete - no script involved. The invoker button that opens the dialog lives in
+   the calling page. *@
+<sa-alert-dialog id="delete-confirm-dialog">
+    <sa-alert-dialog-header>
+        <sa-alert-dialog-title>@Model.Title</sa-alert-dialog-title>
+        <sa-alert-dialog-description>@Model.Message</sa-alert-dialog-description>
+    </sa-alert-dialog-header>
+    <sa-alert-dialog-footer>
+        <form method="dialog">
+            <sa-alert-dialog-cancel>@Model.CancelLabel</sa-alert-dialog-cancel>
+        </form>
+        <form method="post" asp-action="Delete" asp-route-id="@Model.EntityId">
+            <sa-alert-dialog-action variant="ButtonVariant.Destructive">@Model.ConfirmLabel</sa-alert-dialog-action>
+        </form>
+    </sa-alert-dialog-footer>
+</sa-alert-dialog>

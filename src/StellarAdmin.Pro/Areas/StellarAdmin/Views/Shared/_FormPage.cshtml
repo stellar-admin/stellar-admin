@@ -1,0 +1,43 @@
+@model ResourceFormPageViewModel
+@inject Microsoft.Extensions.Options.IOptions<StellarAdmin.StellarAdminFormsOptions> FormsOptions
+
+@{
+    var layout = Model.SectionLayout ?? FormsOptions.Value.SectionLayout;
+}
+
+<sa-page-container width="PageContainerWidth.Large" class="sa-resource-form" data-form-layout="@layout.GetDataAttributeText()">
+    <sa-page-header class="sa-resource-form-header">
+        <sa-page-header-title>@Model.Title</sa-page-header-title>
+        @if (Model.Subtitle is not null)
+        {
+            <sa-page-header-description>@Model.Subtitle</sa-page-header-description>
+        }
+    </sa-page-header>
+
+    <form method="post">
+        <sa-field-group>
+            @Html.ValidationSummary(excludePropertyErrors: true)
+
+            <sa-slot-outlet name="pre-form-fields"/>
+
+            <partial name="_FormFields" for="@Model.Entity"
+                     view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Model.Fields, [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.ReferenceChoices] = Model.ReferenceChoices }'/>
+
+            <sa-slot-outlet name="post-form-fields"/>
+
+            <div class="sa-resource-form-footer">
+                @if (Model.Delete is not null)
+                {
+                    <sa-button type="button" variant="ButtonVariant.Ghost" class="sa-resource-form-delete"
+                               command="show-modal" commandfor="delete-confirm-dialog">@Model.Delete.Title</sa-button>
+                }
+                <div class="sa-resource-form-actions">
+                    <sa-slot-outlet name="pre-form-actions"/>
+                    <sa-linkbutton asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-linkbutton>
+                    <sa-button type="submit">@Model.SubmitLabel</sa-button>
+                    <sa-slot-outlet name="post-form-actions"/>
+                </div>
+            </div>
+        </sa-field-group>
+    </form>
+</sa-page-container>

@@ -1,0 +1,28 @@
+@page
+@{
+    IEnumerable<SpikeBooking> bookings =
+    [
+        new SpikeBooking("BK-1", 300m, "Confirmed"),
+        new SpikeBooking("BK-2", 100m, "Pending"),
+        new SpikeBooking("BK-3", 200m, "Cancelled"),
+    ];
+    var missingKeyField = ViewContext.HttpContext.Request.Query["case"] == "no-key-field";
+}
+<h1>Spike 10: sa-data-grid-selection</h1>
+
+@if (missingKeyField)
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-selection/>
+        <sa-data-grid-column title="Reference" field="Reference"/>
+    </sa-data-grid>
+}
+else
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-selection key-field="Reference" name="selectedRefs" id="spike-selection"/>
+        <sa-data-grid-column title="Reference" field="Reference"/>
+        <sa-data-grid-column title="Total" field="Total"/>
+        <sa-data-grid-column title="Status" field="Status"/>
+    </sa-data-grid>
+}

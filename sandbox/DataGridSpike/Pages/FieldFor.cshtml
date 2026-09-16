@@ -1,0 +1,61 @@
+@page
+@{
+    var rows = new[]
+    {
+        new SpikeTemplatedBooking("SPK-1", SpikeLevel.High, new DateOnly(2026, 9, 12), 120.50M, 4.5M),
+        new SpikeTemplatedBooking("SPK-2", SpikeLevel.Low, null, 80.00M, 3M),
+    };
+    var channels = new[]
+    {
+        new SpikeChannel { Name = "Email", Enabled = true },
+        new SpikeChannel { Name = "SMS", Enabled = false },
+    };
+    var crew = new[]
+    {
+        new SpikeCrewMember("Ada Marlow", "Lisbon", 12),
+        new SpikeCrewMember("Ben Okafor", "Cape Town", 7),
+    };
+    var noBookings = Array.Empty<SpikeTemplatedBooking>();
+}
+<h1>Spike 10: expression-bound columns (field-for)</h1>
+
+<h2>A: string-field reference grid (same columns as Spike 9 A)</h2>
+<sa-data-grid items="rows" id="grid-string">
+    <sa-data-grid-column title="Ref" field="Reference"/>
+    <sa-data-grid-column title="Level" field="Level"/>
+    <sa-data-grid-column title="Departure" field="Departure"/>
+    <sa-data-grid-column title="Total" field="Total" template="SpikeMoney" format="{0:C}"/>
+    <sa-data-grid-column title="Rating" field="Rating"/>
+    <sa-data-grid-column title="Rating (raw)" field="Rating" format="{0:0.00}"/>
+</sa-data-grid>
+
+<h2>B: field-for twins — must render identically to A</h2>
+<sa-data-grid items="rows" id="grid-expression">
+    <sa-data-grid-column title="Ref" field-for="(SpikeTemplatedBooking b) => b.Reference"/>
+    <sa-data-grid-column title="Level" field-for="(SpikeTemplatedBooking b) => b.Level"/>
+    <sa-data-grid-column title="Departure" field-for="(SpikeTemplatedBooking b) => b.Departure"/>
+    <sa-data-grid-column title="Total" field-for="(SpikeTemplatedBooking b) => b.Total" template="SpikeMoney" format="{0:C}"/>
+    <sa-data-grid-column title="Rating" field-for="(SpikeTemplatedBooking b) => b.Rating"/>
+    <sa-data-grid-column title="Rating (raw)" field-for="(SpikeTemplatedBooking b) => b.Rating" format="{0:0.00}"/>
+</sa-data-grid>
+
+<h2>C: header defaults, no title attributes — [Display] name ("Crew member"), PascalCase
+    split ("Home Port"), and the same chain on a string field ("Years At Sea")</h2>
+<sa-data-grid items="crew" id="grid-titles">
+    <sa-data-grid-column field-for="(SpikeCrewMember c) => c.FullName"/>
+    <sa-data-grid-column field-for="(SpikeCrewMember c) => c.HomePort"/>
+    <sa-data-grid-column field="YearsAtSea"/>
+</sa-data-grid>
+
+<h2>D: [UIHint] from a [ModelMetadataType] metadata class via field-for (Enabled)</h2>
+<sa-data-grid items="channels" id="grid-buddy">
+    <sa-data-grid-column title="Name" field-for="(SpikeChannel c) => c.Name"/>
+    <sa-data-grid-column title="Enabled" field-for="(SpikeChannel c) => c.Enabled"/>
+</sa-data-grid>
+
+<h2>E: empty grid — field-for metadata resolves from the parameter type, so the [UIHint]
+    template lookup and header defaults still work with zero rows</h2>
+<sa-data-grid items="noBookings" id="grid-empty">
+    <sa-data-grid-column field-for="(SpikeTemplatedBooking b) => b.Level"/>
+    <sa-data-grid-column field-for="(SpikeTemplatedBooking b) => b.Departure"/>
+</sa-data-grid>

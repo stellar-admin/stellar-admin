@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data grid panel prototype — integrated pager exploration (nova)</title>
+
+    <!-- Geist, same link the docs layout uses -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
+    />
+
+    <!--
+      Real built library assets from the OSS repo — true theme rendering, and the
+      real sel-table-selection web component so select-all works in the live
+      candidate. The theme <link> is swappable from the control bar.
+    -->
+    <link
+      id="theme-css"
+      rel="stylesheet"
+      href="../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css"
+    />
+    <script defer src="../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!--
+      Tailwind v4 browser build — ONLY for prototype-authored utility classes
+      (panel frames, footer layout, captions). The sa-* component styles all
+      come from the bundle above.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      /* Token vocabulary (copy of Client/css/theme-tokens.css) so prototype
+         utilities like bg-card / border-border resolve against whatever theme
+         bundle is currently linked. */
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-sidebar-ring: var(--sidebar-ring);
+        --color-sidebar-border: var(--sidebar-border);
+        --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+        --color-sidebar-accent: var(--sidebar-accent);
+        --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+        --color-sidebar-primary: var(--sidebar-primary);
+        --color-sidebar-foreground: var(--sidebar-foreground);
+        --color-sidebar: var(--sidebar);
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      /* The browser build's preflight lands after the bundle's base layer and
+         would reset border-color to currentColor; restore the library default. */
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <div id="canvas" class="min-h-screen bg-background">
+      <div class="mx-auto flex w-full max-w-5xl flex-col gap-8 p-6 pb-32">
+        <!-- Voyager Travel page context, so the panel is judged against a real page -->
+        <div class="flex items-start gap-4">
+          <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-semibold tracking-tight">Bookings</h1>
+            <p class="text-sm text-muted-foreground">
+              All Voyager Travel bookings across destinations, newest first.
+            </p>
+          </div>
+          <button type="button" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default ml-auto">
+            Create booking
+          </button>
+        </div>
+
+        <!--
+          ======================================================================
+          LIVE CANDIDATE — the unified "panel" data grid on the CARD CHASSIS.
+            panel  = sa-card (real card classes: ring, rounded-xl, bg-card,
+                     per-theme shadow — none in nova, shadow-xs in vega)
+                     + neutralizations py-0 gap-0 so the table bleeds to the
+                     top edge and the footer sits flush at the bottom in every
+                     theme (nova zeroes pb itself via has-footer:pb-0; vega
+                     does not, hence py-0 not pt-0). Extraction: structural
+                     rules on sa-data-grid, like the card's img full-bleed case
+            table  = edge padding references the card's own spacing token,
+                     [&_tr>*:first-child]:pl-(--card-spacing) / :pr-(...), so
+                     cell content tracks the theme's footer padding (4 in
+                     nova, 6 in vega) automatically
+            footer = sa-card-footer for the theme's background + horizontal
+                     padding (nova bg-muted/50 px-4, vega untinted px-6),
+                     overridden with border-t py-2: always a top border and
+                     tight vertical spacing in every theme. gap-4 layout.
+                     (extraction: sa-data-grid-footer carries border-t/py-2/
+                     gap structurally; bg/px inherit from sa-card-footer)
+          The pager sits INSIDE the footer. .sa-pagination is w-full mx-auto
+          justify-center, so in-footer placement overrides with w-auto ml-auto
+          — extraction would give the footer pager its own placement rule.
+          ======================================================================
+        -->
+        <div data-slot="data-grid" class="sa-card group/card py-0 gap-0">
+          <sel-table-selection data-slot="table-selection" id="--sa-grid-proto-selection">
+            <div class="sa-table-container" data-slot="table-container">
+              <table class="sa-table [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)" data-slot="table">
+                <thead class="sa-table-header" data-slot="table-header">
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <th class="sa-table-head" data-slot="table-head" style="width: 3rem"><span class="sa-input-control-wrapper"><input type="checkbox" aria-label="Select all rows" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></th>
+                    <th class="sa-table-head" data-slot="table-head">Booking #</th>
+                    <th class="sa-table-head" data-slot="table-head">Status</th>
+                    <th class="sa-table-head" data-slot="table-head"><a href="#" data-slot="data-grid-sort-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm" style="margin-left: -0.625rem">Destination<svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></a></th>
+                    <th class="sa-table-head text-right" data-slot="table-head"><a href="#" data-slot="data-grid-sort-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm" style="margin-left: -0.625rem">Amount<svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></a></th>
+                  </tr>
+                </thead>
+                <tbody class="sa-table-body" data-slot="table-body">
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4821" name="selectedBookings" aria-label="Select row TRP-4821" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-default">Confirmed</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">London, UK</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4822" name="selectedBookings" aria-label="Select row TRP-4822" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Pending</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4823" name="selectedBookings" aria-label="Select row TRP-4823" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4823</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-default">Confirmed</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Cancun, Mexico</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$850.50</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4824" name="selectedBookings" aria-label="Select row TRP-4824" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4824</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-default">Confirmed</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Reykjavík, Iceland</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$3,120.00</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4825" name="selectedBookings" aria-label="Select row TRP-4825" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4825</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-destructive">Cancelled</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Rome, Italy</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$1,780.25</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4826" name="selectedBookings" aria-label="Select row TRP-4826" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4826</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-secondary">Pending</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Cape Town, South Africa</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$2,940.75</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4827" name="selectedBookings" aria-label="Select row TRP-4827" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4827</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-default">Confirmed</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Queenstown, New Zealand</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$4,215.00</td>
+                  </tr>
+                  <tr class="sa-table-row" data-slot="table-row">
+                    <td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" value="TRP-4828" name="selectedBookings" aria-label="Select row TRP-4828" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td>
+                    <td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4828</td>
+                    <td class="sa-table-cell" data-slot="table-cell"><span data-slot="badge" class="sa-badge group/badge sa-badge-variant-default">Confirmed</span></td>
+                    <td class="sa-table-cell" data-slot="table-cell">Santorini, Greece</td>
+                    <td class="sa-table-cell text-right" data-slot="table-cell">$1,999.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </sel-table-selection>
+
+          <!-- panel footer: inherited sa-card-footer chassis; per-page left, range + compact pager right (Avo arrangement) -->
+          <div data-slot="card-footer" class="sa-card-footer border-t py-2 gap-4">
+            <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper group/native-select">
+              <select data-slot="native-select" data-size="sm" class="sa-native-select" aria-label="Rows per page">
+                <option selected>8 per page</option>
+                <option>24 per page</option>
+                <option>48 per page</option>
+              </select>
+              <svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+            </div>
+            <div class="ml-auto flex items-center gap-4">
+              <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+              <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-0">
+                <ul class="sa-pagination-content" data-slot="pagination-content">
+                  <li data-slot="pagination-item"><a aria-disabled="true" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-previous" style="pointer-events: none; opacity: 0.5"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg></a></li>
+                  <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                  <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                  <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">3</a></li>
+                  <li data-slot="pagination-item"><span aria-hidden="true" data-slot="pagination-ellipsis" class="sa-pagination-ellipsis"><svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg><span class="sr-only">More pages</span></span></li>
+                  <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">7</a></li>
+                  <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= comparison strips ================= -->
+        <p class="max-w-prose text-sm text-muted-foreground">
+          The grid above is the live candidate: table + pager unified in one
+          panel. Below are variations for each open question, on shortened
+          tables. Use the control bar (bottom right) to switch theme, dark
+          mode, and the page canvas (panel vs muted background — the Avo
+          screenshot sits on a grey canvas).
+        </p>
+
+        <!-- Strip 1: panel surface -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">1 · Panel surface — border / shadow / background</h2>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">✅ sa-card chassis: sa-card py-0 gap-0 + sa-card-footer (LIVE CANDIDATE — ring + per-theme shadow: none in nova, shadow-xs in vega)</figcaption>
+              <div data-slot="card" class="sa-card group/card py-0 gap-0">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="card-footer" class="sa-card-footer border-t py-2 gap-4">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">bespoke: rounded-xl border bg-card shadow-xs (fixed shadow in every theme — superseded by card chassis)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card shadow-xs">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">rounded-xl border bg-card shadow-sm (heavier lift)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">rounded-xl border bg-background (no card tint — only differs on muted canvas / themed cards)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-background">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Strip 2: header row treatment -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">2 · Header row — plain / tinted / muted text</h2>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">✅ plain thead, border-b (LIVE CANDIDATE — current sa-table default)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">thead bg-muted/50 (tinted band, Avo-like)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header bg-muted/50" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">muted header text — thead [&amp;_th]:text-muted-foreground</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header [&_th]:text-muted-foreground" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Strip 3: footer arrangement -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">3 · Footer arrangement — Avo / labelled / centered</h2>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">✅ per-page left · range + compact icon pager right (LIVE CANDIDATE — Avo arrangement)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper group/native-select">
+                    <select data-slot="native-select" data-size="sm" class="sa-native-select" aria-label="Rows per page">
+                      <option selected>8 per page</option>
+                      <option>24 per page</option>
+                    </select>
+                    <svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+                  </div>
+                  <div class="ml-auto flex items-center gap-4">
+                    <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                    <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-0">
+                      <ul class="sa-pagination-content" data-slot="pagination-content">
+                        <li data-slot="pagination-item"><a aria-disabled="true" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-previous" style="pointer-events: none; opacity: 0.5"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg></a></li>
+                        <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">3</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">range left · current pager with Previous/Next labels right (sa-button-size-default)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a aria-disabled="true" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link sa-pagination-previous" style="pointer-events: none; opacity: 0.5"><svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg><span class="sa-pagination-link-label">Previous</span></a></li>
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-default sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link">3</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link sa-pagination-next"><span class="sa-pagination-link-label">Next</span><svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">centered pager, nothing else (current pager, moved inside the panel)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center border-t px-4 py-2">
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a aria-disabled="true" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link sa-pagination-previous" style="pointer-events: none; opacity: 0.5"><svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg><span class="sa-pagination-link-label">Previous</span></a></li>
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-default sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link">3</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-pagination-link sa-pagination-next"><span class="sa-pagination-link-label">Next</span><svg fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Strip 4: footer separation -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">4 · Footer separation — border-t / tinted / none</h2>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">border-t px-4 py-2 (bespoke — superseded: the candidate now inherits the theme's card footer, see strip 6)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">border-t bg-muted/30 (tinted footer band)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t bg-muted/30 px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">no border-t, padding only (rows' own dividers end the table)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Strip 5: edge padding -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">5 · Edge padding — default px-2 vs first/last padded to the panel edge</h2>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">sa-table as-is (cells p-2 — content sits 0.5rem from the panel edge, footer at px-4 misaligns)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head" style="width: 3rem"><span class="sa-input-control-wrapper"><input type="checkbox" aria-label="Select all rows (padding strip a)" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></th><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" aria-label="Select row (padding strip a)" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">✅ [&amp;_tr>*:first-child]:pl-4 [&amp;_tr>*:last-child]:pr-4 (LIVE CANDIDATE — edges align with footer px-4)</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head" style="width: 3rem"><span class="sa-input-control-wrapper"><input type="checkbox" aria-label="Select all rows (padding strip b)" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></th><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell"><span class="sa-input-control-wrapper"><input type="checkbox" aria-label="Select row (padding strip b)" data-slot="input" class="sa-checkbox peer" /><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span></span></td><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Strip 6: footer chassis — inherited card footer vs bespoke -->
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold">6 · Footer chassis — inherited sa-card-footer vs bespoke</h2>
+          <p class="max-w-prose text-xs text-muted-foreground">
+            Flip the theme (control bar) to judge this one. The candidate keeps the theme's
+            card-footer background and horizontal padding (nova: tinted bg-muted/50 px-4,
+            vega: untinted px-6) but forces border-t and tightens to py-2 in every theme.
+            The pure inherited footer is kept for reference (nova: tall p-4 band; vega:
+            borderless, tight against the last row). The bespoke footer ignores the theme
+            entirely.
+          </p>
+          <div class="flex flex-col gap-4">
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">✅ inherited + overrides: sa-card-footer border-t py-2, card py-0 (LIVE CANDIDATE — theme bg/px, forced top border, tight vertical)</figcaption>
+              <div data-slot="card" class="sa-card group/card py-0 gap-0">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="card-footer" class="sa-card-footer border-t py-2 gap-4">
+                  <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper group/native-select">
+                    <select data-slot="native-select" data-size="sm" class="sa-native-select" aria-label="Rows per page">
+                      <option selected>8 per page</option>
+                      <option>24 per page</option>
+                    </select>
+                    <svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+                  </div>
+                  <div class="ml-auto flex items-center gap-4">
+                    <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                    <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-0">
+                      <ul class="sa-pagination-content" data-slot="pagination-content">
+                        <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">3</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">pure inherited (reference): sa-card-footer untouched — nova tall p-4 band, vega borderless and tight</figcaption>
+              <div data-slot="card" class="sa-card group/card pt-0 gap-0">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing)" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="card-footer" class="sa-card-footer gap-4">
+                  <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                  <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-auto">
+                    <ul class="sa-pagination-content" data-slot="pagination-content">
+                      <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                      <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </figure>
+            <figure class="flex flex-col gap-1.5">
+              <figcaption class="text-xs text-muted-foreground">bespoke (first candidate): border bg-card + footer border-t px-4 py-2 — identical in every theme</figcaption>
+              <div class="flex flex-col overflow-hidden rounded-xl border bg-card">
+                <div class="sa-table-container" data-slot="table-container">
+                  <table class="sa-table [&_tr>*:first-child]:pl-4 [&_tr>*:last-child]:pr-4" data-slot="table">
+                    <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row"><th class="sa-table-head" data-slot="table-head">Booking #</th><th class="sa-table-head" data-slot="table-head">Destination</th><th class="sa-table-head text-right" data-slot="table-head">Amount</th></tr></thead>
+                    <tbody class="sa-table-body" data-slot="table-body">
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4821</td><td class="sa-table-cell" data-slot="table-cell">London, UK</td><td class="sa-table-cell text-right" data-slot="table-cell">$1,249.99</td></tr>
+                      <tr class="sa-table-row" data-slot="table-row"><td class="sa-table-cell font-medium" data-slot="table-cell">TRP-4822</td><td class="sa-table-cell" data-slot="table-cell">Kyoto, Japan</td><td class="sa-table-cell text-right" data-slot="table-cell">$2,450.00</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div data-slot="data-grid-footer" class="flex items-center gap-4 border-t px-4 py-2">
+                  <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper group/native-select">
+                    <select data-slot="native-select" data-size="sm" class="sa-native-select" aria-label="Rows per page">
+                      <option selected>8 per page</option>
+                      <option>24 per page</option>
+                    </select>
+                    <svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+                  </div>
+                  <div class="ml-auto flex items-center gap-4">
+                    <span class="text-sm text-muted-foreground tabular-nums"><span class="font-medium text-foreground">1–8</span> of 56</span>
+                    <nav aria-label="pagination" role="navigation" data-slot="data-grid-pager" class="sa-pagination w-auto mr-0 ml-0">
+                      <ul class="sa-pagination-content" data-slot="pagination-content">
+                        <li data-slot="pagination-item"><a href="#" aria-current="page" data-slot="pagination-link" data-active="true" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm sa-pagination-link">1</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">2</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link">3</a></li>
+                        <li data-slot="pagination-item"><a href="#" data-slot="pagination-link" data-active="false" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-pagination-link sa-pagination-next"><svg class="size-4" fill="none" stroke="currentColor" width="24" height="24" stroke-width="2" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></a></li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </figure>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= prototype control bar (not part of the design) ================= -->
+    <div class="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg border border-border bg-popover p-2 text-xs shadow-md">
+      <span class="text-muted-foreground">theme</span>
+      <button type="button" data-set-theme="shadcn.nova" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">nova</button>
+      <button type="button" data-set-theme="shadcn.vega" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">vega</button>
+      <span class="ml-2 text-muted-foreground">canvas</span>
+      <button type="button" data-set-canvas="background" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">plain</button>
+      <button type="button" data-set-canvas="muted" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">muted</button>
+      <button type="button" data-toggle-dark class="ml-2 rounded-md border border-border px-2 py-1">dark</button>
+    </div>
+
+    <script>
+      const mark = (sel, active) =>
+        document.querySelectorAll(sel).forEach((b) => {
+          if (b.dataset.setTheme === active || b.dataset.setCanvas === active) b.setAttribute("data-active", "");
+          else b.removeAttribute("data-active");
+        });
+      document.querySelectorAll("[data-set-theme]").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document.getElementById("theme-css").href =
+            `../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${btn.dataset.setTheme}.css`;
+          mark("[data-set-theme]", btn.dataset.setTheme);
+        }),
+      );
+      document.querySelectorAll("[data-set-canvas]").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document.getElementById("canvas").className =
+            btn.dataset.setCanvas === "muted" ? "min-h-screen bg-muted" : "min-h-screen bg-background";
+          mark("[data-set-canvas]", btn.dataset.setCanvas);
+        }),
+      );
+      document
+        .querySelector("[data-toggle-dark]")
+        .addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+      mark("[data-set-theme]", "shadcn.nova");
+      mark("[data-set-canvas]", "background");
+    </script>
+  </body>
+</html>

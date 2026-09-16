@@ -1,0 +1,17 @@
+@page
+@{
+    var pageNo = int.TryParse(ViewContext.HttpContext.Request.Query["p"], out var parsedPage)
+        ? parsedPage
+        : 1;
+}
+<h1>Spike 8: sa-data-grid-pager standalone</h1>
+
+<h2>A: ambient address (no asp-* address attributes)</h2>
+<sa-data-grid-pager page-no="pageNo" total-pages="30" asp-route-p="{pageNo}"/>
+
+<h2>B: explicit asp-page + preserve-query (explicit route value wins over preserved query)</h2>
+<sa-data-grid-pager page-no="pageNo" total-pages="30" preserve-query="true"
+                    asp-page="/Pager" asp-route-p="{pageNo}" asp-route-status="forced"/>
+
+<h2>C: single page (renders nothing)</h2>
+<sa-data-grid-pager page-no="1" total-pages="1" asp-route-p="{pageNo}"/>

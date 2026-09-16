@@ -1,0 +1,34 @@
+@page
+@{
+    IEnumerable<SpikeBooking> bookings = [new SpikeBooking("BK-1", 300m, "Confirmed")];
+    var missing = ViewContext.HttpContext.Request.Query["case"].ToString();
+}
+<h1>Sorting error cases (expected to throw)</h1>
+
+@if (missing == "no-sort-element")
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-column title="Reference" field="Reference" sortable="true"/>
+    </sa-data-grid>
+}
+else if (missing == "no-field")
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-sort asp-route-s="{sort}" asp-route-d="{dir}"/>
+        <sa-data-grid-column title="Reference" sortable="true"/>
+    </sa-data-grid>
+}
+else if (missing == "no-dir")
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-sort asp-route-s="{sort}"/>
+        <sa-data-grid-column title="Reference" field="Reference" sortable="true"/>
+    </sa-data-grid>
+}
+else
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-sort asp-route-d="{dir}"/>
+        <sa-data-grid-column title="Reference" field="Reference" sortable="true"/>
+    </sa-data-grid>
+}

@@ -1,0 +1,10 @@
+@inherits FormFieldsBaseView<object>
+
+@{
+    var sectionOptions = (FormSectionOptions)ViewData[ViewDataKeys.FormContainer]!;
+    var layout = ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
+}
+
+<sa-form-section title="@sectionOptions.Title" description="@sectionOptions.Description" layout="@layout">
+    <partial name="_FormItems" model="@Model" />
+</sa-form-section>

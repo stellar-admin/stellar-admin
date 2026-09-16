@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using StellarAdmin;
+using StellarAdmin.Pro;
 using StellarAdmin.TagHelpers;
 
 namespace DocsSamples;
@@ -20,6 +21,7 @@ public class Program
         var stellarAdmin = builder.Services.AddStellarAdmin();
         // Custom icons for the Icons docs page.
         stellarAdmin.AddTagHelpers().AddIconPack<VoyagerIconPack>();
+        stellarAdmin.AddPro();
 
         var app = builder.Build();
 

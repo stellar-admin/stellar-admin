@@ -1,0 +1,9 @@
+@page
+<h1>Spike 5: header + item templates inside a column</h1>
+<spike-grid>
+    <spike-column name="A">
+        <spike-header-template><u>Custom A header</u> <sa-badge>beta</sa-badge></spike-header-template>
+        <spike-item-template><b>A=@Html.SpikeItem()</b></spike-item-template>
+    </spike-column>
+    <spike-column name="B"><i>plain B=@Html.SpikeItem()</i></spike-column>
+</spike-grid>

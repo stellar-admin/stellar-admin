@@ -1,0 +1,53 @@
+@page
+@{
+    var voyages = new[]
+    {
+        new SpikeVoyage(
+            "VY-1",
+            new SpikeSkipper(
+                "Ada Marlow",
+                12,
+                new SpikeHarbor("Lisbon", 14.2M, new DateOnly(2026, 9, 12))
+            )
+        ),
+        new SpikeVoyage("VY-2", null),
+        new SpikeVoyage("VY-3", new SpikeSkipper("Ben Okafor", 7, null)),
+    };
+    var noVoyages = Array.Empty<SpikeVoyage>();
+}
+<h1>Spike 11: nested property binding (dotted field / field-for chains)</h1>
+
+<h2>A: dotted string fields — VY-2 (null Skipper) and VY-3 (null HomePort) render empty
+    nested cells</h2>
+<sa-data-grid items="voyages" id="grid-string">
+    <sa-data-grid-column title="Ref" field="Reference"/>
+    <sa-data-grid-column title="Name" field="Skipper.FullName"/>
+    <sa-data-grid-column title="City" field="Skipper.HomePort.City"/>
+    <sa-data-grid-column title="Depth" field="Skipper.HomePort.Depth"/>
+    <sa-data-grid-column title="Inspection" field="Skipper.HomePort.NextInspection"/>
+</sa-data-grid>
+
+<h2>B: field-for chain twins — must render identically to A</h2>
+<sa-data-grid items="voyages" id="grid-expression">
+    <sa-data-grid-column title="Ref" field-for="(SpikeVoyage v) => v.Reference"/>
+    <sa-data-grid-column title="Name" field-for="(SpikeVoyage v) => v.Skipper!.FullName"/>
+    <sa-data-grid-column title="City" field-for="(SpikeVoyage v) => v.Skipper!.HomePort!.City"/>
+    <sa-data-grid-column title="Depth" field-for="(SpikeVoyage v) => v.Skipper!.HomePort!.Depth"/>
+    <sa-data-grid-column title="Inspection" field-for="(SpikeVoyage v) => v.Skipper!.HomePort!.NextInspection"/>
+</sa-data-grid>
+
+<h2>C: header defaults on nested columns, no title attributes — leaf [Display]
+    ("Skipper"), leaf PascalCase split ("Years At Sea"), and the same on a dotted string
+    field ("City")</h2>
+<sa-data-grid items="voyages" id="grid-titles">
+    <sa-data-grid-column field-for="(SpikeVoyage v) => v.Skipper!.FullName"/>
+    <sa-data-grid-column field-for="(SpikeVoyage v) => v.Skipper!.YearsAtSea"/>
+    <sa-data-grid-column field="Skipper.HomePort.City"/>
+</sa-data-grid>
+
+<h2>D: empty grid — chain metadata resolves from the parameter type, so leaf [UIHint]
+    lookup and header defaults still work with zero rows</h2>
+<sa-data-grid items="noVoyages" id="grid-empty">
+    <sa-data-grid-column field-for="(SpikeVoyage v) => v.Skipper!.FullName"/>
+    <sa-data-grid-column field-for="(SpikeVoyage v) => v.Skipper!.HomePort!.NextInspection"/>
+</sa-data-grid>

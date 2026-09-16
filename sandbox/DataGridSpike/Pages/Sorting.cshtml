@@ -1,0 +1,36 @@
+@page
+@using StellarAdmin.Pro.TagHelpers
+@{
+    var query = ViewContext.HttpContext.Request.Query;
+    var sortBy = query["s"].ToString();
+    var sortDirection = query["d"] == "desc"
+        ? DataGridSortDirection.Descending
+        : DataGridSortDirection.Ascending;
+
+    IEnumerable<SpikeBooking> bookings =
+    [
+        new SpikeBooking("BK-1", 300m, "Confirmed"),
+        new SpikeBooking("BK-2", 100m, "Pending"),
+        new SpikeBooking("BK-3", 200m, "Cancelled"),
+    ];
+    bookings = (sortBy.ToLowerInvariant(), sortDirection) switch
+    {
+        ("reference", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Reference),
+        ("reference", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Reference),
+        ("total", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Total),
+        ("total", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Total),
+        _ => bookings
+    };
+}
+<h1>Spike 9: sa-data-grid-sort</h1>
+
+<h2>A: ambient address, sort-field override, preserve-query</h2>
+<sa-data-grid items="bookings">
+    <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
+                       asp-route-s="{sort}" asp-route-d="{dir}"
+                       asp-route-p="1"
+                       preserve-query="true"/>
+    <sa-data-grid-column title="Reference" field="Reference" sortable="true"/>
+    <sa-data-grid-column title="Total" field="Total" sortable="true" sort-field="TotalNet"/>
+    <sa-data-grid-column title="Status" field="Status"/>
+</sa-data-grid>

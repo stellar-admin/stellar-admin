@@ -1,0 +1,6 @@
+@page
+<h1>Spike 1: grid re-executes its own child content per row</h1>
+<spike-grid>
+    <spike-column name="A"><b>A=@Html.SpikeItem()</b></spike-column>
+    <spike-column name="B"><i>B=@(Html.SpikeItem()?.ToUpperInvariant())</i></spike-column>
+</spike-grid>

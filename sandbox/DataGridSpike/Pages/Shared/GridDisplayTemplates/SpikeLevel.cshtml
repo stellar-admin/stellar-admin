@@ -1,0 +1,5 @@
+@using StellarAdmin.Pro.TagHelpers
+@model DataGridSpike.SpikeLevel
+<span data-spike-level="@Model" data-spike-ref="@(Html.GridItem<SpikeTemplatedBooking>().Reference)">
+    Level: @Model
+</span>

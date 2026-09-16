@@ -1,0 +1,15 @@
+@page
+<h1>Spike 3: sa-dropdown-menu inside a row template (UniqueId duplication) + discriminator fix</h1>
+<spike-grid>
+    <spike-column name="Actions">
+        <sa-dropdown-menu>
+            <sa-dropdown-menu-trigger>Open @Html.SpikeItem()</sa-dropdown-menu-trigger>
+            <sa-dropdown-menu-content>
+                <sa-dropdown-menu-item>Edit @Html.SpikeItem()</sa-dropdown-menu-item>
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+    </spike-column>
+    <spike-column name="Id">
+        <spike-id></spike-id>
+    </spike-column>
+</spike-grid>

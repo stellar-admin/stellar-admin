@@ -1,0 +1,25 @@
+@page
+@{
+    IEnumerable<SpikeBooking> bookings = [new SpikeBooking("BK-1", 300m, "Confirmed")];
+    var badCase = ViewContext.HttpContext.Request.Query["case"].ToString();
+}
+<h1>field-for error cases (expected to throw)</h1>
+
+@if (badCase == "both")
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-column title="Reference" field="Reference" field-for="(SpikeBooking b) => b.Reference"/>
+    </sa-data-grid>
+}
+else if (badCase == "string-typo")
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-column title="Typo" field="Reference.Missing.Length"/>
+    </sa-data-grid>
+}
+else
+{
+    <sa-data-grid items="bookings">
+        <sa-data-grid-column title="Trimmed" field-for="(SpikeBooking b) => b.Reference.Trim()"/>
+    </sa-data-grid>
+}

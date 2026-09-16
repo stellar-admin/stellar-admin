@@ -1,0 +1,9 @@
+@model DateOnly?
+@if (Model is { } departure)
+{
+    <span data-spike-date="@departure.ToString("yyyy-MM-dd")">@departure.ToString("d MMM yyyy")</span>
+}
+else
+{
+    <span data-spike-date="">Not scheduled</span>
+}

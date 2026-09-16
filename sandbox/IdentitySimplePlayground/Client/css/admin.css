@@ -1,0 +1,15 @@
+/* The Stellar Admin theme already supplies Preflight; do not reset its base styles. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+/* The Stellar Admin theme supplies component styles and runtime token values. */
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/shadcn-tailwind.css";
+
+@plugin "@tailwindcss/forms" {
+    strategy: "class";
+}
+
+@source "../../Pages/";
+@source "../../Forms/";

@@ -1,0 +1,10 @@
+@model DocsSamples.BookingStatus
+@{
+    var variant = Model switch
+    {
+        BookingStatus.Cancelled => BadgeVariant.Destructive,
+        BookingStatus.Pending => BadgeVariant.Secondary,
+        _ => BadgeVariant.Default,
+    };
+}
+<sa-badge variant="@variant">@Model.ToString()</sa-badge>
