@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 public static class DataGridHtmlHelperExtensions
 {

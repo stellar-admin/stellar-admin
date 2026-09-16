@@ -1,4 +1,4 @@
-@using StellarAdmin.Pro.TagHelpers
+@using StellarAdmin.TagHelpers
 @{
     var selectedPageSize = int.TryParse(Context.Request.Query["pageSize"], out var requestedPageSize)
         ? (int?)Math.Max(requestedPageSize, 1)

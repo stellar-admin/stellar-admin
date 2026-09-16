@@ -1,4 +1,4 @@
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     The direction of a data grid sort.

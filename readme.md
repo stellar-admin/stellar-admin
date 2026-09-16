@@ -92,6 +92,6 @@ This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.ra
 
 ## Resource and admin packages
 
-This repository also contains `StellarAdmin.Pro` (admin shell, resource screens, and data grid), `StellarAdmin.Pro.Identity` (Identity management), and `StellarAdmin.Pro.EntityFrameworkCore` (EF Core resources). All are MIT licensed. The `.Pro*` names and `AddPro()` API are retained temporarily; there is no paid tier. These packages are available from source; their NuGet publication is a separate release step.
+This repository also contains `StellarAdmin.Pro` (admin shell and resource screens), `StellarAdmin.Pro.Identity` (Identity management), and `StellarAdmin.Pro.EntityFrameworkCore` (EF Core resources). All are MIT licensed. The `.Pro*` names and `AddPro()` API are retained temporarily; there is no paid tier. These packages are available from source; their NuGet publication is a separate release step.
 
 The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, and the Identity playground used by the resource integration tests.

@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers;
 using StellarAdmin.TagHelpers.Icons;
 
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     A pager that renders page-number, previous, and next links for a paged data set. Link

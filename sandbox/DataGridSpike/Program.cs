@@ -1,12 +1,10 @@
 using StellarAdmin;
-using StellarAdmin.Pro;
+using StellarAdmin.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-// StellarAdmin.Pro opts out of automatic application part discovery; AddPro()
-// registers its part (and the UI services), which the sa-data-grid tag helpers need.
-builder.Services.AddStellarAdmin().AddPro();
+builder.Services.AddStellarAdmin().AddTagHelpers();
 
 var app = builder.Build();
 

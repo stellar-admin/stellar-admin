@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Shared state between the data grid and its columns. A single mutable instance is

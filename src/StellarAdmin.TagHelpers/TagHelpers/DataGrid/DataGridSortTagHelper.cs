@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers;
 using StellarAdmin.TagHelpers.Icons;
 using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper;
 
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Declares how the data grid generates its column-sorting links, and the current sort

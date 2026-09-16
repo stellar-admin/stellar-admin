@@ -7,6 +7,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
-    <ProjectReference Include="..\..\src\StellarAdmin.Pro\StellarAdmin.Pro.csproj" />
   </ItemGroup>
 </Project>

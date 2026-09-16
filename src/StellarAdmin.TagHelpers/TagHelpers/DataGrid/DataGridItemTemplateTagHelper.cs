@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers;
 
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     The row template of a data grid column, re-rendered once per data row with the current

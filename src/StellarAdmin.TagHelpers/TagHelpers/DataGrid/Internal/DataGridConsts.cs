@@ -1,4 +1,4 @@
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 public static class DataGridConsts
 {

@@ -1,4 +1,4 @@
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>The row-selection declaration registered during the collect pass.</summary>
 internal sealed class DataGridSelection

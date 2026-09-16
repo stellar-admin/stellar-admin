@@ -1,4 +1,4 @@
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>A column definition registered during the collect pass.</summary>
 internal sealed class DataGridColumn

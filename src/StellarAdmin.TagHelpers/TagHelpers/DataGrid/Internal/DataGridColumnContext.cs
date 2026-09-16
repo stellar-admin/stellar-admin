@@ -1,4 +1,4 @@
-namespace StellarAdmin.Pro.TagHelpers;
+namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Published by a data grid column before it executes its child content, so nested

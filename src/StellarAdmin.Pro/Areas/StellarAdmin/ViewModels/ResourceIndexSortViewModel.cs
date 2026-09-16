@@ -1,4 +1,4 @@
-using StellarAdmin.Pro.TagHelpers;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Pro.Areas.StellarAdmin.ViewModels;
 

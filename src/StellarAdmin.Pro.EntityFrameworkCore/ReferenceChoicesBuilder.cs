@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using StellarAdmin.Pro.Resources.Infrastructure.Query;
-using StellarAdmin.Pro.TagHelpers;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Pro.EntityFrameworkCore;
 

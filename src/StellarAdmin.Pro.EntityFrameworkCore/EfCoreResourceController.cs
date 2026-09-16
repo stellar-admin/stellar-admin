@@ -158,7 +158,7 @@ internal sealed class EfCoreResourceController<TContext, TEntity>(
 
         var query = db.Set<TEntity>()
             .AsNoTracking()
-            .OrderByField(selector, TagHelpers.DataGridSortDirection.Ascending);
+            .OrderByField(selector, StellarAdmin.TagHelpers.DataGridSortDirection.Ascending);
 
         foreach (
             var reference in options.References.Where(reference =>
