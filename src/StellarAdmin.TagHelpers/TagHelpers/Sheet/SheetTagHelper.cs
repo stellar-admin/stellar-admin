@@ -79,7 +79,10 @@ public class SheetTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "x" };
+            var iconTagHelper = new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.Close),
+            };
             await iconTagHelper.ProcessAsync(context, iconOutput);
 
             // Render the button. Icon-only, so it carries a visually hidden accessible name.

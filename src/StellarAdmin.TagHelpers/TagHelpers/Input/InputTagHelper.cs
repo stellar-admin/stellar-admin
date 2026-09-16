@@ -172,7 +172,10 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                     [new TagHelperAttribute("class", "sa-checkbox-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var checkboxIconTagHelper = new IconTagHelper(_iconOptions) { Name = "check" };
+                var checkboxIconTagHelper = new IconTagHelper(_iconOptions)
+                {
+                    Name = _iconOptions.GetSemanticIconName(SemanticIconRole.CheckboxSelected),
+                };
                 await checkboxIconTagHelper.ProcessAsync(context, checkboxIconOutput);
                 checkboxSpan.InnerHtml.AppendHtml(checkboxIconOutput);
 
@@ -198,7 +201,10 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                     [new TagHelperAttribute("class", "sa-radiobutton-indicator-icon")],
                     (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
                 );
-                var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "circle" };
+                var iconTagHelper = new IconTagHelper(_iconOptions)
+                {
+                    Name = _iconOptions.GetSemanticIconName(SemanticIconRole.RadioSelected),
+                };
                 await iconTagHelper.ProcessAsync(context, iconOutput);
                 spanTagBuilder.InnerHtml.AppendHtml(iconOutput);
 

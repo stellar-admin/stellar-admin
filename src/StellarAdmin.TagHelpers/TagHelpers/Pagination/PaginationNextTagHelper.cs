@@ -71,7 +71,10 @@ public class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-right" };
+            var iconTagHelper = new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.PaginationNext),
+            };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
         }

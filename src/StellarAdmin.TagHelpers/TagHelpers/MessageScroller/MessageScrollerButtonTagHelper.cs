@@ -119,7 +119,10 @@ public class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "arrow-down" };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ScrollToEnd),
+        };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         output.Content.AppendHtml(iconOutput);
 

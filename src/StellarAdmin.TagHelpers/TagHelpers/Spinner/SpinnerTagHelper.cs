@@ -19,7 +19,10 @@ public class SpinnerTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "loader-circle" };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.Loading),
+        };
         await iconTagHelper.ProcessAsync(context, output);
 
         output.Attributes.SetAttribute("role", "status");

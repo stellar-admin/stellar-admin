@@ -49,7 +49,10 @@ public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "panel-left" };
+            var iconTagHelper = new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ToggleSidebar),
+            };
             iconTagHelper.Process(context, iconOutput);
             iconContent = new DefaultTagHelperContent().AppendHtml(iconOutput);
         }

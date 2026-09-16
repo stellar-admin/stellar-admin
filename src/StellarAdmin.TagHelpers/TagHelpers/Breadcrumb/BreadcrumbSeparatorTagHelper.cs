@@ -44,7 +44,10 @@ public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
                 [new TagHelperAttribute("class", "size-4")],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-right" };
+            var iconTagHelper = new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.BreadcrumbSeparator),
+            };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
         }

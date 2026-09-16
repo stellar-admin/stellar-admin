@@ -88,7 +88,12 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
         indicator.Attributes["data-slot"] = "dropdown-menu-checkbox-item-indicator";
         indicator.Attributes["class"] = JoinCssClasses("sa-dropdown-menu-item-indicator");
         indicator.InnerHtml.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, _iconOptions, "check", "size-4")
+            DropdownMenuInternals.RenderIcon(
+                context,
+                _iconOptions,
+                SemanticIconRole.MenuItemSelected,
+                "size-4"
+            )
         );
 
         var childContent = await output.GetChildContentAsync();

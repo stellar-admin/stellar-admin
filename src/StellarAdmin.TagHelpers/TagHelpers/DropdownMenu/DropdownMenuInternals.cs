@@ -40,11 +40,11 @@ internal static class DropdownMenuInternals
             _ => "bottom",
         };
 
-    /// <summary>Renders a Lucide icon (via <see cref="IconTagHelper" />) as inline content.</summary>
+    /// <summary>Renders a semantic icon (via <see cref="IconTagHelper" />) as inline content.</summary>
     public static IHtmlContent RenderIcon(
         TagHelperContext context,
         IconOptions iconOptions,
-        string name,
+        SemanticIconRole role,
         string cssClass
     )
     {
@@ -53,7 +53,10 @@ internal static class DropdownMenuInternals
             [new TagHelperAttribute("class", cssClass)],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(iconOptions) { Name = name };
+        var iconTagHelper = new IconTagHelper(iconOptions)
+        {
+            Name = iconOptions.GetSemanticIconName(role),
+        };
         iconTagHelper.Process(context, iconOutput);
 
         return iconOutput;

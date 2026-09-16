@@ -236,7 +236,10 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
 
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "check" };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.ChoiceSelected),
+        };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         indicator.InnerHtml.AppendHtml(iconOutput);
 

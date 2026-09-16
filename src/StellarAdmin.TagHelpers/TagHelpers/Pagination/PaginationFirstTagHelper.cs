@@ -65,7 +65,10 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
                 [],
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
-            var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-first" };
+            var iconTagHelper = new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.PaginationFirst),
+            };
             await iconTagHelper.ProcessAsync(context, iconOutput);
             output.Content.AppendHtml(iconOutput);
 

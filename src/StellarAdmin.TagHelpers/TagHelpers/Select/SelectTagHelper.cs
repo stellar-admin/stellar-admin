@@ -108,7 +108,10 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
             ],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = "chevron-down" };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.DropdownIndicator),
+        };
         await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
 
         output.Content.AppendHtml(iconTagHelperOutput);

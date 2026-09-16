@@ -81,7 +81,10 @@ public class CarouselPreviousTagHelper : StellarAdminTagHelperBase
                 (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
             );
 
-            new IconTagHelper(_iconOptions) { Name = "chevron-left" }.Process(context, icon);
+            new IconTagHelper(_iconOptions)
+            {
+                Name = _iconOptions.GetSemanticIconName(SemanticIconRole.CarouselPrevious),
+            }.Process(context, icon);
 
             output.Content.SetHtmlContent(icon);
         }

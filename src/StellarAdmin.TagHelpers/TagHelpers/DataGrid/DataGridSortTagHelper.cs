@@ -163,9 +163,9 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
                 context,
                 activeDirection switch
                 {
-                    DataGridSortDirection.Ascending => "arrow-up",
-                    DataGridSortDirection.Descending => "arrow-down",
-                    _ => "chevrons-up-down",
+                    DataGridSortDirection.Ascending => SemanticIconRole.SortAscending,
+                    DataGridSortDirection.Descending => SemanticIconRole.SortDescending,
+                    _ => SemanticIconRole.SortUnsorted,
                 }
             )
         );
@@ -222,14 +222,17 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
         );
     }
 
-    private async Task<IHtmlContent> RenderIcon(TagHelperContext context, string name)
+    private async Task<IHtmlContent> RenderIcon(TagHelperContext context, SemanticIconRole role)
     {
         var iconOutput = new TagHelperOutput(
             "svg",
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = name };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(role),
+        };
         await iconTagHelper.ProcessAsync(context, iconOutput);
 
         return iconOutput;

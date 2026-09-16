@@ -525,7 +525,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         var content = new DefaultTagHelperContent();
         if (direction == "previous")
         {
-            content.AppendHtml(await RenderIcon(context, "chevron-left"));
+            content.AppendHtml(await RenderIcon(context, SemanticIconRole.PaginationPrevious));
             if (!compact)
             {
                 content.AppendHtml("<span class=\"sa-pagination-link-label\">Previous</span>");
@@ -537,7 +537,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             {
                 content.AppendHtml("<span class=\"sa-pagination-link-label\">Next</span>");
             }
-            content.AppendHtml(await RenderIcon(context, "chevron-right"));
+            content.AppendHtml(await RenderIcon(context, SemanticIconRole.PaginationNext));
         }
 
         var ariaLabel = direction == "previous" ? "Go to previous page" : "Go to next page";
@@ -604,14 +604,17 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         return ellipsisOutput;
     }
 
-    private async Task<IHtmlContent> RenderIcon(TagHelperContext context, string name)
+    private async Task<IHtmlContent> RenderIcon(TagHelperContext context, SemanticIconRole role)
     {
         var iconOutput = new TagHelperOutput(
             "svg",
             [],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(_iconOptions) { Name = name };
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(role),
+        };
         await iconTagHelper.ProcessAsync(context, iconOutput);
 
         return iconOutput;

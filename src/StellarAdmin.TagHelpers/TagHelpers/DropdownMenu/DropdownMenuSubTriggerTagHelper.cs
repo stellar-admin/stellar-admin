@@ -59,7 +59,12 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
         var childContent = await output.GetChildContentAsync();
         output.Content.SetHtmlContent(childContent);
         output.Content.AppendHtml(
-            DropdownMenuInternals.RenderIcon(context, _iconOptions, "chevron-right", "size-4")
+            DropdownMenuInternals.RenderIcon(
+                context,
+                _iconOptions,
+                SemanticIconRole.SubmenuIndicator,
+                "size-4"
+            )
         );
     }
 }

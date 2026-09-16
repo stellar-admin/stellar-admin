@@ -146,6 +146,7 @@ Require(fallbackHtml.Contains("M12 9v4"), "Missing icons must retain the fallbac
 Require(trackingOptions.ReadCount == 1, "Rendering must use the already-resolved options.");
 
 Console.WriteLine("Core icon options and isolation checks passed.");
+await SemanticIconTests.Run();
 
 var builder = WebApplication.CreateBuilder();
 var services = builder.Services;

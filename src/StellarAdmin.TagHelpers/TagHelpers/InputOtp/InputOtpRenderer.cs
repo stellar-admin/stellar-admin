@@ -63,7 +63,10 @@ internal static class InputOtpRenderer
             [new TagHelperAttribute("class", "size-4")],
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        var iconTagHelper = new IconTagHelper(iconOptions) { Name = "minus" };
+        var iconTagHelper = new IconTagHelper(iconOptions)
+        {
+            Name = iconOptions.GetSemanticIconName(SemanticIconRole.OtpSeparator),
+        };
         await iconTagHelper.ProcessAsync(context, iconOutput);
         target.AppendHtml(iconOutput);
     }
