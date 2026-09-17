@@ -54,3 +54,9 @@ Verification: Skill Creator validation and `git diff --check` passed; relative l
 ## Publication handoff (2026-09-17)
 
 The user authorized committing and pushing the completed skill migration, product split, generator changes, and installation documentation to `origin/master`. Installation smoke tests and additional CI packaging checks remain outstanding; this commit does not claim those checks are complete.
+
+## Installation scope follow-up (2026-09-17)
+
+The user reported a successful installation, including default-layout changes and Bootstrap removal, and requested that consumers choose whether those changes are wanted. Updated the skill entry point and setup guide to ask for basic installation or installation with layout conversion unless the user already specified the scope. Basic installation preserves the existing layout structure and Bootstrap; layout conversion includes dependency-aware Bootstrap cleanup within the agreed scope. Replaced the unconditional framework-removal recommendation with guidance to explain coexistence concerns and check actual rendering.
+
+Verification: Skill Creator validation, relative links and heading anchors in the changed skill documents, and `git diff --check` passed. The revised prompt behavior has not been exercised in a fresh consumer session. No runtime or generated component references changed.

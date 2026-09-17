@@ -2,6 +2,17 @@
 
 StellarAdmin Tag Helpers ships as the **`StellarAdmin.TagHelpers`** NuGet package. A project needs four things wired up before any `<sa-*>` tag helper renders correctly. If components render as plain, unstyled HTML, one of these steps is missing (usually 3 or 4).
 
+## Choose the installation scope
+
+Before changing a project for installation, ask the user which scope they want unless their request already makes the choice explicit:
+
+> Would you like a basic installation that keeps your current layout and Bootstrap, or should I also convert the default layout to StellarAdmin and remove Bootstrap where it is no longer needed?
+
+- **Basic installation:** complete steps 1–4. Add the necessary asset references to the existing layout, preserving its structure, navigation, page markup, existing stylesheets, and scripts. Do not remove Bootstrap or redesign the app shell.
+- **Installation with layout conversion:** complete steps 1–4, then adapt the default layout using the [layout guide](layout.md) and perform the Bootstrap cleanup below. Preserve application routes, content, Razor sections, and behavior while converting the presentation.
+
+Wait for the choice before making installation changes; an unanswered question does not authorize layout conversion. Honor a scope already specified by the user without asking again. This choice applies to installation, not every later component edit.
+
 ## 1. Install the package
 
 ```bash
@@ -49,9 +60,11 @@ Both are **static web assets**, so the app must serve them — the default templ
 
 The package targets **net10.0**, so the app must be on .NET 10 or later.
 
-## 5. Remove conflicting CSS frameworks (strongly recommended)
+## Optional: convert the layout and remove Bootstrap
 
-Using StellarAdmin alongside another CSS framework — Bootstrap being the common one — will almost always break rendering, because their resets and utilities fight StellarAdmin's. Remove third-party stylesheets and rely on the StellarAdmin bundle alone.
+Perform this only when the user selected layout conversion or explicitly requested it. Replace the default layout's Bootstrap-dependent markup with StellarAdmin components and appropriate application CSS. Check remaining pages and scripts for Bootstrap dependencies before removing its stylesheet, JavaScript references, or installed assets. If other pages still depend on Bootstrap, explain what remains and ask before expanding the conversion beyond the agreed layout scope. Do not remove unrelated stylesheets, scripts, or validation dependencies as cleanup.
+
+For basic installation, retain Bootstrap and explain that CSS resets and overlapping styles can affect rendering when the frameworks coexist. Check both a StellarAdmin component and the existing layout; report any observed conflicts and offer a separate layout conversion rather than silently removing the existing framework. Keeping the markup and assets does not guarantee an unchanged appearance after adding a theme stylesheet.
 
 ## Optional: customize the theme
 

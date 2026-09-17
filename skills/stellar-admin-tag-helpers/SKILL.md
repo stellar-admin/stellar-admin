@@ -24,6 +24,8 @@ This skill targets `StellarAdmin.TagHelpers` **0.3.0** on **.NET 10**, with its 
 
 ## How to use this skill
 
+For installation requests, establish the setup scope before editing: **basic installation** (packages, services, tag helper registration, CSS and JS, preserving the existing layout and Bootstrap) or **layout conversion** (also adapt the default layout and remove Bootstrap where no longer needed). If the user has not already chosen, ask using the [setup guide](references/setup.md#choose-the-installation-scope). A request to install StellarAdmin alone does not authorize layout conversion.
+
 The detail lives in `references/`, loaded on demand — open only what the task needs:
 
 - **[setup](references/setup.md)** — is StellarAdmin installed and wired up? Read this when a project is new to StellarAdmin, or when components render as plain unstyled HTML (missing CSS/JS, or a conflicting CSS framework).
