@@ -1,15 +1,3 @@
----
-name: theming
-description: >-
-  Configures the look of a StellarAdmin app — picking a theme stylesheet, customizing theme
-  values with CSS variables, enabling dark mode, using the design tokens in your own
-  markup, and tuning the menu color / appearance / accent. Use when the user wants to
-  change the StellarAdmin theme, add or toggle dark mode, adjust menu or dropdown
-  appearance, or asks which colors or classes to use with StellarAdmin.
-metadata:
-  author: StellarAdmin
----
-
 # Theming StellarAdmin
 
 **A theme is a stylesheet.** The package ships one self-contained CSS bundle per theme; the layout links exactly one, and switching themes means switching that `<link>`. Nothing about the theme is configured in C#. Dark mode is a CSS class, and day-to-day styling means using the semantic design tokens instead of hard-coded colors.
@@ -81,7 +69,7 @@ Concourse has cool grey surfaces, a blue accent, 4px corners, and 34px default c
 
 ### Ledger
 
-Use `stellar-admin.ledger.css` as the single theme bundle. Optionally load Lexend (UI, weights 300–700) and JetBrains Mono (identifiers and shortcuts, weights 400–500) from the app's layout, self-hosted or through a font provider. The library stylesheet does not fetch fonts. Existing tag helpers and the `.dark` class work unchanged, including shared surfaces used by Pro.
+Use `stellar-admin.ledger.css` as the single theme bundle. Optionally load Lexend (UI, weights 300–700) and JetBrains Mono (identifiers and shortcuts, weights 400–500) from the app's layout, self-hosted or through a font provider. The library stylesheet does not fetch fonts. Existing tag helpers and the `.dark` class work unchanged, including shared surfaces used by `StellarAdmin.Dashboard`.
 
 Preserve raised borders and shadows on primary, secondary, outline, and destructive buttons; ghost and link actions are flat. Do not reproduce the original prototype's `.ldg-*` classes. Use StellarAdmin's normal components. Ledger-specific `--sa-ledger-*` variables are implementation details rather than shared tokens. If customising primary/destructive colours, coordinate their `--sa-ledger-primary-hover`, `--sa-ledger-primary-border`, `--sa-ledger-destructive-hover`, `--sa-ledger-destructive-border`, and `--sa-ledger-destructive-foreground` companions in both modes.
 

@@ -6,6 +6,7 @@ Completed records remain useful for rationale and commit references. Their old p
 
 | Plan | Status |
 | --- | --- |
+| [Consumer skill consolidation](consumer-skill-consolidation.md) | active — product-specific layout and installation documentation complete; installation tests and CI checks remain |
 | [Workspace and skills consolidation](workspace-retirement.md) | completed — product 0.3.0 release verified; old repositories archived and NuGet trust removed; website stays separate |
 | [Icon encapsulation and semantic icons](semantic-icons.md) | encapsulation completed; semantic API proposed |
 | [Repository consolidation](archive/repository-consolidation.md) | completed — clean import committed; push and retirement remain separate |

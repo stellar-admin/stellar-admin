@@ -1,19 +1,6 @@
----
-name: forms
-description: >-
-  Builds accessible, model-bound forms with StellarAdmin Tag Helpers in ASP.NET Core MVC /
-  Razor Pages — fields with labels, descriptions and validation, asp-for model binding,
-  validation messages, field groups and fieldsets, choice cards, and the input family
-  (text, select, textarea, switch, checkbox, radio, slider, toggle, OTP). Use when
-  creating or editing a form in a .cshtml/.razor file that uses StellarAdmin, or when the
-  user mentions StellarAdmin forms, fields, inputs, model binding, or validation.
-metadata:
-  author: StellarAdmin
----
-
 # Building forms with StellarAdmin
 
-This skill covers the *patterns* for StellarAdmin forms. For a specific component's attributes and values, open its file under `../tag-helpers/references/components/` — for example `../tag-helpers/references/components/field.md`, `.../input.md`, `.../select.md`. Read `../tag-helpers/references/conventions.md` for the cross-cutting rules (fully-qualified enums, attribute pass-through, model binding).
+This guide covers the *patterns* for StellarAdmin forms. For a specific component's attributes and values, open its file under `components/` — for example `components/field.md`, `.../input.md`, `.../select.md`. Read `conventions.md` for the cross-cutting rules (fully-qualified enums, attribute pass-through, model binding).
 
 ## The field is the unit of a form
 

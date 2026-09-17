@@ -17,9 +17,9 @@ using StellarAdmin.TagHelpers;
 builder.Services.AddStellarAdmin().AddTagHelpers();
 ```
 
-`AddStellarAdmin()` (namespace `StellarAdmin`) creates the shared builder; `.AddTagHelpers()` (namespace `StellarAdmin.TagHelpers`) registers the tag helper services — the icon manager, with the **Lucide** icon pack as the default. Without `.AddTagHelpers()`, tag helpers that render icons fail to resolve their services.
+`AddStellarAdmin()` (namespace `StellarAdmin`) comes from `StellarAdmin.Core`, which is installed transitively with `StellarAdmin.TagHelpers`. It creates the shared builder and registers `IconOptions`, with the **Lucide** icon pack as the default. `.AddTagHelpers()` (namespace `StellarAdmin.TagHelpers`) comes from `StellarAdmin.TagHelpers` and registers the tag helper options. Keep both calls in the registration chain.
 
-Both live in the same package. Theme selection is **not** part of registration: the theme is whichever stylesheet the layout links (step 4).
+No separate Core package installation is needed. Theme selection is **not** part of registration: the theme is whichever stylesheet the layout links (step 4).
 
 ## 3. Register the tag helpers (`_ViewImports.cshtml`)
 
@@ -64,7 +64,7 @@ Every color and radius in the bundle is a CSS custom property. Redeclare the pro
 }
 ```
 
-Values live on `:root`, with dark-mode overrides under `.dark`; the compiled rules all reference `var(--…)`, so redeclared values take effect everywhere. The full list of variables is in the `stellar-admin:theming` skill.
+Values live on `:root`, with dark-mode overrides under `.dark`; the compiled rules all reference `var(--…)`, so redeclared values take effect everywhere. The full list of variables is in the [theming](theming.md) guide.
 
 ## Optional: use StellarAdmin's design tokens in your own markup
 
@@ -94,7 +94,3 @@ Drop this on a page; if it renders as a styled alert, setup is correct:
 ## Online documentation
 
 Full component docs and live examples: <https://www.stellaradmin.com/docs/tag-helpers>
-
-## Resource packages
-
-The resource asset helpers live in `StellarAdmin.Dashboard`, which is MIT licensed alongside the rest of StellarAdmin. These packages are currently available from the source repository; NuGet publication is a separate release step. Keep `StellarAdmin.TagHelpers` registered, reference the `StellarAdmin.Dashboard` project, add `using StellarAdmin.Dashboard;` in startup, and call `.AddDashboard()` on the `StellarAdminBuilder`. In `_ViewImports.cshtml`, add `@using StellarAdmin.Dashboard.TagHelpers` and `@addTagHelper *, StellarAdmin.Dashboard`.

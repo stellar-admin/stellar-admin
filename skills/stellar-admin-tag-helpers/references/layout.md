@@ -1,19 +1,6 @@
----
-name: layout
-description: >-
-  Composes page layouts and app shells with StellarAdmin Tag Helpers in ASP.NET Core — the
-  sidebar dashboard shell (wrapper + sidebar + inset), the app header, the page header,
-  the Page Container / Stack / Group spacing primitives, and Card composition. Use when
-  building a StellarAdmin page layout, an admin or dashboard shell, a navigation sidebar,
-  a page header, or a card, or when the user mentions a StellarAdmin layout, sidebar,
-  dashboard, app shell, app header, page header, or card.
-metadata:
-  author: StellarAdmin
----
-
 # Composing layouts with StellarAdmin
 
-Patterns for page structure. For a component's attributes and values, open its file under `../tag-helpers/references/components/` — for example `../tag-helpers/references/components/sidebar.md`, `.../app-header.md`, `.../page-header.md`, `.../layout.md`, `.../card.md`. For cross-cutting rules see `../tag-helpers/references/conventions.md`.
+Patterns for page structure. For a component's attributes and values, open its file under `components/` — for example `components/sidebar.md`, `.../app-header.md`, `.../page-header.md`, `.../layout.md`, `.../card.md`. For cross-cutting rules see `conventions.md`.
 
 ## The pieces, and where each belongs
 
@@ -203,7 +190,7 @@ Slots in fixed order: header (title / description / optional action) → content
 - Dividers are opt-in utilities: `<sa-card-header class="border-b">` / `<sa-card-footer class="border-t">`.
 - `size="CardSize.Small"` tightens the padding.
 - The `class` values above (`mx-auto`, `w-full`, `max-w-sm`, `flex-col gap-2`) are Tailwind utilities, so they only take effect if the app runs its own Tailwind build — see conventions.md §4. Without one, size and center the card with your own CSS class instead.
-- Building the form inside the card? See the [forms](../forms/SKILL.md) skill.
+- Building the form inside the card? See the [forms](forms.md) guide.
 
 ## Rules
 

@@ -194,10 +194,10 @@ internal sealed class Renderer(Dictionary<string, EnumInfo> enums)
     }
 
     /// <summary>Renders the component catalog index.</summary>
-    public static string RenderIndex(IReadOnlyList<ComponentInfo> components)
+    public static string RenderIndex(IReadOnlyList<ComponentInfo> components, string productTitle)
     {
         var builder = new StringBuilder();
-        builder.Append("# StellarAdmin Tag Helpers component catalog\n\n");
+        builder.Append($"# {productTitle} component catalog\n\n");
         builder.Append("| Component | Tags | Summary |\n");
         builder.Append("|-----------|------|---------|\n");
 

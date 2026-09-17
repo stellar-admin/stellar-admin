@@ -4,6 +4,8 @@ Status: repository consolidation, archival, and old NuGet trust policy cleanup c
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
 
+Consumer distribution update: the plugin packaging and compatibility approach below are historical and have been superseded by [consumer skill consolidation](consumer-skill-consolidation.md). The current consumer source is `skills/`.
+
 ## Recommendation
 
 Make `stellar-admin/stellar-admin` the self-contained product and contributor repository. Move consumer skills, their generator, release tooling, and maintained product development guidance into it. Keep `website` independent, as required by the user. Retire the workspace as an active dependency; retain the old repositories for history and installation compatibility until the transition is proven.

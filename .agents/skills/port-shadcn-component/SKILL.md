@@ -178,7 +178,7 @@ dotnet run --project util/SkillsGenerator
 dotnet run --project util/SkillsGenerator -- --check   # must report no drift
 ```
 
-Under `plugins/stellar-admin/skills/tag-helpers/references/`, `components/*.md` and `components-index.md` are generated. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
+Under `skills/stellar-admin-tag-helpers/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Dashboard components are generated separately under `skills/stellar-admin-dashboard/references/`. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
 
 ## Phase 7 — verify and hand over
 

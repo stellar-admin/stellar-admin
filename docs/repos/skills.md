@@ -1,16 +1,27 @@
 # StellarAdmin consumer skills
 
-Read this guide when working on `plugins/stellar-admin/` from the product repository. Shared instructions are in [AGENTS.md](../../AGENTS.md), with conventions in [docs/conventions](../conventions/). Paths below are relative to the product repository root.
+Read this guide when working on `skills/` from the product repository. Shared instructions are in [AGENTS.md](../../AGENTS.md), with conventions in [docs/conventions/](../conventions/). Paths below are relative to the product repository root.
 
-These MIT consumer skills live alongside the product and teach agents how to use StellarAdmin. The separate `skills/` repo is a compatibility marketplace forwarding to this plugin; its old content is frozen, so do not regenerate into it. These are consumer skills, separate from the product repository's component-development workflows.
+Consumer guidance is organized by product; see the [skills overview](../../skills/README.md). It is separate from the product repository's development workflows in `.agents/skills/`. The `skills/` directory is part of this product checkout, not the retired separate skills repository.
 
-Read [plugin README](../../plugins/stellar-admin/README.md) for installation and packaging. Keep one copy of each skill's content; agent-specific packaging must preserve sibling reference links. The current Claude marketplace lives in `.claude-plugin/` and `plugins/*/.claude-plugin/`; those manifests are not universal plugin manifests.
+## Product boundaries
+
+- [stellar-admin-tag-helpers](../../skills/stellar-admin-tag-helpers/SKILL.md) teaches applications to use the UI library. Setup, forms, layout, theming, and component documentation live under its `references/` directory and are loaded as needed.
+- `skills/stellar-admin-dashboard/` preserves Dashboard component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
+- Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Dashboard consumers customizing UI markup can also use the Tag Helpers skill; avoid duplicating the UI catalog.
+
+The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation smoke tests remain in [consumer skill consolidation](../plans/consumer-skill-consolidation.md).
 
 ## Source ownership and validation
 
-- `plugins/stellar-admin/skills/tag-helpers/references/components/*.md` and `references/components-index.md` are generated from tag helpers in `StellarAdmin.TagHelpers` and `StellarAdmin.Dashboard`, with curated samples by `util/SkillsGenerator`.
+- `skills/stellar-admin-tag-helpers/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.TagHelpers`.
+- `skills/stellar-admin-dashboard/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.Dashboard`. These currently cover FormPage and IndexPage.
+- `util/SkillsGenerator` generates both product catalogs with curated samples. It retains shared source lookup for inherited attributes and enum values, while routing output by the component's source project.
 - Component regions between `<!-- structure:begin -->` and `<!-- structure:end -->` are hand-authored and preserved by generation.
-- Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs.
-- Preserve the `tag-helpers`, `forms`, `layout`, and `theming` sibling layout; skills link to each other's files. Use relative file links for cross-agent discovery, not plugin command names as the only reference.
+- Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs. Forms, layout, and theming remain reference documents within the UI skill.
 
-For generated-reference changes, run `dotnet run --project util/SkillsGenerator` and then `dotnet run --project util/SkillsGenerator -- --check` from the product repository. No sibling checkouts are needed for generation. Validate skill frontmatter, relative links, and referenced tag names after handwritten changes. Do not promise automatic activation solely from file extensions.
+Run `dotnet run --project util/SkillsGenerator` and then `dotnet run --project util/SkillsGenerator -- --check` from the product repository. No sibling checkouts are needed. Validate skill frontmatter, relative links, product ownership, and referenced tag names after changes. Do not promise automatic activation solely from file extensions.
+
+## Compatibility maintenance
+
+The current documented baseline is `StellarAdmin.TagHelpers` 0.3.0 on .NET 10. Keep the consumer overview, root README, and UI skill's version section aligned when that baseline changes. Verify package APIs and generated references before claiming support for another version. The default-branch installer command does not automatically match a consumer's NuGet version. Do not advertise an old release tag as a skill source unless that tag contains the product-specific skill layout.

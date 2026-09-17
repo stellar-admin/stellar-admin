@@ -30,22 +30,23 @@ static string GetRepoRootFolder()
 var repoRoot = GetRepoRootFolder();
 
 // Sources, samples, and consumer references belong to this checkout.
-string[] tagHelpersRoots =
-[
-    Path.Combine(repoRoot, "src", "StellarAdmin.TagHelpers", "TagHelpers"),
-    Path.Combine(repoRoot, "src", "StellarAdmin.Dashboard", "TagHelpers"),
-];
+var products = new[]
+{
+    (
+        Package: "StellarAdmin.TagHelpers",
+        Skill: "stellar-admin-tag-helpers",
+        Title: "StellarAdmin Tag Helpers"
+    ),
+    (
+        Package: "StellarAdmin.Dashboard",
+        Skill: "stellar-admin-dashboard",
+        Title: "StellarAdmin Dashboard"
+    ),
+};
+var tagHelpersRoots = products
+    .Select(product => Path.Combine(repoRoot, "src", product.Package, "TagHelpers"))
+    .ToArray();
 var pagesRoot = Path.Combine(repoRoot, "docs", "DocsSamples", "Pages");
-var referencesDir = Path.Combine(
-    repoRoot,
-    "plugins",
-    "stellar-admin",
-    "skills",
-    "tag-helpers",
-    "references"
-);
-var componentsDir = Path.Combine(referencesDir, "components");
-var indexPath = Path.Combine(referencesDir, "components-index.md");
 
 var checkMode = args.Contains("--check");
 
@@ -55,32 +56,40 @@ var exampleManifest = Snippets.LoadManifest(manifestPath);
 var enums = tagHelpersRoots
     .SelectMany(Extractor.BuildEnumIndex)
     .ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
-var components = tagHelpersRoots
-    .SelectMany(root =>
-        Extractor.ExtractComponents(
+var renderer = new Renderer(enums);
+var components = new List<ComponentInfo>();
+var outputs = new Dictionary<string, string>(StringComparer.Ordinal);
+foreach (var product in products)
+{
+    var root = Path.Combine(repoRoot, "src", product.Package, "TagHelpers");
+    var referencesDir = Path.Combine(repoRoot, "skills", product.Skill, "references");
+    var productComponents = Extractor
+        .ExtractComponents(
             root,
             enums,
             folder => Snippets.ForComponent(pagesRoot, folder, exampleManifest),
             tagHelpersRoots
         )
-    )
-    .OrderBy(component => component.FolderName, StringComparer.Ordinal)
-    .ToList();
+        .OrderBy(component => component.FolderName, StringComparer.Ordinal)
+        .ToList();
+    components.AddRange(productComponents);
 
-var renderer = new Renderer(enums);
-
-// Build the full set of (path, content) outputs.
-var outputs = new Dictionary<string, string>(StringComparer.Ordinal);
-foreach (var component in components)
-{
-    var path = Path.Combine(componentsDir, Extractor.ToKebabCase(component.FolderName) + ".md");
-    var existing = File.Exists(path) ? File.ReadAllText(path) : null;
-    var package = Directory.Exists(Path.Combine(tagHelpersRoots[1], component.FolderName))
-        ? "StellarAdmin.Dashboard"
-        : null;
-    outputs[path] = renderer.RenderComponent(component, existing, package);
+    foreach (var component in productComponents)
+    {
+        var path = Path.Combine(
+            referencesDir,
+            "components",
+            Extractor.ToKebabCase(component.FolderName) + ".md"
+        );
+        var existing = File.Exists(path) ? File.ReadAllText(path) : null;
+        var package = product.Package == "StellarAdmin.TagHelpers" ? null : product.Package;
+        outputs[path] = renderer.RenderComponent(component, existing, package);
+    }
+    outputs[Path.Combine(referencesDir, "components-index.md")] = Renderer.RenderIndex(
+        productComponents,
+        product.Title
+    );
 }
-outputs[indexPath] = Renderer.RenderIndex(components);
 
 if (checkMode)
 {
@@ -110,14 +119,14 @@ if (checkMode)
     return 1;
 }
 
-Directory.CreateDirectory(componentsDir);
 foreach (var (path, content) in outputs)
 {
+    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
     File.WriteAllText(path, content);
 }
 
 AnsiConsole.MarkupLine(
-    $"[green]Generated[/] {components.Count} component file(s) + the component index."
+    $"[green]Generated[/] {components.Count} component file(s) + {products.Length} product indexes."
 );
 
 var withoutExample = components

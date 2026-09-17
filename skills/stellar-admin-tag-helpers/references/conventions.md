@@ -75,7 +75,7 @@ public string? Email { get; set; }
 <sa-input asp-for="Email" />
 ```
 
-See the `stellar-admin:forms` skill for the full form story.
+See the [forms](forms.md) guide for the full form story.
 
 ## 6. Links and routing
 
@@ -151,4 +151,4 @@ The `<sel-*>` web components and the `data-state` / `data-side` / `data-open` / 
 
 ## 11. Theming, briefly
 
-Colors, radius and other design tokens come from the linked theme stylesheet (`stellar-admin.<theme>.css`) as CSS variables, exposed as Tailwind utilities like `bg-primary`, `text-muted-foreground`, `border`. Prefer these semantic tokens over hard-coded colors so components stay consistent in light and dark mode — subject to the Tailwind-build caveat in §4. Dark mode, theme customization and menu appearance are covered by the `stellar-admin:theming` skill.
+Colors, radius and other design tokens come from the linked theme stylesheet (`stellar-admin.<theme>.css`) as CSS variables, exposed as Tailwind utilities like `bg-primary`, `text-muted-foreground`, `border`. Prefer these semantic tokens over hard-coded colors so components stay consistent in light and dark mode — subject to the Tailwind-build caveat in §4. Dark mode, theme customization and menu appearance are covered by the [theming](theming.md) guide.

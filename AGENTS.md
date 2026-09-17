@@ -28,7 +28,7 @@ Use the pinned SDK and checked-in package manager lockfiles. Keep package bounda
 
 ## Development skills
 
-Canonical development skills live in `.agents/skills/`; `.claude/skills/` contains relative links to them. These help build StellarAdmin. The separately packaged consumer skills in `plugins/stellar-admin/skills/` teach applications how to use it; do not mix their audiences or discovery paths.
+Canonical development skills live in `.agents/skills/`; `.claude/skills/` contains relative links to them. These help build StellarAdmin. The separately packaged consumer skills in `skills/` teach applications how to use it; do not mix their audiences or discovery paths.
 
 - [create-custom-theme](.agents/skills/create-custom-theme/SKILL.md): independent theme design, implementation, and coverage using maintained specifications.
 - [prototype-component](.agents/skills/prototype-component/SKILL.md): visual exploration for new components before extraction.
@@ -41,4 +41,4 @@ See [agent setup](docs/agents.md) for discovery and handoffs. Maintained theme s
 
 Website-only work starts in the website repository and follows its own `AGENTS.md`. For component documentation/export tasks, read [website integration](docs/repos/website.md). A sibling `../website` checkout is a convenience; `STELLARADMIN_WEBSITE_DIR` selects another destination. Product-only work needs neither checkout.
 
-Release verification now runs here through the [manual release workflow](.github/workflows/release.yml), with individual GitHub Actions steps. Opt-in publishing is limited to Core and TagHelpers and requires the configured `nuget-org` environment and publishing gate. Consumer skill source and the primary marketplace live here; the old skills marketplace forwards here for compatibility. See the [consolidation plan](docs/plans/workspace-retirement.md); do not advance either cutover as part of unrelated work.
+Release verification now runs here through the [manual release workflow](.github/workflows/release.yml), with individual GitHub Actions steps. Opt-in publishing is limited to Core and TagHelpers and requires the configured `nuget-org` environment and publishing gate. Consumer skill source lives in `skills/`; Claude plugin packaging has been removed. See the [consumer skill consolidation plan](docs/plans/consumer-skill-consolidation.md) for distribution work and the [workspace consolidation plan](docs/plans/workspace-retirement.md) for historical context.

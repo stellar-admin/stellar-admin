@@ -8,7 +8,7 @@ Product conventions live in [conventions](conventions/), detailed guidance in [r
 
 ## Skills
 
-Development skills have one canonical copy in `.agents/skills/`; `.claude/skills/<name>` entries are relative directory symlinks. Keep their relative documentation and sibling-skill links intact. These developer workflows are separate from the consumer plugin under `plugins/stellar-admin/skills/`.
+Development skills have one canonical copy in `.agents/skills/`; `.claude/skills/<name>` entries are relative directory symlinks. Keep their relative documentation and sibling-skill links intact. These developer workflows are separate from the consumer skill under `skills/stellar-admin-tag-helpers/`.
 
 On systems without symlink checkout support, read the canonical folders directly or configure local discovery; do not hand-maintain two versions. Personal permissions and IDE settings are not imported from the former workspace.
 

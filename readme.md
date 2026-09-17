@@ -77,18 +77,17 @@ Start using the StellarAdmin Tag Helpers inside your Razor Pages or MVC Views. F
 
 Documentation and code examples for all the Tag Helpers [can be found online](https://www.stellaradmin.com/docs/tag-helpers).
 
-## Using StellarAdmin with AI agents (Claude Code)
+## Using StellarAdmin with AI agents
 
-StellarAdmin ships a set of [Claude Code](https://claude.com/claude-code) skills that teach an AI agent how to build UIs with StellarAdmin — the component catalog, the library's conventions, and task workflows for forms, layout, and theming.
+The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
 
-The skills live alongside the product in [stellar-admin/stellar-admin](https://github.com/stellar-admin/stellar-admin/tree/master/plugins/stellar-admin), which also hosts the plugin marketplace:
+From your application's project directory, install the skill with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme):
 
 ```bash
-/plugin marketplace add stellar-admin/stellar-admin
-/plugin install stellar-admin@stellar-admin
+npx skills add stellar-admin/stellar-admin --skill stellar-admin-tag-helpers
 ```
 
-This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.razor` files) along with `forms`, `layout`, and `theming`.
+The skill targets `StellarAdmin.TagHelpers` 0.3.0 on .NET 10. See [installation and compatibility](skills/README.md#install-the-tag-helpers-skill) for prerequisites, agent selection, and local-checkout installation.
 
 `StellarAdmin.Core` supplies the shared `AddStellarAdmin()` entry point, builder, and icon services in `StellarAdmin.Icons`. It is installed transitively with TagHelpers or Dashboard; no separate installation is needed.
 
