@@ -6,7 +6,7 @@ Completed records remain useful for rationale and commit references. Their old p
 
 | Plan | Status |
 | --- | --- |
-| [Workspace and skills consolidation](workspace-retirement.md) | active — step 3 hosted dry run passed; step 4 code verified and workspace publisher disabled; NuGet setup pending; website remains separate |
+| [Workspace and skills consolidation](workspace-retirement.md) | repositories archived — product 0.3.0 release verified; old NuGet trust cleanup remains manual; website stays separate |
 | [Icon encapsulation and semantic icons](semantic-icons.md) | encapsulation completed; semantic API proposed |
 | [Repository consolidation](archive/repository-consolidation.md) | completed — clean import committed; push and retirement remain separate |
 | [Homepage component embeds](homepage-component-embeds.md) | reference — experiment accepted; reusable code retained, example route removed; homepage integration proposed |

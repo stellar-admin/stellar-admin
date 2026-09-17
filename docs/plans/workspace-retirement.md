@@ -1,6 +1,6 @@
 # Workspace and skills consolidation
 
-Status: active — steps 1–3 committed and pushed; strict hosted dry run passed. Step 4 code is prepared and verified; GitHub environment created and workspace publisher disabled. NuGet username/trust and product publishing activation remain pending. Updated: 2026-09-17.
+Status: repository consolidation and archival complete; old NuGet trust policy cleanup remains manual. Product 0.3.0 release succeeded. Updated: 2026-09-17.
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
 
@@ -200,3 +200,14 @@ The old skills marketplace now points at `https://github.com/stellar-admin/stell
 - No package build was repeated for step 4; the hosted dry-run result is the build evidence. No hosted publish job, OIDC login, package push, release, or deployment was run.
 
 The user authorized committing and pushing all four repositories with NuGet configuration still pending. Push the product before the compatibility marketplace and website so their new source is available. GitHub settings remain as listed above: the workspace publisher is disabled and the product publishing gate is false. After the push, configure the NuGet policy and product environment secret, then enable the gate. The first actual publication remains a separate release action; workspace retirement remains step 5.
+
+
+## Step 5 retirement — 2026-09-17
+
+Verified successful product release [35188566992](https://github.com/stellar-admin/stellar-admin/actions/runs/35188566992) at `ddc8d3de603f80e41a37e2ac92a769f90503d3ae`. Both build and publish jobs passed, including NuGet OIDC login and package/symbol pushes. The public [v0.3.0 release](https://github.com/stellar-admin/stellar-admin/releases/tag/v0.3.0) contains exactly the Core and TagHelpers nupkgs and snupkgs. This completes the hosted publishing checkpoint.
+
+The user authorized retirement. Searches of active product, website, and compatibility repository content found no remaining Pro/workspace remote dependencies or release App references; historical plans/design records were excluded. `stellar-admin-pro` was already archived and remains private. Archived `workspace` and `skills`; skills remains public with its committed product marketplace forwarding intact. The website remains separate and active. Local checkouts were retained.
+
+Removed workspace repository secrets `NUGET_USER`, `RELEASE_APP_ID`, and `RELEASE_APP_PRIVATE_KEY`; verified zero remaining repository secrets. Its `nuget-org` environment had no secrets, and the retired release workflow was disabled. These removals delete workspace-held credentials, not the GitHub App itself or any globally valid private key.
+
+Remaining account cleanup: in NuGet.org Trusted Publishing, remove any policy targeting repository `stellar-admin/workspace`, preserving the working `stellar-admin/stellar-admin` policy. No authenticated NuGet management access is available here. Review the old release GitHub App's other consumers before revoking its key or uninstalling the App; no global App changes were made. These account cleanup items do not prevent the completed repository archival.
