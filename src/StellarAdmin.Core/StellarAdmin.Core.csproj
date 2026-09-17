@@ -18,5 +18,7 @@
       OutputItemType="Analyzer"
     />
     <AdditionalFiles Include="Icons/Definitions/Lucide.json" />
+    <AdditionalFiles Include="Icons/Definitions/TablerFilled.json" />
+    <AdditionalFiles Include="Icons/Definitions/TablerOutline.json" />
   </ItemGroup>
 </Project>

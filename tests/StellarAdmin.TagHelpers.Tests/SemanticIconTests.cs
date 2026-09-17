@@ -247,6 +247,11 @@ internal static class SemanticIconTests
     {
         public IDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>();
+
+        public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
+        {
+            return new Dictionary<SemanticIconRole, string>();
+        }
     }
 
     private sealed class MappingOnlyPack : IIconPack
@@ -268,6 +273,11 @@ internal static class SemanticIconTests
                     []
                 ),
             };
+
+        public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
+        {
+            return new Dictionary<SemanticIconRole, string>();
+        }
     }
 
     private sealed class ReplacementPack : IIconPack

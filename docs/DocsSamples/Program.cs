@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using StellarAdmin;
+using StellarAdmin.Icons;
 using StellarAdmin.TagHelpers;
 
 namespace DocsSamples;
@@ -20,6 +21,21 @@ public class Program
         var stellarAdmin = builder.Services.AddStellarAdmin(sa =>
         {
             sa.AddIconPack<VoyagerIconPack>().AddTagHelpers();
+            sa.AddIconPack<LucideIconPack>(pack =>
+            {
+                pack.Prefix = "preview-lucide-";
+                pack.ImportSemanticMappings = false;
+            });
+            sa.AddIconPack<TablerOutlineIconPack>(pack =>
+            {
+                pack.Prefix = "preview-tabler-outline-";
+                pack.ImportSemanticMappings = false;
+            });
+            sa.AddIconPack<TablerFilledIconPack>(pack =>
+            {
+                pack.Prefix = "preview-tabler-filled-";
+                pack.ImportSemanticMappings = false;
+            });
         });
 
         var app = builder.Build();

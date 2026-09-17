@@ -59,6 +59,11 @@ public class VoyagerIconPack : IIconPack
         };
     }
 
+    public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
+    {
+        return new Dictionary<SemanticIconRole, string>();
+    }
+
     private static SvgShape Shape(string name, params (string Name, string Value)[] attributes)
     {
         return new SvgShape(name, attributes.ToImmutableDictionary(a => a.Name, a => a.Value));

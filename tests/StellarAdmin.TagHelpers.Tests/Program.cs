@@ -447,6 +447,11 @@ internal sealed class CoreTestIconPack : IIconPack
     {
         return new Dictionary<string, IconDefinition> { ["check"] = Icon };
     }
+
+    public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
+    {
+        return new Dictionary<SemanticIconRole, string>();
+    }
 }
 
 internal sealed class TrackingIconOptions : IOptions<IconOptions>

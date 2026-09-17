@@ -1,0 +1,66 @@
+@page
+@model DocsSamples.Pages.Icon.Semantic
+@using StellarAdmin.Icons
+
+@section Styles {
+    <style>
+        .icon-comparison { padding: 2rem; width: 100%; min-width: 0; }
+        .icon-comparison h1 { font-size: 1.5rem; font-weight: 600; }
+        .icon-comparison p { margin-block: .5rem 1.5rem; color: var(--muted-foreground); }
+        .icon-comparison-scroll { overflow-x: auto; }
+        .icon-comparison table { width: 100%; border-collapse: collapse; }
+        .icon-comparison caption { text-align: left; margin-bottom: 1rem; color: var(--muted-foreground); }
+        .icon-comparison th, .icon-comparison td { padding: 1rem; border-bottom: 1px solid var(--border); text-align: center; }
+        .icon-comparison th:first-child { text-align: left; }
+        .icon-comparison thead th { white-space: nowrap; }
+        .icon-comparison-preview { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+        .icon-comparison-preview svg { width: 24px; height: 24px; }
+        .icon-comparison-preview code { font-size: .75rem; white-space: nowrap; color: var(--muted-foreground); }
+        .icon-comparison-loading { animation: icon-comparison-spin 1s linear infinite; }
+        @@keyframes icon-comparison-spin { to { transform: rotate(360deg); } }
+        @@media (prefers-reduced-motion: reduce) { .icon-comparison-loading { animation: none; } }
+    </style>
+}
+
+<main class="icon-comparison">
+    <h1>Semantic icons</h1>
+    <p>Compare the icons each pack assigns to the same role. Loading icons animate; all icons are shown at 24px.</p>
+    <div class="icon-comparison-scroll" role="region" aria-label="Semantic icon comparison" tabindex="0">
+        <table>
+            <caption>— means the pack has no mapping for that role. Voyager is a custom sample pack without semantic mappings.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Role</th>
+                    @foreach (var pack in Model.Packs)
+                    {
+                        <th scope="col">@pack.Name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var role in Model.Roles)
+                {
+                    <tr>
+                        <th scope="row">@role</th>
+                        @foreach (var pack in Model.Packs)
+                        {
+                            <td>
+                                @if (pack.Mappings.TryGetValue(role, out var name))
+                                {
+                                    <div class="icon-comparison-preview">
+                                        <sa-icon name="@(pack.Prefix + name)" class="@(role == SemanticIconRole.Loading ? "icon-comparison-loading" : null)" aria-hidden="true" />
+                                        <code>@name</code>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span aria-label="No mapping">—</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>
