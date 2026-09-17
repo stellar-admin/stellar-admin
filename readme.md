@@ -97,3 +97,7 @@ This adds the `tag-helpers` skill (auto-activates when you edit `.cshtml` / `.ra
 This repository also contains `StellarAdmin.Dashboard` (admin shell and resource screens), `StellarAdmin.Dashboard.Identity` (Identity management), and `StellarAdmin.Dashboard.EntityFrameworkCore` (EF Core resources). All are MIT licensed. Register the integrated admin application with `AddStellarAdmin().AddDashboard()`. There is no paid tier. These packages are available from source; their NuGet publication is a separate release step.
 
 The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, and the Identity playground used by the resource integration tests.
+
+## Contributing
+
+Start with [contributor guidance](AGENTS.md) and [development and verification](docs/development.md). This checkout includes the development skills, maintained designs, and plans; no workspace checkout is required. The public website remains a separate repository.
