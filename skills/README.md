@@ -27,11 +27,11 @@ For an unpublished local checkout, use its absolute path instead of the GitHub s
 npx skills add /path/to/stellar-admin/skills/stellar-admin-tag-helpers --skill stellar-admin-tag-helpers
 ```
 
-## Supported product version
+## Version compatibility
 
-The Tag Helpers skill currently targets **StellarAdmin.TagHelpers 0.3.0 on .NET 10**, with its matching Core dependency. Compatibility with other package versions has not been established. The skill's [version guidance](stellar-admin-tag-helpers/SKILL.md#version-compatibility) travels with the installed references.
+The Tag Helpers skill is maintained alongside StellarAdmin. Its references follow the repository's default branch and may include changes newer than your installed NuGet package. The skill instructs the agent to check your installed version before applying API examples; this [version guidance](stellar-admin-tag-helpers/SKILL.md#version-compatibility) travels with the installed references.
 
-The GitHub command reads the repository's default branch; it does not select guidance based on your installed NuGet version. Check compatibility before updating the skill. Dashboard remains work in progress and has no installable skill or supported skill version yet.
+The installer does not select guidance based on your installed NuGet version or update your packages. Dashboard remains work in progress and has no installable skill yet.
 
 ## Layout and maintenance
 

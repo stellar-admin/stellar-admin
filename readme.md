@@ -87,7 +87,7 @@ From your application's project directory, install the skill with [Vercel's skil
 npx skills add stellar-admin/stellar-admin --skill stellar-admin-tag-helpers
 ```
 
-The skill targets `StellarAdmin.TagHelpers` 0.3.0 on .NET 10. See [installation and compatibility](skills/README.md#install-the-tag-helpers-skill) for prerequisites, agent selection, and local-checkout installation.
+The skill is maintained alongside StellarAdmin; its references may include changes newer than your installed NuGet package. See [installation and compatibility](skills/README.md#install-the-tag-helpers-skill) for prerequisites, agent selection, and local-checkout installation.
 
 `StellarAdmin.Core` supplies the shared `AddStellarAdmin()` entry point, builder, and icon services in `StellarAdmin.Icons`. It is installed transitively with TagHelpers or Dashboard; no separate installation is needed.
 

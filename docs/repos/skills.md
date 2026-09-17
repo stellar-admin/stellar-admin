@@ -24,4 +24,4 @@ Run `dotnet run --project util/SkillsGenerator` and then `dotnet run --project u
 
 ## Compatibility maintenance
 
-The current documented baseline is `StellarAdmin.TagHelpers` 0.3.0 on .NET 10. Keep the consumer overview, root README, and UI skill's version section aligned when that baseline changes. Verify package APIs and generated references before claiming support for another version. The default-branch installer command does not automatically match a consumer's NuGet version. Do not advertise an old release tag as a skill source unless that tag contains the product-specific skill layout.
+Maintain the skill alongside the library without a fixed package-version claim. Keep consumer guidance clear that default-branch references may include changes newer than an application's installed NuGet package, and instruct agents to check that version before applying API examples. The installer does not automatically match a consumer's NuGet version. Do not advertise an old release tag as a skill source unless that tag contains the product-specific skill layout.

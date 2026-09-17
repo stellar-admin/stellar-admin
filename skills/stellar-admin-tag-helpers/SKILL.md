@@ -20,7 +20,7 @@ Use this skill when writing or editing StellarAdmin markup in MVC or Razor Pages
 
 ## Version compatibility
 
-This skill targets `StellarAdmin.TagHelpers` **0.3.0** on **.NET 10**, with its matching Core dependency. Check the application's package references (including `Directory.Packages.props` when present) before applying API examples. For other versions, verify the relevant APIs against that version's source or documentation; compatibility has not been established. Installing or updating the skill does not update NuGet packages.
+This skill is maintained alongside StellarAdmin. Its references follow the repository's default branch and may include changes newer than the application's installed NuGet package. Check the application's package references (including `Directory.Packages.props` when present) before applying API examples, and verify relevant APIs against the installed version's source or documentation when needed. Installing or updating the skill does not update NuGet packages.
 
 ## How to use this skill
 
