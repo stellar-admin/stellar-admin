@@ -8,6 +8,8 @@ Before changing a project for installation, ask the user which scope they want u
 
 > Would you like a basic installation that keeps your current layout and Bootstrap, or should I also convert the default layout to StellarAdmin and remove Bootstrap where it is no longer needed?
 
+Use a structured choice or picker when available; otherwise ask a concise text question with both options.
+
 - **Basic installation:** complete steps 1–4. Add the necessary asset references to the existing layout, preserving its structure, navigation, page markup, existing stylesheets, and scripts. Do not remove Bootstrap or redesign the app shell.
 - **Installation with layout conversion:** complete steps 1–4, then adapt the default layout using the [layout guide](layout.md) and perform the Bootstrap cleanup below. Preserve application routes, content, Razor sections, and behavior while converting the presentation.
 
