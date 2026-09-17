@@ -1,6 +1,6 @@
 # Workspace and skills consolidation
 
-Status: repository consolidation and archival complete; old NuGet trust policy cleanup remains manual. Product 0.3.0 release succeeded. Updated: 2026-09-17.
+Status: repository consolidation, archival, and old NuGet trust policy cleanup complete. Product 0.3.0 release succeeded. Updated: 2026-09-17.
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
 
@@ -210,4 +210,4 @@ The user authorized retirement. Searches of active product, website, and compati
 
 Removed workspace repository secrets `NUGET_USER`, `RELEASE_APP_ID`, and `RELEASE_APP_PRIVATE_KEY`; verified zero remaining repository secrets. Its `nuget-org` environment had no secrets, and the retired release workflow was disabled. These removals delete workspace-held credentials, not the GitHub App itself or any globally valid private key.
 
-Remaining account cleanup: in NuGet.org Trusted Publishing, remove any policy targeting repository `stellar-admin/workspace`, preserving the working `stellar-admin/stellar-admin` policy. No authenticated NuGet management access is available here. Review the old release GitHub App's other consumers before revoking its key or uninstalling the App; no global App changes were made. These account cleanup items do not prevent the completed repository archival.
+The user confirmed deletion of the old workspace NuGet trusted publishing policy on 2026-09-17. This completes the NuGet account cleanup; confirmation is user-reported because no authenticated NuGet management access is available here. The consolidation is complete. The old release GitHub App remains intact; review its other consumers before any separate key revocation or App removal.
