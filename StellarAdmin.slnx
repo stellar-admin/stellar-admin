@@ -22,6 +22,7 @@
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
   </Folder>
   <Folder Name="/util/">
+    <Project Path="util/SkillsGenerator/SkillsGenerator.csproj" />
     <Project Path="util\ThemeGenerator\ThemeGenerator.csproj" />
   </Folder>
   <Folder Name="/workflows/">

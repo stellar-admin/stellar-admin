@@ -1,0 +1,14 @@
+{
+  "name": "stellar-admin",
+  "description": "The StellarAdmin plugin marketplace — agent skills for building ASP.NET Core admin UIs with StellarAdmin.",
+  "owner": {
+    "name": "Jerrie Pelser"
+  },
+  "plugins": [
+    {
+      "name": "stellar-admin",
+      "source": "./plugins/stellar-admin",
+      "description": "StellarAdmin Tag Helpers agent skills — the component catalog and conventions, plus task skills for building forms, layouts, and theming with the <sa-*> Tag Helpers in ASP.NET Core MVC and Razor Pages."
+    }
+  ]
+}
