@@ -13,8 +13,20 @@ From within Claude Code:
 ```text
 /plugin marketplace add stellar-admin/stellar-admin
 /plugin install stellar-admin@stellar-admin
-/reload-skills
+/reload-plugins
 ```
+
+### Existing Claude installations
+
+The old `stellar-admin/skills` address is a compatibility marketplace pointing to this plugin with a `git-subdir` source. Keep the existing registration and run:
+
+```text
+/plugin marketplace update stellar-admin
+/plugin update stellar-admin@stellar-admin
+/reload-plugins
+```
+
+Forwarding is tested with Claude Code 2.1.251. If an older client rejects `git-subdir`, update Claude Code or register `stellar-admin/stellar-admin` instead. The plugin and marketplace identifiers remain unchanged. Plugin version 0.1.1 refreshes the migrated content; bump the plugin version whenever shipping skill changes. It is independent of the NuGet version.
 
 ### Codex and other agents
 

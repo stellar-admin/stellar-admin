@@ -1,6 +1,6 @@
 {
   "name": "stellar-admin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Build ASP.NET Core MVC / Razor Pages UIs with the StellarAdmin.TagHelpers <sa-*> Tag Helpers. Bundles the generated component catalog and the library's conventions, plus task skills for forms, layout, and theming.",
   "author": {
     "name": "Jerrie Pelser"

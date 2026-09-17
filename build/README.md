@@ -1,24 +1,30 @@
-# Release verification
+# Release workflow
 
-Run the **Release verification** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata.
+Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml), with individual Actions steps.
 
-The workflow shows individual steps for version validation, checkout and commit recording, Node/.NET setup, tool restore, client dependency installation, solution build, packing, package validation, each test suite, consumer reference checking, the consumer smoke test, and artifact upload. All five libraries and their symbols are built; package validation includes Source Link URL reachability.
+Every run builds and validates Core, TagHelpers, Dashboard, Dashboard.Identity, and Dashboard.EntityFrameworkCore, runs both test suites and consumer reference checks, tests a temporary consumer app, and uploads all ten package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
 
-`build/smoke-test.sh` contains the consumer test: it creates a temporary Razor Pages app, installs the newly packed libraries using an isolated cache and source mapping, and checks registration, rendered components, and static assets. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml).
+## Publishing
 
-The workflow uses the selected product revision as its only checkout and uploads ten verified package/symbol files. It has read-only repository permissions and no publishing job. It must be present on the default branch for manual dispatch. [GitHub dispatch documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch)
+Check **publish** only for an authorized release. The publishing job downloads the verified build artifact and publishes **StellarAdmin.Core** and **StellarAdmin.TagHelpers**, including their symbols. Dashboard packages remain artifacts. The job creates one product tag at the built SHA and a GitHub release containing only the four published package/symbol files. It uses the product `GITHUB_TOKEN`; no cross-repository App is required. Writes and OIDC permissions are confined to this job.
 
-## Publishing cutover (step 4)
+Publishing runs are serialized with cancellation disabled. Version checks use SemVer precedence and inspect product tags plus NuGet versions for both published packages. A normal run must advance the version. A draft release reserves the version before the NuGet push, with a hidden marker binding the source SHA, workflow run ID, and immutable package artifact ID. The release becomes public only after package pushes and release-asset uploads succeed. Dry runs create no draft, tag, or NuGet publication.
 
-The workspace still owns the active publisher. Keep its workflow, smoke script, and tool manifest until the cutover; the copied product tooling is maintained here. The website remains separate and is not a release input.
+## Recovering a failed publish
 
-Before enabling product publishing:
+Use **Re-run failed jobs** on the original workflow run, while its 30-day artifact remains available. This reruns the publishing job against the original verified bytes; it does not rebuild packages. Already accepted packages and symbols are skipped separately, missing release assets are uploaded, and the release is finalized. [GitHub rerun documentation](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs)
 
-1. Run the new workflow on GitHub and review its SHA and artifacts. Confirm live product tags and NuGet package versions, keeping historical tags unchanged.
-2. Verify the product `nuget-org` environment, protection rules, `NUGET_USER` availability, and a NuGet trusted policy for owner `stellar-admin`, repository `stellar-admin`, workflow `release.yml`, and environment `nuget-org`. A dry run cannot verify OIDC exchange. [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
-3. Inspect tag/release rules and downstream automation before replacing the cross-repository App token with `GITHUB_TOKEN`. Confine `contents: write` and `id-token: write` to the publish job; tags/releases created with this token generally do not trigger other workflows. [GitHub workflow triggering](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
-4. Add serialized publication with cancellation disabled. Replace the old `sort -V` guard with SemVer precedence and an explicit recovery mode bound to the original version, SHA, and artifacts. Recovery must reject a conflicting tag or source revision and reuse the verified artifacts after a partial push; it must not rebuild different package bytes under the same published version.
-5. Preserve the publish allowlist of `StellarAdmin.Core` and `StellarAdmin.TagHelpers`; all five remain verification inputs. Publish the downloaded verified artifacts, tag only the built product SHA, and attach only published packages and symbols to the release.
-6. Disable workspace publishing before enabling the product publisher. Repository-scoped concurrency cannot coordinate two active publishers. Retire old App credentials and NuGet trust only after checking their remaining uses, then perform the next separately authorized release.
+Do not dispatch a fresh run or select **Re-run all jobs** to recover a partial publication. A different run, artifact, or tag SHA is rejected. Recovery also refuses an older version after a newer release exists. Keep the draft's hidden marker intact. If the artifact expired, stop and recover the original bytes through an explicit maintenance decision; do not rebuild an already published version. A failed pre-push run can also leave a reserved draft/tag; review that reservation before deciding to abandon it.
 
-External settings have not been changed by this migration. See the [consolidation plan](../docs/plans/workspace-retirement.md) for actual verification and the remaining distribution/retirement work.
+## Required configuration and cutover
+
+The product repository needs:
+
+- A `nuget-org` GitHub environment, with the intended protection rules.
+- An environment secret `NUGET_USER` naming the NuGet.org user.
+- A NuGet trusted policy for GitHub owner `stellar-admin`, repository `stellar-admin`, workflow `release.yml`, and environment `nuget-org`. Limit its packages to Core and TagHelpers. Core has not previously been published, so allow new package creation as well as new versions. [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+- Repository variable `RELEASE_PUBLISHING_ENABLED=true`, set only after configuring NuGet trust and disabling the workspace publisher.
+
+The workspace workflow is replaced with a retirement notice and must be disabled in GitHub before enabling this gate. Retain old credentials/trust until confirming they have no remaining consumers; do not use the workspace for new releases. The separate website is not a release input.
+
+The hosted dry run at [run 35185318228](https://github.com/stellar-admin/stellar-admin/actions/runs/35185318228) passed on product commit `26b039d`. Publishing and OIDC exchange require the next separately authorized release to verify. See the [consolidation record](../docs/plans/workspace-retirement.md) for live configuration and cutover status.

@@ -2,7 +2,7 @@
 
 Read this guide when working on `plugins/stellar-admin/` from the product repository. Shared instructions are in [AGENTS.md](../../AGENTS.md), with conventions in [docs/conventions](../conventions/). Paths below are relative to the product repository root.
 
-These MIT consumer skills live alongside the product and teach agents how to use StellarAdmin. The separate `skills/` repo remains unchanged until the distribution cutover; do not regenerate into it. These are consumer skills, separate from the product repository's component-development workflows.
+These MIT consumer skills live alongside the product and teach agents how to use StellarAdmin. The separate `skills/` repo is a compatibility marketplace forwarding to this plugin; its old content is frozen, so do not regenerate into it. These are consumer skills, separate from the product repository's component-development workflows.
 
 Read [plugin README](../../plugins/stellar-admin/README.md) for installation and packaging. Keep one copy of each skill's content; agent-specific packaging must preserve sibling reference links. The current Claude marketplace lives in `.claude-plugin/` and `plugins/*/.claude-plugin/`; those manifests are not universal plugin manifests.
 

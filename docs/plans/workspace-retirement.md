@@ -1,6 +1,6 @@
 # Workspace and skills consolidation
 
-Status: active — steps 1–2 committed; step 3 release verification implemented and locally verified with source URL reachability excluded. Hosted strict validation, publishing cutover, and retirement remain pending. Updated: 2026-09-17.
+Status: active — steps 1–3 committed and pushed; strict hosted dry run passed. Step 4 code is prepared and verified; GitHub environment created and workspace publisher disabled. NuGet username/trust and product publishing activation remain pending. Updated: 2026-09-17.
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
 
@@ -75,11 +75,11 @@ The user confirmed that the website must remain separate and accepted this five-
 
 1. Move consumer skills and SkillsGenerator into the product repo; verify generation, preservation, and CI drift checking. Completed and committed as product `51bcfb7` and workspace `0c80b64`.
 2. Move contributor guidance, maintained designs, theme specifications, development skills, and plans into the product. Give the website a standalone contributor entry point and validate discovery without workspace/sibling checkouts. Committed as product `1c638cc`, website `c8ba7b7b`, and workspace `c8b7781`; see verification below.
-3. Move release tooling and prove a complete dry run in the product repo. Keep the workspace publishing entry point until this passes.
+3. Move release tooling and prove a complete dry run in the product repo. Completed in product `26b039d` and workspace `11288e9`; strict hosted dry run `35185318228` passed.
 4. Switch skills distribution and publishing: update website installation instructions, test a compatibility marketplace, configure NuGet trust/environment settings, disable old publishing, then use the new workflow for the next authorized release.
 5. Retire the workspace after successful release verification; retain history and the compatibility endpoint as needed. Validate cross-repo export with separate checkouts.
 
-Step 3 is now authorized and implemented locally; see the current verification record below. Commit and push only when requested, then run the strict hosted dry run before publishing cutover. The website remains a separate repository throughout.
+Step 4 is now authorized; see the current implementation and external-configuration status below. Commit and push its code changes only when requested. The next actual package release remains separately authorized. The website remains a separate repository throughout.
 
 ## Initial analysis verification and working tree state
 
@@ -163,3 +163,40 @@ Working trees at handoff: product contains release tooling, the three verificati
 The user requested individual GitHub Actions steps and explicitly does not need local release verification. Removed `build/release.sh` and its local validation bypass. The workflow now directly owns separate version validation, restore, dependency installation, build, pack, package validation, tag-helper tests, resource integration tests, reference checks, smoke test, and artifact upload steps. The existing consumer smoke test remains a script. Updated contributor and release guidance to direct execution through GitHub Actions.
 
 Validated the revised workflow with Actionlint and Bash syntax checks for every inline command. No builds or local release runs were repeated for this orchestration-only revision. A hosted dry run remains pending an authorized commit/push. Nothing committed or pushed.
+
+
+## Step 4 implementation — 2026-09-17
+
+The user confirmed the publish allowlist remains Core and TagHelpers and authorized step 4. Verified the strict hosted dry run [35185318228](https://github.com/stellar-admin/stellar-admin/actions/runs/35185318228): success at product SHA `26b039d5ab5d664a0a6640762f078f0750ae208f`, version `0.2.1-preview.1`. The earlier run with a trailing dot in its version failed as expected. Product and workspace tags match through `v0.2.0`; NuGet lists TagHelpers through 0.2.0 and Core's version index returns 404, so the new trust policy must allow first publication of Core as well as new versions.
+
+### Release implementation
+
+The product workflow retains individual GitHub Actions steps and adds an opt-in `publish` input. Dry runs still build/validate all five packages with read-only permissions and no writes. The publish job uses only the built SHA and immutable artifact ID, root SDK pin, product `GITHUB_TOKEN`, and `nuget-org` OIDC authentication. Its only published packages and release assets are Core and TagHelpers plus their symbols. No standalone release orchestration script or local validation bypass was reintroduced.
+
+Whole publishing runs are serialized without canceling an active run. The preflight compares SemVer precedence against tags and both NuGet version indexes, reserves a draft release, and binds it to the workflow run ID, source SHA, and artifact ID. It tags only the built product commit. Recovery uses **Re-run failed jobs** in the same run, skipping already accepted nupkgs and snupkgs independently and completing asset upload/release publication. Another run/artifact, conflicting tag, or a later published version blocks recovery. The original 30-day artifact must remain available; there is no automatic rebuild fallback.
+
+The workspace workflow is replaced locally with a retirement notice. On GitHub, workflow ID `337429987` was disabled after confirming no unfinished release runs; API state is `disabled_manually`. This prevents the old publisher from running before the new code is pushed. Its old App secrets and NuGet policy remain intact for later retirement; no credentials were deleted.
+
+### Live configuration
+
+- Product had no environment, repository secrets, branch protection, or rulesets. Its default workflow token permissions allow writes, so the explicit publish-job permissions can use `GITHUB_TOKEN`. Inspected product workflows have no tag/release-dependent downstream automation; the VRT comment workflow only follows VRT runs.
+- Created product `nuget-org` environment (ID `22117682589`) with the same existing workspace protections: no reviewers, timer, or branch restrictions.
+- Created repository variable `RELEASE_PUBLISHING_ENABLED=false`. The workflow refuses publication until the variable is true and `NUGET_USER` is populated.
+- Requested the NuGet username and policy configuration from the user. The old username is an environment secret whose value GitHub cannot disclose, and no authenticated NuGet management connection is available. Required trust: owner `stellar-admin`, repository `stellar-admin`, workflow `release.yml`, environment `nuget-org`, package scope limited to Core and TagHelpers with permission for new package creation and new versions.
+- After the user supplies the username and confirms trust, set the product environment secret, recheck the workspace workflow is disabled, then enable the repository publishing gate. OIDC exchange and package publication remain untested until the next separately authorized release.
+
+### Skills distribution
+
+Product plugin version advances from 0.1.0 to 0.1.1 to refresh migrated content. Marketplace and plugin names remain `stellar-admin`. Product README, plugin README, and website installation instructions use `stellar-admin/stellar-admin`. Existing installations can update their existing marketplace and plugin; manually copied skills/symlinks need the product path. Refresh instructions use `/reload-plugins`; website wording no longer promises unconditional file-extension activation.
+
+The old skills marketplace now points at `https://github.com/stellar-admin/stellar-admin.git`, branch `master`, subdirectory `plugins/stellar-admin`, using `git-subdir`. Its old `plugins/` tree is left frozen for legacy local paths and older clients; it is no longer referenced by the marketplace or regenerated. The old README directs new work and installations to the product. Deploy these source changes by pushing the product before the compatibility marketplace and website updates.
+
+### Verification and remaining work
+
+- Actionlint 1.7.12 passed for product release/CI and the workspace retirement workflow; all inline Bash steps passed syntax checks. Sixteen mocked preflight scenarios passed, including SemVer ordering, first publication, same-artifact recovery, conflicting artifacts/tags, invalid versions, later versions, and API permission errors. These checks execute the actual inline preflight code with mocked APIs; no release or tag was created.
+- Claude Code 2.1.251 validated both marketplace manifests and the plugin manifest. Fresh isolated installs from the public product marketplace and the compatibility manifest both succeeded. A separate local Git fixture proved update from the original 0.1.0 marketplace to forwarded 0.1.1 content; that fixture substituted a local source URL for the not-yet-pushed plugin version. Both versions retained all four sibling skills and 60 valid relative links. Temporary `CLAUDE_CONFIG_DIR` directories isolated every test from the user's plugin settings.
+- The public product marketplace checkout measured 33 MB; the installed plugin was 528 KB. This is the anticipated checkout-size tradeoff, with no extra distribution service introduced.
+- Website lint, type checking, and production build passed; built route output contains the updated installation section. Initial sandbox checks could not open package-manager state, so approved escalation was used. No website application or generated demos changed.
+- No package build was repeated for step 4; the hosted dry-run result is the build evidence. No hosted publish job, OIDC login, package push, release, or deployment was run.
+
+The user authorized committing and pushing all four repositories with NuGet configuration still pending. Push the product before the compatibility marketplace and website so their new source is available. GitHub settings remain as listed above: the workspace publisher is disabled and the product publishing gate is false. After the push, configure the NuGet policy and product environment secret, then enable the gate. The first actual publication remains a separate release action; workspace retirement remains step 5.
