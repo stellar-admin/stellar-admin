@@ -1,0 +1,127 @@
+name: Release verification
+run-name: Release ${{ inputs.version }} (dry run)
+
+# Step 3: verification only. Publishing remains in the workspace until cutover.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Package version (SemVer without leading v or build metadata)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  VERSION: ${{ inputs.version }}
+  ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+
+jobs:
+  build:
+    name: Build, pack and verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version input
+        shell: bash
+        run: |
+          NUMBER='(0|[1-9][0-9]*)'
+          IDENTIFIER="($NUMBER|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)"
+          if ! [[ "$VERSION" =~ ^$NUMBER\.$NUMBER\.$NUMBER(-$IDENTIFIER(\.$IDENTIFIER)*)?$ ]]; then
+            echo "::error::Use SemVer without a leading v or build metadata."
+            exit 1
+          fi
+
+      - name: Checkout dispatched commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Record built commit
+        run: |
+          sha=$(git rev-parse HEAD)
+          {
+            echo "## Release verification"
+            echo
+            printf 'Version: %s\n\nCommit: %s\n' "$VERSION" "$sha"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Install client dependencies
+        shell: bash
+        run: |
+          for client in \
+            src/StellarAdmin.TagHelpers/Client \
+            src/StellarAdmin.Dashboard/Client \
+            docs/DocsSamples/Client \
+            sandbox/ComponentPlayground/Client \
+            sandbox/IdentitySimplePlayground/Client
+          do
+            npm ci --prefix "$client"
+          done
+
+      - name: Build product solution
+        run: >
+          dotnet build StellarAdmin.slnx --configuration Release -m:1
+          -p:Version="$VERSION"
+          -p:ContinuousIntegrationBuild=true
+          -p:AllowMissingPrunePackageData=true
+
+      - name: Pack packages
+        shell: bash
+        run: |
+          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard StellarAdmin.Dashboard.Identity StellarAdmin.Dashboard.EntityFrameworkCore; do
+            dotnet pack "src/$package/$package.csproj" --configuration Release --no-build \
+              --output "$ARTIFACTS_DIR" \
+              -p:Version="$VERSION" \
+              -p:PackageVersion="$VERSION" \
+              -p:ContinuousIntegrationBuild=true \
+              -p:AllowMissingPrunePackageData=true \
+              -p:IncludeSymbols=true \
+              -p:SymbolPackageFormat=snupkg
+          done
+
+      - name: Validate packages
+        shell: bash
+        run: |
+          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard StellarAdmin.Dashboard.Identity StellarAdmin.Dashboard.EntityFrameworkCore; do
+            dotnet meziantou.validate-nuget-package "$ARTIFACTS_DIR/$package.$VERSION.nupkg"
+          done
+
+      - name: Run tag helper tests
+        run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
+
+      - name: Run resource integration tests
+        run: dotnet run --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests --no-build --configuration Release
+
+      - name: Check consumer reference drift
+        run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
+
+      - name: Smoke-test packages as a consumer
+        run: build/smoke-test.sh "$VERSION" "$ARTIFACTS_DIR"
+
+      - name: Upload verified packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ inputs.version }}
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+          if-no-files-found: error
+          retention-days: 30

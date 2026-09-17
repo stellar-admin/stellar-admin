@@ -1,12 +1,12 @@
 # Workspace and skills consolidation
 
-Status: active — step 1 committed; step 2 (contributor guidance) implemented and verified, with local commits authorized. Steps 3–5, publication, and retirement remain separate. Updated: 2026-09-17.
+Status: active — steps 1–2 committed; step 3 release verification implemented and locally verified with source URL reachability excluded. Hosted strict validation, publishing cutover, and retirement remain pending. Updated: 2026-09-17.
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
 
 ## Recommendation
 
-Make `stellar-admin/stellar-admin` the self-contained product and contributor repository. Move consumer skills, their generator, release tooling, and maintained product development guidance into it. Keep `website` independent initially. Retire the workspace as an active dependency; retain the old repositories for history and installation compatibility until the transition is proven.
+Make `stellar-admin/stellar-admin` the self-contained product and contributor repository. Move consumer skills, their generator, release tooling, and maintained product development guidance into it. Keep `website` independent, as required by the user. Retire the workspace as an active dependency; retain the old repositories for history and installation compatibility until the transition is proven.
 
 The OSS/Pro split no longer justifies a release orchestration repository. The current release workflow already builds all five packages from a single product checkout. The workspace solution largely repeats the product solution, adding only SkillsGenerator. Consumer references are tightly coupled to the library and samples, so colocating them permits one PR and a meaningful drift check.
 
@@ -74,12 +74,12 @@ Keeping the website separate retains its independent Node/TanStack deployment li
 The user confirmed that the website must remain separate and accepted this five-step order, superseding the original analysis ordering:
 
 1. Move consumer skills and SkillsGenerator into the product repo; verify generation, preservation, and CI drift checking. Completed and committed as product `51bcfb7` and workspace `0c80b64`.
-2. Move contributor guidance, maintained designs, theme specifications, development skills, and plans into the product. Give the website a standalone contributor entry point and validate discovery without workspace/sibling checkouts. Implemented locally; see verification below.
+2. Move contributor guidance, maintained designs, theme specifications, development skills, and plans into the product. Give the website a standalone contributor entry point and validate discovery without workspace/sibling checkouts. Committed as product `1c638cc`, website `c8ba7b7b`, and workspace `c8b7781`; see verification below.
 3. Move release tooling and prove a complete dry run in the product repo. Keep the workspace publishing entry point until this passes.
 4. Switch skills distribution and publishing: update website installation instructions, test a compatibility marketplace, configure NuGet trust/environment settings, disable old publishing, then use the new workflow for the next authorized release.
 5. Retire the workspace after successful release verification; retain history and the compatibility endpoint as needed. Validate cross-repo export with separate checkouts.
 
-Next concrete step after review of step 2: commit if requested, then begin the release-tooling move only when authorized. The website remains a separate repository throughout.
+Step 3 is now authorized and implemented locally; see the current verification record below. Commit and push only when requested, then run the strict hosted dry run before publishing cutover. The website remains a separate repository throughout.
 
 ## Initial analysis verification and working tree state
 
@@ -125,3 +125,41 @@ Verification:
 - Git whitespace checks passed for all three affected repositories. No application or build-input code changed, so product tests and website build were not rerun for this documentation relocation. Step 1 build/test results, including the reproduced baseline semantic-icon failure, remain recorded above.
 
 Working trees at handoff: workspace has moved-file deletions, routing guidance, and the forwarding skill link; product has the imported contributor setup/docs and README link; website has its entry points and README update. Legacy skills repo remains clean. The pre-existing workspace `StellarAdmin.sln.DotSettings.user` change remains untouched. User authorized committing step 2 in the product, website, and workspace repositories. These changes are included in their local contributor-guidance migration commits; nothing pushed or published. Release migration has not started.
+
+
+## Step 3 implementation — 2026-09-17
+
+User authorized the release-tooling migration and investigation of the known test failure. Product now owns a manual `.github/workflows/release.yml`, individual orchestration steps in that workflow, the copied consumer smoke script, and the NuGet validator merged into its tool manifest alongside CSharpier. The source tooling was copied from workspace commit `c8b7781`; the workspace workflow and tool manifest remain unchanged. Its smoke script receives only the same one-line icon API correction needed to verify current product versions. Website and legacy skills are unchanged.
+
+The product workflow deliberately exposes verification only until step 4. It checks out the dispatched product SHA without a GitHub App, uses root `global.json`, records the built SHA, and uploads verified packages with read-only repository permissions. Publishing, OIDC, tags, and releases remain in the workspace. This staged approach avoids introducing two active publishing entry points before external trust and permissions are configured.
+
+The release workflow uses strict SemVer input validation, locked npm installs for all five solution client projects, a serial Release solution build, all five packages and symbols, package validation, both executable test suites, consumer reference drift checking, and a temporary consumer app. The smoke check copies the SDK pin and uses an isolated NuGet cache with source mapping to require the newly packed StellarAdmin packages. Release builds retain the existing `AllowMissingPrunePackageData` property.
+
+Three issues uncovered by the release checks were fixed:
+
+- `IconOptions.AddIconPack` now validates all semantic mappings before changing existing icons or mappings, and does not read mappings when import is disabled. The existing baseline failure now passes. Added coverage for preserving an existing icon and mapping when a later mapping is invalid, and for a pack whose mapping accessor must not be called.
+- SkillsGenerator previously used `CallerFilePath` to locate its checkout; deterministic release builds rewrite that path to `/_/`, causing a runtime directory failure. It now locates the product root by walking up from its executable and checking the solution and generator manifest.
+- The copied consumer smoke test still called the removed `IconOptions.Icons` property. It now uses `TryGetIcon`; the workspace copy gets the same one-line fix so it remains compatible during transition.
+
+Strict package validation reached Source Link checks and failed with rule 119 because source URLs reference unpushed commit `1c638cc57adb7d65566801bd80d68e2f52aee781` and GitHub returns 404. An initial local verification script excluded only source URL reachability. That script and its bypass option were removed following user review; the workflow always uses strict validation. Local success is provisional until an authorized push and strict GitHub run confirm public sources, runner setup, and artifact upload.
+
+See [release verification and cutover](../../build/README.md) for commands and the step 4 requirements: live tags/versions, product environment and NuGet policy, tag/release permissions and downstream events, serialized publishing, same-version/SHA/artifact recovery, the preserved Core/TagHelpers allowlist, and disabling the workspace publisher. External settings have not been changed or inspected during this step.
+
+
+Verification before the workflow structure revision (historical evidence; the local orchestration script is no longer shipped):
+
+- Ran the initial shared script end to end in `/tmp/stellar-release-kf__tfmz/product`, an independent clone with the working changes overlaid, no sibling repositories, and the canonical product remote URL. Used .NET 10.0.400 and temporary Node 20.20.2, matching the workflow's Node major. Command: `build/release.sh --local 0.2.1-migration.1 /tmp/stellar-release-kf__tfmz/final-packages`. Exit 0; log: `/tmp/stellar-release-final.log`. Version is a local test identifier, not a release decision.
+- Built the complete Release solution, produced five nupkgs and five snupkgs, and validated all five packages with only rule 119 excluded. Inspected package metadata and verified every internal StellarAdmin dependency uses the requested version. Existing SQLitePCLRaw 2.1.11 vulnerability warnings remain; clean compilation also reports existing XML documentation/nullability warnings. No dependency versions were changed.
+- Both executable suites passed, including the original semantic-icon failure and new preservation/disabled-accessor cases. Consumer references passed after deterministic compilation and again when invoking the built generator DLL from unrelated working directory `/tmp`.
+- Fresh consumer restore/build passed with zero warnings/errors, using all five local packages. Verified form/icon registration, rendered alert/button/data-grid markup, and all four expected CSS/JS assets on temporary port 5299. The script removed its consumer directory and stopped its server.
+- Actionlint 1.7.12 passed for release and CI workflows; Bash syntax and Git whitespace checks passed. Exercised valid/invalid SemVer inputs, refusal to overwrite a nonempty output directory, and rejection of `--local` under both CI flags. Confirmed the standalone test's release scripts, workflow, tool manifest, and changed C# files match the working tree.
+- Initial sandbox network restrictions required reviewed escalation for downloads, package validation, and fresh consumer restore. A subsequent forced restore with network access succeeded. Strict Source Link validation still requires an authorized push; no remote workflow was dispatched and artifact upload, NuGet trust, and publish permissions remain unverified.
+
+Working trees at handoff: product contains release tooling, the three verification fixes, and updated guidance/plan; workspace contains only the smoke-script API fix plus Jerrie's pre-existing `StellarAdmin.sln.DotSettings.user` edit, which was preserved. Website and legacy skills remain clean. Nothing committed, pushed, tagged, published, or deployed. Next: review/commit when requested, then push and run the strict hosted dry run before step 4 cutover.
+
+
+### Workflow structure revision
+
+The user requested individual GitHub Actions steps and explicitly does not need local release verification. Removed `build/release.sh` and its local validation bypass. The workflow now directly owns separate version validation, restore, dependency installation, build, pack, package validation, tag-helper tests, resource integration tests, reference checks, smoke test, and artifact upload steps. The existing consumer smoke test remains a script. Updated contributor and release guidance to direct execution through GitHub Actions.
+
+Validated the revised workflow with Actionlint and Bash syntax checks for every inline command. No builds or local release runs were repeated for this orchestration-only revision. A hosted dry run remains pending an authorized commit/push. Nothing committed or pushed.

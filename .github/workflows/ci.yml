@@ -1,7 +1,7 @@
 name: Build and Test
 
-# Build and test the complete product from this checkout. Releases are orchestrated
-# by the workspace repository.
+# Build and test the complete product from this checkout. Release verification uses
+# release.yml; publishing remains in the workspace until cutover.
 
 on:
   push:

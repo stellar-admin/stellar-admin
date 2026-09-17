@@ -21,6 +21,7 @@ Commands below run from the product repository root unless a working directory i
 | Resources / Identity / EF Core | Build the affected project under `src/`; exercise DocsSamples or the Identity playground, including binding and view overrides. |
 | Website app/MDX | `pnpm lint`, `pnpm types:check`, and `pnpm build` in `../website/`; inspect changed pages. |
 | Consumer references | `dotnet run --project util/SkillsGenerator`, then `dotnet run --project util/SkillsGenerator -- --check`. |
+| Release tooling | Run the **Release verification** workflow in GitHub Actions; see [release verification](../build/README.md) for inputs and cutover status. |
 | Shared conventions | Edit the single source in `docs/conventions/`; check references in the repository guides. |
 | Agent docs/skills | Check imports, symlinks, frontmatter, relative links, and commands; confirm discovery in fresh sessions when the agent is available. |
 

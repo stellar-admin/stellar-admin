@@ -1,12 +1,31 @@
-using System.Runtime.CompilerServices;
 using SkillsGenerator;
 using Spectre.Console;
 
-// Program.cs lives at <repoRoot>/util/SkillsGenerator/, so the repository root is two
-// directories up. [CallerFilePath] is resolved at compile time and stays correct regardless of
-// the working directory.
-static string GetRepoRootFolder([CallerFilePath] string sourceFilePath = "") =>
-    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
+// Walk from the executable so deterministic builds and unrelated working directories
+// resolve the same checkout. Compile-time source paths may be rewritten to /_/ by CI.
+static string GetRepoRootFolder()
+{
+    for (
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        directory is not null;
+        directory = directory.Parent
+    )
+    {
+        if (
+            File.Exists(Path.Combine(directory.FullName, "StellarAdmin.slnx"))
+            && File.Exists(
+                Path.Combine(directory.FullName, "util", "SkillsGenerator", "skills.examples.json")
+            )
+        )
+        {
+            return directory.FullName;
+        }
+    }
+
+    throw new DirectoryNotFoundException(
+        "Run SkillsGenerator from a product checkout's build output."
+    );
+}
 
 var repoRoot = GetRepoRootFolder();
 

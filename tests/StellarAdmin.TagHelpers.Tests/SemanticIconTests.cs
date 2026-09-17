@@ -123,6 +123,24 @@ internal static class SemanticIconTests
             "Later packs must replace role overrides."
         );
 
+        var retained = new IconOptions();
+        var retainedNames = retained.GetIconNames();
+        var retainedClose = retained.GetSemanticIconName(SemanticIconRole.Close);
+        Require(retained.TryGetIcon("x", out var retainedCloseIcon), "Default close icon missing.");
+        Reject(() => retained.AddIconPack<PartiallyValidPack>());
+        Require(
+            retained.GetIconNames().SequenceEqual(retainedNames)
+                && retained.GetSemanticIconName(SemanticIconRole.Close) == retainedClose
+                && retained.TryGetIcon("x", out var unchangedCloseIcon)
+                && unchangedCloseIcon == retainedCloseIcon,
+            "A later invalid mapping must preserve existing icons and earlier role mappings."
+        );
+        retained.AddIconPack<UnreadableMappingsPack>(pack => pack.ImportSemanticMappings = false);
+        Require(
+            retained.TryGetIcon("test-dots", out _),
+            "Disabled mapping imports must not read the pack's mappings."
+        );
+
         var services = new ServiceCollection();
         services.AddStellarAdmin().AddIconPack<ReplacementPack>(pack => pack.Prefix = "my:");
         using var provider = services.BuildServiceProvider();
@@ -280,6 +298,23 @@ internal static class SemanticIconTests
         }
     }
 
+    private sealed class PartiallyValidPack : IIconPack
+    {
+        public IDictionary<string, IconDefinition> GetIcons() =>
+            new Dictionary<string, IconDefinition>
+            {
+                ["x"] = ReplacementPack.Icon,
+                ["new-icon"] = ReplacementPack.Icon,
+            };
+
+        public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
+            new Dictionary<SemanticIconRole, string>
+            {
+                [SemanticIconRole.Close] = "new-icon",
+                [SemanticIconRole.PaginationEllipsis] = "absent",
+            };
+    }
+
     private sealed class ReplacementPack : IIconPack
     {
         public static IconDefinition Icon { get; } =
@@ -293,5 +328,14 @@ internal static class SemanticIconTests
             {
                 [SemanticIconRole.PaginationEllipsis] = "TEST-DOTS",
             };
+    }
+
+    private sealed class UnreadableMappingsPack : IIconPack
+    {
+        public IDictionary<string, IconDefinition> GetIcons() =>
+            new Dictionary<string, IconDefinition> { ["test-dots"] = ReplacementPack.Icon };
+
+        public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
+            throw new InvalidOperationException("Mappings must not be read.");
     }
 }
