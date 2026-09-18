@@ -25,6 +25,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [concourse-theme](archive/concourse-theme.md) | completed |
 | [consumer-skill-consolidation](archive/consumer-skill-consolidation.md) | completed |
 | [demo-theme-selector](archive/demo-theme-selector.md) | completed |
+| [ef-test-migration](archive/ef-test-migration.md) | completed; all 325 solution tests pass through discovery on 2026-09-18 |
 | [form-section](oss/archive/form-section.md) | completed |
 | [generic-resources-brainstorming](archive/generic-resources-brainstorming.md) | completed |
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |

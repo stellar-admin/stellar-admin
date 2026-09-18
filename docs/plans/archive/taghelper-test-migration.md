@@ -1,5 +1,7 @@
 # TagHelper runner migration
 
+Current testing status (2026-09-18): all legacy executable runners have been replaced by discoverable TUnit unit and integration tests. Both workflows run the solution-wide test command. See the [EF test migration](ef-test-migration.md) for current project ownership, coverage, and verification; runner commands and results below are historical.
+
 ## Scope — 2026-09-18
 
 Replace `tests/StellarAdmin.TagHelpers.Tests/Program.cs` with discoverable TUnit tests, preserving its checks while moving Core behavior into the owning test project. Use SUT-based classes, matching production folders, behavior-specific partial files, independent mutable state, and explicit arrange–act–assert sections. No production changes or migration of the EntityFrameworkCore executable are in scope.

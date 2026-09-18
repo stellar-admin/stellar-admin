@@ -131,7 +131,7 @@ Optional webfonts are linked from the app layout, **not** `@import`ed in CSS. A 
 - State is exposed to CSS by reflecting it onto `data-*` attributes that Tailwind `group-data-[...]` variants react to.
 
 ## Verifying changes
-Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. `StellarAdmin.Core.Tests` runs icon configuration and DI registration tests through TUnit. `StellarAdmin.TagHelpers.Tests` uses TUnit for component rendering and TagHelpers registration tests. Both CI and release discover all TUnit projects in `StellarAdmin.slnx` automatically through `dotnet test`; adding a unit-test project to the solution needs no workflow entry. The EntityFrameworkCore executable retains existing checks awaiting migration; keep running it for relevant changes. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
+Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. `StellarAdmin.Core.Tests` runs icon configuration and DI registration tests through TUnit. `StellarAdmin.TagHelpers.Tests` uses TUnit for component rendering and TagHelpers registration tests. Dashboard builder tests live in `StellarAdmin.Dashboard.Tests`; Dashboard rendering/binding and EF resource behavior live in their respective `.IntegrationTests` projects. Both CI and release discover all five TUnit test projects in `StellarAdmin.slnx` automatically through `dotnet test`; adding a test project to the solution needs no workflow entry. There are no legacy test runners. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
 
 DocsSamples consume the prebuilt bundles, with deliberate variation — DocsSamples links the Observatory theme, ComponentPlayground links shadcn.vega and additionally runs the `@tailwindcss/forms` plugin in its own build. Both import `theme-tokens.css` into their own Tailwind builds, keeping the token-vocabulary consumer path exercised.
 
@@ -153,10 +153,9 @@ Parallax is hand-authored in `Client/css/themes/parallax.css`; see its [specific
 
 The admin shell and resource layer live in `src/StellarAdmin.Dashboard/`, with Identity and EF Core integrations in their respective `src/StellarAdmin.Dashboard.*` projects. Register the application with `AddStellarAdmin().AddDashboard()`; its assets use `_content/StellarAdmin.Dashboard/`. Maintained Identity designs live in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md`.
 
-`docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. `sandbox/IdentitySimplePlayground/` is also the host for the EF Core integration suite; keep it available when running tests.
+`docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. `sandbox/IdentitySimplePlayground/` is also the host for the Dashboard and EF Core integration suites through `tests/StellarAdmin.Dashboard.Testing/`; keep it available when running tests. The fixtures use per-test temporary SQLite databases and in-process HTTP, leaving the playground database and running application untouched. See [integration test isolation](../development.md#integration-test-isolation).
 
 ```bash
 dotnet build StellarAdmin.slnx
 dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
-dotnet run --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests
 ```

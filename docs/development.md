@@ -12,7 +12,7 @@ Use the .NET CLI to create projects (`dotnet new`), add or remove solution proje
 
 For TUnit, follow the [official console-project setup](https://tunit.dev/docs/getting-started/installation/): create a console project with the pinned framework, add `TUnit` through the CLI, and remove the generated `Program.cs` so TUnit supplies the entry point. Add a direct reference to the SUT project and add the test project to `StellarAdmin.slnx` through the CLI.
 
-`global.json` selects Microsoft.Testing.Platform for the .NET 10 `dotnet test` runner, following the [official runner configuration](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test#mtp-mode-of-dotnet-test). TUnit supplies the test-project metadata used for solution discovery. New TUnit projects added to `StellarAdmin.slnx` are automatically included by both workflows. `--minimum-expected-tests 1` rejects a discovered test application that runs no tests; do not suppress that exit code. The legacy EntityFrameworkCore integration executable still needs its separate `dotnet run` step until it is migrated.
+`global.json` selects Microsoft.Testing.Platform for the .NET 10 `dotnet test` runner, following the [official runner configuration](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test#mtp-mode-of-dotnet-test). TUnit supplies the test-project metadata used for solution discovery. New TUnit projects added to `StellarAdmin.slnx` are automatically included by both workflows. `--minimum-expected-tests 1` rejects a discovered test application that runs no tests; do not suppress that exit code. Unit and integration test projects use the same runner and discovery command; no legacy test executables or individual test-project workflow steps remain.
 
 ## File encoding
 
@@ -20,15 +20,18 @@ Preserve each existing file’s encoding, UTF-8 BOM, and line endings when editi
 
 ## Commands and validation
 
-For new and migrated .NET tests, follow the [unit testing conventions](conventions/unit-testing.md). Existing executable checks remain runnable during migration; their current commands are in the [product development guide](repos/stellar-admin.md). Each migration must document its verified TUnit command here and add the project to the solution. Both CI and release discover tests through the solution-wide command below; do not add individual unit-test project steps to either workflow.
+For new and migrated .NET tests, follow the [unit testing conventions](conventions/unit-testing.md). The solution contains TUnit unit and integration suites; project ownership and environment requirements are listed below. Each migration must document its verified TUnit command here and add the project to the solution. Both CI and release discover tests through the solution-wide command below; do not add individual unit-test project steps to either workflow.
 
 Commands below run from the product repository root unless a working directory is specified. Normal commands come first; apply the conditional environment notes below only when needed.
 
 | Change | Validation |
 | --- | --- |
-| All unit tests | `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`; use `--list-tests` instead of `--minimum-expected-tests 1` to verify discovery. Add `--no-build` after a Release build, as CI does. |
+| All .NET tests (unit and integration) | `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`; use `--list-tests` instead of `--minimum-expected-tests 1` to verify discovery. Add `--no-build` after a Release build, as CI does. |
 | Core unit tests | `dotnet run --project tests/StellarAdmin.Core.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | TagHelpers unit tests | `dotnet run --project tests/StellarAdmin.TagHelpers.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
+| Dashboard unit tests | `dotnet test --project tests/StellarAdmin.Dashboard.Tests --configuration Release --minimum-expected-tests 1` |
+| Dashboard rendering and binding integration tests | `dotnet test --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release --minimum-expected-tests 1` |
+| EF resource integration tests | `dotnet test --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests --configuration Release --minimum-expected-tests 1` |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |
 | OSS CSS/JS | `npm run build` in `src/StellarAdmin.TagHelpers/Client/`; inspect the compiled bundle and exercise changed states. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
 | Resources / Identity / EF Core | Build the affected project under `src/`; exercise DocsSamples or the Identity playground, including binding and view overrides. |
@@ -39,6 +42,12 @@ Commands below run from the product repository root unless a working directory i
 | Agent docs/skills | Check imports, symlinks, frontmatter, relative links, and commands; confirm discovery in fresh sessions when the agent is available. |
 
 For C# formatting, run `dotnet tool restore` then `dotnet csharpier format <touched-path>` from the OSS repo where the formatter manifest lives. Do not format whole repos for a localized change. Consumer-facing references under `references/components/` and `components-index.md` are generated; other guides are handwritten. The generator preserves marked `structure` regions inside component references.
+
+## Integration test isolation
+
+`StellarAdmin.Dashboard.IntegrationTests` covers Dashboard Razor editors, scalar binding, form layouts, and actions. `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` covers EF resource CRUD, references and SQL queries, authorization, antiforgery, and playground migration/metadata/Identity compatibility. Their shared `StellarAdmin.Dashboard.Testing` support library hosts `sandbox/IdentitySimplePlayground` through WebApplicationFactory. Each test owns its host, services, HTTP client, SQL interceptor, and unique temporary SQLite database; connections disable pooling and disposal deletes the temporary database files. Tests override DbContext registration inside the host, never process environment variables or the playground’s app.db. No external database, running application, or fixed TCP port is required. Each integration assembly limits concurrent hosts to four to bound memory and I/O; tests do not share mutable fixtures or depend on execution order.
+
+Pure form-builder configuration tests live in `StellarAdmin.Dashboard.Tests/Resources/Builders/` and reference Dashboard directly without the playground or test-host support library. The complete solution command runs all five test assemblies; the shared support library is not a test assembly.
 
 ## Samples, screenshots, and generated website demos
 

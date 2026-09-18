@@ -4,6 +4,8 @@ using StellarAdmin.Dashboard.Areas.StellarAdmin;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
 
+namespace StellarAdmin.Dashboard.Testing;
+
 [Area("StellarAdmin")]
 [Route("test-editors")]
 public sealed class EditorTestController : Controller

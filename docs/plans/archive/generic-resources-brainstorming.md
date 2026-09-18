@@ -1,5 +1,7 @@
 # Generic resources brainstorming — 2026-09-08
 
+Current testing status (2026-09-18): all legacy executable runners have been replaced by discoverable TUnit unit and integration tests. Both workflows run the solution-wide test command. See the [EF test migration](ef-test-migration.md) for current project ownership, coverage, and verification; runner commands and results below are historical.
+
 ## Code audit — 2026-09-18
 
 Current status: **completed**. EF resource registration/controller, Category/Product playground, reference choices, shared form layouts and typed editor classes exist in `src/StellarAdmin.Dashboard*`. Deferred features remain in the maintained follow-up backlog.

@@ -19,7 +19,10 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/StellarAdmin.Core.Tests/StellarAdmin.Core.Tests.csproj" />
-    <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.IntegrationTests/StellarAdmin.Dashboard.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.Testing/StellarAdmin.Dashboard.Testing.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.Tests/StellarAdmin.Dashboard.Tests.csproj" />
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
   </Folder>
   <Folder Name="/util/">

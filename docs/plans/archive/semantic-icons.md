@@ -1,5 +1,7 @@
 # Icon encapsulation and semantic icons
 
+Current testing status (2026-09-18): all legacy executable runners have been replaced by discoverable TUnit unit and integration tests. Both workflows run the solution-wide test command. See the [EF test migration](ef-test-migration.md) for current project ownership, coverage, and verification; runner commands and results below are historical.
+
 ## Code audit — 2026-09-18
 
 Current status: **completed**. `src/StellarAdmin.Core/Icons/IconOptions.cs` implements encapsulated registration, semantic mappings and pack settings; it validates every incoming mapping before mutating registrations and skips mapping access when imports are disabled. `tests/StellarAdmin.Core.Tests/Icons/IconOptionsTests.IconPacks.cs` now covers atomic rejection and preserved existing mappings, so the failure at the end of the old record is no longer outstanding. Semantic role consumers, pack mappings and `docs/DocsSamples/Pages/Icon/Semantic.cshtml` are present. Dashboard-specific mapping expansion remains outside the agreed scope.

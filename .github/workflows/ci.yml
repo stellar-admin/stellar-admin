@@ -48,8 +48,5 @@ jobs:
     - name: Check consumer reference drift
       run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
 
-    - name: Run all unit tests
+    - name: Run all .NET tests
       run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
-
-    - name: Run resource integration tests
-      run: dotnet run --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests --no-build --configuration Release

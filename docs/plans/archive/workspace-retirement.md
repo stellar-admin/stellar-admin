@@ -1,5 +1,7 @@
 # Workspace and skills consolidation
 
+Current testing status (2026-09-18): all legacy executable runners have been replaced by discoverable TUnit unit and integration tests. Both workflows run the solution-wide test command. See the [EF test migration](ef-test-migration.md) for current project ownership, coverage, and verification; runner commands and results below are historical.
+
 ## Code audit — 2026-09-18
 
 Current status: **completed**. `StellarAdmin.slnx`, `src/StellarAdmin.Dashboard*`, `skills/`, `.github/workflows/ci.yml` and `.github/workflows/release.yml` establish the consolidated product checkout. Release verification packs five projects and publishing is limited to Core/TagHelpers. Plugin packaging has been removed in favor of the current consumer-skill layout. Remote repository archival, NuGet account cleanup and release success remain historical evidence from the closeout below; this audit did not re-query external settings.

@@ -5,6 +5,8 @@ using StellarAdmin.Dashboard.Resources.Controllers;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
+namespace StellarAdmin.Dashboard.Testing;
+
 [Area("StellarAdmin")]
 [Route("test-form-layout")]
 public sealed class FormLayoutTestController : ResourceControllerBase<Product>

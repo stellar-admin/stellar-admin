@@ -1,5 +1,7 @@
 # Form section
 
+Current testing status (2026-09-18): all legacy executable runners have been replaced by discoverable TUnit unit and integration tests. Both workflows run the solution-wide test command. See the [EF test migration](../../archive/ef-test-migration.md) for current project ownership, coverage, and verification; runner commands and results below are historical.
+
 ## Code audit — 2026-09-18
 
 Current status: **completed**. `FormSectionTagHelper`, `FormRowTagHelper`, `StellarAdminFormsOptions` and Dashboard `_FormSection.cshtml`/`_FormRow.cshtml` implement the components and shared integration. `_FormPage.cshtml` resolves the app/form layout; section-level Dashboard overrides were superseded. Samples, generator registrations, website docs and consumer references are present.
