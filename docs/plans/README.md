@@ -58,7 +58,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [resource-index-page-view-model](archive/resource-index-page-view-model.md) | completed |
 | [resources-project-extraction](archive/resources-project-extraction.md) | superseded |
 | [segmented-control](oss/archive/segmented-control.md) | completed |
-| [semantic-icons](archive/semantic-icons.md) | completed |
+| [semantic-icons](archive/semantic-icons.md) | completed; IconOptions tests migrated to TUnit on 2026-09-18 |
 | [shadcn-theme-fonts](archive/shadcn-theme-fonts.md) | completed |
 | [shadcn-theme-namespace](archive/shadcn-theme-namespace.md) | completed |
 | [templated-view-slots](archive/templated-view-slots.md) | completed |

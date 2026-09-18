@@ -18,6 +18,7 @@
     <Project Path="src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/StellarAdmin.Core.Tests/StellarAdmin.Core.Tests.csproj" />
     <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
   </Folder>

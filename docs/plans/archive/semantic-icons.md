@@ -2,9 +2,33 @@
 
 ## Code audit — 2026-09-18
 
-Current status: **completed**. `src/StellarAdmin.Core/Icons/IconOptions.cs` implements encapsulated registration, semantic mappings and pack settings; it validates every incoming mapping before mutating registrations and skips mapping access when imports are disabled. `tests/StellarAdmin.TagHelpers.Tests/SemanticIconTests.cs` covers atomic rejection and preserved existing mappings, so the failure at the end of the old record is no longer outstanding. Semantic role consumers, pack mappings and `docs/DocsSamples/Pages/Icon/Semantic.cshtml` are present. Dashboard-specific mapping expansion remains outside the agreed scope.
+Current status: **completed**. `src/StellarAdmin.Core/Icons/IconOptions.cs` implements encapsulated registration, semantic mappings and pack settings; it validates every incoming mapping before mutating registrations and skips mapping access when imports are disabled. `tests/StellarAdmin.Core.Tests/Icons/IconOptionsTests.IconPacks.cs` now covers atomic rejection and preserved existing mappings, so the failure at the end of the old record is no longer outstanding. Semantic role consumers, pack mappings and `docs/DocsSamples/Pages/Icon/Semantic.cshtml` are present. Dashboard-specific mapping expansion remains outside the agreed scope.
 
 This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## IconOptions test migration — 2026-09-18
+
+Scope: move IconOptions contracts to `tests/StellarAdmin.Core.Tests/Icons/` using TUnit, partial `IconOptionsTests` files and explicit arrange–act–assert sections. Create the project, package reference, SUT reference and solution membership with the .NET CLI. The remaining legacy semantic icon checks and the Core test README were subsequently removed at the user’s request. Other rendering and builder/DI checks in `Program.cs` remain executable in the TagHelpers suite.
+
+Coverage inventory before deleting migrated checks:
+
+| Existing checks | Replacement in `IconOptionsTests` |
+| --- | --- |
+| Every semantic role has a resolvable default | `Constructor_ForEachSemanticRole_RegistersResolvableDefault` (one generated case per enum value) |
+| Incoming mappings win case-insensitively; partial and legacy packs preserve other mappings | `AddIconPack_WhenMappingCasingDiffers_ImportsMapping`, `WhenOnlySomeRolesAreMapped_PreservesOtherMappings`, `WhenPackHasNoMappings_PreservesExistingMappings` |
+| Clear removes mappings and defaults; replacement packs do not restore defaults | `ClearIcons_WhenSemanticIconsAreMapped_RemovesAllMappings`, `ClearIcons_WhenDefaultsAreRegistered_RemovesAllIcons`, `AddIconPack_WhenDefaultsWereCleared_RegistersOnlyReplacementIcons` |
+| Independent options instances; removing an icon clears all matching roles | `MapSemanticIcon_WhenAnotherInstanceExists_DoesNotChangeItsMapping`, `RemoveIcon_WhenNameCasingDiffers_RemovesAllAssociatedMappings` (plain and prefixed) |
+| Unregistered explicit target rejected; registered explicit target accepted; later pack overrides role | `MapSemanticIcon_WhenIconIsUnregistered_ThrowsArgumentException`, `WhenIconIsRegistered_AssignsRole`, `AddIconPack_WhenRoleWasExplicitlyMapped_ReplacesMapping` |
+| Invalid packs do not register anything; mapping-only packs cannot reference the registry; later invalid mapping preserves earlier state | `AddIconPack_WhenMappingTargetIsMissing_RejectsEntirePack` (plain and prefixed), `WhenMappingTargetExistsOnlyInRegistry_RejectsPack`, `WhenLaterMappingIsInvalid_PreservesExistingRegistrations` |
+| Disabled imports skip getter and validation and preserve existing mappings | Three `AddIconPack_WhenMappingImportIsDisabled_*` tests |
+| Prefix qualifies names/mappings, lookup ignores casing, different prefixes coexist, empty prefix is a no-op | `AddIconPack_WhenPrefixIsSpecified_QualifiesNamesAndMappings`, `WhenPrefixesDiffer_KeepsBothDefinitions`, `WhenPrefixIsEmpty_LeavesNamesUnchanged` |
+| Named override affects semantic use | Direct contract in `AddIconPack_WhenNameAlreadyExists_ReplacesDefinition`; existing Breadcrumb rendering assertion retained |
+| Program.cs direct options block: clear, snapshot, replacement, case-insensitive remove, repeat remove and missing lookup | Basic `IconOptionsTests.cs` cases plus replacement-pack case above |
+| Pagination default/replacement/child-content/fallback/prefixed rendering; Accordion title/wrapper; Breadcrumb override; builder prefix registration | Removed with the legacy `SemanticIconTests.Run()` at the user’s request; these rendering and builder integration cases have no replacement in this migration. Other Program.cs DI and rendering checks remain |
+
+Verification: SDK 10.0.400 and CLI-installed TUnit 1.68.4; TUnit discovered 50 cases (including all 24 semantic roles), and all 50 passed with none skipped. Both affected projects built in Release with `--no-restore -m:1`, with zero warnings and errors. The remaining TagHelpers executable passed its provider/isolation, semantic rendering/registration and field rendering checks. CSharpier formatted the touched C# files; `git diff --check` passed. The initial package download required network escalation, and the initial parallel TagHelpers build exited without diagnostics; the serial build succeeded. Hosted release verification and the unrelated EF integration suite were not run. No production code changed.
+
+The release workflow now runs `dotnet run --project tests/StellarAdmin.Core.Tests --no-build --configuration Release` after the solution build; this exact command was also verified locally. The solution, development guide and release documentation include the new suite. The Core test README and legacy `SemanticIconTests.cs`, including its runner call, were subsequently removed at the user’s request. The other checks in `Program.cs` remain. Verification above describes the migration before this removal. After removal, the TagHelpers test project rebuilt in Release with zero warnings/errors and its remaining executable checks passed. Whitespace checks passed for the changed tests and documentation; the unrelated existing `StellarAdmin.sln.DotSettings` edit was left untouched.
 
 ## Historical record
 

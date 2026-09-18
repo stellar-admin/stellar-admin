@@ -109,29 +109,6 @@ foreach (var duplicateName in new[] { "CHECK", "duplicate-custom" })
     Require(duplicateRejected, "Duplicate icon names must be rejected when options are resolved.");
 }
 
-var replacementOptions = new IconOptions();
-var originalNames = replacementOptions.GetIconNames();
-replacementOptions.ClearIcons();
-Require(
-    replacementOptions.GetIconNames().Length == 0,
-    "Clearing icons must remove Lucide defaults."
-);
-Require(originalNames.Length > 0, "Icon names must be returned as an independent snapshot.");
-replacementOptions.AddIconPack<CoreTestIconPack>();
-Require(
-    replacementOptions.TryGetIcon("CHECK", out var replacementIcon)
-        && replacementIcon == CoreTestIconPack.Icon
-        && !replacementOptions.TryGetIcon("activity", out _),
-    "A replacement pack must work without restoring Lucide defaults."
-);
-Require(replacementOptions.RemoveIcon("CHECK"), "Icon removal must be case-insensitive.");
-Require(
-    !replacementOptions.RemoveIcon("check")
-        && !replacementOptions.TryGetIcon("check", out var removedIcon)
-        && removedIcon is null,
-    "Removed icons must no longer be available."
-);
-
 var trackingOptions = new TrackingIconOptions();
 var iconHelper = new IconTagHelper(trackingOptions) { Name = "check" };
 Require(trackingOptions.ReadCount == 1, "Icon options must resolve during construction.");
@@ -146,7 +123,6 @@ Require(fallbackHtml.Contains("M12 9v4"), "Missing icons must retain the fallbac
 Require(trackingOptions.ReadCount == 1, "Rendering must use the already-resolved options.");
 
 Console.WriteLine("Core icon options and isolation checks passed.");
-await SemanticIconTests.Run();
 
 var builder = WebApplication.CreateBuilder();
 var services = builder.Services;

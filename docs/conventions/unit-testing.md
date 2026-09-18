@@ -36,7 +36,7 @@ Follow [C# file organization](csharp-file-organization.md) within each partial f
 
 ## Framework
 
-Use TUnit for new and migrated .NET tests, with individually discoverable `[Test]` methods and its built-in assertions. Manage package versions in `Directory.Packages.props`. Await TUnit assertions; see its [assertion guidance](https://tunit.dev/docs/assertions/getting-started/).
+Use TUnit for new and migrated .NET tests, with individually discoverable `[Test]` methods and its built-in assertions. Manage package versions in `Directory.Packages.props`. Use the [.NET CLI workflow](../development.md#net-project-and-dependency-changes) to create projects and manage packages, references, and solution membership; do not hand-edit project or solution files for changes supported by the CLI. Await TUnit assertions; see its [assertion guidance](https://tunit.dev/docs/assertions/getting-started/).
 
 Do not introduce handwritten test runners, console success messages, or assertion replacements such as `Run()`, `Require()`, and `Reject()`. Use framework discovery, assertions, exception assertions, and parameterized cases. Keep framework analyzers enabled and resolve diagnostics in changed tests.
 

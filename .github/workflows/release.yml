@@ -119,6 +119,9 @@ jobs:
             dotnet meziantou.validate-nuget-package "$ARTIFACTS_DIR/$package.$VERSION.nupkg"
           done
 
+      - name: Run Core unit tests
+        run: dotnet run --project tests/StellarAdmin.Core.Tests --no-build --configuration Release
+
       - name: Run tag helper tests
         run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
 

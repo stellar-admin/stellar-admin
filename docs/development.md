@@ -6,6 +6,12 @@ This product repository is self-contained for builds, tests, and consumer refere
 
 Use the .NET SDK declared by the relevant `global.json`, restore the repo's local .NET tools, and use the checked-in package manager/lockfile for each client project. The product SDK is currently pinned to 10.0.400. Website uses pnpm; library clients use npm. Read `package.json` for available scripts. Do not silently change SDK pins or dependency versions to fit a machine.
 
+## .NET project and dependency changes
+
+Use the .NET CLI to create projects (`dotnet new`), add or remove solution projects (`dotnet sln ... add/remove`), manage project references (`dotnet reference add/remove --project ...`), and add, update, or remove NuGet packages (`dotnet package add/remove --project ...`). Never edit `.csproj` or `.slnx` files directly when a CLI command supports the change. Keep package versions centrally managed in `Directory.Packages.props`; package commands should update central versions as well as project references. Direct MSBuild edits are reserved for settings without a corresponding CLI command.
+
+For TUnit, follow the [official console-project setup](https://tunit.dev/docs/getting-started/installation/): create a console project with the pinned framework, add `TUnit` through the CLI, and remove the generated `Program.cs` so TUnit supplies the entry point. Add a direct reference to the SUT project and add the test project to `StellarAdmin.slnx` through the CLI.
+
 ## File encoding
 
 Preserve each existing file’s encoding, UTF-8 BOM, and line endings when editing it. Do not strip or add a BOM as a side effect of reading and rewriting text; this can conflict with the encoding already selected in the user’s editor.
@@ -18,6 +24,7 @@ Commands below run from the product repository root unless a working directory i
 
 | Change | Validation |
 | --- | --- |
+| Core unit tests | `dotnet run --project tests/StellarAdmin.Core.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |
 | OSS CSS/JS | `npm run build` in `src/StellarAdmin.TagHelpers/Client/`; inspect the compiled bundle and exercise changed states. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
 | Resources / Identity / EF Core | Build the affected project under `src/`; exercise DocsSamples or the Identity playground, including binding and view overrides. |
