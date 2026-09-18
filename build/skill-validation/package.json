@@ -1,0 +1,14 @@
+{
+  "name": "stellar-admin-skill-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node check.mjs",
+    "test": "node --test check.test.mjs"
+  },
+  "dependencies": {
+    "github-slugger": "2.0.0",
+    "markdown-it": "14.1.0",
+    "yaml": "2.8.1"
+  }
+}

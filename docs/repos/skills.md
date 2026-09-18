@@ -10,7 +10,7 @@ Consumer guidance is organized by product; see the [skills overview](../../skill
 - `skills/stellar-admin-dashboard/` preserves Dashboard component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
 - Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Dashboard consumers customizing UI markup can also use the Tag Helpers skill; avoid duplicating the UI catalog.
 
-The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation smoke tests remain in [consumer skill consolidation](../plans/consumer-skill-consolidation.md).
+The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation verification and CI closeout are recorded in [consumer skill consolidation](../plans/consumer-skill-consolidation.md).
 
 ## Source ownership and validation
 
@@ -19,6 +19,8 @@ The Claude plugin manifests and installation README have been removed. Installat
 - `util/SkillsGenerator` generates both product catalogs with curated samples. It retains shared source lookup for inherited attributes and enum values, while routing output by the component's source project.
 - Component regions between `<!-- structure:begin -->` and `<!-- structure:end -->` are hand-authored and preserved by generation.
 - Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs. Forms, layout, and theming remain reference documents within the UI skill.
+
+Consumer bundle validation runs in CI through `build/skill-validation/check.mjs`. Run `npm ci --prefix build/skill-validation --ignore-scripts --no-audit --no-fund`, `npm test --prefix build/skill-validation`, and `npm run check --prefix build/skill-validation` locally. It checks metadata, licenses, bundled references, relative Markdown links and heading anchors within each installable skill. Reference-only product folders are skipped. See [validator guidance](../../build/skill-validation/README.md).
 
 Run `dotnet run --project util/SkillsGenerator` and then `dotnet run --project util/SkillsGenerator -- --check` from the product repository. No sibling checkouts are needed. Validate skill frontmatter, relative links, product ownership, and referenced tag names after changes. Do not promise automatic activation solely from file extensions.
 

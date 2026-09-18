@@ -28,6 +28,12 @@ jobs:
       with:
         node-version: '20.x'
 
+    - name: Validate consumer skills
+      run: |
+        npm ci --prefix build/skill-validation --ignore-scripts --no-audit --no-fund
+        npm test --prefix build/skill-validation
+        npm run check --prefix build/skill-validation
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
 

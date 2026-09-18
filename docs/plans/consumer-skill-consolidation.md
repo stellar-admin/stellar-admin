@@ -1,6 +1,6 @@
 # Consumer skill consolidation
 
-Status: active — steps 1–4 complete; product split complete; step 5 remains. Updated: 2026-09-17. Affected repository: product only.
+Status: completed — implementation, manual installation verification and CI packaging checks complete. Updated: 2026-09-18. Affected repository: product only.
 
 ## Scope and decision
 
@@ -64,3 +64,11 @@ Verification: Skill Creator validation, relative links and heading anchors in th
 ## Public documentation and compatibility follow-up (2026-09-17)
 
 The user subsequently reported successful basic and full installations in both Codex and Claude Code. The website's `content/docs/tag-helpers/agent-skills.mdx` has now been updated locally to describe Vercel installation and the setup choices instead of the retired Claude plugin. The user also approved replacing the fixed 0.3.0 compatibility claim across the website, product README, consumer overview, skill, and maintenance guide: guidance follows the default branch and agents should check the application's installed package version before applying examples. This supersedes the fixed baseline policy recorded above; historical verification remains unchanged.
+
+## CI validation and closeout — 2026-09-18
+
+Status: completed. The successful basic and full installations in Codex and Claude Code reported on 2026-09-17 satisfy the manual installation checkpoint. The earlier audit incorrectly carried that checkpoint forward as unfinished; no repeated installation test is required for this closeout.
+
+Added `build/skill-validation/` with pinned npm dependencies and a lockfile. The checker discovers installable consumer skills, validates YAML name/description, license and bundled references, and checks local Markdown links/images and heading anchors within each bundle. Reference-only Dashboard material is skipped; bundle symlinks are rejected. External URLs and agent execution are outside this check. CI runs installation, regression tests and bundle validation after Node setup on each PR and push to master; generated-reference drift remains a separate existing step.
+
+Local verification: the bundle check passed for one installable skill and 62 Markdown files; all eight regression tests passed, covering valid folded YAML/reference links/duplicate headings, invalid metadata, missing license/references, broken links/anchors, path escapes, symlink cycles and empty discovery. Formatting and Git whitespace checks passed. The workflow has not been run on GitHub for this change; no product runtime tests or repeated agent installation tests were needed. No implementation work remains in this consolidation plan.
