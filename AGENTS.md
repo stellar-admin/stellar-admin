@@ -23,6 +23,7 @@ Use the pinned SDK and checked-in package manager lockfiles. Keep package bounda
 
 - [Options builders](docs/conventions/options-builders.md): consult before designing or extending public configuration APIs.
 - [C# file organization](docs/conventions/csharp-file-organization.md): member ordering, braces, and logical spacing; do not reorder untouched files.
+- [Unit testing](docs/conventions/unit-testing.md): required for new and migrated .NET tests; mirror the SUT's project and folders, use TUnit, and follow explicit arrange–act–assert sections.
 - [XML documentation](docs/conventions/xml-documentation.md): brief consumer-facing documentation; internal types stay uncommented.
 - [Markdown](docs/conventions/markdown.md): one line per prose paragraph in Markdown/MDX; do not hard-wrap prose or reflow untouched text.
 

@@ -12,6 +12,8 @@ Preserve each existing file’s encoding, UTF-8 BOM, and line endings when editi
 
 ## Commands and validation
 
+For new and migrated .NET tests, follow the [unit testing conventions](conventions/unit-testing.md). Existing executable checks remain runnable during migration; their current commands are in the [product development guide](repos/stellar-admin.md). Each migration must document its verified TUnit command here and update the affected solution, project README, and CI/release execution paths.
+
 Commands below run from the product repository root unless a working directory is specified. Normal commands come first; apply the conditional environment notes below only when needed.
 
 | Change | Validation |

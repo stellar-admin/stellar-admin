@@ -66,7 +66,7 @@ builder
     .AddController(controller, name);
 ```
 
-In controllers, separate validation, entity creation/loading, binding, persistence, and response construction. In tests, separate host setup, data setup, and distinct test scenarios; keep each action with the assertions that verify it. In Tag Helper `ProcessAsync` methods, separate resolved configuration/context setup, output element name/mode, attribute configuration, styling helpers, child-content rendering, and the final return. Use `CarouselTagHelper` as a concrete reference for Tag Helper spacing.
+In controllers, separate validation, entity creation/loading, binding, persistence, and response construction. In tests, follow the [unit testing conventions](unit-testing.md): one behavior per test method, with explicit `// Arrange`, `// Act`, and `// Assert` sections separated by blank lines. In Tag Helper `ProcessAsync` methods, separate resolved configuration/context setup, output element name/mode, attribute configuration, styling helpers, child-content rendering, and the final return. Use `CarouselTagHelper` as a concrete reference for Tag Helper spacing.
 
 ```csharp
 var effectiveOrientation = Orientation ?? CarouselOrientation.Horizontal;

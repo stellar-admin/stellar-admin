@@ -131,7 +131,7 @@ Optional webfonts are linked from the app layout, **not** `@import`ed in CSS. A 
 - State is exposed to CSS by reflecting it onto `data-*` attributes that Tailwind `group-data-[...]` variants react to.
 
 ## Verifying changes
-Run the executable test suites listed below for relevant changes. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
+Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. The executable test suites listed below are existing checks awaiting migration; keep running them for relevant changes. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
 
 DocsSamples consume the prebuilt bundles, with deliberate variation — DocsSamples links the Observatory theme, ComponentPlayground links shadcn.vega and additionally runs the `@tailwindcss/forms` plugin in its own build. Both import `theme-tokens.css` into their own Tailwind builds, keeping the token-vocabulary consumer path exercised.
 
