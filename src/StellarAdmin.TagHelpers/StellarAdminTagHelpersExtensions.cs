@@ -12,6 +12,23 @@ public static class StellarAdminTagHelpersExtensions
         public StellarAdminTagHelpersBuilder AddTagHelpers()
         {
             stellarAdminBuilder.Services.AddOptions<StellarAdminTagHelpersOptions>();
+            stellarAdminBuilder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+            {
+                if (!options.ModelBinderProviders.OfType<CheckboxGroupModelBinderProvider>().Any())
+                {
+                    var index = options
+                        .ModelBinderProviders.ToList()
+                        .FindIndex(provider =>
+                            provider
+                            is Microsoft.AspNetCore.Mvc.ModelBinding.Binders.ArrayModelBinderProvider
+                        );
+                    options.ModelBinderProviders.Insert(
+                        index < 0 ? options.ModelBinderProviders.Count : index,
+                        new CheckboxGroupModelBinderProvider()
+                    );
+                    options.ValueProviderFactories.Add(new CheckboxGroupValueProviderFactory());
+                }
+            });
 
             var builder = new StellarAdminTagHelpersBuilder(stellarAdminBuilder.Services);
 

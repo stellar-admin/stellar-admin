@@ -8,6 +8,15 @@ generated: true
 
 A form input. Renders a styled `<input>` for text-like types, and a styled checkbox or radio button (with its indicator) when the type is `checkbox` or `radio`. Supports model binding via `asp-for`.
 
+<!-- structure:begin -->
+## Individual controls and groups
+
+Prefer a [checkbox group](checkbox-group.md) when selected options should bind to one array or collection. Use an individual [checkbox input](input.md) for a boolean property.
+
+Prefer a [radio group](radio-group.md) when related options share one bound property, label, and validation message. Use individual [radio inputs](input.md) when you need to compose the fields and layout yourself.
+
+<!-- structure:end -->
+
 ## Attributes
 
 | Attribute | Type | Default | Values |

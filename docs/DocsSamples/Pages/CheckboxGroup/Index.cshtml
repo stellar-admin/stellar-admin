@@ -1,0 +1,23 @@
+@page
+@model DocsSamples.Pages.CheckboxGroup.Index
+
+<docs-example-wrapper>
+    <docs-example title="Intro"><partial name="_Intro" /></docs-example>
+    <docs-example title="Choice Cards"><partial name="_ChoiceCards" /></docs-example>
+    <docs-example title="Items"><partial name="_Items" /></docs-example>
+    <docs-example title="Model Binding">
+        <form method="post">
+            <sa-stack>
+                <partial name="_CollectionBinding" for="Order" />
+                <sa-group>
+                    <sa-button type="submit">Save</sa-button>
+                    <sa-button type="reset" variant="ButtonVariant.Outline">Reset</sa-button>
+                </sa-group>
+                <output>@Model.Result</output>
+            </sa-stack>
+        </form>
+    </docs-example>
+    <docs-example title="Validation">
+        <partial name="_Validation" for="Validation" />
+    </docs-example>
+</docs-example-wrapper>

@@ -53,7 +53,10 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.MergeAttributes(tagBuilder);
+        if (tagBuilder != null)
+        {
+            output.MergeAttributes(tagBuilder);
+        }
 
         output.Attributes.SetAttribute("role", "alert");
         output.Attributes.SetAttribute("data-slot", "field-error");

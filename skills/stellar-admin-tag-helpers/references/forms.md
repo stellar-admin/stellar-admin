@@ -136,6 +136,8 @@ if (!ModelState.IsValid) return Page();
 | Text / email / password / number / date... | `<sa-input>` with `type="..."` (or `[DataType]` via `asp-for`) |
 | **Checkbox** | `<sa-input type="checkbox" asp-for="...">` — there is **no** `<sa-checkbox>` tag |
 | **Radio** | `<sa-input type="radio" asp-for="..." value="..." label="...">` — no `<sa-radio>` tag |
+| Checkbox group bound to a collection | [`<sa-checkbox-group>`](components/checkbox-group.md) with `<sa-checkbox-group-item>` children |
+| Radio group bound to one property | [`<sa-radio-group>`](components/radio-group.md) with `<sa-radio-group-item>` children |
 | Dropdown | `<sa-select asp-for="..." asp-items="...">` (supports inline `<option>` / `<optgroup>`) |
 | Multi-line | `<sa-textarea asp-for="...">` |
 | On/off toggle | `<sa-switch asp-for="...">` |
@@ -146,7 +148,13 @@ if (!ModelState.IsValid) return Page();
 
 Bound to a `bool`, `<sa-input asp-for="...">` renders a checkbox without an explicit `type`.
 
-**Checkbox / radio groups:** put `data-slot="checkbox-group"` (or `radio-group`) on the enclosing `<sa-field-group>`, inside a `<sa-field-set>` with a `<sa-field-legend>`, one `<sa-input>` per option.
+Prefer a [checkbox group](components/checkbox-group.md) when selected options should bind to one array or collection. Use individual checkboxes for separate boolean properties.
+
+Prefer a [radio group](components/radio-group.md) when related options share one bound property, label, and validation message. Use individual radio inputs when you need to compose the fields and layout yourself.
+
+Both group helpers support `asp-for` or unbound usage with `name` and `value` (radio) or `values` (checkbox).
+
+For manually composed groups, put `data-slot="checkbox-group"` (or `radio-group`) on the enclosing `<sa-field-group>`, inside a `<sa-field-set>` with a `<sa-field-legend>`, one `<sa-input>` per option.
 
 **Horizontal fields** (checkbox/switch/radio rows): in an **explicit** field, set `orientation="FieldOrientation.Horizontal"` on the `<sa-field>` and wrap the label and description in `<sa-field-content>`.
 
@@ -159,6 +167,8 @@ You don't need to do this for **implicit** fields: a checkbox, radio or switch t
 `render-field` only toggles the wrapping field on or off — it doesn't control orientation. To change the layout, write the field explicitly.
 
 ## Choice cards
+
+For group helpers, set `variant="CheckboxGroupVariant.ChoiceCard"` or `variant="RadioGroupVariant.ChoiceCard"`. The helper composes the card markup and shared validation message.
 
 For a richer selectable row, wrap a horizontal field in a `<sa-field-label>` so the whole card is clickable:
 
@@ -190,7 +200,7 @@ The same shape with `data-slot="radio-group"` and `type="radio"` gives radio cho
 1. **Prefer implicit + `asp-for`** for model-bound forms; fall back to explicit `<sa-field>` only when you need custom structure.
 2. Implicit wrapping fires on `asp-for` / `label` / `description` / `error`, but **not** inside an existing `<sa-field>`. Override with `render-field`.
 3. The error tag is `<sa-field-error>`. Bind `asp-for` for automatic validation; otherwise set `aria-invalid="true"` and supply the message.
-4. Checkboxes and radios are `<sa-input type="checkbox|radio">`, not dedicated tags. There is no `<sa-checkbox>`, `<sa-radio>`, `<sa-checkbox-group>` or `<sa-radio-group>` element.
+4. Individual checkboxes and radios use `<sa-input type="checkbox|radio">`. There is no `<sa-checkbox>` or `<sa-radio>` tag. Use `<sa-checkbox-group>` for a collection of selected values and `<sa-radio-group>` for one selected value.
 5. Explicit field order is label → input → description → error — except horizontal checkbox/radio/switch rows, which put the input first.
 6. Inside a field use `<sa-field-label>`; outside one use `<sa-label>`. Inside an explicit `<sa-field>`, an input's `label` / `description` / `error` attributes render nothing.
 7. Enum attributes are fully-qualified (`FieldOrientation.Horizontal`).

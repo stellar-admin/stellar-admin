@@ -38,6 +38,8 @@
 @source inline("anchored-{left,right}{,-center,-span-top,-span-bottom}");
 @source inline("try-flip-all");
 @source inline("font-heading");
+/* Match the conventional checkbox group demo: option labels override Field label weight. */
+@source inline("[&_[data-slot=field-label]]:font-normal");
 
 @layer components {
   /* The gap between an anchored overlay panel and its trigger, keyed off the

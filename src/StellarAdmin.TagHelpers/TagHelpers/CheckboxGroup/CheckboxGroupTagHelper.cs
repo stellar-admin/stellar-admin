@@ -1,22 +1,42 @@
-﻿namespace StellarAdmin.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.Icons;
 
-/*
+namespace StellarAdmin.TagHelpers;
+
+/// <summary>
+///     A group of checkbox options bound to a collection.
+/// </summary>
 [HtmlTargetElement("sa-checkbox-group")]
-public class CheckboxGroupTagHelper : StellarAdminTagHelperBase
+public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    /// <summary>
+    ///     The initially selected values when not using model binding.
+    /// </summary>
+    public IEnumerable<string>? Values { get; set; }
+
+    /// <summary>
+    ///     The display format of the options.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="CheckboxGroupVariant.Default" />.
+    /// </remarks>
+    public CheckboxGroupVariant? Variant { get; set; }
+
+    public CheckboxGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
+        : base(generator, icons) { }
+
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
+        var effectiveVariant = Variant ?? CheckboxGroupVariant.Default;
 
-        output.Attributes.SetAttribute("role", "checkboxgroup");
-        output.Attributes.SetAttribute("data-slot", "checkbox-group");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("grid gap-3", output.GetUserSuppliedClass())
+        return RenderAsync(
+            context,
+            output,
+            true,
+            effectiveVariant == CheckboxGroupVariant.ChoiceCard,
+            Values
         );
-
-        output.Content.AppendHtml(await output.GetChildContentAsync());
     }
 }
-*/

@@ -21,6 +21,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | --- | --- |
 | [aurora-theme](archive/aurora-theme.md) | completed |
 | [carousel](oss/archive/carousel.md) | completed |
+| [choice-groups](archive/choice-groups.md) | completed. Product helpers, typed binding, display variants, website docs and exports, consumer references, 76 passing TagHelpers tests, and Chromium checks verified 2026-09-18 |
 | [component-showcases](archive/component-showcases.md) | completed |
 | [concourse-theme](archive/concourse-theme.md) | completed |
 | [consumer-skill-consolidation](archive/consumer-skill-consolidation.md) | completed |

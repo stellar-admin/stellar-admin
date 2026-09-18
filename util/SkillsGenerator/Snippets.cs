@@ -12,8 +12,6 @@ internal static class Snippets
 {
     private static readonly Dictionary<string, string> DemoFolderAlias = new(StringComparer.Ordinal)
     {
-        ["CheckboxGroup"] = "Checkbox",
-        ["RadioGroup"] = "Radio",
         ["Layout"] = "Group",
     };
 

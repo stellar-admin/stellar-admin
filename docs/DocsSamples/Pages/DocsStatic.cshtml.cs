@@ -20,6 +20,8 @@ public class DocsStatic : PageModel
         {
             "Checkbox/_GroupModelBinding" => new Checkbox.Index.GroupModel(),
             "Checkbox/_ModelBinding" => new Checkbox.Index.ModelBindingModel(),
+            "CheckboxGroup/_CollectionBinding" => new CheckboxGroup.Index.OrderModel(),
+            "CheckboxGroup/_Validation" => new CheckboxGroup.Index.ValidationModel(),
             "Checkbox/_Validation" => new Checkbox.Index.ValidationModel(),
             "Field/_CheckboxImplicit" => new CheckboxImplicitModel { SyncMapWithItinerary = true },
             "Field/_FieldGroupImplicit" => new FieldGroupImplicitModel
@@ -49,6 +51,8 @@ public class DocsStatic : PageModel
             "Questionnaire/_Steps" => new Questionnaire.Index.StepsModel(),
             "Questionnaire/_Validation" => new Questionnaire.Index.ValidationModel(),
             "Radio/_ModelBinding" => new Radio.Index.ModelBindingModel(),
+            "RadioGroup/_ModelBinding" => new RadioGroup.Index.OrderModel(),
+            "RadioGroup/_Validation" => new RadioGroup.Index.ValidationModel(),
             "Radio/_Validation" => new Radio.Index.ValidationModel(),
             "SegmentedControl/_Validation" => new SegmentedControl.Index.BookingModel
             {
@@ -74,6 +78,15 @@ public class DocsStatic : PageModel
                 ModelState.AddModelError(
                     "PartialModel.AcceptTerms",
                     "You must accept the terms and conditions"
+                );
+                break;
+            case "CheckboxGroup/_Validation":
+                ModelState.AddModelError("PartialModel.Extras", "Choose at least one extra.");
+                break;
+            case "RadioGroup/_Validation":
+                ModelState.AddModelError(
+                    "PartialModel.DeliveryMethod",
+                    "Choose a delivery method."
                 );
                 break;
             case "Input/_Validation":

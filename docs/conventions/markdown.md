@@ -2,17 +2,21 @@
 
 Conventions for Markdown and MDX across all StellarAdmin repos — the docs site content, README files, design docs, agent skills, and the conventions docs themselves. Adopted 2026-08-24.
 
+## Use separate sentences
+
+Do not join independent clauses with semicolons in prose. Jerrie prefers separate sentences with full stops. This applies to documentation and user-facing explanations, not semicolons required by code syntax.
+
 ## Do not hard-wrap prose
 
 Write one line per paragraph. Do not break prose at a column limit.
 
 ```markdown
 <!-- correct -->
-The assets are served from the package as static web assets. The CSS ships as one bundle per theme; link exactly one, because switching themes is switching the `<link>`.
+The assets are served from the package as static web assets. The CSS ships as one bundle per theme. Link exactly one, because switching themes is switching the `<link>`.
 
 <!-- avoid -->
 The assets are served from the package as static web assets. The CSS ships as
-one bundle per theme; link exactly one, because switching themes is switching
+one bundle per theme. Link exactly one, because switching themes is switching
 the `<link>`.
 ```
 

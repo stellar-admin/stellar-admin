@@ -48,6 +48,8 @@
     "Questionnaire/_Steps",
     "Questionnaire/_LongForm"
   ],
+  "RadioGroup": ["RadioGroup/_Intro", "RadioGroup/_ChoiceCards", "RadioGroup/_ModelBinding", "RadioGroup/_Items", "RadioGroup/_Validation"],
+  "CheckboxGroup": ["CheckboxGroup/_Intro", "CheckboxGroup/_ChoiceCards", "CheckboxGroup/_CollectionBinding", "CheckboxGroup/_Items", "CheckboxGroup/_Validation"],
   "SegmentedControl": ["SegmentedControl/_Intro", "SegmentedControl/_Icons", "SegmentedControl/_ModelBinding", "SegmentedControl/_ChangeEvent"],
   "Select": ["Select/_Intro", "Select/_ModelBinding", "Select/_Groups"],
   "Separator": ["Separator/_Intro"],

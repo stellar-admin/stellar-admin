@@ -1,22 +1,42 @@
-﻿namespace StellarAdmin.TagHelpers;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.Icons;
 
-/*
+namespace StellarAdmin.TagHelpers;
+
+/// <summary>
+///     A group of radio options bound to a scalar value.
+/// </summary>
 [HtmlTargetElement("sa-radio-group")]
-public class RadioGroupTagHelper(ICssClassMerger classMerger) : StellarAdminTagHelper
+public class RadioGroupTagHelper : ChoiceGroupTagHelper
 {
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    /// <summary>
+    ///     The initially selected value when not using model binding.
+    /// </summary>
+    public string? Value { get; set; }
+
+    /// <summary>
+    ///     The display format of the options.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="RadioGroupVariant.Default" />.
+    /// </remarks>
+    public RadioGroupVariant? Variant { get; set; }
+
+    public RadioGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
+        : base(generator, icons) { }
+
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.TagName = "div";
-        output.TagMode = TagMode.StartTagAndEndTag;
+        var effectiveVariant = Variant ?? RadioGroupVariant.Default;
 
-        output.Attributes.SetAttribute("role", "radiogroup");
-        output.Attributes.SetAttribute("data-slot", "radio-group");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("grid gap-3", output.GetUserSuppliedClass())
+        return RenderAsync(
+            context,
+            output,
+            false,
+            effectiveVariant == RadioGroupVariant.ChoiceCard,
+            Value == null ? null : new[] { Value }
         );
-
-        output.Content.AppendHtml(await output.GetChildContentAsync());
     }
 }
-*/
