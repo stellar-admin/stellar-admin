@@ -1,5 +1,13 @@
 # Homepage component embeds
 
+## Code audit — 2026-09-18
+
+Current status: **proposed**. The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. The experiment is complete; actual homepage integration and a general Razor fragment export remain unimplemented. Current workflow: `docs/design/inline-website-examples.md`; current generator: `docs/DocsSamplesGenerator/Generator.cs`. Website inspected read-only.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: reference — experiment accepted; reusable implementation retained, experimental route and standalone spike removed; homepage integration remains proposed.
 
 Last updated: 2026-09-14. Affected repos: workspace and website. OSS and Pro remain unchanged. Current implementation guidance is maintained in [inline website examples](../design/inline-website-examples.md).

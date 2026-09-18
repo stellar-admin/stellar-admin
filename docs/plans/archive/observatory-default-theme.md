@@ -1,5 +1,13 @@
 # Observatory as the recommended theme and website palette
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. DocsSamples defaults to Observatory; website `src/lib/demo-theme.ts` and the consumer theming guide retain the recommendation. Website palette source was inspected alongside the theme source.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implemented and verified locally on 2026-09-14.
 
 Last updated: 2026-09-14.

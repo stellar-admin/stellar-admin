@@ -1,5 +1,13 @@
 # Parallax implementation
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Parallax CSS, specification and `verify-parallax.mjs` are present; it remains separate from upstream ThemeGenerator inputs.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implementation, local verification and user-reviewed refinements. Updated: 2026-09-13. User authorized handoff removal and commits across all five repositories. No push or publication requested.
 
 ## Scope and implementation

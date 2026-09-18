@@ -1,5 +1,13 @@
 # OSS docs: content sweep
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Website routing-attributes include and component accessibility sections exist; inspected samples use the Voyager copy and corrected radio/input markup. The former source paths now resolve under `docs/DocsSamples`.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **COMPLETE 2026-08-19** (code follow-ups in review notes §2.3) — decisions: English pagination labels, sentence case, accessibility on the flagged set.

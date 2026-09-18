@@ -1,5 +1,13 @@
 # Research: the `TUser : class` / `TRole : class` constraint rethink
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. The recommended constraint change is implemented: `IdentityUsersOptions<TUser,TKey>` and `IdentityRolesOptions<TRole,TKey>` constrain to Identity user/role types and read `UserName`/`Name` directly. `StellarAdminIdentityBuilder` carries the key type; shared `ResourceOptions<TEntity>` remains entity-agnostic. The external-library comparison is historical research, not freshly revalidated.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** reference. **Indexed:** 2026-09-05. Research/specification record; read the current design before using historical examples.
 
 Researched 2026-08-11. Question: the Identity-side classes in `StellarAdmin.Identity`

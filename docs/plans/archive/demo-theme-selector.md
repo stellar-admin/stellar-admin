@@ -1,5 +1,13 @@
 # Theme selector for docs website demos
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Website `demo-theme-select.tsx`, `src/lib/demo-theme.ts` and `demo-preview.tsx` implement selection/persistence and ResizeObserver sizing; sample exports contain theme switching support.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **COMPLETE 2026-08-17** — all three phases executed, CDP-verified, and

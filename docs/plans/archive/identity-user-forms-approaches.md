@@ -1,5 +1,13 @@
 # Identity Create/Edit user screens — contrasting the approaches, end to end
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. The field-schema approach is implemented through shared resource options, filtered binding and MVC editor templates. `UseModel<T>`/Load/Prepare/Apply alternatives in this exploration are not shipped APIs. The later shared resource and editor implementation replaces this decision-stage document; retain it only for rationale.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** reference. **Indexed:** 2026-09-05. Research/specification record; read the current design before using historical examples.
 
 **Status (2026-08-06): reference document.** This preserves the initial research and the three candidate architectures with complete code for each: everything the developer writes, everything the library does behind the scenes, and the full request flow. Repercussions follow the code in each section.

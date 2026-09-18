@@ -1,5 +1,13 @@
 # Project reorganization plan
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. The historical project arrangement is superseded by Core, TagHelpers, Dashboard, Dashboard.Identity and Dashboard.EntityFrameworkCore in StellarAdmin.slnx. Core has been extracted again; do not replay the old merge steps.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: COMPLETE 2026-08-16 (Phases 0–4 recorded complete below).

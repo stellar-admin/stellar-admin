@@ -1,10 +1,18 @@
 # CRUD screens through high-level Tag Helpers
 
+## Code audit — 2026-09-18
+
+Current status: **proposed**. The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. `FormPageTagHelper` still requires `ResourceFormPageViewModel`, and `StellarAdminTemplatedTagHelperBase` still discards ordinary child output. One proposed piece has shipped: `sa-form-section` supports title/description/layout, with `sa-form-row` for columns; the sketched `columns` attribute on a section is not its API. DataGrid now belongs to TagHelpers; prospective Dashboard work belongs in this product checkout.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: proposed. Last updated: 2026-09-06.
 
 Scope: design exploration and non-compiling consumer sketches in the workspace. Future high-level components belong in `StellarAdmin.Pro`; existing OSS controls remain the field primitives. No product implementation, migration, or publishing is authorized by this plan.
 
-Related exploration: [resource consumer sketches](resource-consumer-sketches.md). This is a separate alternative, not an amendment to or implementation of that proposal.
+Related exploration: [resource consumer sketches](archive/resource-consumer-sketches.md). This is a separate alternative, not an amendment to or implementation of that proposal.
 
 ## Direction
 
@@ -24,7 +32,7 @@ This is a narrower product promise than automatic CRUD. It saves layout and fiel
 | Pro `sa-form-page` | Already renders a packaged Razor view, but requires `ResourceFormPageViewModel`, whose entity and field definitions are populated internally by the resource layer. It is not currently a general-purpose composition surface for a consumer's own view model. |
 | `StellarAdminTemplatedTagHelperBase` | Supports an instance `view` override and named slots through normal partial-view resolution. Its current implementation discards ordinary child output, so the proposed body-content composition needs explicit support. |
 
-Inspected sources: [field input base](../../stellar-admin/src/StellarAdmin.TagHelpers/TagHelpers/Field/FieldInputBaseTagHelper.cs), [implicit form example](../../stellar-admin/docs/DocsSamples/Pages/Field/_Implicit.cshtml), [data grid](../../stellar-admin-pro/src/StellarAdmin.Pro/TagHelpers/DataGrid/DataGridTagHelper.cs), [form page helper](../../stellar-admin-pro/src/StellarAdmin.Pro/TagHelpers/FormPage/FormPageTagHelper.cs), [form page view model](../../stellar-admin-pro/src/StellarAdmin.Pro/Areas/StellarAdmin/ViewModels/ResourceFormPageViewModel.cs), and [templated helper base](../../stellar-admin/src/StellarAdmin.TagHelpers/TagHelpers/StellarAdminTemplatedTagHelperBase.cs).
+Inspected sources: [field input base](../../src/StellarAdmin.TagHelpers/TagHelpers/Field/FieldInputBaseTagHelper.cs), [implicit form example](../../docs/DocsSamples/Pages/Field/_Implicit.cshtml), [data grid](../../src/StellarAdmin.TagHelpers/TagHelpers/DataGrid/DataGridTagHelper.cs), [form page helper](../../src/StellarAdmin.Dashboard/TagHelpers/FormPage/FormPageTagHelper.cs), [form page view model](../../src/StellarAdmin.Dashboard/Areas/StellarAdmin/ViewModels/ResourceFormPageViewModel.cs), and [templated helper base](../../src/StellarAdmin.TagHelpers/TagHelpers/StellarAdminTemplatedTagHelperBase.cs).
 
 ## Three possible levels
 

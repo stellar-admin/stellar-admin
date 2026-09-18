@@ -1,5 +1,13 @@
 # Aurora theme implementation
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Aurora CSS, theme registration, maintained specification and `verify-aurora.mjs` are present; card-divider verification is retained.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implemented and verified locally. Updated 2026-09-12. User authorized autonomous end-to-end implementation with no feedback checkpoints. The user subsequently authorized commits across all five repositories; no publishing or deployment performed.
 
 ## Delivered

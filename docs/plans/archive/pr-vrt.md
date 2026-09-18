@@ -1,5 +1,13 @@
 # PR visual regression tests — plan
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `.github/workflows/vrt.yml` creates a merge-base worktree, captures base/head and compares pixels through `util/visual-regression/vrt.mjs`; `vrt-comment.yml` and `write-pr-comment.mjs` implement the advisory comment flow. Pixel comparison and regression self-test code exist. DocsSamples and its generator now both live in this repository, so the separate Pro overlay/two-host question is obsolete. Historical hosted/fork verification limits remain below; no hosted run was started for this audit.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** needs-reconciliation. **Indexed:** 2026-09-05. Historical execution/review notes need reconciliation against current code before resuming. This migration does not infer outstanding approval or completion.
 
 Status: **APPROVED** (2026-08-20) — Jerrie signed off on Decision 1 (Option A move),
@@ -63,7 +71,7 @@ Jerrie's review — nothing committed or pushed). Execution notes:
   reviews the comment format on the PR, then closes it unmerged; the fork-PR
   (read-only token) path gets exercised by the first real community PR.
 
-Expands item 3 of [oss-release.md](archive/oss-release.md). Three questions to settle:
+Expands item 3 of [oss-release.md](oss-release.md). Three questions to settle:
 
 1. The best page source (DocsSamples) lives in the pro repo, but the check must run on
    OSS-repo PRs. Split DocsSamples into OSS and pro parts?

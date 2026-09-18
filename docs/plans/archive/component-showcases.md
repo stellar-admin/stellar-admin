@@ -1,5 +1,13 @@
 # Component showcase examples
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `docs/DocsSamples/Pages/Showcase/` retains Masonry and ThemeShowcase with shared GalleryParts; `docs/DocsSamples/Client/css/site.css` contains the flexible tile layout. Both are registered in `docs/DocsSamplesGenerator/Generator.cs`; the website has both exports and its theming page embeds `showcase-theme-showcase.html`. Earlier visual-review and layout-selection checkpoints are closed.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: implemented; visual review pending. Last updated: 2026-09-13.
 
 ## Scope and decisions

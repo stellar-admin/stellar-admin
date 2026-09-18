@@ -1,5 +1,13 @@
 # Meridian theme implementation
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Meridian CSS, specification and `verify-meridian.mjs` are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implemented, verified and accepted by Jerrie on 2026-09-12. Repositories: workspace, OSS, Pro samples, website, consumer skills. Jerrie authorized closeout documentation and commits across all five repositories. Initial worktrees were clean except the untracked Meridian handoff in the workspace. Pushes and publication remain outside scope.
 
 ## Scope and decisions

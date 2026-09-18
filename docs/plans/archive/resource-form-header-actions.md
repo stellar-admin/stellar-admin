@@ -1,8 +1,16 @@
 # Resource form header and actions
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Dashboard `_FormPage.cshtml` contains shared header, delete/cancel/submit footer and slots, using a single effective form/app section layout. Form-layout integration checks are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed; implemented, verified, and committed.
 
-Last updated: 2026-09-10. Affected repo: `stellar-admin-pro`; this workspace owns the plan. Builds on [form section integration](../oss/form-section.md).
+Last updated: 2026-09-10. Affected repo: `stellar-admin-pro`; this workspace owns the plan. Builds on [form section integration](../oss/archive/form-section.md).
 
 ## Intended result
 

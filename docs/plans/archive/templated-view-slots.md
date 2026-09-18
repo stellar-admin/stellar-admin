@@ -1,5 +1,13 @@
 # Plan: templated tag helpers with slots
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. StellarAdminTemplatedTagHelperBase, SlotContent/SlotOutlet helpers, samples and Dashboard FormPage/IndexPage implement view overrides and slots. Ordinary non-slot child output is intentionally discarded by the templated base.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 ## Progress

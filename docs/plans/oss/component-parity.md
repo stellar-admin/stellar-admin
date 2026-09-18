@@ -1,5 +1,13 @@
 # shadcn/ui component parity
 
+## Code audit — 2026-09-18
+
+Current status: **active**. Compared the listed backlog against current TagHelpers folders, client components, DocsSamples, generator registrations and website component docs. Carousel is implemented with native scrolling; DataGrid is now a TagHelpers component covering server-rendered data-table scenarios. Missing named components remain backlog, and a hover-capable Popover does not establish a dedicated Hover Card implementation. This is a local implementation audit, not a fresh inventory of upstream shadcn releases.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Tracks which [shadcn/ui](https://ui.shadcn.com/docs/components) components have been
 brought over to StellarAdmin.TagHelpers as Tag Helpers, and what's left. This is the durable backlog —
 update it as each component lands.
@@ -27,7 +35,7 @@ don't apply — not everything needs a web component or a form-posting playgroun
       travel-website theme (see [Example content: travel theme](#example-content-travel-theme)).
 - [ ] ComponentPlayground demo (`sandbox/ComponentPlayground/Pages/Demo/`) — when it posts
       form values, add a postback round-trip there.
-- [ ] Generator: register partials in `stellar-admin-pro/docs/DocsSamplesGenerator/Generator.cs` (workspace-relative); add any
+- [ ] Generator: register partials in `docs/DocsSamplesGenerator/Generator.cs` (product-root-relative); add any
       model-bound demo's model to `Pages/DocsStatic.cshtml.cs`.
 - [ ] Website: add `content/docs/tag-helpers/components/<component>.mdx` + `meta.json` entry,
       then run the generator to emit demo HTML + code-includes into the `website` repo.
@@ -125,12 +133,12 @@ machinery the rest of this tier reuses.
 |---|---|---|---|
 | Calendar | ☐ | yes | date grid + keyboard nav |
 | Date Picker | ☐ | yes | Calendar + Popover |
-| Carousel | ☐ | yes | embla-style |
+| Carousel | ✅ | yes — `sel-carousel` | native scroll-snap; helpers, themes, samples, exports and website docs implemented |
 | Sonner / Toast | ☐ | yes | toast queue |
 | Drawer | ☐ | yes | Sheet covers most side-panel cases; Drawer is the draggable bottom sheet |
 | Resizable | ☐ | yes | drag-to-resize panels |
 | Scroll Area | ☐ | yes | custom scrollbars |
-| Data Table | ☐ | — | recipe over existing Table (sort/paginate) |
+| Data Table | covered by DataGrid | server-rendered | TagHelpers DataGrid supports columns, sorting and paging; not a literal port of the client-side shadcn recipe |
 | Chart | ☐ | yes | largest lift; possibly out of scope |
 
 ### Not applicable to a server-side Tag Helper library
@@ -145,4 +153,4 @@ Collapsible, Dialog, **Dropdown Menu** ✅, Empty, Field, Icon, Input, Input Gro
 Pagination, Popover, Progress, Radio, Select, Separator, Sheet, Sidebar, Skeleton, Slider,
 Spinner, Switch, Table, Tabs, Textarea, **Toggle** ✅, **Toggle Group** ✅, Tooltip.
 Plus StellarAdmin.TagHelpers-specific layout helpers
-(Group, Stack) and JS helpers (js-dialog).
+(Group, Stack, Form Section, Form Row, Segmented Control, DataGrid, Attachment, Bubble, Message, Questionnaire) and JS helpers (js-dialog).

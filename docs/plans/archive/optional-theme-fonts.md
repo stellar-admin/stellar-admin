@@ -1,5 +1,13 @@
 # Optional custom-theme fonts
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Seven custom theme sources retain preferred fonts plus native fallback stacks; `docs/DocsSamples/wwwroot/js/theme-fonts.js` selects optional fonts and the sample/export layouts use it.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed locally. Last updated: 2026-09-14. Affected repos: workspace, OSS, Pro, website, consumer skills.
 
 ## Decision and scope

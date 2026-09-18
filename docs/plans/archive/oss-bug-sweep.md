@@ -1,5 +1,13 @@
 # OSS tag helpers bug sweep
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. The inspected anchor-routing guard, scoped parent context, radio ID suffixes, input tag modes, dropdown state CSS and corrected sample markup retain the fixes. This is source inspection, not a rerun of every historical browser assertion.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **COMPLETE 2026-08-18** (Phases 1-3).

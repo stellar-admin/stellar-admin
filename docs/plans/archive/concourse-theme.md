@@ -1,5 +1,13 @@
 # Concourse theme
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Concourse CSS and specification, segmented/tab recipes and `verify-concourse.mjs` are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implemented and verified locally; not committed or published. Last updated: 2026-09-11.
 
 ## Scope and authorization

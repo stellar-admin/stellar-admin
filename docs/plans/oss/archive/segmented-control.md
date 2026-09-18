@@ -1,5 +1,13 @@
 # Segmented control
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. SegmentedControl and item helpers render native radio inputs with shared/theme CSS; samples, generator entries and website documentation exist.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed. Last updated: 2026-09-11. Affected repos: workspace, OSS, pro (sample exporter only), website, consumer skills. Implementation is complete. The user subsequently authorized committing and pushing all affected repositories.
 
 ## Approved scope and design

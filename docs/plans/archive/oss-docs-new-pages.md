@@ -1,5 +1,13 @@
 # OSS docs: new topic pages
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. The website has theming, icons, JavaScript and Label pages; Label samples and generator registrations are present. Old root-level docs URLs are historical.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **COMPLETE 2026-08-18**.

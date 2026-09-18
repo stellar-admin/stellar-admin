@@ -1,5 +1,13 @@
 # Workspace and skills consolidation
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `StellarAdmin.slnx`, `src/StellarAdmin.Dashboard*`, `skills/`, `.github/workflows/ci.yml` and `.github/workflows/release.yml` establish the consolidated product checkout. Release verification packs five projects and publishing is limited to Core/TagHelpers. Plugin packaging has been removed in favor of the current consumer-skill layout. Remote repository archival, NuGet account cleanup and release success remain historical evidence from the closeout below; this audit did not re-query external settings.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: repository consolidation, archival, and old NuGet trust policy cleanup complete. Product 0.3.0 release succeeded. Updated: 2026-09-17.
 
 Affected repositories: workspace, stellar-admin, skills, and website (documentation and development guidance).
@@ -145,7 +153,7 @@ Three issues uncovered by the release checks were fixed:
 
 Strict package validation reached Source Link checks and failed with rule 119 because source URLs reference unpushed commit `1c638cc57adb7d65566801bd80d68e2f52aee781` and GitHub returns 404. An initial local verification script excluded only source URL reachability. That script and its bypass option were removed following user review; the workflow always uses strict validation. Local success is provisional until an authorized push and strict GitHub run confirm public sources, runner setup, and artifact upload.
 
-See [release verification and cutover](../../build/README.md) for commands and the step 4 requirements: live tags/versions, product environment and NuGet policy, tag/release permissions and downstream events, serialized publishing, same-version/SHA/artifact recovery, the preserved Core/TagHelpers allowlist, and disabling the workspace publisher. External settings have not been changed or inspected during this step.
+See [release verification and cutover](../../../build/README.md) for commands and the step 4 requirements: live tags/versions, product environment and NuGet policy, tag/release permissions and downstream events, serialized publishing, same-version/SHA/artifact recovery, the preserved Core/TagHelpers allowlist, and disabling the workspace publisher. External settings have not been changed or inspected during this step.
 
 
 Verification before the workflow structure revision (historical evidence; the local orchestration script is no longer shipped):

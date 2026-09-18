@@ -1,5 +1,13 @@
 # Plan: extract the generic resource layer into StellarAdmin.Resources
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. The generic resource boundary survives inside Dashboard, with Identity separate. The temporary StellarAdmin.Resources assembly and AddResources entry point have been superseded by later consolidation.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 ## Progress

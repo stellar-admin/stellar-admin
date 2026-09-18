@@ -1,5 +1,13 @@
 # Plan: Support shadcn menu configuration (menu color / appearance / accent)
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. StellarAdminTagHelpersMenuOptions exposes Color, Appearance and Accent; DropdownMenu content/subcontent apply MenuSurfaceInternals, with Solid as the default. The old “not started” status is incorrect. Future menu families are not implicitly implemented.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Status:** Backlog — not started. Deferred out of the Dropdown Menu build.
 **Created:** 2026-07-01
 **Related component:** Dropdown Menu (keystone) → also Context Menu, Menubar, Navigation Menu, Select, Command, Popover.

@@ -1,5 +1,13 @@
 # Observatory theme
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Observatory CSS, specification and `verify-observatory.mjs` are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed locally. Updated: 2026-09-12. No commits, pushes or publishing performed.
 
 Jerrie authorized end-to-end implementation from `observatory_handoff/`, selected compact density, and requested autonomous best-effort decisions with special-review notes. The handoff was removed with user authorization on 2026-09-12 after preserving reusable guidance in the maintained specification and CSS. The maintained authority is the [Observatory specification](../../design/themes/observatory.md) and its linked CSS.

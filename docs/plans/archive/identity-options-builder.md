@@ -1,5 +1,13 @@
 # Plan: StellarAdmin Identity options builder — Users index end-to-end
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Identity builders/options and shared index builders provide configured columns, sorting, query and sidebar configuration. Current names are under Dashboard; old User-prefixed models have been replaced.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 **Design doc (read first):** `stellar-admin-pro/docs/design/identity-configuration.md`

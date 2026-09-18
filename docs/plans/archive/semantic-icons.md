@@ -1,5 +1,13 @@
 # Icon encapsulation and semantic icons
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `src/StellarAdmin.Core/Icons/IconOptions.cs` implements encapsulated registration, semantic mappings and pack settings; it validates every incoming mapping before mutating registrations and skips mapping access when imports are disabled. `tests/StellarAdmin.TagHelpers.Tests/SemanticIconTests.cs` covers atomic rejection and preserved existing mappings, so the failure at the end of the old record is no longer outstanding. Semantic role consumers, pack mappings and `docs/DocsSamples/Pages/Icon/Semantic.cshtml` are present. Dashboard-specific mapping expansion remains outside the agreed scope.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: encapsulation and semantic icons implemented; accordion indicator follow-up implemented; Dashboard mappings excluded. Updated 2026-09-16. Repositories: workspace, stellar-admin, website, skills.
 
 ## Implemented

@@ -1,7 +1,6 @@
 # OSS plans
 
-- [Component parity](component-parity.md): ongoing component backlog. Its entries are historical inventory, not a fresh audit of current upstream coverage. Verify the component before marking it complete.
-- [Upstream reference cleanup](archive/upstream-references-cleanup.md): historical record.
-- [Menu color/appearance/accent](archive/menu-color-appearance-accent.md): historical record.
+- [Component parity](component-parity.md): current component backlog, checked against the local implementation on 2026-09-18. Carousel is complete; DataGrid covers server-rendered data-table scenarios. This is not a fresh upstream-release inventory.
+- [Form section](archive/form-section.md), [Carousel](archive/carousel.md), [Segmented control](archive/segmented-control.md), [Menu configuration](archive/menu-color-appearance-accent.md), and [Upstream reference cleanup](archive/upstream-references-cleanup.md): archived implementation records with dated source checks.
 
-For substantial new work, record scope, status, affected repos, decisions, verification, and the next step in the workspace plans. Old plans do not authorize new work or commits. See [the main plan index](../README.md).
+Use the [main plan index](../README.md) for current and retired work. Update an existing relevant record when work resumes; old plans do not authorize implementation or commits.

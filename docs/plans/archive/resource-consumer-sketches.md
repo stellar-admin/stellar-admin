@@ -1,8 +1,16 @@
 # Consumer resource API sketches
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. `AddEfCoreResource`, `EfCoreResourceBuilder`, `EfCoreResourceController` and the Category/Product playground implement the later chosen EF CRUD direction. The sketch alternatives (external handlers, operations classes, arbitrary commands and multiple same-entity registrations) are not all implemented; EF registration explicitly rejects duplicate entity/DbContext registration. Unfinished agreed directions remain in `generic-resources-follow-ups.md`, rather than this earlier API-selection exercise.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: proposed. Last updated: 2026-09-06. Affected repo: workspace documentation only; prospective implementation belongs in `stellar-admin-pro/`.
 
-Follow-up: the [2026-09-08 brainstorming session](archive/generic-resources-brainstorming.md) narrows the initial work to StellarAdmin-managed EF CRUD with consumer override points, followed by form layout and single-record references. That session is now closed; use the [follow-up backlog](generic-resources-follow-ups.md) for deferred work. The broader alternatives below remain exploratory context.
+Follow-up: the [2026-09-08 brainstorming session](generic-resources-brainstorming.md) narrows the initial work to StellarAdmin-managed EF CRUD with consumer override points, followed by form layout and single-record references. That session is now closed; use the [follow-up backlog](../generic-resources-follow-ups.md) for deferred work. The broader alternatives below remain exploratory context.
 
 ## Purpose and agreed requirements
 

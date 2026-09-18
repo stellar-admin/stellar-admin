@@ -1,5 +1,13 @@
 # Review: consumer view-override escape hatches
 
+## Code audit — 2026-09-18
+
+Current status: **reference**. The identified typed-row gap is closed by `ResourceIndexPageViewModel<TEntity>.Page` and `PagedListViewModel<TEntity>.Items`. Dashboard shared partials, Identity page views, and the templated tag-helper `view`/slot mechanism remain. No configurable `RowActions` builder was found; copying `_IndexDataGrid.cshtml` remains the existing route. Keep this as historical rationale; names in the body predate the current resource models.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** reference. **Indexed:** 2026-09-05. Research/specification record; read the current design before using historical examples.
 
 Status: **decided 2026-08-10** — Gap A resolved as a fourth option Jerrie recalled from

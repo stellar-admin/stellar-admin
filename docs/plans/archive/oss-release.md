@@ -1,12 +1,20 @@
 # OSS release (StellarAdmin.TagHelpers 1.0)
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Registration uses AddTagHelpers and the product has release/VRT workflows. The title’s original 1.0 target is historical, not proof of a 1.0 publication; current release mechanics supersede the workspace pipeline.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **COMPLETE 2026-08-21.** `StellarAdmin.TagHelpers 0.0.1-preview.6` is live on
 nuget.org, published by the pipeline and install-tested by Jerrie. Every section is done.
 Split out of [release-pipeline.md](release-pipeline.md), whose pipeline work (Phases 0-3
 + pro metadata) is DONE and verified end-to-end; pro-specific release work moved to
-[pro-release.md](../pro-release.md).
+[pro-release.md](pro-release.md).
 
 Goal: ship `StellarAdmin.TagHelpers` publicly on nuget.org.
 
@@ -35,7 +43,7 @@ references swept.
 
 ## 3. Visual regression tests on PRs (OSS and pro)
 
-**DONE 2026-08-20** — full plan + execution notes in [pr-vrt.md](../pr-vrt.md); committed,
+**DONE 2026-08-20** — full plan + execution notes in [pr-vrt.md](pr-vrt.md); committed,
 pushed, and verified end-to-end on trial PR #1 (close it unmerged after reviewing the
 comment format). Summary of the decisions:
 

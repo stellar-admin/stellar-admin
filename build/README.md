@@ -27,4 +27,4 @@ The product repository needs:
 
 The workspace workflow is replaced with a retirement notice and must be disabled in GitHub before enabling this gate. Retain old credentials/trust until confirming they have no remaining consumers; do not use the workspace for new releases. The separate website is not a release input.
 
-The hosted dry run at [run 35185318228](https://github.com/stellar-admin/stellar-admin/actions/runs/35185318228) passed on product commit `26b039d`. Publishing and OIDC exchange require the next separately authorized release to verify. See the [consolidation record](../docs/plans/workspace-retirement.md) for live configuration and cutover status.
+The hosted dry run at [run 35185318228](https://github.com/stellar-admin/stellar-admin/actions/runs/35185318228) passed on product commit `26b039d`. Publishing and OIDC exchange require the next separately authorized release to verify. See the [consolidation record](../docs/plans/archive/workspace-retirement.md) for live configuration and cutover status.

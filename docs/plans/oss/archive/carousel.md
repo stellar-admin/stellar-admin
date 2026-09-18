@@ -1,5 +1,13 @@
 # Native scrolling carousel
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Carousel tag helpers, `sel-carousel.ts`, structural/theme CSS, samples, generator entries and website documentation exist. This is native scrolling, not an unimplemented Embla integration.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed. Last updated: 2026-09-05.
 
 ## Agreed design and authorization

@@ -1,5 +1,13 @@
 # Plan: Expression-bound columns for the data grid (`field-for`)
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `src/StellarAdmin.TagHelpers/TagHelpers/DataGrid/DataGridColumnTagHelper.cs` exposes `LambdaExpression FieldFor`, rejects simultaneous string/expression binding, extracts property chains and resolves metadata. Resource `_IndexDataGrid.cshtml` passes configured expressions into the grid. Nested binding subsequently extended this implementation; the old standalone phases are no longer pending.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** reference. **Indexed:** 2026-09-05. Research/specification record; read the current design before using historical examples.
 
 **Status:** Not started as a standalone plan — this document is now the **spec for

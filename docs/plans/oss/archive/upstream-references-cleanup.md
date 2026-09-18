@@ -1,5 +1,13 @@
 # Upstream references cleanup (shadcn / Base UI / Radix)
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. The inspected DropdownMenu documentation/sample and public helper comments no longer contain the targeted comparisons; the InputGroup sample now uses travel content. Provenance remains in internal comments and theme-generation infrastructure intentionally. The approval checklist is historical, not a pending permission request.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Goal: remove references to shadcn, Base UI, Radix from code and docs, **except** the
 project-background / attribution section (which you've said stays) and load-bearing
 infrastructure. For each item below, mark the box for the action you approve. Where a

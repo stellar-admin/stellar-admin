@@ -10,7 +10,7 @@ Consumer guidance is organized by product; see the [skills overview](../../skill
 - `skills/stellar-admin-dashboard/` preserves Dashboard component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
 - Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Dashboard consumers customizing UI markup can also use the Tag Helpers skill; avoid duplicating the UI catalog.
 
-The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation verification and CI closeout are recorded in [consumer skill consolidation](../plans/consumer-skill-consolidation.md).
+The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation verification and CI closeout are recorded in [consumer skill consolidation](../plans/archive/consumer-skill-consolidation.md).
 
 ## Source ownership and validation
 

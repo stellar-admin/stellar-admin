@@ -1,5 +1,13 @@
 # Ledger theme
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `src/StellarAdmin.TagHelpers/Client/css/themes/ledger.css`, its bundle registration, `util/theme-coverage/coverage.json`, and `util/visual-regression/verify-ledger.mjs` are present. The PR VRT workflow invokes the Ledger check; sample and website theme selectors include Ledger. The old foundational-checkpoint index status was stale. The maintained design is `docs/design/themes/ledger.md`.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: implemented and verified. Last updated: 2026-09-11.
 
 ## Scope and authorization
@@ -8,7 +16,7 @@ Implement the custom Ledger theme, infer missing designs from its intent, and es
 
 ## Design and implementation
 
-See [Ledger specification](../design/themes/ledger.md). The original design export was deleted at the user’s request; the specification and maintained CSS now own the design contract. Ledger is hand-authored and independent of ThemeGenerator's upstream sources. Existing tag helper APIs and interaction semantics remain the component contract.
+See [Ledger specification](../../design/themes/ledger.md). The original design export was deleted at the user’s request; the specification and maintained CSS now own the design contract. Ledger is hand-authored and independent of ThemeGenerator's upstream sources. Existing tag helper APIs and interaction semantics remain the component contract.
 
 - Full Ledger light/dark CSS covers the shipped visual component families. Shared-only components have explicit rationale in the coverage manifest.
 - The build and CI enforce inventory and coverage for 54 component families across nine themes. Seven failure-case tests verify the checker. The porting skill records the workflow for extending custom themes.

@@ -1,5 +1,13 @@
 # Repository consolidation
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. All five product projects, samples, generators, tests and consumer skills now live here; the separate website remains. The old push/retirement follow-up is covered by the later workspace-retirement closeout.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed; user spot testing accepted and clean import committed. Updated: 2026-09-16.
 
 Scope: keep `stellar-admin`, `website`, `skills`, and workspace; preserve `.Pro*` APIs and package names. User authorized a clean import and local commits. Push, publication, and repository deletion remain separate steps.

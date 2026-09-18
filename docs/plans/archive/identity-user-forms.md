@@ -1,5 +1,13 @@
 # Identity user Create/Edit screens — status + implementation plan
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. Create/edit and filtered entity binding are implemented in `UsersController.cs` and `ResourceControllerBase.cs`. The shared form prefix is now `Entity`, and Dashboard ships styled `Views/Shared/EditorTemplates/` using StellarAdmin controls, superseding the old no-template/no-tag-helper constraints. The exact deferred `FirstName`/`LastName`/`CountrySelect` playground proof is absent; do not mark that experiment as performed. Styled editors are covered by the current EF integration fixtures, but this audit did not run an Identity-specific custom-widget proof. Use `docs/design/identity-user-forms.md` and current sources for future work.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** needs-reconciliation. **Indexed:** 2026-09-05. Historical execution/review notes need reconciliation against current code before resuming. This migration does not infer outstanding approval or completion.
 
 **Status (2026-08-06): design approved.** The canonical, up-to-date design lives at

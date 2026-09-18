@@ -1,12 +1,20 @@
 # Cross-repo release pipeline
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. The workspace-hosted multi-repo pipeline is superseded by `.github/workflows/release.yml` and `build/README.md` in this checkout. Current publication is restricted to Core/TagHelpers.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 Status: **CLOSED 2026-08-20.** The pipeline itself is done and verified end-to-end
 (Phases 0-3 + pro metadata; `0.0.1-preview.2` published to GitHub Packages, three repos
 tagged, draft prerelease on OSS, package consumed successfully). Remaining work split
 into [oss-release.md](oss-release.md) (also CLOSED — nuget.org go-live, was Phase 4) and
-[pro-release.md](../pro-release.md) (FUTURE — licensing etc., was Phase 5). This file stays
+[pro-release.md](pro-release.md) (FUTURE — licensing etc., was Phase 5). This file stays
 as the record of the pipeline's decisions and history.
 
 Three of those decisions were **superseded by the nuget.org go-live on 2026-08-20** (see
@@ -184,7 +192,7 @@ Moved to [oss-release.md](oss-release.md) §4.
 
 ## Phase 5 — Pro readiness
 
-Metadata work DONE 2026-08-19/20 (recorded in [pro-release.md](../pro-release.md), which
+Metadata work DONE 2026-08-19/20 (recorded in [pro-release.md](pro-release.md), which
 also carries the remaining tasks): `stellar-admin-pro/src/Directory.Build.props` (a
 deliberate copy of the OSS shape, not a cross-repo import: each repo must build
 standalone), `LICENSE.txt` (per-application, perpetual fallback, localhost-only without

@@ -1,6 +1,14 @@
 # Consumer skill consolidation
 
-Status: completed — implementation, manual installation verification and CI packaging checks complete. Updated: 2026-09-18. Affected repository: product only.
+## Code audit — 2026-09-18
+
+Current status: **completed**. Product-specific skill packaging, manual basic/full installation checks in both agents, and CI bundle validation are complete. See the 2026-09-18 closeout below for implementation and actual local verification. The initial audit incorrectly counted the user-reported installation checks as outstanding.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
+Status: active — steps 1–4 complete; product split complete; step 5 remains. Updated: 2026-09-17. Affected repository: product only.
 
 ## Scope and decision
 

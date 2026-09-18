@@ -1,5 +1,13 @@
 # Form section
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. `FormSectionTagHelper`, `FormRowTagHelper`, `StellarAdminFormsOptions` and Dashboard `_FormSection.cshtml`/`_FormRow.cshtml` implement the components and shared integration. `_FormPage.cshtml` resolves the app/form layout; section-level Dashboard overrides were superseded. Samples, generator registrations, website docs and consumer references are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: OSS components, documentation, and Pro form-definition integration implemented. Updated 2026-09-10.
 
 ## Agreed design
@@ -66,4 +74,4 @@ Committed Pro integration and the wider form container as `1c90967` (`Use shared
 
 ### Layout scope revision
 
-The user subsequently chose app/form layout settings only for Pro definition-built forms, superseding the section-level override described above. The planned header/footer dividers follow that single effective layout (Split/Stacked only); buttons remain consistent across layouts. See [Resource form header and actions](../archive/resource-form-header-actions.md) for the completed removal of the Pro section override, shared header/footer actions, and validation; the standalone OSS helper retains its explicit layout attribute.
+The user subsequently chose app/form layout settings only for Pro definition-built forms, superseding the section-level override described above. The planned header/footer dividers follow that single effective layout (Split/Stacked only); buttons remain consistent across layouts. See [Resource form header and actions](../../archive/resource-form-header-actions.md) for the completed removal of the Pro section override, shared header/footer actions, and validation; the standalone OSS helper retains its explicit layout attribute.

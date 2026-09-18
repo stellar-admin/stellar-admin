@@ -1,5 +1,13 @@
 # Plan: ResourceIndexPageViewModel — regroup, rename, selected-vs-effective state
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. ResourceIndexPageViewModel, PagedListViewModel, IndexPageSelection/Request/Result and the shared index views implement the regrouped model and selected/effective distinction.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 ## Progress

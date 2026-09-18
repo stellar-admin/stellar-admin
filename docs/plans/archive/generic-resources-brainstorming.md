@@ -1,5 +1,13 @@
 # Generic resources brainstorming — 2026-09-08
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. EF resource registration/controller, Category/Product playground, reference choices, shared form layouts and typed editor classes exist in `src/StellarAdmin.Dashboard*`. Deferred features remain in the maintained follow-up backlog.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed for the agreed implementation scope; session closed 2026-09-10. Basic EF resources, form layouts, editor part classes, and initial EF single-record references are implemented. Deferred work is tracked in the [generic resource follow-up backlog](../generic-resources-follow-ups.md); no follow-up is active or implicitly authorized.
 
 ## Session closeout
@@ -28,7 +36,7 @@ This order is Jerrie's requested direction. Phases 1–2 and the initial EF refe
 
 Jerrie clarified that StellarAdmin must handle reading and writing for EF-backed resources, with escape hatches for consumers to override behavior where necessary. The default must not require application-written CRUD handlers or controllers. The precise override API remains a design question.
 
-The earlier [consumer resource API sketches](../resource-consumer-sketches.md) compare handlers, consumer controllers, EF convenience registration, and Razor overrides. They remain useful background, but their broader examples are not the implementation scope for this session.
+The earlier [consumer resource API sketches](resource-consumer-sketches.md) compare handlers, consumer controllers, EF convenience registration, and Razor overrides. They remain useful background, but their broader examples are not the implementation scope for this session.
 
 ## Existing foundation
 

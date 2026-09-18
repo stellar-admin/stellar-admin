@@ -1,5 +1,13 @@
 # Plan: Data grid nested-property field binding
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. DataGridColumnTagHelper walks expression/string property chains and resolves leaf metadata; the current grid is in TagHelpers rather than the historical Pro project.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** completed. **Indexed:** 2026-09-05. Historical record; completion is recorded in the phase/progress notes below. Deferred items require a separately scoped task.
 
 **Goal:** `field-for="(Booking b) => b.Customer.Name"` and (decision 2 permitting)

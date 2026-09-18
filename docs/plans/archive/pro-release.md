@@ -1,9 +1,17 @@
 # Pro release (StellarAdmin.Pro / StellarAdmin.Pro.Identity)
 
+## Code audit — 2026-09-18
+
+Current status: **superseded**. The separate commercial Pro product/repository assumed here has been replaced by MIT-licensed `StellarAdmin.Dashboard`, `.Identity` and `.EntityFrameworkCore` in this checkout. The current release workflow builds/packs them but its publication allowlist remains Core and TagHelpers. Publishing Dashboard packages would need a new release decision; commercial licensing, a Pro package feed and cross-repo App-token CI are retired assumptions.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 **Index status:** parked. **Indexed:** 2026-09-05. Future work, not authorized by inclusion in this index.
 
 Status: **FUTURE** (parked 2026-08-20) — split out of
-[release-pipeline.md](archive/release-pipeline.md). The shared pipeline already builds, packs
+[release-pipeline.md](release-pipeline.md). The shared pipeline already builds, packs
 and validates the pro packages on every release run with lockstep versions, so the
 mechanics are proven; what remains is everything commercial.
 

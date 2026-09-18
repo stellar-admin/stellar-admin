@@ -1,5 +1,13 @@
 # Shadcn theme namespace
 
+## Code audit — 2026-09-18
+
+Current status: **completed**. Eight `shadcn.*.css` sources, matching bundle registrations, sample/website theme lists and coverage namespace validation are present.
+
+This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
+
+## Historical record
+
 Status: completed — implemented, verified locally, and committed at the user’s request.
 Last updated: 2026-09-13.
 Affected repositories: workspace, stellar-admin, stellar-admin-pro, website, skills.
