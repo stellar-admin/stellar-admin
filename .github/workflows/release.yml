@@ -122,7 +122,7 @@ jobs:
       - name: Run Core unit tests
         run: dotnet run --project tests/StellarAdmin.Core.Tests --no-build --configuration Release
 
-      - name: Run tag helper tests
+      - name: Run TagHelpers unit tests
         run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
 
       - name: Run resource integration tests

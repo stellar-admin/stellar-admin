@@ -2,7 +2,7 @@
 
 Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml), with individual Actions steps.
 
-Every run builds and validates Core, TagHelpers, Dashboard, Dashboard.Identity, and Dashboard.EntityFrameworkCore, runs the Core TUnit suite and both legacy executable test suites and consumer reference checks, tests a temporary consumer app, and uploads all ten package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
+Every run builds and validates Core, TagHelpers, Dashboard, Dashboard.Identity, and Dashboard.EntityFrameworkCore, runs the Core and TagHelpers TUnit suites, the legacy EntityFrameworkCore executable tests, and consumer reference checks, tests a temporary consumer app, and uploads all ten package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
 
 ## Publishing
 

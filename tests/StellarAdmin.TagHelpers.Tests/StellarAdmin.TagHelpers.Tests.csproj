@@ -9,4 +9,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../../src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="TUnit" />
+  </ItemGroup>
 </Project>

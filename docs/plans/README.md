@@ -61,6 +61,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [semantic-icons](archive/semantic-icons.md) | completed; IconOptions tests migrated to TUnit on 2026-09-18 |
 | [shadcn-theme-fonts](archive/shadcn-theme-fonts.md) | completed |
 | [shadcn-theme-namespace](archive/shadcn-theme-namespace.md) | completed |
+| [taghelper-test-migration](archive/taghelper-test-migration.md) | completed; Core and TagHelpers TUnit suites verified on 2026-09-18 |
 | [templated-view-slots](archive/templated-view-slots.md) | completed |
 | [upstream-references-cleanup](oss/archive/upstream-references-cleanup.md) | completed |
 | [workspace-retirement](archive/workspace-retirement.md) | completed |
