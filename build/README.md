@@ -2,7 +2,11 @@
 
 Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml), with individual Actions steps.
 
-Every run builds and validates Core, TagHelpers, Dashboard, Dashboard.Identity, and Dashboard.EntityFrameworkCore, runs the Core and TagHelpers TUnit suites, the legacy EntityFrameworkCore executable tests, and consumer reference checks, tests a temporary consumer app, and uploads all ten package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
+Every run builds and validates Core, TagHelpers, Dashboard, Dashboard.Identity, and Dashboard.EntityFrameworkCore, discovers and runs all solution TUnit test projects, the legacy EntityFrameworkCore executable tests, and consumer reference checks, tests a temporary consumer app, and uploads all ten package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
+
+## Unit-test discovery
+
+Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual unit-test project list is maintained. The legacy EntityFrameworkCore integration executable retains its explicit step until it is migrated to a discoverable framework.
 
 ## Publishing
 

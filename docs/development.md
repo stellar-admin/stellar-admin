@@ -12,18 +12,21 @@ Use the .NET CLI to create projects (`dotnet new`), add or remove solution proje
 
 For TUnit, follow the [official console-project setup](https://tunit.dev/docs/getting-started/installation/): create a console project with the pinned framework, add `TUnit` through the CLI, and remove the generated `Program.cs` so TUnit supplies the entry point. Add a direct reference to the SUT project and add the test project to `StellarAdmin.slnx` through the CLI.
 
+`global.json` selects Microsoft.Testing.Platform for the .NET 10 `dotnet test` runner, following the [official runner configuration](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test#mtp-mode-of-dotnet-test). TUnit supplies the test-project metadata used for solution discovery. New TUnit projects added to `StellarAdmin.slnx` are automatically included by both workflows. `--minimum-expected-tests 1` rejects a discovered test application that runs no tests; do not suppress that exit code. The legacy EntityFrameworkCore integration executable still needs its separate `dotnet run` step until it is migrated.
+
 ## File encoding
 
 Preserve each existing file’s encoding, UTF-8 BOM, and line endings when editing it. Do not strip or add a BOM as a side effect of reading and rewriting text; this can conflict with the encoding already selected in the user’s editor.
 
 ## Commands and validation
 
-For new and migrated .NET tests, follow the [unit testing conventions](conventions/unit-testing.md). Existing executable checks remain runnable during migration; their current commands are in the [product development guide](repos/stellar-admin.md). Each migration must document its verified TUnit command here and update the affected solution, project README, and CI/release execution paths.
+For new and migrated .NET tests, follow the [unit testing conventions](conventions/unit-testing.md). Existing executable checks remain runnable during migration; their current commands are in the [product development guide](repos/stellar-admin.md). Each migration must document its verified TUnit command here and add the project to the solution. Both CI and release discover tests through the solution-wide command below; do not add individual unit-test project steps to either workflow.
 
 Commands below run from the product repository root unless a working directory is specified. Normal commands come first; apply the conditional environment notes below only when needed.
 
 | Change | Validation |
 | --- | --- |
+| All unit tests | `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`; use `--list-tests` instead of `--minimum-expected-tests 1` to verify discovery. Add `--no-build` after a Release build, as CI does. |
 | Core unit tests | `dotnet run --project tests/StellarAdmin.Core.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | TagHelpers unit tests | `dotnet run --project tests/StellarAdmin.TagHelpers.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |

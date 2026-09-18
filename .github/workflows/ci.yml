@@ -36,6 +36,8 @@ jobs:
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
 
     - name: Restore dependencies
       run: dotnet restore
@@ -46,8 +48,8 @@ jobs:
     - name: Check consumer reference drift
       run: dotnet run --project util/SkillsGenerator --no-build --configuration Release -- --check
 
-    - name: Run tag helper tests
-      run: dotnet run --project tests/StellarAdmin.TagHelpers.Tests --no-build --configuration Release
+    - name: Run all unit tests
+      run: dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1
 
     - name: Run resource integration tests
       run: dotnet run --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.Tests --no-build --configuration Release

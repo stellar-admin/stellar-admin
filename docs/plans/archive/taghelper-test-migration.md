@@ -44,3 +44,18 @@ Verified locally with the pinned .NET SDK 10.0.400:
 The first build identified the missing concrete DI package in Core; the first rendering run identified unnecessary Razor dependencies from AddMvc. The final fixture uses AddMvcCore().AddViews() and all rendering tests pass without a host. One TUnit analyzer recommendation was corrected; no analyzers were suppressed.
 
 Hosted CI and the unrelated EntityFrameworkCore suite were not run. The pre-existing user edit in `StellarAdmin.sln.DotSettings` remains untouched and excluded from the task's whitespace check.
+
+## CI discovery follow-up — 2026-09-18
+
+The earlier migration updated release verification but missed the main Build and Test workflow, which still invoked only the TagHelpers project. This follow-up replaces individual unit-test steps in both `.github/workflows/ci.yml` and `.github/workflows/release.yml` with `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1`. `global.json` selects Microsoft.Testing.Platform while retaining SDK 10.0.400. Main CI now explicitly installs that pinned SDK through setup-dotnet, matching release. New TUnit projects added to the solution are discovered without workflow changes; no custom project-scanning script or project list is needed.
+
+The legacy EntityFrameworkCore integration executable remains an explicit step in both workflows because it does not yet implement test-framework discovery. Migrating that runner is outside this change. Updated development, testing, product, and release guidance describes solution membership and the shared command.
+
+Actual verification:
+
+- The exact shared CI command discovered both current unit-test assemblies and passed all 97 cases, with zero failures or skips.
+- Solution discovery using `--list-tests` reported 97 tests in two assemblies.
+- The shared command with a deliberately unmatched `--treenode-filter '/*/*/NoTestsForDiscoveryGuardCheck/*'` failed with exit code 8 and a minimum-expected-tests policy violation, verifying that zero-test runs cannot silently pass.
+- Parsed both workflow YAML files and verified the identical shared test command, pinned SDK setup, absence of per-project Core/TagHelpers steps, and preservation of the legacy integration step. Checked documentation link targets and `git diff --check`.
+
+Local sandbox attempts could not bind the runner's IPC socket; the successful discovery, execution, and negative checks ran with sandbox escalation. Existing Release binaries were used (`--no-build`); no test or production source changed. Hosted Actions and the full release/package pipeline were not run.
