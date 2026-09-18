@@ -2,13 +2,13 @@
 
 ## Repository entry points
 
-Start product sessions in this repository. `AGENTS.md` is the maintained entry point and `CLAUDE.md` imports it with `@AGENTS.md`. Website-only sessions start in the separate website repository, which has its own entry point. No workspace checkout is required for either repository's ordinary development.
+Start product sessions in this repository. `AGENTS.md` is the maintained entry point. Claude Code 2.1.277 or later reads it directly when no `CLAUDE.md` exists. This support is not yet available on Bedrock, Vertex, or Foundry, as noted in the [2.1.277 release notes](https://code.claude.com/docs/en/changelog#2-1-277). Website-only sessions start in the separate website repository, which has its own entry point. No workspace checkout is required for either repository's ordinary development.
 
 Product conventions live in [conventions](conventions/), detailed guidance in [repo guides](repos/), and handoffs in [plans](plans/README.md). Follow the current task; historical plans and old repository paths describe prior work, not instructions to resume it.
 
 ## Skills
 
-Development skills have one canonical copy in `.agents/skills/`; `.claude/skills/<name>` entries are relative directory symlinks. Keep their relative documentation and sibling-skill links intact. These developer workflows are separate from the consumer skill under `skills/stellar-admin-tag-helpers/`.
+Development skills have one canonical copy in `.agents/skills/`. Claude Code discovers them through the relative directory symlinks at `.claude/skills/<name>`. Direct `AGENTS.md` support does not replace this skill discovery path. Keep their relative documentation and sibling-skill links intact. These developer workflows are separate from the product-specific consumer guidance under `skills/`. See the [consumer skills overview](../skills/README.md) for available and planned skills.
 
 On systems without symlink checkout support, read the canonical folders directly or configure local discovery; do not hand-maintain two versions. Personal permissions and IDE settings are not imported from the former workspace.
 
