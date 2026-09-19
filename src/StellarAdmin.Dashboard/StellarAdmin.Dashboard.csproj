@@ -33,6 +33,10 @@
     <ClientInput Include="Client/scripts/**/*.mjs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" />
+  </ItemGroup>
+
   <!-- These items are declared at execution time rather than evaluation time on purpose:
        .cshtml files in a second, custom item type break Rider's Razor analysis for the views,
        and Rider silently strips an evaluation-time ClientOutput item from this file when the

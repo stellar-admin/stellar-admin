@@ -2,6 +2,10 @@
 
 Member ordering for C# types in all StellarAdmin repos. Applies to new code and to files being substantially edited — do **not** mass-reorder untouched files just to comply (keep diffs reviewable). CSharpier handles formatting only and never reorders members, so there is no tooling conflict.
 
+## Language features
+
+Prefer modern C# features supported by the repository's pinned SDK when they simplify code. Use `field` for property backing storage, target-typed `new` when the type is clear, and primary constructors where they preserve the intended API and accessibility. Keep the SDK's stable language default rather than setting `LangVersion` to `latest` or enabling preview features.
+
 ## Section order within a type
 
 1. **Constants**

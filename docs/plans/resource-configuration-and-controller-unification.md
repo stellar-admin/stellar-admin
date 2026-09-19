@@ -1,113 +1,125 @@
 # Resource configuration and controller unification
 
-Status: phase 1 implementation reverted at the user’s request on 2026-09-19. The original plan below is retained for context and needs revision before further implementation. Controller unification has not started. Action-specific form models remain deferred.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Step 1 (resource registration and naming) is implemented. Step 2 is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
-Make Identity a thin resource integration. Shared resource builders configure its screens, and a shared resource controller workflow handles ordinary CRUD. Identity supplies defaults and operations through UserManager and RoleManager. EF Core supplies its own operations through DbContext. Dashboard must not depend on either integration package.
-
-Deliver configuration unification first, then controller unification. Action-specific form models are a recorded third phase and are explicitly deferred.
+Build a simple standalone resource foundation in Dashboard, then make EF Core and Identity integrations use its builders and controller workflow. Resource identity comes from TResource. Labels derive from that type with optional SingularLabel and PluralLabel overrides. Integrations supply configuration and persistence/domain operations without introducing a separate form configuration system.
 
 ## Current baseline
 
-- Identity already exposes ResourceBuilder<TEntity> through ConfigureUsers and ConfigureRoles. Create/edit field builders already support sections, groups, and rows.
-- FormPageDefaults only seeds flat property names and holds title/submit-label fallbacks. CreatePageBuilder and EditPageBuilder expose Title, Subtitle, and SectionLayout, but no SubmitLabel.
-- IndexPageDefaults similarly holds columns, sorting, and several strings that are not exposed by IndexPageBuilder. DeleteDefaults supplies values to read-only DeleteOptions, with no Delete builder entry point.
-- FormPageOptions.Items holds the layout tree. Fields flattens it for binding and other field processing. Defaults and application configuration must continue producing the same options tree.
-- ResourceControllerBase<TEntity> provides binding, view-model construction, and redirect helpers, but no CRUD actions. UsersController, RolesController, and EfCoreResourceController each implement their own actions.
-- EF's controller also handles key metadata, reference loading and selection validation, query execution, persistence errors, and view fallback. Identity controllers handle manager operations, Identity error mapping, and the self-deletion restriction.
-- User creation binds a separate CreateUserPasswordInput and renders it through the post-form-fields slot in Users/Create.cshtml. It cannot yet use the entity-only form pipeline in full.
+The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-Relevant code is under src/StellarAdmin.Dashboard/Resources/, src/StellarAdmin.Dashboard.EntityFrameworkCore/, and src/StellarAdmin.Dashboard.Identity/. The earlier extraction is documented in [identity resource layer](archive/identity-resource-layer.md). This plan takes ownership of the shared operations work overlapping item 2 in [generic resource follow-ups](generic-resources-follow-ups.md), without reopening its unrelated backlog.
+EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. They do not verify the retained Dashboard rendering.
 
 ## Design rules
 
-1. Defaults run once when a resource's options are created, before application callbacks. Repeated registration or configuration must not reseed fields or overwrite application choices.
-2. Library defaults and application callbacks use the same builders and the same options instance. Scalars override earlier values, Add appends, and Clear removes all entries in that collection, including seeded containers. Existing composition rules for query transforms remain intact.
-3. A resource registration owns its configuration. Request-scoped services and mutable request data never live in singleton options. Operations resolve through DI per request and must remain isolated between registered resources, including resources using different DbContexts.
-4. Shared controller code owns HTTP flow, binding, validation display, view selection, and redirects. Integration operations own querying, persistence, and domain rules. No Identity or EF types appear in shared contracts.
-5. Identity writes continue through UserManager and RoleManager. Consolidating controllers must not substitute direct DbContext writes.
-6. Preserve existing routes, registration entry points, configured-field allow-lists, read-only behavior, authorization, antiforgery, view overrides, and successful/failed request behavior unless a change is explicitly documented and agreed.
-7. Retain entity-backed forms as the default. Do not implement the deferred form-model API through an untyped dictionary, object payload, or special password parameter in the shared contract.
+- Keep the shared resource implementation independent of EF Core and Identity. Prove it with an in-memory Product sample.
+- Use a simple builder over resource configuration. Derive labels from TResource and optional SingularLabel/PluralLabel; explicit page labels take precedence. Do not restore captured defaults, reset machinery, or compatibility shims from the rejected implementation.
+- Keep field and layout configuration on the same builder path for ordinary resources and integration defaults. Seed integration definitions through that builder before applying application configuration.
+- Shared controller behavior owns HTTP flow, binding, validation redisplay, rendering, and redirects. Persistence and domain operations belong to the application or integration and resolve request-scoped services through DI.
+- Keep TResource as the resource identity while allowing each form action to use its own typed model. Entity-backed forms remain the default. Loading and submission must explicitly handle mapping; do not introduce a speculative generic mapping framework.
+- Follow the maintained options-builder conventions. Concrete public signatures beyond the agreed resource registration and label concepts remain implementation decisions.
 
-## Phase 1 — Unify configuration
+## Rebuild sequence
 
-### 1.1 Complete the shared builder surface
+Each step is a bounded implementation increment with focused tests and a compiling sample where applicable. Record actual verification as each step lands. This plan records the intended sequence and does not itself authorize implementation, commits, publishing, or deployment.
 
-- Add SubmitLabel to create/edit options and builders.
-- Expose the existing index create label and empty-state title, description, and icon through the shared index builder.
-- Add ResourceBuilder.Delete(...) and a shared delete builder for the existing confirmation settings and display-name behavior. Follow the options-builder convention for scalar properties and behavior methods.
-- Store configured values in ordinary options. Preserve useful Effective* accessors as compatibility aliases where practical rather than renaming public members unnecessarily.
-- Define null/empty semantics explicitly. Existing Title = null restores a library fallback, so removing the defaults record must not silently turn that into a blank title. A small scalar fallback mechanism is acceptable if needed for compatibility. It must not become a second layout configuration API.
+### 1. Resource registration and naming — completed
 
-### 1.2 Seed integrations through builders
+Introduce AddResource<TResource>(...), its builder, and resource options. Derive readable singular/plural labels from the type, allow SingularLabel and PluralLabel overrides, and establish straightforward override rules. Prove configuration resolution and isolation between resources. This step only registers configuration.
 
-- Replace the active FormPageDefaults initialization path with default configuration through shared builders. Do not introduce FormPageDefaults<TEntity>.
-- Migrate IndexPageDefaults and DeleteDefaults seeding as part of the same configuration unification, so Identity has one way to supply its screen configuration.
-- Keep Identity default configuration beside its integration registration/options. Use typed user/role selectors. Keep EF-specific default configuration inside the EF package.
-- Audit public defaults records and options constructors before removal. Prefer forwarding compatibility shims where feasible, with explicit migration notes for any breaking change. All active library registration paths must use builders even if legacy entry points are retained temporarily.
-- Preserve existing default labels, field order, columns, and sorting. Demonstrate a seeded section/row in a focused fixture or sample without redesigning the shipped Identity pages as a side effect.
+### 2. Working index page
 
-### Acceptance
+Create a standalone Product sample backed by an in-memory store. Add column configuration and the minimum controller behavior needed to display products. Prove the full registration-to-controller-to-rendering path without integration dependencies.
 
-Applications can override submit labels and existing index/delete copy through shared builders. Library-seeded layouts can contain sections, groups, and rows and can be appended to or cleared normally. Tests establish initialization order, repeated configuration behavior, option isolation, scalar fallback semantics, and unchanged ordinary defaults. Identity and EF sample registrations remain usable.
+### 3. Working create form
 
-## Phase 2 — Unify controller behavior
+Add typed field configuration, page titles, submit labels, model binding, validation, and saving through the sample's store. Derive default labels from the resource labels and honor explicit overrides. Prove configured writable-field binding, invalid submission redisplay, and successful submission. Apply appropriate authorization and antiforgery protection as write actions are introduced.
 
-### 2.1 Define the operations contract and migration boundary
+### 4. Form layout
 
-Write down concrete signatures and DI registration before migrating actions. Names remain an implementation design decision, but the contract must cover index execution, record lookup and key formatting, create/update/delete operations, and structured field/form errors. It must distinguish missing records, validation/domain failures, and success without returning MVC IActionResult from integration operations.
+Add sections, rows, and groups to the same form builder. Exercise them in the Product sample using the retained rendering components. Prove layout configuration, binding through nested layout containers, and rendering at desktop/mobile widths.
 
-Keep provider-specific query execution in the integrations. EF retains asynchronous database execution and cancellation. Shared contracts must not require an EF-backed IQueryable or assume every provider supports EF async methods. If operation-level record constraints are exposed, they must apply consistently to index and direct record lookup. Existing index TransformQuery remains presentation/query configuration, not an authorization boundary.
+### 5. Edit and delete
 
-Use scoped operations with constructor injection. If consumer replacement is exposed in this phase, it must allow overriding one operation while retaining or invoking the integration defaults. Do not force applications to reimplement CRUD. The earlier UseOperations<T>() sketch is not an agreed public name.
+Extend the shared controller flow with record lookup, loading edit values, updates, deletion, missing-record handling, authorization, and antiforgery protection. Prove success and failure behavior using the in-memory sample and focused request tests.
 
-### 2.2 Extract and migrate EF operations
+### 6. Action-specific view models
 
-- Move EF key conversion/validation, querying, reference includes, persistence, and error translation out of the HTTP controller.
-- Define a bounded form-preparation/validation extension for loading reference choices, validating submitted selections, and rebuilding choices on failed posts. Shared code coordinates it without knowing EF metadata.
-- Preserve current reference behavior, including disabled assigned values, required/optional selections, label projection, sorting, query counts, and read-only protection.
-- Move ordinary actions into the shared controller workflow. A thin closed controller or registration adapter may remain to preserve routing and integration-specific registration identity, but it must not duplicate the CRUD action bodies.
-- Preserve resource-specific view lookup before the existing fallback and preserve per-resource authorization policies.
+Give Product separate create and edit models, including a form-only field. Prove typed field/layout configuration, initialization/loading, binding, validation, error redisplay, and explicit mapping to the resource through the normal controller workflow. Edit identifies the resource through the route independently of posted values. Keep the action model distinct from the page presentation model.
 
-### 2.3 Migrate Identity operations
+This step must establish the core capability before adding index features or reconnecting integrations. It should expose any assumptions that every form uses TResource early enough to correct them. Decide how selecting a different form model interacts with previously configured fields and page settings. Password and confirmation fields will later use this same capability in Identity, with appropriate sensitive-value redisplay handling.
 
-- Implement role operations through RoleManager and user operations through UserManager.
-- Move IdentityResult translation into the integration, returning errors that the shared workflow attaches to the appropriate form field or validation summary.
-- Preserve self-deletion prevention using the current request's principal through an explicit context/service boundary.
-- Migrate role index/create/edit/delete and user index/edit/delete to the shared workflow. Keep existing routes and override locations even if controller implementation types change.
-- Keep user creation's password input, validation, manager call, and Razor slot as a documented temporary specialized path. Reuse shared helpers where possible without inventing the deferred form-model API. This exception is removed in phase 3, not hidden behind a password-aware common controller.
+### 7. Index features
 
-### 2.4 Preserve and document observable differences
+Add paging, sorting, searching, and scopes incrementally. Keep data access independent of EF and avoid assuming a provider supports EF asynchronous query methods. Verify each feature against the standalone sample before broadening the API.
 
-Identity currently treats deletion of an already missing record as a redirect, while EF returns NotFound. Preserve these outcomes through an explicit operation result or resource policy. Preserve error messages, validation redisplay, post-success redirects, and htmx return behavior. Extracting common code is not authorization to normalize these behaviors silently.
+### 8. Reconnect integrations
 
-### Acceptance
+Adapt EF Core first, then Identity. Reattach each integration, its sample, and appropriate new tests only after adapting it to the proven core. EF supplies database operations and provider-specific behavior. Identity seeds fields through the normal resource builder, applies user configuration through the same builder, and performs writes through UserManager and RoleManager.
 
-EF and Identity roles execute ordinary CRUD through the shared action workflow. Identity users share index/edit/delete. Integrations contain persistence/domain behavior and configuration rather than duplicated HTTP action flow. User creation is the only explicitly retained Identity CRUD exception for its extra inputs. Routes, view customization, authorization, binding protection, and integration-specific behavior pass regression coverage.
+Prove Identity user creation with an action-specific model for password and confirmation through the shared controller workflow. Preserve integration domain requirements, including error translation and self-deletion prevention, and review routes, view overrides, authorization, and EF reference behavior during adaptation. Identity integration is not complete while password fields require a separate form configuration or CRUD flow.
 
-## Phase 3 — Deferred: action-specific form models
+## Verification and scope
 
-The user wants to select a form model for an individual CRUD action, with TEntity remaining the default when no model is selected. Create and edit may use different types. All field expressions and layout builders for that action must target the selected model. Password and password confirmation become ordinary typed fields that can be placed anywhere in the form layout.
+Introduce focused TUnit tests alongside the new implementation, following the repository's unit testing conventions. Shared tests and the standalone sample must not depend on EF, Identity, or their playground. Run affected builds/tests per step and the active solution checks at delivery. Exercise rendered sample pages when adding UI behavior; leave the user's port 5205 process alone.
 
-The eventual API needs typed loading/initialization and submission operations. Selecting a type alone does not define entity mapping. The shared workflow must bind configured writable fields, validate the model, preserve errors on redisplay, and submit the valid model to the action operation. Edit identifies the resource independently through the route, rather than trusting a posted identifier. Passwords require appropriate redisplay handling and must never be copied into persisted entity properties by generic mapping.
+Update relevant maintained guidance and generated references when affected. Record commands, results, remaining decisions, and limitations here. Website work, unrelated backlog features, and new Identity workflows are outside this rebuild.
 
-Keep the action's form model distinct from ResourceFormPageViewModel, which carries page presentation. Decide how changing the form-model type replaces incompatible seeded field expressions while preserving applicable page settings. A sketch such as Create<TForm>(...) is illustrative, not a committed signature.
+## Plan revision — 2026-09-19
 
-Do not implement this phase during phases 1 or 2. Phase 2's contract design should leave room for it without building a speculative general mapping framework.
+Replaced the superseded implementation phases with the agreed eight-step rebuild sequence. Moved action-specific view models to step 6, immediately after edit/delete and before index features and integrations. Updated the plan index. Documentation only; no application builds or tests were rerun. Checked the documentation diff with git diff --check.
 
-## Verification and delivery
+## Step 1 implementation — 2026-09-19
 
-- Add focused TUnit tests under the owning projects following [unit testing conventions](../conventions/unit-testing.md). Use Dashboard unit tests for shared builder/options behavior and shared workflow behavior that can be tested independently.
-- Extend Dashboard and EF integration coverage using the existing isolated host infrastructure. Include Identity user/role create/edit/delete behavior, mapped errors, password validation, self-deletion rejection, configured-field binding, view overrides, authorization/antiforgery, multiple resource registrations, and EF reference regressions. Keep integration-specific dependencies out of the Dashboard unit test project.
-- Run affected project builds and focused test projects during each phase. At completion run `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` with the pinned SDK.
-- Exercise representative Identity and EF screens in the playground. Verify the configured section/row example at desktop/mobile widths if markup or shipped layouts change. Use an agent-owned process and leave port 5205 alone.
-- Update maintained resource/Identity guidance and affected consumer references. Regenerate component references only if their source/API changes require it. Website work is not part of this plan.
-- Update this record with actual commands, outcomes, compatibility decisions, and outstanding work. Do not treat historical test results as new verification.
+Added `AddResource<TResource>()` and its configuration overload, `ResourceBuilder<TResource>`, and `ResourceOptions<TResource>`. The builder is a facade over typed options registered through the standard options pattern. Humanizer.Core 2.14.1 supplies readable type names and English pluralization. A singular override affects the inferred plural. An explicit plural remains authoritative regardless of assignment order. Blank labels are rejected. Generic type arity is omitted from display labels.
 
-## Explicit exclusions
+Repeated resource registration composes callbacks in registration order. A no-argument call preserves configured values. Each resource type and service provider resolves a separate options instance. Defaults and application overrides can therefore share the same builder path without captured defaults or reset machinery. This step adds configuration only. Resource routes, navigation, page options, CRUD controllers, persistence, and the standalone sample remain for subsequent steps. EF and Identity remain detached.
 
-No action-specific form-model implementation, targeted editing of existing sections by identifier, new Identity workflows, details pages, sidebar unification, new reference editors/sources, concurrency-token round-tripping, or unrelated backlog cleanup. No commit, push, publish, or deployment is authorized by this plan.
+Created a new Dashboard TUnit project through the CLI, added it to the solution, and introduced 16 tests covering default labels, compound/acronym/generic names, irregular plurals, explicit override order, updated singular fallback after reading a default, blank-label rejection, repeated registration, null callbacks, and isolation between resource types and service providers. Updated development commands and Dashboard setup notes.
+
+Verification: Release solution build passed. The initial restore reported unavailable NuGet vulnerability metadata and existing source warnings. The final Release solution build completed with 12 warnings in unchanged source and zero errors. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 158 tests, including 16 Dashboard cases. Tests ran outside the sandbox because local IPC was denied inside it. Solution-wide test discovery listed all 16 new cases. CSharpier and git diff --check passed. The consumer reference drift check passed. No browser checks apply to this configuration-only increment. Changes are uncommitted.
+
+## Step 1 test approach revision — 2026-09-19
+
+Moved the naming, override-order, fallback, and invalid-label cases from ResourceOptionsTests into StellarAdminDashboardBuilderExtensionsTests at the user's request. All resource configuration now goes through AddResource<TResource> and its builder callback. Tests resolve typed options only to observe results. The provider-isolation test also uses builder configuration and checks that providers resolve distinct instances. Removed ResourceOptionsTests. Blank-label cases now verify rejection during configuration resolution rather than directly inspecting options after a failed setter.
+
+Verification: `dotnet build tests/StellarAdmin.Dashboard.Tests --configuration Release -m:1` passed with one existing XML documentation warning. The initial combined dotnet run/build attempt failed without a diagnostic. Running the explicit build and then `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release --no-build` passed all 16 cases. Test discovery via `-- --list-tests` passed. CSharpier formatting and git diff --check passed. Production code is unchanged. The solution-wide 158-test result above predates this test-only revision.
+
+## Step 1 language-feature review — 2026-09-19
+
+Reviewed and preserved the user's C# `field` conversion in ResourceOptions. Simplified builder construction with target-typed `new(options)` and made the builder's single-assignment constructor expression-bodied. Kept its explicit internal constructor because a primary constructor on this public class would expose construction publicly. Registration already uses C# extension blocks. Recorded the preference for modern stable C# features in the maintained C# conventions.
+
+Verification: the Dashboard test project Release build passed with one existing XML documentation warning and no new diagnostics. All 16 builder tests passed via `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release --no-build`. CSharpier formatted the two changed implementation files and git diff --check passed.
+
+## Step 1 builder return correction — 2026-09-19
+
+Changed the no-callback AddResource<TResource>() overload to return ResourceBuilder<TResource> and use the requested summary, "Adds a resource." The callback overload invokes that overload, configures the returned builder immediately, and returns the Dashboard builder. Repeated calls share the registered resource options instance, matching Dashboard's registration-time configuration pattern. The builder constructor remains internal.
+
+This supersedes the earlier deferred-callback and per-provider options behavior recorded above. Options are now shared per resource type and service collection and exposed through IOptions<ResourceOptions<TResource>>. Providers built from the same collection share those options. Separate service collections remain isolated. No copying or parallel configuration path was introduced.
+
+Updated the tests to cover returned-builder configuration, mixed overloads, callback return values, immediate blank-label rejection, and service-collection isolation. Updated Dashboard setup notes and the options-builder conventions to state the overload return pattern and configuration lifetime.
+
+Verification: the Dashboard test project Release build passed with one existing XML documentation warning. All 18 builder tests passed using `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release --no-build`, and discovery listed all 18 cases. CSharpier formatted the changed C# files and git diff --check passed. Earlier solution-wide results were not rerun for this focused correction.
+
+## Step 1 setter-only builder correction — 2026-09-19
+
+ResourceBuilder now wraps OptionsBuilder<ResourceOptions<TResource>>. Its scalar properties are setter-only and register Configure actions. AddResource uses AddOptions and returns the resource builder. The callback overload invokes the builder callback and returns the Dashboard builder. Removed singleton options lookup and Options.Create registration. This supersedes the preceding registration-time shared-options implementation. Configuration values are applied when options resolve, through the standard configuration, post-configuration, and validation pipeline. Options instances are separate per provider.
+
+Removed the builder-read test and assertions. All configuration flows through setters, with values asserted through resolved options. Added coverage for standard Configure/PostConfigure composition, options validation, and provider isolation. Updated maintained conventions and setup notes to describe the corrected pattern.
+
+Verification: the Dashboard test project Release build passed with one existing XML documentation warning. All 20 tests passed with `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release --no-build`, and discovery listed 20 cases. CSharpier formatting and git diff --check passed. No full solution rerun for this focused correction.
+
+## Step 1 direct service-collection builder — 2026-09-19
+
+Simplified ResourceBuilder to hold IServiceCollection directly. Setter-only label properties call Configure<ResourceOptions<TResource>>. AddResource registers options with AddOptions and returns a builder over the service collection. The internal constructor and callback overload remain unchanged in behavior. This replaces the OptionsBuilder wrapper without changing the options pipeline or adding configuration state. Updated the maintained builder convention.
+
+Verification: the Dashboard test project Release build passed with one existing XML documentation warning. All 20 existing tests passed with `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release --no-build`. CSharpier formatted the two changed implementation files and git diff --check passed. No new tests or full solution rerun were needed for this equivalent implementation.
+
+## Historical work records
+
+The records below describe earlier states and verification. They do not override the current baseline or rebuild sequence above.
 
 ## Planning verification — 2026-09-19
 

@@ -28,6 +28,7 @@ Commands below run from the product repository root unless a working directory i
 | --- | --- |
 | All .NET tests (unit and integration) | `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`; use `--list-tests` instead of `--minimum-expected-tests 1` to verify discovery. Add `--no-build` after a Release build, as CI does. |
 | Core unit tests | `dotnet run --project tests/StellarAdmin.Core.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
+| Dashboard unit tests | `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | TagHelpers unit tests | `dotnet run --project tests/StellarAdmin.TagHelpers.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |
 | OSS CSS/JS | `npm run build` in `src/StellarAdmin.TagHelpers/Client/`; inspect the compiled bundle and exercise changed states. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |
@@ -42,11 +43,11 @@ For C# formatting, run `dotnet tool restore` then `dotnet csharpier format <touc
 
 ## Resource redesign baseline
 
-The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. Resource registration and CRUD execution will be rebuilt separately.
+The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. The replacement `AddResource<TResource>()` registration now configures typed resource labels. CRUD execution remains to be rebuilt.
 
 EF Core, Identity, and `sandbox/IdentitySimplePlayground` remain outside `StellarAdmin.slnx` and the build/release pipeline. Their source is retained for later adaptation and now references removed APIs. They are not expected to compile independently during this reset.
 
-The old Dashboard unit tests, Dashboard integration tests, EF resource integration tests, and shared Dashboard.Testing host have been deleted. The active solution command runs the Core and TagHelpers unit suites. New resource tests should be introduced alongside the replacement implementation. Rendering coverage previously supplied by the deleted integration suites is not currently exercised.
+The old Dashboard unit tests, Dashboard integration tests, EF resource integration tests, and shared Dashboard.Testing host have been deleted. The active solution command runs Core, TagHelpers, and a new Dashboard unit suite covering resource registration, naming, overrides, and configuration isolation. Rendering coverage previously supplied by the deleted integration suites is not currently exercised.
 
 ## Samples, screenshots, and generated website demos
 
