@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/sandbox/">
     <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
+    <Project Path="sandbox/DashboardPlayground/DashboardPlayground.csproj" />
     <Project Path="sandbox/DataGridSpike/DataGridSpike.csproj" />
   </Folder>
   <Folder Name="/src/">
