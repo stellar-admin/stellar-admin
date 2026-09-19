@@ -9,6 +9,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | Record | Status | Current assessment |
 | --- | --- | --- |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
+| [resource-configuration-and-controller-unification](resource-configuration-and-controller-unification.md) | needs revision | Phase 1 implementation reverted at the user’s request. EF, Identity, their sample and dependent integration suites are detached on `resource-redesign`. Reconsider around a standalone resource foundation before adapting the integrations. Action-specific form models remain deferred. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Sidebar registration, operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |

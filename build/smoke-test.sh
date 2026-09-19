@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke-tests all five packed StellarAdmin packages as a consumer:
+# Smoke-tests the three active packed StellarAdmin packages as a consumer:
 # scaffolds a throwaway Razor Pages app, installs the package from a folder feed, renders
 # a page with tag helpers, and asserts the page and the RCL static web assets are served.
 #
@@ -13,7 +13,7 @@ set -euo pipefail
 VERSION="${1:?usage: smoke-test.sh <version> <artifacts-dir> [port]}"
 ARTIFACTS="$(cd "${2:?usage: smoke-test.sh <version> <artifacts-dir> [port]}" && pwd)"
 PORT="${3:-5299}"
-PACKAGES=(StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard StellarAdmin.Dashboard.Identity StellarAdmin.Dashboard.EntityFrameworkCore)
+PACKAGES=(StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard)
 
 WORK="$(mktemp -d)"
 APP="$WORK/SmokeApp"
@@ -76,8 +76,6 @@ using StellarAdmin;
 using StellarAdmin.Icons;
 using StellarAdmin.TagHelpers;
 using StellarAdmin.Dashboard;
-using StellarAdmin.Dashboard.Identity;
-using StellarAdmin.Dashboard.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -191,4 +189,4 @@ assert_asset /_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css "sa-re
 assert_asset /_content/StellarAdmin.Dashboard/htmx.min.js "htmx"
 
 echo
-echo "SMOKE OK: all five packages at $VERSION restore; tag helpers and data grid render with static assets"
+echo "SMOKE OK: all three packages at $VERSION restore; tag helpers and data grid render with static assets"

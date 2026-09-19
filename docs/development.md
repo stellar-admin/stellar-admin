@@ -45,9 +45,11 @@ For C# formatting, run `dotnet tool restore` then `dotnet csharpier format <touc
 
 ## Integration test isolation
 
+During the resource redesign, EF Core, Identity, `sandbox/IdentitySimplePlayground`, both integration test projects, and `StellarAdmin.Dashboard.Testing` are temporarily excluded from `StellarAdmin.slnx` and the build/release pipeline. Their sources remain in place. The integration commands above describe the retained projects but are outside current verification and may stop building as the core changes. Reattach them after adapting them to the redesigned core.
+
 `StellarAdmin.Dashboard.IntegrationTests` covers Dashboard Razor editors, scalar binding, form layouts, and actions. `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` covers EF resource CRUD, references and SQL queries, authorization, antiforgery, and playground migration/metadata/Identity compatibility. Their shared `StellarAdmin.Dashboard.Testing` support library hosts `sandbox/IdentitySimplePlayground` through WebApplicationFactory. Each test owns its host, services, HTTP client, SQL interceptor, and unique temporary SQLite database; connections disable pooling and disposal deletes the temporary database files. Tests override DbContext registration inside the host, never process environment variables or the playground’s app.db. No external database, running application, or fixed TCP port is required. Each integration assembly limits concurrent hosts to four to bound memory and I/O; tests do not share mutable fixtures or depend on execution order.
 
-Pure form-builder configuration tests live in `StellarAdmin.Dashboard.Tests/Resources/Builders/` and reference Dashboard directly without the playground or test-host support library. The complete solution command runs all five test assemblies; the shared support library is not a test assembly.
+Pure form-builder configuration tests live in `StellarAdmin.Dashboard.Tests/Resources/Builders/` and reference Dashboard directly without the playground or test-host support library. The active solution command runs the three unit test assemblies (Core, TagHelpers, and Dashboard); the shared support library is not a test assembly.
 
 ## Samples, screenshots, and generated website demos
 
