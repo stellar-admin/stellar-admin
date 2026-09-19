@@ -1,4 +1,4 @@
-namespace StellarAdmin.Dashboard.Resources.Infrastructure.Query;
+namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
 ///     The index page parameters the user explicitly selected, validated against the

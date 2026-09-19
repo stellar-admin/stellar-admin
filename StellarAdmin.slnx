@@ -16,7 +16,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/StellarAdmin.Core.Tests/StellarAdmin.Core.Tests.csproj" />
-    <Project Path="tests/StellarAdmin.Dashboard.Tests/StellarAdmin.Dashboard.Tests.csproj" />
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
   </Folder>
   <Folder Name="/util/">

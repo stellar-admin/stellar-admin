@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using StellarAdmin.Dashboard.Resources.Infrastructure.Query;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;

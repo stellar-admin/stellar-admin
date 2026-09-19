@@ -1,7 +1,7 @@
 name: Build and Test
 
-# Build and test the active solution. EF Core, Identity, and their dependent tests
-# and sample are temporarily detached for the resource redesign. Release verification uses
+# Build and test the active solution. EF Core, Identity, and their sample
+# are temporarily detached. Old resource tests were removed for the redesign. Release verification uses
 # release.yml; opt-in publishing is owned by that workflow.
 
 on:
