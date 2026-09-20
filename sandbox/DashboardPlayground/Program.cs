@@ -20,6 +20,7 @@ builder
     )
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<ProductDataSource>();
 builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
@@ -27,17 +28,28 @@ builder
         dashboard.AddResource<Product>(resource =>
         {
             resource.UseDataSource<ProductDataSource>();
+            resource.Create(create =>
+            {
+                create.Fields(fields =>
+                {
+                    fields.Add(product => product.Name);
+                    fields.Add(product => product.Price);
+                });
+            });
             resource.Index(index =>
             {
                 index.Columns(columns =>
                 {
                     columns.Add(product => product.Id);
                     columns.Add(product => product.Name);
-                    columns.Add(product => product.Price, column =>
-                    {
-                        column.Title = "Unit price";
-                        column.Format = "{0:0.00}";
-                    });
+                    columns.Add(
+                        product => product.Price,
+                        column =>
+                        {
+                            column.Title = "Unit price";
+                            column.Format = "{0:0.00}";
+                        }
+                    );
                 });
             });
         });

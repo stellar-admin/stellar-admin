@@ -95,12 +95,18 @@ public class ResourceBuilderTests
 
     public sealed class ProductDataSource : IResourceDataSource<Product>
     {
+        public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
     }
 
     public sealed class ReplacementDataSource : IResourceDataSource<Product>
     {
+        public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
     }

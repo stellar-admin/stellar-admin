@@ -10,7 +10,7 @@ using StellarAdmin.Dashboard.Resources.Builders;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Areas.StellarAdmin.Controllers;
 
-public class ResourceControllerTests
+public partial class ResourceControllerTests
 {
     [Test]
     public async Task Index_AcrossRequests_ResolvesDataSourceFromEachRequestScope()
@@ -112,9 +112,7 @@ public class ResourceControllerTests
             .IsEqualTo("12.50");
         await Assert
             .That(
-                document.QuerySelector(
-                    "a[href*='/Create'], a[href*='/Edit'], [hx-post], [data-slot='data-grid-pager']"
-                )
+                document.QuerySelector("a[href*='/Edit'], [hx-post], [data-slot='data-grid-pager']")
             )
             .IsNull();
     }
@@ -167,6 +165,13 @@ public class ResourceControllerTests
                             );
                         })
                     );
+                    resource.Create(create =>
+                        create.Fields(fields =>
+                        {
+                            fields.Add(product => product.Name);
+                            fields.Add(product => product.Price);
+                        })
+                    );
                     configure?.Invoke(resource);
                 })
             );
@@ -178,28 +183,54 @@ public class ResourceControllerTests
         return app;
     }
 
-    public sealed record Product(
-        int Id,
-        [property: Display(Name = "Product name")] string Name,
-        decimal Price
-    );
+    public sealed class Product
+    {
+        public int Id { get; set; }
+
+        [Required]
+        [Display(Name = "Product name")]
+        public string Name { get; set; } = "";
+
+        [Range(typeof(decimal), "0.01", "1000000")]
+        public decimal Price { get; set; }
+
+        public Product() { }
+
+        public Product(int id, string name, decimal price)
+        {
+            Id = id;
+            Name = name;
+            Price = price;
+        }
+    }
 
     public sealed class ProductDataSource(ProductState state) : IResourceDataSource<Product>
     {
         private readonly Guid _id = Guid.NewGuid();
+
+        public Task CreateAsync(Product resource, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            state.SubmittedId = resource.Id;
+            resource.Id = state.Products.Count + 1;
+            state.Products.Add(resource);
+
+            return Task.CompletedTask;
+        }
 
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             state.Requests.Add(_id);
 
-            return Task.FromResult(state.Products);
+            return Task.FromResult<IReadOnlyList<Product>>(state.Products);
         }
     }
 
     public sealed class ProductState(IReadOnlyList<Product> products)
     {
-        public IReadOnlyList<Product> Products { get; } = products;
+        public List<Product> Products { get; } = [.. products];
         public List<Guid> Requests { get; } = [];
+        public int? SubmittedId { get; set; }
     }
 }

@@ -34,6 +34,18 @@ public sealed class ResourceBuilder<TResource>
     internal ResourceBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
+    ///     Configures the create page.
+    /// </summary>
+    public ResourceBuilder<TResource> Create(Action<ResourceCreateBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the index page.
     /// </summary>
     public ResourceBuilder<TResource> Index(Action<ResourceIndexBuilder<TResource>> configure)

@@ -8,6 +8,11 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public sealed class ResourceOptions<TResource>
 {
     /// <summary>
+    ///     The create page configuration.
+    /// </summary>
+    public ResourceCreateOptions Create { get; } = new();
+
+    /// <summary>
     ///     The index page configuration.
     /// </summary>
     public ResourceIndexOptions Index { get; } = new();

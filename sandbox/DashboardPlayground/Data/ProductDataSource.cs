@@ -5,17 +5,47 @@ namespace DashboardPlayground.Data;
 
 public sealed class ProductDataSource : IResourceDataSource<Product>
 {
-    private readonly IReadOnlyList<Product> _products =
+    private readonly Lock _lock = new();
+    private readonly List<Product> _products =
     [
-        new(1, "Notebook", 8.50m),
-        new(2, "Desk lamp", 34.95m),
-        new(3, "Travel mug", 18.00m),
+        new()
+        {
+            Id = 1,
+            Name = "Notebook",
+            Price = 8.50m,
+        },
+        new()
+        {
+            Id = 2,
+            Name = "Desk lamp",
+            Price = 34.95m,
+        },
+        new()
+        {
+            Id = 3,
+            Name = "Travel mug",
+            Price = 18.00m,
+        },
     ];
+
+    public Task CreateAsync(Product resource, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_lock)
+        {
+            resource.Id = _products.Max(product => product.Id) + 1;
+            _products.Add(resource);
+        }
+
+        return Task.CompletedTask;
+    }
 
     public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
-        return Task.FromResult(_products);
+        lock (_lock)
+        {
+            return Task.FromResult<IReadOnlyList<Product>>(_products.ToArray());
+        }
     }
 }

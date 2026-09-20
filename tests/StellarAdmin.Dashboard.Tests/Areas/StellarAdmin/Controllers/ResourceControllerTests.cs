@@ -40,6 +40,9 @@ public class ResourceControllerTests
 
     private sealed class ProductDataSource : IResourceDataSource<Product>
     {
+        public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult<IReadOnlyList<Product>>([]);

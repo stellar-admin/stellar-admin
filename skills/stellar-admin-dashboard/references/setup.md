@@ -18,6 +18,11 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
     dashboard.AddResource<Product>(resource =>
     {
         resource.UseDataSource<ProductDataSource>();
+        resource.Create(create => create.Fields(fields =>
+        {
+            fields.Add(product => product.Name);
+            fields.Add(product => product.Price);
+        }));
         resource.Index(index => index.Columns(columns =>
         {
             columns.Add(product => product.Name);
@@ -36,9 +41,9 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 });
 ```
 
-Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product index is available at `/stellaradmin/Product`. The route uses the resource type name, independently of its display labels. Register a data source and columns for each resource whose index you want to display. Automatic sidebar entries and write actions are not implemented yet.
+Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product index is available at `/stellaradmin/Product`. The route uses the resource type name, independently of its display labels. Register a data source and columns for each resource whose index you want to display. The create form is available at `/stellaradmin/Product/Create`. Automatic sidebar entries, edit, and delete are not implemented yet.
 
-`ProductDataSource` implements `IResourceDataSource<Product>` from `StellarAdmin.Dashboard.Resources`. Its initial operation is `Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)`. The shared controller forwards the request cancellation token and renders the returned records. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
+`ProductDataSource` implements `IResourceDataSource<Product>` from `StellarAdmin.Dashboard.Resources`. It implements `Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)` and `Task CreateAsync(Product resource, CancellationToken cancellationToken)`. The shared controller forwards the request cancellation token and renders the returned records. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
 
 Index columns start empty. `Add` appends and `Clear` removes the configured columns. `Add(selector)` returns the column builder. `Add(selector, configure)` returns the columns builder. Column `Title` and `Format` are setter-only. Omitted titles use the selected property's display metadata/name. Omitted formats use its display metadata. Set `index.Title` to override the page title, which otherwise uses the current resource plural label. Empty results display an empty state. This first index implementation does not perform paging, sorting, or searching.
 
@@ -55,3 +60,13 @@ var resource = dashboard.AddResource<Product>();
 resource.SingularLabel = "Item";
 resource.PluralLabel = "Inventory";
 ```
+
+## Create forms
+
+Configure the create page through `resource.Create(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Sections, groups, and rows are the next planned increment.
+
+For this increment, the resource is a mutable reference type with a public parameterless constructor. Field selectors must name direct properties with public getters and setters. The controller constructs a resource for both GET and POST and binds only configured properties, using input names such as `Entity.Name`. ASP.NET Core model validation applies, including data annotations. Invalid submissions redisplay entered values and errors without calling the data source. POST requires an antiforgery token. A successful `CreateAsync` redirects to the index. The data source assigns generated values such as IDs. Action-specific form models and reporting domain validation failures are deferred.
+
+The Product playground registers `ProductDataSource` as a singleton with synchronized in-memory storage so created products survive subsequent requests. Restarting the application resets its data. Production sources can retain the default scoped lifetime and persist through their own dependencies.
+
+Override the create view with `Areas/StellarAdmin/Views/Product/Create.cshtml`. The controller uses the same normal MVC lookup as Index, falling back to `ResourceCreate`. The default uses `ResourceFormPageViewModel` and `<sa-form-page model="Model" />`, which renders the existing form editors and antiforgery token.

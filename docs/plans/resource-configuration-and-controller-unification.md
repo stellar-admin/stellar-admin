@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is implemented and awaiting user review before step 4. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -10,7 +10,7 @@ Build a simple standalone resource foundation in Dashboard, then make EF Core an
 
 The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The new Dashboard integration suite verifies the rebuilt index rendering through HTTP.
+EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The new Dashboard integration suite verifies index rendering and the basic create flow through HTTP.
 
 ## Design rules
 
@@ -33,9 +33,9 @@ Introduce AddResource<TResource>(...), its builder, and resource options. Derive
 
 Use DashboardPlayground for a Product sample backed by an in-memory data source. Add column configuration and the minimum controller behavior needed to display products. Prove the full registration-to-controller-to-rendering path without integration dependencies.
 
-### 3. Working create form
+### 3. Working create form — implemented, awaiting user review
 
-Add typed field configuration, page titles, submit labels, model binding, validation, and saving through the sample's store. Derive default labels from the resource labels and honor explicit overrides. Prove configured writable-field binding, invalid submission redisplay, and successful submission. Apply appropriate authorization and antiforgery protection as write actions are introduced.
+Add typed field configuration, page titles, submit labels, model binding, validation, and saving through the sample's data source. Derive default labels from the resource labels and honor explicit overrides. Prove configured writable-field binding, invalid submission redisplay, and successful submission. Apply appropriate authorization and antiforgery protection as write actions are introduced.
 
 ### 4. Form layout
 
@@ -168,3 +168,17 @@ Added four builder/data-source registration tests and a separate Dashboard integ
 Verification: `dotnet build StellarAdmin.slnx --configuration Release -m:1` passed with 12 existing warnings and zero errors. The final unit assertion refinement was then rebuilt with zero warnings/errors. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 172 tests across four assemblies, including 24 Dashboard unit tests and six Dashboard integration cases. Solution-wide `--list-tests` discovered all 172. The solution runner used escalation for its local IPC sockets. Focused Dashboard unit and integration executables also passed in the sandbox. CSharpier and `git diff --check` passed. Consumer reference generation and the subsequent `--check` reported no drift.
 
 Ran DashboardPlayground on an agent-owned port 5206 instance and verified the Product page in Chromium at 1440×1000 and 390×844. Both sizes showed all three seeded products, configured headers and decimal formatting, loaded stylesheets, and no horizontal page overflow. Captured screenshots at `/tmp/product-index-desktop.png` and `/tmp/product-index-mobile.png`. Used decimal sample formatting to avoid the invariant culture's generic currency symbol. Port 5205 was untouched. Changes are uncommitted. Step 3 (create form) is next.
+
+## Step 3 implementation — 2026-09-20
+
+Implemented the agreed basic create API: `resource.Create(...)`, setter-only Title and SubmitLabel, and explicit typed fields with Add, Clear, and field Title overrides. Configuration uses the standard options pipeline and creates independent field definitions per resolved options instance. Selectors reject methods, nested members, and properties without public getters/setters. Retained form field options and editor partials provide rendering. Advanced layout builders remain deferred until the user reviews and accepts the basic flow.
+
+Added `CreateAsync(TResource, CancellationToken)` to the data source. The shared controller constructs a resource through its public parameterless constructor, binds only configured fields under the Entity prefix, validates through MVC, redisplays invalid submissions, and persists valid submissions before redirecting to Index. POST validates antiforgery tokens. Create uses the existing ResourceView helper and falls back to ResourceCreate. The index now links to Create. Both default form title and submit label derive from the current singular resource label.
+
+DashboardPlayground uses a mutable Product with data annotations and explicitly configures Name and Price. Its synchronized singleton in-memory data source preserves created records across requests and assigns IDs. Restarting resets the data. The existing host EF/Identity setup is unchanged. Action-specific models, business validation results, edit/delete, and integration adaptation remain later work.
+
+Added builder tests for replacement, options isolation, and rejected selectors. HTTP tests cover default and overridden labels, configured fields, successful persistence and index redirect, exclusion of forged IDs, required/range/conversion failures with value redisplay, and missing antiforgery tokens. The existing index tests and data source fakes were adapted to the new operation.
+
+Verification: Dashboard unit and HTTP integration Release builds passed, with the existing unresolved FormFieldOptions XML cref warning on the integration build. All 31 unit and 13 HTTP tests passed through their project executables. DashboardPlayground Release build passed. Chromium checks at 1440×1000 and 390×1000 verified form fields and no horizontal overflow, invalid POST errors, and a valid browser submission followed by the index showing the created product. Screenshots are `/tmp/resource-create-1440.png` and `/tmp/resource-create-390.png`. The agent-owned playground on port 5206 and browser were stopped. Port 5205 was untouched.
+
+Final verification: the full Release solution build passed with 11 existing warnings and no errors. Consumer reference drift check passed. CSharpier formatted the touched C# files and `git diff --check` passed. The full solution test suite was not rerun. Changes are uncommitted.
