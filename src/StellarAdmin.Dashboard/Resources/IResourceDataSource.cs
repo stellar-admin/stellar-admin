@@ -11,6 +11,11 @@ public interface IResourceDataSource<TResource>
     Task CreateAsync(TResource resource, CancellationToken cancellationToken);
 
     /// <summary>
+    ///     Deletes the resource identified by the key, returning false if it does not exist.
+    /// </summary>
+    Task<bool> DeleteAsync(string id, CancellationToken cancellationToken);
+
+    /// <summary>
     ///     Returns a resource for editing, or null when the key does not exist.
     /// </summary>
     /// <remarks>

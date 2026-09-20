@@ -7,6 +7,9 @@ public sealed class CustomProductDataSource : IResourceDataSource<CustomProduct>
     public Task CreateAsync(CustomProduct resource, CancellationToken cancellationToken) =>
         Task.CompletedTask;
 
+    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
+        Task.FromResult(false);
+
     public Task<CustomProduct?> FindAsync(string id, CancellationToken cancellationToken) =>
         Task.FromResult<CustomProduct?>(id == "item-1" ? new() : null);
 

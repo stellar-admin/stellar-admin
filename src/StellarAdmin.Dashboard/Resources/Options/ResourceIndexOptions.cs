@@ -19,6 +19,11 @@ public sealed class ResourceIndexOptions
     public string? CreateLabel { get; set; }
 
     /// <summary>
+    ///     The delete button label.
+    /// </summary>
+    public string? DeleteLabel { get; set; }
+
+    /// <summary>
     ///     The edit link label.
     /// </summary>
     public string? EditLabel { get; set; }

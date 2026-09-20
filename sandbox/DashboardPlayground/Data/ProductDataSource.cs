@@ -33,11 +33,23 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
-            resource.Id = _products.Max(product => product.Id) + 1;
+            resource.Id = _products.Select(product => product.Id).DefaultIfEmpty().Max() + 1;
             _products.Add(resource);
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_lock)
+        {
+            return Task.FromResult(
+                int.TryParse(id, out var key)
+                    && _products.RemoveAll(product => product.Id == key) > 0
+            );
+        }
     }
 
     public Task<Product?> FindAsync(string id, CancellationToken cancellationToken)

@@ -115,6 +115,9 @@ public class ResourceBuilderTests
         public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
+        public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
+            Task.FromResult(false);
+
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);
 
@@ -132,6 +135,9 @@ public class ResourceBuilderTests
     {
         public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+
+        public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
+            Task.FromResult(false);
 
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);

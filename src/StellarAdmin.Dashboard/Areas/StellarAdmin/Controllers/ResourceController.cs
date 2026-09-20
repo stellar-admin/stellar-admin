@@ -62,6 +62,29 @@ public class ResourceController<TResource>(
     }
 
     /// <summary>
+    ///     Deletes a resource.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        if (!await dataSource.DeleteAsync(id, cancellationToken))
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(Index), new { id = (string?)null });
+    }
+
+    /// <summary>
     ///     Displays the edit form.
     /// </summary>
     [HttpGet]
@@ -142,6 +165,18 @@ public class ResourceController<TResource>(
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
                     _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
+                Delete = _resourceOptions.KeySelector is null
+                    ? null
+                    : new(
+                        _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
+                        _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
+                        _resourceOptions.Delete.ConfirmLabel
+                            ?? _labelOptions.DeleteConfirmLabel(labels),
+                        _resourceOptions.Delete.CancelLabel
+                            ?? _labelOptions.DeleteCancelLabel(labels)
+                    ),
+                DeleteLabel =
+                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
                 EditLabel =
                     _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
                 KeySelector = _resourceOptions.KeySelector,

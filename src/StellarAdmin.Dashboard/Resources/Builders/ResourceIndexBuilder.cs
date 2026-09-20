@@ -22,6 +22,17 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <summary>
+    ///     The delete button label.
+    /// </summary>
+    public string? DeleteLabel
+    {
+        set =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.DeleteLabel = value
+            );
+    }
+
+    /// <summary>
     ///     The edit link label.
     /// </summary>
     public string? EditLabel

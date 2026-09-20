@@ -49,6 +49,18 @@ public sealed class ResourceBuilder<TResource>
     }
 
     /// <summary>
+    ///     Configures resource deletion.
+    /// </summary>
+    public ResourceBuilder<TResource> Delete(Action<ResourceDeleteBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the edit page.
     /// </summary>
     public ResourceBuilder<TResource> Edit(Action<ResourceEditBuilder<TResource>> configure)

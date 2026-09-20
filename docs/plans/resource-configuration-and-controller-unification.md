@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 is split for review: edit is implemented and awaiting review. Delete remains pending until edit is approved. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is now implemented and awaiting review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -51,7 +51,7 @@ Add sections, rows, and groups to the same form builder. Exercise them in the Pr
 
 ### 5. Edit and delete
 
-Implement edit first and pause for review, as requested on 2026-09-20. Delete requires a subsequent go-ahead.
+Edit was implemented first and committed after review. Delete was subsequently authorized on 2026-09-20 and is now implemented for review.
 
 Extend the shared controller flow with record lookup, loading edit values, updates, deletion, missing-record handling, authorization, and antiforgery protection. Prove success and failure behavior using the in-memory sample and focused request tests.
 
@@ -70,6 +70,10 @@ Add paging, sorting, searching, and scopes incrementally. Keep data access indep
 Adapt EF Core first, then Identity. Reattach each integration, its sample, and appropriate new tests only after adapting it to the proven core. EF supplies database operations and provider-specific behavior. Identity seeds fields through the normal resource builder, applies user configuration through the same builder, and performs writes through UserManager and RoleManager.
 
 Prove Identity user creation with an action-specific model for password and confirmation through the shared controller workflow. Preserve integration domain requirements, including error translation and self-deletion prevention, and review routes, view overrides, authorization, and EF reference behavior during adaptation. Identity integration is not complete while password fields require a separate form configuration or CRUD flow.
+
+## Follow-up after the rebuild sequence
+
+After steps 1–8, audit resource-facing text for remaining hardcoded wording, including the empty index message “No records found”. Make applicable text derive from the resource labels through the existing global delegate-based defaults and resource/page overrides. Review other empty states, action text, and confirmation messages as part of the same task. Requested on 2026-09-20 and deferred until the current list is complete. No rendering or label changes are included now.
 
 ## Verification and scope
 
@@ -318,3 +322,15 @@ Restored the pre-redesign index edit button from commit 97691a8: Outline variant
 Replaced the native title tooltip with sa-tooltip, linked through interestfor with a unique ID per rendered row. The button retains aria-label. Both use the configured IndexEditLabel, including the user’s updated default of `Edit {SingularLabel}`. Updated the existing HTTP scenario to verify tooltip association, configured content, and absence of title. The final Dashboard integration Release build passed with no warnings or errors, and all 41 HTTP tests passed. No new browser check was performed for this change.
 
 The tooltip ID now uses `--resource-edit-{rowId}` instead of a random GUID, as requested. The row key is resolved once and reused for the edit route and tooltip ID. The Dashboard integration Release build and all 41 HTTP tests passed after this correction.
+
+## Step 5b: delete implementation — 2026-09-20
+
+Added `IResourceDataSource<TResource>.DeleteAsync(id, cancellationToken)`, returning false for a missing resource. The shared controller accepts an antiforgery-protected POST, takes the key only from the route, returns 404 for missing resources or unconfigured keys, and redirects to the index with the route id cleared. Host authorization remains the application's responsibility, as with the existing actions.
+
+The index now offers an outline trash icon button beside edit, with a StellarAdmin tooltip identified by the resource key. It reuses the existing shared StellarAdmin alert dialog for confirmation. Cancelling leaves the resource untouched. Confirming submits the row's normal POST form. No HTMX dependency was introduced. This increment exposes deletion from the index. The retained form-page delete affordance is not wired into edit.
+
+Global delegate defaults cover `DeleteTitle`, `DeleteMessage`, `DeleteConfirmLabel`, `DeleteCancelLabel`, and `IndexDeleteLabel`. Resource overrides are available through `resource.Delete(...)` and `resource.Index(index => index.DeleteLabel = ...)`. The existing hardcoded-text audit remains deferred until after the rebuild sequence.
+
+Updated active sample and test data sources. The sample now handles creating a resource after deleting every existing item. Added ten integration cases covering label defaults and overrides, rendered confirmation, route-key protection, successful deletion and redirect, missing records including disappearance after rendering, GET rejection, missing antiforgery tokens, and resources without keys. Existing create and edit scenarios remain intact.
+
+Verification: the final Release solution build with `--no-restore -m:1` passed with one existing XML documentation warning in `ViewDataKeys`. The solution test command `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 204 cases, including 51 Dashboard HTTP cases. CSharpier formatted the touched C# files and `git diff --check` passed. An isolated Chromium session exercised the sample at desktop and mobile widths, checked confirmation and cancellation, deleted all three sample records, and successfully created a resource afterward. The agent-owned sample server on port 5206 and browser were stopped. Changes are uncommitted. Action-specific view models are next after review.

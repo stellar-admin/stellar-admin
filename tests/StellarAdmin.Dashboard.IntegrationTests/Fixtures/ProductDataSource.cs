@@ -16,6 +16,17 @@ public sealed class ProductDataSource(ProductState state) : IResourceDataSource<
         return Task.CompletedTask;
     }
 
+    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        state.DeleteCalls++;
+
+        return Task.FromResult(
+            int.TryParse(id, out var key)
+                && state.Products.RemoveAll(product => product.Id == key) > 0
+        );
+    }
+
     public Task<Product?> FindAsync(string id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

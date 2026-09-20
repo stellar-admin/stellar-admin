@@ -20,6 +20,16 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public required string CreateLabel { get; init; }
 
     /// <summary>
+    ///     The delete confirmation dialog.
+    /// </summary>
+    public ResourceIndexDeleteDialogViewModel? Delete { get; init; }
+
+    /// <summary>
+    ///     The delete button label.
+    /// </summary>
+    public string? DeleteLabel { get; init; }
+
+    /// <summary>
     ///     The edit link label.
     /// </summary>
     public string? EditLabel { get; init; }

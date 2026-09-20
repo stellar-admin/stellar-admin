@@ -12,6 +12,9 @@ public sealed class InventoryItemDataSource(List<InventoryItem> items)
         return Task.CompletedTask;
     }
 
+    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
+        Task.FromResult(false);
+
     public Task<InventoryItem?> FindAsync(string id, CancellationToken cancellationToken) =>
         Task.FromResult<InventoryItem?>(null);
 

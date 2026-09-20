@@ -13,6 +13,11 @@ public sealed class ResourceOptions<TResource>
     public ResourceCreateOptions<TResource> Create { get; } = new();
 
     /// <summary>
+    ///     The delete configuration.
+    /// </summary>
+    public ResourceDeleteOptions Delete { get; } = new();
+
+    /// <summary>
     ///     The edit page configuration.
     /// </summary>
     public ResourceFormOptions Edit { get; } = new();

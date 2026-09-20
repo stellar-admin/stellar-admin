@@ -26,6 +26,16 @@ public interface IResourceIndexPageViewModel
     string CreateLabel { get; }
 
     /// <summary>
+    ///     The delete confirmation dialog.
+    /// </summary>
+    ResourceIndexDeleteDialogViewModel? Delete { get; }
+
+    /// <summary>
+    ///     The delete button label.
+    /// </summary>
+    string? DeleteLabel { get; }
+
+    /// <summary>
     ///     The edit link label.
     /// </summary>
     string? EditLabel { get; }

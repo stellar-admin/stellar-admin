@@ -1,11 +1,9 @@
 @model ResourceIndexDeleteDialogViewModel
 
-@* The index page's delete confirmation. The grid's delete buttons reference
-   confirmResourceDelete via hx-confirm; the promise resolves with the user's choice. *@
 <sa-alert-dialog id="--delete-confirmation-dialog">
     <sa-alert-dialog-header>
         <sa-alert-dialog-title>@Model.Title</sa-alert-dialog-title>
-        <sa-alert-dialog-description></sa-alert-dialog-description>
+        <sa-alert-dialog-description>@Model.Message</sa-alert-dialog-description>
     </sa-alert-dialog-header>
     <form method="dialog">
         <sa-alert-dialog-footer>
@@ -17,14 +15,12 @@
 </sa-alert-dialog>
 
 <script>
-    async function confirmResourceDelete(elt) {
-        const alertDialogElement = document.getElementById("--delete-confirmation-dialog");
+    document.addEventListener("submit", async (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || !form.hasAttribute("data-resource-delete")) return;
 
-        const description = alertDialogElement.querySelector("[data-slot='alert-dialog-description']");
-        if (description) description.textContent = elt.dataset.deleteMessage ?? "Are you sure you want to delete this record?";
-
-        const alertDialog = window.stellarAdmin.alertDialog(alertDialogElement);
-
-        return await alertDialog.confirmAsync();
-    }
+        event.preventDefault();
+        const dialog = window.stellarAdmin.alertDialog("#--delete-confirmation-dialog");
+        if (await dialog.confirmAsync()) HTMLFormElement.prototype.submit.call(form);
+    });
 </script>

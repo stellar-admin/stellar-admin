@@ -37,6 +37,60 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the default delete cancellation label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> DeleteCancelLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.DeleteCancelLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default delete confirmation button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> DeleteConfirmLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.DeleteConfirmLabel = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default delete confirmation message.
+    /// </summary>
+    public Func<ResourceLabelContext, string> DeleteMessage
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.DeleteMessage = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default delete confirmation title.
+    /// </summary>
+    public Func<ResourceLabelContext, string> DeleteTitle
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.DeleteTitle = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default edit form submit label.
     /// </summary>
     public Func<ResourceLabelContext, string> EditSubmitLabel
@@ -72,6 +126,19 @@ public sealed class ResourceLabelsBuilder
             ArgumentNullException.ThrowIfNull(value);
 
             _services.Configure<ResourceLabelOptions>(options => options.IndexCreateLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default index delete button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> IndexDeleteLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.IndexDeleteLabel = value);
         }
     }
 
