@@ -1,5 +1,7 @@
 using System.Net;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 
@@ -62,6 +64,73 @@ public class ResourceCreateTests
         await Assert
             .That(document.QuerySelector("input[name='__RequestVerificationToken']"))
             .IsNotNull();
+    }
+
+    [Test]
+    public async Task FactoryWithoutParameterlessConstructor_RendersInitialValues()
+    {
+        // Arrange
+        await using var sut = await CreateInventoryHost([], []);
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/InventoryItem/Create");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("input[name='Entity.Name']").GetAttribute("value"))
+            .IsEqualTo("New item");
+    }
+
+    [Test]
+    [Arguments("Notebook", true)]
+    [Arguments("", false)]
+    public async Task FactorySubmission_BindsAndValidatesNewInstance(string name, bool valid)
+    {
+        // Arrange
+        var items = new List<InventoryItem>();
+        var created = new List<InventoryItem>();
+        await using var sut = await CreateInventoryHost(items, created);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/InventoryItem/Create");
+        values["Entity.Name"] = name;
+        values["Entity.Sku"] = "forged";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/InventoryItem/Create", content);
+
+        // Assert
+        await Assert.That(created.Count).IsEqualTo(2);
+        await Assert.That(created[0].Name).IsEqualTo("New item");
+        await Assert.That(created[1].Name).IsEqualTo(valid ? name : null);
+        await Assert.That(created[1].Sku).IsEqualTo("SKU-123");
+        await Assert.That(items.Count).IsEqualTo(valid ? 1 : 0);
+        await Assert
+            .That(response.StatusCode)
+            .IsEqualTo(valid ? HttpStatusCode.Redirect : HttpStatusCode.OK);
+        if (valid)
+        {
+            await Assert.That(items[0]).IsSameReferenceAs(created[1]);
+            await Assert
+                .That(response.Headers.Location?.OriginalString)
+                .IsEqualTo("/stellaradmin/InventoryItem");
+        }
+        else
+        {
+            var document = await response.ReadDocumentAsync();
+            await Assert
+                .That(
+                    document.RequiredElement("input[name='Entity.Name']").GetAttribute("value")
+                        ?? ""
+                )
+                .IsEqualTo("");
+            await Assert
+                .That(
+                    document.RequiredElement("[data-valmsg-for='Entity.Name']").TextContent.Trim()
+                )
+                .IsNotNullOrEmpty();
+        }
     }
 
     [Test]
@@ -158,9 +227,39 @@ public class ResourceCreateTests
         await Assert.That(index).Contains("New notebook");
     }
 
-    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client)
+    private static Task<WebApplication> CreateInventoryHost(
+        List<InventoryItem> items,
+        List<InventoryItem> created
+    ) =>
+        DashboardTestHost.CreateAsync(
+            new([]),
+            configureDashboard: dashboard =>
+            {
+                dashboard.Services.AddSingleton(items);
+                dashboard.AddResource<InventoryItem>(resource =>
+                {
+                    resource.UseDataSource<InventoryItemDataSource>();
+                    resource.Create(create =>
+                    {
+                        create.UseFactory(() =>
+                        {
+                            var item = new InventoryItem("SKU-123");
+                            created.Add(item);
+
+                            return item;
+                        });
+                        create.Fields(fields => fields.Add(item => item.Name));
+                    });
+                });
+            }
+        );
+
+    private static async Task<Dictionary<string, string>> PrepareForm(
+        HttpClient client,
+        string url = "/stellaradmin/Product/Create"
+    )
     {
-        using var response = await client.GetAsync("/stellaradmin/Product/Create");
+        using var response = await client.GetAsync(url);
         response.EnsureSuccessStatusCode();
         var document = await response.ReadDocumentAsync();
         var token = document

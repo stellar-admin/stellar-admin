@@ -30,6 +30,7 @@ builder
             resource.UseDataSource<ProductDataSource>();
             resource.Create(create =>
             {
+                create.UseFactory(() => new Product { Price = 10m });
                 create.Fields(fields =>
                 {
                     fields.Add(product => product.Name);

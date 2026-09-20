@@ -10,7 +10,7 @@ public sealed class ResourceOptions<TResource>
     /// <summary>
     ///     The create page configuration.
     /// </summary>
-    public ResourceCreateOptions Create { get; } = new();
+    public ResourceCreateOptions<TResource> Create { get; } = new();
 
     /// <summary>
     ///     The index page configuration.

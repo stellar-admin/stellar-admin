@@ -47,4 +47,18 @@ public sealed class ResourceCreateBuilder<TResource>
 
         return this;
     }
+
+    /// <summary>
+    ///     Specifies how to instantiate a resource for the create form.
+    /// </summary>
+    public ResourceCreateBuilder<TResource> UseFactory(Func<TResource> factory)
+    {
+        ArgumentNullException.ThrowIfNull(factory);
+
+        _services.Configure<ResourceOptions<TResource>>(options =>
+            options.Create.Factory = factory
+        );
+
+        return this;
+    }
 }

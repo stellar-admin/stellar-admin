@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Before step 4, consolidate Dashboard tests, add a create factory callback, and introduce global label templates, in that order. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Introduce global label templates before step 4. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -43,7 +43,7 @@ Add typed field configuration, page titles, submit labels, model binding, valida
 2. Add an optional create factory callback for resources without a parameterless constructor. Use it for GET and POST initialization before configured-field binding, retaining parameterless construction as the default.
 3. Add overridable global label templates such as `Create {SingularLabel}` and `Edit {SingularLabel}`. Explicit page titles and submit labels take precedence. Keep resolution simple, without captured defaults or synchronization machinery.
 
-Factory and template implementation remain pending. Prove them with focused HTTP scenarios rather than parallel options and controller unit tests. Advanced layouts remain on hold until these foundations are reviewed.
+Test consolidation and the creation factory are implemented. Global label templates remain pending. Prove them with focused HTTP scenarios rather than parallel options and controller unit tests. Advanced layouts remain on hold until these foundations are reviewed.
 
 ### 4. Form layout
 
@@ -222,3 +222,17 @@ Added four internal extension helpers in `tests/StellarAdmin.Dashboard.Integrati
 Updated the four resource scenario classes to use these helpers for repeated parsing and HTML reads. Requests, response status assertions, binding names, and scenario expectations remain visible in each test. RequiredElement prevents a missing input from passing an empty-value assertion. Explicit absence and element-count assertions retain direct queries. PrepareForm stays private to ResourceCreateTests and now reuses response parsing and required-element lookup. No dependencies or additional test cases were introduced.
 
 Verification: the integration project Release build passed with one existing unresolved XML cref warning in ViewDataKeys.cs and zero errors. `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release --no-build` passed all 18 cases. CSharpier and git diff --check passed. The full solution suite was not rerun for this test-helper cleanup. Production code is unchanged. Changes are uncommitted.
+
+## Creation factory callback — 2026-09-20
+
+Added `create.UseFactory(Func<TResource>)` to the create builder. The nullable `ResourceCreateOptions<TResource>.Factory` is configured through the existing options pipeline. Both controller actions call `CreateInstance()`, which invokes the configured factory or falls back to `Activator.CreateInstance<TResource>()` when no factory is supplied. GET invokes the factory for initial form values; POST invokes it again before binding configured fields, then follows the existing validation and persistence flow. Invalid submissions redisplay the bound instance without invoking the factory again. The callback should return a new instance on each invocation.
+
+DashboardPlayground demonstrates factory-provided initial pricing. Added three HTTP cases using InventoryItem, which requires a constructor argument: initial values render, a valid submission persists the fresh factory instance, and an invalid submission redisplays submitted values without persistence. Submission coverage also proves an unconfigured posted field cannot overwrite the factory's value. Existing Product cases continue exercising default parameterless construction. No new unit tests or dependencies were added.
+
+Global label templates are next; advanced layouts remain on hold.
+
+Verification: `dotnet build StellarAdmin.slnx --configuration Release -m:1` passed with 12 existing warnings and zero errors. After correcting a test expectation for MVC's empty-string-to-null binding, the integration project Release rebuild passed with zero warnings/errors and all 21 HTTP cases passed using `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release --no-build`. Discovery listed the three new factory cases. All 10 Dashboard unit tests passed. CSharpier and `git diff --check` passed. The full solution test suite and browser checks were not run. Changes are uncommitted.
+
+Follow-up verification after making Factory nullable and adding CreateInstance: the integration project Release build passed with the existing ViewDataKeys XML cref warning; all 21 HTTP cases passed again. CSharpier and git diff --check passed.
+
+ResourceController now resolves options.Value once into a readonly field during construction and uses that field throughout. The integration project Release build passed with the existing ViewDataKeys XML cref warning; all 21 HTTP cases passed again. CSharpier and git diff --check passed.

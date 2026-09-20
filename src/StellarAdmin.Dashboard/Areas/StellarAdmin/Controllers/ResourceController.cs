@@ -18,13 +18,15 @@ public class ResourceController<TResource>(
     ICompositeViewEngine viewEngine
 ) : Controller
 {
+    private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
+
     /// <summary>
     ///     Displays the create form.
     /// </summary>
     [HttpGet]
     public IActionResult Create()
     {
-        return CreateView(Activator.CreateInstance<TResource>()!);
+        return CreateView(_resourceOptions.Create.CreateInstance()!);
     }
 
     /// <summary>
@@ -35,9 +37,9 @@ public class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreatePost(CancellationToken cancellationToken)
     {
-        var resource = Activator.CreateInstance<TResource>()!;
-        var fields = options
-            .Value.Create.Fields.Select(field => field.FieldName)
+        var resource = _resourceOptions.Create.CreateInstance()!;
+        var fields = _resourceOptions
+            .Create.Fields.Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
 
         var valid = await TryUpdateModelAsync(
@@ -64,23 +66,21 @@ public class ResourceController<TResource>(
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var items = await dataSource.ListAsync(cancellationToken);
-        var resourceOptions = options.Value;
 
         return ResourceView(
             nameof(Index),
             new ResourceIndexPageViewModel<TResource>
             {
-                Columns = resourceOptions.Index.Columns.ToArray(),
+                Columns = _resourceOptions.Index.Columns.ToArray(),
                 Items = items,
-                Title = resourceOptions.Index.Title ?? resourceOptions.PluralLabel,
+                Title = _resourceOptions.Index.Title ?? _resourceOptions.PluralLabel,
             }
         );
     }
 
     private ViewResult CreateView(object resource)
     {
-        var configuration = options.Value;
-        var fields = configuration.Create.Fields.ToArray();
+        var fields = _resourceOptions.Create.Fields.ToArray();
 
         return ResourceView(
             nameof(Create),
@@ -89,9 +89,10 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = fields,
                 Items = fields,
-                Title = configuration.Create.Title ?? "Create " + configuration.SingularLabel,
+                Title = _resourceOptions.Create.Title ?? "Create " + _resourceOptions.SingularLabel,
                 SubmitLabel =
-                    configuration.Create.SubmitLabel ?? "Create " + configuration.SingularLabel,
+                    _resourceOptions.Create.SubmitLabel
+                    ?? "Create " + _resourceOptions.SingularLabel,
             }
         );
     }
