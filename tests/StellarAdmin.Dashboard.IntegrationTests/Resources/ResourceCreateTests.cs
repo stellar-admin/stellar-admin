@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
+using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.TagHelpers;
 using TUnit.Assertions.Enums;
@@ -13,6 +14,65 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ResourceCreateTests
 {
+    [Test]
+    public async Task PersistenceRejection_RedisplaysValuesAndFieldAndSummaryErrors()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)])
+        {
+            CreateResult = ResourceOperationResult.ValidationFailed([
+                new(nameof(Product.Name), "This name is already used."),
+                new(nameof(Product.Name), "Choose another name."),
+                new(null, "The operation was rejected."),
+                new("UnrenderedProperty", "An additional requirement was not met."),
+            ]),
+        };
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.Edit(edit =>
+                    edit.Fields(fields =>
+                    {
+                        fields.Add(product => product.Name);
+                        fields.Add(product => product.Price);
+                    })
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        values["Entity.Name"] = "Attempted name";
+        values["Entity.Price"] = "12.50";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Create", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var document = await response.ReadDocumentAsync();
+        await Assert
+            .That(document.RequiredElement("input[name='Entity.Name']").GetAttribute("value"))
+            .IsEqualTo("Attempted name");
+        await Assert
+            .That(document.RequiredElement("input[name='Entity.Price']").GetAttribute("value"))
+            .IsEqualTo("12.50");
+        await Assert
+            .That(document.RequiredElement("[data-valmsg-for='Entity.Name']").TextContent)
+            .Contains("This name is already used.");
+        await Assert
+            .That(document.RequiredElement(".validation-summary-errors").TextContent)
+            .Contains("The operation was rejected.");
+        await Assert
+            .That(document.RequiredElement(".validation-summary-errors").TextContent)
+            .Contains("An additional requirement was not met.");
+        await Assert.That(state.Products.Count).IsEqualTo(1);
+        await Assert.That(state.Products[0].Name).IsEqualTo("Notebook");
+        await Assert.That(state.Products[0].Price).IsEqualTo(8.50m);
+    }
+
     [Test]
     public async Task ClearedLayout_RendersNoFieldsOrContainers()
     {

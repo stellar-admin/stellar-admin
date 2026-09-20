@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is now implemented and awaiting review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are implemented. The data source contract review is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -60,6 +60,16 @@ Extend the shared controller flow with record lookup, loading edit values, updat
 Give Product separate create and edit models, including a form-only field. Prove typed field/layout configuration, initialization/loading, binding, validation, error redisplay, and explicit mapping to the resource through the normal controller workflow. Edit identifies the resource through the route independently of posted values. Keep the action model distinct from the page presentation model.
 
 This step must establish the core capability before adding index features or reconnecting integrations. It should expose any assumptions that every form uses TResource early enough to correct them. Decide how selecting a different form model interacts with previously configured fields and page settings. Password and confirmation fields will later use this same capability in Identity, with appropriate sensitive-value redisplay handling.
+
+#### Agreed implementation checkpoints — 2026-09-20
+
+1. Introduce shared operation results in existing data source create, update, and delete operations. Map field and general validation errors to the form, preserve submitted values, return 404 for missing records, and redisplay the index with a summary for rejected deletes. Prove persistence failures through HTTP scenarios. Keep current resource models.
+2. Settle the data source contract before adding handlers. Sketch ordinary and custom registrations together and decide how consumers avoid implementing unused operations. Interface composition remains a proposal, not a decision.
+3. Implement custom create end-to-end with `Create<TModel, THandler>()`. A custom model requires a compatible handler. Do not expose a model-only overload. Callback registration returns the resource builder, and no-callback registration returns the action builder. Preserve typed fields/layouts and factory support. Keep the shared controller responsible for HTTP binding, validation, antiforgery, and responses. Add only the internal typed connection required to execute create.
+4. Demonstrate a separate create model with password and confirmation in DashboardPlayground. Verify success, model validation, and handler validation with scenario integration tests. Pause for user review before custom edit.
+5. Extend the reviewed design to `Edit<TModel, THandler>()`, including loading and route-key preservation. Prove custom create with ordinary edit and ordinary create with custom edit.
+
+Ordinary create and edit continue to use TResource and the data source. Custom handlers contain persistence and model-loading behavior, without requiring an application controller. Expected persistence rejection uses operation results. Unexpected exceptions propagate. Error field names refer to model properties without the MVC binding prefix. Handler contracts and internal adapters remain design sketches until their checkpoint. Decide how errors for unrendered fields remain visible.
 
 ### 7. Index features
 
@@ -334,3 +344,16 @@ Global delegate defaults cover `DeleteTitle`, `DeleteMessage`, `DeleteConfirmLab
 Updated active sample and test data sources. The sample now handles creating a resource after deleting every existing item. Added ten integration cases covering label defaults and overrides, rendered confirmation, route-key protection, successful deletion and redirect, missing records including disappearance after rendering, GET rejection, missing antiforgery tokens, and resources without keys. Existing create and edit scenarios remain intact.
 
 Verification: the final Release solution build with `--no-restore -m:1` passed with one existing XML documentation warning in `ViewDataKeys`. The solution test command `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 204 cases, including 51 Dashboard HTTP cases. CSharpier formatted the touched C# files and `git diff --check` passed. An isolated Chromium session exercised the sample at desktop and mobile widths, checked confirmation and cancellation, deleted all three sample records, and successfully created a resource afterward. The agent-owned sample server on port 5206 and browser were stopped. Changes are uncommitted. Action-specific view models are next after review.
+
+
+## Step 6a: operation results — 2026-09-20
+
+Implemented the first agreed checkpoint without introducing action-specific models or handlers. CreateAsync, UpdateAsync, and DeleteAsync now return ResourceOperationResult with Success(), NotFound(), or ValidationFailed(...) outcomes. ResourceValidationError carries a model property name and message, with null representing an operation-level error. Result construction snapshots errors and rejects empty error collections or blank messages. Expected failures must not persist changes. Unexpected exceptions remain exceptions.
+
+The shared controller maps configured field errors to the Entity binding prefix, redisplays create/edit with attempted values, and puts general errors and errors for unrendered fields into the summary. Delete validation failures reload the index in the same response and show all messages in its summary. This preserves ModelState without TempData. Refreshing that POST can resubmit the delete. Missing-resource results return 404, while successful operations retain their existing redirects. Applications overriding the full index view can render the errors through the standard MVC validation summary.
+
+Updated all active sample and fixture data sources to the new return contract. Added three HTTP scenarios covering create/edit value preservation, field and general errors, unrendered-field fallback, unchanged persistence after rejection, and rejected deletion with encoded messages and the record still visible. Existing success, not-found, model-validation, antiforgery, and view-override scenarios remain passing. No duplicate unit suite was added.
+
+Verification: the final Release solution build (`dotnet build StellarAdmin.slnx --configuration Release --no-restore -m:1`) passed with one existing unresolved XML cref warning in ViewDataKeys. The initial full build reported 12 existing warnings. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 207 tests, including 54 Dashboard HTTP scenarios. The runner initially failed under the sandbox's IPC socket restrictions and passed with escalated execution. CSharpier and `git diff --check` passed. No browser check was performed. Changes remain uncommitted.
+
+Next: review the data source contract for unused operations before implementing custom create. Custom model and handler pairing is agreed, but interface composition and internal adapter details remain proposals.

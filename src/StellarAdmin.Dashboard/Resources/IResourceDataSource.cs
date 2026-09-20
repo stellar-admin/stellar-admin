@@ -3,17 +3,24 @@ namespace StellarAdmin.Dashboard.Resources;
 /// <summary>
 ///     Provides data operations for a resource.
 /// </summary>
+/// <remarks>
+///     Write operations return validation errors for expected rejection and must not persist rejected changes.
+///     Error field names are model property names without a form prefix. Unexpected failures should throw.
+/// </remarks>
 public interface IResourceDataSource<TResource>
 {
     /// <summary>
     ///     Persists a new resource.
     /// </summary>
-    Task CreateAsync(TResource resource, CancellationToken cancellationToken);
+    Task<ResourceOperationResult> CreateAsync(
+        TResource resource,
+        CancellationToken cancellationToken
+    );
 
     /// <summary>
-    ///     Deletes the resource identified by the key, returning false if it does not exist.
+    ///     Deletes the resource identified by the key, reporting not-found if it does not exist.
     /// </summary>
-    Task<bool> DeleteAsync(string id, CancellationToken cancellationToken);
+    Task<ResourceOperationResult> DeleteAsync(string id, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Returns a resource for editing, or null when the key does not exist.
@@ -29,7 +36,11 @@ public interface IResourceDataSource<TResource>
     Task<IReadOnlyList<TResource>> ListAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    ///     Updates the resource identified by the key, returning false if it no longer exists.
+    ///     Updates the resource identified by the key, reporting not-found if it no longer exists.
     /// </summary>
-    Task<bool> UpdateAsync(string id, TResource resource, CancellationToken cancellationToken);
+    Task<ResourceOperationResult> UpdateAsync(
+        string id,
+        TResource resource,
+        CancellationToken cancellationToken
+    );
 }

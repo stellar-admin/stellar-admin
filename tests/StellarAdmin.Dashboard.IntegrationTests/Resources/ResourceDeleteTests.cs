@@ -2,12 +2,50 @@ using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
+using StellarAdmin.Dashboard.Resources;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ResourceDeleteTests
 {
+    [Test]
+    public async Task PersistenceRejection_RedisplaysIndexWithErrorsAndRetainsResource()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)])
+        {
+            DeleteResult = ResourceOperationResult.ValidationFailed([
+                new(null, "This product is still in use."),
+                new(nameof(Product.Name), "<script>unsafe</script>"),
+            ]),
+        };
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => resource.UseKey(product => product.Id)
+        );
+        using var client = sut.GetTestClient();
+        using var content = new FormUrlEncodedContent(
+            await PrepareForm(client, "/stellaradmin/Product")
+        );
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Delete/7", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var document = await response.ReadDocumentAsync();
+        var summary = document.RequiredElement(".validation-summary-errors");
+        await Assert.That(summary.TextContent).Contains("This product is still in use.");
+        await Assert.That(summary.TextContent).Contains("<script>unsafe</script>");
+        await Assert.That(summary.QuerySelector("script")).IsNull();
+        await Assert
+            .That(document.QuerySelector("form[action='/stellaradmin/Product/Delete/7']"))
+            .IsNotNull();
+        await Assert.That(state.Products.Count).IsEqualTo(1);
+        await Assert.That(state.DeleteCalls).IsEqualTo(1);
+    }
+
     [Test]
     [Arguments(
         0,

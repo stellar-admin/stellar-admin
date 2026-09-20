@@ -1,7 +1,13 @@
+using StellarAdmin.Dashboard.Resources;
+
 namespace StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 
 public sealed class ProductState(IReadOnlyList<Product> products)
 {
+    public ResourceOperationResult? CreateResult { get; set; }
+    public ResourceOperationResult? DeleteResult { get; set; }
+    public ResourceOperationResult? UpdateResult { get; set; }
+
     public int DeleteCalls { get; set; }
 
     public bool DisappearOnUpdate { get; set; }

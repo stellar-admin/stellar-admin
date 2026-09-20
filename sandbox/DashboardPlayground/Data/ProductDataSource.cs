@@ -28,7 +28,10 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
         },
     ];
 
-    public Task CreateAsync(Product resource, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> CreateAsync(
+        Product resource,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
@@ -37,17 +40,19 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
             _products.Add(resource);
         }
 
-        return Task.CompletedTask;
+        return Task.FromResult(ResourceOperationResult.Success());
     }
 
-    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
             return Task.FromResult(
                 int.TryParse(id, out var key)
-                    && _products.RemoveAll(product => product.Id == key) > 0
+                && _products.RemoveAll(product => product.Id == key) > 0
+                    ? ResourceOperationResult.Success()
+                    : ResourceOperationResult.NotFound()
             );
         }
     }
@@ -83,7 +88,11 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
         }
     }
 
-    public Task<bool> UpdateAsync(string id, Product resource, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> UpdateAsync(
+        string id,
+        Product resource,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
@@ -93,7 +102,7 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
                 : -1;
             if (index < 0)
             {
-                return Task.FromResult(false);
+                return Task.FromResult(ResourceOperationResult.NotFound());
             }
 
             _products[index] = new Product
@@ -103,7 +112,7 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
                 Price = resource.Price,
             };
 
-            return Task.FromResult(true);
+            return Task.FromResult(ResourceOperationResult.Success());
         }
     }
 }

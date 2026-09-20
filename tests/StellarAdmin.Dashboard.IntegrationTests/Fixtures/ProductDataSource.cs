@@ -6,24 +6,38 @@ public sealed class ProductDataSource(ProductState state) : IResourceDataSource<
 {
     private readonly Guid _id = Guid.NewGuid();
 
-    public Task CreateAsync(Product resource, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> CreateAsync(
+        Product resource,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (state.CreateResult is { } result)
+        {
+            return Task.FromResult(result);
+        }
+
         state.SubmittedId = resource.Id;
         resource.Id = state.Products.Count + 1;
         state.Products.Add(resource);
 
-        return Task.CompletedTask;
+        return Task.FromResult(ResourceOperationResult.Success());
     }
 
-    public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> DeleteAsync(string id, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         state.DeleteCalls++;
+        if (state.DeleteResult is { } result)
+        {
+            return Task.FromResult(result);
+        }
 
         return Task.FromResult(
             int.TryParse(id, out var key)
-                && state.Products.RemoveAll(product => product.Id == key) > 0
+            && state.Products.RemoveAll(product => product.Id == key) > 0
+                ? ResourceOperationResult.Success()
+                : ResourceOperationResult.NotFound()
         );
     }
 
@@ -47,21 +61,29 @@ public sealed class ProductDataSource(ProductState state) : IResourceDataSource<
         return Task.FromResult<IReadOnlyList<Product>>(state.Products);
     }
 
-    public Task<bool> UpdateAsync(string id, Product resource, CancellationToken cancellationToken)
+    public Task<ResourceOperationResult> UpdateAsync(
+        string id,
+        Product resource,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         state.UpdateCalls++;
+        if (state.UpdateResult is { } result)
+        {
+            return Task.FromResult(result);
+        }
         state.SubmittedId = resource.Id;
         var index = int.TryParse(id, out var key)
             ? state.Products.FindIndex(product => product.Id == key)
             : -1;
         if (index < 0 || state.DisappearOnUpdate)
         {
-            return Task.FromResult(false);
+            return Task.FromResult(ResourceOperationResult.NotFound());
         }
 
         state.Products[index] = new(key, resource.Name, resource.Price);
 
-        return Task.FromResult(true);
+        return Task.FromResult(ResourceOperationResult.Success());
     }
 }

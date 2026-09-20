@@ -112,11 +112,15 @@ public class ResourceBuilderTests
 
     public sealed class ProductDataSource : IResourceDataSource<Product>
     {
-        public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
-            Task.CompletedTask;
+        public Task<ResourceOperationResult> CreateAsync(
+            Product resource,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
 
-        public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
-            Task.FromResult(false);
+        public Task<ResourceOperationResult> DeleteAsync(
+            string id,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.NotFound());
 
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);
@@ -124,20 +128,24 @@ public class ResourceBuilderTests
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
 
-        public Task<bool> UpdateAsync(
+        public Task<ResourceOperationResult> UpdateAsync(
             string id,
             Product resource,
             CancellationToken cancellationToken
-        ) => Task.FromResult(false);
+        ) => Task.FromResult(ResourceOperationResult.NotFound());
     }
 
     public sealed class ReplacementDataSource : IResourceDataSource<Product>
     {
-        public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
-            Task.CompletedTask;
+        public Task<ResourceOperationResult> CreateAsync(
+            Product resource,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
 
-        public Task<bool> DeleteAsync(string id, CancellationToken cancellationToken) =>
-            Task.FromResult(false);
+        public Task<ResourceOperationResult> DeleteAsync(
+            string id,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.NotFound());
 
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);
@@ -145,10 +153,10 @@ public class ResourceBuilderTests
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
 
-        public Task<bool> UpdateAsync(
+        public Task<ResourceOperationResult> UpdateAsync(
             string id,
             Product resource,
             CancellationToken cancellationToken
-        ) => Task.FromResult(false);
+        ) => Task.FromResult(ResourceOperationResult.NotFound());
     }
 }

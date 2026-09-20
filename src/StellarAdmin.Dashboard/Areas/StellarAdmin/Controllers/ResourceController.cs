@@ -56,7 +56,17 @@ public class ResourceController<TResource>(
             return CreateView(resource);
         }
 
-        await dataSource.CreateAsync(resource, cancellationToken);
+        var result = await dataSource.CreateAsync(resource, cancellationToken);
+        if (result.IsNotFound)
+        {
+            return NotFound();
+        }
+
+        if (!result.IsSuccess)
+        {
+            AddValidationErrors(result, fields);
+            return CreateView(resource);
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -76,9 +86,16 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        if (!await dataSource.DeleteAsync(id, cancellationToken))
+        var result = await dataSource.DeleteAsync(id, cancellationToken);
+        if (result.IsNotFound)
         {
             return NotFound();
+        }
+
+        if (!result.IsSuccess)
+        {
+            AddValidationErrors(result, []);
+            return await Index(cancellationToken);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -141,9 +158,16 @@ public class ResourceController<TResource>(
             return EditView(resource);
         }
 
-        if (!await dataSource.UpdateAsync(id, resource, cancellationToken))
+        var result = await dataSource.UpdateAsync(id, resource, cancellationToken);
+        if (result.IsNotFound)
         {
             return NotFound();
+        }
+
+        if (!result.IsSuccess)
+        {
+            AddValidationErrors(result, fields);
+            return EditView(resource);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -184,6 +208,21 @@ public class ResourceController<TResource>(
                 Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
             }
         );
+    }
+
+    private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
+    {
+        foreach (var error in result.Errors)
+        {
+            var key =
+                error.FieldName is not null && fields.Contains(error.FieldName)
+                    ? ModelNames.CreatePropertyModelName(
+                        ResourceFormPageViewModel.BindingPrefix,
+                        error.FieldName
+                    )
+                    : string.Empty;
+            ModelState.AddModelError(key, error.Message);
+        }
     }
 
     private ResourceLabelContext CreateLabelContext() =>

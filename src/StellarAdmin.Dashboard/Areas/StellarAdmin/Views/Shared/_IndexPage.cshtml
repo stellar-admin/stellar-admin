@@ -9,6 +9,7 @@
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
     </sa-page-header>
+    @Html.ValidationSummary(excludePropertyErrors: true)
     <div id="index-page-data-grid">
         <partial name="_IndexDataGrid" />
     </div>
