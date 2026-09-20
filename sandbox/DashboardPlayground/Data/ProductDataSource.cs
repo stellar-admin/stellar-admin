@@ -3,7 +3,7 @@ using StellarAdmin.Dashboard.Resources;
 
 namespace DashboardPlayground.Data;
 
-public sealed class ProductDataSource : IResourceDataSource<Product>
+public sealed class ProductDataSource : IResourceCrudDataSource<Product>
 {
     private readonly Lock _lock = new();
     private readonly List<Product> _products =

@@ -81,8 +81,8 @@ public class ResourceCreateTests
             new([]),
             resource =>
             {
-                ConfigureLayout(resource);
-                resource.Create(create => create.Fields(fields => fields.Clear()));
+                var create = ConfigureLayout(resource);
+                create.Fields(fields => fields.Clear());
             }
         );
         using var client = sut.GetTestClient();
@@ -234,7 +234,7 @@ public class ResourceCreateTests
         var state = new ProductState([]);
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
-            ConfigureLayout,
+            resource => ConfigureLayout(resource),
             configureDashboard: dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
                 {
@@ -320,16 +320,13 @@ public class ResourceCreateTests
             new([]),
             resource =>
             {
-                ConfigureLayout(resource);
-                resource.Create(create =>
+                var create = ConfigureLayout(resource);
+                if (overrideLayout)
                 {
-                    if (overrideLayout)
-                    {
-                        create.SectionLayout = FormSectionLayout.Card;
-                    }
+                    create.SectionLayout = FormSectionLayout.Card;
+                }
 
-                    create.Fields(fields => fields.Add(product => product.Id));
-                });
+                create.Fields(fields => fields.Add(product => product.Id));
             },
             dashboard =>
                 dashboard
@@ -379,7 +376,10 @@ public class ResourceCreateTests
     {
         // Arrange
         var state = new ProductState([]);
-        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureLayout);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => ConfigureLayout(resource)
+        );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "New notebook";
@@ -404,9 +404,12 @@ public class ResourceCreateTests
         await Assert.That(index).Contains("New notebook");
     }
 
-    private static void ConfigureLayout(ResourceBuilder<Product> resource) =>
-        resource.Create(create =>
-            create.Fields(fields =>
+    private static ResourceCreateBuilder<Product> ConfigureLayout(
+        ResourceBuilder<Product> resource
+    ) =>
+        resource
+            .Create()
+            .Fields(fields =>
             {
                 fields.Clear();
                 var section = fields.AddSection("Product <details>");
@@ -419,8 +422,7 @@ public class ResourceCreateTests
                     group.Add(product => product.Name).Title = "Item name";
                 });
                 row.AddGroup().Add(product => product.Price);
-            })
-        );
+            });
 
     private static Task<WebApplication> CreateInventoryHost(
         List<InventoryItem> items,

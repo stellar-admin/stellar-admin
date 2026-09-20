@@ -18,7 +18,7 @@ public sealed class ResourceEditBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Edit.SectionLayout = value
+                options.Edit!.SectionLayout = value
             );
     }
 
@@ -29,7 +29,7 @@ public sealed class ResourceEditBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Edit.SubmitLabel = value
+                options.Edit!.SubmitLabel = value
             );
     }
 
@@ -39,7 +39,7 @@ public sealed class ResourceEditBuilder<TResource>
     public string? Title
     {
         set =>
-            _services.Configure<ResourceOptions<TResource>>(options => options.Edit.Title = value);
+            _services.Configure<ResourceOptions<TResource>>(options => options.Edit!.Title = value);
     }
 
     internal ResourceEditBuilder(IServiceCollection services) => _services = services;
@@ -54,7 +54,7 @@ public sealed class ResourceEditBuilder<TResource>
         configure(
             new(action =>
                 _services.Configure<ResourceOptions<TResource>>(options =>
-                    action(options.Edit.Items)
+                    action(options.Edit!.Items)
                 )
             )
         );

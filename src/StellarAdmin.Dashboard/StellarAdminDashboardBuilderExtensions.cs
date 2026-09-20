@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.Controllers;
+using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
 
@@ -20,7 +21,30 @@ public static class StellarAdminDashboardBuilderExtensions
             ArgumentNullException.ThrowIfNull(builder);
 
             builder.Services.AddOptions<ResourceLabelOptions>();
-            builder.Services.AddOptions<ResourceOptions<TResource>>();
+            builder
+                .Services.AddOptions<ResourceOptions<TResource>>()
+                .Validate(
+                    options =>
+                        options.Create is null
+                        || options.CreateHandler is not null
+                        || options.DataSourceType is { } type
+                            && typeof(IResourceCreateHandler<TResource>).IsAssignableFrom(type),
+                    "The create form requires a data source implementing IResourceCreateHandler or an explicit create handler."
+                )
+                .Validate(
+                    options =>
+                        options.Edit is null
+                        || options.DataSourceType is { } type
+                            && typeof(IResourceEditHandler<TResource>).IsAssignableFrom(type),
+                    "The edit form requires a data source implementing IResourceEditHandler."
+                )
+                .Validate(
+                    options =>
+                        options.Delete is null
+                        || options.DataSourceType is { } type
+                            && typeof(IResourceDeleteHandler<TResource>).IsAssignableFrom(type),
+                    "Delete configuration requires a data source implementing IResourceDeleteHandler."
+                );
             builder.AddController(
                 typeof(ResourceController<TResource>),
                 typeof(TResource).Name.Split('`')[0]

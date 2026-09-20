@@ -22,13 +22,17 @@ public class ResourceController<TResource>(
     private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
+    private bool CanCreate => _resourceOptions.Create is not null;
+
     /// <summary>
     ///     Displays the create form.
     /// </summary>
     [HttpGet]
     public IActionResult Create()
     {
-        return CreateView(_resourceOptions.Create.CreateInstance()!);
+        return _resourceOptions.Create is { } create
+            ? CreateView(create.CreateModel())
+            : NotFound();
     }
 
     /// <summary>
@@ -39,14 +43,19 @@ public class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreatePost(CancellationToken cancellationToken)
     {
-        var resource = _resourceOptions.Create.CreateInstance()!;
+        if (_resourceOptions.Create is null)
+        {
+            return NotFound();
+        }
+
+        var resource = _resourceOptions.Create.CreateModel();
         var fields = _resourceOptions
             .Create.Fields.Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
 
         var valid = await TryUpdateModelAsync(
             resource,
-            typeof(TResource),
+            _resourceOptions.Create.ModelType,
             ResourceFormPageViewModel.BindingPrefix,
             await CompositeValueProvider.CreateAsync(ControllerContext),
             metadata => fields.Contains(metadata.PropertyName ?? "")
@@ -56,7 +65,12 @@ public class ResourceController<TResource>(
             return CreateView(resource);
         }
 
-        var result = await dataSource.CreateAsync(resource, cancellationToken);
+        var result = _resourceOptions.CreateHandler is { } handler
+            ? await handler(HttpContext.RequestServices, resource, cancellationToken)
+            : await ((IResourceCreateHandler<TResource>)dataSource).CreateAsync(
+                (TResource)resource,
+                cancellationToken
+            );
         if (result.IsNotFound)
         {
             return NotFound();
@@ -81,12 +95,17 @@ public class ResourceController<TResource>(
         CancellationToken cancellationToken
     )
     {
-        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        if (
+            _resourceOptions.Delete is null
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+            || dataSource is not IResourceDeleteHandler<TResource> handler
+        )
         {
             return NotFound();
         }
 
-        var result = await dataSource.DeleteAsync(id, cancellationToken);
+        var result = await handler.DeleteAsync(id, cancellationToken);
         if (result.IsNotFound)
         {
             return NotFound();
@@ -110,12 +129,17 @@ public class ResourceController<TResource>(
         CancellationToken cancellationToken
     )
     {
-        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        if (
+            _resourceOptions.Edit is null
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+            || dataSource is not IResourceEditHandler<TResource> handler
+        )
         {
             return NotFound();
         }
 
-        var resource = await dataSource.FindAsync(id, cancellationToken);
+        var resource = await handler.FindAsync(id, cancellationToken);
 
         return resource is null ? NotFound() : EditView(resource);
     }
@@ -131,12 +155,17 @@ public class ResourceController<TResource>(
         CancellationToken cancellationToken
     )
     {
-        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        if (
+            _resourceOptions.Edit is null
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+            || dataSource is not IResourceEditHandler<TResource> handler
+        )
         {
             return NotFound();
         }
 
-        var resource = await dataSource.FindAsync(id, cancellationToken);
+        var resource = await handler.FindAsync(id, cancellationToken);
         if (resource is null)
         {
             return NotFound();
@@ -158,7 +187,7 @@ public class ResourceController<TResource>(
             return EditView(resource);
         }
 
-        var result = await dataSource.UpdateAsync(id, resource, cancellationToken);
+        var result = await handler.UpdateAsync(id, resource, cancellationToken);
         if (result.IsNotFound)
         {
             return NotFound();
@@ -186,19 +215,23 @@ public class ResourceController<TResource>(
             nameof(Index),
             new ResourceIndexPageViewModel<TResource>
             {
+                CanCreate = CanCreate,
+                CanEdit =
+                    _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
                     _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
-                Delete = _resourceOptions.KeySelector is null
-                    ? null
-                    : new(
-                        _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
-                        _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
-                        _resourceOptions.Delete.ConfirmLabel
-                            ?? _labelOptions.DeleteConfirmLabel(labels),
-                        _resourceOptions.Delete.CancelLabel
-                            ?? _labelOptions.DeleteCancelLabel(labels)
-                    ),
+                Delete =
+                    _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
+                        ? null
+                        : new(
+                            _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
+                            _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
+                            _resourceOptions.Delete.ConfirmLabel
+                                ?? _labelOptions.DeleteConfirmLabel(labels),
+                            _resourceOptions.Delete.CancelLabel
+                                ?? _labelOptions.DeleteCancelLabel(labels)
+                        ),
                 DeleteLabel =
                     _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
                 EditLabel =
@@ -230,7 +263,8 @@ public class ResourceController<TResource>(
 
     private ViewResult CreateView(object resource)
     {
-        var fields = _resourceOptions.Create.Fields.ToArray();
+        var create = _resourceOptions.Create!;
+        var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
 
         return ResourceView(
@@ -239,17 +273,17 @@ public class ResourceController<TResource>(
             {
                 Entity = resource,
                 Fields = fields,
-                Items = _resourceOptions.Create.Items.ToArray(),
-                SectionLayout = _resourceOptions.Create.SectionLayout,
-                Title = _resourceOptions.Create.Title ?? _labelOptions.CreateTitle(labels),
-                SubmitLabel =
-                    _resourceOptions.Create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
+                Items = create.Items.ToArray(),
+                SectionLayout = create.SectionLayout,
+                Title = create.Title ?? _labelOptions.CreateTitle(labels),
+                SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
             }
         );
     }
 
     private ViewResult EditView(object resource)
     {
+        var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
 
         return ResourceView(
@@ -257,12 +291,11 @@ public class ResourceController<TResource>(
             new ResourceFormPageViewModel
             {
                 Entity = resource,
-                Fields = _resourceOptions.Edit.Fields,
-                Items = _resourceOptions.Edit.Items.ToArray(),
-                SectionLayout = _resourceOptions.Edit.SectionLayout,
-                Title = _resourceOptions.Edit.Title ?? _labelOptions.EditTitle(labels),
-                SubmitLabel =
-                    _resourceOptions.Edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
+                Fields = edit.Fields,
+                Items = edit.Items.ToArray(),
+                SectionLayout = edit.SectionLayout,
+                Title = edit.Title ?? _labelOptions.EditTitle(labels),
+                SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
             }
         );
     }

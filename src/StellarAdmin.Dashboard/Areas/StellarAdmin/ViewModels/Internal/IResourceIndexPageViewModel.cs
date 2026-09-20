@@ -11,7 +11,12 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 public interface IResourceIndexPageViewModel
 {
     /// <summary>
-    ///     Whether resources have keys for edit links.
+    ///     Whether resources can be created.
+    /// </summary>
+    bool CanCreate { get; }
+
+    /// <summary>
+    ///     Whether resources can be edited.
     /// </summary>
     bool CanEdit { get; }
 

@@ -22,7 +22,7 @@ public class ResourceDeleteTests
         };
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
-            resource => resource.UseKey(product => product.Id)
+            resource => resource.UseKey(product => product.Id).Delete()
         );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
@@ -87,6 +87,7 @@ public class ResourceDeleteTests
             resource =>
             {
                 resource.UseKey(product => product.Id);
+                resource.Delete();
                 if (configuration > 0)
                 {
                     resource.SingularLabel = "Stock item";
@@ -164,7 +165,7 @@ public class ResourceDeleteTests
         var state = new ProductState([new(7, "Notebook", 8.50m), new(8, "Lamp", 24m)]);
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
-            resource => resource.UseKey(product => product.Id)
+            resource => resource.UseKey(product => product.Id).Delete()
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/Product");
@@ -199,7 +200,7 @@ public class ResourceDeleteTests
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
-            resource => resource.UseKey(product => product.Id)
+            resource => resource.UseKey(product => product.Id).Delete()
         );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
@@ -224,7 +225,7 @@ public class ResourceDeleteTests
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
-            resource => resource.UseKey(product => product.Id)
+            resource => resource.UseKey(product => product.Id).Delete()
         );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
@@ -247,7 +248,10 @@ public class ResourceDeleteTests
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await DashboardTestHost.CreateAsync(state);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => resource.Delete()
+        );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(await PrepareForm(client));
 

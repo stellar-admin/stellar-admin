@@ -10,6 +10,16 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageViewModel
 {
     /// <summary>
+    ///     Whether resources can be created.
+    /// </summary>
+    public bool CanCreate { get; init; }
+
+    /// <summary>
+    ///     Whether resources can be edited.
+    /// </summary>
+    public bool CanEdit { get; init; }
+
+    /// <summary>
     ///     The columns displayed in order.
     /// </summary>
     public required IReadOnlyList<DataGridColumnOptions> Columns { get; init; }
@@ -48,8 +58,6 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     ///     The page title.
     /// </summary>
     public required string Title { get; init; }
-
-    bool IResourceIndexPageViewModel.CanEdit => KeySelector is not null;
 
     IEnumerable IResourceIndexPageViewModel.Items => Items;
 

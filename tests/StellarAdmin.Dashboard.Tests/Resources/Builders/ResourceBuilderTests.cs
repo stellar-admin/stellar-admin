@@ -13,6 +13,7 @@ public class ResourceBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
         sut.Create(create =>
             create.Fields(fields =>
                 fields.AddSection(
@@ -38,17 +39,17 @@ public class ResourceBuilderTests
             .That(firstOptions.Index.Columns[0])
             .IsNotSameReferenceAs(secondOptions.Index.Columns[0]);
         await Assert
-            .That(firstOptions.Create.Items[0])
-            .IsNotSameReferenceAs(secondOptions.Create.Items[0]);
-        var firstSection = (FormSectionOptions)firstOptions.Create.Items[0];
-        var secondSection = (FormSectionOptions)secondOptions.Create.Items[0];
+            .That(firstOptions.Create!.Items[0])
+            .IsNotSameReferenceAs(secondOptions.Create!.Items[0]);
+        var firstSection = (FormSectionOptions)firstOptions.Create!.Items[0];
+        var secondSection = (FormSectionOptions)secondOptions.Create!.Items[0];
         await Assert.That(firstSection.Items[0]).IsNotSameReferenceAs(secondSection.Items[0]);
         await Assert
-            .That(firstOptions.Create.Fields[0])
-            .IsNotSameReferenceAs(secondOptions.Create.Fields[0]);
+            .That(firstOptions.Create!.Fields[0])
+            .IsNotSameReferenceAs(secondOptions.Create!.Fields[0]);
         await Assert
-            .That(firstOptions.Create.Fields[0].Editor)
-            .IsNotSameReferenceAs(secondOptions.Create.Fields[0].Editor);
+            .That(firstOptions.Create!.Fields[0].Editor)
+            .IsNotSameReferenceAs(secondOptions.Create!.Fields[0].Editor);
     }
 
     [Test]
@@ -71,6 +72,40 @@ public class ResourceBuilderTests
         await Assert
             .That(source)
             .IsSameReferenceAs(provider.GetRequiredService<ProductDataSource>());
+    }
+
+    [Test]
+    [Arguments("create")]
+    [Arguments("edit")]
+    [Arguments("delete")]
+    public async Task UseDataSource_WhenConfiguredActionIsUnsupported_RejectsConfiguration(
+        string action
+    )
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ReadOnlyDataSource>();
+        switch (action)
+        {
+            case "create":
+                sut.Create();
+                break;
+            case "edit":
+                sut.Edit(_ => { });
+                break;
+            case "delete":
+                sut.Delete(_ => { });
+                break;
+        }
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(act).Throws<OptionsValidationException>();
     }
 
     [Test]
@@ -110,7 +145,7 @@ public class ResourceBuilderTests
         public string Name { get; set; } = "";
     }
 
-    public sealed class ProductDataSource : IResourceDataSource<Product>
+    public sealed class ProductDataSource : IResourceCrudDataSource<Product>
     {
         public Task<ResourceOperationResult> CreateAsync(
             Product resource,
@@ -135,7 +170,13 @@ public class ResourceBuilderTests
         ) => Task.FromResult(ResourceOperationResult.NotFound());
     }
 
-    public sealed class ReplacementDataSource : IResourceDataSource<Product>
+    public sealed class ReadOnlyDataSource : IResourceDataSource<Product>
+    {
+        public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Product>>([]);
+    }
+
+    public sealed class ReplacementDataSource : IResourceCrudDataSource<Product>
     {
         public Task<ResourceOperationResult> CreateAsync(
             Product resource,

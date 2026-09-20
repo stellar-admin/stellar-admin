@@ -8,6 +8,8 @@ public sealed class ProductState(IReadOnlyList<Product> products)
     public ResourceOperationResult? DeleteResult { get; set; }
     public ResourceOperationResult? UpdateResult { get; set; }
 
+    public int CreateCalls { get; set; }
+
     public int DeleteCalls { get; set; }
 
     public bool DisappearOnUpdate { get; set; }

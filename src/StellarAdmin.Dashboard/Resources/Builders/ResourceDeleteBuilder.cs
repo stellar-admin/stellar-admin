@@ -17,7 +17,7 @@ public sealed class ResourceDeleteBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Delete.CancelLabel = value
+                options.Delete!.CancelLabel = value
             );
     }
 
@@ -28,7 +28,7 @@ public sealed class ResourceDeleteBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Delete.ConfirmLabel = value
+                options.Delete!.ConfirmLabel = value
             );
     }
 
@@ -39,7 +39,7 @@ public sealed class ResourceDeleteBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Delete.Message = value
+                options.Delete!.Message = value
             );
     }
 
@@ -50,7 +50,7 @@ public sealed class ResourceDeleteBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Delete.Title = value
+                options.Delete!.Title = value
             );
     }
 

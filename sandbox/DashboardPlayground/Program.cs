@@ -21,6 +21,7 @@ builder
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<ProductDataSource>();
+builder.Services.AddSingleton<CustomerDataSource>();
 builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
@@ -31,9 +32,54 @@ builder
             labels.CreateSubmitLabel = resource => $"Add {resource.SingularLabel}";
         });
 
+        dashboard.AddResource<Customer>(resource =>
+        {
+            resource.UseDataSource<CustomerDataSource>();
+            resource.Delete();
+            resource.UseKey(customer => customer.Id);
+            resource.Index(index =>
+                index.Columns(columns =>
+                {
+                    columns.Add(customer => customer.Name);
+                    columns.Add(customer => customer.Email);
+                })
+            );
+            resource.Create<CreateCustomerModel, CreateCustomerHandler>(create =>
+                create.Fields(fields =>
+                {
+                    fields.AddSection(
+                        "Customer details",
+                        section =>
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.Name);
+                                row.Add(model => model.Email);
+                            })
+                    );
+                    fields.AddSection(
+                        "Password",
+                        section =>
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.Password);
+                                row.Add(model => model.PasswordConfirmation);
+                            })
+                    );
+                })
+            );
+            resource.Edit(edit =>
+                edit.Fields(fields =>
+                {
+                    fields.Add(customer => customer.Name);
+                    fields.Add(customer => customer.Email);
+                })
+            );
+        });
+
         dashboard.AddResource<Product>(resource =>
         {
             resource.UseDataSource<ProductDataSource>();
+            resource.Delete();
             resource.UseKey(product => product.Id);
             resource.Create(create =>
             {

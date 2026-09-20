@@ -2,7 +2,7 @@ using StellarAdmin.Dashboard.Resources;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 
-public sealed class CustomProductDataSource : IResourceDataSource<CustomProduct>
+public sealed class CustomProductDataSource : IResourceCrudDataSource<CustomProduct>
 {
     public Task<ResourceOperationResult> CreateAsync(
         CustomProduct resource,

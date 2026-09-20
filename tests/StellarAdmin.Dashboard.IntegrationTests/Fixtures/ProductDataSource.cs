@@ -2,7 +2,7 @@ using StellarAdmin.Dashboard.Resources;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 
-public sealed class ProductDataSource(ProductState state) : IResourceDataSource<Product>
+public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSource<Product>
 {
     private readonly Guid _id = Guid.NewGuid();
 

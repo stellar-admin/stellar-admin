@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
@@ -7,19 +6,16 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 /// <summary>
 ///     Configures a resource's create page.
 /// </summary>
-public sealed class ResourceCreateBuilder<TResource>
+public sealed class ResourceCreateBuilder<TModel>
 {
-    private readonly IServiceCollection _services;
+    private readonly Action<Action<ResourceCreateOptions<TModel>>> _configure;
 
     /// <summary>
     ///     The layout of form sections.
     /// </summary>
     public FormSectionLayout? SectionLayout
     {
-        set =>
-            _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.SectionLayout = value
-            );
+        set => _configure(options => options.SectionLayout = value);
     }
 
     /// <summary>
@@ -27,10 +23,7 @@ public sealed class ResourceCreateBuilder<TResource>
     /// </summary>
     public string? SubmitLabel
     {
-        set =>
-            _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.SubmitLabel = value
-            );
+        set => _configure(options => options.SubmitLabel = value);
     }
 
     /// <summary>
@@ -38,30 +31,20 @@ public sealed class ResourceCreateBuilder<TResource>
     /// </summary>
     public string? Title
     {
-        set =>
-            _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.Title = value
-            );
+        set => _configure(options => options.Title = value);
     }
 
-    internal ResourceCreateBuilder(IServiceCollection services) => _services = services;
+    internal ResourceCreateBuilder(Action<Action<ResourceCreateOptions<TModel>>> configure) =>
+        _configure = configure;
 
     /// <summary>
     ///     Configures the form fields.
     /// </summary>
-    public ResourceCreateBuilder<TResource> Fields(
-        Action<ResourceFieldsBuilder<TResource>> configure
-    )
+    public ResourceCreateBuilder<TModel> Fields(Action<ResourceFieldsBuilder<TModel>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(
-            new(action =>
-                _services.Configure<ResourceOptions<TResource>>(options =>
-                    action(options.Create.Items)
-                )
-            )
-        );
+        configure(new(action => _configure(options => action(options.Items))));
 
         return this;
     }
@@ -69,13 +52,11 @@ public sealed class ResourceCreateBuilder<TResource>
     /// <summary>
     ///     Specifies how to instantiate a resource for the create form.
     /// </summary>
-    public ResourceCreateBuilder<TResource> UseFactory(Func<TResource> factory)
+    public ResourceCreateBuilder<TModel> UseFactory(Func<TModel> factory)
     {
         ArgumentNullException.ThrowIfNull(factory);
 
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Create.Factory = factory
-        );
+        _configure(options => options.Factory = factory);
 
         return this;
     }

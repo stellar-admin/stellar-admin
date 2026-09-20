@@ -3,7 +3,7 @@ using StellarAdmin.Dashboard.Resources;
 namespace StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 
 public sealed class InventoryItemDataSource(List<InventoryItem> items)
-    : IResourceDataSource<InventoryItem>
+    : IResourceCrudDataSource<InventoryItem>
 {
     public Task<ResourceOperationResult> CreateAsync(
         InventoryItem resource,

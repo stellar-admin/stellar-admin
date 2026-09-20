@@ -25,6 +25,8 @@ public class ResourceViewOverrideTests
                     resource.PluralLabel = "Custom inventory";
                     resource.UseDataSource<CustomProductDataSource>();
                     resource.UseKey(product => product.Code);
+                    resource.Create();
+                    resource.Edit();
                 })
         );
         using var client = sut.GetTestClient();

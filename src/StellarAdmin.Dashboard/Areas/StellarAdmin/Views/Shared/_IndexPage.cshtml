@@ -5,7 +5,10 @@
         <sa-page-header-title>@Model.Title</sa-page-header-title>
         <sa-page-header-actions>
             <sa-slot-outlet name="pre-page-actions" />
-            <sa-linkbutton asp-action="Create">@Model.CreateLabel</sa-linkbutton>
+            @if (Model.CanCreate)
+            {
+                <sa-linkbutton asp-action="Create">@Model.CreateLabel</sa-linkbutton>
+            }
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
     </sa-page-header>

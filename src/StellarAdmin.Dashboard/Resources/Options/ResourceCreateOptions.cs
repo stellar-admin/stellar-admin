@@ -1,21 +1,14 @@
 namespace StellarAdmin.Dashboard.Resources.Options;
 
 /// <summary>
-///     Configures a resource's create page.
+///     Configures a resource's create form.
 /// </summary>
-public sealed class ResourceCreateOptions<TResource> : ResourceFormOptions
+public abstract class ResourceCreateOptions : ResourceFormOptions
 {
     /// <summary>
-    ///     The factory used to instantiate a resource for the create form.
+    ///     The model used by the create form.
     /// </summary>
-    /// <remarks>
-    ///     When null, instances are created using the resource's parameterless constructor.
-    /// </remarks>
-    public Func<TResource>? Factory { get; set; }
+    public abstract Type ModelType { get; }
 
-    /// <summary>
-    ///     Creates a resource using the configured factory or its parameterless constructor.
-    /// </summary>
-    public TResource CreateInstance() =>
-        Factory is { } factory ? factory() : Activator.CreateInstance<TResource>()!;
+    internal abstract object CreateModel();
 }

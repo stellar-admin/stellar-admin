@@ -86,7 +86,7 @@ public class ResourceEditTests
             new([new(7, "Notebook", 12.50m)]),
             resource =>
             {
-                ConfigureEdit(resource);
+                var edit = ConfigureEdit(resource);
                 resource.Create(create =>
                     create.UseFactory(() =>
                         throw new InvalidOperationException("Edit must not use the create factory.")
@@ -99,11 +99,8 @@ public class ResourceEditTests
                 if (configuration == 2)
                 {
                     resource.Index(index => index.EditLabel = "Update");
-                    resource.Edit(edit =>
-                    {
-                        edit.Title = "Update inventory";
-                        edit.SubmitLabel = "Apply";
-                    });
+                    edit.Title = "Update inventory";
+                    edit.SubmitLabel = "Apply";
                 }
             },
             dashboard =>
@@ -179,7 +176,10 @@ public class ResourceEditTests
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureEdit);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => ConfigureEdit(resource)
+        );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
         values["Entity.Name"] = name;
@@ -220,7 +220,10 @@ public class ResourceEditTests
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureEdit);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => ConfigureEdit(resource)
+        );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
             new Dictionary<string, string> { ["Entity.Name"] = "Changed" }
@@ -244,7 +247,10 @@ public class ResourceEditTests
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureEdit);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => ConfigureEdit(resource)
+        );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
             await PrepareForm(client, "/stellaradmin/Product/Edit/7")
@@ -265,7 +271,10 @@ public class ResourceEditTests
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]) { DisappearOnUpdate = true };
-        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureEdit);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource => ConfigureEdit(resource)
+        );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
         values["Entity.Name"] = "Changed";
@@ -335,23 +344,23 @@ public class ResourceEditTests
         await Assert.That(index.Body!.TextContent).Contains("Updated notebook");
     }
 
-    private static void ConfigureEdit(ResourceBuilder<Product> resource)
+    private static ResourceEditBuilder<Product> ConfigureEdit(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
-        resource.Edit(edit =>
-        {
-            edit.SectionLayout = FormSectionLayout.Card;
-            edit.Fields(fields =>
-                fields.AddSection(
-                    "Product details",
-                    section =>
-                        section.AddRow(row =>
-                        {
-                            row.Add(product => product.Name);
-                            row.Add(product => product.Price);
-                        })
-                )
-            );
-        });
+        var edit = resource.Edit();
+        edit.SectionLayout = FormSectionLayout.Card;
+        edit.Fields(fields =>
+            fields.AddSection(
+                "Product details",
+                section =>
+                    section.AddRow(row =>
+                    {
+                        row.Add(product => product.Name);
+                        row.Add(product => product.Price);
+                    })
+            )
+        );
+
+        return edit;
     }
 }

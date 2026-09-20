@@ -8,19 +8,19 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public sealed class ResourceOptions<TResource>
 {
     /// <summary>
-    ///     The create page configuration.
+    ///     The create page configuration, or null when create is disabled.
     /// </summary>
-    public ResourceCreateOptions<TResource> Create { get; } = new();
+    public ResourceCreateOptions? Create { get; internal set; }
 
     /// <summary>
-    ///     The delete configuration.
+    ///     The delete configuration, or null when delete is disabled.
     /// </summary>
-    public ResourceDeleteOptions Delete { get; } = new();
+    public ResourceDeleteOptions? Delete { get; internal set; }
 
     /// <summary>
-    ///     The edit page configuration.
+    ///     The edit page configuration, or null when edit is disabled.
     /// </summary>
-    public ResourceFormOptions Edit { get; } = new();
+    public ResourceFormOptions? Edit { get; internal set; }
 
     /// <summary>
     ///     The index page configuration.
@@ -63,5 +63,12 @@ public sealed class ResourceOptions<TResource>
             field = value;
         }
     } = typeof(TResource).Name.Split('`')[0].Humanize();
+    internal Func<
+        IServiceProvider,
+        object,
+        CancellationToken,
+        Task<ResourceOperationResult>
+    >? CreateHandler { get; set; }
+    internal Type? DataSourceType { get; set; }
     internal string? KeyPropertyName { get; set; }
 }

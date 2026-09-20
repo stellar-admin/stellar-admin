@@ -29,6 +29,10 @@ Status: adopted 2026-08-04, while the Identity options builder was still being p
 
 The `Configure*` vs `Add*`/`Enable*` distinction carries real information: the verb promises whether the feature exists without the call. Keep that promise — `Add*` and `Enable*` must actually gate the feature (controllers, sidebar items, rendered UI), not just tweak options. `Add*` registers something (routes, entries); `Enable*` turns on an affordance of an existing page — the OpenIddict toggle vocabulary (`Allow*`/`Enable*`/`Require*`) is the precedent.
 
+## Resource action registration
+
+The standalone resource API uses `Create`, `Edit`, and `Delete` as explicit action registration boundaries (decision 2026-09-21). Unlike structural bare-noun methods, these calls enable the action and replace any previous configuration for it. Their no-callback overloads return the action builder, and callback overloads return the resource builder. Omitted actions stay disabled even when the data source implements their handlers.
+
 ## Canonical example
 
 The reference shape, from the Identity builder design:
