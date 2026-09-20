@@ -8,47 +8,31 @@ namespace StellarAdmin.Dashboard.Tests.Resources.Builders;
 public class ResourceBuilderTests
 {
     [Test]
-    public async Task Index_WhenColumnsAreCleared_ReplacesEarlierColumns()
+    public async Task Create_WithSeparateProviders_CreatesIndependentResourceConfiguration()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
-        sut.Index(index => index.Columns(columns => columns.Add(product => product.Id)));
+        sut.Create(create => create.Fields(fields => fields.Add(product => product.Name)));
+        sut.Index(index => index.Columns(columns => columns.Add(product => product.Name)));
+        using var first = services.BuildServiceProvider();
+        using var second = services.BuildServiceProvider();
 
         // Act
-        sut.Index(index =>
-            index.Columns(columns =>
-            {
-                columns.Clear();
-                columns.Add(product => product.Name).Title = "Product name";
-            })
-        );
-        using var provider = services.BuildServiceProvider();
-        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var firstOptions = first.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+        var secondOptions = second.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
-        await Assert.That(options.Index.Columns.Count).IsEqualTo(1);
-        await Assert.That(options.Index.Columns[0].FieldName).IsEqualTo("Name");
-        await Assert.That(options.Index.Columns[0].Title).IsEqualTo("Product name");
-    }
-
-    [Test]
-    public async Task Index_WithSeparateProviders_CreatesIndependentColumnOptions()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
-        sut.Index(index => index.Columns(columns => columns.Add(product => product.Id)));
-        using var firstProvider = services.BuildServiceProvider();
-        using var secondProvider = services.BuildServiceProvider();
-
-        // Act
-        var first = firstProvider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
-        var second = secondProvider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
-
-        // Assert
-        await Assert.That(first.Index.Columns[0]).IsNotSameReferenceAs(second.Index.Columns[0]);
-        await Assert.That(first.Index.Columns).IsNotSameReferenceAs(second.Index.Columns);
+        await Assert.That(firstOptions).IsNotSameReferenceAs(secondOptions);
+        await Assert
+            .That(firstOptions.Index.Columns[0])
+            .IsNotSameReferenceAs(secondOptions.Index.Columns[0]);
+        await Assert
+            .That(firstOptions.Create.Fields[0])
+            .IsNotSameReferenceAs(secondOptions.Create.Fields[0]);
+        await Assert
+            .That(firstOptions.Create.Fields[0].Editor)
+            .IsNotSameReferenceAs(secondOptions.Create.Fields[0].Editor);
     }
 
     [Test]
@@ -91,7 +75,10 @@ public class ResourceBuilderTests
         await Assert.That(source).IsTypeOf<ReplacementDataSource>();
     }
 
-    public sealed record Product(int Id, string Name);
+    public sealed class Product
+    {
+        public string Name { get; set; } = "";
+    }
 
     public sealed class ProductDataSource : IResourceDataSource<Product>
     {

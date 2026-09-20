@@ -10,11 +10,17 @@ For example, `src/StellarAdmin.Core/Icons/IconOptions.cs` maps to `tests/Stellar
 
 Place each test according to the behavior it verifies. Icon registration and mapping belong with `IconOptions`; builder and DI registration behavior belongs with the relevant Core registration type; rendered pagination icons belong with `PaginationEllipsisTagHelper` in the corresponding TagHelpers folder. A feature spanning projects does not justify a single feature-wide test class.
 
-Tests requiring an application host, database, or HTTP boundary belong in explicitly named `<ProductionProject>.IntegrationTests` projects and use the same TUnit, naming, and arrange–act–assert conventions. Document their environment and execution requirements separately. Keep host/database state private to each test; do not use process-wide environment overrides or static SQL interceptors. A resource-based parallelism limit is appropriate for hosted integration tests, but must not compensate for shared mutable test state. Using a small, in-memory service collection to test registration does not by itself require a hosted integration test.
+Tests requiring an application host, database, or HTTP boundary belong in explicitly named `<ProductionProject>.IntegrationTests` projects and use the same TUnit and arrange–act–assert conventions. Organize integration tests by feature and scenario rather than mirroring production types. Document their environment and execution requirements separately. Keep host/database state private to each test; do not use process-wide environment overrides or static SQL interceptors. A resource-based parallelism limit is appropriate for hosted integration tests, but must not compensate for shared mutable test state. Using a small, in-memory service collection to test registration does not by itself require a hosted integration test.
+
+## Dashboard test strategy
+
+For Dashboard resource features, prefer HTTP integration tests configured through the public builders. Verify rendered pages, binding, validation, persistence, redirects, and real application view overrides together. Extend an existing scenario when it can prove a new contract clearly. Do not add matching options, builder, and controller unit tests for behavior already covered through HTTP.
+
+Keep focused unit tests for contracts that HTTP cannot express clearly, such as rejected builder expressions, invalid configuration, application-selected DI lifetimes, and isolation between providers built from the same registration. Avoid retesting framework options plumbing, third-party naming rules, trivial setters, or builder return values. Test factory callbacks and global label templates through their observable form behavior when those features are introduced.
 
 ## Class, file, and method names
 
-Name the test class `<SutType>Tests`. Start with `<SutType>Tests.cs`; when behavioral subdivisions help navigation, use a partial class and dot-separated file names:
+For unit tests, name the test class `<SutType>Tests`. Start with `<SutType>Tests.cs`; when behavioral subdivisions help navigation, use a partial class and dot-separated file names:
 
 ```text
 tests/StellarAdmin.Core.Tests/
@@ -26,13 +32,19 @@ tests/StellarAdmin.Core.Tests/
 
 All these files declare `public partial class IconOptionsTests`. Create only files that contain useful tests or support; a subdivided class does not require an otherwise empty `IconOptionsTests.cs`. Keep the same namespace across all parts. Use behavior names for subdivisions, not numbered files. Do not introduce nested test classes or regions solely for categorization. Partial files are source organization; they remain one test class in the test explorer.
 
-Name test methods `Member_Scenario_ExpectedOutcome`, using `Constructor` for construction behavior. Examples:
+Name unit test methods `Member_Scenario_ExpectedOutcome`, using `Constructor` for construction behavior. Examples:
 
 - `AddIconPack_WhenMappingTargetIsMissing_PreservesExistingRegistrations`
 - `RemoveIcon_WhenNameCasingDiffers_RemovesAssociatedMappings`
 - `MapSemanticIcon_WhenIconIsUnregistered_ThrowsArgumentException`
 
 Follow [C# file organization](csharp-file-organization.md) within each partial file. Keep test methods before private helpers and nested fake types.
+
+### Integration test organization
+
+Group integration tests by feature, using scenario-oriented classes such as `Resources/ResourceIndexTests.cs`, `ResourceCreateTests.cs`, `ResourceConfigurationTests.cs`, and `ResourceViewOverrideTests.cs`. Match namespaces to these folders. Name methods `Scenario_ExpectedOutcome`, for example `InvalidSubmission_RedisplaysValuesAndDoesNotPersist`. Do not prefix every method with the controller action already conveyed by the class.
+
+Keep shared host setup in `Infrastructure/DashboardTestHost.cs` and sample models, data sources, and state in `Fixtures/`, with fresh mutable state per test. Extract only shared setup, leaving scenario configuration, requests, and assertions visible in the tests. Helpers used by one scenario class can remain private in that class. Real Razor fixtures retain MVC's `Areas/StellarAdmin/Views/...` structure. Avoid a general-purpose test base class.
 
 ## Framework
 

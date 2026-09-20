@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is implemented and awaiting user review before step 4. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Before step 4, consolidate Dashboard tests, add a create factory callback, and introduce global label templates, in that order. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -37,6 +37,14 @@ Use DashboardPlayground for a Product sample backed by an in-memory data source.
 
 Add typed field configuration, page titles, submit labels, model binding, validation, and saving through the sample's data source. Derive default labels from the resource labels and honor explicit overrides. Prove configured writable-field binding, invalid submission redisplay, and successful submission. Apply appropriate authorization and antiforgery protection as write actions are introduced.
 
+### Before layout: foundation follow-ups — revised 2026-09-20
+
+1. Consolidate Dashboard tests around the public builders and HTTP behavior. Remove redundant options/controller tests, retain a small unit suite for non-HTTP contracts, and establish this approach before adding factories or templates.
+2. Add an optional create factory callback for resources without a parameterless constructor. Use it for GET and POST initialization before configured-field binding, retaining parameterless construction as the default.
+3. Add overridable global label templates such as `Create {SingularLabel}` and `Edit {SingularLabel}`. Explicit page titles and submit labels take precedence. Keep resolution simple, without captured defaults or synchronization machinery.
+
+Factory and template implementation remain pending. Prove them with focused HTTP scenarios rather than parallel options and controller unit tests. Advanced layouts remain on hold until these foundations are reviewed.
+
 ### 4. Form layout
 
 Add sections, rows, and groups to the same form builder. Exercise them in the Product sample using the retained rendering components. Prove layout configuration, binding through nested layout containers, and rendering at desktop/mobile widths.
@@ -63,7 +71,7 @@ Prove Identity user creation with an action-specific model for password and conf
 
 ## Verification and scope
 
-Introduce focused TUnit tests alongside the new implementation, following the repository's unit testing conventions. The shared Dashboard tests must not depend on EF or Identity. DashboardPlayground retains the host’s ASP.NET Core EF/Identity setup for future use, but its Product resource uses an independent in-memory data source. Run affected builds/tests per step and the active solution checks at delivery. Exercise rendered sample pages when adding UI behavior; leave the user's port 5205 process alone.
+Use integration-first TUnit coverage through public builders and HTTP, following the repository's Dashboard test strategy. Retain unit tests only for useful contracts that HTTP cannot express clearly. The shared Dashboard tests must not depend on EF or Identity. DashboardPlayground retains the host’s ASP.NET Core EF/Identity setup for future use, but its Product resource uses an independent in-memory data source. Run affected builds/tests per step and the active solution checks at delivery. Exercise rendered sample pages when adding UI behavior; leave the user's port 5205 process alone.
 
 Update relevant maintained guidance and generated references when affected. Record commands, results, remaining decisions, and limitations here. Website work, unrelated backlog features, and new Identity workflows are outside this rebuild.
 
@@ -182,3 +190,27 @@ Added builder tests for replacement, options isolation, and rejected selectors. 
 Verification: Dashboard unit and HTTP integration Release builds passed, with the existing unresolved FormFieldOptions XML cref warning on the integration build. All 31 unit and 13 HTTP tests passed through their project executables. DashboardPlayground Release build passed. Chromium checks at 1440×1000 and 390×1000 verified form fields and no horizontal overflow, invalid POST errors, and a valid browser submission followed by the index showing the created product. Screenshots are `/tmp/resource-create-1440.png` and `/tmp/resource-create-390.png`. The agent-owned playground on port 5206 and browser were stopped. Port 5205 was untouched.
 
 Final verification: the full Release solution build passed with 11 existing warnings and no errors. Consumer reference drift check passed. CSharpier formatted the touched C# files and `git diff --check` passed. The full solution test suite was not rerun. Changes are uncommitted.
+
+## Integration-first test consolidation — 2026-09-20
+
+Completed the testing follow-up first at the user's request, before factory callbacks and global label templates. Recorded the durable Dashboard strategy in `docs/conventions/unit-testing.md` and updated development guidance and the plan index. Production behavior is unchanged.
+
+Reduced Dashboard coverage from 31 unit plus 13 HTTP cases to 10 unit plus 18 HTTP cases. The retained unit cases cover blank labels (four), unsupported field selectors (three), DI lifetime preservation and replacement (two), and consolidated resource/column/field/editor isolation across providers (one).
+
+Coverage mapping and intentional removals:
+
+- Default and explicit labels and ordinary builder configuration remain covered by existing rendered index/create tests. Strengthened create assertions to reject duplicate fields after clearing and rebuilding configuration.
+- Moved column replacement to an HTTP test that checks the actual headers and cells. Added repeated registration cases using both builder overloads to verify singular-derived and explicit plural labels at the stable route.
+- Replaced mocked controller/view-engine tests with compiled application Razor overrides for Index and Create on a second resource. Existing Product tests continue to verify shared fallback views. Enabled MVC Razor compilation in the integration project for these fixtures.
+- Consolidated three provider-isolation tests into one. Removed separate service-collection isolation coverage because every HTTP scenario uses a private host.
+- Removed low-value assertions about builder return references, null callback guards, standard options Configure/PostConfigure/Validate plumbing, and third-party acronym/generic naming details. These are deliberate coverage reductions, not claimed HTTP replacements. Retained irregular plural and override composition checks through rendering.
+
+Verification: both Dashboard Release builds passed without warnings after correcting a namespace in the new Razor fixture. All 18 HTTP cases and 10 unit cases passed. The CI/release solution command `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 170 tests across four assemblies. Solution-wide discovery listed 170 tests. After moving the consolidated isolation case to ResourceBuilderTests, its explicit Release build and all 10 unit cases passed again. The combined run/build command had failed without diagnostics, so verification used separate build and no-build run commands. The solution runner required execution outside the sandbox because its local IPC socket was denied inside it. CSharpier and git diff --check passed. No browser checks or consumer-reference regeneration were needed for this test/documentation-only change. Changes are uncommitted.
+
+## Scenario-oriented integration test structure — 2026-09-20
+
+Reorganized the 18 Dashboard HTTP cases into `Resources/ResourceIndexTests.cs` (three), `ResourceCreateTests.cs` (seven), `ResourceConfigurationTests.cs` (six), and `ResourceViewOverrideTests.cs` (two). Renamed methods to `Scenario_ExpectedOutcome` without controller action prefixes. Extracted the existing host setup into `Infrastructure/DashboardTestHost.cs` and sample models, data sources, and per-test state into `Fixtures/`. The create form helper remains private to ResourceCreateTests. Real Razor overrides remain under `Areas/StellarAdmin/Views/CustomProduct`. Removed the old controller test files and their empty directory.
+
+This is an organizational change. No scenarios or assertions were added or removed. Each test still creates and disposes its own host and state. Updated the testing conventions to distinguish production-type-based unit tests from feature/scenario integration tests, and documented the folders in development guidance.
+
+Verification: `dotnet build tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release -m:1` passed with zero warnings and errors. `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release --no-build` passed all 18 cases. The same command with `-- --list-tests` discovered all 18 renamed cases. CSharpier and git diff --check passed. The earlier 170-test solution result predates this reorganization. No production changes, browser checks, or commits were made.

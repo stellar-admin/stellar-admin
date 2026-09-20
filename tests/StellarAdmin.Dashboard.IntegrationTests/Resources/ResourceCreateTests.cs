@@ -1,26 +1,27 @@
 using System.Net;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
+using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
+using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 
-namespace StellarAdmin.Dashboard.IntegrationTests.Areas.StellarAdmin.Controllers;
+namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
-public partial class ResourceControllerTests
+public class ResourceCreateTests
 {
     [Test]
     [Arguments(false, "Create Product", "Create Product")]
     [Arguments(true, "Add inventory", "Save product")]
-    public async Task Create_WithConfiguration_RendersFieldsAndLabels(
+    public async Task ConfiguredForm_RendersFieldsAndLabels(
         bool customize,
         string title,
         string submit
     )
     {
         // Arrange
-        await using var sut = await CreateHost(
+        await using var sut = await DashboardTestHost.CreateAsync(
             new([]),
             resource =>
             {
-                resource.SingularLabel = "Product";
                 if (customize)
                 {
                     resource.Create(create =>
@@ -50,8 +51,12 @@ public partial class ResourceControllerTests
         await Assert
             .That(document.QuerySelector("button[type='submit']")?.TextContent.Trim())
             .IsEqualTo(submit);
-        await Assert.That(document.QuerySelector("input[name='Entity.Name']")).IsNotNull();
-        await Assert.That(document.QuerySelector("input[name='Entity.Price']")).IsNotNull();
+        await Assert
+            .That(document.QuerySelectorAll("input[name='Entity.Name']").Length)
+            .IsEqualTo(1);
+        await Assert
+            .That(document.QuerySelectorAll("input[name='Entity.Price']").Length)
+            .IsEqualTo(1);
         await Assert.That(document.QuerySelector("input[name='Entity.Id']")).IsNull();
         await Assert
             .That(document.QuerySelector("label[for='Entity_Name']")?.TextContent.Trim())
@@ -62,40 +67,10 @@ public partial class ResourceControllerTests
     }
 
     [Test]
-    public async Task Create_WithValidSubmission_PersistsConfiguredFieldsAndRedirectsToIndex()
-    {
-        // Arrange
-        var state = new ProductState([]);
-        await using var sut = await CreateHost(state);
-        using var client = sut.GetTestClient();
-        var values = await PrepareForm(client);
-        values["Entity.Name"] = "New notebook";
-        values["Entity.Price"] = "12.50";
-        values["Entity.Id"] = "999";
-        using var content = new FormUrlEncodedContent(values);
-
-        // Act
-        using var response = await client.PostAsync("/stellaradmin/Product/Create", content);
-
-        // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
-        await Assert
-            .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product");
-        await Assert.That(state.Products.Count).IsEqualTo(1);
-        await Assert.That(state.SubmittedId).IsEqualTo(0);
-        await Assert.That(state.Products[0].Id).IsEqualTo(1);
-        await Assert.That(state.Products[0].Name).IsEqualTo("New notebook");
-        await Assert.That(state.Products[0].Price).IsEqualTo(12.50m);
-        var index = await client.GetStringAsync("/stellaradmin/Product");
-        await Assert.That(index).Contains("New notebook");
-    }
-
-    [Test]
     [Arguments("", "12.50", "Name")]
     [Arguments("Notebook", "-1", "Price")]
     [Arguments("Notebook", "not a number", "Price")]
-    public async Task Create_WithInvalidSubmission_RedisplaysValuesAndDoesNotPersist(
+    public async Task InvalidSubmission_RedisplaysValuesAndDoesNotPersist(
         string name,
         string price,
         string errorField
@@ -103,7 +78,7 @@ public partial class ResourceControllerTests
     {
         // Arrange
         var state = new ProductState([]);
-        await using var sut = await CreateHost(state);
+        await using var sut = await DashboardTestHost.CreateAsync(state);
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = name;
@@ -135,11 +110,11 @@ public partial class ResourceControllerTests
     }
 
     [Test]
-    public async Task Create_WithoutAntiforgeryToken_RejectsSubmission()
+    public async Task MissingAntiforgeryToken_RejectsSubmission()
     {
         // Arrange
         var state = new ProductState([]);
-        await using var sut = await CreateHost(state);
+        await using var sut = await DashboardTestHost.CreateAsync(state);
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -155,6 +130,36 @@ public partial class ResourceControllerTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
         await Assert.That(state.Products.Count).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task ValidSubmission_PersistsConfiguredFieldsAndRedirectsToIndex()
+    {
+        // Arrange
+        var state = new ProductState([]);
+        await using var sut = await DashboardTestHost.CreateAsync(state);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client);
+        values["Entity.Name"] = "New notebook";
+        values["Entity.Price"] = "12.50";
+        values["Entity.Id"] = "999";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Create", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert
+            .That(response.Headers.Location?.OriginalString)
+            .IsEqualTo("/stellaradmin/Product");
+        await Assert.That(state.Products.Count).IsEqualTo(1);
+        await Assert.That(state.SubmittedId).IsEqualTo(0);
+        await Assert.That(state.Products[0].Id).IsEqualTo(1);
+        await Assert.That(state.Products[0].Name).IsEqualTo("New notebook");
+        await Assert.That(state.Products[0].Price).IsEqualTo(12.50m);
+        var index = await client.GetStringAsync("/stellaradmin/Product");
+        await Assert.That(index).Contains("New notebook");
     }
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client)
