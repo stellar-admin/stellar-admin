@@ -205,7 +205,7 @@ public class ResourceCustomCreateTests
             new([]),
             resource =>
             {
-                resource.Create<CreateProductModel, CreateProductHandler>(create =>
+                resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
                 {
                     create.Title = "Discarded title";
                     create.SubmitLabel = "Discarded submit";
@@ -216,7 +216,7 @@ public class ResourceCustomCreateTests
                 });
                 if (customModel)
                 {
-                    resource.Create<CreateProductModel, CreateProductHandler>(create =>
+                    resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
                     {
                         create.UseFactory(() => new(25m));
                         create.Fields(fields => fields.Add(model => model.ProductName));
@@ -224,7 +224,7 @@ public class ResourceCustomCreateTests
                 }
                 else
                 {
-                    resource.Create().Fields(fields => fields.Add(product => product.Name));
+                    resource.AllowCreate().Fields(fields => fields.Add(product => product.Name));
                 }
             }
         );
@@ -250,7 +250,7 @@ public class ResourceCustomCreateTests
     {
         resource.UseDataSource<ProductMaintenanceDataSource>();
         resource.UseKey(product => product.Id);
-        resource.Create<CreateProductModel, CreateProductHandler>(create =>
+        resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
         {
             create.SubmitLabel = "Register product";
             create.UseFactory(() => new(10m));
@@ -268,7 +268,7 @@ public class ResourceCustomCreateTests
                 )
             );
         });
-        resource.Edit(edit =>
+        resource.AllowEdit(edit =>
             edit.Fields(fields =>
             {
                 fields.Add(product => product.Name);

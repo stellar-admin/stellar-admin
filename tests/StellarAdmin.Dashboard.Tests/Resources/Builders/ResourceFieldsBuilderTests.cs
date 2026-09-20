@@ -16,7 +16,7 @@ public class ResourceFieldsBuilderTests
 
         // Act
         Action act = () =>
-            sut.Create(create =>
+            sut.AllowCreate(create =>
                 create.Fields(fields =>
                 {
                     switch (expression)

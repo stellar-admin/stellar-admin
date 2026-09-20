@@ -39,7 +39,7 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures the create page.
     /// </summary>
-    public ResourceCreateBuilder<TResource> Create()
+    public ResourceCreateBuilder<TResource> AllowCreate()
     {
         _services.Configure<ResourceOptions<TResource>>(options =>
         {
@@ -53,10 +53,12 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures the create page.
     /// </summary>
-    public ResourceBuilder<TResource> Create(Action<ResourceCreateBuilder<TResource>> configure)
+    public ResourceBuilder<TResource> AllowCreate(
+        Action<ResourceCreateBuilder<TResource>> configure
+    )
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(Create());
+        configure(AllowCreate());
 
         return this;
     }
@@ -64,7 +66,7 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures a create form with a custom model and handler.
     /// </summary>
-    public ResourceCreateBuilder<TModel> Create<TModel, THandler>()
+    public ResourceCreateBuilder<TModel> AllowCreate<TModel, THandler>()
         where THandler : class, IResourceCreateHandler<TModel>
     {
         _services.TryAddScoped<THandler>();
@@ -83,13 +85,13 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures a create form with a custom model and handler.
     /// </summary>
-    public ResourceBuilder<TResource> Create<TModel, THandler>(
+    public ResourceBuilder<TResource> AllowCreate<TModel, THandler>(
         Action<ResourceCreateBuilder<TModel>> configure
     )
         where THandler : class, IResourceCreateHandler<TModel>
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(Create<TModel, THandler>());
+        configure(AllowCreate<TModel, THandler>());
 
         return this;
     }
@@ -97,7 +99,7 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures resource deletion.
     /// </summary>
-    public ResourceDeleteBuilder<TResource> Delete()
+    public ResourceDeleteBuilder<TResource> AllowDelete()
     {
         _services.Configure<ResourceOptions<TResource>>(options => options.Delete = new());
 
@@ -107,11 +109,13 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures resource deletion.
     /// </summary>
-    public ResourceBuilder<TResource> Delete(Action<ResourceDeleteBuilder<TResource>> configure)
+    public ResourceBuilder<TResource> AllowDelete(
+        Action<ResourceDeleteBuilder<TResource>> configure
+    )
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(Delete());
+        configure(AllowDelete());
 
         return this;
     }
@@ -119,7 +123,7 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures the edit page.
     /// </summary>
-    public ResourceEditBuilder<TResource> Edit()
+    public ResourceEditBuilder<TResource> AllowEdit()
     {
         _services.Configure<ResourceOptions<TResource>>(options => options.Edit = new());
 
@@ -129,11 +133,11 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Enables and configures the edit page.
     /// </summary>
-    public ResourceBuilder<TResource> Edit(Action<ResourceEditBuilder<TResource>> configure)
+    public ResourceBuilder<TResource> AllowEdit(Action<ResourceEditBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(Edit());
+        configure(AllowEdit());
 
         return this;
     }

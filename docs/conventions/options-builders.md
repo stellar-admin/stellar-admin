@@ -31,7 +31,7 @@ The `Configure*` vs `Add*`/`Enable*` distinction carries real information: the v
 
 ## Resource action registration
 
-The standalone resource API uses `Create`, `Edit`, and `Delete` as explicit action registration boundaries (decision 2026-09-21). Unlike structural bare-noun methods, these calls enable the action and replace any previous configuration for it. Their no-callback overloads return the action builder, and callback overloads return the resource builder. Omitted actions stay disabled even when the data source implements their handlers.
+The standalone resource API uses `AllowCreate`, `AllowEdit`, and `AllowDelete` as explicit action registration boundaries (decision 2026-09-21). These opt-in methods enable the action and replace any previous configuration for it. Their no-callback overloads return the action builder, and callback overloads return the resource builder. Omitted actions stay disabled even when the data source implements their handlers.
 
 ## Canonical example
 

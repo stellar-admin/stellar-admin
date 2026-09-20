@@ -8,13 +8,13 @@ namespace StellarAdmin.Dashboard.Tests.Resources.Builders;
 public class ResourceBuilderTests
 {
     [Test]
-    public async Task Create_WithSeparateProviders_CreatesIndependentResourceConfiguration()
+    public async Task AllowCreate_WithSeparateProviders_CreatesIndependentResourceConfiguration()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
         sut.UseDataSource<ProductDataSource>();
-        sut.Create(create =>
+        sut.AllowCreate(create =>
             create.Fields(fields =>
                 fields.AddSection(
                     "Details",
@@ -89,13 +89,13 @@ public class ResourceBuilderTests
         switch (action)
         {
             case "create":
-                sut.Create();
+                sut.AllowCreate();
                 break;
             case "edit":
-                sut.Edit(_ => { });
+                sut.AllowEdit(_ => { });
                 break;
             case "delete":
-                sut.Delete(_ => { });
+                sut.AllowDelete(_ => { });
                 break;
         }
         using var provider = services.BuildServiceProvider();

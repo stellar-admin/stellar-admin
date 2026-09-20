@@ -32,7 +32,7 @@ public class ResourceCreateTests
             resource =>
             {
                 resource.UseKey(product => product.Id);
-                resource.Edit(edit =>
+                resource.AllowEdit(edit =>
                     edit.Fields(fields =>
                     {
                         fields.Add(product => product.Name);
@@ -112,7 +112,7 @@ public class ResourceCreateTests
             {
                 if (customize)
                 {
-                    resource.Create(create =>
+                    resource.AllowCreate(create =>
                     {
                         create.Title = "Add inventory";
                         create.SubmitLabel = "Save product";
@@ -408,7 +408,7 @@ public class ResourceCreateTests
         ResourceBuilder<Product> resource
     ) =>
         resource
-            .Create()
+            .AllowCreate()
             .Fields(fields =>
             {
                 fields.Clear();
@@ -436,7 +436,7 @@ public class ResourceCreateTests
                 dashboard.AddResource<InventoryItem>(resource =>
                 {
                     resource.UseDataSource<InventoryItemDataSource>();
-                    resource.Create(create =>
+                    resource.AllowCreate(create =>
                     {
                         create.UseFactory(() =>
                         {

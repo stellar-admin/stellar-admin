@@ -76,7 +76,7 @@ public class ResourceConfigurationTests
                         index.Title = "Stock";
                         index.CreateLabel = "Receive stock";
                     });
-                    resource.Create(create =>
+                    resource.AllowCreate(create =>
                     {
                         create.Title = "New stock item";
                         create.SubmitLabel = "Add to stock";

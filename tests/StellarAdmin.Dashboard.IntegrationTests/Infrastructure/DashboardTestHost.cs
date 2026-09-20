@@ -45,7 +45,7 @@ internal static class DashboardTestHost
                             );
                         })
                     );
-                    resource.Create(create =>
+                    resource.AllowCreate(create =>
                         create.Fields(fields =>
                         {
                             fields.Add(product => product.Name);

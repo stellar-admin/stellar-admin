@@ -35,7 +35,7 @@ builder
         dashboard.AddResource<Customer>(resource =>
         {
             resource.UseDataSource<CustomerDataSource>();
-            resource.Delete();
+            resource.AllowDelete();
             resource.UseKey(customer => customer.Id);
             resource.Index(index =>
                 index.Columns(columns =>
@@ -44,7 +44,7 @@ builder
                     columns.Add(customer => customer.Email);
                 })
             );
-            resource.Create<CreateCustomerModel, CreateCustomerHandler>(create =>
+            resource.AllowCreate<CreateCustomerModel, CreateCustomerHandler>(create =>
                 create.Fields(fields =>
                 {
                     fields.AddSection(
@@ -67,7 +67,7 @@ builder
                     );
                 })
             );
-            resource.Edit(edit =>
+            resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                 {
                     fields.Add(customer => customer.Name);
@@ -79,9 +79,9 @@ builder
         dashboard.AddResource<Product>(resource =>
         {
             resource.UseDataSource<ProductDataSource>();
-            resource.Delete();
+            resource.AllowDelete();
             resource.UseKey(product => product.Id);
-            resource.Create(create =>
+            resource.AllowCreate(create =>
             {
                 create.UseFactory(() => new Product { Price = 10m });
                 create.Fields(fields =>
@@ -101,7 +101,7 @@ builder
                     );
                 });
             });
-            resource.Edit(edit =>
+            resource.AllowEdit(edit =>
                 edit.Fields(fields =>
                     fields.AddSection(
                         "Product details",

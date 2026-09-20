@@ -29,7 +29,7 @@ public class ResourceEditTests
             resource =>
             {
                 resource.UseKey(product => product.Id);
-                resource.Edit(edit =>
+                resource.AllowEdit(edit =>
                     edit.Fields(fields =>
                     {
                         fields.Add(product => product.Name);
@@ -87,7 +87,7 @@ public class ResourceEditTests
             resource =>
             {
                 var edit = ConfigureEdit(resource);
-                resource.Create(create =>
+                resource.AllowCreate(create =>
                     create.UseFactory(() =>
                         throw new InvalidOperationException("Edit must not use the create factory.")
                     )
@@ -305,7 +305,7 @@ public class ResourceEditTests
             resource =>
             {
                 resource.UseKey(product => product.Id);
-                resource.Edit(edit =>
+                resource.AllowEdit(edit =>
                     edit.Fields(fields =>
                     {
                         fields.Add(product => product.Id);
@@ -347,7 +347,7 @@ public class ResourceEditTests
     private static ResourceEditBuilder<Product> ConfigureEdit(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
-        var edit = resource.Edit();
+        var edit = resource.AllowEdit();
         edit.SectionLayout = FormSectionLayout.Card;
         edit.Fields(fields =>
             fields.AddSection(
