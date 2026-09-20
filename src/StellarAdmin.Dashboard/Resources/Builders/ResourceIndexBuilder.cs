@@ -22,6 +22,17 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <summary>
+    ///     The edit link label.
+    /// </summary>
+    public string? EditLabel
+    {
+        set =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.EditLabel = value
+            );
+    }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     public string? Title

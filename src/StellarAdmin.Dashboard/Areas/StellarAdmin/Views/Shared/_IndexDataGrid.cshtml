@@ -6,6 +6,23 @@
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
                              format="@column.Format" sortable="false" />
     }
+    @if (Model.CanEdit)
+    {
+        <sa-data-grid-column sortable="false" class="w-px whitespace-nowrap">
+            <sa-data-grid-item-template>
+                @{
+                    var resourceId = Model.GetKey(Html.GridItem<object>());
+                    var editTooltipId = $"--resource-edit-{resourceId}";
+                }
+                <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                               asp-action="Edit" asp-route-id="@resourceId"
+                               aria-label="@Model.EditLabel" interestfor="@editTooltipId">
+                    <sa-icon name="square-pen" />
+                </sa-linkbutton>
+                <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
+            </sa-data-grid-item-template>
+        </sa-data-grid-column>
+    }
     <sa-data-grid-empty>
         <sa-empty>
             <sa-empty-header>

@@ -11,7 +11,20 @@ public interface IResourceDataSource<TResource>
     Task CreateAsync(TResource resource, CancellationToken cancellationToken);
 
     /// <summary>
+    ///     Returns a resource for editing, or null when the key does not exist.
+    /// </summary>
+    /// <remarks>
+    ///     Changes to the returned instance must not be persisted until UpdateAsync succeeds.
+    /// </remarks>
+    Task<TResource?> FindAsync(string id, CancellationToken cancellationToken);
+
+    /// <summary>
     ///     Returns the resources to display on the index page.
     /// </summary>
     Task<IReadOnlyList<TResource>> ListAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Updates the resource identified by the key, returning false if it no longer exists.
+    /// </summary>
+    Task<bool> UpdateAsync(string id, TResource resource, CancellationToken cancellationToken);
 }

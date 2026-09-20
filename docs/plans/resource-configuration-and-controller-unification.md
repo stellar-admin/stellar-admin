@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 (edit/delete) is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 is split for review: edit is implemented and awaiting review. Delete remains pending until edit is approved. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -10,7 +10,7 @@ Build a simple standalone resource foundation in Dashboard, then make EF Core an
 
 The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The new Dashboard integration suite verifies index rendering and the basic create flow through HTTP.
+EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The Dashboard integration suite verifies index rendering and create/edit flows through HTTP.
 
 ## Design rules
 
@@ -50,6 +50,8 @@ Test consolidation, the creation factory, and global delegate-based labels are i
 Add sections, rows, and groups to the same form builder. Exercise them in the Product sample using the retained rendering components. Prove layout configuration, binding through nested layout containers, and rendering at desktop/mobile widths.
 
 ### 5. Edit and delete
+
+Implement edit first and pause for review, as requested on 2026-09-20. Delete requires a subsequent go-ahead.
 
 Extend the shared controller flow with record lookup, loading edit values, updates, deletion, missing-record handling, authorization, and antiforgery protection. Prove success and failure behavior using the in-memory sample and focused request tests.
 
@@ -279,3 +281,40 @@ Added three HTTP cases covering nested markup and field order, encoded section t
 Verification: the initial integration build caught an incorrect ConfigureForms test setup, which was corrected. The full Release solution build with --no-restore -m:1 passed with 12 existing warnings and one new test nullability warning. That warning was corrected, and the subsequent integration Release build passed with zero warnings/errors. The CI command `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 178 tests across four assemblies. The solution runner ran outside the sandbox for its local IPC socket. CSharpier formatted the eight touched C# files and git diff --check passed.
 
 Chromium checks at 1440×1000 and 390×1000 verified columns side by side on desktop and stacked on mobile, no horizontal overflow, invalid POST errors, and a successful browser submission followed by the index showing the new item. Screenshots were visually reviewed at /tmp/resource-layout-1440.png and /tmp/resource-layout-390.png. The agent-owned playground on port 5206 and browser were stopped. Port 5205 was untouched. Changes are uncommitted. Edit/delete is next, followed immediately by action-specific view models.
+
+
+## Step 5a: edit — 2026-09-20
+
+Implemented edit only. Changes remain uncommitted for review. Delete has not been started.
+
+### Configuration and data source
+
+`resource.UseKey(product => product.Id)` selects a direct readable property. Its value is formatted with invariant culture for URLs. `resource.Edit(edit => edit.Fields(...))` uses the same field, section, row, and group builders as Create, with independent configuration. Shared form settings now live in ResourceFormOptions, inherited by ResourceCreateOptions to retain its factory. ResourceFieldsBuilder accepts a configuration callback and no longer assumes the create action.
+
+IResourceDataSource now includes `FindAsync(string id, CancellationToken)` and `UpdateAsync(string id, TResource resource, CancellationToken)`. Lookup returns null for a missing record. Update returns false when the target no longer exists. Lookup results must remain unpersisted until a successful update. The in-memory sample returns a copy and replaces the stored record under its lock only when saving. Keys are explicit single properties in this increment. Composite-key configuration and optimistic concurrency handling are not implemented.
+
+### Controller and rendering
+
+Index rows have Edit links when a key selector is configured. Edit GET loads existing values. Edit POST loads a fresh instance, binds only configured edit fields, excludes the key property, validates, persists, and redirects to Index without the route key. The route id is explicitly bound from route data, preventing query/form values from selecting a different record. Missing records return 404 on GET and POST, including a record that disappears before update. POST requires antiforgery validation. Authorization remains controlled by the host configuration. No built-in Dashboard authorization policy was introduced in this increment.
+
+Global EditTitle, EditSubmitLabel, and IndexEditLabel callbacks default to `Edit {SingularLabel}`, `Save {SingularLabel}`, and `Edit`. Edit Title/SubmitLabel and Index EditLabel override those defaults. Applications can provide Edit.cshtml through the existing resource view lookup, falling back to ResourceEdit.cshtml and the shared form renderer.
+
+DashboardPlayground registers Product's Id key and a separate edit section/row with Name and Price. Create retains its existing factory and layout.
+
+### Verification
+
+Added edit HTTP scenarios for index links, existing values, nested layout, default/global/resource labels, successful updates, unconfigured field preservation, forged route/key values, required/range/conversion validation redisplay, antiforgery rejection, malformed/missing keys, disappearance before save, and an application Edit.cshtml override with a string key. Shared antiforgery form preparation was extracted from ResourceCreateTests. Added one unit test rejecting a computed key selector. Existing create scenarios still pass.
+
+`dotnet build StellarAdmin.slnx --configuration Release --no-restore -m:1` passed. The final incremental build reported one existing unresolved XML cref warning in ViewDataKeys.cs and no errors. The initial full build reported 12 existing warnings. A project build without `-m:1` exited unsuccessfully without diagnostics, and the serial build passed. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 194 tests, including 41 Dashboard HTTP cases and 11 Dashboard unit cases. The solution runner required execution outside the sandbox for its local IPC sockets. An initial HTTP run had three selector assertions counting ASP.NET Core's hidden input. Restricting those assertions to Entity fields resolved them. CSharpier and `git diff --check` passed.
+
+Chromium verified index edit links, prefilled values, desktop/mobile layout at 1440×1000 and 390×1000, no horizontal overflow, invalid submission errors, successful browser save, index redirect, and reloading persisted values. Screenshots were visually inspected at /tmp/resource-edit-1440.png and /tmp/resource-edit-390.png. The agent-owned browser and playground on port 5206 were stopped. Port 5205 was untouched.
+
+### Edit button review correction — 2026-09-20
+
+Restored the pre-redesign index edit button from commit 97691a8: Outline variant, IconSmall size, square-pen icon, and an untitled action column. The configurable edit label now supplies aria-label and title. The initial text-only ghost button was an unintended presentation change. Updated the existing label assertion to verify the accessible name. The Dashboard integration project Release build passed with the existing ViewDataKeys XML cref warning, all 41 HTTP tests passed, and CSharpier and git diff checks passed. No new browser check was performed for this markup-only correction.
+
+### StellarAdmin edit tooltip — 2026-09-20
+
+Replaced the native title tooltip with sa-tooltip, linked through interestfor with a unique ID per rendered row. The button retains aria-label. Both use the configured IndexEditLabel, including the user’s updated default of `Edit {SingularLabel}`. Updated the existing HTTP scenario to verify tooltip association, configured content, and absence of title. The final Dashboard integration Release build passed with no warnings or errors, and all 41 HTTP tests passed. No new browser check was performed for this change.
+
+The tooltip ID now uses `--resource-edit-{rowId}` instead of a random GUID, as requested. The row key is resolved once and reused for the edit route and tooltip ID. The Dashboard integration Release build and all 41 HTTP tests passed after this correction.

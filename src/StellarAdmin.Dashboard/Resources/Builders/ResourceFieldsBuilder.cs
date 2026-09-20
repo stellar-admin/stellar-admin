@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -11,13 +10,6 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 public class ResourceFieldsBuilder<TResource>
 {
     private readonly Action<Action<IList<FormItemOptions>>> _configure;
-
-    internal ResourceFieldsBuilder(IServiceCollection services)
-        : this(configure =>
-            services.Configure<ResourceOptions<TResource>>(options =>
-                configure(options.Create.Items)
-            )
-        ) { }
 
     internal ResourceFieldsBuilder(Action<Action<IList<FormItemOptions>>> configure) =>
         _configure = configure;

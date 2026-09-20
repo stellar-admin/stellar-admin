@@ -37,6 +37,32 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the default edit form submit label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> EditSubmitLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.EditSubmitLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default edit page title.
+    /// </summary>
+    public Func<ResourceLabelContext, string> EditTitle
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.EditTitle = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default index create button label.
     /// </summary>
     public Func<ResourceLabelContext, string> IndexCreateLabel
@@ -46,6 +72,19 @@ public sealed class ResourceLabelsBuilder
             ArgumentNullException.ThrowIfNull(value);
 
             _services.Configure<ResourceLabelOptions>(options => options.IndexCreateLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default index edit link label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> IndexEditLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.IndexEditLabel = value);
         }
     }
 

@@ -9,6 +9,7 @@ public class ResourceViewOverrideTests
     [Test]
     [Arguments("", "Custom inventory")]
     [Arguments("/Create", "Create Custom item")]
+    [Arguments("/Edit/item-1", "Edit Custom item")]
     public async Task ApplicationOverride_RendersResourceSpecificRazorView(
         string action,
         string expected
@@ -23,6 +24,7 @@ public class ResourceViewOverrideTests
                     resource.SingularLabel = "Custom item";
                     resource.PluralLabel = "Custom inventory";
                     resource.UseDataSource<CustomProductDataSource>();
+                    resource.UseKey(product => product.Code);
                 })
         );
         using var client = sut.GetTestClient();

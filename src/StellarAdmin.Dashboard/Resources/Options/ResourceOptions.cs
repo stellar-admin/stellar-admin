@@ -13,9 +13,19 @@ public sealed class ResourceOptions<TResource>
     public ResourceCreateOptions<TResource> Create { get; } = new();
 
     /// <summary>
+    ///     The edit page configuration.
+    /// </summary>
+    public ResourceFormOptions Edit { get; } = new();
+
+    /// <summary>
     ///     The index page configuration.
     /// </summary>
     public ResourceIndexOptions Index { get; } = new();
+
+    /// <summary>
+    ///     Returns a resource's key as a URL value.
+    /// </summary>
+    public Func<TResource, string>? KeySelector { get; set; }
 
     /// <summary>
     ///     The plural resource label.
@@ -48,4 +58,5 @@ public sealed class ResourceOptions<TResource>
             field = value;
         }
     } = typeof(TResource).Name.Split('`')[0].Humanize();
+    internal string? KeyPropertyName { get; set; }
 }

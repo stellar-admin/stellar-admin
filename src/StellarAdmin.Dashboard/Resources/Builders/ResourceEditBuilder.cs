@@ -5,9 +5,9 @@ using StellarAdmin.TagHelpers;
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
 /// <summary>
-///     Configures a resource's create page.
+///     Configures a resource's edit page.
 /// </summary>
-public sealed class ResourceCreateBuilder<TResource>
+public sealed class ResourceEditBuilder<TResource>
 {
     private readonly IServiceCollection _services;
 
@@ -18,7 +18,7 @@ public sealed class ResourceCreateBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.SectionLayout = value
+                options.Edit.SectionLayout = value
             );
     }
 
@@ -29,7 +29,7 @@ public sealed class ResourceCreateBuilder<TResource>
     {
         set =>
             _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.SubmitLabel = value
+                options.Edit.SubmitLabel = value
             );
     }
 
@@ -39,42 +39,24 @@ public sealed class ResourceCreateBuilder<TResource>
     public string? Title
     {
         set =>
-            _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Create.Title = value
-            );
+            _services.Configure<ResourceOptions<TResource>>(options => options.Edit.Title = value);
     }
 
-    internal ResourceCreateBuilder(IServiceCollection services) => _services = services;
+    internal ResourceEditBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
     ///     Configures the form fields.
     /// </summary>
-    public ResourceCreateBuilder<TResource> Fields(
-        Action<ResourceFieldsBuilder<TResource>> configure
-    )
+    public ResourceEditBuilder<TResource> Fields(Action<ResourceFieldsBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(
             new(action =>
                 _services.Configure<ResourceOptions<TResource>>(options =>
-                    action(options.Create.Items)
+                    action(options.Edit.Items)
                 )
             )
-        );
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Specifies how to instantiate a resource for the create form.
-    /// </summary>
-    public ResourceCreateBuilder<TResource> UseFactory(Func<TResource> factory)
-    {
-        ArgumentNullException.ThrowIfNull(factory);
-
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Create.Factory = factory
         );
 
         return this;

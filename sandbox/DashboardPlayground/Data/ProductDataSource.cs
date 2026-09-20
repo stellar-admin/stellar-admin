@@ -40,12 +40,58 @@ public sealed class ProductDataSource : IResourceDataSource<Product>
         return Task.CompletedTask;
     }
 
+    public Task<Product?> FindAsync(string id, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_lock)
+        {
+            var product = int.TryParse(id, out var key)
+                ? _products.Find(product => product.Id == key)
+                : null;
+
+            return Task.FromResult(
+                product is null
+                    ? null
+                    : new Product
+                    {
+                        Id = product.Id,
+                        Name = product.Name,
+                        Price = product.Price,
+                    }
+            );
+        }
+    }
+
     public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
             return Task.FromResult<IReadOnlyList<Product>>(_products.ToArray());
+        }
+    }
+
+    public Task<bool> UpdateAsync(string id, Product resource, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_lock)
+        {
+            var index = int.TryParse(id, out var key)
+                ? _products.FindIndex(product => product.Id == key)
+                : -1;
+            if (index < 0)
+            {
+                return Task.FromResult(false);
+            }
+
+            _products[index] = new Product
+            {
+                Id = key,
+                Name = resource.Name,
+                Price = resource.Price,
+            };
+
+            return Task.FromResult(true);
         }
     }
 }

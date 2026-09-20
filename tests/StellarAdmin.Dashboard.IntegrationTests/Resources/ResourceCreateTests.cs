@@ -7,6 +7,7 @@ using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.TagHelpers;
 using TUnit.Assertions.Enums;
+using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
@@ -387,23 +388,4 @@ public class ResourceCreateTests
                 });
             }
         );
-
-    private static async Task<Dictionary<string, string>> PrepareForm(
-        HttpClient client,
-        string url = "/stellaradmin/Product/Create"
-    )
-    {
-        using var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        var document = await response.ReadDocumentAsync();
-        var token = document
-            .RequiredElement("input[name='__RequestVerificationToken']")
-            .GetAttribute("value")!;
-        client.DefaultRequestHeaders.Add(
-            "Cookie",
-            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
-        );
-
-        return new() { ["__RequestVerificationToken"] = token };
-    }
 }

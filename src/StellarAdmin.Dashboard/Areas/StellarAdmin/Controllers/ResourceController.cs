@@ -62,6 +62,71 @@ public class ResourceController<TResource>(
     }
 
     /// <summary>
+    ///     Displays the edit form.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Edit(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var resource = await dataSource.FindAsync(id, cancellationToken);
+
+        return resource is null ? NotFound() : EditView(resource);
+    }
+
+    /// <summary>
+    ///     Updates a resource from the submitted form.
+    /// </summary>
+    [HttpPost]
+    [ActionName(nameof(Edit))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditPost(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (_resourceOptions.KeySelector is null || string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
+
+        var resource = await dataSource.FindAsync(id, cancellationToken);
+        if (resource is null)
+        {
+            return NotFound();
+        }
+
+        var fields = _resourceOptions
+            .Edit.Fields.Select(field => field.FieldName)
+            .Where(name => name != _resourceOptions.KeyPropertyName)
+            .ToHashSet(StringComparer.Ordinal);
+        var valid = await TryUpdateModelAsync(
+            resource,
+            typeof(TResource),
+            ResourceFormPageViewModel.BindingPrefix,
+            await CompositeValueProvider.CreateAsync(ControllerContext),
+            metadata => fields.Contains(metadata.PropertyName ?? "")
+        );
+        if (!valid)
+        {
+            return EditView(resource);
+        }
+
+        if (!await dataSource.UpdateAsync(id, resource, cancellationToken))
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(Index), new { id = (string?)null });
+    }
+
+    /// <summary>
     ///     Displays the resource index page.
     /// </summary>
     [HttpGet]
@@ -77,6 +142,9 @@ public class ResourceController<TResource>(
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
                     _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
+                EditLabel =
+                    _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
+                KeySelector = _resourceOptions.KeySelector,
                 Items = items,
                 Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
             }
@@ -102,6 +170,25 @@ public class ResourceController<TResource>(
                 Title = _resourceOptions.Create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel =
                     _resourceOptions.Create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
+            }
+        );
+    }
+
+    private ViewResult EditView(object resource)
+    {
+        var labels = CreateLabelContext();
+
+        return ResourceView(
+            nameof(Edit),
+            new ResourceFormPageViewModel
+            {
+                Entity = resource,
+                Fields = _resourceOptions.Edit.Fields,
+                Items = _resourceOptions.Edit.Items.ToArray(),
+                SectionLayout = _resourceOptions.Edit.SectionLayout,
+                Title = _resourceOptions.Edit.Title ?? _labelOptions.EditTitle(labels),
+                SubmitLabel =
+                    _resourceOptions.Edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
             }
         );
     }

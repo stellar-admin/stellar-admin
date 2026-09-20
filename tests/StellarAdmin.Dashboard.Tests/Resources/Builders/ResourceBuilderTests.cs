@@ -91,6 +91,20 @@ public class ResourceBuilderTests
         await Assert.That(source).IsTypeOf<ReplacementDataSource>();
     }
 
+    [Test]
+    public async Task UseKey_WithComputedValue_RejectsSelector()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+
+        // Act
+        Action act = () => sut.UseKey(product => product.Name.ToUpperInvariant());
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
     public sealed class Product
     {
         public string Name { get; set; } = "";
@@ -101,8 +115,17 @@ public class ResourceBuilderTests
         public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
+        public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
+            Task.FromResult<Product?>(null);
+
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
+
+        public Task<bool> UpdateAsync(
+            string id,
+            Product resource,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(false);
     }
 
     public sealed class ReplacementDataSource : IResourceDataSource<Product>
@@ -110,7 +133,16 @@ public class ResourceBuilderTests
         public Task CreateAsync(Product resource, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
+        public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
+            Task.FromResult<Product?>(null);
+
         public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Product>>([]);
+
+        public Task<bool> UpdateAsync(
+            string id,
+            Product resource,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(false);
     }
 }

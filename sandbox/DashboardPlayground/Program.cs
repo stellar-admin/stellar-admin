@@ -34,6 +34,7 @@ builder
         dashboard.AddResource<Product>(resource =>
         {
             resource.UseDataSource<ProductDataSource>();
+            resource.UseKey(product => product.Id);
             resource.Create(create =>
             {
                 create.UseFactory(() => new Product { Price = 10m });
@@ -54,6 +55,19 @@ builder
                     );
                 });
             });
+            resource.Edit(edit =>
+                edit.Fields(fields =>
+                    fields.AddSection(
+                        "Product details",
+                        section =>
+                            section.AddRow(row =>
+                            {
+                                row.Add(product => product.Name);
+                                row.Add(product => product.Price);
+                            })
+                    )
+                )
+            );
             resource.Index(index =>
             {
                 index.Columns(columns =>

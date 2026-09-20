@@ -11,6 +11,11 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 public interface IResourceIndexPageViewModel
 {
     /// <summary>
+    ///     Whether resources have keys for edit links.
+    /// </summary>
+    bool CanEdit { get; }
+
+    /// <summary>
     ///     The columns displayed in order.
     /// </summary>
     IReadOnlyList<DataGridColumnOptions> Columns { get; }
@@ -21,6 +26,11 @@ public interface IResourceIndexPageViewModel
     string CreateLabel { get; }
 
     /// <summary>
+    ///     The edit link label.
+    /// </summary>
+    string? EditLabel { get; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     IEnumerable Items { get; }
@@ -29,4 +39,9 @@ public interface IResourceIndexPageViewModel
     ///     The page title.
     /// </summary>
     string Title { get; }
+
+    /// <summary>
+    ///     Returns the key used in resource links.
+    /// </summary>
+    string GetKey(object resource);
 }

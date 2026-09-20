@@ -20,14 +20,28 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public required string CreateLabel { get; init; }
 
     /// <summary>
+    ///     The edit link label.
+    /// </summary>
+    public string? EditLabel { get; init; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     public required IReadOnlyList<TResource> Items { get; init; }
+
+    /// <summary>
+    ///     Returns the key used in resource links.
+    /// </summary>
+    public Func<TResource, string>? KeySelector { get; init; }
 
     /// <summary>
     ///     The page title.
     /// </summary>
     public required string Title { get; init; }
 
+    bool IResourceIndexPageViewModel.CanEdit => KeySelector is not null;
+
     IEnumerable IResourceIndexPageViewModel.Items => Items;
+
+    string IResourceIndexPageViewModel.GetKey(object resource) => KeySelector!((TResource)resource);
 }
