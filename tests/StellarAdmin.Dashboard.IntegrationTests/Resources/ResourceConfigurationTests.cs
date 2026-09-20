@@ -1,5 +1,4 @@
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
@@ -45,27 +44,11 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await client.GetStringAsync("/stellaradmin/Product")
-        );
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
 
         // Assert
-        await Assert
-            .That(
-                document
-                    .QuerySelectorAll("thead th")
-                    .Select(element => element.TextContent.Trim())
-                    .ToArray()
-            )
-            .IsEquivalentTo(["Item"]);
-        await Assert
-            .That(
-                document
-                    .QuerySelectorAll("tbody td")
-                    .Select(element => element.TextContent.Trim())
-                    .ToArray()
-            )
-            .IsEquivalentTo(["Notebook"]);
+        await Assert.That(document.TextContents("thead th")).IsEquivalentTo(["Item"]);
+        await Assert.That(document.TextContents("tbody td")).IsEquivalentTo(["Notebook"]);
     }
 
     [Test]
@@ -88,12 +71,11 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var html = await client.GetStringAsync("/stellaradmin/Product");
-        var document = await new HtmlParser().ParseDocumentAsync(html);
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-slot='page-header-title']")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo(expected);
     }
 
@@ -122,13 +104,11 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await client.GetStringAsync("/stellaradmin/Product")
-        );
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-slot='page-header-title']")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo(expected);
     }
 }

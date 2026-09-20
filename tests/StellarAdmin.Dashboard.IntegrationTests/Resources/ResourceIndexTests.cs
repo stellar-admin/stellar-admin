@@ -1,5 +1,4 @@
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 
@@ -15,20 +14,14 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        var html = await client.GetStringAsync("/stellaradmin/Product");
-        var document = await new HtmlParser().ParseDocumentAsync(html);
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-slot='empty-title']")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-slot='empty-title']").TextContent.Trim())
             .IsEqualTo("No records found");
         await Assert
-            .That(
-                document
-                    .QuerySelectorAll("thead th")
-                    .Select(element => element.TextContent.Trim())
-                    .ToArray()
-            )
+            .That(document.TextContents("thead th"))
             .IsEquivalentTo(["Product name", "Unit price"]);
     }
 
@@ -42,16 +35,15 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        var html = await client.GetStringAsync("/stellaradmin/Product");
-        var document = await new HtmlParser().ParseDocumentAsync(html);
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-slot='page-header-title']")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo("Products");
         await Assert.That(document.QuerySelectorAll("tbody tr").Length).IsEqualTo(1);
         await Assert
-            .That(document.QuerySelector("tbody td")?.TextContent.Trim())
+            .That(document.RequiredElement("tbody td").TextContent.Trim())
             .IsEqualTo("<script>alert('test')</script>");
         await Assert.That(document.QuerySelector("tbody script")).IsNull();
         await Assert

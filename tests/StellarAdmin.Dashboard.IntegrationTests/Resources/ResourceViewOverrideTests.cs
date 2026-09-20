@@ -1,4 +1,3 @@
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
@@ -29,13 +28,11 @@ public class ResourceViewOverrideTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await client.GetStringAsync("/stellaradmin/CustomProduct" + action)
-        );
+        var document = await client.GetDocumentAsync("/stellaradmin/CustomProduct" + action);
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-application-view]")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-application-view]").TextContent.Trim())
             .IsEqualTo(expected);
     }
 }

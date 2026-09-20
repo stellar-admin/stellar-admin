@@ -1,5 +1,4 @@
 using System.Net;
-using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
@@ -41,15 +40,14 @@ public class ResourceCreateTests
         using var client = sut.GetTestClient();
 
         // Act
-        var html = await client.GetStringAsync("/stellaradmin/Product/Create");
-        var document = await new HtmlParser().ParseDocumentAsync(html);
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Create");
 
         // Assert
         await Assert
-            .That(document.QuerySelector("[data-slot='page-header-title']")?.TextContent.Trim())
+            .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo(title);
         await Assert
-            .That(document.QuerySelector("button[type='submit']")?.TextContent.Trim())
+            .That(document.RequiredElement("button[type='submit']").TextContent.Trim())
             .IsEqualTo(submit);
         await Assert
             .That(document.QuerySelectorAll("input[name='Entity.Name']").Length)
@@ -59,7 +57,7 @@ public class ResourceCreateTests
             .IsEqualTo(1);
         await Assert.That(document.QuerySelector("input[name='Entity.Id']")).IsNull();
         await Assert
-            .That(document.QuerySelector("label[for='Entity_Name']")?.TextContent.Trim())
+            .That(document.RequiredElement("label[for='Entity_Name']").TextContent.Trim())
             .IsEqualTo(customize ? "Name of product" : "Product name");
         await Assert
             .That(document.QuerySelector("input[name='__RequestVerificationToken']"))
@@ -87,24 +85,22 @@ public class ResourceCreateTests
 
         // Act
         using var response = await client.PostAsync("/stellaradmin/Product/Create", content);
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(state.Products.Count).IsEqualTo(0);
         await Assert
-            .That(document.QuerySelector("input[name='Entity.Name']")?.GetAttribute("value") ?? "")
+            .That(document.RequiredElement("input[name='Entity.Name']").GetAttribute("value") ?? "")
             .IsEqualTo(name);
         await Assert
-            .That(document.QuerySelector("input[name='Entity.Price']")?.GetAttribute("value"))
+            .That(document.RequiredElement("input[name='Entity.Price']").GetAttribute("value"))
             .IsEqualTo(price);
         await Assert
             .That(
                 document
-                    .QuerySelector($"[data-valmsg-for='Entity.{errorField}']")
-                    ?.TextContent.Trim()
+                    .RequiredElement($"[data-valmsg-for='Entity.{errorField}']")
+                    .TextContent.Trim()
             )
             .IsNotNullOrEmpty();
     }
@@ -166,11 +162,9 @@ public class ResourceCreateTests
     {
         using var response = await client.GetAsync("/stellaradmin/Product/Create");
         response.EnsureSuccessStatusCode();
-        var document = await new HtmlParser().ParseDocumentAsync(
-            await response.Content.ReadAsStringAsync()
-        );
+        var document = await response.ReadDocumentAsync();
         var token = document
-            .QuerySelector("input[name='__RequestVerificationToken']")!
+            .RequiredElement("input[name='__RequestVerificationToken']")
             .GetAttribute("value")!;
         client.DefaultRequestHeaders.Add(
             "Cookie",
