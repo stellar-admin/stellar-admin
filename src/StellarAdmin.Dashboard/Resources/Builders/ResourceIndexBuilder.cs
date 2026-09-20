@@ -11,6 +11,17 @@ public sealed class ResourceIndexBuilder<TResource>
     private readonly IServiceCollection _services;
 
     /// <summary>
+    ///     The create button label.
+    /// </summary>
+    public string? CreateLabel
+    {
+        set =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.CreateLabel = value
+            );
+    }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     public string? Title

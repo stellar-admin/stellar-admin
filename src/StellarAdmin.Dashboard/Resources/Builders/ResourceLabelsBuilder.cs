@@ -37,6 +37,19 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the default index create button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> IndexCreateLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.IndexCreateLabel = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default index page title.
     /// </summary>
     public Func<ResourceLabelContext, string> IndexTitle

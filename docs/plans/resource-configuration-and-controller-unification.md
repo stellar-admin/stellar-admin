@@ -244,3 +244,9 @@ Implemented `dashboard.ConfigureResourceLabels(...)` with setter-only IndexTitle
 DashboardPlayground demonstrates an “Add Product” title and “Save” submit button. Added two HTTP cases for global labels and explicit resource precedence, and extended existing invalid-submission cases to verify callback-generated labels on redisplay. Existing scenarios continue verifying the built-in defaults. No new unit tests were added.
 
 Verification: the initial parallel integration build stopped during restore without diagnostics. The explicit single-worker integration build with `--no-restore` passed with the existing ViewDataKeys XML cref warning. `dotnet build StellarAdmin.slnx --configuration Release --no-restore -m:1` passed with 12 existing warnings and zero errors, including DashboardPlayground. All 23 HTTP integration cases and all 10 Dashboard unit cases passed via their Release project executables with `--no-build`. CSharpier checked all eight touched C# files and `git diff --check` passed. The full solution test suite and browser checks were not run. Changes are uncommitted.
+
+## Index create button label — 2026-09-20
+
+Replaced the hardcoded index Create button text with a resolved view-model label. The global `IndexCreateLabel` callback defaults to “Create”; `resource.Index(index => index.CreateLabel = "...")` supplies an explicit resource override, with null falling back to the global callback. The callback receives the same effective resource labels as the index title. Extended existing HTTP scenarios to cover default text, global callback text, and resource override precedence without adding test cases.
+
+Verification: the integration project Release build (`--no-restore -m:1`) passed with the existing ViewDataKeys XML cref warning and no errors. All 23 HTTP integration cases passed with `--no-build`. CSharpier and `git diff --check` passed. Full solution tests and browser checks were not run. Changes are uncommitted.

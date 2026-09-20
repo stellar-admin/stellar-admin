@@ -68,15 +68,17 @@ public class ResourceController<TResource>(
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var items = await dataSource.ListAsync(cancellationToken);
+        var labels = CreateLabelContext();
 
         return ResourceView(
             nameof(Index),
             new ResourceIndexPageViewModel<TResource>
             {
                 Columns = _resourceOptions.Index.Columns.ToArray(),
+                CreateLabel =
+                    _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
                 Items = items,
-                Title =
-                    _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(CreateLabelContext()),
+                Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
             }
         );
     }

@@ -41,6 +41,13 @@ public class ResourceIndexTests
         await Assert
             .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo("Products");
+        await Assert
+            .That(
+                document
+                    .RequiredElement("a[href='/stellaradmin/Product/Create']")
+                    .TextContent.Trim()
+            )
+            .IsEqualTo("Create");
         await Assert.That(document.QuerySelectorAll("tbody tr").Length).IsEqualTo(1);
         await Assert
             .That(document.RequiredElement("tbody td").TextContent.Trim())

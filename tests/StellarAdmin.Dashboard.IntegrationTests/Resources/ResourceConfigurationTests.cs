@@ -52,13 +52,14 @@ public class ResourceConfigurationTests
     }
 
     [Test]
-    [Arguments(false, "Browse Inventory", "Add Inventory item", "Save")]
-    [Arguments(true, "Stock", "New stock item", "Add to stock")]
+    [Arguments(false, "Browse Inventory", "Add Inventory item", "Save", "New Inventory item")]
+    [Arguments(true, "Stock", "New stock item", "Add to stock", "Receive stock")]
     public async Task GlobalLabels_RespectsResourceOverrides(
         bool customize,
         string indexTitle,
         string createTitle,
-        string submitLabel
+        string submitLabel,
+        string indexCreateLabel
     )
     {
         // Arrange
@@ -70,7 +71,11 @@ public class ResourceConfigurationTests
                 resource.PluralLabel = "Inventory";
                 if (customize)
                 {
-                    resource.Index(index => index.Title = "Stock");
+                    resource.Index(index =>
+                    {
+                        index.Title = "Stock";
+                        index.CreateLabel = "Receive stock";
+                    });
                     resource.Create(create =>
                     {
                         create.Title = "New stock item";
@@ -82,6 +87,7 @@ public class ResourceConfigurationTests
                 dashboard.ConfigureResourceLabels(labels =>
                 {
                     labels.IndexTitle = resource => $"Browse {resource.PluralLabel}";
+                    labels.IndexCreateLabel = resource => $"New {resource.SingularLabel}";
                     labels.CreateTitle = resource => $"Add {resource.SingularLabel}";
                     labels.CreateSubmitLabel = resource => "Save";
                 })
@@ -99,6 +105,11 @@ public class ResourceConfigurationTests
         await Assert
             .That(create.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo(createTitle);
+        await Assert
+            .That(
+                index.RequiredElement("a[href='/stellaradmin/Product/Create']").TextContent.Trim()
+            )
+            .IsEqualTo(indexCreateLabel);
         await Assert
             .That(create.RequiredElement("button[type='submit']").TextContent.Trim())
             .IsEqualTo(submitLabel);

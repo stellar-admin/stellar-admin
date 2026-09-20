@@ -18,6 +18,11 @@ public sealed class ResourceLabelOptions
         resource => $"Create {resource.SingularLabel}";
 
     /// <summary>
+    ///     The callback that generates the default index create button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> IndexCreateLabel { get; set; } = resource => "Create";
+
+    /// <summary>
     ///     The callback that generates the default index page title.
     /// </summary>
     public Func<ResourceLabelContext, string> IndexTitle { get; set; } =

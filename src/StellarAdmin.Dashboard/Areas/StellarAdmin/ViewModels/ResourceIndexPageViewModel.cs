@@ -15,6 +15,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public required IReadOnlyList<DataGridColumnOptions> Columns { get; init; }
 
     /// <summary>
+    ///     The create button label.
+    /// </summary>
+    public required string CreateLabel { get; init; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     public required IReadOnlyList<TResource> Items { get; init; }

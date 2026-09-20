@@ -11,10 +11,18 @@ public sealed class ResourceIndexOptions
     public IList<DataGridColumnOptions> Columns { get; } = new List<DataGridColumnOptions>();
 
     /// <summary>
+    ///     The create button label.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? CreateLabel { get; set; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     /// <remarks>
-    ///     Defaults to the resource's plural label when null.
+    ///     Uses the global resource label callback when null.
     /// </remarks>
     public string? Title { get; set; }
 }

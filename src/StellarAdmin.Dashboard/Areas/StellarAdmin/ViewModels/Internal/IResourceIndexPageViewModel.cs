@@ -16,6 +16,11 @@ public interface IResourceIndexPageViewModel
     IReadOnlyList<DataGridColumnOptions> Columns { get; }
 
     /// <summary>
+    ///     The create button label.
+    /// </summary>
+    string CreateLabel { get; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     IEnumerable Items { get; }
