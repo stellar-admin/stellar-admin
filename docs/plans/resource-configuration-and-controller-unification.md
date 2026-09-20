@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults are implemented; step 4 (advanced layouts) is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 (edit/delete) is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -43,7 +43,7 @@ Add typed field configuration, page titles, submit labels, model binding, valida
 2. Add an optional create factory callback for resources without a parameterless constructor. Use it for GET and POST initialization before configured-field binding, retaining parameterless construction as the default.
 3. Add overridable global label templates such as `Create {SingularLabel}` and `Edit {SingularLabel}`. Explicit page titles and submit labels take precedence. Keep resolution simple, without captured defaults or synchronization machinery.
 
-Test consolidation and the creation factory are implemented. Global label templates remain pending. Prove them with focused HTTP scenarios rather than parallel options and controller unit tests. Advanced layouts remain on hold until these foundations are reviewed.
+Test consolidation, the creation factory, and global delegate-based labels are implemented and reviewed. Advanced layouts are implemented below. Continue proving subsequent features through focused HTTP scenarios rather than parallel options and controller unit tests.
 
 ### 4. Form layout
 
@@ -250,3 +250,32 @@ Verification: the initial parallel integration build stopped during restore with
 Replaced the hardcoded index Create button text with a resolved view-model label. The global `IndexCreateLabel` callback defaults to “Create”; `resource.Index(index => index.CreateLabel = "...")` supplies an explicit resource override, with null falling back to the global callback. The callback receives the same effective resource labels as the index title. Extended existing HTTP scenarios to cover default text, global callback text, and resource override precedence without adding test cases.
 
 Verification: the integration project Release build (`--no-restore -m:1`) passed with the existing ViewDataKeys XML cref warning and no errors. All 23 HTTP integration cases passed with `--no-build`. CSharpier and `git diff --check` passed. Full solution tests and browser checks were not run. Changes are uncommitted.
+
+## Step 4: advanced form layouts — 2026-09-20
+
+Added AddSection, AddRow, and AddGroup to ResourceFieldsBuilder, including callback overloads returning the parent and no-callback overloads returning the child builder. Sections support a title and optional Description. Nested builders share the existing typed Add field API, and Clear removes only the current scope's fields and containers. Root configuration still uses the standard options pipeline, with fresh containers and fields for each resolved options instance. No Identity or EF dependencies were introduced.
+
+ResourceCreateOptions.Items is now the authoritative ordered layout tree. Fields is a read-only flattened projection used for the binding allowlist and field metadata. ResourceController passes the tree to the retained Razor partials, so nested fields retain the same Entity binding prefix, validation, persistence, and invalid-submission redisplay. Create.SectionLayout optionally overrides the application's form setting. No Razor, Tag Helper, or CSS changes were necessary.
+
+DashboardPlayground demonstrates a Product details section with a description and two row columns, each containing a field group. The API remains straightforward for forms that need only fields:
+
+```csharp
+create.Fields(fields =>
+{
+    fields.AddSection("Product details", section =>
+    {
+        section.Description = "Information shown in the catalog.";
+        section.AddRow(row =>
+        {
+            row.Add(product => product.Name);
+            row.Add(product => product.Price);
+        });
+    });
+});
+```
+
+Added three HTTP cases covering nested markup and field order, encoded section text, global/per-resource section layout selection, and clearing the entire layout. Extended the existing valid and invalid submission scenarios to use nested sections/rows/groups, including exclusion of a field removed by a nested Clear. Extended the existing provider-isolation unit case to include layout containers. Ordinary flat forms remain covered by the original rendering and factory scenarios. Dashboard now has 26 HTTP cases and 10 unit cases.
+
+Verification: the initial integration build caught an incorrect ConfigureForms test setup, which was corrected. The full Release solution build with --no-restore -m:1 passed with 12 existing warnings and one new test nullability warning. That warning was corrected, and the subsequent integration Release build passed with zero warnings/errors. The CI command `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 178 tests across four assemblies. The solution runner ran outside the sandbox for its local IPC socket. CSharpier formatted the eight touched C# files and git diff --check passed.
+
+Chromium checks at 1440×1000 and 390×1000 verified columns side by side on desktop and stacked on mobile, no horizontal overflow, invalid POST errors, and a successful browser submission followed by the index showing the new item. Screenshots were visually reviewed at /tmp/resource-layout-1440.png and /tmp/resource-layout-390.png. The agent-owned playground on port 5206 and browser were stopped. Port 5205 was untouched. Changes are uncommitted. Edit/delete is next, followed immediately by action-specific view models.

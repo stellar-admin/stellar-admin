@@ -44,7 +44,7 @@ For C# formatting, run `dotnet tool restore` then `dotnet csharpier format <touc
 
 ## Resource redesign baseline
 
-The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. The replacement `AddResource<TResource>()` registration configures typed labels, index columns, and an `IResourceDataSource<TResource>`. The shared resource controller renders index and create pages. Create forms now support explicit fields, validation, and persistence. Layout builders, edit, and delete remain to be rebuilt. `sandbox/DashboardPlayground` demonstrates Product with an in-memory data source. Its ASP.NET Core EF/Identity host setup is retained for future work.
+The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. The replacement `AddResource<TResource>()` registration configures typed labels, index columns, and an `IResourceDataSource<TResource>`. The shared resource controller renders index and create pages. Create forms now support explicit fields, nested sections/rows/groups, validation, and persistence. Edit and delete remain to be rebuilt. `sandbox/DashboardPlayground` demonstrates Product with an in-memory data source. Its ASP.NET Core EF/Identity host setup is retained for future work.
 
 EF Core, Identity, and `sandbox/IdentitySimplePlayground` remain outside `StellarAdmin.slnx` and the build/release pipeline. Their source is retained for later adaptation and now references removed APIs. They are not expected to compile independently during this reset.
 

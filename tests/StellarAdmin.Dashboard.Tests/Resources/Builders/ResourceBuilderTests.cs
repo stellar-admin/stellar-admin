@@ -13,7 +13,17 @@ public class ResourceBuilderTests
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
-        sut.Create(create => create.Fields(fields => fields.Add(product => product.Name)));
+        sut.Create(create =>
+            create.Fields(fields =>
+                fields.AddSection(
+                    "Details",
+                    section =>
+                        section.AddRow(row =>
+                            row.AddGroup(group => group.Add(product => product.Name))
+                        )
+                )
+            )
+        );
         sut.Index(index => index.Columns(columns => columns.Add(product => product.Name)));
         using var first = services.BuildServiceProvider();
         using var second = services.BuildServiceProvider();
@@ -27,6 +37,12 @@ public class ResourceBuilderTests
         await Assert
             .That(firstOptions.Index.Columns[0])
             .IsNotSameReferenceAs(secondOptions.Index.Columns[0]);
+        await Assert
+            .That(firstOptions.Create.Items[0])
+            .IsNotSameReferenceAs(secondOptions.Create.Items[0]);
+        var firstSection = (FormSectionOptions)firstOptions.Create.Items[0];
+        var secondSection = (FormSectionOptions)secondOptions.Create.Items[0];
+        await Assert.That(firstSection.Items[0]).IsNotSameReferenceAs(secondSection.Items[0]);
         await Assert
             .That(firstOptions.Create.Fields[0])
             .IsNotSameReferenceAs(secondOptions.Create.Fields[0]);

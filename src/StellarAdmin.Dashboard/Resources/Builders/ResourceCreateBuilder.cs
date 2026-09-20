@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
@@ -9,6 +10,17 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 public sealed class ResourceCreateBuilder<TResource>
 {
     private readonly IServiceCollection _services;
+
+    /// <summary>
+    ///     The layout of form sections.
+    /// </summary>
+    public FormSectionLayout? SectionLayout
+    {
+        set =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+                options.Create.SectionLayout = value
+            );
+    }
 
     /// <summary>
     ///     The submit button label.

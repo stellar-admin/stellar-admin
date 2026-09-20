@@ -4,11 +4,37 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
+using StellarAdmin.Dashboard.Resources.Builders;
+using StellarAdmin.TagHelpers;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ResourceCreateTests
 {
+    [Test]
+    public async Task ClearedLayout_RendersNoFieldsOrContainers()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+            {
+                ConfigureLayout(resource);
+                resource.Create(create => create.Fields(fields => fields.Clear()));
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Create");
+
+        // Assert
+        await Assert.That(document.QuerySelectorAll("input[name^='Entity.']").Length).IsEqualTo(0);
+        await Assert.That(document.QuerySelector("[data-slot='form-section']")).IsNull();
+        await Assert.That(document.QuerySelector("[data-slot='form-row']")).IsNull();
+    }
+
     [Test]
     [Arguments(false, "Create Product", "Create Product")]
     [Arguments(true, "Add inventory", "Save product")]
@@ -147,6 +173,7 @@ public class ResourceCreateTests
         var state = new ProductState([]);
         await using var sut = await DashboardTestHost.CreateAsync(
             state,
+            ConfigureLayout,
             configureDashboard: dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
                 {
@@ -167,6 +194,14 @@ public class ResourceCreateTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(state.Products.Count).IsEqualTo(0);
+        await Assert
+            .That(
+                document
+                    .RequiredElement("[data-slot='form-section']")
+                    .QuerySelectorAll("[data-slot='form-row']")
+                    .Length
+            )
+            .IsEqualTo(1);
         await Assert
             .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo("Add Product");
@@ -212,11 +247,78 @@ public class ResourceCreateTests
     }
 
     [Test]
+    [Arguments(false, "split")]
+    [Arguments(true, "card")]
+    public async Task NestedLayout_RendersContainersAndFieldsInOrder(
+        bool overrideLayout,
+        string layout
+    )
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+            {
+                ConfigureLayout(resource);
+                resource.Create(create =>
+                {
+                    if (overrideLayout)
+                    {
+                        create.SectionLayout = FormSectionLayout.Card;
+                    }
+
+                    create.Fields(fields => fields.Add(product => product.Id));
+                });
+            },
+            dashboard =>
+                dashboard
+                    .Services.AddStellarAdmin()
+                    .ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Split)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Create");
+
+        // Assert
+        var section = document.RequiredElement("[data-slot='form-section']");
+        await Assert.That(section.GetAttribute("data-layout")).IsEqualTo(layout);
+        await Assert
+            .That(section.RequiredElement("[data-slot='form-section-title']").TextContent.Trim())
+            .IsEqualTo("Product <details>");
+        await Assert
+            .That(
+                section.RequiredElement("[data-slot='form-section-description']").TextContent.Trim()
+            )
+            .IsEqualTo("Catalog <information>");
+        await Assert.That(section.QuerySelector("details")).IsNull();
+        var row = section.RequiredElement("[data-slot='form-row-content']");
+        await Assert
+            .That(row.QuerySelectorAll(":scope > [data-slot='field-group']").Length)
+            .IsEqualTo(2);
+        await Assert
+            .That(row.RequiredElement("label[for='Entity_Name']").TextContent.Trim())
+            .IsEqualTo("Item name");
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("input[name^='Entity.']")
+                    .Select(input => input.GetAttribute("name")!)
+                    .ToArray()
+            )
+            .IsEquivalentTo(
+                ["Entity.Name", "Entity.Price", "Entity.Id"],
+                CollectionOrdering.Matching
+            );
+        await Assert.That(section.QuerySelector("input[name='Entity.Id']")).IsNull();
+    }
+
+    [Test]
     public async Task ValidSubmission_PersistsConfiguredFieldsAndRedirectsToIndex()
     {
         // Arrange
         var state = new ProductState([]);
-        await using var sut = await DashboardTestHost.CreateAsync(state);
+        await using var sut = await DashboardTestHost.CreateAsync(state, ConfigureLayout);
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = "New notebook";
@@ -240,6 +342,24 @@ public class ResourceCreateTests
         var index = await client.GetStringAsync("/stellaradmin/Product");
         await Assert.That(index).Contains("New notebook");
     }
+
+    private static void ConfigureLayout(ResourceBuilder<Product> resource) =>
+        resource.Create(create =>
+            create.Fields(fields =>
+            {
+                fields.Clear();
+                var section = fields.AddSection("Product <details>");
+                section.Description = "Catalog <information>";
+                var row = section.AddRow();
+                row.AddGroup(group =>
+                {
+                    group.Add(product => product.Id);
+                    group.Clear();
+                    group.Add(product => product.Name).Title = "Item name";
+                });
+                row.AddGroup().Add(product => product.Price);
+            })
+        );
 
     private static Task<WebApplication> CreateInventoryHost(
         List<InventoryItem> items,

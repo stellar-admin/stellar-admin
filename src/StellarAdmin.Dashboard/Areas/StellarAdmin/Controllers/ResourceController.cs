@@ -97,7 +97,8 @@ public class ResourceController<TResource>(
             {
                 Entity = resource,
                 Fields = fields,
-                Items = fields,
+                Items = _resourceOptions.Create.Items.ToArray(),
+                SectionLayout = _resourceOptions.Create.SectionLayout,
                 Title = _resourceOptions.Create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel =
                     _resourceOptions.Create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),

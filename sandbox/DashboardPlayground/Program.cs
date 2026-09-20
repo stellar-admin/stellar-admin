@@ -39,8 +39,19 @@ builder
                 create.UseFactory(() => new Product { Price = 10m });
                 create.Fields(fields =>
                 {
-                    fields.Add(product => product.Name);
-                    fields.Add(product => product.Price);
+                    fields.AddSection(
+                        "Product details",
+                        section =>
+                        {
+                            section.Description =
+                                "The name and pricing shown in the product catalog.";
+                            section.AddRow(row =>
+                            {
+                                row.AddGroup(group => group.Add(product => product.Name));
+                                row.AddGroup(group => group.Add(product => product.Price));
+                            });
+                        }
+                    );
                 });
             });
             resource.Index(index =>

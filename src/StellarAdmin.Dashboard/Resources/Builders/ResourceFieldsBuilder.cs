@@ -8,11 +8,19 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 /// <summary>
 ///     Configures the fields displayed on a resource's form.
 /// </summary>
-public sealed class ResourceFieldsBuilder<TResource>
+public class ResourceFieldsBuilder<TResource>
 {
-    private readonly IServiceCollection _services;
+    private readonly Action<Action<IList<FormItemOptions>>> _configure;
 
-    internal ResourceFieldsBuilder(IServiceCollection services) => _services = services;
+    internal ResourceFieldsBuilder(IServiceCollection services)
+        : this(configure =>
+            services.Configure<ResourceOptions<TResource>>(options =>
+                configure(options.Create.Items)
+            )
+        ) { }
+
+    internal ResourceFieldsBuilder(Action<Action<IList<FormItemOptions>>> configure) =>
+        _configure = configure;
 
     /// <summary>
     ///     Adds a field.
@@ -35,9 +43,7 @@ public sealed class ResourceFieldsBuilder<TResource>
         }
 
         var fieldBuilder = new ResourceFieldBuilder(field);
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Create.Fields.Add(fieldBuilder.Build())
-        );
+        _configure(items => items.Add(fieldBuilder.Build()));
 
         return fieldBuilder;
     }
@@ -58,12 +64,106 @@ public sealed class ResourceFieldsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Removes all configured fields.
+    ///     Adds a group of related fields.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddGroup() =>
+        AddContainer(() => new FormGroupOptions());
+
+    /// <summary>
+    ///     Adds and configures a group of related fields.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddGroup(
+        Action<ResourceFieldsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AddGroup());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a row whose fields and groups form equally sized columns.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddRow() => AddContainer(() => new FormRowOptions());
+
+    /// <summary>
+    ///     Adds and configures a row.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddRow(
+        Action<ResourceFieldsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AddRow());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a titled section.
+    /// </summary>
+    public ResourceSectionBuilder<TResource> AddSection(string title)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+
+        var configuration = new List<Action<IList<FormItemOptions>>>();
+        var section = new ResourceSectionBuilder<TResource>(title, configuration.Add);
+        _configure(items =>
+        {
+            var options = section.Build();
+            foreach (var configure in configuration)
+            {
+                configure(options.MutableItems);
+            }
+
+            items.Add(options);
+        });
+
+        return section;
+    }
+
+    /// <summary>
+    ///     Adds and configures a titled section.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddSection(
+        string title,
+        Action<ResourceSectionBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AddSection(title));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Removes all fields and containers in this scope.
     /// </summary>
     public ResourceFieldsBuilder<TResource> Clear()
     {
-        _services.Configure<ResourceOptions<TResource>>(options => options.Create.Fields.Clear());
+        _configure(items => items.Clear());
 
         return this;
+    }
+
+    private ResourceFieldsBuilder<TResource> AddContainer(Func<FormContainerOptions> factory)
+    {
+        var configuration = new List<Action<IList<FormItemOptions>>>();
+        _configure(items =>
+        {
+            var container = factory();
+            foreach (var configure in configuration)
+            {
+                configure(container.MutableItems);
+            }
+
+            items.Add(container);
+        });
+
+        return new(configuration.Add);
     }
 }
