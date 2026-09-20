@@ -52,6 +52,59 @@ public class ResourceConfigurationTests
     }
 
     [Test]
+    [Arguments(false, "Browse Inventory", "Add Inventory item", "Save")]
+    [Arguments(true, "Stock", "New stock item", "Add to stock")]
+    public async Task GlobalLabels_RespectsResourceOverrides(
+        bool customize,
+        string indexTitle,
+        string createTitle,
+        string submitLabel
+    )
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+            {
+                resource.SingularLabel = "Inventory item";
+                resource.PluralLabel = "Inventory";
+                if (customize)
+                {
+                    resource.Index(index => index.Title = "Stock");
+                    resource.Create(create =>
+                    {
+                        create.Title = "New stock item";
+                        create.SubmitLabel = "Add to stock";
+                    });
+                }
+            },
+            dashboard =>
+                dashboard.ConfigureResourceLabels(labels =>
+                {
+                    labels.IndexTitle = resource => $"Browse {resource.PluralLabel}";
+                    labels.CreateTitle = resource => $"Add {resource.SingularLabel}";
+                    labels.CreateSubmitLabel = resource => "Save";
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var index = await client.GetDocumentAsync("/stellaradmin/Product");
+        var create = await client.GetDocumentAsync("/stellaradmin/Product/Create");
+
+        // Assert
+        await Assert
+            .That(index.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
+            .IsEqualTo(indexTitle);
+        await Assert
+            .That(create.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
+            .IsEqualTo(createTitle);
+        await Assert
+            .That(create.RequiredElement("button[type='submit']").TextContent.Trim())
+            .IsEqualTo(submitLabel);
+    }
+
+    [Test]
     [Arguments(null, "Inventory")]
     [Arguments("Available products", "Available products")]
     public async Task LabelOverrides_RendersEffectiveTitleAtStableRoute(

@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Introduce global label templates before step 4. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults are implemented; step 4 (advanced layouts) is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -236,3 +236,11 @@ Verification: `dotnet build StellarAdmin.slnx --configuration Release -m:1` pass
 Follow-up verification after making Factory nullable and adding CreateInstance: the integration project Release build passed with the existing ViewDataKeys XML cref warning; all 21 HTTP cases passed again. CSharpier and git diff --check passed.
 
 ResourceController now resolves options.Value once into a readonly field during construction and uses that field throughout. The integration project Release build passed with the existing ViewDataKeys XML cref warning; all 21 HTTP cases passed again. CSharpier and git diff --check passed.
+
+## Global resource label callbacks — 2026-09-20
+
+Implemented `dashboard.ConfigureResourceLabels(...)` with setter-only IndexTitle, CreateTitle, and CreateSubmitLabel callbacks. Each is a `Func<ResourceLabelContext, string>` receiving the resource’s effective SingularLabel and PluralLabel. ResourceLabelOptions supplies the existing default wording, and the builder uses the standard options configuration pipeline. ResourceController resolves label options once into a readonly field and invokes callbacks when constructing page models, only where an explicit resource title or submit label is absent. No parsed templates, extra dependencies, or captured defaults were introduced. Edit/delete settings remain deferred until those actions exist.
+
+DashboardPlayground demonstrates an “Add Product” title and “Save” submit button. Added two HTTP cases for global labels and explicit resource precedence, and extended existing invalid-submission cases to verify callback-generated labels on redisplay. Existing scenarios continue verifying the built-in defaults. No new unit tests were added.
+
+Verification: the initial parallel integration build stopped during restore without diagnostics. The explicit single-worker integration build with `--no-restore` passed with the existing ViewDataKeys XML cref warning. `dotnet build StellarAdmin.slnx --configuration Release --no-restore -m:1` passed with 12 existing warnings and zero errors, including DashboardPlayground. All 23 HTTP integration cases and all 10 Dashboard unit cases passed via their Release project executables with `--no-build`. CSharpier checked all eight touched C# files and `git diff --check` passed. The full solution test suite and browser checks were not run. Changes are uncommitted.

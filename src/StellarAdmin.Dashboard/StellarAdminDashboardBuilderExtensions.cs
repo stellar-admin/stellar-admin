@@ -19,6 +19,7 @@ public static class StellarAdminDashboardBuilderExtensions
         {
             ArgumentNullException.ThrowIfNull(builder);
 
+            builder.Services.AddOptions<ResourceLabelOptions>();
             builder.Services.AddOptions<ResourceOptions<TResource>>();
             builder.AddController(
                 typeof(ResourceController<TResource>),
@@ -39,6 +40,21 @@ public static class StellarAdminDashboardBuilderExtensions
             ArgumentNullException.ThrowIfNull(configure);
 
             configure(builder.AddResource<TResource>());
+
+            return builder;
+        }
+
+        /// <summary>
+        ///     Configures default page text for resources.
+        /// </summary>
+        public StellarAdminDashboardBuilder ConfigureResourceLabels(
+            Action<ResourceLabelsBuilder> configure
+        )
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(configure);
+
+            configure(new(builder.Services));
 
             return builder;
         }

@@ -25,6 +25,12 @@ builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
     {
+        dashboard.ConfigureResourceLabels(labels =>
+        {
+            labels.CreateTitle = resource => $"Add new {resource.SingularLabel}";
+            labels.CreateSubmitLabel = resource => $"Add {resource.SingularLabel}";
+        });
+
         dashboard.AddResource<Product>(resource =>
         {
             resource.UseDataSource<ProductDataSource>();

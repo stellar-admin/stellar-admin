@@ -145,7 +145,15 @@ public class ResourceCreateTests
     {
         // Arrange
         var state = new ProductState([]);
-        await using var sut = await DashboardTestHost.CreateAsync(state);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            configureDashboard: dashboard =>
+                dashboard.ConfigureResourceLabels(labels =>
+                {
+                    labels.CreateTitle = resource => $"Add {resource.SingularLabel}";
+                    labels.CreateSubmitLabel = resource => "Save";
+                })
+        );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);
         values["Entity.Name"] = name;
@@ -159,6 +167,12 @@ public class ResourceCreateTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         await Assert.That(state.Products.Count).IsEqualTo(0);
+        await Assert
+            .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
+            .IsEqualTo("Add Product");
+        await Assert
+            .That(document.RequiredElement("button[type='submit']").TextContent.Trim())
+            .IsEqualTo("Save");
         await Assert
             .That(document.RequiredElement("input[name='Entity.Name']").GetAttribute("value") ?? "")
             .IsEqualTo(name);

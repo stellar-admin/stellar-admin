@@ -15,9 +15,11 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.Controllers;
 public class ResourceController<TResource>(
     IResourceDataSource<TResource> dataSource,
     IOptions<ResourceOptions<TResource>> options,
+    IOptions<ResourceLabelOptions> labelOptions,
     ICompositeViewEngine viewEngine
 ) : Controller
 {
+    private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
     /// <summary>
@@ -73,14 +75,19 @@ public class ResourceController<TResource>(
             {
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 Items = items,
-                Title = _resourceOptions.Index.Title ?? _resourceOptions.PluralLabel,
+                Title =
+                    _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(CreateLabelContext()),
             }
         );
     }
 
+    private ResourceLabelContext CreateLabelContext() =>
+        new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
+
     private ViewResult CreateView(object resource)
     {
         var fields = _resourceOptions.Create.Fields.ToArray();
+        var labels = CreateLabelContext();
 
         return ResourceView(
             nameof(Create),
@@ -89,10 +96,9 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = fields,
                 Items = fields,
-                Title = _resourceOptions.Create.Title ?? "Create " + _resourceOptions.SingularLabel,
+                Title = _resourceOptions.Create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel =
-                    _resourceOptions.Create.SubmitLabel
-                    ?? "Create " + _resourceOptions.SingularLabel,
+                    _resourceOptions.Create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
             }
         );
     }
