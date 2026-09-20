@@ -28,6 +28,7 @@ Commands below run from the product repository root unless a working directory i
 | --- | --- |
 | All .NET tests (unit and integration) | `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`; use `--list-tests` instead of `--minimum-expected-tests 1` to verify discovery. Add `--no-build` after a Release build, as CI does. |
 | Core unit tests | `dotnet run --project tests/StellarAdmin.Core.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
+| Dashboard HTTP integration tests | `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release`; uses an in-process TestServer with a private in-memory data source per test, no database or EF/Identity dependency. |
 | Dashboard unit tests | `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | TagHelpers unit tests | `dotnet run --project tests/StellarAdmin.TagHelpers.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |
@@ -43,11 +44,11 @@ For C# formatting, run `dotnet tool restore` then `dotnet csharpier format <touc
 
 ## Resource redesign baseline
 
-The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. The replacement `AddResource<TResource>()` registration now configures typed resource labels. CRUD execution remains to be rebuilt.
+The old resource builders, page/default options, controller base, and query infrastructure have been removed. Dashboard retains its shell, page tag helpers, Razor views, editors, and rendering data definitions. The replacement `AddResource<TResource>()` registration configures typed labels, index columns, and an `IResourceDataSource<TResource>`. The shared resource controller renders index pages. Create, edit, and delete remain to be rebuilt. `sandbox/DashboardPlayground` demonstrates Product with an in-memory data source. Its ASP.NET Core EF/Identity host setup is retained for future work.
 
 EF Core, Identity, and `sandbox/IdentitySimplePlayground` remain outside `StellarAdmin.slnx` and the build/release pipeline. Their source is retained for later adaptation and now references removed APIs. They are not expected to compile independently during this reset.
 
-The old Dashboard unit tests, Dashboard integration tests, EF resource integration tests, and shared Dashboard.Testing host have been deleted. The active solution command runs Core, TagHelpers, and a new Dashboard unit suite covering resource registration, naming, overrides, and configuration isolation. Rendering coverage previously supplied by the deleted integration suites is not currently exercised.
+The old Dashboard unit tests, Dashboard integration tests, EF resource integration tests, and shared Dashboard.Testing host have been deleted. The active solution command runs Core, TagHelpers, Dashboard unit tests, and new Dashboard HTTP integration tests. The latter cover index routes, label overrides, columns, encoded cell values, empty results, and request-scoped data sources using the shared Razor views. The remaining legacy rendering coverage has not been restored.
 
 ## Samples, screenshots, and generated website demos
 

@@ -1,71 +1,19 @@
-@using System.Globalization
-@using Microsoft.AspNetCore.Mvc.ModelBinding
 @model IResourceIndexPageViewModel
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-@inject Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider MetadataProvider
-@{
-    var tokenSet = Antiforgery.GetAndStoreTokens(Context);
-    var pageSizeOptions = string.Join(
-        ",",
-        Model.PageSizeOptions.Select(size => size.ToString(CultureInfo.InvariantCulture))
-    );
-}
-<sa-data-grid items="Model.Page.Items" hx-boost:inherited="true">
-    <sa-data-grid-sort sort-by="@Model.Sort.By" sort-direction="Model.Sort.Direction"
-                       asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"
-                       preserve-query="true" preserve-query-except="pageNo"/>
+
+<sa-data-grid items="Model.Items">
     @foreach (var column in Model.Columns)
     {
-        var title = column.Title;
-        if (title is null && column.DisplayExpression is not null && column.FieldName is not null)
-        {
-            title = MetadataProvider.GetMetadataForProperty(column.FieldExpression.Parameters[0].Type, column.FieldName).GetDisplayName();
-        }
-
-        <sa-data-grid-column title="@title" field-for="@(column.DisplayExpression ?? column.FieldExpression)" sort-field="@(column.DisplayExpression is null ? null : column.FieldName)"
-                             template="@column.Template" format="@column.Format"
-                             sortable="column.Sortable"/>
+        <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
+                             format="@column.Format" sortable="false" />
     }
-    <sa-data-grid-column>
-        <sa-data-grid-item-template>
-            @{
-                var item = Html.GridItem<object>();
-                var rowId = Model.GetRowId(item);
-            }
-            <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
-                           asp-action="Edit" asp-route-id="@rowId"
-                           hx-boost:inherited="false">
-                <sa-icon name="square-pen"/>
-            </sa-linkbutton>
-            <sa-button variant="ButtonVariant.Destructive" size="ButtonSize.IconSmall"
-                       hx-post="@Url.Action("Delete", new { id = rowId })"
-                       hx-vals='js:{ "@tokenSet.FormFieldName": "@tokenSet.RequestToken" }'
-                       hx-target="#index-page-data-grid"
-                       hx-select="#index-page-data-grid"
-                       hx-swap="outerHTML"
-                       hx-confirm="js:confirmResourceDelete(this)"
-                       data-delete-message="@Model.GetDeleteMessage(item)"
-                       hx-boost:inherited="false"
-            >
-                <sa-icon name="trash"/>
-            </sa-button>
-        </sa-data-grid-item-template>
-    </sa-data-grid-column>
     <sa-data-grid-empty>
         <sa-empty>
             <sa-empty-header>
                 <sa-empty-media variant="EmptyMediaVariant.Icon">
-                    <sa-icon name="@Model.Empty.Icon"/>
+                    <sa-icon name="inbox" />
                 </sa-empty-media>
-                <sa-empty-title>@Model.Empty.Title</sa-empty-title>
-                <sa-empty-description>@Model.Empty.Description</sa-empty-description>
+                <sa-empty-title>No records found</sa-empty-title>
             </sa-empty-header>
         </sa-empty>
     </sa-data-grid-empty>
-    <sa-data-grid-pager page-no="Model.Page.PageNo" total-pages="@Model.Page.TotalPages"
-                        page-size="@Model.Page.PageSize"
-                        selected-page-size="Model.Selection.PageSize"
-                        total-items="@Model.Page.Total" page-size-options="@pageSizeOptions"
-                        asp-route-pageNo="{pageNo}" asp-route-pageSize="{pageSize}"
-                        preserve-query="true"/>
 </sa-data-grid>

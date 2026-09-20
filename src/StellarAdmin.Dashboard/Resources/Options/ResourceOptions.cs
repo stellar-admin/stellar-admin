@@ -3,10 +3,15 @@ using Humanizer;
 namespace StellarAdmin.Dashboard.Resources.Options;
 
 /// <summary>
-///     Configures a resource's display labels.
+///     Configures a resource.
 /// </summary>
 public sealed class ResourceOptions<TResource>
 {
+    /// <summary>
+    ///     The index page configuration.
+    /// </summary>
+    public ResourceIndexOptions Index { get; } = new();
+
     /// <summary>
     ///     The plural resource label.
     /// </summary>

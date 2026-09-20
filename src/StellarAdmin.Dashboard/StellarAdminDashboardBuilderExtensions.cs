@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Areas.StellarAdmin.Controllers;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
 
@@ -19,6 +20,10 @@ public static class StellarAdminDashboardBuilderExtensions
             ArgumentNullException.ThrowIfNull(builder);
 
             builder.Services.AddOptions<ResourceOptions<TResource>>();
+            builder.AddController(
+                typeof(ResourceController<TResource>),
+                typeof(TResource).Name.Split('`')[0]
+            );
 
             return new(builder.Services);
         }

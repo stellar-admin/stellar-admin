@@ -1,78 +1,14 @@
-@using System.Globalization
 @model IResourceIndexPageViewModel
 
 <sa-page-container>
     <sa-page-header>
         <sa-page-header-title>@Model.Title</sa-page-header-title>
-        @if (Model.Subtitle is not null)
-        {
-            <sa-page-header-description>@Model.Subtitle</sa-page-header-description>
-        }
         <sa-page-header-actions>
-            <sa-slot-outlet name="pre-page-actions"/>
-            <sa-linkbutton asp-action="Create">
-                <sa-icon name="plus"/>
-                @Model.CreateLabel
-            </sa-linkbutton>
-            <sa-slot-outlet name="post-page-actions"/>
+            <sa-slot-outlet name="pre-page-actions" />
+            <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
-        <sa-page-header-nav aria-label="Page sections">
-            <sa-group justify="GroupJustify.SpaceBetween" class="@(Model.Search is not null ? "my-2 mr-2" : null)">
-                @if (Model.Scopes.Count > 0)
-                {
-                    <sa-tab-list hx-boost:inherited="true" id="index-page-scopes">
-                        @foreach (var scope in Model.Scopes)
-                        {
-                            <sa-tab-link is-active="scope.IsActive"
-                                         asp-route-scope="@scope.QueryValue"
-                                         asp-route-search="@Model.Search?.Term"
-                                         asp-route-sortBy="@Model.Selection.SortBy"
-                                         asp-route-sortDir="@Model.Selection.SortDirection"
-                                         asp-route-pageSize="@(Model.Selection.PageSize?.ToString(CultureInfo.InvariantCulture))">
-                                @scope.Title
-                            </sa-tab-link>
-                        }
-                    </sa-tab-list>
-                }
-                @if (Model.Search is { } search)
-                {
-                    <sa-input-group class="w-full sm:w-64">
-                        <sa-input-group-input placeholder="@search.Placeholder"
-                                              autofocus=""
-                                              value="@search.Term"
-                                              name="search"
-                                              hx-get="@Url.Action("Index", new
-                                                      {
-                                                          scope = Model.Selection.Scope,
-                                                          sortBy = Model.Selection.SortBy,
-                                                          sortDir = Model.Selection.SortDirection,
-                                                          pageSize = Model.Selection.PageSize
-                                                      })"
-                                              hx-trigger="input changed delay:400ms"
-                                              hx-swap="outerHTML"
-                                              hx-target="#index-page-data-grid"
-                                              hx-select="#index-page-data-grid"
-                                              hx-select-oob="#index-page-scopes"
-                                              hx-push-url="true"
-                        />
-                        <sa-input-group-addon>
-                            <sa-icon name="search"/>
-                        </sa-input-group-addon>
-                    </sa-input-group>
-                }
-            </sa-group>
-        </sa-page-header-nav>
     </sa-page-header>
-
     <div id="index-page-data-grid">
-        @if (TempData[TempDataKeys.ErrorMessage] is string errorMessage)
-        {
-            <sa-alert variant="AlertVariant.Destructive">
-                <sa-alert-title>@errorMessage</sa-alert-title>
-            </sa-alert>
-        }
-        <partial name="_IndexDataGrid"/>
+        <partial name="_IndexDataGrid" />
     </div>
 </sa-page-container>
-
-<partial name="_IndexDeleteDialog" model="Model.DeleteDialog"/>

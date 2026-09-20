@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -31,4 +32,30 @@ public sealed class ResourceBuilder<TResource>
     }
 
     internal ResourceBuilder(IServiceCollection services) => _services = services;
+
+    /// <summary>
+    ///     Configures the index page.
+    /// </summary>
+    public ResourceBuilder<TResource> Index(Action<ResourceIndexBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Specifies the data source used for the resource.
+    /// </summary>
+    public ResourceBuilder<TResource> UseDataSource<TDataSource>()
+        where TDataSource : class, IResourceDataSource<TResource>
+    {
+        _services.TryAddScoped<TDataSource>();
+        _services.AddScoped<IResourceDataSource<TResource>>(services =>
+            services.GetRequiredService<TDataSource>()
+        );
+
+        return this;
+    }
 }

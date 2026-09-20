@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Step 1 (resource registration and naming) is implemented. Step 2 is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -10,7 +10,7 @@ Build a simple standalone resource foundation in Dashboard, then make EF Core an
 
 The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. They do not verify the retained Dashboard rendering.
+EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The new Dashboard integration suite verifies the rebuilt index rendering through HTTP.
 
 ## Design rules
 
@@ -29,9 +29,9 @@ Each step is a bounded implementation increment with focused tests and a compili
 
 Introduce AddResource<TResource>(...), its builder, and resource options. Derive readable singular/plural labels from the type, allow SingularLabel and PluralLabel overrides, and establish straightforward override rules. Prove configuration resolution and isolation between resources. This step only registers configuration.
 
-### 2. Working index page
+### 2. Working index page — completed
 
-Create a standalone Product sample backed by an in-memory store. Add column configuration and the minimum controller behavior needed to display products. Prove the full registration-to-controller-to-rendering path without integration dependencies.
+Use DashboardPlayground for a Product sample backed by an in-memory data source. Add column configuration and the minimum controller behavior needed to display products. Prove the full registration-to-controller-to-rendering path without integration dependencies.
 
 ### 3. Working create form
 
@@ -63,7 +63,7 @@ Prove Identity user creation with an action-specific model for password and conf
 
 ## Verification and scope
 
-Introduce focused TUnit tests alongside the new implementation, following the repository's unit testing conventions. Shared tests and the standalone sample must not depend on EF, Identity, or their playground. Run affected builds/tests per step and the active solution checks at delivery. Exercise rendered sample pages when adding UI behavior; leave the user's port 5205 process alone.
+Introduce focused TUnit tests alongside the new implementation, following the repository's unit testing conventions. The shared Dashboard tests must not depend on EF or Identity. DashboardPlayground retains the host’s ASP.NET Core EF/Identity setup for future use, but its Product resource uses an independent in-memory data source. Run affected builds/tests per step and the active solution checks at delivery. Exercise rendered sample pages when adding UI behavior; leave the user's port 5205 process alone.
 
 Update relevant maintained guidance and generated references when affected. Record commands, results, remaining decisions, and limitations here. Website work, unrelated backlog features, and new Identity workflows are outside this rebuild.
 
@@ -150,3 +150,21 @@ Retained the Dashboard shell, page tag helpers, Razor views, editors, form field
 Deleted Dashboard.Tests, Dashboard.IntegrationTests, Dashboard.EntityFrameworkCore.IntegrationTests, and Dashboard.Testing, including their project files and fixtures. Removed the last active Dashboard test project from the solution through the .NET CLI. Core and TagHelpers tests remain. EF and Identity library and playground sources remain detached and now reference deleted APIs. Their future adaptation is outstanding. No compatibility shim or replacement test host was introduced.
 
 Verification: `dotnet build StellarAdmin.slnx --configuration Release -m:1` passed with 12 warnings in unchanged source and no errors. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 142 remaining tests (run outside the sandbox for local IPC). Consumer reference drift check and `git diff --check` passed. No browser checks or hosted release run were performed. Passing Core/TagHelpers tests does not provide coverage for the retained Dashboard rendering.
+
+## Step 2 implementation — 2026-09-19
+
+Extracted the action-view lookup into a private `ResourceView(string action, object model)` helper, following the requested convention of trying the action name before `Resource{action}`. `Index` calls it with `nameof(Index)`; future actions can reuse it. Verification: Dashboard unit project Release build passed with the existing XML documentation warning, all 26 Dashboard unit tests passed, and CSharpier and `git diff --check` passed.
+
+Follow-up: the shared resource controller now searches for `Index` through `ICompositeViewEngine.FindView` before falling back to `ResourceIndex`. Applications can provide `Areas/StellarAdmin/Views/Product/Index.cshtml`; normal shared locations and configured view-location expanders also participate. Documented this in the consumer setup reference. Two controller unit cases verify view selection with a test view engine. Verification for this follow-up: Dashboard unit and integration project Release builds passed (one existing XML documentation warning during the unit build); all 26 Dashboard unit tests and six HTTP integration cases passed, including actual rendering through the default fallback. CSharpier and `git diff --check` passed. The full solution suite and browser checks were not repeated for this follow-up.
+
+Implemented the agreed `UseDataSource<TDataSource>()` API and `IResourceDataSource<TResource>` with its initial `ListAsync(CancellationToken)` operation. The concrete data source defaults to scoped registration and preserves any existing application registration. The controller resolves the selected source from the request scope. Write operations remain for the subsequent CRUD steps, including action-specific models before integration adaptation.
+
+Added `Index` and typed `Columns` builders, including column `Title` and `Format`, append/clear behavior, and an optional page title. Column configuration runs through the resource options pipeline and creates separate column options for each resolved options instance. `AddResource<TResource>` registers the closed generic shared controller under the resource type name. `MapStellarAdmin` exposes `/stellaradmin/Product`, independently of display-label changes. Default page titles come directly from the current plural label. There is no captured-default state.
+
+Simplified the retained index presentation model and shared Razor views to columns, items, title, and an empty state. The index no longer assumes create/edit/delete, sorting, search, scopes, or paging are present. These will return through the planned increments. Added the Product model and in-memory ProductDataSource to the user's DashboardPlayground, filled its existing configuration placeholder, mapped Dashboard routes, and linked Products from the host navigation. Preserved the user's EF/Identity host setup and Dashboard project reference. The detached StellarAdmin integration projects remain detached. Automatic resource sidebar entries are not part of this increment.
+
+Added four builder/data-source registration tests and a separate Dashboard integration project with six HTTP test cases. HTTP coverage exercises real MVC routing and Razor rendering, property display metadata, column format/title overrides, encoded cell values, empty results, label/title precedence at a stable route, per-request source resolution, and an unregistered resource returning 404. Hosts and their in-memory state are private to each test. The integration suite does not reference DashboardPlayground, EF Core, or Identity.
+
+Verification: `dotnet build StellarAdmin.slnx --configuration Release -m:1` passed with 12 existing warnings and zero errors. The final unit assertion refinement was then rebuilt with zero warnings/errors. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed all 172 tests across four assemblies, including 24 Dashboard unit tests and six Dashboard integration cases. Solution-wide `--list-tests` discovered all 172. The solution runner used escalation for its local IPC sockets. Focused Dashboard unit and integration executables also passed in the sandbox. CSharpier and `git diff --check` passed. Consumer reference generation and the subsequent `--check` reported no drift.
+
+Ran DashboardPlayground on an agent-owned port 5206 instance and verified the Product page in Chromium at 1440×1000 and 390×844. Both sizes showed all three seeded products, configured headers and decimal formatting, loaded stylesheets, and no horizontal page overflow. Captured screenshots at `/tmp/product-index-desktop.png` and `/tmp/product-index-mobile.png`. Used decimal sample formatting to avoid the invariant culture's generic currency symbol. Port 5205 was untouched. Changes are uncommitted. Step 3 (create form) is next.
