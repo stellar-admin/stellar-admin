@@ -18,6 +18,14 @@
 @source "../../Areas/StellarAdmin/Views";
 
 @layer components {
+    .sa-resource-index-grid .sa-data-grid-footer {
+        flex-wrap: wrap;
+    }
+
+    .sa-resource-index-grid .sa-data-grid-range {
+        white-space: nowrap;
+    }
+
     .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) > .sa-resource-form-header {
         border-bottom: 1px solid var(--border);
         padding-bottom: var(--sa-gap-lg);

@@ -29,6 +29,11 @@ public sealed class ResourceIndexOptions
     public string? EditLabel { get; set; }
 
     /// <summary>
+    ///     The paging settings, or null when paging is disabled.
+    /// </summary>
+    public ResourcePagingOptions? Paging { get; set; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     /// <remarks>

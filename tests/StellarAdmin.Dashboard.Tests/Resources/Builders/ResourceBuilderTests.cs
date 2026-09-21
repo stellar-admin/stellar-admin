@@ -26,6 +26,7 @@ public class ResourceBuilderTests
             )
         );
         sut.Index(index => index.Columns(columns => columns.Add(product => product.Name)));
+        sut.Index(index => index.EnablePaging().PageSizes = [10, 25]);
         using var first = services.BuildServiceProvider();
         using var second = services.BuildServiceProvider();
 
@@ -35,6 +36,9 @@ public class ResourceBuilderTests
 
         // Assert
         await Assert.That(firstOptions).IsNotSameReferenceAs(secondOptions);
+        await Assert
+            .That(firstOptions.Index.Paging!.PageSizes)
+            .IsNotSameReferenceAs(secondOptions.Index.Paging!.PageSizes);
         await Assert
             .That(firstOptions.Index.Columns[0])
             .IsNotSameReferenceAs(secondOptions.Index.Columns[0]);
@@ -50,6 +54,37 @@ public class ResourceBuilderTests
         await Assert
             .That(firstOptions.Create!.Fields[0].Editor)
             .IsNotSameReferenceAs(secondOptions.Create!.Fields[0].Editor);
+    }
+
+    [Test]
+    [Arguments(0, "2,3")]
+    [Arguments(2, "")]
+    [Arguments(2, "2,0")]
+    [Arguments(2, "2,2")]
+    [Arguments(2, "3,4")]
+    public async Task EnablePaging_WithInvalidSizes_RejectsConfiguration(int pageSize, string sizes)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.Index(index =>
+            index.EnablePaging(paging =>
+            {
+                paging.PageSize = pageSize;
+                paging.PageSizes = sizes
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToArray();
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(act).Throws<OptionsValidationException>();
     }
 
     [Test]
@@ -160,8 +195,10 @@ public class ResourceBuilderTests
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);
 
-        public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<Product>>([]);
+        public Task<ResourceListResult<Product>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<Product>([], 0));
 
         public Task<ResourceOperationResult> UpdateAsync(
             string id,
@@ -172,8 +209,10 @@ public class ResourceBuilderTests
 
     public sealed class ReadOnlyDataSource : IResourceDataSource<Product>
     {
-        public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<Product>>([]);
+        public Task<ResourceListResult<Product>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<Product>([], 0));
     }
 
     public sealed class ReplacementDataSource : IResourceCrudDataSource<Product>
@@ -191,8 +230,10 @@ public class ResourceBuilderTests
         public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
             Task.FromResult<Product?>(null);
 
-        public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<Product>>([]);
+        public Task<ResourceListResult<Product>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<Product>([], 0));
 
         public Task<ResourceOperationResult> UpdateAsync(
             string id,

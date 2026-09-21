@@ -67,4 +67,27 @@ public sealed class ResourceIndexBuilder<TResource>
 
         return this;
     }
+
+    /// <summary>
+    ///     Enables index paging.
+    /// </summary>
+    public ResourcePagingBuilder<TResource> EnablePaging()
+    {
+        _services.Configure<ResourceOptions<TResource>>(options => options.Index.Paging = new());
+
+        return new(_services);
+    }
+
+    /// <summary>
+    ///     Enables and configures index paging.
+    /// </summary>
+    public ResourceIndexBuilder<TResource> EnablePaging(
+        Action<ResourcePagingBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnablePaging());
+
+        return this;
+    }
 }

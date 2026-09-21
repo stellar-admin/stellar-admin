@@ -90,9 +90,15 @@ public class ResourceCapabilitiesTests
 
     public sealed class ReadOnlyDataSource : IResourceDataSource<InventoryItem>
     {
-        public Task<IReadOnlyList<InventoryItem>> ListAsync(CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<InventoryItem>>([
-                new("SKU-123") { Name = "Read-only item" },
-            ]);
+        public Task<ResourceListResult<InventoryItem>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) =>
+            Task.FromResult(
+                new ResourceListResult<InventoryItem>(
+                    [new("SKU-123") { Name = "Read-only item" }],
+                    1
+                )
+            );
     }
 }

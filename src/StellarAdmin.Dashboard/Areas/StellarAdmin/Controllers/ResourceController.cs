@@ -92,9 +92,15 @@ public class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(
         [FromRoute] string id,
+        [FromQuery] ResourceIndexQuery query,
         CancellationToken cancellationToken
     )
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
         if (
             _resourceOptions.Delete is null
             || _resourceOptions.KeySelector is null
@@ -103,6 +109,11 @@ public class ResourceController<TResource>(
         )
         {
             return NotFound();
+        }
+
+        if (!TryCreateListRequest(query, out var request))
+        {
+            return BadRequest();
         }
 
         var result = await handler.DeleteAsync(id, cancellationToken);
@@ -114,10 +125,18 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, []);
-            return await Index(cancellationToken);
+            return await IndexView(request, cancellationToken, redirectOutOfRange: false);
         }
 
-        return RedirectToAction(nameof(Index), new { id = (string?)null });
+        return RedirectToAction(
+            nameof(Index),
+            new
+            {
+                id = (string?)null,
+                page = request.Paging?.Page,
+                pageSize = request.Paging?.PageSize,
+            }
+        );
     }
 
     /// <summary>
@@ -217,41 +236,22 @@ public class ResourceController<TResource>(
     ///     Displays the resource index page.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(
+        [FromQuery] ResourceIndexQuery query,
+        CancellationToken cancellationToken
+    )
     {
-        var items = await dataSource.ListAsync(cancellationToken);
-        var labels = CreateLabelContext();
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
 
-        return ResourceView(
-            nameof(Index),
-            new ResourceIndexPageViewModel<TResource>
-            {
-                CanCreate = CanCreate,
-                CanEdit =
-                    _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
-                Columns = _resourceOptions.Index.Columns.ToArray(),
-                CreateLabel =
-                    _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
-                Delete =
-                    _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
-                        ? null
-                        : new(
-                            _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
-                            _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
-                            _resourceOptions.Delete.ConfirmLabel
-                                ?? _labelOptions.DeleteConfirmLabel(labels),
-                            _resourceOptions.Delete.CancelLabel
-                                ?? _labelOptions.DeleteCancelLabel(labels)
-                        ),
-                DeleteLabel =
-                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
-                EditLabel =
-                    _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
-                KeySelector = _resourceOptions.KeySelector,
-                Items = items,
-                Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
-            }
-        );
+        if (!TryCreateListRequest(query, out var request))
+        {
+            return BadRequest();
+        }
+
+        return await IndexView(request, cancellationToken);
     }
 
     private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
@@ -311,6 +311,99 @@ public class ResourceController<TResource>(
         );
     }
 
+    private async Task<IActionResult> IndexView(
+        ResourceListRequest request,
+        CancellationToken cancellationToken,
+        bool redirectOutOfRange = true
+    )
+    {
+        var result = await dataSource.ListAsync(request, cancellationToken);
+        ResourceIndexPagingViewModel? pagingModel = null;
+        if (request.Paging is { } paging)
+        {
+            var totalPages = Math.Max(
+                1,
+                result.TotalCount / paging.PageSize
+                    + (result.TotalCount % paging.PageSize == 0 ? 0 : 1)
+            );
+            if (paging.Page > totalPages)
+            {
+                if (redirectOutOfRange)
+                {
+                    return RedirectToAction(
+                        nameof(Index),
+                        new
+                        {
+                            id = (string?)null,
+                            page = totalPages,
+                            pageSize = paging.PageSize,
+                        }
+                    );
+                }
+
+                // A rejected delete must retain its validation errors while adjusting the page.
+                paging = paging with
+                {
+                    Page = (int)totalPages,
+                };
+                result = await dataSource.ListAsync(
+                    request with
+                    {
+                        Paging = paging,
+                    },
+                    cancellationToken
+                );
+                totalPages = Math.Max(
+                    1,
+                    result.TotalCount / paging.PageSize
+                        + (result.TotalCount % paging.PageSize == 0 ? 0 : 1)
+                );
+            }
+
+            pagingModel = new(
+                paging.Page,
+                paging.PageSize,
+                result.TotalCount,
+                totalPages,
+                _resourceOptions.Index.Paging!.PageSizes
+            );
+        }
+
+        var labels = CreateLabelContext();
+
+        return ResourceView(
+            nameof(Index),
+            new ResourceIndexPageViewModel<TResource>
+            {
+                CanCreate = CanCreate,
+                CanEdit =
+                    _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
+                Columns = _resourceOptions.Index.Columns.ToArray(),
+                CreateLabel =
+                    _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
+                Delete =
+                    _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
+                        ? null
+                        : new(
+                            _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
+                            _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
+                            _resourceOptions.Delete.ConfirmLabel
+                                ?? _labelOptions.DeleteConfirmLabel(labels),
+                            _resourceOptions.Delete.CancelLabel
+                                ?? _labelOptions.DeleteCancelLabel(labels)
+                        ),
+                DeleteLabel =
+                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
+                EditLabel =
+                    _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
+                KeySelector = _resourceOptions.KeySelector,
+                Items = result.Items,
+                Paging = pagingModel,
+                Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
+            }
+        );
+    }
+
     private ViewResult ResourceView(string action, object model)
     {
         var viewName = viewEngine.FindView(ControllerContext, action, isMainPage: true).Success
@@ -318,5 +411,32 @@ public class ResourceController<TResource>(
             : "Resource" + action;
 
         return View(viewName, model);
+    }
+
+    private bool TryCreateListRequest(ResourceIndexQuery query, out ResourceListRequest request)
+    {
+        request = new();
+        if (_resourceOptions.Index.Paging is not { } options)
+        {
+            return true;
+        }
+
+        if (query.Page is <= 0)
+        {
+            return false;
+        }
+
+        var page = query.Page ?? 1;
+        var pageSize =
+            query.PageSize is { } size && options.PageSizes.Contains(size)
+                ? size
+                : options.PageSize;
+        if ((long)(page - 1) * pageSize > int.MaxValue)
+        {
+            return false;
+        }
+
+        request = new() { Paging = new(page, pageSize) };
+        return true;
     }
 }

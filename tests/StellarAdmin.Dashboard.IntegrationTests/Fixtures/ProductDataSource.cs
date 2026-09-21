@@ -53,12 +53,24 @@ public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSou
         );
     }
 
-    public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
+    public Task<ResourceListResult<Product>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         state.Requests.Add(_id);
+        state.ListRequests.Add(request);
 
-        return Task.FromResult<IReadOnlyList<Product>>(state.Products);
+        IEnumerable<Product> items = state.Products.OrderBy(item => item.Id);
+        if (request.Paging is { } paging)
+        {
+            items = items.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize);
+        }
+
+        return Task.FromResult(
+            new ResourceListResult<Product>(items.ToArray(), state.Products.Count)
+        );
     }
 
     public Task<ResourceOperationResult> UpdateAsync(

@@ -25,6 +25,16 @@ public static class StellarAdminDashboardBuilderExtensions
                 .Services.AddOptions<ResourceOptions<TResource>>()
                 .Validate(
                     options =>
+                        options.Index.Paging is not { } paging
+                        || paging.PageSize > 0
+                            && paging.PageSizes is { Length: > 0 }
+                            && paging.PageSizes.All(size => size > 0)
+                            && paging.PageSizes.Distinct().Count() == paging.PageSizes.Length
+                            && paging.PageSizes.Contains(paging.PageSize),
+                    "Paging requires positive, distinct page sizes including the default page size."
+                )
+                .Validate(
+                    options =>
                         options.Create is null
                         || options.CreateHandler is not null
                         || options.DataSourceType is { } type

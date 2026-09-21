@@ -268,7 +268,9 @@ public class ResourceCustomEditTests
             CancellationToken cancellationToken
         ) => source.CreateAsync(model, cancellationToken);
 
-        public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
-            source.ListAsync(cancellationToken);
+        public Task<ResourceListResult<Product>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => source.ListAsync(request, cancellationToken);
     }
 }

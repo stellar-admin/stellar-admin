@@ -1,0 +1,17 @@
+namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
+
+/// <summary>
+///     The index settings supplied in the query string.
+/// </summary>
+public sealed class ResourceIndexQuery
+{
+    /// <summary>
+    ///     The requested one-based page number.
+    /// </summary>
+    public int? Page { get; set; }
+
+    /// <summary>
+    ///     The requested number of resources per page.
+    /// </summary>
+    public int? PageSize { get; set; }
+}

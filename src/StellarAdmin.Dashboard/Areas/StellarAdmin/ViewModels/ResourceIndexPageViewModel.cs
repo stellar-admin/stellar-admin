@@ -55,6 +55,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public Func<TResource, string>? KeySelector { get; init; }
 
     /// <summary>
+    ///     The paging controls, or null when paging is disabled.
+    /// </summary>
+    public ResourceIndexPagingViewModel? Paging { get; init; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     public required string Title { get; init; }

@@ -1,6 +1,6 @@
 @model IResourceIndexPageViewModel
 
-<sa-data-grid items="Model.Items">
+<sa-data-grid items="Model.Items" class="sa-resource-index-grid">
     @foreach (var column in Model.Columns)
     {
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
@@ -26,7 +26,7 @@
                 }
                 @if (Model.Delete is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" class="inline-block" data-resource-delete>
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@Model.Paging?.Page" asp-route-pageSize="@Model.Paging?.PageSize" class="inline-block" data-resource-delete>
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">
                             <sa-icon name="trash" />
@@ -36,6 +36,14 @@
                 }
             </sa-data-grid-item-template>
         </sa-data-grid-column>
+    }
+    @if (Model.Paging is { } paging)
+    {
+        <sa-data-grid-pager asp-action="Index" asp-route-id="@((string?)null)"
+                            asp-route-page="{pageNo}" asp-route-pageSize="{pageSize}"
+                            page-no="paging.Page" page-size="paging.PageSize"
+                            selected-page-size="paging.PageSize" total-items="paging.TotalCount"
+                            total-pages="paging.TotalPages" page-size-options="@string.Join(',', paging.PageSizes)" />
     }
     <sa-data-grid-empty>
         <sa-empty>

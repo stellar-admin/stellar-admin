@@ -51,6 +51,11 @@ public interface IResourceIndexPageViewModel
     IEnumerable Items { get; }
 
     /// <summary>
+    ///     The paging controls, or null when paging is disabled.
+    /// </summary>
+    ResourceIndexPagingViewModel? Paging { get; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     string Title { get; }

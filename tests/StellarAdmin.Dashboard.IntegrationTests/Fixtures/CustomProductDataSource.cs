@@ -17,8 +17,10 @@ public sealed class CustomProductDataSource : IResourceCrudDataSource<CustomProd
     public Task<CustomProduct?> FindAsync(string id, CancellationToken cancellationToken) =>
         Task.FromResult<CustomProduct?>(id == "item-1" ? new() : null);
 
-    public Task<IReadOnlyList<CustomProduct>> ListAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<CustomProduct>>([]);
+    public Task<ResourceListResult<CustomProduct>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    ) => Task.FromResult(new ResourceListResult<CustomProduct>([], 0));
 
     public Task<ResourceOperationResult> UpdateAsync(
         string id,

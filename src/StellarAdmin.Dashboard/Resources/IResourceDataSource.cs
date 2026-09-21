@@ -6,7 +6,13 @@ namespace StellarAdmin.Dashboard.Resources;
 public interface IResourceDataSource<TResource>
 {
     /// <summary>
-    ///     Returns the resources to display on the index page.
+    ///     Returns the requested resources and the total matching count before paging.
     /// </summary>
-    Task<IReadOnlyList<TResource>> ListAsync(CancellationToken cancellationToken);
+    /// <remarks>
+    ///     Use stable ordering when paging, with a unique key to break ties.
+    /// </remarks>
+    Task<ResourceListResult<TResource>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    );
 }

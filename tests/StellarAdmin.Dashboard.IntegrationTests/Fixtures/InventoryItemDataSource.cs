@@ -23,8 +23,21 @@ public sealed class InventoryItemDataSource(List<InventoryItem> items)
     public Task<InventoryItem?> FindAsync(string id, CancellationToken cancellationToken) =>
         Task.FromResult<InventoryItem?>(null);
 
-    public Task<IReadOnlyList<InventoryItem>> ListAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<InventoryItem>>(items);
+    public Task<ResourceListResult<InventoryItem>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult(
+            new ResourceListResult<InventoryItem>(
+                request.Paging is { } paging
+                    ? items
+                        .Skip((paging.Page - 1) * paging.PageSize)
+                        .Take(paging.PageSize)
+                        .ToArray()
+                    : items.ToArray(),
+                items.Count
+            )
+        );
 
     public Task<ResourceOperationResult> UpdateAsync(
         string id,

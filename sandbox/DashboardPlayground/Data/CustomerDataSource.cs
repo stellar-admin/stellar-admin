@@ -75,12 +75,23 @@ public sealed class CustomerDataSource
         }
     }
 
-    public Task<IReadOnlyList<Customer>> ListAsync(CancellationToken cancellationToken)
+    public Task<ResourceListResult<Customer>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
-            return Task.FromResult<IReadOnlyList<Customer>>(_customers.Select(Copy).ToArray());
+            IEnumerable<Customer> items = _customers.OrderBy(item => item.Id);
+            if (request.Paging is { } paging)
+            {
+                items = items.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize);
+            }
+
+            return Task.FromResult(
+                new ResourceListResult<Customer>(items.ToArray(), _customers.Count)
+            );
         }
     }
 

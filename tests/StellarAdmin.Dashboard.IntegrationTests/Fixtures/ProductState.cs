@@ -15,6 +15,8 @@ public sealed class ProductState(IReadOnlyList<Product> products)
     public bool DisappearOnUpdate { get; set; }
 
     public List<Product> Products { get; } = [.. products];
+    public List<ResourceListRequest> ListRequests { get; } = [];
+
     public List<Guid> Requests { get; } = [];
     public int? SubmittedId { get; set; }
     public int UpdateCalls { get; set; }

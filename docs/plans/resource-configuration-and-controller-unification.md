@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are implemented for review. Custom edit is next after review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is implemented and verified, awaiting review. Sorting is next after that review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -73,7 +73,75 @@ Ordinary create and edit continue to use TResource and the data source. Custom h
 
 ### 7. Index features
 
-Add paging, sorting, searching, and scopes incrementally. Keep data access independent of EF and avoid assuming a provider supports EF asynchronous query methods. Verify each feature against the standalone sample before broadening the API.
+Design paging, sorting, searching, and scopes together, then implement and review them separately. Keep data access independent of EF and avoid assuming a provider supports EF asynchronous query methods. No index feature implementation is authorized by this plan update alone.
+
+#### Agreed responsibility boundary — 2026-09-21
+
+The shared builder declares index capabilities and presentation. The controller resolves URL parameters against that configuration and passes a normalized listing request to the data source. The data source decides what search text, sort fields, and scope identifiers mean and executes filtering, ordering, counting, and paging. The controller must not load all records and apply these operations itself.
+
+Search and scope registration in the shared builder contain no query expressions or execution delegates. A future EF Core integration may provide an EnableSearch overload taking an expression and similar provider conveniences. That is deferred to integration adaptation. In-memory and external API sources implement their own semantics. Scope selection is not authorization. Mandatory access restrictions always apply in the data source independently of the selected scope.
+
+#### Complete API design sketch
+
+The following names and detailed behaviors are the working design from the discussion, to refine during each implementation checkpoint. The responsibility boundary above is agreed. Features remain unimplemented.
+
+```csharp
+resource.Index(index =>
+{
+    index.Columns(columns =>
+    {
+        columns.Add(product => product.Name, column => column.Sortable = true);
+        columns.Add(product => product.Price, column => column.Sortable = true);
+    });
+
+    index.EnablePaging(paging =>
+    {
+        paging.PageSize = 25;
+        paging.PageSizes = [10, 25, 50, 100];
+    });
+
+    index.DefaultSortBy(product => product.Name);
+    // Alternatively: index.DefaultSortByDescending(product => product.Price);
+
+    index.EnableSearch(search => search.Placeholder = "Search products...");
+
+    index.EnableScopes(scopes =>
+    {
+        scopes.Add("all", "All products");
+        scopes.Add("available", "Available");
+        scopes.Add("out-of-stock", "Out of stock");
+        scopes.DefaultScope = "all";
+    });
+});
+```
+
+No-callback Enable methods return the feature builder. Callback overloads return the index builder. Scalar configuration remains setter-only through the options pipeline. Start with one selected sort and one selected scope. Scope identifiers are explicit and stable, independent of displayed labels. Custom data sources implement the capabilities advertised by registration.
+
+| Layer | Proposed models and members |
+| --- | --- |
+| MVC input | ResourceIndexQuery with nullable Page, PageSize, SortBy, SortDirection, Search, and Scope. Index binds this from the query string. |
+| Data source request | ResourceListRequest with nullable Paging, Sort, Search, and Scope. ResourcePaging contains one-based Page and PageSize. ResourceSort contains Field and ResourceSortDirection (Ascending or Descending). |
+| Data source result | ResourceListResult<TResource> contains Items and a long TotalCount after search/scope filtering but before paging. |
+| Data source contract | ListAsync(ResourceListRequest request, CancellationToken cancellationToken) returns Task<ResourceListResult<TResource>>. CRUD handler contracts stay unchanged. |
+| Configuration | Index options gain nullable ResourcePagingOptions, ResourceSearchOptions, ResourceScopesOptions, and default sort. Paging options contain PageSize and PageSizes. Search options contain a placeholder override. Scope options contain definitions (identifier/title) and a default identifier. Column options gain sortable configuration. |
+| Presentation | Extend ResourceIndexPageViewModel<TResource> with nullable Paging, Search, and Sort plus a Scopes collection. Reuse or adjust the retained search/sort/scope view models. Add ResourceIndexPagingViewModel with Page, PageSize, TotalCount, TotalPages, and PageSizes. |
+
+Null Paging means paging is disabled. Null Search means no search. Null Scope means no configured scope is selected. Null Sort delegates default ordering to the data source. Sort fields passed from HTTP are restricted to configured sortable identifiers. Typed default-sort selectors are resolved from configuration. Data sources must use deterministic ordering for paging, including a unique tie-breaker where the selected ordering is not unique. Numbered paging assumes an available total count. Cursor-only pagination is outside this increment.
+
+The proposed controller policy is to default missing page/page size, use configured defaults for unsupported page sizes or unknown sorts/scopes, normalize whitespace-only search to null, and ignore parameters for disabled features. Malformed enabled numeric/enum parameters and overflow return 400. Define nonpositive page handling and concrete size/search limits when implementing normalization. A valid page beyond the last page redirects to the last available page (page 1 for no matches), retaining other index state. Account for concurrent changes without a redirect loop.
+
+Keep query normalization in one internal helper reused for rejected-delete redisplay. Changing search, scope, sort, or page size resets page to 1. Page links preserve other state. Clearing search preserves scope and sort. Delete success and rejection preserve known index query values, including handling removal of the last item on a page. A rejected delete must retain its validation summary if the page needs adjustment. Configuration validation catches duplicate scope identifiers, missing default scopes, invalid page sizes, and invalid default-sort selectors.
+
+New control labels use existing global label delegates and local overrides. The broader audit of existing hardcoded text remains deferred. Add types and members as their feature lands, using this shared design to avoid incompatible per-feature contracts.
+
+#### Implementation checkpoints
+
+1. **Paging and listing contract.** Introduce ResourceListRequest, ResourcePaging, ResourceListResult<TResource>, and the updated ListAsync signature. Migrate active sample/test sources. Add EnablePaging, options, query normalization, presentation model, and pagination controls. Prove paging disabled/enabled, allowed sizes, totals, empty/out-of-range pages, deterministic sample ordering, and delete behavior through focused HTTP scenarios. Exercise the sample with enough records at desktop/mobile widths. Pause for review.
+2. **Sorting.** Add sortable columns, typed default-sort methods, ResourceSort/direction, query members, and links/indicators. The source applies ordering before paging. Verify permitted/default sorting, invalid selections, stable ordering, and page reset/state preservation. Pause for review.
+3. **Searching.** Add EnableSearch, placeholder defaults/overrides, query/request members, and the search form. The source implements matching and counts filtered results. Verify search/clear behavior, empty results, and interaction with paging/sort. Pause for review.
+4. **Scopes.** Add EnableScopes, named definitions/default scope, query/request members, and tabs using retained presentation models. The source applies the selected scope alongside search. Verify defaults, invalid identifiers, combined filtering/counts, page resets, and query preservation across controls and deletes. Pause for review before reconnecting integrations.
+
+Use integration-first scenario tests for each increment, without duplicate options/controller suites. Record actual builds, tests, and browser checks when implementation occurs.
 
 ### 8. Reconnect integrations
 
@@ -401,3 +469,30 @@ DashboardPlayground now demonstrates separate CreateCustomerModel and EditCustom
 Added 11 HTTP scenarios for typed loading and layouts, custom-handler precedence with and without a source edit implementation, configured-field binding and route identity, annotation and handler errors without persistence, missing records on GET/POST and during update, antiforgery rejection, and repeated custom/ordinary edit registration. No new unit tests were added.
 
 Verification: Release solution build with --no-restore -m:1 passed. The initial build reported 12 existing warnings and the incremental build reported the existing ViewDataKeys XML cref warning. The solution test command passed all 238 tests, including 82 Dashboard HTTP scenarios. The runner required local IPC access outside the sandbox. An isolated Chromium session verified the Customer edit screen at desktop and mobile widths, creation through the separate create model, duplicate-email rejection with preserved values, successful update, and reloading saved values. Screenshots were inspected. CSharpier and git diff --check passed. Changes remain uncommitted. This completes the custom edit checkpoint for review.
+
+
+## Index design plan update — 2026-09-21
+
+Recorded the complete index API sketch and the agreed data-source execution boundary. Search/scope expression overloads are deferred to future EF integration. Paging, sorting, searching, and scopes have separate implementation/review checkpoints. Custom edit is committed as c13fe5b. This update changes documentation only. Validation: git diff --check. No application builds, tests, or browser checks were run.
+
+## Paging implementation — 2026-09-21
+
+Implemented the paging checkpoint following explicit user authorization. `Index(index => index.EnablePaging(...))` enables paging with a default size of 25 and available sizes 10, 25, 50, and 100. The no-callback overload returns its paging builder. Configuration rejects nonpositive or duplicate sizes and requires the default size to appear in the available sizes. Paging options resolve through the existing options pipeline and retain provider isolation.
+
+`IResourceDataSource<TResource>.ListAsync` now accepts `ResourceListRequest` and returns `ResourceListResult<TResource>` with the requested items and a long total count before paging. A null `Paging` requests all matching resources. Active sample and test sources have been migrated. Sources own ordering and slicing. The in-memory samples use Id ordering, and the Product playground has 37 seeded rows with 10/25/50 page-size choices. Customer remains an example with paging disabled. EF and Identity remain detached.
+
+The controller defaults missing values, falls back to the configured size for unsupported numeric sizes, ignores disabled paging parameters, and rejects malformed values, nonpositive pages, and offsets exceeding Int32.MaxValue with 400. Page numbers are one-based. There is no additional hardcoded page-size cap beyond the configured allowlist. Out-of-range pages redirect down to the last available page, or page 1 for no records. Redirects only reduce the page number, preventing a redirect cycle if records disappear concurrently. Delete forms preserve page and size. A rejected delete retains its validation summary and can reload the adjusted page once without redirecting.
+
+The index reuses the existing data-grid pager for navigation, totals, and page-size selection. Page-size changes return to page 1. Its existing wording, including record-count and page-size labels, belongs to the deferred hardcoded-text audit. No new wording was added in this increment. Dashboard-specific footer CSS lets controls wrap on narrow screens while keeping the record range on one line.
+
+Verification: Release solution build passed with existing warnings. `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed all 263 tests, including 102 Dashboard HTTP scenarios. New paging scenarios cover defaults, disabled paging, selected and unsupported sizes, stable ordering, totals, empty and single-page results, invalid inputs, out-of-range redirects, and successful/rejected delete navigation. Configuration validation and provider isolation are covered by the existing builder suite. Builds and tests required unsandboxed local IPC. Dashboard CSS was built directly and its output inspected. Chromium checks on an agent-owned playground at port 5206 exercised next-page navigation, changing size back to page 1, and the final page at 1440px and 390px widths. Screenshots: `/tmp/resource-paging-desktop.png` and `/tmp/resource-paging-mobile.png`. Port 5205 was untouched.
+
+Pause for paging review before starting sorting. No commit or push was requested.
+
+## Paging binding review — 2026-09-22
+
+Retained normal MVC query model binding and removed paging's ModelState mutations. Binding errors return 400 even when paging is disabled. Successfully bound paging values are ignored when the feature is disabled. This supersedes the earlier policy of ignoring malformed disabled paging parameters. Defaults and allowlist normalization remain unchanged.
+
+Verification: all 104 Dashboard HTTP scenarios passed through `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release`, including disabled paging with valid values and binding errors. The runner required unsandboxed local IPC. CSharpier and git diff --check passed. No commit or push.
+
+Moved the binding-error checks to the start of the Index and Delete controller actions following review. TryCreateListRequest now handles only paging defaults and constraints and does not access ModelState. Reverification on 2026-09-22: all 104 Dashboard HTTP scenarios passed. CSharpier and git diff --check passed.

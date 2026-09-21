@@ -15,8 +15,10 @@ public sealed class ProductMaintenanceDataSource(ProductDataSource source)
     public Task<Product?> FindAsync(string id, CancellationToken cancellationToken) =>
         source.FindAsync(id, cancellationToken);
 
-    public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken) =>
-        source.ListAsync(cancellationToken);
+    public Task<ResourceListResult<Product>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    ) => source.ListAsync(request, cancellationToken);
 
     public Task<ResourceOperationResult> UpdateAsync(
         string id,

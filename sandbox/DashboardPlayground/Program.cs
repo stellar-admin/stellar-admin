@@ -116,6 +116,11 @@ builder
             );
             resource.Index(index =>
             {
+                index.EnablePaging(paging =>
+                {
+                    paging.PageSize = 10;
+                    paging.PageSizes = [10, 25, 50];
+                });
                 index.Columns(columns =>
                 {
                     columns.Add(product => product.Id);

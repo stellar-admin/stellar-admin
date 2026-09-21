@@ -26,6 +26,14 @@ public sealed class ProductDataSource : IResourceCrudDataSource<Product>
             Name = "Travel mug",
             Price = 18.00m,
         },
+        .. Enumerable
+            .Range(4, 34)
+            .Select(id => new Product
+            {
+                Id = id,
+                Name = $"Sample product {id:00}",
+                Price = id * 2.5m,
+            }),
     ];
 
     public Task<ResourceOperationResult> CreateAsync(
@@ -79,12 +87,23 @@ public sealed class ProductDataSource : IResourceCrudDataSource<Product>
         }
     }
 
-    public Task<IReadOnlyList<Product>> ListAsync(CancellationToken cancellationToken)
+    public Task<ResourceListResult<Product>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    )
     {
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
-            return Task.FromResult<IReadOnlyList<Product>>(_products.ToArray());
+            IEnumerable<Product> items = _products.OrderBy(item => item.Id);
+            if (request.Paging is { } paging)
+            {
+                items = items.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize);
+            }
+
+            return Task.FromResult(
+                new ResourceListResult<Product>(items.ToArray(), _products.Count)
+            );
         }
     }
 
