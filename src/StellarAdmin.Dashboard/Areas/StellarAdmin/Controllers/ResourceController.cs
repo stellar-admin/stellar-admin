@@ -133,13 +133,14 @@ public class ResourceController<TResource>(
             _resourceOptions.Edit is null
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
-            || dataSource is not IResourceEditHandler<TResource> handler
         )
         {
             return NotFound();
         }
 
-        var resource = await handler.FindAsync(id, cancellationToken);
+        var resource = _resourceOptions.EditLoader is { } loader
+            ? await loader(HttpContext.RequestServices, id, cancellationToken)
+            : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
 
         return resource is null ? NotFound() : EditView(resource);
     }
@@ -159,13 +160,14 @@ public class ResourceController<TResource>(
             _resourceOptions.Edit is null
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
-            || dataSource is not IResourceEditHandler<TResource> handler
         )
         {
             return NotFound();
         }
 
-        var resource = await handler.FindAsync(id, cancellationToken);
+        var resource = _resourceOptions.EditLoader is { } loader
+            ? await loader(HttpContext.RequestServices, id, cancellationToken)
+            : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
         if (resource is null)
         {
             return NotFound();
@@ -173,11 +175,14 @@ public class ResourceController<TResource>(
 
         var fields = _resourceOptions
             .Edit.Fields.Select(field => field.FieldName)
-            .Where(name => name != _resourceOptions.KeyPropertyName)
+            .Where(name =>
+                _resourceOptions.Edit.ModelType != typeof(TResource)
+                || name != _resourceOptions.KeyPropertyName
+            )
             .ToHashSet(StringComparer.Ordinal);
         var valid = await TryUpdateModelAsync(
             resource,
-            typeof(TResource),
+            _resourceOptions.Edit.ModelType,
             ResourceFormPageViewModel.BindingPrefix,
             await CompositeValueProvider.CreateAsync(ControllerContext),
             metadata => fields.Contains(metadata.PropertyName ?? "")
@@ -187,7 +192,13 @@ public class ResourceController<TResource>(
             return EditView(resource);
         }
 
-        var result = await handler.UpdateAsync(id, resource, cancellationToken);
+        var result = _resourceOptions.EditHandler is { } handler
+            ? await handler(HttpContext.RequestServices, id, resource, cancellationToken)
+            : await ((IResourceEditHandler<TResource>)dataSource).UpdateAsync(
+                id,
+                (TResource)resource,
+                cancellationToken
+            );
         if (result.IsNotFound)
         {
             return NotFound();

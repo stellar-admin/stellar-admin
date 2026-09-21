@@ -5,7 +5,6 @@ namespace DashboardPlayground.Data;
 
 public sealed class CustomerDataSource
     : IResourceDataSource<Customer>,
-        IResourceEditHandler<Customer>,
         IResourceDeleteHandler<Customer>
 {
     private readonly List<Customer> _customers =

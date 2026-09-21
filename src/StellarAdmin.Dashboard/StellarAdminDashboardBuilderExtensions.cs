@@ -34,9 +34,10 @@ public static class StellarAdminDashboardBuilderExtensions
                 .Validate(
                     options =>
                         options.Edit is null
+                        || options.EditHandler is not null
                         || options.DataSourceType is { } type
                             && typeof(IResourceEditHandler<TResource>).IsAssignableFrom(type),
-                    "The edit form requires a data source implementing IResourceEditHandler."
+                    "The edit form requires a data source implementing IResourceEditHandler or an explicit edit handler."
                 )
                 .Validate(
                     options =>

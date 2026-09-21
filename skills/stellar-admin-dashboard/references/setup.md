@@ -51,7 +51,7 @@ To customize a resource's index, add `Areas/StellarAdmin/Views/Product/Index.csh
 
 The singular label defaults to the readable type name (`ProductCategory` becomes `Product category`). The plural defaults to its English plural (`Product categories`). Setting only `SingularLabel` also changes the inferred plural. An explicit `PluralLabel` takes precedence regardless of assignment order. Labels must be nonblank. Set both labels for other languages or domain-specific wording. Naming uses [Humanizer](https://github.com/Humanizr/Humanizer).
 
-Resolve configuration through `IOptions<ResourceOptions<Product>>` (`Microsoft.Extensions.Options` and `StellarAdmin.Dashboard.Resources.Options`). The builder callback executes during registration. Its setter-only properties register configuration actions, which execute when options resolve. Each resource type and service provider gets its own options instance. Repeated `AddResource` registrations compose in assignment order, and later assignments to the same property win. A no-argument `AddResource` registration preserves existing configuration. Each `Create`, `Edit`, or `Delete` call replaces that action’s previous configuration; setters and field calls on the returned builder compose. Standard Configure, PostConfigure, and options validation remain available. This allows an integration to register defaults first and application code to override them afterwards.
+Resolve configuration through `IOptions<ResourceOptions<Product>>` (`Microsoft.Extensions.Options` and `StellarAdmin.Dashboard.Resources.Options`). The builder callback executes during registration. Its setter-only properties register configuration actions, which execute when options resolve. Each resource type and service provider gets its own options instance. Repeated `AddResource` registrations compose in assignment order, and later assignments to the same property win. A no-argument `AddResource` registration preserves existing configuration. Each `AllowCreate`, `AllowEdit`, or `AllowDelete` call replaces that action’s previous configuration; setters and field calls on the returned builder compose. Standard Configure, PostConfigure, and options validation remain available. This allows an integration to register defaults first and application code to override them afterwards.
 
 The no-callback overload returns the resource builder. The callback overload returns the Dashboard builder:
 
@@ -96,4 +96,29 @@ resource.AllowEdit(edit => edit.Fields(fields => fields.Add(customer => customer
 
 Each create registration starts fresh, including fields, factory, page labels, and section layout. Calling ordinary `AllowCreate(...)` selects the resource model and data source again. A previously obtained typed builder cannot configure a different model after that selection changes.
 
-DashboardPlayground includes ordinary Product CRUD and a Customer resource with custom create and ordinary edit. Its passwords demonstrate form-only validation and are not stored or used to create authentication accounts. Custom edit models are the next checkpoint and are not implemented yet.
+DashboardPlayground includes ordinary Product CRUD and a Customer resource with separate custom create and edit models. Its passwords demonstrate form-only validation and are not stored or used to create authentication accounts.
+
+
+## Custom edit models
+
+Pair an edit model with a handler independently of the create model:
+
+```csharp
+resource.UseKey(customer => customer.Id);
+resource.AllowEdit<EditCustomerModel, EditCustomerHandler>(edit =>
+{
+    edit.Fields(fields =>
+    {
+        fields.Add(model => model.DisplayName);
+        fields.Add(model => model.Email);
+    });
+});
+```
+
+`EditCustomerHandler` implements `IResourceEditHandler<EditCustomerModel>`. Its `FindAsync(string id, CancellationToken cancellationToken)` returns a detached editable model or null for a missing record. Both GET and POST load through this method, so the model needs no parameterless constructor. The POST binds only configured fields and calls `UpdateAsync(string id, EditCustomerModel model, CancellationToken cancellationToken)` after model validation succeeds. The handler maps that model to persistence and returns `ResourceOperationResult`. Report field errors using the edit model's property names. Rejected updates must leave persisted values unchanged.
+
+The route supplies the authoritative ID to both handler methods. Ordinary resource-model edit also excludes the configured resource key property from binding. A custom model's configured properties are its form inputs, not the resource's key mapping. Handlers should use the supplied route ID to identify the record.
+
+The explicit handler takes precedence over any data source edit implementation and is resolved from request services. Its concrete registration defaults to scoped and preserves an existing application registration. The data source can omit `IResourceEditHandler<Customer>`. The no-callback overload returns `ResourceEditBuilder<EditCustomerModel>`, and the callback overload returns the resource builder. Each registration replaces prior edit configuration and handler selection. Ordinary `AllowEdit(...)` returns to the resource model and data source.
+
+Typed fields, layouts, resource label defaults, page overrides, model and handler validation, and antiforgery protection use the shared edit flow. Override the view with `Areas/StellarAdmin/Views/Customer/Edit.cshtml`, or let MVC fall back to `ResourceEdit`.

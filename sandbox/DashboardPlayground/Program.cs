@@ -67,11 +67,11 @@ builder
                     );
                 })
             );
-            resource.AllowEdit(edit =>
+            resource.AllowEdit<EditCustomerModel, EditCustomerHandler>(edit =>
                 edit.Fields(fields =>
                 {
-                    fields.Add(customer => customer.Name);
-                    fields.Add(customer => customer.Email);
+                    fields.Add(model => model.DisplayName);
+                    fields.Add(model => model.Email);
                 })
             );
         });

@@ -20,7 +20,7 @@ public sealed class ResourceOptions<TResource>
     /// <summary>
     ///     The edit page configuration, or null when edit is disabled.
     /// </summary>
-    public ResourceFormOptions? Edit { get; internal set; }
+    public ResourceEditOptions? Edit { get; internal set; }
 
     /// <summary>
     ///     The index page configuration.
@@ -70,5 +70,18 @@ public sealed class ResourceOptions<TResource>
         Task<ResourceOperationResult>
     >? CreateHandler { get; set; }
     internal Type? DataSourceType { get; set; }
+    internal Func<
+        IServiceProvider,
+        string,
+        object,
+        CancellationToken,
+        Task<ResourceOperationResult>
+    >? EditHandler { get; set; }
+    internal Func<
+        IServiceProvider,
+        string,
+        CancellationToken,
+        Task<object?>
+    >? EditLoader { get; set; }
     internal string? KeyPropertyName { get; set; }
 }

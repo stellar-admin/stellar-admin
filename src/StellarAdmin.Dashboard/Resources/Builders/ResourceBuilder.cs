@@ -125,9 +125,14 @@ public sealed class ResourceBuilder<TResource>
     /// </summary>
     public ResourceEditBuilder<TResource> AllowEdit()
     {
-        _services.Configure<ResourceOptions<TResource>>(options => options.Edit = new());
+        _services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.Edit = new ResourceEditOptions<TResource>();
+            options.EditLoader = null;
+            options.EditHandler = null;
+        });
 
-        return new(_services);
+        return EditBuilder<TResource>();
     }
 
     /// <summary>
@@ -138,6 +143,41 @@ public sealed class ResourceBuilder<TResource>
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(AllowEdit());
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Enables and configures an edit form with a custom model and handler.
+    /// </summary>
+    public ResourceEditBuilder<TModel> AllowEdit<TModel, THandler>()
+        where THandler : class, IResourceEditHandler<TModel>
+    {
+        _services.TryAddScoped<THandler>();
+        _services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.Edit = new ResourceEditOptions<TModel>();
+            options.EditLoader = async (services, id, cancellationToken) =>
+                await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
+            options.EditHandler = (services, id, model, cancellationToken) =>
+                services
+                    .GetRequiredService<THandler>()
+                    .UpdateAsync(id, (TModel)model, cancellationToken);
+        });
+
+        return EditBuilder<TModel>();
+    }
+
+    /// <summary>
+    ///     Enables and configures an edit form with a custom model and handler.
+    /// </summary>
+    public ResourceBuilder<TResource> AllowEdit<TModel, THandler>(
+        Action<ResourceEditBuilder<TModel>> configure
+    )
+        where THandler : class, IResourceEditHandler<TModel>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AllowEdit<TModel, THandler>());
 
         return this;
     }
@@ -212,6 +252,21 @@ public sealed class ResourceBuilder<TResource>
                 }
 
                 configure(create);
+            })
+        );
+
+    private ResourceEditBuilder<TModel> EditBuilder<TModel>() =>
+        new(configure =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+            {
+                if (options.Edit is not ResourceEditOptions<TModel> edit)
+                {
+                    throw new InvalidOperationException(
+                        "The edit builder's model no longer matches the selected edit model."
+                    );
+                }
+
+                configure(edit);
             })
         );
 }
