@@ -60,6 +60,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public ResourceIndexPagingViewModel? Paging { get; init; }
 
     /// <summary>
+    ///     The selected ordering.
+    /// </summary>
+    public ResourceIndexSortViewModel? Sort { get; init; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     public required string Title { get; init; }

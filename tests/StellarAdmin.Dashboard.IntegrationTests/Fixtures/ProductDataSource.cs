@@ -62,7 +62,22 @@ public sealed class ProductDataSource(ProductState state) : IResourceCrudDataSou
         state.Requests.Add(_id);
         state.ListRequests.Add(request);
 
-        IEnumerable<Product> items = state.Products.OrderBy(item => item.Id);
+        IEnumerable<Product> items = request.Sort switch
+        {
+            { Field: nameof(Product.Name), Direction: ResourceSortDirection.Descending } => state
+                .Products.OrderByDescending(item => item.Name)
+                .ThenBy(item => item.Id),
+            { Field: nameof(Product.Name) } => state
+                .Products.OrderBy(item => item.Name)
+                .ThenBy(item => item.Id),
+            { Field: nameof(Product.Price), Direction: ResourceSortDirection.Descending } => state
+                .Products.OrderByDescending(item => item.Price)
+                .ThenBy(item => item.Id),
+            { Field: nameof(Product.Price) } => state
+                .Products.OrderBy(item => item.Price)
+                .ThenBy(item => item.Id),
+            _ => state.Products.OrderBy(item => item.Id),
+        };
         if (request.Paging is { } paging)
         {
             items = items.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize);

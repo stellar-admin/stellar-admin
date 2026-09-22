@@ -20,6 +20,14 @@ public sealed class ResourceColumnBuilder
     }
 
     /// <summary>
+    ///     Whether the column supports sorting.
+    /// </summary>
+    public bool Sortable
+    {
+        set => _configuration.Add(options => options.Sortable = value);
+    }
+
+    /// <summary>
     ///     The column title.
     /// </summary>
     public string? Title

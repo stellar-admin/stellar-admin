@@ -9,4 +9,10 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 /// <param name="Direction">
 ///     The direction the list is sorted in. Meaningful only when <see cref="By" /> is set.
 /// </param>
-public sealed record ResourceIndexSortViewModel(string? By, DataGridSortDirection Direction);
+public sealed record ResourceIndexSortViewModel(string? By, DataGridSortDirection Direction)
+{
+    /// <summary>
+    ///     The direction used in index links.
+    /// </summary>
+    public string QueryDirection => Direction == DataGridSortDirection.Descending ? "desc" : "asc";
+}

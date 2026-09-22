@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
 
@@ -69,6 +70,20 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <summary>
+    ///     Orders resources by the selected column by default.
+    /// </summary>
+    public ResourceIndexBuilder<TResource> DefaultSortBy<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    ) => ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
+
+    /// <summary>
+    ///     Orders resources by the selected column in descending order by default.
+    /// </summary>
+    public ResourceIndexBuilder<TResource> DefaultSortByDescending<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
+
+    /// <summary>
     ///     Enables index paging.
     /// </summary>
     public ResourcePagingBuilder<TResource> EnablePaging()
@@ -87,6 +102,27 @@ public sealed class ResourceIndexBuilder<TResource>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(EnablePaging());
+
+        return this;
+    }
+
+    private ResourceIndexBuilder<TResource> ConfigureDefaultSort(
+        LambdaExpression field,
+        ResourceSortDirection direction
+    )
+    {
+        ArgumentNullException.ThrowIfNull(field);
+        if (field.Body is not MemberExpression { Expression: ParameterExpression } member)
+        {
+            throw new ArgumentException(
+                "Select a resource property for the default sort.",
+                nameof(field)
+            );
+        }
+
+        _services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.DefaultSort = new(member.Member.Name, direction)
+        );
 
         return this;
     }

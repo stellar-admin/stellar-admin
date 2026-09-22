@@ -116,6 +116,7 @@ builder
             );
             resource.Index(index =>
             {
+                index.DefaultSortBy(product => product.Name);
                 index.EnablePaging(paging =>
                 {
                     paging.PageSize = 10;
@@ -124,11 +125,12 @@ builder
                 index.Columns(columns =>
                 {
                     columns.Add(product => product.Id);
-                    columns.Add(product => product.Name);
+                    columns.Add(product => product.Name, column => column.Sortable = true);
                     columns.Add(
                         product => product.Price,
                         column =>
                         {
+                            column.Sortable = true;
                             column.Title = "Unit price";
                             column.Format = "{0:0.00}";
                         }

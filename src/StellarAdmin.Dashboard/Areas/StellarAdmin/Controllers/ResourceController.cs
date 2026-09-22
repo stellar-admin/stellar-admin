@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin.Controllers;
 
@@ -135,6 +136,10 @@ public class ResourceController<TResource>(
                 id = (string?)null,
                 page = request.Paging?.Page,
                 pageSize = request.Paging?.PageSize,
+                sortBy = request.Sort?.Field,
+                sortDirection = request.Sort?.Direction == ResourceSortDirection.Descending ? "desc"
+                : request.Sort is null ? null
+                : "asc",
             }
         );
     }
@@ -337,6 +342,12 @@ public class ResourceController<TResource>(
                             id = (string?)null,
                             page = totalPages,
                             pageSize = paging.PageSize,
+                            sortBy = request.Sort?.Field,
+                            sortDirection = request.Sort?.Direction
+                            == ResourceSortDirection.Descending
+                                ? "desc"
+                            : request.Sort is null ? null
+                            : "asc",
                         }
                     );
                 }
@@ -399,6 +410,14 @@ public class ResourceController<TResource>(
                 KeySelector = _resourceOptions.KeySelector,
                 Items = result.Items,
                 Paging = pagingModel,
+                Sort = request.Sort is { } sort
+                    ? new(
+                        sort.Field,
+                        sort.Direction == ResourceSortDirection.Descending
+                            ? DataGridSortDirection.Descending
+                            : DataGridSortDirection.Ascending
+                    )
+                    : null,
                 Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
             }
         );
@@ -416,6 +435,27 @@ public class ResourceController<TResource>(
     private bool TryCreateListRequest(ResourceIndexQuery query, out ResourceListRequest request)
     {
         request = new();
+        var direction = query.SortDirection?.ToLowerInvariant();
+        if (direction is not (null or "" or "asc" or "desc"))
+        {
+            return false;
+        }
+
+        var column = _resourceOptions.Index.Columns.FirstOrDefault(column =>
+            column.Sortable
+            && string.Equals(column.FieldName, query.SortBy, StringComparison.OrdinalIgnoreCase)
+        );
+        request = new()
+        {
+            Sort = column is null
+                ? _resourceOptions.Index.DefaultSort
+                : new(
+                    column.FieldName!,
+                    direction == "desc"
+                        ? ResourceSortDirection.Descending
+                        : ResourceSortDirection.Ascending
+                ),
+        };
         if (_resourceOptions.Index.Paging is not { } options)
         {
             return true;
@@ -436,7 +476,7 @@ public class ResourceController<TResource>(
             return false;
         }
 
-        request = new() { Paging = new(page, pageSize) };
+        request = request with { Paging = new(page, pageSize) };
         return true;
     }
 }

@@ -57,6 +57,27 @@ public class ResourceBuilderTests
     }
 
     [Test]
+    public async Task DefaultSort_WithoutSortableColumn_RejectsConfiguration()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.Index(index =>
+        {
+            index.Columns(columns => columns.Add(product => product.Name));
+            index.DefaultSortBy(product => product.Name);
+        });
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(act).Throws<OptionsValidationException>();
+    }
+
+    [Test]
     [Arguments(0, "2,3")]
     [Arguments(2, "")]
     [Arguments(2, "2,0")]

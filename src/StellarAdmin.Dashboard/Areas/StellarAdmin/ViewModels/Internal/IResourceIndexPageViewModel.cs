@@ -56,6 +56,11 @@ public interface IResourceIndexPageViewModel
     ResourceIndexPagingViewModel? Paging { get; }
 
     /// <summary>
+    ///     The selected ordering.
+    /// </summary>
+    ResourceIndexSortViewModel? Sort { get; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     string Title { get; }

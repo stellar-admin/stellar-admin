@@ -19,6 +19,11 @@ public sealed class ResourceIndexOptions
     public string? CreateLabel { get; set; }
 
     /// <summary>
+    ///     The default ordering, or null to use the data source's default.
+    /// </summary>
+    public ResourceSort? DefaultSort { get; set; }
+
+    /// <summary>
     ///     The delete button label.
     /// </summary>
     public string? DeleteLabel { get; set; }

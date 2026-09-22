@@ -61,6 +61,25 @@ resource.SingularLabel = "Item";
 resource.PluralLabel = "Inventory";
 ```
 
+## Index sorting
+
+Opt columns into sorting and optionally choose a default:
+
+```csharp
+resource.Index(index =>
+{
+    index.Columns(columns =>
+    {
+        columns.Add(product => product.Name, column => column.Sortable = true);
+        columns.Add(product => product.Price, column => column.Sortable = true);
+    });
+    index.DefaultSortBy(product => product.Name);
+    // Or: index.DefaultSortByDescending(product => product.Price);
+});
+```
+
+The default must select a configured sortable column. `ResourceListRequest.Sort` supplies the field name and `ResourceSortDirection` to the data source; null leaves ordering to the source. Apply ordering before paging, with a unique tie-breaker for equal values. The shared controller does not sort returned rows. Header links toggle direction through HTMX, reset the page, and preserve page size. Paging and deletion preserve the selected ordering. Unknown fields fall back to the configured default; invalid directions return 400.
+
 ## Create forms
 
 Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection`, `AddGroup`, and `AddRow` for nested layouts. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.

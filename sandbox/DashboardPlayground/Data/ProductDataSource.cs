@@ -95,7 +95,20 @@ public sealed class ProductDataSource : IResourceCrudDataSource<Product>
         cancellationToken.ThrowIfCancellationRequested();
         lock (_lock)
         {
-            IEnumerable<Product> items = _products.OrderBy(item => item.Id);
+            IEnumerable<Product> items = request.Sort switch
+            {
+                { Field: nameof(Product.Name), Direction: ResourceSortDirection.Descending } =>
+                    _products.OrderByDescending(item => item.Name).ThenBy(item => item.Id),
+                { Field: nameof(Product.Name) } => _products
+                    .OrderBy(item => item.Name)
+                    .ThenBy(item => item.Id),
+                { Field: nameof(Product.Price), Direction: ResourceSortDirection.Descending } =>
+                    _products.OrderByDescending(item => item.Price).ThenBy(item => item.Id),
+                { Field: nameof(Product.Price) } => _products
+                    .OrderBy(item => item.Price)
+                    .ThenBy(item => item.Id),
+                _ => _products.OrderBy(item => item.Id),
+            };
             if (request.Paging is { } paging)
             {
                 items = items.Skip((paging.Page - 1) * paging.PageSize).Take(paging.PageSize);

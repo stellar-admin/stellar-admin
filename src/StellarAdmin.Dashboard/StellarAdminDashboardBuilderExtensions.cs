@@ -35,6 +35,14 @@ public static class StellarAdminDashboardBuilderExtensions
                 )
                 .Validate(
                     options =>
+                        options.Index.DefaultSort is not { } sort
+                        || options.Index.Columns.Any(column =>
+                            column.Sortable && column.FieldName == sort.Field
+                        ),
+                    "The default sort must select a configured sortable column."
+                )
+                .Validate(
+                    options =>
                         options.Create is null
                         || options.CreateHandler is not null
                         || options.DataSourceType is { } type

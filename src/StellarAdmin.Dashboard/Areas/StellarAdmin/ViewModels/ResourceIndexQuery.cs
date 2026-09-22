@@ -14,4 +14,14 @@ public sealed class ResourceIndexQuery
     ///     The requested number of resources per page.
     /// </summary>
     public int? PageSize { get; set; }
+
+    /// <summary>
+    ///     The requested sort field.
+    /// </summary>
+    public string? SortBy { get; set; }
+
+    /// <summary>
+    ///     The requested sort direction: asc or desc.
+    /// </summary>
+    public string? SortDirection { get; set; }
 }
