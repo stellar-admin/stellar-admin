@@ -61,6 +61,11 @@ public interface IResourceIndexPageViewModel
     ResourceIndexQuery Query { get; }
 
     /// <summary>
+    ///     The scope tabs.
+    /// </summary>
+    IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; }
+
+    /// <summary>
     ///     The search box, or null when searching is disabled.
     /// </summary>
     ResourceIndexSearchViewModel? Search { get; }

@@ -65,6 +65,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public ResourceIndexQuery Query { get; init; } = new();
 
     /// <summary>
+    ///     The scope tabs.
+    /// </summary>
+    public IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; init; } = [];
+
+    /// <summary>
     ///     The search box, or null when searching is disabled.
     /// </summary>
     public ResourceIndexSearchViewModel? Search { get; init; }

@@ -39,6 +39,11 @@ public sealed class ResourceIndexOptions
     public ResourcePagingOptions? Paging { get; set; }
 
     /// <summary>
+    ///     The scope settings, or null when scopes are disabled.
+    /// </summary>
+    public ResourceScopesOptions? Scopes { get; set; }
+
+    /// <summary>
     ///     The search settings, or null when searching is disabled.
     /// </summary>
     public ResourceSearchOptions? Search { get; set; }

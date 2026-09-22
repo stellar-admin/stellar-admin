@@ -16,6 +16,11 @@ public sealed class ResourceIndexQuery
     public int? PageSize { get; set; }
 
     /// <summary>
+    ///     The selected scope identifier, or null when no scope is selected.
+    /// </summary>
+    public string? Scope { get; set; }
+
+    /// <summary>
     ///     The search term, or null when the list is unfiltered.
     /// </summary>
     public string? Search { get; set; }

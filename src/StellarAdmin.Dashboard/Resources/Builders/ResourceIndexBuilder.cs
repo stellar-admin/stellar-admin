@@ -107,6 +107,29 @@ public sealed class ResourceIndexBuilder<TResource>
     }
 
     /// <summary>
+    ///     Enables index scopes.
+    /// </summary>
+    public ResourceScopesBuilder<TResource> EnableScopes()
+    {
+        _services.Configure<ResourceOptions<TResource>>(options => options.Index.Scopes = new());
+
+        return new(_services);
+    }
+
+    /// <summary>
+    ///     Enables and configures index scopes.
+    /// </summary>
+    public ResourceIndexBuilder<TResource> EnableScopes(
+        Action<ResourceScopesBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableScopes());
+
+        return this;
+    }
+
+    /// <summary>
     ///     Enables index searching.
     /// </summary>
     public ResourceSearchBuilder<TResource> EnableSearch()

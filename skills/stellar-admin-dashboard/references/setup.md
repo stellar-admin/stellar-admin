@@ -97,6 +97,26 @@ The controller passes trimmed text in `ResourceListRequest.Search`; blank text a
 
 The search input updates the grid through HTMX after a 400 ms typing delay and updates browser history. Searching and clearing reset paging while retaining explicitly selected page size and sorting. Paging, sorting, and deletion preserve search. Configured defaults are not added to navigation URLs.
 
+## Index scopes
+
+Enable named filters through the index builder:
+
+```csharp
+index.EnableScopes(scopes =>
+{
+    scopes.Add("all", "All products");
+    scopes.Add("under-50", "Under 50");
+    scopes.Add("50-and-over", "50 and over");
+    scopes.DefaultScope = "all";
+});
+```
+
+The no-callback overload returns the scopes builder. Identifiers are matched case-insensitively and passed to the data source in `ResourceListRequest.Scope` using their configured spelling. An omitted or unknown identifier uses `DefaultScope`. Without a configured default, it produces null. Disabled scopes also produce null. Scope identifiers must be distinct, and a configured default must identify an existing scope.
+
+The data source decides how to apply each scope alongside search, before counting and paging. The shared builder does not accept filtering expressions. Scopes are navigation filters, not authorization. Data sources must always enforce mandatory access restrictions.
+
+Tabs use HTMX navigation. Selecting a scope resets the page and retains search and explicitly selected sorting and page size. The default tab omits the scope parameter. Search, paging, sorting, and deletion preserve scope selection.
+
 ## Create forms
 
 Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection`, `AddGroup`, and `AddRow` for nested layouts. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.

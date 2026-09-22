@@ -30,7 +30,7 @@
                 }
                 @if (Model.Delete is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
                           hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">

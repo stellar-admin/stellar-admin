@@ -11,31 +11,52 @@
             }
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
-        @if (Model.Search is { } search)
+        @if (Model.Search is not null || Model.Scopes.Count > 0)
         {
-            <sa-page-header-nav>
-                <sa-input-group id="index-page-search" class="w-full sm:w-64 my-2">
-                    <sa-input-group-input placeholder="@search.Placeholder"
-                                          aria-label="@search.Placeholder"
-                                          autofocus=""
-                                          value="@search.Term"
-                                          name="search"
-                                          hx-get="@Url.Action("Index", new
-                                                  {
-                                                      id = (string?)null,
-                                                      sortBy = Model.Query.SortBy,
-                                                      sortDirection = Model.Query.SortDirection,
-                                                      pageSize = Model.Query.PageSize
-                                                  })"
-                                          hx-trigger="input changed delay:400ms"
-                                          hx-swap="outerHTML"
-                                          hx-target="#index-page-data-grid"
-                                          hx-select="#index-page-data-grid"
-                                          hx-push-url="true" />
-                    <sa-input-group-addon>
-                        <sa-icon name="search" />
-                    </sa-input-group-addon>
-                </sa-input-group>
+            <sa-page-header-nav aria-label="Page sections">
+                <sa-group justify="GroupJustify.SpaceBetween" class="my-2 mr-2">
+                    @if (Model.Scopes.Count > 0)
+                    {
+                        <sa-tab-list id="index-page-scopes" hx-boost:inherited="true">
+                            @foreach (var scope in Model.Scopes)
+                            {
+                                <sa-tab-link is-active="scope.IsActive" asp-action="Index" asp-route-id="@((string?)null)"
+                                             asp-route-scope="@scope.QueryValue" asp-route-search="@Model.Query.Search"
+                                             asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection"
+                                             asp-route-pageSize="@Model.Query.PageSize">
+                                    @scope.Title
+                                </sa-tab-link>
+                            }
+                        </sa-tab-list>
+                    }
+                    @if (Model.Search is { } search)
+                    {
+                        <sa-input-group id="index-page-search" class="w-full sm:w-64">
+                            <sa-input-group-input placeholder="@search.Placeholder"
+                                                  aria-label="@search.Placeholder"
+                                                  autofocus=""
+                                                  value="@search.Term"
+                                                  name="search"
+                                                  hx-get="@Url.Action("Index", new
+                                                          {
+                                                              id = (string?)null,
+                                                              scope = Model.Query.Scope,
+                                                              sortBy = Model.Query.SortBy,
+                                                              sortDirection = Model.Query.SortDirection,
+                                                              pageSize = Model.Query.PageSize
+                                                          })"
+                                                  hx-trigger="input changed delay:400ms"
+                                                  hx-swap="outerHTML"
+                                                  hx-target="#index-page-data-grid"
+                                                  hx-select="#index-page-data-grid"
+                                                  hx-select-oob="@(Model.Scopes.Count > 0 ? "#index-page-scopes" : null)"
+                                                  hx-push-url="true" />
+                            <sa-input-group-addon>
+                                <sa-icon name="search" />
+                            </sa-input-group-addon>
+                        </sa-input-group>
+                    }
+                </sa-group>
             </sa-page-header-nav>
         }
     </sa-page-header>
@@ -44,7 +65,7 @@
          hx-target:inherited="#index-page-data-grid"
          hx-select:inherited="#index-page-data-grid"
          hx-swap:inherited="outerHTML"
-         hx-select-oob:inherited="@(Model.Search is null ? null : "#index-page-search")">
+         hx-select-oob:inherited="#index-page-search, #index-page-scopes">
         @Html.ValidationSummary(excludePropertyErrors: true)
         <partial name="_IndexDataGrid" />
     </div>

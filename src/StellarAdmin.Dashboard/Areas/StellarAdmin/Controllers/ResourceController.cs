@@ -137,6 +137,7 @@ public class ResourceController<TResource>(
                 page = query.Page,
                 pageSize = query.PageSize,
                 search = query.Search,
+                scope = query.Scope,
                 sortBy = query.SortBy,
                 sortDirection = query.SortDirection,
             }
@@ -343,6 +344,7 @@ public class ResourceController<TResource>(
                             page = totalPages,
                             pageSize = query.PageSize,
                             search = query.Search,
+                            scope = query.Scope,
                             sortBy = query.SortBy,
                             sortDirection = query.SortDirection,
                         }
@@ -408,6 +410,16 @@ public class ResourceController<TResource>(
                 Items = result.Items,
                 Paging = pagingModel,
                 Query = query,
+                Scopes = _resourceOptions.Index.Scopes is { } scopes
+                    ? scopes
+                        .Items.Select(scope => new ResourceIndexScopeViewModel(
+                            scope.Id,
+                            scope.Title,
+                            scope.Id == request.Scope,
+                            scope.Id == scopes.DefaultScope ? null : scope.Id
+                        ))
+                        .ToArray()
+                    : [],
                 Search = _resourceOptions.Index.Search is { } search
                     ? new(
                         request.Search,
@@ -451,6 +463,14 @@ public class ResourceController<TResource>(
         );
         request = new()
         {
+            Scope = _resourceOptions.Index.Scopes is { } scopes
+                ? scopes
+                    .Items.FirstOrDefault(scope =>
+                        string.Equals(scope.Id, query.Scope, StringComparison.OrdinalIgnoreCase)
+                    )
+                    ?.Id
+                    ?? scopes.DefaultScope
+                : null,
             Search =
                 _resourceOptions.Index.Search is null || string.IsNullOrWhiteSpace(query.Search)
                     ? null

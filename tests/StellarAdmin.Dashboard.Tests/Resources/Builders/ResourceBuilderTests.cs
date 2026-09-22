@@ -8,6 +8,38 @@ namespace StellarAdmin.Dashboard.Tests.Resources.Builders;
 public class ResourceBuilderTests
 {
     [Test]
+    [Arguments("duplicate")]
+    [Arguments("missing-default")]
+    public async Task EnableScopes_WithInvalidConfiguration_RejectsOptions(string scenario)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.Index(index =>
+            index.EnableScopes(scopes =>
+            {
+                scopes.Add("all", "All");
+                if (scenario == "duplicate")
+                {
+                    scopes.Add("ALL", "Duplicate");
+                }
+                else
+                {
+                    scopes.DefaultScope = "missing";
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(act).Throws<OptionsValidationException>();
+    }
+
+    [Test]
     public async Task AllowCreate_WithSeparateProviders_CreatesIndependentResourceConfiguration()
     {
         // Arrange

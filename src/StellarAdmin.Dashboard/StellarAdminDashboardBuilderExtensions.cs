@@ -35,6 +35,23 @@ public static class StellarAdminDashboardBuilderExtensions
                 )
                 .Validate(
                     options =>
+                        options.Index.Scopes is not { } scopes
+                        || scopes.Items.All(scope =>
+                            !string.IsNullOrWhiteSpace(scope.Id)
+                            && !string.IsNullOrWhiteSpace(scope.Title)
+                        )
+                            && scopes
+                                .Items.Select(scope => scope.Id)
+                                .Distinct(StringComparer.OrdinalIgnoreCase)
+                                .Count() == scopes.Items.Count
+                            && (
+                                scopes.DefaultScope is null
+                                || scopes.Items.Any(scope => scope.Id == scopes.DefaultScope)
+                            ),
+                    "Scopes require distinct identifiers, nonblank labels, and a default scope matching a configured identifier."
+                )
+                .Validate(
+                    options =>
                         options.Index.DefaultSort is not { } sort
                         || options.Index.Columns.Any(column =>
                             column.Sortable && column.FieldName == sort.Field

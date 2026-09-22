@@ -117,6 +117,13 @@ builder
             resource.Index(index =>
             {
                 index.EnableSearch();
+                index.EnableScopes(scopes =>
+                {
+                    scopes.Add("all", "All products");
+                    scopes.Add("under-50", "Under 50");
+                    scopes.Add("50-and-over", "50 and over");
+                    scopes.DefaultScope = "all";
+                });
                 index.DefaultSortBy(product => product.Name);
                 index.EnablePaging(paging =>
                 {

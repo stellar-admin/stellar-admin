@@ -103,6 +103,13 @@ public sealed class ProductDataSource : IResourceCrudDataSource<Product>
                 );
             }
 
+            items = request.Scope switch
+            {
+                "under-50" => items.Where(item => item.Price < 50),
+                "50-and-over" => items.Where(item => item.Price >= 50),
+                _ => items,
+            };
+
             var totalCount = items.Count();
             items = request.Sort switch
             {
