@@ -28,6 +28,8 @@ public static class StellarAdminDashboardBuilderExtensions
             .Configure<IServiceScopeFactory>(
                 (options, scopeFactory) =>
                 {
+                    options.Index = new EfCoreResourceIndexOptions<TEntity>();
+
                     // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
                     using var scope = scopeFactory.CreateScope();
                     var db = scope.ServiceProvider.GetRequiredService<TContext>();

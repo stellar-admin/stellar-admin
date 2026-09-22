@@ -92,6 +92,10 @@ builder
         {
             resource.Index(index =>
             {
+                index.EnableSearch(
+                    term => product => product.Name.Contains(term),
+                    search => search.Placeholder = "Search products..."
+                );
                 index.DefaultSortBy(product => product.Name);
                 index.EnablePaging(paging =>
                 {

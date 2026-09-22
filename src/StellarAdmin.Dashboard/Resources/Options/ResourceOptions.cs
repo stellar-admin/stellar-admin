@@ -25,7 +25,7 @@ public sealed class ResourceOptions<TResource>
     /// <summary>
     ///     The index page configuration.
     /// </summary>
-    public ResourceIndexOptions Index { get; } = new();
+    public ResourceIndexOptions Index { get; internal set; } = new();
 
     /// <summary>
     ///     Returns a resource's key as a URL value.

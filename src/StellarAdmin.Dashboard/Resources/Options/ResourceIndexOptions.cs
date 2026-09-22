@@ -3,7 +3,7 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 /// <summary>
 ///     Configures a resource's index page.
 /// </summary>
-public sealed class ResourceIndexOptions
+public class ResourceIndexOptions
 {
     /// <summary>
     ///     The columns displayed in order.

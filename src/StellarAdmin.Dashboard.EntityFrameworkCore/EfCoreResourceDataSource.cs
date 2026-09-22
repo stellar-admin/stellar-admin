@@ -21,6 +21,14 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     )
     {
         var query = db.Set<TEntity>().AsNoTracking();
+        if (
+            request.Search is { } term
+            && _resourceOptions.Index.Search is EfCoreResourceSearchOptions<TEntity> search
+        )
+        {
+            query = query.Where(search.Predicate(term));
+        }
+
         var totalCount = await query.LongCountAsync(cancellationToken);
         var parameter = Expression.Parameter(typeof(TEntity), "entity");
         var key = Expression.Lambda(
