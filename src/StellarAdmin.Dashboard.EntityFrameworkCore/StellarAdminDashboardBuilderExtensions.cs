@@ -1,111 +1,80 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Dashboard.Sidebar;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 /// <summary>
-///     Registers EF Core resource screens.
+///     Registers EF Core resources.
 /// </summary>
 public static class StellarAdminDashboardBuilderExtensions
 {
     /// <summary>
-    ///     Adds CRUD screens for an entity in the application's DbContext.
+    ///     Adds an EF Core resource.
     /// </summary>
-    public static StellarAdminDashboardBuilder AddEfCoreResource<TContext, TEntity>(
-        this StellarAdminDashboardBuilder builder,
-        string name,
-        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+    public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
+        this StellarAdminDashboardBuilder builder
     )
         where TContext : DbContext
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(builder);
+
+        var resource = builder.AddResource<TEntity>();
+        resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
+        builder
+            .Services.AddOptions<ResourceOptions<TEntity>>()
+            .Configure<IServiceScopeFactory>(
+                (options, scopeFactory) =>
+                {
+                    // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
+                    using var scope = scopeFactory.CreateScope();
+                    var db = scope.ServiceProvider.GetRequiredService<TContext>();
+                    var entity =
+                        db.Model.FindEntityType(typeof(TEntity))
+                        ?? throw new InvalidOperationException(
+                            $"{typeof(TEntity).Name} is not mapped in {typeof(TContext).Name}."
+                        );
+                    var keys = entity.FindPrimaryKey()?.Properties;
+                    if (
+                        keys is not { Count: 1 }
+                        || keys[0].PropertyInfo is not { GetMethod.IsPublic: true } property
+                        || !(
+                            property.PropertyType == typeof(int)
+                            || property.PropertyType == typeof(long)
+                            || property.PropertyType == typeof(Guid)
+                            || property.PropertyType == typeof(string)
+                        )
+                    )
+                    {
+                        throw new InvalidOperationException(
+                            "EF resources require one public CLR primary-key property of type int, long, Guid, or string."
+                        );
+                    }
+
+                    options.KeyPropertyName = property.Name;
+                    options.KeySelector = item =>
+                        Convert.ToString(property.GetValue(item), CultureInfo.InvariantCulture)!;
+                }
+            );
+
+        return new(resource, new(builder.Services));
+    }
+
+    /// <summary>
+    ///     Adds and configures an EF Core resource.
+    /// </summary>
+    public static StellarAdminDashboardBuilder AddEfCoreResource<TContext, TEntity>(
+        this StellarAdminDashboardBuilder builder,
+        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+    )
+        where TContext : DbContext
+        where TEntity : class
+    {
         ArgumentNullException.ThrowIfNull(configure);
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        if (!System.Text.RegularExpressions.Regex.IsMatch(name, "^[a-zA-Z][a-zA-Z0-9-]*$"))
-        {
-            throw new ArgumentException(
-                "Resource names must start with a letter and contain only letters, digits, or hyphens.",
-                nameof(name)
-            );
-        }
-
-        if (
-            builder.Services.Any(d =>
-                d.ServiceType == typeof(EfCoreResourceOptions<TContext, TEntity>)
-            )
-        )
-        {
-            throw new InvalidOperationException(
-                "This entity and DbContext already have a resource registration."
-            );
-        }
-
-        var options = new EfCoreResourceOptions<TContext, TEntity>(name);
-        configure(new EfCoreResourceBuilder<TContext, TEntity>(options));
-        foreach (var reference in options.References)
-        {
-            foreach (
-                var column in options.IndexPage.Columns.Where(column =>
-                    column.FieldName == reference.FieldName
-                )
-            )
-            {
-                column.DisplayExpression = reference.DisplayExpression;
-            }
-
-            if (options.IndexPage.DefaultSort is { } sort && sort.FieldName == reference.FieldName)
-            {
-                options.IndexPage.DefaultSort =
-                    new StellarAdmin.Dashboard.Resources.Options.DataGridDefaultSortOptions(
-                        reference.DisplayExpression,
-                        sort.FieldName,
-                        sort.Descending
-                    );
-            }
-        }
-
-        builder.Services.AddSingleton(options);
-
-        builder.Services.AddSingleton<ISidebarItemsProvider>(
-            new ResourceSidebarProvider(name, () => options.IndexPage.EffectiveTitle)
-        );
-
-        var controller = typeof(EfCoreResourceController<TContext, TEntity>);
-        builder.AddController(controller, name);
-
-        builder.Services.Configure<MvcOptions>(mvc =>
-        {
-            mvc.Conventions.Add(
-                new ResourceAuthorizationConvention(controller, options.AuthorizationPolicy)
-            );
-        });
+        configure(builder.AddEfCoreResource<TContext, TEntity>());
 
         return builder;
-    }
-
-    private sealed class ResourceAuthorizationConvention(Type type, string? policy)
-        : IControllerModelConvention
-    {
-        public void Apply(ControllerModel controller)
-        {
-            if (controller.ControllerType == type && !string.IsNullOrWhiteSpace(policy))
-            {
-                controller.Filters.Add(new AuthorizeFilter(policy));
-            }
-        }
-    }
-
-    private sealed class ResourceSidebarProvider(string name, Func<string> title)
-        : ISidebarItemsProvider
-    {
-        public SidebarItem[] GetItems() =>
-            [new SidebarActionLinkItem(title(), name, "Index", "StellarAdmin")];
     }
 }

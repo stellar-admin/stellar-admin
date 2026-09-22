@@ -1,73 +1,52 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources.Builders;
-using StellarAdmin.Dashboard.Resources.Infrastructure.Expressions;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 /// <summary>
-///     Configures the screens for an EF Core entity.
+///     Configures an EF Core resource.
 /// </summary>
-public sealed class EfCoreResourceBuilder<TContext, TEntity> : ResourceBuilder<TEntity>
+public sealed class EfCoreResourceBuilder<TContext, TEntity>
     where TContext : DbContext
     where TEntity : class
 {
-    private readonly EfCoreResourceOptions<TContext, TEntity> _options;
+    private readonly ResourceBuilder<TEntity> _resource;
+    private readonly ResourceIndexBuilder<TEntity> _index;
 
     /// <summary>
-    ///     The authorization policy required to access the resource.
+    ///     The plural resource label.
     /// </summary>
-    public string? AuthorizationPolicy
+    public string PluralLabel
     {
-        get => _options.AuthorizationPolicy;
-        set => _options.AuthorizationPolicy = value;
+        set => _resource.PluralLabel = value;
     }
 
-    internal EfCoreResourceBuilder(EfCoreResourceOptions<TContext, TEntity> options)
-        : base(options)
+    /// <summary>
+    ///     The singular resource label.
+    /// </summary>
+    public string SingularLabel
     {
-        _options = options;
+        set => _resource.SingularLabel = value;
     }
 
-    /// <summary>Adds a reference using an EF foreign key, navigation, and display property.</summary>
-    public EfCoreResourceBuilder<TContext, TEntity> AddReference<TKey, TTarget>(
-        Expression<Func<TEntity, TKey>> key,
-        Expression<Func<TEntity, TTarget?>> navigation,
-        Expression<Func<TTarget, string>> display,
-        Action<EfCoreReferenceBuilder<TTarget>>? configure = null
+    internal EfCoreResourceBuilder(
+        ResourceBuilder<TEntity> resource,
+        ResourceIndexBuilder<TEntity> index
     )
-        where TTarget : class
     {
-        ArgumentNullException.ThrowIfNull(key);
-        ArgumentNullException.ThrowIfNull(navigation);
-        ArgumentNullException.ThrowIfNull(display);
+        _resource = resource;
+        _index = index;
+    }
 
-        var fieldName = FieldExpressionHelper.ExtractDirectPropertyName(key);
-        if (
-            fieldName is null
-            || FieldExpressionHelper.ExtractDirectPropertyName(navigation) is null
-            || FieldExpressionHelper.ExtractDirectPropertyName(display) is null
-        )
-        {
-            throw new ArgumentException("Reference selectors must select direct properties.");
-        }
-
-        if (_options.References.Any(reference => reference.FieldName == fieldName))
-        {
-            throw new InvalidOperationException($"Reference '{fieldName}' is already registered.");
-        }
-
-        var builder = new EfCoreReferenceBuilder<TTarget>();
-        configure?.Invoke(builder);
-        _options.References.Add(
-            new EfCoreReference<TEntity, TKey, TTarget>(
-                fieldName,
-                key,
-                navigation,
-                display,
-                builder.ChoiceOptions
-            )
-        );
+    /// <summary>
+    ///     Configures the index page.
+    /// </summary>
+    public EfCoreResourceBuilder<TContext, TEntity> Index(
+        Action<EfCoreResourceIndexBuilder<TContext, TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(new(_index));
 
         return this;
     }

@@ -178,3 +178,29 @@ The route supplies the authoritative ID to both handler methods. Ordinary resour
 The explicit handler takes precedence over any data source edit implementation and is resolved from request services. Its concrete registration defaults to scoped and preserves an existing application registration. The data source can omit `IResourceEditHandler<Customer>`. The no-callback overload returns `ResourceEditBuilder<EditCustomerModel>`, and the callback overload returns the resource builder. Each registration replaces prior edit configuration and handler selection. Ordinary `AllowEdit(...)` returns to the resource model and data source.
 
 Typed fields, layouts, resource label defaults, page overrides, model and handler validation, and antiforgery protection use the shared edit flow. Override the view with `Areas/StellarAdmin/Views/Customer/Edit.cshtml`, or let MVC fall back to `ResourceEdit`.
+
+## EF Core resource index
+
+Reference `StellarAdmin.Dashboard.EntityFrameworkCore` and import its namespace to register an EF entity through the shared resource controller and views:
+
+```csharp
+using StellarAdmin.Dashboard.EntityFrameworkCore;
+
+dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
+{
+    resource.Index(index =>
+    {
+        index.Columns(columns =>
+        {
+            columns.Add(product => product.Name, column => column.Sortable = true);
+            columns.Add(product => product.Price, column => column.Sortable = true);
+        });
+        index.DefaultSortBy(product => product.Name);
+        index.EnablePaging();
+    });
+});
+```
+
+Register AppDbContext with the application's chosen EF provider before serving resource requests. The EF builder selects its own data source and discovers the key from EF metadata, so it has no UseDataSource or UseKey methods. Supported keys are single public CLR properties of type int, long, Guid, or string. Labels and index titles use the shared defaults and overrides. Queries honor EF global query filters, count before paging, and append primary-key ordering to keep page results stable. Sort selectors must translate through the chosen provider.
+
+The current EF checkpoint is read-only. Search/scope expressions, query transformations, sort overrides, CRUD, and reference editors are not yet exposed. DashboardPlayground demonstrates this index with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.

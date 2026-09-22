@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is committed as `0cdfb12`. HTMX index paging and deletion are committed as `70c6a2a`. Sorting is committed as `05af889`, and explicit query preservation as `e3e82c1`. Search is committed as `9bb3e2e`. Scopes are implemented and awaiting review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is committed as `0cdfb12`. HTMX index paging and deletion are committed as `70c6a2a`. Sorting is committed as `05af889`, and explicit query preservation as `e3e82c1`. Search is committed as `9bb3e2e`. Scopes are committed and pushed as `ffb2059`. EF Core checkpoint 1 is implemented and awaiting review: shared-controller registration, metadata keys, a read-only SQLite Product index, paging, sorting, and solution/build reattachment. Expression configuration remains checkpoint 2. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -10,7 +10,7 @@ Build a simple standalone resource foundation in Dashboard, then make EF Core an
 
 The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The Dashboard integration suite verifies index rendering and create/edit flows through HTTP.
+EF Core is reattached with a read-only implementation and new SQLite HTTP integration tests. Identity and IdentitySimplePlayground remain detached from the solution and build pipeline, with source referencing removed APIs retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The Dashboard integration suite verifies index rendering and create/edit flows through HTTP.
 
 ## Design rules
 
@@ -150,6 +150,83 @@ Use integration-first scenario tests for each increment, without duplicate optio
 Adapt EF Core first, then Identity. Reattach each integration, its sample, and appropriate new tests only after adapting it to the proven core. EF supplies database operations and provider-specific behavior. Identity seeds fields through the normal resource builder, applies user configuration through the same builder, and performs writes through UserManager and RoleManager.
 
 Prove Identity user creation with an action-specific model for password and confirmation through the shared controller workflow. Preserve integration domain requirements, including error translation and self-deletion prevention, and review routes, view overrides, authorization, and EF reference behavior during adaptation. Identity integration is not complete while password fields require a separate form configuration or CRUD flow.
+
+### EF Core implementation checkpoints — revised 2026-09-22
+
+The current authorization is to record the design and present the concrete builder API before coding checkpoint 1. No runtime changes are part of this planning increment. The previous extension-only proposal is superseded: returning ResourceBuilder<TEntity> would expose UseDataSource and allow replacing the EF source while leaving EF configuration behind.
+
+Use a dedicated EfCoreResourceBuilder<TContext, TEntity> that composes the shared resource builder internally. Do not inherit from ResourceBuilder or expose the wrapped builder. AddEfCoreResource<TContext, TEntity>() returns the EF builder. Its callback overload returns StellarAdminDashboardBuilder. The builder exposes setter-only SingularLabel and PluralLabel, Index, ordinary and custom-model AllowCreate/AllowEdit, and AllowDelete. It omits UseDataSource and UseKey because the registration selects the EF source and EF metadata determines the primary key. Initially support one CLR primary-key property of type int, long, Guid, or string, matching the old integration. Reject unsupported key shapes clearly. Do not introduce composite route-key encoding in this increment.
+
+The EF root builder uses EfCoreResourceIndexBuilder<TContext, TEntity> for Index. This builder forwards shared title/action labels, Columns, EnablePaging, and DefaultSortBy/DefaultSortByDescending to the shared configuration. It additionally exposes expression-based EnableSearch, EnableScopes with EfCoreResourceScopesBuilder<TContext, TEntity>, SortBy for column-specific sort overrides, and TransformQuery. Reuse the existing column, paging, search-settings, create, edit, delete, field, and layout builders. Add only the internal access needed for composition across the integration boundary, following existing friend-assembly conventions. Do not introduce a general builder inheritance framework.
+
+Proposed usage (illustrative Product shape, not a required sample-model expansion):
+
+```csharp
+dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
+{
+    resource.SingularLabel = "Product";
+
+    resource.Index(index =>
+    {
+        index.Columns(columns =>
+        {
+            columns.Add(p => p.Name, column => column.Sortable = true);
+            columns.Add(p => p.Price, column => column.Sortable = true);
+            columns.Add(p => p.CategoryId);
+        });
+
+        index.DefaultSortBy(p => p.Name);
+        index.SortBy(p => p.CategoryId, p => p.Category.Name);
+        index.TransformQuery(query => query.Include(p => p.Category));
+
+        index.EnableSearch(
+            term => p => p.Name.Contains(term),
+            search => search.Placeholder = "Search products..."
+        );
+
+        index.EnableScopes(scopes =>
+        {
+            scopes.Add("all", "All products");
+            scopes.Add("under-50", "Under 50", p => p.Price < 50);
+            scopes.Add("50-and-over", "50 and over", p => p.Price >= 50);
+            scopes.DefaultScope = "all";
+        });
+
+        index.EnablePaging();
+    });
+
+    resource.AllowCreate(create => create.Fields(fields =>
+    {
+        fields.Add(p => p.Name);
+        fields.Add(p => p.Price);
+    }));
+
+    resource.AllowEdit(edit => edit.Fields(fields =>
+    {
+        fields.Add(p => p.Name);
+        fields.Add(p => p.Price);
+    }));
+
+    resource.AllowDelete();
+});
+```
+
+EnableSearch accepts Func<string, Expression<Func<TEntity, bool>>> and an optional configure overload using ResourceSearchBuilder<TEntity>. The overload without a configure callback returns that settings builder. There is no parameterless EF EnableSearch because EF needs a predicate to define its behavior. EnableScopes has no-callback and callback overloads. Its EF scopes builder supports Add(id, title) for an unfiltered scope and Add(id, title, Expression<Func<TEntity, bool>>) for a filtered scope, plus setter-only DefaultScope. Repeated feature enablement replaces both shared settings and corresponding EF expressions, preserving the current replacement semantics without preservation or model-switch machinery.
+
+SortBy<TField, TSort>(Expression<Func<TEntity, TField>> column, Expression<Func<TEntity, TSort>> selector) identifies an existing column and supplies its database sort expression. It marks the column sortable. Ordinary sortable columns use their existing FieldExpression, with no duplicate configuration. DefaultSortBy continues selecting the column, so its override applies to both default and user-selected sorting. Keep column identity validation consistent with the current shared grid. Sort overrides replace earlier overrides for the same column. TransformQuery accepts Func<IQueryable<TEntity>, IQueryable<TEntity>> and composes in registration order. It customizes the index query only and must preserve entity results. It is not an authorization mechanism or an edit/delete lookup restriction.
+
+ResourceOptions<TEntity> remains the authority for labels, columns, forms, enabled actions, and normalized index selections. A separate EfCoreResourceOptions<TContext, TEntity> stores the search predicate factory, scope predicate mappings, sort overrides, and index transformations. Configure both through the standard options pipeline. Do not inherit ResourceOptions, eagerly instantiate options, or duplicate UI defaults. The EF data source consumes both resolved options and the request-scoped DbContext. The controller, query model, operation results, views, and HTMX flow remain shared.
+
+Index execution starts with the EF entity query, applies configured transformations, scope and search, counts matching records, applies ordering with primary-key tie-breaking, then paging and asynchronous materialization. Use no-tracking index reads. Pass expression trees to EF rather than compiling predicates or filtering materialized results. Translation remains provider-dependent and unsupported queries fail rather than silently falling back to client filtering. Mandatory restrictions must apply independently of scope selection and to record lookup, for example through DbContext global query filters.
+
+1. **Basic EF registration and index.** Adapt the detached EF project to the dedicated root/index builder and shared controller registration. Implement key discovery, listing, paging, and ordinary column sorting. Prove a read-only EF Product resource in DashboardPlayground while Customer remains in-memory. Temporarily omit Product action registration until checkpoint 3. Remove obsolete EF controller/views and other references to deleted core APIs as necessary to compile. Reattach the compiling EF project and focused SQLite HTTP integration tests to the solution at this checkpoint so routine CI covers the new implementation immediately. Do not reconnect Identity. Review before expression features.
+2. **Expression configuration.** Implement the proposed search, scopes, sort override, and index transformation APIs with EF-specific options. Prove combined filters, count-before-paging, stable ordering, default/explicit selections, and translated SQL behavior through SQLite HTTP scenarios. Reuse existing controller normalization and HTMX rendering. Review before writes.
+3. **CRUD handlers.** Implement existing create/edit/delete contracts using EF and restore Product action registration. Preserve creation factories, configured-field binding, missing-record behavior, and validation redisplay. Reject writable keys, generated fields, and concurrency tokens as appropriate. Decide expected database-error translation into ResourceOperationResult explicitly. Do not turn arbitrary exceptions into validation errors. Custom form models retain their mandatory custom handlers and are not automatically mapped onto entities. Review before closeout.
+4. **Integration closeout.** Verify solution/build-pipeline inclusion, update consumer documentation, and finish obsolete-code cleanup. Inventory the previous reference-field functionality and agree its follow-up scope explicitly rather than silently dropping or restoring it. Review authorization and view-override parity. Identity remains the subsequent integration, with the hardcoded-text audit after the rebuild sequence.
+
+Verification remains integration-first through public registration and real MVC requests with an isolated SQLite database. Keep generic Dashboard tests EF-independent. Add only distinct configuration validation coverage beyond scenarios. Record actual builds/tests/browser checks per checkpoint. SQLite is a relational proof, not a guarantee that every expression translates identically on every provider.
+
+Planning verification: inspected the current shared builders/options/controller contracts, detached EF registration/controller/options, and Playground configuration. Git working tree was clean and synchronized with origin/resource-redesign before this documentation edit. Only plan documents were changed. git diff --check passed for this increment. No application build, tests, or browser checks were run.
 
 ## Follow-up after the rebuild sequence
 
@@ -542,3 +619,19 @@ Reused ResourceIndexScopeViewModel and the previous implementation's boosted tab
 DashboardPlayground demonstrates All products, Under 50, and 50 and over. Its data source applies the selected price filter alongside name search before counting and paging. Updated the handwritten consumer setup reference. EF/Identity remain detached and unchanged.
 
 Verification: Dashboard integration and playground builds passed, with only the existing ViewDataKeys XML documentation warning where Dashboard rebuilt. All 141 Dashboard integration scenarios and 22 Dashboard configuration tests passed. The active solution test command subsequently passed all 305 tests. Ten new HTTP cases cover default/unknown/case-insensitive/disabled scopes, combined filtering and totals, page reset, query preservation, clearing, delete success/rejection, and out-of-range redirects. Two configuration cases cover duplicate identifiers and a missing default target. Chromium verified tabs, combined search, paging, sorting, clearing, default URLs, browser back, mobile overflow, and deletion without a full document reload. Initial browser-script attempts failed on a malformed CSS selector, which was corrected before the successful run. Agent-owned sample and browser processes were stopped, and port 5205 was untouched. CSharpier and git diff --check passed. Changes remain uncommitted for review before integration adaptation.
+
+## EF Core checkpoint 1 implementation — 2026-09-22
+
+Implemented AddEfCoreResource<TContext, TEntity> and dedicated resource/index builders using composition over the existing shared builders. The current public surface is labels, index title/columns, default sorting, and paging. Action methods and labels arrive with the CRUD checkpoint rather than exposing unusable handlers now. UseDataSource and UseKey are absent. Existing friend-assembly access was sufficient, so no shared builder API or controller changes were needed. No EF expression options are introduced until checkpoint 2.
+
+The scoped EF data source uses no-tracking queries, global filters, count-before-paging, expression-based column ordering, primary-key tie-breaking, and asynchronous database materialization. Shared options derive the primary key from EF metadata when resolved. Metadata inspection creates and disposes its own DI scope so cached options do not retain a scoped DbContext. Supported key shapes remain a single public CLR int, long, Guid, or string property. The generic controller and existing views handle routing, normalization, redirects, rendering, and HTMX.
+
+DashboardPlayground Product now uses ProductDbContext with a separate in-memory SQLite database and the same 37 seed records. It resets at app startup and leaves the existing Identity database untouched. Two-decimal prices map to integer cents for database ordering. Product is read-only for this checkpoint and temporarily omits search/scopes. Customer remains on the existing in-memory custom-model handlers. Removed the obsolete ProductDataSource.
+
+Reattached the EF library and a new EF Core integration test project to the solution. CI discovers its tests through the existing solution command. Release verification now packs and validates EF alongside the other three packages, while publishing remains limited to Core and TagHelpers. Removed the obsolete EF controller, Razor views, default options, and reference implementation that depended on deleted core APIs.
+
+Reference follow-up inventory: the old AddReference API linked a scalar FK, navigation, and display selector. It replaced displayed FK values and ordering with target labels, included navigations, loaded selectable records with optional query transformation and sorting, retained unavailable current selections as disabled choices, and rejected invalid/required selections during binding. Its metadata validation checked compatible FK/navigation relationships. These capabilities are intentionally not implemented in this read-only checkpoint and require explicit API review before restoration. The old integration also offered per-resource authorization and sidebar registration, which remain parity decisions for closeout rather than silently returning in this increment. Historical source is available in ffb2059.
+
+Verification: the EF library and DashboardPlayground built successfully. The active solution test command passed all 316 tests, including 11 new SQLite HTTP scenarios covering nonconventional metadata keys, global filters, unpaged results, disabled forms, invalid paging, empty results, out-of-range redirects, default/requested sorting, stable ties, and SQL count/order/limit execution. The first run exposed an incorrect test assertion against the document title, corrected to the visible page heading. SQLite test dependencies were aligned to the playground's 10.0.11 provider after 10.0.10 surfaced a native SQLite vulnerability warning. The final solution run no longer reports that warning. The existing unrelated ViewDataKeys XML documentation warning remains.
+
+Chromium verified the seeded catalog, totals, paging, ascending/descending price sorting, omission of default query values, disabled action/search controls, mobile width, and retained document state during HTMX navigation. An initial browser check selected a paging link containing sortBy instead of the column header and was corrected by restricting the selector to header links. Agent-owned server and browser processes were stopped. Port 5205 was untouched. CSharpier and git diff --check passed. A Release EF package was successfully generated under /tmp/stellar-ef-pack. The hosted GitHub workflow and package validator were not run. No commit or push is included. Pause for review before expression configuration.

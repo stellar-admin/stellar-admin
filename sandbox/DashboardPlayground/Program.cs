@@ -1,9 +1,11 @@
 using DashboardPlayground.Data;
 using DashboardPlayground.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
 using StellarAdmin.Dashboard;
+using StellarAdmin.Dashboard.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,17 @@ builder
     )
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<ProductDataSource>();
+
+// Keep the demo catalog separate from the existing Identity database.
+builder.Services.AddSingleton(_ =>
+{
+    var connection = new SqliteConnection("Data Source=:memory:");
+    connection.Open();
+    return connection;
+});
+builder.Services.AddDbContext<ProductDbContext>(
+    (services, options) => options.UseSqlite(services.GetRequiredService<SqliteConnection>())
+);
 builder.Services.AddSingleton<CustomerDataSource>();
 builder
     .Services.AddStellarAdmin()
@@ -76,54 +88,10 @@ builder
             );
         });
 
-        dashboard.AddResource<Product>(resource =>
+        dashboard.AddEfCoreResource<ProductDbContext, Product>(resource =>
         {
-            resource.UseDataSource<ProductDataSource>();
-            resource.AllowDelete();
-            resource.UseKey(product => product.Id);
-            resource.AllowCreate(create =>
-            {
-                create.UseFactory(() => new Product { Price = 10m });
-                create.Fields(fields =>
-                {
-                    fields.AddSection(
-                        "Product details",
-                        section =>
-                        {
-                            section.Description =
-                                "The name and pricing shown in the product catalog.";
-                            section.AddRow(row =>
-                            {
-                                row.AddGroup(group => group.Add(product => product.Name));
-                                row.AddGroup(group => group.Add(product => product.Price));
-                            });
-                        }
-                    );
-                });
-            });
-            resource.AllowEdit(edit =>
-                edit.Fields(fields =>
-                    fields.AddSection(
-                        "Product details",
-                        section =>
-                            section.AddRow(row =>
-                            {
-                                row.Add(product => product.Name);
-                                row.Add(product => product.Price);
-                            })
-                    )
-                )
-            );
             resource.Index(index =>
             {
-                index.EnableSearch();
-                index.EnableScopes(scopes =>
-                {
-                    scopes.Add("all", "All products");
-                    scopes.Add("under-50", "Under 50");
-                    scopes.Add("50-and-over", "50 and over");
-                    scopes.DefaultScope = "all";
-                });
                 index.DefaultSortBy(product => product.Name);
                 index.EnablePaging(paging =>
                 {
@@ -149,6 +117,14 @@ builder
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+    await db.Database.EnsureCreatedAsync();
+    db.Products.AddRange(ProductSeed.Create());
+    await db.SaveChangesAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

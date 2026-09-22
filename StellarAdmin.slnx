@@ -13,10 +13,12 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/StellarAdmin.Core/StellarAdmin.Core.csproj" />
+    <Project Path="src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
     <Project Path="src/StellarAdmin.Dashboard/StellarAdmin.Dashboard.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/StellarAdmin.Core.Tests/StellarAdmin.Core.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.Dashboard.IntegrationTests/StellarAdmin.Dashboard.IntegrationTests.csproj" />
     <Project Path="tests/StellarAdmin.Dashboard.Tests/StellarAdmin.Dashboard.Tests.csproj" />
     <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />

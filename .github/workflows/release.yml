@@ -1,7 +1,7 @@
 name: Release
 run-name: Release ${{ inputs.version }}${{ inputs.publish && ' (publish)' || ' (dry run)' }}
 
-# Build and verify the three active packages. EF Core and Identity are detached for the resource redesign. Publishing is opt-in and limited to Core and TagHelpers.
+# Build and verify Core, TagHelpers, Dashboard, and EF Core. Identity remains detached for the resource redesign. Publishing is opt-in and limited to Core and TagHelpers.
 on:
   workflow_dispatch:
     inputs:
@@ -100,7 +100,7 @@ jobs:
       - name: Pack packages
         shell: bash
         run: |
-          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard; do
+          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard StellarAdmin.Dashboard.EntityFrameworkCore; do
             dotnet pack "src/$package/$package.csproj" --configuration Release --no-build \
               --output "$ARTIFACTS_DIR" \
               -p:Version="$VERSION" \
@@ -114,7 +114,7 @@ jobs:
       - name: Validate packages
         shell: bash
         run: |
-          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard; do
+          for package in StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard StellarAdmin.Dashboard.EntityFrameworkCore; do
             dotnet meziantou.validate-nuget-package "$ARTIFACTS_DIR/$package.$VERSION.nupkg"
           done
 

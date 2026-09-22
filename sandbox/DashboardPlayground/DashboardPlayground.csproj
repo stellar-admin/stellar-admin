@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.Dashboard\StellarAdmin.Dashboard.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.Dashboard.EntityFrameworkCore\StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>
