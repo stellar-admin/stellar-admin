@@ -36,6 +36,11 @@ public sealed class DataGridColumnOptions
     public bool Sortable { get; internal set; }
 
     /// <summary>
+    ///     The expression used to order the column, or null to use its field expression.
+    /// </summary>
+    public LambdaExpression? SortExpression { get; internal set; }
+
+    /// <summary>
     ///     The grid display template that renders the column's cells, or <c>null</c> to
     ///     resolve it from the bound property's metadata.
     /// </summary>

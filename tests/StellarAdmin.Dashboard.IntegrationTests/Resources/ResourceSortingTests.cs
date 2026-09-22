@@ -115,9 +115,7 @@ public class ResourceSortingTests
                 resource.Index(index =>
                 {
                     index.Columns(columns =>
-                        columns
-                            .Clear()
-                            .Add(product => product.Name, column => column.Sortable = true)
+                        columns.Clear().Add(product => product.Name, column => column.Sortable())
                     );
                     index.DefaultSortByDescending(product => product.Name);
                 })
@@ -348,8 +346,8 @@ public class ResourceSortingTests
             index.Columns(columns =>
             {
                 columns.Clear();
-                columns.Add(product => product.Name, column => column.Sortable = true);
-                columns.Add(product => product.Price, column => column.Sortable = true);
+                columns.Add(product => product.Name, column => column.Sortable());
+                columns.Add(product => product.Price, column => column.Sortable());
                 columns.Add(product => product.Id);
             });
             index.DefaultSortBy(product => product.Name);

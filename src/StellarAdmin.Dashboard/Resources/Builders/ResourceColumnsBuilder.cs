@@ -16,11 +16,13 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// <summary>
     ///     Adds a column.
     /// </summary>
-    public ResourceColumnBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
+    public ResourceColumnBuilder<TResource> Add<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    )
     {
         ArgumentNullException.ThrowIfNull(field);
 
-        var column = new ResourceColumnBuilder(field);
+        var column = new ResourceColumnBuilder<TResource>(field);
         _services.Configure<ResourceOptions<TResource>>(options =>
             options.Index.Columns.Add(column.Build())
         );
@@ -33,7 +35,7 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// </summary>
     public ResourceColumnsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,
-        Action<ResourceColumnBuilder> configure
+        Action<ResourceColumnBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);

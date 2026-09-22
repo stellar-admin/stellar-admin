@@ -6,7 +6,7 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 /// <summary>
 ///     Configures an index column.
 /// </summary>
-public sealed class ResourceColumnBuilder
+public sealed class ResourceColumnBuilder<TResource>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];
     private readonly LambdaExpression _field;
@@ -20,14 +20,6 @@ public sealed class ResourceColumnBuilder
     }
 
     /// <summary>
-    ///     Whether the column supports sorting.
-    /// </summary>
-    public bool Sortable
-    {
-        set => _configuration.Add(options => options.Sortable = value);
-    }
-
-    /// <summary>
     ///     The column title.
     /// </summary>
     public string? Title
@@ -36,6 +28,38 @@ public sealed class ResourceColumnBuilder
     }
 
     internal ResourceColumnBuilder(LambdaExpression field) => _field = field;
+
+    /// <summary>
+    ///     Enables sorting by the column's field.
+    /// </summary>
+    public ResourceColumnBuilder<TResource> Sortable()
+    {
+        _configuration.Add(options =>
+        {
+            options.Sortable = true;
+            options.SortExpression = null;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Enables sorting by the selected expression.
+    /// </summary>
+    public ResourceColumnBuilder<TResource> Sortable<TSort>(
+        Expression<Func<TResource, TSort>> selector
+    )
+    {
+        ArgumentNullException.ThrowIfNull(selector);
+
+        _configuration.Add(options =>
+        {
+            options.Sortable = true;
+            options.SortExpression = selector;
+        });
+
+        return this;
+    }
 
     internal DataGridColumnOptions Build()
     {

@@ -211,7 +211,7 @@ public class ResourceScopesTests
             });
             index.EnableSearch();
             index.Columns(columns =>
-                columns.Clear().Add(product => product.Name, column => column.Sortable = true)
+                columns.Clear().Add(product => product.Name, column => column.Sortable())
             );
             index.DefaultSortBy(product => product.Name);
             index.EnablePaging(paging =>

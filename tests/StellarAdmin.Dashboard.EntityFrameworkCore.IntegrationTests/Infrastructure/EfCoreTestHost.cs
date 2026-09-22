@@ -50,8 +50,8 @@ internal static class EfCoreTestHost
                         index.Columns(columns =>
                         {
                             columns.Add(product => product.Number);
-                            columns.Add(product => product.Name, column => column.Sortable = true);
-                            columns.Add(product => product.Price, column => column.Sortable = true);
+                            columns.Add(product => product.Name, column => column.Sortable());
+                            columns.Add(product => product.Price, column => column.Sortable());
                         })
                     );
                     configure?.Invoke(resource);

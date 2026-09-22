@@ -51,7 +51,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             );
             query = Order(
                 query,
-                column.FieldExpression,
+                column.SortExpression ?? column.FieldExpression,
                 sort.Direction == ResourceSortDirection.Descending
                     ? nameof(Queryable.OrderByDescending)
                     : nameof(Queryable.OrderBy)

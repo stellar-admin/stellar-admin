@@ -92,8 +92,8 @@ resource.Index(index =>
 {
     index.Columns(columns =>
     {
-        columns.Add(product => product.Name, column => column.Sortable = true);
-        columns.Add(product => product.Price, column => column.Sortable = true);
+        columns.Add(product => product.Name, column => column.Sortable());
+        columns.Add(product => product.Price, column => column.Sortable());
     });
 
     index.EnablePaging(paging =>
@@ -172,13 +172,12 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
     {
         index.Columns(columns =>
         {
-            columns.Add(p => p.Name, column => column.Sortable = true);
-            columns.Add(p => p.Price, column => column.Sortable = true);
-            columns.Add(p => p.CategoryId);
+            columns.Add(p => p.Name, column => column.Sortable());
+            columns.Add(p => p.Price, column => column.Sortable());
+            columns.Add(p => p.CategoryId, column => column.Sortable(p => p.Category.Name));
         });
 
         index.DefaultSortBy(p => p.Name);
-        index.SortBy(p => p.CategoryId, p => p.Category.Name);
         index.TransformQuery(query => query.Include(p => p.Category));
 
         index.EnableSearch(
@@ -696,3 +695,14 @@ EF search is committed as `822084b`. Added EnableScopes callback and no-callback
 The EF data source applies the selected entry's predicate before search, counting, ordering, and paging. A null predicate leaves the query unfiltered by that scope while retaining global query filters. Existing controller normalization, validation, scope tabs, URLs, and HTMX remain unchanged. DashboardPlayground Product demonstrates All products, Under 50, and 50 and over. Updated the consumer setup reference and development guide. Sorting overrides, query transformations, and EF CRUD remain subsequent increments.
 
 Verification: dotnet test --solution StellarAdmin.slnx --minimum-expected-tests 1 passed all 330 tests across five projects. Eight new HTTP cases cover default and unknown scopes, case-insensitive selection, combined search, unfiltered scopes, second-page results, global-filter exclusion, configuration replacement, and filtered out-of-range redirects. SQL assertions verify scope filtering in count and paged queries. The initial run exposed two incorrect test expectations for the existing singular count label and redirect URL, corrected before the passing run. DashboardPlayground built successfully with zero warnings or errors. CSharpier and git diff --check passed. The initial solution build retained the existing unrelated ViewDataKeys XML cref warning. Browser checks were not repeated because shared rendering and HTMX code are unchanged. No commit or push is included. Pause for review before sorting overrides.
+
+
+## EF Core sorting expressions implementation — 2026-09-22
+
+EF scope predicates are committed as `1ab050b`. Following API review, sorting configuration lives on ResourceColumnBuilder<TResource>. Sortable() enables ordering by the column field, and Sortable<TSort>(selector) enables ordering by a typed expression. These replace the former Sortable setter. ResourceColumnsBuilder returns and accepts the generic builder. Removed the proposed index-level SortBy method and its column lookup validation. DefaultSortBy remains on the index to select initial ordering.
+
+A provider-neutral nullable SortExpression on DataGridColumnOptions stores the override alongside the field. The shared builder captures the expression, and the data source decides how to apply it. EF orders by SortExpression when present, falling back to FieldExpression. Repeated Sortable calls replace the sorting configuration, with the parameterless overload clearing any previous override. Existing default/requested direction handling and primary-key tie-breaking remain unchanged. No controller, view, URL, or HTMX changes were needed.
+
+DashboardPlayground configures name sorting through column.Sortable(product => product.Name.ToLower()) while displaying the original name. Updated active callers and consumer guidance. Query transformations and EF CRUD remain subsequent checkpoints.
+
+Verification: dotnet test --solution StellarAdmin.slnx --minimum-expected-tests 1 passed all 335 tests across five projects. Five new HTTP cases cover default and descending expression ordering, stable paged ties, combined scope/search filtering, replacement of sorting expressions, restoration of field ordering, and original displayed values. SQL assertions verify translated expression ordering before paging. Removed the two tests for the eliminated index-level lookup validation. DashboardPlayground built with zero warnings and errors. The solution build retained the existing unrelated ViewDataKeys XML cref warning. CSharpier and git diff --check passed. Browser checks were not repeated because rendering and HTMX are unchanged. Changes remain uncommitted for review.

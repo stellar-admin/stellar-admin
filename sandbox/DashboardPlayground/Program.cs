@@ -112,12 +112,15 @@ builder
                 index.Columns(columns =>
                 {
                     columns.Add(product => product.Id);
-                    columns.Add(product => product.Name, column => column.Sortable = true);
+                    columns.Add(
+                        product => product.Name,
+                        column => column.Sortable(product => product.Name.ToLower())
+                    );
                     columns.Add(
                         product => product.Price,
                         column =>
                         {
-                            column.Sortable = true;
+                            column.Sortable();
                             column.Title = "Unit price";
                             column.Format = "{0:0.00}";
                         }
