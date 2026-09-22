@@ -3,7 +3,7 @@
 <sa-data-grid items="Model.Items" class="sa-resource-index-grid">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
                        asp-route-sortBy="{sort}" asp-route-sortDirection="{dir}"
-                       asp-route-page="@((int?)null)" asp-route-pageSize="@Model.Paging?.PageSize"
+                       preserve-query="true" preserve-query-except="page"
                        sort-by="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
     @foreach (var column in Model.Columns)
     {
@@ -30,7 +30,7 @@
                 }
                 @if (Model.Delete is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@Model.Paging?.Page" asp-route-pageSize="@Model.Paging?.PageSize" asp-route-sortBy="@Model.Sort?.By" asp-route-sortDirection="@Model.Sort?.QueryDirection" class="inline-block" data-resource-delete
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
                           hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">
@@ -46,9 +46,9 @@
     {
         <sa-data-grid-pager asp-action="Index" asp-route-id="@((string?)null)"
                             asp-route-page="{pageNo}" asp-route-pageSize="{pageSize}"
-                            asp-route-sortBy="@Model.Sort?.By" asp-route-sortDirection="@Model.Sort?.QueryDirection"
+                            preserve-query="true"
                             page-no="paging.Page" page-size="paging.PageSize"
-                            selected-page-size="paging.PageSize" total-items="paging.TotalCount"
+                            selected-page-size="@(Model.Query.PageSize is null ? null : (int?)paging.PageSize)" total-items="paging.TotalCount"
                             total-pages="paging.TotalPages" page-size-options="@string.Join(',', paging.PageSizes)" />
     }
     <sa-data-grid-empty>

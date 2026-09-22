@@ -126,7 +126,7 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, []);
-            return await IndexView(request, cancellationToken, redirectOutOfRange: false);
+            return await IndexView(query, request, cancellationToken, redirectOutOfRange: false);
         }
 
         return RedirectToAction(
@@ -134,12 +134,10 @@ public class ResourceController<TResource>(
             new
             {
                 id = (string?)null,
-                page = request.Paging?.Page,
-                pageSize = request.Paging?.PageSize,
-                sortBy = request.Sort?.Field,
-                sortDirection = request.Sort?.Direction == ResourceSortDirection.Descending ? "desc"
-                : request.Sort is null ? null
-                : "asc",
+                page = query.Page,
+                pageSize = query.PageSize,
+                sortBy = query.SortBy,
+                sortDirection = query.SortDirection,
             }
         );
     }
@@ -256,7 +254,7 @@ public class ResourceController<TResource>(
             return BadRequest();
         }
 
-        return await IndexView(request, cancellationToken);
+        return await IndexView(query, request, cancellationToken);
     }
 
     private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
@@ -317,6 +315,7 @@ public class ResourceController<TResource>(
     }
 
     private async Task<IActionResult> IndexView(
+        ResourceIndexQuery query,
         ResourceListRequest request,
         CancellationToken cancellationToken,
         bool redirectOutOfRange = true
@@ -341,13 +340,9 @@ public class ResourceController<TResource>(
                         {
                             id = (string?)null,
                             page = totalPages,
-                            pageSize = paging.PageSize,
-                            sortBy = request.Sort?.Field,
-                            sortDirection = request.Sort?.Direction
-                            == ResourceSortDirection.Descending
-                                ? "desc"
-                            : request.Sort is null ? null
-                            : "asc",
+                            pageSize = query.PageSize,
+                            sortBy = query.SortBy,
+                            sortDirection = query.SortDirection,
                         }
                     );
                 }
@@ -410,6 +405,7 @@ public class ResourceController<TResource>(
                 KeySelector = _resourceOptions.KeySelector,
                 Items = result.Items,
                 Paging = pagingModel,
+                Query = query,
                 Sort = request.Sort is { } sort
                     ? new(
                         sort.Field,

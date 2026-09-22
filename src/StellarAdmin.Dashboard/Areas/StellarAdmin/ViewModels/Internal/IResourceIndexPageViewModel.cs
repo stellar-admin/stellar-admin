@@ -56,6 +56,11 @@ public interface IResourceIndexPageViewModel
     ResourceIndexPagingViewModel? Paging { get; }
 
     /// <summary>
+    ///     The index settings explicitly supplied in the query string.
+    /// </summary>
+    ResourceIndexQuery Query { get; }
+
+    /// <summary>
     ///     The selected ordering.
     /// </summary>
     ResourceIndexSortViewModel? Sort { get; }

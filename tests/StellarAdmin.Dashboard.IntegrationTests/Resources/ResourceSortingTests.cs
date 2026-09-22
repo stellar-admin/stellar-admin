@@ -238,7 +238,108 @@ public class ResourceSortingTests
         // Assert
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&pageSize=2&sortBy=Price&sortDirection=desc");
+            .IsEqualTo("/stellaradmin/Product?page=2&sortBy=Price&sortDirection=desc");
+    }
+
+    [Test]
+    public async Task DefaultIndex_LinksOnlyIncludeSelectionsMadeByTheUser()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(CreateState(), ConfigureSorting);
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var nextLink = document
+            .RequiredElement("a[aria-label='Go to next page']")
+            .GetAttribute("href")!;
+        var secondPage = await client.GetDocumentAsync(nextLink);
+
+        // Assert
+        await Assert.That(nextLink).IsEqualTo("/stellaradmin/Product?page=2");
+        await Assert
+            .That(secondPage.RequiredElement("th[aria-sort]").GetAttribute("aria-sort"))
+            .IsEqualTo("ascending");
+        await Assert
+            .That(
+                secondPage
+                    .RequiredElement("[data-slot='data-grid-sort-link'][data-active='true']")
+                    .GetAttribute("href")
+            )
+            .IsEqualTo("/stellaradmin/Product?sortBy=Name&sortDirection=desc");
+        await Assert
+            .That(
+                document.RequiredElement("[data-slot='data-grid-page-size'] a").GetAttribute("href")
+            )
+            .IsEqualTo("/stellaradmin/Product?page=1&pageSize=2");
+    }
+
+    [Test]
+    [Arguments(false)]
+    [Arguments(true)]
+    public async Task DeleteWithoutSelections_DoesNotAddDefaults(bool rejected)
+    {
+        // Arrange
+        var state = CreateState();
+        if (rejected)
+        {
+            state.DeleteResult = ResourceOperationResult.ValidationFailed(null, "Still in use.");
+        }
+
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                ConfigureSorting(resource);
+                resource.UseKey(product => product.Id).AllowDelete();
+            }
+        );
+        using var client = sut.GetTestClient();
+        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
+        using var content = new FormUrlEncodedContent(
+            await PrepareForm(client, "/stellaradmin/Product")
+        );
+
+        // Act
+        using var response = await client.PostAsync(action, content);
+
+        // Assert
+        await Assert.That(action).IsEqualTo("/stellaradmin/Product/Delete/2");
+        if (rejected)
+        {
+            var result = await response.ReadDocumentAsync();
+            await Assert
+                .That(result.RequiredElement("form[data-resource-delete]").GetAttribute("action"))
+                .IsEqualTo(action);
+            await Assert
+                .That(
+                    result.RequiredElement("a[aria-label='Go to next page']").GetAttribute("href")
+                )
+                .IsEqualTo("/stellaradmin/Product?page=2");
+        }
+        else
+        {
+            await Assert
+                .That(response.Headers.Location?.OriginalString)
+                .IsEqualTo("/stellaradmin/Product");
+        }
+    }
+
+    [Test]
+    public async Task OutOfRangePageWithoutSelections_RedirectDoesNotAddDefaults()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(CreateState(), ConfigureSorting);
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Product?page=9");
+
+        // Assert
+        await Assert
+            .That(response.Headers.Location?.OriginalString)
+            .IsEqualTo("/stellaradmin/Product?page=2");
     }
 
     private static void ConfigureSorting(ResourceBuilder<Product> resource) =>

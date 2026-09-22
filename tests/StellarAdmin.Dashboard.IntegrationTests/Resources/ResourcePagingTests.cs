@@ -248,7 +248,11 @@ public class ResourcePagingTests
                     .RequiredElement("[data-slot='data-grid-pager'] a[href]")
                     .GetAttribute("href")
             )
-            .Contains($"pageSize={pageSize}");
+            .IsEqualTo(
+                query.Contains("pageSize=")
+                    ? $"/stellaradmin/Product?page=1&pageSize={pageSize}"
+                    : "/stellaradmin/Product?page=1"
+            );
         await Assert
             .That(
                 document.QuerySelector(
