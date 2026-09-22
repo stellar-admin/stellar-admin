@@ -16,6 +16,11 @@ public sealed class ResourceIndexQuery
     public int? PageSize { get; set; }
 
     /// <summary>
+    ///     The search term, or null when the list is unfiltered.
+    /// </summary>
+    public string? Search { get; set; }
+
+    /// <summary>
     ///     The requested sort field.
     /// </summary>
     public string? SortBy { get; set; }

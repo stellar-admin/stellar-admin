@@ -136,6 +136,7 @@ public class ResourceController<TResource>(
                 id = (string?)null,
                 page = query.Page,
                 pageSize = query.PageSize,
+                search = query.Search,
                 sortBy = query.SortBy,
                 sortDirection = query.SortDirection,
             }
@@ -341,6 +342,7 @@ public class ResourceController<TResource>(
                             id = (string?)null,
                             page = totalPages,
                             pageSize = query.PageSize,
+                            search = query.Search,
                             sortBy = query.SortBy,
                             sortDirection = query.SortDirection,
                         }
@@ -406,6 +408,12 @@ public class ResourceController<TResource>(
                 Items = result.Items,
                 Paging = pagingModel,
                 Query = query,
+                Search = _resourceOptions.Index.Search is { } search
+                    ? new(
+                        request.Search,
+                        search.Placeholder ?? _labelOptions.IndexSearchPlaceholder(labels)
+                    )
+                    : null,
                 Sort = request.Sort is { } sort
                     ? new(
                         sort.Field,
@@ -443,6 +451,10 @@ public class ResourceController<TResource>(
         );
         request = new()
         {
+            Search =
+                _resourceOptions.Index.Search is null || string.IsNullOrWhiteSpace(query.Search)
+                    ? null
+                    : query.Search.Trim(),
             Sort = column is null
                 ? _resourceOptions.Index.DefaultSort
                 : new(

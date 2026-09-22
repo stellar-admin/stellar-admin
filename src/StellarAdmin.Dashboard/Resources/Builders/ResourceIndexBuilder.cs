@@ -106,6 +106,29 @@ public sealed class ResourceIndexBuilder<TResource>
         return this;
     }
 
+    /// <summary>
+    ///     Enables index searching.
+    /// </summary>
+    public ResourceSearchBuilder<TResource> EnableSearch()
+    {
+        _services.Configure<ResourceOptions<TResource>>(options => options.Index.Search = new());
+
+        return new(_services);
+    }
+
+    /// <summary>
+    ///     Enables and configures index searching.
+    /// </summary>
+    public ResourceIndexBuilder<TResource> EnableSearch(
+        Action<ResourceSearchBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableSearch());
+
+        return this;
+    }
+
     private ResourceIndexBuilder<TResource> ConfigureDefaultSort(
         LambdaExpression field,
         ResourceSortDirection direction

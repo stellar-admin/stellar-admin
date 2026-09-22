@@ -71,6 +71,12 @@ public sealed class ResourceLabelOptions
         resource => $"Edit {resource.SingularLabel}";
 
     /// <summary>
+    ///     The callback that generates the default index search placeholder.
+    /// </summary>
+    public Func<ResourceLabelContext, string> IndexSearchPlaceholder { get; set; } =
+        resource => $"Search {resource.PluralLabel}...";
+
+    /// <summary>
     ///     The callback that generates the default index page title.
     /// </summary>
     public Func<ResourceLabelContext, string> IndexTitle { get; set; } =

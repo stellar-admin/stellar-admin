@@ -61,6 +61,11 @@ public interface IResourceIndexPageViewModel
     ResourceIndexQuery Query { get; }
 
     /// <summary>
+    ///     The search box, or null when searching is disabled.
+    /// </summary>
+    ResourceIndexSearchViewModel? Search { get; }
+
+    /// <summary>
     ///     The selected ordering.
     /// </summary>
     ResourceIndexSortViewModel? Sort { get; }

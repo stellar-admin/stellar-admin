@@ -116,6 +116,7 @@ builder
             );
             resource.Index(index =>
             {
+                index.EnableSearch();
                 index.DefaultSortBy(product => product.Name);
                 index.EnablePaging(paging =>
                 {

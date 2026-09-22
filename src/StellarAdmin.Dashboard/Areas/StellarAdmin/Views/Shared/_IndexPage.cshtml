@@ -11,12 +11,40 @@
             }
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
+        @if (Model.Search is { } search)
+        {
+            <sa-page-header-nav>
+                <sa-input-group id="index-page-search" class="w-full sm:w-64 my-2">
+                    <sa-input-group-input placeholder="@search.Placeholder"
+                                          aria-label="@search.Placeholder"
+                                          autofocus=""
+                                          value="@search.Term"
+                                          name="search"
+                                          hx-get="@Url.Action("Index", new
+                                                  {
+                                                      id = (string?)null,
+                                                      sortBy = Model.Query.SortBy,
+                                                      sortDirection = Model.Query.SortDirection,
+                                                      pageSize = Model.Query.PageSize
+                                                  })"
+                                          hx-trigger="input changed delay:400ms"
+                                          hx-swap="outerHTML"
+                                          hx-target="#index-page-data-grid"
+                                          hx-select="#index-page-data-grid"
+                                          hx-push-url="true" />
+                    <sa-input-group-addon>
+                        <sa-icon name="search" />
+                    </sa-input-group-addon>
+                </sa-input-group>
+            </sa-page-header-nav>
+        }
     </sa-page-header>
     <div id="index-page-data-grid"
          hx-boost:inherited="true"
          hx-target:inherited="#index-page-data-grid"
          hx-select:inherited="#index-page-data-grid"
-         hx-swap:inherited="outerHTML">
+         hx-swap:inherited="outerHTML"
+         hx-select-oob:inherited="@(Model.Search is null ? null : "#index-page-search")">
         @Html.ValidationSummary(excludePropertyErrors: true)
         <partial name="_IndexDataGrid" />
     </div>

@@ -11,6 +11,11 @@ public sealed record ResourceListRequest
     public ResourcePaging? Paging { get; init; }
 
     /// <summary>
+    ///     The search term, or null when the list is unfiltered.
+    /// </summary>
+    public string? Search { get; init; }
+
+    /// <summary>
     ///     The requested ordering, or null to use the data source's default.
     /// </summary>
     public ResourceSort? Sort { get; init; }

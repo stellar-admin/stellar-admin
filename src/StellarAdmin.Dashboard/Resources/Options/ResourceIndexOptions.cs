@@ -39,6 +39,11 @@ public sealed class ResourceIndexOptions
     public ResourcePagingOptions? Paging { get; set; }
 
     /// <summary>
+    ///     The search settings, or null when searching is disabled.
+    /// </summary>
+    public ResourceSearchOptions? Search { get; set; }
+
+    /// <summary>
     ///     The page title.
     /// </summary>
     /// <remarks>
