@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Builders;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
@@ -7,36 +8,12 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 ///     Configures an EF Core resource.
 /// </summary>
 public sealed class EfCoreResourceBuilder<TContext, TEntity>
+    : ResourceBuilderBase<TEntity, EfCoreResourceBuilder<TContext, TEntity>>
     where TContext : DbContext
     where TEntity : class
 {
-    private readonly ResourceBuilder<TEntity> _resource;
-    private readonly ResourceIndexBuilder<TEntity> _index;
-
-    /// <summary>
-    ///     The plural resource label.
-    /// </summary>
-    public string PluralLabel
-    {
-        set => _resource.PluralLabel = value;
-    }
-
-    /// <summary>
-    ///     The singular resource label.
-    /// </summary>
-    public string SingularLabel
-    {
-        set => _resource.SingularLabel = value;
-    }
-
-    internal EfCoreResourceBuilder(
-        ResourceBuilder<TEntity> resource,
-        ResourceIndexBuilder<TEntity> index
-    )
-    {
-        _resource = resource;
-        _index = index;
-    }
+    internal EfCoreResourceBuilder(IServiceCollection services)
+        : base(services) { }
 
     /// <summary>
     ///     Configures the index page.
@@ -46,7 +23,7 @@ public sealed class EfCoreResourceBuilder<TContext, TEntity>
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
-        configure(new(_index));
+        configure(new(Services));
 
         return this;
     }

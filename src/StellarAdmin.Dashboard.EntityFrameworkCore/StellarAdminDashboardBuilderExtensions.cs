@@ -59,7 +59,7 @@ public static class StellarAdminDashboardBuilderExtensions
                 }
             );
 
-        return new(resource, new(builder.Services));
+        return new(builder.Services);
     }
 
     /// <summary>
