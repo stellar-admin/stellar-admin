@@ -22,6 +22,14 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     {
         var query = db.Set<TEntity>().AsNoTracking();
         if (
+            _resourceOptions.Index.Scopes?.Items.FirstOrDefault(scope => scope.Id == request.Scope)
+            is EfCoreResourceScopeOptions<TEntity> { Predicate: { } predicate }
+        )
+        {
+            query = query.Where(predicate);
+        }
+
+        if (
             request.Search is { } term
             && _resourceOptions.Index.Search is EfCoreResourceSearchOptions<TEntity> search
         )

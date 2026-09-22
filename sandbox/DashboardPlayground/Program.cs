@@ -92,6 +92,13 @@ builder
         {
             resource.Index(index =>
             {
+                index.EnableScopes(scopes =>
+                {
+                    scopes.Add("all", "All products");
+                    scopes.Add("under-50", "Under 50", product => product.Price < 50);
+                    scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
+                    scopes.DefaultScope = "all";
+                });
                 index.EnableSearch(
                     term => product => product.Name.Contains(term),
                     search => search.Placeholder = "Search products..."

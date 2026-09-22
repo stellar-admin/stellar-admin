@@ -200,6 +200,13 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
             term => product => product.Name.Contains(term),
             search => search.Placeholder = "Search products..."
         );
+        index.EnableScopes(scopes =>
+        {
+            scopes.Add("all", "All products");
+            scopes.Add("under-50", "Under 50", product => product.Price < 50);
+            scopes.Add("50-and-over", "50 and over", product => product.Price >= 50);
+            scopes.DefaultScope = "all";
+        });
         index.EnablePaging();
     });
 });
@@ -207,4 +214,6 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
 
 Register AppDbContext with the application's chosen EF provider before serving resource requests. The EF builder selects its own data source and discovers the key from EF metadata, so it has no UseDataSource or UseKey methods. Supported keys are single public CLR properties of type int, long, Guid, or string. Labels and index titles use the shared defaults and overrides. Queries honor EF global query filters, count before paging, and append primary-key ordering to keep page results stable. Search predicates and sort selectors must translate through the chosen provider. Search filters the query before counting and paging. The predicate factory is required by `EnableSearch`. Its no-callback overload returns the shared search builder for placeholder configuration. Repeated calls replace the search configuration.
 
-The built-in EF data source currently supports listing only. The EF builder inherits the shared `AllowCreate`, `AllowEdit`, and `AllowDelete` configuration methods; actions remain disabled unless explicitly enabled. Ordinary actions require matching data-source handlers, which the EF source does not yet implement. Custom create/edit model-handler pairs can use the inherited registration methods. Scope expressions, query transformations, sort overrides, built-in EF CRUD handlers, and reference editors remain deferred. DashboardPlayground demonstrates this index with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.
+EF scopes accept an optional predicate on each entry. Omitting it leaves that scope unfiltered while retaining EF global query filters. The selected predicate combines with search before counting and paging. Scope predicates must translate through the chosen provider. The no-callback `EnableScopes()` overload returns the EF scopes builder. Repeated calls replace the entries and default selection. Scope identifiers, default selection, tabs, and navigation follow the shared scope behavior described above.
+
+The built-in EF data source currently supports listing only. The EF builder inherits the shared `AllowCreate`, `AllowEdit`, and `AllowDelete` configuration methods; actions remain disabled unless explicitly enabled. Ordinary actions require matching data-source handlers, which the EF source does not yet implement. Custom create/edit model-handler pairs can use the inherited registration methods. Query transformations, sort overrides, built-in EF CRUD handlers, and reference editors remain deferred. DashboardPlayground demonstrates this index with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.

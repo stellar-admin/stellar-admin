@@ -18,6 +18,29 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
         : base(services) { }
 
     /// <summary>
+    ///     Enables index scopes with EF Core predicates.
+    /// </summary>
+    public EfCoreResourceScopesBuilder<TEntity> EnableScopes()
+    {
+        Services.Configure<ResourceOptions<TEntity>>(options => options.Index.Scopes = new());
+
+        return new(Services);
+    }
+
+    /// <summary>
+    ///     Enables and configures index scopes with EF Core predicates.
+    /// </summary>
+    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableScopes(
+        Action<EfCoreResourceScopesBuilder<TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableScopes());
+
+        return this;
+    }
+
+    /// <summary>
     ///     Enables index searching with an EF Core predicate.
     /// </summary>
     public ResourceSearchBuilder<TEntity> EnableSearch(
