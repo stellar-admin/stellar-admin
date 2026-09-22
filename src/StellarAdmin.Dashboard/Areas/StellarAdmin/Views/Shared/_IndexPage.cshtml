@@ -12,8 +12,12 @@
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>
     </sa-page-header>
-    @Html.ValidationSummary(excludePropertyErrors: true)
-    <div id="index-page-data-grid">
+    <div id="index-page-data-grid"
+         hx-boost:inherited="true"
+         hx-target:inherited="#index-page-data-grid"
+         hx-select:inherited="#index-page-data-grid"
+         hx-swap:inherited="outerHTML">
+        @Html.ValidationSummary(excludePropertyErrors: true)
         <partial name="_IndexDataGrid" />
     </div>
     @if (Model.Delete is not null)

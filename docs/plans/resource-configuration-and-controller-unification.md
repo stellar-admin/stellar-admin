@@ -1,6 +1,6 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is implemented and verified, awaiting review. Sorting is next after that review. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is committed as `0cdfb12`. HTMX index paging and deletion are restored and approved for commit. Sorting is next. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
 
 ## Objective
 
@@ -13,6 +13,8 @@ The old resource builders, page/default options, controller base, query machiner
 EF Core, Identity, and IdentitySimplePlayground remain detached from the solution and build pipeline. Their source references removed APIs and is retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The Dashboard integration suite verifies index rendering and create/edit flows through HTTP.
 
 ## Design rules
+
+- Keep implementations simple. Reuse established working patterns when requested; do not add abstractions, flags, alternate response paths, or defensive machinery without a concrete requirement. Discuss a necessary departure before implementing it.
 
 - Keep the shared resource implementation independent of EF Core and Identity. Prove it with an in-memory Product sample.
 - Use a simple builder over resource configuration. Derive labels from TResource and optional SingularLabel/PluralLabel; explicit page labels take precedence. Do not restore captured defaults, reset machinery, or compatibility shims from the rejected implementation.
@@ -496,3 +498,12 @@ Retained normal MVC query model binding and removed paging's ModelState mutation
 Verification: all 104 Dashboard HTTP scenarios passed through `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release`, including disabled paging with valid values and binding errors. The runner required unsandboxed local IPC. CSharpier and git diff --check passed. No commit or push.
 
 Moved the binding-error checks to the start of the Index and Delete controller actions following review. TryCreateListRequest now handles only paging defaults and constraints and does not access ModelState. Reverification on 2026-09-22: all 104 Dashboard HTTP scenarios passed. CSharpier and git diff --check passed.
+
+
+## HTMX index restoration — 2026-09-22
+
+Restored the previous implementation's redirect-and-select approach after review. Paging and page-size links use HTMX to select and replace `#index-page-data-grid`; edit navigation remains ordinary navigation. Delete forms use the existing asynchronous StellarAdmin confirmation dialog, retain antiforgery tokens, and suppress pushing the delete URL. The controller is unchanged: HTMX follows its existing redirect and extracts the grid from the resulting index page. Validation errors sit inside the grid wrapper so rejected deletes show their errors during the swap.
+
+Removed the proposed direct-fragment response, additional controller HTMX checks, `afterDelete` flag, new wrapper partial, and tests specific to that discarded design. Full-page view resolution and the existing grid partial remain unchanged. The user approved this checkpoint for commit. Sorting is next. Verification for this simplified version is recorded below.
+
+Verification of the simplified implementation: Dashboard integration and playground builds passed; all 104 existing Dashboard HTTP scenarios passed; `git diff --check` passed. Chromium verified paging, page-size selection, back/forward history, cancellation, repeated confirmed deletion, and refreshing an emptied last page through the existing redirects without reloading the document. As in the previous interaction pattern, deletion does not change browser history: when the last page disappears the grid shows the preceding page while the address retains the requested page. The commit contains only the three index Razor views and plan documentation. Commit authorized on 2026-09-22; no push requested.

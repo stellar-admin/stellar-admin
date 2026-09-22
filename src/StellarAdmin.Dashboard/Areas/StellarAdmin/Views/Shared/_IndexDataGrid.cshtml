@@ -18,7 +18,7 @@
                 @if (Model.CanEdit)
                 {
                     <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
-                                   asp-action="Edit" asp-route-id="@resourceId"
+                                   asp-action="Edit" asp-route-id="@resourceId" hx-boost="false"
                                    aria-label="@Model.EditLabel" interestfor="@editTooltipId">
                         <sa-icon name="square-pen" />
                     </sa-linkbutton>
@@ -26,7 +26,8 @@
                 }
                 @if (Model.Delete is not null)
                 {
-                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@Model.Paging?.Page" asp-route-pageSize="@Model.Paging?.PageSize" class="inline-block" data-resource-delete>
+                    <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@Model.Paging?.Page" asp-route-pageSize="@Model.Paging?.PageSize" class="inline-block" data-resource-delete
+                          hx-confirm="js:confirmResourceDelete()" hx-push-url="false">
                         <sa-button type="submit" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    aria-label="@Model.DeleteLabel" interestfor="@deleteTooltipId">
                             <sa-icon name="trash" />

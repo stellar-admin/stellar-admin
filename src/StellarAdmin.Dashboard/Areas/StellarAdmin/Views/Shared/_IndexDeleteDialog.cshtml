@@ -15,12 +15,8 @@
 </sa-alert-dialog>
 
 <script>
-    document.addEventListener("submit", async (event) => {
-        const form = event.target;
-        if (!(form instanceof HTMLFormElement) || !form.hasAttribute("data-resource-delete")) return;
-
-        event.preventDefault();
+    async function confirmResourceDelete() {
         const dialog = window.stellarAdmin.alertDialog("#--delete-confirmation-dialog");
-        if (await dialog.confirmAsync()) HTMLFormElement.prototype.submit.call(form);
-    });
+        return await dialog.confirmAsync();
+    }
 </script>
