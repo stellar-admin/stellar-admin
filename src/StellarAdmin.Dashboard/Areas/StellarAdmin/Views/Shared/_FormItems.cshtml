@@ -1,13 +1,13 @@
 @inherits FormFieldsBaseView<object>
-@using StellarAdmin.Dashboard.Resources.Editors
 @{
     var editorData = ViewData[ViewDataKeys.EditorData] as IReadOnlyDictionary<string, object?>;
+    var editorTemplates = ViewData[ViewDataKeys.EditorTemplates] as IReadOnlyDictionary<string, string>;
 }
 @foreach (var item in Items)
 {
     if (item is FormFieldOptions field)
     {
-        @Html.Editor(field.FieldName, (field.Editor as ResourceEditor)?.TemplateName, new Dictionary<string, object>
+        @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
         {
             [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
             {

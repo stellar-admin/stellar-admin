@@ -21,7 +21,7 @@
             <sa-slot-outlet name="pre-form-fields"/>
 
             <partial name="_FormFields" for="@Model.Entity"
-                     view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Model.Fields, [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.EditorData] = Model.EditorData }'/>
+                     view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Model.Fields, [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.EditorData] = Model.EditorData, [ViewDataKeys.EditorTemplates] = Model.EditorTemplates }'/>
 
             <sa-slot-outlet name="post-form-fields"/>
 

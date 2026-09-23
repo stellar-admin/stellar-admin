@@ -3,6 +3,6 @@
 @model string
 @{
     var field = (FormFieldProperties)ViewData[ViewDataKeys.FormFieldProperties]!;
-    var editor = (ProductNameEditor)field.Editor;
+    var options = (ProductNameEditorOptions)field.Editor;
 }
-<input name="@Html.NameForModel()" value="@Model" placeholder="@editor.Placeholder" data-custom-editor="product-name" />
+<input name="@Html.NameForModel()" value="@Model" placeholder="@options.Placeholder" data-custom-editor="product-name" data-editor-context="@field.EditorData" />

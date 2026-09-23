@@ -12,6 +12,8 @@ public sealed class FormFieldOptions : FormItemOptions
     /// </summary>
     public EditorOptions Editor { get; internal set; } = new();
 
+    internal Type? EditorType { get; set; }
+
     /// <summary>
     ///     The expression selecting the property the field renders and binds.
     /// </summary>

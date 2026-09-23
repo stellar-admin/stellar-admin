@@ -42,6 +42,12 @@ public class ResourceFormPageViewModel
         new Dictionary<string, object?>();
 
     /// <summary>
+    ///     The templates selected by configured field editors.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> EditorTemplates { get; internal set; } =
+        new Dictionary<string, string>();
+
+    /// <summary>
     ///     The layout of the form sections.
     /// </summary>
     /// <remarks>

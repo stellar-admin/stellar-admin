@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Dashboard.Resources;
@@ -279,6 +280,7 @@ public class ResourceController<TResource>(
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
+        var editors = await PrepareEditorsAsync(fields, cancellationToken);
 
         return ResourceView(
             nameof(Create),
@@ -287,7 +289,8 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = fields,
                 Items = create.Items.ToArray(),
-                EditorData = await PrepareEditorsAsync(fields, cancellationToken),
+                EditorData = editors.Data,
+                EditorTemplates = editors.Templates,
                 SectionLayout = create.SectionLayout,
                 Title = create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
@@ -299,6 +302,7 @@ public class ResourceController<TResource>(
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
+        var editors = await PrepareEditorsAsync(edit.Fields, cancellationToken);
 
         return ResourceView(
             nameof(Edit),
@@ -307,7 +311,8 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),
-                EditorData = await PrepareEditorsAsync(edit.Fields, cancellationToken),
+                EditorData = editors.Data,
+                EditorTemplates = editors.Templates,
                 SectionLayout = edit.SectionLayout,
                 Title = edit.Title ?? _labelOptions.EditTitle(labels),
                 SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
@@ -315,24 +320,32 @@ public class ResourceController<TResource>(
         );
     }
 
-    private async Task<IReadOnlyDictionary<string, object?>> PrepareEditorsAsync(
+    private async Task<(
+        IReadOnlyDictionary<string, object?> Data,
+        IReadOnlyDictionary<string, string> Templates
+    )> PrepareEditorsAsync(
         IReadOnlyList<FormFieldOptions> fields,
         CancellationToken cancellationToken
     )
     {
         var data = new Dictionary<string, object?>();
+        var templates = new Dictionary<string, string>();
         foreach (var field in fields)
         {
-            if (field.Editor is ResourceEditor editor)
+            if (field.EditorType is { } editorType)
             {
-                data[field.FieldName] = await editor.PrepareAsync(
-                    HttpContext.RequestServices,
-                    cancellationToken
-                );
+                var editor = (IFieldEditor)
+                    ActivatorUtilities.CreateInstance(
+                        HttpContext.RequestServices,
+                        editorType,
+                        field.Editor
+                    );
+                data[field.FieldName] = await editor.PrepareAsync(cancellationToken);
+                templates[field.FieldName] = editor.TemplateName;
             }
         }
 
-        return data;
+        return (data, templates);
     }
 
     private async Task<IActionResult> IndexView(

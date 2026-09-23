@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources;
-using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -214,8 +214,8 @@ public class ResourceReferenceTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<ReferenceLookupEditor>(editor =>
-                        editor.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<ReferenceLookupEditorOptions>(options =>
+                        options.UseLookup<CategoryLookupProvider>()
                     );
             })
         );
@@ -230,8 +230,8 @@ public class ResourceReferenceTests
                 fields.Add(model => model.Name);
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<ReferenceLookupEditor>(editor =>
-                        editor.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<ReferenceLookupEditorOptions>(options =>
+                        options.UseLookup<CategoryLookupProvider>()
                     );
             })
         );
@@ -244,8 +244,8 @@ public class ResourceReferenceTests
             edit.Fields(fields =>
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<ReferenceLookupEditor>(editor =>
-                        editor.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<ReferenceLookupEditorOptions>(options =>
+                        options.UseLookup<CategoryLookupProvider>()
                     )
             )
         );

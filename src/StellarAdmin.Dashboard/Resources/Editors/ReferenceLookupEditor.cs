@@ -1,37 +1,28 @@
-using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
 ///     Displays a reference field using values from a lookup provider.
 /// </summary>
-public sealed class ReferenceLookupEditor : ResourceEditor
+public sealed class ReferenceLookupEditor(
+    ReferenceLookupEditorOptions options,
+    IReferenceLookupProviderResolver lookupProviders
+) : IFieldEditor<ReferenceLookupEditorOptions>
 {
-    private Type? _providerType;
-
-    /// <summary>
-    ///     Selects the provider that supplies the lookup values.
-    /// </summary>
-    public ReferenceLookupEditor UseLookup<TProvider>()
-        where TProvider : class, IReferenceLookupProvider
-    {
-        _providerType = typeof(TProvider);
-        return this;
-    }
+    /// <inheritdoc />
+    public string TemplateName => nameof(ReferenceLookupEditor);
 
     /// <inheritdoc />
-    public override async Task<object?> PrepareAsync(
-        IServiceProvider services,
-        CancellationToken cancellationToken
-    )
+    public async Task<object?> PrepareAsync(CancellationToken cancellationToken)
     {
-        if (_providerType is null)
+        if (options.LookupProviderType is not { } providerType)
         {
             throw new InvalidOperationException("A reference lookup provider is required.");
         }
 
-        return await (
-            (IReferenceLookupProvider)services.GetRequiredService(_providerType)
-        ).GetLookupsAsync(cancellationToken);
+        var provider = lookupProviders.Resolve(providerType);
+
+        return await provider.GetLookupsAsync(cancellationToken);
     }
 }

@@ -179,7 +179,7 @@ The explicit handler takes precedence over any data source edit implementation a
 
 Typed fields, layouts, resource label defaults, page overrides, model and handler validation, and antiforgery protection use the shared edit flow. Override the view with `Areas/StellarAdmin/Views/Customer/Edit.cshtml`, or let MVC fall back to `ResourceEdit`.
 
-For a custom form editor, derive a configuration class from `ResourceEditor` and add an MVC editor template in `Views/Shared/EditorTemplates` with the same name as the class, or override `TemplateName`. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The template can read the configured editor through `FormFieldProperties.Editor` in `ViewData[ViewDataKeys.FormFieldProperties]`. Override `PrepareAsync` when an editor needs request-time data; the result is available through `FormFieldProperties.EditorData`. Fields without `UseEditor` continue using MVC metadata-based editor template selection.
+For a custom form editor, create an options class derived from `EditorOptions` that implements `IFieldEditorOptions<MyEditor>`. Implement `IFieldEditor<MyEditorOptions>` on the editor, and accept `MyEditorOptions` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditorOptions>(options => { /* settings */ });`. The editor's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`; `PrepareAsync` can load request data. The template reads the configured options from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`. Fields without `UseEditor` continue using MVC metadata-based editor template selection.
 
 ## EF Core resources
 
@@ -188,6 +188,7 @@ Reference `StellarAdmin.Dashboard.EntityFrameworkCore` and import its namespace 
 ```csharp
 using StellarAdmin.Dashboard.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.Dashboard.Resources.Options;
 
 builder.Services.AddScoped<CategoryLookupProvider>();
 
@@ -220,13 +221,13 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
-        fields.Add(product => product.CategoryId).UseEditor<ReferenceLookupEditor>(editor => editor.UseLookup<CategoryLookupProvider>());
+        fields.Add(product => product.CategoryId).UseEditor<ReferenceLookupEditorOptions>(options => options.UseLookup<CategoryLookupProvider>());
     }));
     resource.AllowEdit(edit => edit.Fields(fields =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
-        fields.Add(product => product.CategoryId).UseEditor<ReferenceLookupEditor>(editor => editor.UseLookup<CategoryLookupProvider>());
+        fields.Add(product => product.CategoryId).UseEditor<ReferenceLookupEditorOptions>(options => options.UseLookup<CategoryLookupProvider>());
     }));
     resource.AllowDelete();
 });
@@ -238,7 +239,7 @@ EF scopes accept an optional predicate on each entry. Omitting it leaves that sc
 
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 
-`UseEditor<ReferenceLookupEditor>` selects the existing Razor reference editor template for a form field. `CategoryLookupProvider` is an application service implementing `IReferenceLookupProvider`; it returns `SelectListItem` values from EF or another source for each form request, including rejected submissions. This works with entity fields and custom create/edit models. Applications register the provider in DI. An index column configured for `CategoryId` displays and sorts by the foreign-key value. The database enforces foreign-key constraints when saving, and database errors propagate through the EF data source.
+`UseEditor<ReferenceLookupEditorOptions>` selects the existing Razor reference editor template for a form field. `CategoryLookupProvider` is an application service implementing `IReferenceLookupProvider`; it returns `SelectListItem` values from EF or another source for each form request, including rejected submissions. This works with entity fields and custom create/edit models. Applications register the provider in DI. An index column configured for `CategoryId` displays and sorts by the foreign-key value. The database enforces foreign-key constraints when saving, and database errors propagate through the EF data source.
 
 The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Lookup queries use the provider's own data access rules. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
 

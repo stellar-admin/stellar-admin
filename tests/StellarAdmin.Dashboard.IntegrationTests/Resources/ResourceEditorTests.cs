@@ -20,8 +20,8 @@ public class ResourceEditorTests
                     create.Fields(fields =>
                         fields
                             .Add(model => model.ProductName)
-                            .UseEditor<ProductNameEditor>(editor =>
-                                editor.Placeholder = "Product name"
+                            .UseEditor<ProductNameEditorOptions>(options =>
+                                options.Placeholder = "Product name"
                             )
                     );
                 })
@@ -35,5 +35,8 @@ public class ResourceEditorTests
         var input = document.RequiredElement("input[data-custom-editor='product-name']");
         await Assert.That(input.GetAttribute("name")).IsEqualTo("Entity.ProductName");
         await Assert.That(input.GetAttribute("placeholder")).IsEqualTo("Product name");
+        await Assert
+            .That(input.GetAttribute("data-editor-context"))
+            .IsEqualTo("Product name:Development");
     }
 }

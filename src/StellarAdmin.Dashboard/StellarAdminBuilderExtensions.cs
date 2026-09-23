@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard;
@@ -13,6 +15,10 @@ public static class StellarAdminBuilderExtensions
         public StellarAdminDashboardBuilder AddDashboard()
         {
             builder.Services.AddMvc();
+            builder.Services.TryAddScoped<
+                IReferenceLookupProviderResolver,
+                ReferenceLookupProviderResolver
+            >();
             builder.AddTagHelpers();
 
             var dashboard = new StellarAdminDashboardBuilder(

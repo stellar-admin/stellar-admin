@@ -1,4 +1,3 @@
-using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
@@ -90,7 +89,7 @@ internal static class EditorClassNamesMapper
         if (
             options is not null
             && options.GetType() != typeof(EditorOptions)
-            && options is not ResourceEditor
+            && options is not IFieldEditorOptions
         )
         {
             throw new InvalidOperationException(

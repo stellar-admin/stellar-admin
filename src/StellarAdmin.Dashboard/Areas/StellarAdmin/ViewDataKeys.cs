@@ -35,4 +35,9 @@ public static class ViewDataKeys
     ///     The key for data prepared by form field editors.
     /// </summary>
     public const string EditorData = "StellarAdminEditorData";
+
+    /// <summary>
+    ///     The key for templates selected by form field editors.
+    /// </summary>
+    public const string EditorTemplates = "StellarAdminEditorTemplates";
 }

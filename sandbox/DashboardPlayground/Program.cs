@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.Dashboard.Resources.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,13 +98,16 @@ builder
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(product => product.CategoryId, field =>
-                    {
-                        field.Title = "Category";
-                        field.UseEditor<ReferenceLookupEditor>(editor =>
-                            editor.UseLookup<CategoryLookupProvider>()
-                        );
-                    });
+                    fields.Add(
+                        product => product.CategoryId,
+                        field =>
+                        {
+                            field.Title = "Category";
+                            field.UseEditor<ReferenceLookupEditorOptions>(options =>
+                                options.UseLookup<CategoryLookupProvider>()
+                            );
+                        }
+                    );
                 })
             );
             resource.AllowEdit(edit =>
@@ -113,13 +116,16 @@ builder
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(product => product.CategoryId, field =>
-                    {
-                        field.Title = "Category";
-                        field.UseEditor<ReferenceLookupEditor>(editor =>
-                            editor.UseLookup<CategoryLookupProvider>()
-                        );
-                    });
+                    fields.Add(
+                        product => product.CategoryId,
+                        field =>
+                        {
+                            field.Title = "Category";
+                            field.UseEditor<ReferenceLookupEditorOptions>(options =>
+                                options.UseLookup<CategoryLookupProvider>()
+                            );
+                        }
+                    );
                 })
             );
             resource.AllowDelete();
