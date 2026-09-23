@@ -31,6 +31,8 @@ public static class ViewDataKeys
     /// </summary>
     public const string FormSectionLayout = "StellarAdminFormSectionLayout";
 
-    /// <summary>The key for the form's reference choices.</summary>
-    public const string ReferenceChoices = "StellarAdminReferenceChoices";
+    /// <summary>
+    ///     The key for the form's reference lookup items.
+    /// </summary>
+    public const string ReferenceLookups = "StellarAdminReferenceLookups";
 }

@@ -8,6 +8,8 @@ public sealed class ProductDbContext(DbContextOptions<ProductDbContext> options)
 {
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<Category> Categories => Set<Category>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>().OwnsOne(product => product.Details);

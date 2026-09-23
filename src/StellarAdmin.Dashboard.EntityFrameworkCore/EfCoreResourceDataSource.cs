@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources;
@@ -9,12 +10,14 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
-    IOptions<ResourceOptions<TEntity>> options
-) : IResourceCrudDataSource<TEntity>
+    IOptions<ResourceOptions<TEntity>> options,
+    IOptions<EfCoreResourceReferences<TEntity>> references
+) : IResourceCrudDataSource<TEntity>, IResourceReferenceLookupProvider<TEntity>
     where TContext : DbContext
     where TEntity : class
 {
     private readonly ResourceOptions<TEntity> _resourceOptions = options.Value;
+    private readonly EfCoreResourceReferences<TEntity> _references = references.Value;
 
     public async Task<ResourceOperationResult> CreateAsync(
         TEntity model,
@@ -54,6 +57,33 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     public Task<TEntity?> FindAsync(string id, CancellationToken cancellationToken) =>
         FindEntityByKeyAsync(id, cancellationToken, noTracking: true);
 
+    public async Task<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>> GetLookupsAsync(
+        Type modelType,
+        IReadOnlyCollection<string> fieldNames,
+        CancellationToken cancellationToken
+    )
+    {
+        var lookups = new Dictionary<string, IReadOnlyList<SelectListItem>>();
+        if (modelType != typeof(TEntity))
+        {
+            return lookups;
+        }
+
+        foreach (
+            var reference in _references.Items.Where(reference =>
+                fieldNames.Contains(reference.FieldName)
+            )
+        )
+        {
+            lookups.Add(
+                reference.FieldName,
+                await reference.GetLookupsAsync(db, cancellationToken)
+            );
+        }
+
+        return lookups;
+    }
+
     public async Task<ResourceListResult<TEntity>> ListAsync(
         ResourceListRequest request,
         CancellationToken cancellationToken
@@ -90,7 +120,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             );
             query = Order(
                 query,
-                column.SortExpression ?? column.FieldExpression,
+                column.SortExpression ?? column.DisplayExpression ?? column.FieldExpression,
                 sort.Direction == ResourceSortDirection.Descending
                     ? nameof(Queryable.OrderByDescending)
                     : nameof(Queryable.OrderBy)
@@ -105,6 +135,17 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         if (request.Paging is { } paging)
         {
             query = query.Skip(checked((paging.Page - 1) * paging.PageSize)).Take(paging.PageSize);
+        }
+
+        foreach (
+            var reference in _references.Items.Where(reference =>
+                _resourceOptions.Index.Columns.Any(column =>
+                    column.FieldName == reference.FieldName
+                )
+            )
+        )
+        {
+            query = query.Include(reference.NavigationName);
         }
 
         return new(await query.ToListAsync(cancellationToken), totalCount);

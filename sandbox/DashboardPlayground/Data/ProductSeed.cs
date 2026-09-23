@@ -9,6 +9,7 @@ internal static class ProductSeed
             new()
             {
                 Id = 1,
+                CategoryId = 1,
                 Name = "Notebook",
                 Price = 8.50m,
                 Details = new() { Sku = "NB-001" },
@@ -16,6 +17,7 @@ internal static class ProductSeed
             new()
             {
                 Id = 2,
+                CategoryId = 2,
                 Name = "Desk lamp",
                 Price = 34.95m,
                 Details = new() { Sku = "DL-002" },
@@ -23,6 +25,7 @@ internal static class ProductSeed
             new()
             {
                 Id = 3,
+                CategoryId = 3,
                 Name = "Travel mug",
                 Price = 18.00m,
                 Details = new() { Sku = "TM-003" },

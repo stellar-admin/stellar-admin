@@ -8,8 +8,10 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 /// </summary>
 public sealed record FormFieldProperties
 {
-    /// <summary>The selectable values for the field, or null for an ordinary editor.</summary>
-    public IReadOnlyList<SelectListItem>? Choices { get; init; }
+    /// <summary>
+    ///     The reference lookup items for the field, or null for an ordinary editor.
+    /// </summary>
+    public IReadOnlyList<SelectListItem>? LookupItems { get; init; }
 
     /// <summary>
     ///     The editor's configuration.

@@ -5,5 +5,5 @@
     var isReadOnly = field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
 }
 
-<sa-select class-names="@EditorClassNamesMapper.ForSelect(field?.Editor)" asp-for="@Model" asp-items="@field?.Choices"
+<sa-select class-names="@EditorClassNamesMapper.ForSelect(field?.Editor)" asp-for="@Model" asp-items="@field?.LookupItems"
            label="@field?.Title" disabled="@isReadOnly" />

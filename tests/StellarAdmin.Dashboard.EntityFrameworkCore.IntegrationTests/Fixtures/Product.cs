@@ -4,6 +4,10 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
 
 public sealed class Product
 {
+    public Category? Category { get; set; }
+
+    public int? CategoryId { get; set; }
+
     public ProductDetails Details { get; set; } = new();
 
     public int Number { get; set; }

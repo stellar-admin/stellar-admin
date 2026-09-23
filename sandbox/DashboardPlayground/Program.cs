@@ -90,12 +90,18 @@ builder
 
         dashboard.AddEfCoreResource<ProductDbContext, Product>(resource =>
         {
+            resource.AddReference(
+                product => product.CategoryId,
+                product => product.Category,
+                category => category.Name
+            );
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
+                    fields.Add(product => product.CategoryId);
                 })
             );
             resource.AllowEdit(edit =>
@@ -104,6 +110,7 @@ builder
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
+                    fields.Add(product => product.CategoryId);
                 })
             );
             resource.AllowDelete();
@@ -130,6 +137,7 @@ builder
                 {
                     columns.Add(product => product.Id);
                     columns.Add(product => product.Details.Sku, column => column.Sortable());
+                    columns.Add(product => product.CategoryId, column => column.Sortable());
                     columns.Add(
                         product => product.Name,
                         column => column.Sortable(product => product.Name.ToLower())
@@ -154,6 +162,11 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
     await db.Database.EnsureCreatedAsync();
+    db.Categories.AddRange(
+        new Category { Id = 1, Name = "Stationery" },
+        new Category { Id = 2, Name = "Lighting" },
+        new Category { Id = 3, Name = "Drinkware" }
+    );
     db.Products.AddRange(ProductSeed.Create());
     await db.SaveChangesAsync();
 }

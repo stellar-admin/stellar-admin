@@ -188,12 +188,15 @@ using StellarAdmin.Dashboard.EntityFrameworkCore;
 
 dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
 {
+    resource.AddReference(product => product.CategoryId, product => product.Category, category => category.Name);
+
     resource.Index(index =>
     {
         index.Columns(columns =>
         {
             columns.Add(product => product.Name, column => column.Sortable(product => product.Name.ToLower()));
             columns.Add(product => product.Price, column => column.Sortable());
+            columns.Add(product => product.CategoryId, column => column.Sortable());
         });
         index.DefaultSortBy(product => product.Name);
         index.EnableSearch(
@@ -214,11 +217,13 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
+        fields.Add(product => product.CategoryId);
     }));
     resource.AllowEdit(edit => edit.Fields(fields =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
+        fields.Add(product => product.CategoryId);
     }));
     resource.AllowDelete();
 });
@@ -228,8 +233,10 @@ Register AppDbContext with the application's chosen EF provider before serving r
 
 EF scopes accept an optional predicate on each entry. Omitting it leaves that scope unfiltered while retaining EF global query filters. The selected predicate combines with search before counting and paging. Scope predicates must translate through the chosen provider. The no-callback `EnableScopes()` overload returns the EF scopes builder. Repeated calls replace the entries and default selection. Scope identifiers, default selection, tabs, and navigation follow the shared scope behavior described above.
 
-Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. For example, `columns.Add(product => product.CategoryId, column => column.Sortable(product => product.Category.Name))` orders a CategoryId column by its related category name. Displayed values and sort URLs continue to use the original column field. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
+Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
+
+`AddReference(foreignKey, navigation, display)` maps a single EF foreign key to its related record and display property. A configured foreign-key form field uses a select populated from the target set. A configured foreign-key index column displays the related label and `Sortable()` orders by that label. Its sort URL still uses the foreign-key field name. The form field and column default to the navigation name as their label, while explicit titles take precedence. References do not add form fields or index columns automatically. The target's EF query filters apply to lookups. The database enforces foreign-key constraints when saving. Database errors propagate through the EF data source. Custom create or edit models use their own handlers and do not receive EF reference lookups automatically.
 
 The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Lookups honor EF global query filters. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
 
-Query transformations, event callbacks, and reference editors remain deferred. DashboardPlayground demonstrates CRUD with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.
+Query transformations, event callbacks, and richer reference lookup sources and editors remain deferred. DashboardPlayground demonstrates CRUD and a Product–Category reference with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.

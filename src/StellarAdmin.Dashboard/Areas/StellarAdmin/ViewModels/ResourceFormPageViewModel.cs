@@ -36,8 +36,10 @@ public class ResourceFormPageViewModel
     /// </summary>
     public IReadOnlyList<FormItemOptions> Items { get; internal init; } = [];
 
-    /// <summary>The reference choices keyed by form field name.</summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>> ReferenceChoices
+    /// <summary>
+    ///     The reference lookup items keyed by form field name.
+    /// </summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>> ReferenceLookups
     {
         get;
         internal set;

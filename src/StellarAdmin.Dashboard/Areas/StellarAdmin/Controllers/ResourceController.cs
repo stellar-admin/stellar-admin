@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
@@ -29,10 +30,10 @@ public class ResourceController<TResource>(
     ///     Displays the create form.
     /// </summary>
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
         return _resourceOptions.Create is { } create
-            ? CreateView(create.CreateModel())
+            ? await CreateView(create.CreateModel(), cancellationToken)
             : NotFound();
     }
 
@@ -61,7 +62,7 @@ public class ResourceController<TResource>(
         );
         if (!valid)
         {
-            return CreateView(resource);
+            return await CreateView(resource, cancellationToken);
         }
 
         var result = _resourceOptions.CreateHandler is { } handler
@@ -78,7 +79,7 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, fields);
-            return CreateView(resource);
+            return await CreateView(resource, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index));
@@ -164,7 +165,7 @@ public class ResourceController<TResource>(
             ? await loader(HttpContext.RequestServices, id, cancellationToken)
             : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
 
-        return resource is null ? NotFound() : EditView(resource);
+        return resource is null ? NotFound() : await EditView(resource, cancellationToken);
     }
 
     /// <summary>
@@ -209,7 +210,7 @@ public class ResourceController<TResource>(
         );
         if (!valid)
         {
-            return EditView(resource);
+            return await EditView(resource, cancellationToken);
         }
 
         var result = _resourceOptions.EditHandler is { } handler
@@ -227,7 +228,7 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, fields);
-            return EditView(resource);
+            return await EditView(resource, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -273,7 +274,7 @@ public class ResourceController<TResource>(
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
-    private ViewResult CreateView(object resource)
+    private async Task<ViewResult> CreateView(object resource, CancellationToken cancellationToken)
     {
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
@@ -286,6 +287,11 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = fields,
                 Items = create.Items.ToArray(),
+                ReferenceLookups = await GetLookupsAsync(
+                    create.ModelType,
+                    fields,
+                    cancellationToken
+                ),
                 SectionLayout = create.SectionLayout,
                 Title = create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
@@ -293,7 +299,7 @@ public class ResourceController<TResource>(
         );
     }
 
-    private ViewResult EditView(object resource)
+    private async Task<ViewResult> EditView(object resource, CancellationToken cancellationToken)
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
@@ -305,12 +311,32 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),
+                ReferenceLookups = await GetLookupsAsync(
+                    edit.ModelType,
+                    edit.Fields,
+                    cancellationToken
+                ),
                 SectionLayout = edit.SectionLayout,
                 Title = edit.Title ?? _labelOptions.EditTitle(labels),
                 SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
             }
         );
     }
+
+    private Task<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>> GetLookupsAsync(
+        Type modelType,
+        IReadOnlyList<FormFieldOptions> fields,
+        CancellationToken cancellationToken
+    ) =>
+        dataSource is IResourceReferenceLookupProvider<TResource> provider
+            ? provider.GetLookupsAsync(
+                modelType,
+                fields.Select(field => field.FieldName).ToArray(),
+                cancellationToken
+            )
+            : Task.FromResult<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>>(
+                new Dictionary<string, IReadOnlyList<SelectListItem>>()
+            );
 
     private async Task<IActionResult> IndexView(
         ResourceIndexQuery query,

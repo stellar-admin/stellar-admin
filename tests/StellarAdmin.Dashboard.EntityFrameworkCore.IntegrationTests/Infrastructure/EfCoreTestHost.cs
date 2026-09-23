@@ -64,9 +64,15 @@ internal static class EfCoreTestHost
             var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
             await db.Database.EnsureCreatedAsync();
             db.AddRange(
+                new Category { Id = 1, Name = "Office" },
+                new Category { Id = 2, Name = "Beverage" },
+                new Category { Id = 3, Name = "Technology" }
+            );
+            db.AddRange(
                 new Product
                 {
                     Number = 1,
+                    CategoryId = 1,
                     Name = "Zebra",
                     Price = 10,
                     Details = new() { Sku = "Z-1", InternalNote = "Keep zebra note" },
@@ -74,6 +80,7 @@ internal static class EfCoreTestHost
                 new Product
                 {
                     Number = 2,
+                    CategoryId = 3,
                     Name = "Apple",
                     Price = 20,
                     Details = new() { Sku = "A-2", InternalNote = "Keep apple note" },
@@ -81,6 +88,7 @@ internal static class EfCoreTestHost
                 new Product
                 {
                     Number = 3,
+                    CategoryId = 3,
                     Name = "Apple",
                     Price = 30,
                     Details = new() { Sku = "A-3" },
@@ -88,6 +96,7 @@ internal static class EfCoreTestHost
                 new Product
                 {
                     Number = 4,
+                    CategoryId = 2,
                     Name = "Banana",
                     Price = 40,
                     Details = new() { Sku = "B-4" },

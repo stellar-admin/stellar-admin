@@ -1,0 +1,203 @@
+using System.Net;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
+using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Infrastructure;
+
+namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
+
+public class ResourceReferenceTests
+{
+    [Test]
+    public async Task Index_DisplaysAndSortsByReferencedLabel()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+        {
+            resource.AddReference(
+                product => product.CategoryId,
+                product => product.Category,
+                category => category.Name
+            );
+            resource.Index(index =>
+                index.Columns(columns =>
+                    columns.Add(product => product.CategoryId, column => column.Sortable())
+                )
+            );
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/Product?sortBy=CategoryId&sortDirection=asc"
+        );
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                string.Join(
+                    ',',
+                    document
+                        .QuerySelectorAll("tbody tr td:last-child")
+                        .Select(cell => cell.TextContent.Trim())
+                )
+            )
+            .IsEqualTo("Beverage,Office,Technology,Technology");
+    }
+
+    [Test]
+    public async Task Create_RendersSortedCategories()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceCreate);
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Product/Create");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                string.Join(
+                    ',',
+                    document
+                        .QuerySelectorAll("select[name='Entity.CategoryId'] option")
+                        .Select(option => option.TextContent.Trim())
+                )
+            )
+            .IsEqualTo("Not set,Beverage,Office,Technology");
+    }
+
+    [Test]
+    public async Task Create_SavesSelectedForeignKey()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceCreate);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        values["Entity.Name"] = "New product";
+        values["Entity.Price"] = "25";
+        values["Entity.CategoryId"] = "2";
+        values["Entity.Hidden"] = "true";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Create",
+            new FormUrlEncodedContent(values)
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        using var scope = sut.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+        var created = await db.Set<Product>().SingleAsync(product => product.Name == "New product");
+        await Assert.That(created.CategoryId).IsEqualTo(2);
+        await Assert.That(created.Hidden).IsFalse();
+    }
+
+    [Test]
+    public async Task Edit_RendersCurrentSelection()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceEdit);
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Product/Edit/1");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .QuerySelector("select[name='Entity.CategoryId'] option[selected]")
+                    ?.GetAttribute("value")
+            )
+            .IsEqualTo("1");
+    }
+
+    [Test]
+    public async Task Edit_UpdatesOnlyConfiguredForeignKey()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceEdit);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/1");
+        values["Entity.CategoryId"] = "3";
+        values["Entity.Name"] = "Forged";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Edit/1",
+            new FormUrlEncodedContent(values)
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        using var scope = sut.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+        var updated = await db.Set<Product>().SingleAsync(product => product.Number == 1);
+        await Assert.That(updated.CategoryId).IsEqualTo(3);
+        await Assert.That(updated.Name).IsEqualTo("Zebra");
+    }
+
+    private static void ConfigureReferenceCreate(
+        EfCoreResourceBuilder<CatalogDbContext, Product> resource
+    )
+    {
+        resource.AddReference(
+            product => product.CategoryId,
+            product => product.Category,
+            category => category.Name
+        );
+        resource.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                fields.Add(product => product.Name);
+                fields.Add(product => product.Price);
+                fields.Add(product => product.CategoryId);
+            })
+        );
+    }
+
+    private static void ConfigureReferenceEdit(
+        EfCoreResourceBuilder<CatalogDbContext, Product> resource
+    )
+    {
+        resource.AddReference(
+            product => product.CategoryId,
+            product => product.Category,
+            category => category.Name
+        );
+        resource.AllowEdit(edit =>
+            edit.Fields(fields => fields.Add(product => product.CategoryId))
+        );
+    }
+
+    private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
+    {
+        using var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var document = await ReadDocument(response);
+        var token = document
+            .QuerySelector("input[name='__RequestVerificationToken']")!
+            .GetAttribute("value")!;
+        client.DefaultRequestHeaders.Add(
+            "Cookie",
+            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
+        );
+
+        return new() { ["__RequestVerificationToken"] = token };
+    }
+
+    private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
+        await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
+}

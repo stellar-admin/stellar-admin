@@ -4,6 +4,10 @@ namespace DashboardPlayground.Models;
 
 public sealed class Product
 {
+    public Category? Category { get; set; }
+
+    public int? CategoryId { get; set; }
+
     public ProductDetails Details { get; set; } = new();
 
     public int Id { get; set; }

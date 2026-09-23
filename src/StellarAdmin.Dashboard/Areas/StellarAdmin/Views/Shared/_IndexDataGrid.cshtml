@@ -7,7 +7,7 @@
                        sort-by="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
     @foreach (var column in Model.Columns)
     {
-        <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
+        <sa-data-grid-column title="@column.Title" field-for="@(column.DisplayExpression ?? column.FieldExpression)"
                              format="@column.Format" sortable="@column.Sortable" sort-field="@column.FieldName" />
     }
     @if (Model.CanEdit || Model.Delete is not null)
