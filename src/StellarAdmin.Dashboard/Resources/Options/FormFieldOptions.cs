@@ -29,12 +29,6 @@ public sealed class FormFieldOptions : FormItemOptions
     public bool IsReadOnly { get; internal set; }
 
     /// <summary>
-    ///     The form editor template that renders the field's editor, or <c>null</c> to
-    ///     resolve it from the property's metadata.
-    /// </summary>
-    public string? Template { get; internal set; }
-
-    /// <summary>
     ///     The field label, or <c>null</c> to derive it from the property's metadata.
     /// </summary>
     public string? Title { get; internal set; }

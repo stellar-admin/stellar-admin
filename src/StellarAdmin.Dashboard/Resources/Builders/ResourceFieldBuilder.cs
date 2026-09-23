@@ -40,7 +40,6 @@ public sealed class ResourceFieldBuilder
             var editor = new TEditor();
             configure(editor);
             options.Editor = editor;
-            options.Template = editor.TemplateName;
         });
 
         return this;
