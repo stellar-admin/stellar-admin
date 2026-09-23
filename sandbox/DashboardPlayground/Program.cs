@@ -92,11 +92,6 @@ builder
 
         dashboard.AddEfCoreResource<ProductDbContext, Product>(resource =>
         {
-            resource.AddReference(
-                product => product.CategoryId,
-                product => product.Category,
-                category => category.Name
-            );
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {

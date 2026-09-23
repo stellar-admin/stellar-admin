@@ -15,16 +15,11 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
 public class ResourceReferenceTests
 {
     [Test]
-    public async Task Index_DisplaysAndSortsByReferencedLabel()
+    public async Task Index_DisplaysAndSortsByForeignKey()
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
         {
-            resource.AddReference(
-                product => product.CategoryId,
-                product => product.Category,
-                category => category.Name
-            );
             resource.Index(index =>
                 index.Columns(columns =>
                     columns.Add(product => product.CategoryId, column => column.Sortable())
@@ -50,7 +45,7 @@ public class ResourceReferenceTests
                         .Select(cell => cell.TextContent.Trim())
                 )
             )
-            .IsEqualTo("Beverage,Office,Technology,Technology");
+            .IsEqualTo("1,2,3,3");
     }
 
     [Test]
@@ -212,11 +207,6 @@ public class ResourceReferenceTests
         EfCoreResourceBuilder<CatalogDbContext, Product> resource
     )
     {
-        resource.AddReference(
-            product => product.CategoryId,
-            product => product.Category,
-            category => category.Name
-        );
         resource.AllowCreate(create =>
             create.Fields(fields =>
             {
@@ -250,11 +240,6 @@ public class ResourceReferenceTests
         EfCoreResourceBuilder<CatalogDbContext, Product> resource
     )
     {
-        resource.AddReference(
-            product => product.CategoryId,
-            product => product.Category,
-            category => category.Name
-        );
         resource.AllowEdit(edit =>
             edit.Fields(fields =>
                 fields

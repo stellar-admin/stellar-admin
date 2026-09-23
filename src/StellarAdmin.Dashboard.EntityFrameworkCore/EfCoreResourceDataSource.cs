@@ -9,14 +9,12 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
-    IOptions<ResourceOptions<TEntity>> options,
-    IOptions<EfCoreResourceReferences<TEntity>> references
+    IOptions<ResourceOptions<TEntity>> options
 ) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
     where TEntity : class
 {
     private readonly ResourceOptions<TEntity> _resourceOptions = options.Value;
-    private readonly EfCoreResourceReferences<TEntity> _references = references.Value;
 
     public async Task<ResourceOperationResult> CreateAsync(
         TEntity model,
@@ -107,17 +105,6 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         if (request.Paging is { } paging)
         {
             query = query.Skip(checked((paging.Page - 1) * paging.PageSize)).Take(paging.PageSize);
-        }
-
-        foreach (
-            var reference in _references.Items.Where(reference =>
-                _resourceOptions.Index.Columns.Any(column =>
-                    column.FieldName == reference.FieldName
-                )
-            )
-        )
-        {
-            query = query.Include(reference.NavigationName);
         }
 
         return new(await query.ToListAsync(cancellationToken), totalCount);

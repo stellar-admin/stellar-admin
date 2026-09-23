@@ -60,25 +60,6 @@ public static class StellarAdminDashboardBuilderExtensions
                     options.KeySelector = item =>
                         Convert.ToString(property.GetValue(item), CultureInfo.InvariantCulture)!;
 
-                    var references = scope
-                        .ServiceProvider.GetRequiredService<
-                            IOptions<EfCoreResourceReferences<TEntity>>
-                        >()
-                        .Value.Items;
-                    foreach (var reference in references)
-                    {
-                        reference.Validate(entity);
-                        foreach (
-                            var column in options.Index.Columns.Where(column =>
-                                column.FieldName == reference.FieldName
-                            )
-                        )
-                        {
-                            column.DisplayExpression = reference.DisplayExpression;
-                            column.Title ??= reference.NavigationName;
-                        }
-                    }
-
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {
                         ValidateEntityFormFields<TEntity>(entity, create);
