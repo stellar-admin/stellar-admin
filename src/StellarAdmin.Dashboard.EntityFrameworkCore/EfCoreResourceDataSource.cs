@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources;
@@ -12,7 +11,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
     IOptions<ResourceOptions<TEntity>> options,
     IOptions<EfCoreResourceReferences<TEntity>> references
-) : IResourceCrudDataSource<TEntity>, IResourceReferenceLookupProvider<TEntity>
+) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
     where TEntity : class
 {
@@ -56,33 +55,6 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
     public Task<TEntity?> FindAsync(string id, CancellationToken cancellationToken) =>
         FindEntityByKeyAsync(id, cancellationToken, noTracking: true);
-
-    public async Task<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>> GetLookupsAsync(
-        Type modelType,
-        IReadOnlyCollection<string> fieldNames,
-        CancellationToken cancellationToken
-    )
-    {
-        var lookups = new Dictionary<string, IReadOnlyList<SelectListItem>>();
-        if (modelType != typeof(TEntity))
-        {
-            return lookups;
-        }
-
-        foreach (
-            var reference in _references.Items.Where(reference =>
-                fieldNames.Contains(reference.FieldName)
-            )
-        )
-        {
-            lookups.Add(
-                reference.FieldName,
-                await reference.GetLookupsAsync(db, cancellationToken)
-            );
-        }
-
-        return lookups;
-    }
 
     public async Task<ResourceListResult<TEntity>> ListAsync(
         ResourceListRequest request,

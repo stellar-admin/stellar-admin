@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
@@ -37,13 +36,10 @@ public class ResourceFormPageViewModel
     public IReadOnlyList<FormItemOptions> Items { get; internal init; } = [];
 
     /// <summary>
-    ///     The reference lookup items keyed by form field name.
+    ///     Request data prepared by the configured field editors.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>> ReferenceLookups
-    {
-        get;
-        internal set;
-    } = new Dictionary<string, IReadOnlyList<SelectListItem>>();
+    public IReadOnlyDictionary<string, object?> EditorData { get; internal set; } =
+        new Dictionary<string, object?>();
 
     /// <summary>
     ///     The layout of the form sections.

@@ -1,7 +1,4 @@
-using System.Globalization;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
@@ -21,11 +18,6 @@ internal abstract class EfCoreReference<TEntity>
 
     public abstract string NavigationName { get; }
 
-    public abstract Task<IReadOnlyList<SelectListItem>> GetLookupsAsync(
-        DbContext db,
-        CancellationToken cancellationToken
-    );
-
     public abstract void Validate(IEntityType entity);
 }
 
@@ -38,8 +30,6 @@ internal sealed class EfCoreReference<TEntity, TTarget>(
     where TEntity : class
     where TTarget : class
 {
-    private readonly Func<TTarget, string> _getLabel = display.Compile();
-
     public override LambdaExpression DisplayExpression { get; } =
         Expression.Lambda(
             Expression.Property(navigation.Body, ((MemberExpression)display.Body).Member.Name),
@@ -49,29 +39,6 @@ internal sealed class EfCoreReference<TEntity, TTarget>(
     public override string FieldName => fieldName;
 
     public override string NavigationName => navigationName;
-
-    public override async Task<IReadOnlyList<SelectListItem>> GetLookupsAsync(
-        DbContext db,
-        CancellationToken cancellationToken
-    )
-    {
-        var foreignKey = GetNavigation(db.Model.FindEntityType(typeof(TEntity))!).ForeignKey;
-        var principalKey = foreignKey.PrincipalKey.Properties.Single().PropertyInfo!;
-        var targets = await db.Set<TTarget>()
-            .AsNoTracking()
-            .OrderBy(display)
-            .ToListAsync(cancellationToken);
-        List<SelectListItem> lookups =
-        [
-            new(foreignKey.IsRequired ? "Select an option" : "Not set", ""),
-            .. targets.Select(target => new SelectListItem(
-                _getLabel(target),
-                Convert.ToString(principalKey.GetValue(target), CultureInfo.InvariantCulture)
-            )),
-        ];
-
-        return lookups;
-    }
 
     public override void Validate(IEntityType entity) => GetNavigation(entity);
 

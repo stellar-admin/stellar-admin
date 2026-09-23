@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
 @model object?
 
 @{
@@ -5,5 +6,5 @@
     var isReadOnly = field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
 }
 
-<sa-select class-names="@EditorClassNamesMapper.ForSelect(field?.Editor)" asp-for="@Model" asp-items="@field?.LookupItems"
+<sa-select class-names="@EditorClassNamesMapper.ForSelect(field?.Editor)" asp-for="@Model" asp-items="@(field?.EditorData as IReadOnlyList<SelectListItem>)"
            label="@field?.Title" disabled="@isReadOnly" />

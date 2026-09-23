@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.AddDbContext<ProductDbContext>(
     (services, options) => options.UseSqlite(services.GetRequiredService<SqliteConnection>())
 );
 builder.Services.AddSingleton<CustomerDataSource>();
+builder.Services.AddScoped<CategoryLookupProvider>();
 builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
@@ -101,7 +103,13 @@ builder
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(product => product.CategoryId);
+                    fields.Add(product => product.CategoryId, field =>
+                    {
+                        field.Title = "Category";
+                        field.UseEditor<ReferenceLookupEditor>(editor =>
+                            editor.UseLookup<CategoryLookupProvider>()
+                        );
+                    });
                 })
             );
             resource.AllowEdit(edit =>
@@ -110,7 +118,13 @@ builder
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                     fields.Add(product => product.Details.Sku);
-                    fields.Add(product => product.CategoryId);
+                    fields.Add(product => product.CategoryId, field =>
+                    {
+                        field.Title = "Category";
+                        field.UseEditor<ReferenceLookupEditor>(editor =>
+                            editor.UseLookup<CategoryLookupProvider>()
+                        );
+                    });
                 })
             );
             resource.AllowDelete();

@@ -32,7 +32,7 @@ public static class ViewDataKeys
     public const string FormSectionLayout = "StellarAdminFormSectionLayout";
 
     /// <summary>
-    ///     The key for the form's reference lookup items.
+    ///     The key for data prepared by form field editors.
     /// </summary>
-    public const string ReferenceLookups = "StellarAdminReferenceLookups";
+    public const string EditorData = "StellarAdminEditorData";
 }

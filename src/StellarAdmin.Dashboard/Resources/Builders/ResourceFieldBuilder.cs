@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -25,6 +26,31 @@ public sealed class ResourceFieldBuilder
         _field = field;
         _fieldName = fieldName;
     }
+
+    /// <summary>
+    ///     Uses and configures an editor for this field.
+    /// </summary>
+    public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)
+        where TEditor : ResourceEditor, new()
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        _configuration.Add(options =>
+        {
+            var editor = new TEditor();
+            configure(editor);
+            options.Editor = editor;
+            options.Template = editor.TemplateName;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Uses an editor for this field.
+    /// </summary>
+    public ResourceFieldBuilder UseEditor<TEditor>()
+        where TEditor : ResourceEditor, new() => UseEditor<TEditor>(_ => { });
 
     internal FormFieldOptions Build()
     {

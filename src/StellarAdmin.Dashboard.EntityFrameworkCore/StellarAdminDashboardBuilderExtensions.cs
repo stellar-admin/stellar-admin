@@ -77,15 +77,6 @@ public static class StellarAdminDashboardBuilderExtensions
                             column.DisplayExpression = reference.DisplayExpression;
                             column.Title ??= reference.NavigationName;
                         }
-
-                        if (options.Create?.ModelType == typeof(TEntity))
-                        {
-                            SetReferenceFieldTitle(options.Create, reference);
-                        }
-                        if (options.Edit?.ModelType == typeof(TEntity))
-                        {
-                            SetReferenceFieldTitle(options.Edit, reference);
-                        }
                     }
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
@@ -116,18 +107,6 @@ public static class StellarAdminDashboardBuilderExtensions
         configure(builder.AddEfCoreResource<TContext, TEntity>());
 
         return builder;
-    }
-
-    private static void SetReferenceFieldTitle<TEntity>(
-        ResourceFormOptions form,
-        EfCoreReference<TEntity> reference
-    )
-        where TEntity : class
-    {
-        foreach (var field in form.Fields.Where(field => field.FieldName == reference.FieldName))
-        {
-            field.Title ??= reference.NavigationName;
-        }
     }
 
     private static void ValidateEntityFormFields<TEntity>(

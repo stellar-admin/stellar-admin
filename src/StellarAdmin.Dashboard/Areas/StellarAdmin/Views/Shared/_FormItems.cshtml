@@ -1,18 +1,16 @@
 @inherits FormFieldsBaseView<object>
 @{
-    var lookups = ViewData[ViewDataKeys.ReferenceLookups] as IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>;
+    var editorData = ViewData[ViewDataKeys.EditorData] as IReadOnlyDictionary<string, object?>;
 }
 @foreach (var item in Items)
 {
     if (item is FormFieldOptions field)
     {
-        var lookupItems = lookups?.GetValueOrDefault(field.FieldName);
-
-        @Html.Editor(field.FieldName, field.Template ?? (lookupItems is null ? null : "Reference"), new Dictionary<string, object>
+        @Html.Editor(field.FieldName, field.Template, new Dictionary<string, object>
         {
             [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
             {
-                LookupItems = lookupItems,
+                EditorData = editorData?.GetValueOrDefault(field.FieldName),
                 Editor = field.Editor,
                 IsReadOnly = field.IsReadOnly,
                 Title = field.Title,

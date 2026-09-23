@@ -41,6 +41,7 @@ internal static class EfCoreTestHost
                 }
             }
         );
+        builder.Services.AddScoped<CategoryLookupProvider>();
         builder
             .Services.AddStellarAdmin()
             .AddDashboard(dashboard =>

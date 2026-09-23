@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
@@ -287,11 +287,7 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = fields,
                 Items = create.Items.ToArray(),
-                ReferenceLookups = await GetLookupsAsync(
-                    create.ModelType,
-                    fields,
-                    cancellationToken
-                ),
+                EditorData = await PrepareEditorsAsync(fields, cancellationToken),
                 SectionLayout = create.SectionLayout,
                 Title = create.Title ?? _labelOptions.CreateTitle(labels),
                 SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
@@ -311,11 +307,7 @@ public class ResourceController<TResource>(
                 Entity = resource,
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),
-                ReferenceLookups = await GetLookupsAsync(
-                    edit.ModelType,
-                    edit.Fields,
-                    cancellationToken
-                ),
+                EditorData = await PrepareEditorsAsync(edit.Fields, cancellationToken),
                 SectionLayout = edit.SectionLayout,
                 Title = edit.Title ?? _labelOptions.EditTitle(labels),
                 SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
@@ -323,20 +315,25 @@ public class ResourceController<TResource>(
         );
     }
 
-    private Task<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>> GetLookupsAsync(
-        Type modelType,
+    private async Task<IReadOnlyDictionary<string, object?>> PrepareEditorsAsync(
         IReadOnlyList<FormFieldOptions> fields,
         CancellationToken cancellationToken
-    ) =>
-        dataSource is IResourceReferenceLookupProvider<TResource> provider
-            ? provider.GetLookupsAsync(
-                modelType,
-                fields.Select(field => field.FieldName).ToArray(),
-                cancellationToken
-            )
-            : Task.FromResult<IReadOnlyDictionary<string, IReadOnlyList<SelectListItem>>>(
-                new Dictionary<string, IReadOnlyList<SelectListItem>>()
-            );
+    )
+    {
+        var data = new Dictionary<string, object?>();
+        foreach (var field in fields)
+        {
+            if (field.Editor is ResourceEditor editor)
+            {
+                data[field.FieldName] = await editor.PrepareAsync(
+                    HttpContext.RequestServices,
+                    cancellationToken
+                );
+            }
+        }
+
+        return data;
+    }
 
     private async Task<IActionResult> IndexView(
         ResourceIndexQuery query,

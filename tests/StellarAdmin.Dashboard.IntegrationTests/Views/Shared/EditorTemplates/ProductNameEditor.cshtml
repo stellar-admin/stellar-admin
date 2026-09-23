@@ -1,0 +1,8 @@
+@using StellarAdmin.Dashboard.Areas.StellarAdmin
+@using StellarAdmin.Dashboard.IntegrationTests.Fixtures
+@model string
+@{
+    var field = (FormFieldProperties)ViewData[ViewDataKeys.FormFieldProperties]!;
+    var editor = (ProductNameEditor)field.Editor;
+}
+<input name="@Html.NameForModel()" value="@Model" placeholder="@editor.Placeholder" data-custom-editor="product-name" />

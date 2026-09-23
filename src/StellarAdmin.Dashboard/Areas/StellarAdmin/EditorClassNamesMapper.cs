@@ -1,3 +1,4 @@
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
 
@@ -86,7 +87,11 @@ internal static class EditorClassNamesMapper
 
     private static void ValidateScalar(EditorOptions? options)
     {
-        if (options is not null && options.GetType() != typeof(EditorOptions))
+        if (
+            options is not null
+            && options.GetType() != typeof(EditorOptions)
+            && options is not ResourceEditor
+        )
         {
             throw new InvalidOperationException(
                 $"{options.GetType().Name} requires a compatible editor template. Scalar editors, including flags-enum text fallbacks, accept EditorOptions."

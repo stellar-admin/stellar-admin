@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
@@ -6,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -149,6 +152,62 @@ public class ResourceReferenceTests
         await Assert.That(updated.Name).IsEqualTo("Zebra");
     }
 
+    [Test]
+    public async Task CustomCreateModel_RendersLookupAndSavesSelectedReference()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
+        using var client = sut.GetTestClient();
+        using var form = await client.GetAsync("/stellaradmin/Product/Create");
+        var document = await ReadDocument(form);
+        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        values["Entity.Name"] = "Custom product";
+        values["Entity.CategoryId"] = "2";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Create",
+            new FormUrlEncodedContent(values)
+        );
+
+        // Assert
+        await Assert.That(form.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelectorAll("select[name='Entity.CategoryId'] option").Length)
+            .IsEqualTo(4);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        using var scope = sut.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+        var product = await db.Set<Product>().SingleAsync(p => p.Name == "Custom product");
+        await Assert.That(product.CategoryId).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task CustomCreateModel_RejectedSubmissionReloadsLookup()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        values["Entity.CategoryId"] = "2";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Create",
+            new FormUrlEncodedContent(values)
+        );
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelectorAll("select[name='Entity.CategoryId'] option").Length)
+            .IsEqualTo(4);
+        await Assert
+            .That(document.QuerySelector("[data-valmsg-for='Entity.Name']")?.TextContent.Trim())
+            .IsNotNullOrEmpty();
+    }
+
     private static void ConfigureReferenceCreate(
         EfCoreResourceBuilder<CatalogDbContext, Product> resource
     )
@@ -163,10 +222,29 @@ public class ResourceReferenceTests
             {
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
-                fields.Add(product => product.CategoryId);
+                fields
+                    .Add(product => product.CategoryId)
+                    .UseEditor<ReferenceLookupEditor>(editor =>
+                        editor.UseLookup<CategoryLookupProvider>()
+                    );
             })
         );
     }
+
+    private static void ConfigureCustomCreate(
+        EfCoreResourceBuilder<CatalogDbContext, Product> resource
+    ) =>
+        resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+            create.Fields(fields =>
+            {
+                fields.Add(model => model.Name);
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<ReferenceLookupEditor>(editor =>
+                        editor.UseLookup<CategoryLookupProvider>()
+                    );
+            })
+        );
 
     private static void ConfigureReferenceEdit(
         EfCoreResourceBuilder<CatalogDbContext, Product> resource
@@ -178,7 +256,13 @@ public class ResourceReferenceTests
             category => category.Name
         );
         resource.AllowEdit(edit =>
-            edit.Fields(fields => fields.Add(product => product.CategoryId))
+            edit.Fields(fields =>
+                fields
+                    .Add(product => product.CategoryId)
+                    .UseEditor<ReferenceLookupEditor>(editor =>
+                        editor.UseLookup<CategoryLookupProvider>()
+                    )
+            )
         );
     }
 
@@ -200,4 +284,33 @@ public class ResourceReferenceTests
 
     private static async Task<IDocument> ReadDocument(HttpResponseMessage response) =>
         await new HtmlParser().ParseDocumentAsync(await response.Content.ReadAsStringAsync());
+
+    public sealed class CreateProductModel
+    {
+        [Required]
+        public string Name { get; set; } = "";
+
+        public int? CategoryId { get; set; }
+    }
+
+    public sealed class CreateProductHandler(CatalogDbContext db)
+        : IResourceCreateHandler<CreateProductModel>
+    {
+        public async Task<ResourceOperationResult> CreateAsync(
+            CreateProductModel model,
+            CancellationToken cancellationToken
+        )
+        {
+            db.Add(
+                new Product
+                {
+                    Name = model.Name,
+                    CategoryId = model.CategoryId,
+                    Price = 1,
+                }
+            );
+            await db.SaveChangesAsync(cancellationToken);
+            return ResourceOperationResult.Success();
+        }
+    }
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
@@ -9,9 +8,9 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 public sealed record FormFieldProperties
 {
     /// <summary>
-    ///     The reference lookup items for the field, or null for an ordinary editor.
+    ///     Data prepared for this editor on the current request.
     /// </summary>
-    public IReadOnlyList<SelectListItem>? LookupItems { get; init; }
+    public object? EditorData { get; init; }
 
     /// <summary>
     ///     The editor's configuration.
