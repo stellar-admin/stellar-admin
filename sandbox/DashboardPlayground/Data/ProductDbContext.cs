@@ -10,6 +10,8 @@ public sealed class ProductDbContext(DbContextOptions<ProductDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Product>().OwnsOne(product => product.Details);
+
         // Store this demo's two-decimal prices as cents so SQLite can order them exactly.
         modelBuilder
             .Entity<Product>()

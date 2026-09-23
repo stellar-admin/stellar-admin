@@ -18,9 +18,7 @@ public sealed class FormFieldOptions : FormItemOptions
     public LambdaExpression FieldExpression { get; }
 
     /// <summary>
-    ///     The name of the property selected by <see cref="FieldExpression" />.
-    ///     Never <c>null</c> — form fields must select a direct property, validated when
-    ///     the field is added.
+    ///     The property path selected by <see cref="FieldExpression" />.
     /// </summary>
     public string FieldName { get; }
 

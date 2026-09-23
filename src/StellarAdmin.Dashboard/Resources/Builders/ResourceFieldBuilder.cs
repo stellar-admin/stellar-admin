@@ -10,6 +10,7 @@ public sealed class ResourceFieldBuilder
 {
     private readonly List<Action<FormFieldOptions>> _configuration = [];
     private readonly LambdaExpression _field;
+    private readonly string _fieldName;
 
     /// <summary>
     ///     The field label.
@@ -19,11 +20,15 @@ public sealed class ResourceFieldBuilder
         set => _configuration.Add(options => options.Title = value);
     }
 
-    internal ResourceFieldBuilder(LambdaExpression field) => _field = field;
+    internal ResourceFieldBuilder(LambdaExpression field, string fieldName)
+    {
+        _field = field;
+        _fieldName = fieldName;
+    }
 
     internal FormFieldOptions Build()
     {
-        var options = new FormFieldOptions(_field, ((MemberExpression)_field.Body).Member.Name);
+        var options = new FormFieldOptions(_field, _fieldName);
         foreach (var configure in _configuration)
         {
             configure(options);

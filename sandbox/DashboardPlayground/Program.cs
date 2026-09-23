@@ -95,6 +95,7 @@ builder
                 {
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
+                    fields.Add(product => product.Details.Sku);
                 })
             );
             resource.AllowEdit(edit =>
@@ -102,6 +103,7 @@ builder
                 {
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
+                    fields.Add(product => product.Details.Sku);
                 })
             );
             resource.AllowDelete();
@@ -127,6 +129,7 @@ builder
                 index.Columns(columns =>
                 {
                     columns.Add(product => product.Id);
+                    columns.Add(product => product.Details.Sku, column => column.Sortable());
                     columns.Add(
                         product => product.Name,
                         column => column.Sortable(product => product.Name.ToLower())

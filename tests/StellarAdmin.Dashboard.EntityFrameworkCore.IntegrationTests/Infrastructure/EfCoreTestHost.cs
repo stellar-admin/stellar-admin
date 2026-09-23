@@ -69,24 +69,28 @@ internal static class EfCoreTestHost
                     Number = 1,
                     Name = "Zebra",
                     Price = 10,
+                    Details = new() { Sku = "Z-1", InternalNote = "Keep zebra note" },
                 },
                 new Product
                 {
                     Number = 2,
                     Name = "Apple",
                     Price = 20,
+                    Details = new() { Sku = "A-2", InternalNote = "Keep apple note" },
                 },
                 new Product
                 {
                     Number = 3,
                     Name = "Apple",
                     Price = 30,
+                    Details = new() { Sku = "A-3" },
                 },
                 new Product
                 {
                     Number = 4,
                     Name = "Banana",
                     Price = 40,
+                    Details = new() { Sku = "B-4" },
                 },
                 new Product
                 {

@@ -130,8 +130,27 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         foreach (var field in edit.Fields)
         {
-            var property = entityType.FindProperty(field.FieldName)!.PropertyInfo!;
-            property.SetValue(entity, property.GetValue(model));
+            var properties = ResourcePropertyPath.GetProperties(field.FieldExpression)!;
+            object target = entity;
+            object source = model;
+            foreach (var segment in properties[..^1])
+            {
+                target =
+                    segment.GetValue(target)
+                    ?? throw new InvalidOperationException(
+                        $"{field.FieldName} has a null parent value on the stored entity."
+                    );
+                source =
+                    segment.GetValue(source)
+                    ?? throw new InvalidOperationException(
+                        $"{field.FieldName} has a null parent value on the submitted model."
+                    );
+            }
+
+            var property = EfCoreFormFieldMetadata
+                .FindProperty(entityType, field.FieldName)!
+                .PropertyInfo!;
+            property.SetValue(target, property.GetValue(source));
         }
 
         try

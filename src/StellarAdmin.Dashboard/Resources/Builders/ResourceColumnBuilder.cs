@@ -65,7 +65,9 @@ public sealed class ResourceColumnBuilder<TResource>
     {
         var options = new DataGridColumnOptions(
             _field,
-            (_field.Body as MemberExpression)?.Member.Name
+            ResourcePropertyPath.GetProperties(_field) is { } properties
+                ? ResourcePropertyPath.GetName(properties)
+                : null
         );
         foreach (var configure in _configuration)
         {

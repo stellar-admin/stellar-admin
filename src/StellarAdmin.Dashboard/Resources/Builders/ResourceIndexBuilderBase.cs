@@ -105,16 +105,16 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
     {
         ArgumentNullException.ThrowIfNull(field);
-        if (field.Body is not MemberExpression { Expression: ParameterExpression } member)
+        if (ResourcePropertyPath.GetProperties(field) is not { } properties)
         {
             throw new ArgumentException(
-                "Select a resource property for the default sort.",
+                "Select a resource property path for the default sort.",
                 nameof(field)
             );
         }
 
         Services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.DefaultSort = new(member.Member.Name, direction)
+            options.Index.DefaultSort = new(ResourcePropertyPath.GetName(properties), direction)
         );
 
         return (TBuilder)this;

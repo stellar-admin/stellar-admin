@@ -8,6 +8,7 @@ public sealed class CatalogDbContext(DbContextOptions<CatalogDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>().HasKey(product => product.Number);
+        modelBuilder.Entity<Product>().OwnsOne(product => product.Details);
         modelBuilder.Entity<Product>().HasQueryFilter(product => !product.Hidden);
         modelBuilder.Entity<Product>().Property(product => product.Version).IsConcurrencyToken();
         modelBuilder

@@ -96,7 +96,7 @@ public static class StellarAdminDashboardBuilderExtensions
     {
         foreach (var field in form.Fields)
         {
-            var property = entity.FindProperty(field.FieldName);
+            var property = EfCoreFormFieldMetadata.FindProperty(entity, field.FieldName);
             if (
                 property?.PropertyInfo is not { SetMethod.IsPublic: true }
                 || property.IsPrimaryKey()

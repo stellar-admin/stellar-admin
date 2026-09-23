@@ -54,12 +54,10 @@ public class ResourceController<TResource>(
             .Create.Fields.Select(field => field.FieldName)
             .ToHashSet(StringComparer.Ordinal);
 
-        var valid = await TryUpdateModelAsync(
+        var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Create.ModelType,
-            ResourceFormPageViewModel.BindingPrefix,
-            await CompositeValueProvider.CreateAsync(ControllerContext),
-            metadata => fields.Contains(metadata.PropertyName ?? "")
+            fields
         );
         if (!valid)
         {
@@ -204,12 +202,10 @@ public class ResourceController<TResource>(
                 || name != _resourceOptions.KeyPropertyName
             )
             .ToHashSet(StringComparer.Ordinal);
-        var valid = await TryUpdateModelAsync(
+        var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Edit.ModelType,
-            ResourceFormPageViewModel.BindingPrefix,
-            await CompositeValueProvider.CreateAsync(ControllerContext),
-            metadata => fields.Contains(metadata.PropertyName ?? "")
+            fields
         );
         if (!valid)
         {
@@ -506,5 +502,64 @@ public class ResourceController<TResource>(
 
         request = request with { Paging = new(page, pageSize) };
         return true;
+    }
+
+    private async Task<bool> TryBindConfiguredFieldsAsync(
+        object model,
+        Type modelType,
+        HashSet<string> fields
+    )
+    {
+        var propertyNames = fields
+            .SelectMany(field => field.Split('.'))
+            .ToHashSet(StringComparer.Ordinal);
+
+        return await TryUpdateModelAsync(
+            model,
+            modelType,
+            ResourceFormPageViewModel.BindingPrefix,
+            new ConfiguredFieldValueProvider(
+                await CompositeValueProvider.CreateAsync(ControllerContext),
+                fields
+            ),
+            metadata => propertyNames.Contains(metadata.PropertyName ?? "")
+        );
+    }
+
+    private sealed class ConfiguredFieldValueProvider(IValueProvider source, HashSet<string> fields)
+        : IValueProvider
+    {
+        private readonly HashSet<string> _keys = fields
+            .Select(field =>
+                ModelNames.CreatePropertyModelName(ResourceFormPageViewModel.BindingPrefix, field)
+            )
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        private readonly HashSet<string> _prefixes = CreatePrefixes(fields);
+
+        public bool ContainsPrefix(string prefix) =>
+            _prefixes.Contains(prefix) && source.ContainsPrefix(prefix);
+
+        public ValueProviderResult GetValue(string key) =>
+            _keys.Contains(key) ? source.GetValue(key) : ValueProviderResult.None;
+
+        private static HashSet<string> CreatePrefixes(HashSet<string> fields)
+        {
+            var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ResourceFormPageViewModel.BindingPrefix,
+            };
+            foreach (var field in fields)
+            {
+                var prefix = ResourceFormPageViewModel.BindingPrefix;
+                foreach (var segment in field.Split('.'))
+                {
+                    prefix = ModelNames.CreatePropertyModelName(prefix, segment);
+                    prefixes.Add(prefix);
+                }
+            }
+
+            return prefixes;
+        }
     }
 }

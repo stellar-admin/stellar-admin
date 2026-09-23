@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Reflection;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -21,20 +20,23 @@ public class ResourceFieldsBuilder<TResource>
     {
         ArgumentNullException.ThrowIfNull(field);
 
+        var properties = ResourcePropertyPath.GetProperties(field);
         if (
-            field.Body is not MemberExpression { Member: PropertyInfo property } member
-            || member.Expression != field.Parameters[0]
-            || property.GetMethod?.IsPublic != true
-            || property.SetMethod?.IsPublic != true
+            properties is null
+            || properties.Any(property => property.GetMethod?.IsPublic != true)
+            || properties[^1].SetMethod?.IsPublic != true
         )
         {
             throw new ArgumentException(
-                "Select a direct property with a public getter and setter.",
+                "Select a property path with public getters and a public setter on its final property.",
                 nameof(field)
             );
         }
 
-        var fieldBuilder = new ResourceFieldBuilder(field);
+        var fieldBuilder = new ResourceFieldBuilder(
+            field,
+            ResourcePropertyPath.GetName(properties)
+        );
         _configure(items => items.Add(fieldBuilder.Build()));
 
         return fieldBuilder;

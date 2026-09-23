@@ -17,9 +17,8 @@ public sealed class DataGridColumnOptions
     public LambdaExpression FieldExpression { get; }
 
     /// <summary>
-    ///     The name of the property selected by <see cref="FieldExpression" />, or
-    ///     <c>null</c> when the expression body is not a member access. Derived without
-    ///     validation — the expression itself is only validated when the grid binds it.
+    ///     The property path selected by <see cref="FieldExpression" />, or
+    ///     <c>null</c> when the expression does not select a property path.
     /// </summary>
     public string? FieldName { get; }
 
