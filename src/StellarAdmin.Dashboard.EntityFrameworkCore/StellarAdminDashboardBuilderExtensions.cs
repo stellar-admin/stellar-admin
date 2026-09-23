@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
 
@@ -25,11 +26,10 @@ public static class StellarAdminDashboardBuilderExtensions
         resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
-            .Configure<IServiceScopeFactory>(
+            .Configure(options => options.Index = new EfCoreResourceIndexOptions<TEntity>())
+            .PostConfigure<IServiceScopeFactory>(
                 (options, scopeFactory) =>
                 {
-                    options.Index = new EfCoreResourceIndexOptions<TEntity>();
-
                     // Options are cached. Use a separate scope to read metadata without retaining a DbContext.
                     using var scope = scopeFactory.CreateScope();
                     var db = scope.ServiceProvider.GetRequiredService<TContext>();
@@ -58,6 +58,15 @@ public static class StellarAdminDashboardBuilderExtensions
                     options.KeyPropertyName = property.Name;
                     options.KeySelector = item =>
                         Convert.ToString(property.GetValue(item), CultureInfo.InvariantCulture)!;
+
+                    if (options.Create is { } create && create.ModelType == typeof(TEntity))
+                    {
+                        ValidateEntityFormFields<TEntity>(entity, create);
+                    }
+                    if (options.Edit is { } edit && edit.ModelType == typeof(TEntity))
+                    {
+                        ValidateEntityFormFields<TEntity>(entity, edit);
+                    }
                 }
             );
 
@@ -78,5 +87,27 @@ public static class StellarAdminDashboardBuilderExtensions
         configure(builder.AddEfCoreResource<TContext, TEntity>());
 
         return builder;
+    }
+
+    private static void ValidateEntityFormFields<TEntity>(
+        IEntityType entity,
+        ResourceFormOptions form
+    )
+    {
+        foreach (var field in form.Fields)
+        {
+            var property = entity.FindProperty(field.FieldName);
+            if (
+                property?.PropertyInfo is not { SetMethod.IsPublic: true }
+                || property.IsPrimaryKey()
+                || property.IsConcurrencyToken
+                || property.ValueGenerated != ValueGenerated.Never
+            )
+            {
+                throw new InvalidOperationException(
+                    $"{typeof(TEntity).Name}.{field.FieldName} cannot be used as an EF resource form field."
+                );
+            }
+        }
     }
 }

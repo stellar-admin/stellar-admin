@@ -179,7 +179,7 @@ The explicit handler takes precedence over any data source edit implementation a
 
 Typed fields, layouts, resource label defaults, page overrides, model and handler validation, and antiforgery protection use the shared edit flow. Override the view with `Areas/StellarAdmin/Views/Customer/Edit.cshtml`, or let MVC fall back to `ResourceEdit`.
 
-## EF Core resource index
+## EF Core resources
 
 Reference `StellarAdmin.Dashboard.EntityFrameworkCore` and import its namespace to register an EF entity through the shared resource controller and views:
 
@@ -209,6 +209,18 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
         });
         index.EnablePaging();
     });
+
+    resource.AllowCreate(create => create.Fields(fields =>
+    {
+        fields.Add(product => product.Name);
+        fields.Add(product => product.Price);
+    }));
+    resource.AllowEdit(edit => edit.Fields(fields =>
+    {
+        fields.Add(product => product.Name);
+        fields.Add(product => product.Price);
+    }));
+    resource.AllowDelete();
 });
 ```
 
@@ -218,4 +230,6 @@ EF scopes accept an optional predicate on each entry. Omitting it leaves that sc
 
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. For example, `columns.Add(product => product.CategoryId, column => column.Sortable(product => product.Category.Name))` orders a CategoryId column by its related category name. Displayed values and sort URLs continue to use the original column field. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 
-The built-in EF data source currently supports listing only. The EF builder inherits the shared `AllowCreate`, `AllowEdit`, and `AllowDelete` configuration methods; actions remain disabled unless explicitly enabled. Ordinary actions require matching data-source handlers, which the EF source does not yet implement. Custom create/edit model-handler pairs can use the inherited registration methods. Query transformations, built-in EF CRUD handlers, and reference editors remain deferred. DashboardPlayground demonstrates this index with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.
+The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Lookups honor EF global query filters. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
+
+Query transformations, event callbacks, and reference editors remain deferred. DashboardPlayground demonstrates CRUD with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.

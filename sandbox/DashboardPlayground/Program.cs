@@ -90,6 +90,21 @@ builder
 
         dashboard.AddEfCoreResource<ProductDbContext, Product>(resource =>
         {
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    fields.Add(product => product.Name);
+                    fields.Add(product => product.Price);
+                })
+            );
+            resource.AllowEdit(edit =>
+                edit.Fields(fields =>
+                {
+                    fields.Add(product => product.Name);
+                    fields.Add(product => product.Price);
+                })
+            );
+            resource.AllowDelete();
             resource.Index(index =>
             {
                 index.EnableScopes(scopes =>

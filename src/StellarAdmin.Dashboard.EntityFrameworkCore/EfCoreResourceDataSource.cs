@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -9,11 +10,49 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     TContext db,
     IOptions<ResourceOptions<TEntity>> options
-) : IResourceDataSource<TEntity>
+) : IResourceCrudDataSource<TEntity>
     where TContext : DbContext
     where TEntity : class
 {
     private readonly ResourceOptions<TEntity> _resourceOptions = options.Value;
+
+    public async Task<ResourceOperationResult> CreateAsync(
+        TEntity model,
+        CancellationToken cancellationToken
+    )
+    {
+        db.Set<TEntity>().Add(model);
+        await db.SaveChangesAsync(cancellationToken);
+
+        return ResourceOperationResult.Success();
+    }
+
+    public async Task<ResourceOperationResult> DeleteAsync(
+        string id,
+        CancellationToken cancellationToken
+    )
+    {
+        var entity = await FindEntityByKeyAsync(id, cancellationToken);
+        if (entity is null)
+        {
+            return ResourceOperationResult.NotFound();
+        }
+
+        db.Set<TEntity>().Remove(entity);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return await GetConcurrencyFailureResultAsync(id, cancellationToken);
+        }
+
+        return ResourceOperationResult.Success();
+    }
+
+    public Task<TEntity?> FindAsync(string id, CancellationToken cancellationToken) =>
+        FindEntityByKeyAsync(id, cancellationToken, noTracking: true);
 
     public async Task<ResourceListResult<TEntity>> ListAsync(
         ResourceListRequest request,
@@ -71,6 +110,85 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         return new(await query.ToListAsync(cancellationToken), totalCount);
     }
 
+    public async Task<ResourceOperationResult> UpdateAsync(
+        string id,
+        TEntity model,
+        CancellationToken cancellationToken
+    )
+    {
+        var edit =
+            _resourceOptions.Edit
+            ?? throw new InvalidOperationException(
+                "Edit is not configured for the EF entity model."
+            );
+        var entity = await FindEntityByKeyAsync(id, cancellationToken);
+        if (entity is null)
+        {
+            return ResourceOperationResult.NotFound();
+        }
+
+        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
+        foreach (var field in edit.Fields)
+        {
+            var property = entityType.FindProperty(field.FieldName)!.PropertyInfo!;
+            property.SetValue(entity, property.GetValue(model));
+        }
+
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return await GetConcurrencyFailureResultAsync(id, cancellationToken);
+        }
+
+        return ResourceOperationResult.Success();
+    }
+
+    private async Task<ResourceOperationResult> GetConcurrencyFailureResultAsync(
+        string id,
+        CancellationToken cancellationToken
+    ) =>
+        await FindEntityByKeyAsync(id, cancellationToken, noTracking: true) is null
+            ? ResourceOperationResult.NotFound()
+            : ResourceOperationResult.ValidationFailed(
+                null,
+                "This record changed while you were working. Reload it and try again."
+            );
+
+    private Task<TEntity?> FindEntityByKeyAsync(
+        string id,
+        CancellationToken cancellationToken,
+        bool noTracking = false
+    )
+    {
+        var property = db
+            .Model.FindEntityType(typeof(TEntity))!
+            .FindPrimaryKey()!
+            .Properties.Single();
+        if (!TryParseResourceId(id, property.ClrType, out var key))
+        {
+            return Task.FromResult<TEntity?>(null);
+        }
+
+        var parameter = Expression.Parameter(typeof(TEntity), "entity");
+        var predicate = Expression.Lambda<Func<TEntity, bool>>(
+            Expression.Equal(
+                Expression.Property(parameter, _resourceOptions.KeyPropertyName!),
+                Expression.Constant(key, property.ClrType)
+            ),
+            parameter
+        );
+        IQueryable<TEntity> query = db.Set<TEntity>();
+        if (noTracking)
+        {
+            query = query.AsNoTracking();
+        }
+
+        return query.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
     private static IQueryable<TEntity> Order(
         IQueryable<TEntity> query,
         LambdaExpression selector,
@@ -85,4 +203,42 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
                 Expression.Quote(selector)
             )
         );
+
+    private static bool TryParseResourceId(string id, Type underlyingType, out object? parsedId)
+    {
+        if (
+            underlyingType == typeof(int)
+            && int.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number)
+        )
+        {
+            parsedId = number;
+            return true;
+        }
+        if (
+            underlyingType == typeof(long)
+            && long.TryParse(
+                id,
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var longNumber
+            )
+        )
+        {
+            parsedId = longNumber;
+            return true;
+        }
+        if (underlyingType == typeof(Guid) && Guid.TryParse(id, out var guid))
+        {
+            parsedId = guid;
+            return true;
+        }
+        if (underlyingType == typeof(string))
+        {
+            parsedId = id;
+            return true;
+        }
+
+        parsedId = null;
+        return false;
+    }
 }

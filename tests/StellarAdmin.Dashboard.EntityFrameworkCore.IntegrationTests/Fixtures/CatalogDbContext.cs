@@ -9,5 +9,10 @@ public sealed class CatalogDbContext(DbContextOptions<CatalogDbContext> options)
     {
         modelBuilder.Entity<Product>().HasKey(product => product.Number);
         modelBuilder.Entity<Product>().HasQueryFilter(product => !product.Hidden);
+        modelBuilder.Entity<Product>().Property(product => product.Version).IsConcurrencyToken();
+        modelBuilder
+            .Entity<Product>()
+            .Property(product => product.GeneratedCode)
+            .HasDefaultValue(7);
     }
 }
