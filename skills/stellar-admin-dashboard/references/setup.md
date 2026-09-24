@@ -6,6 +6,23 @@ These preserved notes support the generated component references; full Dashboard
 
 The resource page helpers live in `StellarAdmin.Dashboard`, which is MIT licensed alongside the rest of StellarAdmin. These packages are currently available from the source repository; NuGet publication is a separate release step. Keep `StellarAdmin.TagHelpers` registered, reference the `StellarAdmin.Dashboard` project, add `using StellarAdmin.Dashboard;` in startup, and call `.AddDashboard()` on the `StellarAdminBuilder`. In `_ViewImports.cshtml`, add `@using StellarAdmin.Dashboard.TagHelpers` and `@addTagHelper *, StellarAdmin.Dashboard`.
 
+## Dashboard theme
+
+Dashboard uses shadcn Nova by default. Choose any of the fifteen shipped themes and optionally load its suggested web fonts in `Program.cs`:
+
+```csharp
+builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+{
+    dashboard.ConfigureTheme(theme =>
+    {
+        theme.Name = DashboardTheme.Ice;
+        theme.IncludeSuggestedFonts = true;
+    });
+});
+```
+
+The `DashboardTheme` enum includes Aurora, Concourse, Ice, Ledger, Meridian, Observatory, Parallax, and the eight `Shadcn*` themes. Dashboard links exactly one matching `stellar-admin.<theme>.css` bundle. `IncludeSuggestedFonts` defaults to `false`; when `true`, Dashboard links the selected theme's suggested Google Fonts families with `display=swap`. With fonts excluded, it makes no Google Fonts requests and the theme's CSS font stacks use available local or system fallbacks. This setting applies to the whole Dashboard; it does not add a visitor theme picker. Applications using TagHelpers outside Dashboard still choose their stylesheet in their own layout.
+
 ## Resource registration
 
 Register a resource through the Dashboard builder:

@@ -1,4 +1,8 @@
 @inject StellarAdminDashboardOptions ProOptions
+@inject Microsoft.Extensions.Options.IOptions<DashboardThemeOptions> ThemeOptions
+@{
+    var theme = DashboardThemeCatalog.Get(ThemeOptions.Value.Name);
+}
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,7 +11,13 @@
     <title>StellarAdmin</title>
     <meta name="description" content="StellarAdmin">
     @await RenderSectionAsync("Styles", required: false)
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.shadcn.nova.css" asp-append-version="true"/>
+    @if (ThemeOptions.Value.IncludeSuggestedFonts)
+    {
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link rel="stylesheet" href="@($"https://fonts.googleapis.com/css2?family={theme.FontFamilies}&display=swap")"/>
+    }
+    <link rel="stylesheet" href="@($"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme.Name}.css")" asp-append-version="true"/>
     @foreach (var stylesheet in ProOptions.Stylesheets)
     {
         <link rel="stylesheet" href="@Url.Content(stylesheet)" asp-append-version="true"/>

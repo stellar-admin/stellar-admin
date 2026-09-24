@@ -1,6 +1,6 @@
 # Theming StellarAdmin
 
-**A theme is a stylesheet.** The package ships one self-contained CSS bundle per theme; the layout links exactly one, and switching themes means switching that `<link>`. Nothing about the theme is configured in C#. Dark mode is a CSS class, and day-to-day styling means using the semantic design tokens instead of hard-coded colors.
+**A theme is a stylesheet.** The package ships one self-contained CSS bundle per theme; the layout links exactly one, and switching themes means switching that `<link>`. TagHelpers-only apps choose that stylesheet in their layout; Dashboard apps can use `dashboard.ConfigureTheme(...)` to choose it during registration. Dark mode is a CSS class, and day-to-day styling means using the semantic design tokens instead of hard-coded colors.
 
 ## Pick a theme (the layout `<link>`)
 
@@ -231,7 +231,7 @@ Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle` — only call 
 
 ## Rules
 
-1. Pick the theme by linking one `stellar-admin.<theme>.css` in the layout; switch themes by switching the `<link>`. No C# theme configuration exists.
+1. In a TagHelpers-only app, pick the theme by linking one `stellar-admin.<theme>.css` in the layout; switch themes by switching the `<link>`. Dashboard apps can instead use `dashboard.ConfigureTheme(...)`.
 2. Customize theme values by redeclaring the CSS custom properties (`--primary`, `--radius`, ...) in the app's own stylesheet, after the theme link. Override `.dark` too where the value should differ.
 3. Enable dark mode with the `dark` class on an ancestor; don't write your own dark CSS — the tokens are already themed for both modes. Set `color-scheme` alongside it.
 4. To use token utilities in your own markup, the app needs its own Tailwind build plus `theme-tokens.css`. Without that, `class="bg-primary"` silently does nothing.

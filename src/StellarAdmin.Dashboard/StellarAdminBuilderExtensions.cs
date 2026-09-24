@@ -20,6 +20,12 @@ public static class StellarAdminBuilderExtensions
                 ReferenceLookupProviderResolver
             >();
             builder.AddTagHelpers();
+            builder
+                .Services.AddOptions<DashboardThemeOptions>()
+                .Validate(
+                    options => Enum.IsDefined(options.Name),
+                    "The Dashboard theme must be one of the shipped themes."
+                );
 
             var dashboard = new StellarAdminDashboardBuilder(
                 builder.Services,

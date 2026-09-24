@@ -21,7 +21,7 @@ services.AddStellarAdmin()   // namespace StellarAdmin — returns StellarAdminB
         .AddTagHelpers();            // namespace StellarAdmin.TagHelpers — returns StellarAdminTagHelpersBuilder
 ```
 
-`AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddStellarAdmin()` registers `IconOptions`, which includes Lucide icons by default. Custom icons and packs are configured through `IconOptions` by `StellarAdminBuilder`; each service provider owns its options instance. Consumers inject `IOptions<IconOptions>` and resolve `.Value` in their constructors. Repeated registration preserves overrides. `AddTagHelpers()` registers the tag helper options. Theme selection is **not** part of registration: it's whichever theme stylesheet the app links.
+`AddStellarAdmin(Action<StellarAdminBuilder>)` is also available. `AddStellarAdmin()` registers `IconOptions`, which includes Lucide icons by default. Custom icons and packs are configured through `IconOptions` by `StellarAdminBuilder`; each service provider owns its options instance. Consumers inject `IOptions<IconOptions>` and resolve `.Value` in their constructors. Repeated registration preserves overrides. `AddTagHelpers()` registers the tag helper options. TagHelpers-only apps select a theme by linking its stylesheet; Dashboard apps may configure which one their shared layout links.
 
 ## Repository layout
 
@@ -151,7 +151,7 @@ Parallax is hand-authored in `Client/css/themes/parallax.css`; see its [specific
 
 ## Resources, Identity, and Entity Framework Core
 
-The admin shell and resource layer live in `src/StellarAdmin.Dashboard/`, with Identity and EF Core integrations in their respective `src/StellarAdmin.Dashboard.*` projects. Register the application with `AddStellarAdmin().AddDashboard()`; its assets use `_content/StellarAdmin.Dashboard/`. Maintained Identity designs live in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md`.
+The admin shell and resource layer live in `src/StellarAdmin.Dashboard/`, with Identity and EF Core integrations in their respective `src/StellarAdmin.Dashboard.*` projects. Register the application with `AddStellarAdmin().AddDashboard()`; its assets use `_content/StellarAdmin.Dashboard/`. Dashboard defaults to shadcn Nova and exposes `dashboard.ConfigureTheme(theme => { theme.Name = DashboardTheme.Ice; theme.IncludeSuggestedFonts = true; })` for app-wide selection and optional suggested web fonts. Maintained Identity designs live in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md`.
 
 `docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. `sandbox/IdentitySimplePlayground/` is also the host for the Dashboard and EF Core integration suites through `tests/StellarAdmin.Dashboard.Testing/`; keep it available when running tests. The fixtures use per-test temporary SQLite databases and in-process HTTP, leaving the playground database and running application untouched. See [integration test isolation](../development.md#integration-test-isolation).
 
