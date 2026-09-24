@@ -13,6 +13,7 @@
             <sa-alert-dialog-cancel>@Model.CancelLabel</sa-alert-dialog-cancel>
         </form>
         <form method="post" asp-action="Delete" asp-route-id="@Model.EntityId">
+            <input type="hidden" name="origin" value="edit" />
             <sa-alert-dialog-action variant="ButtonVariant.Destructive">@Model.ConfirmLabel</sa-alert-dialog-action>
         </form>
     </sa-alert-dialog-footer>

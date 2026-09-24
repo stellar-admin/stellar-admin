@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -94,6 +95,7 @@ public class ResourceController<TResource>(
     public async Task<IActionResult> Delete(
         [FromRoute] string id,
         [FromQuery] ResourceIndexQuery query,
+        [FromForm] string? origin,
         CancellationToken cancellationToken
     )
     {
@@ -125,6 +127,14 @@ public class ResourceController<TResource>(
 
         if (!result.IsSuccess)
         {
+            if (origin == "edit")
+            {
+                TempData[TempDataKeys.DeleteErrors] = JsonSerializer.Serialize(
+                    result.Errors.Select(error => error.Message)
+                );
+                return RedirectToAction(nameof(Edit), new { id });
+            }
+
             AddValidationErrors(result, []);
             return await IndexView(query, request, cancellationToken, redirectOutOfRange: false);
         }
@@ -166,7 +176,20 @@ public class ResourceController<TResource>(
             ? await loader(HttpContext.RequestServices, id, cancellationToken)
             : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
 
-        return resource is null ? NotFound() : await EditView(resource, cancellationToken);
+        if (resource is null)
+        {
+            return NotFound();
+        }
+
+        if (TempData[TempDataKeys.DeleteErrors] is string deleteErrors)
+        {
+            foreach (var message in JsonSerializer.Deserialize<string[]>(deleteErrors) ?? [])
+            {
+                ModelState.AddModelError(string.Empty, message);
+            }
+        }
+
+        return await EditView(resource, id, cancellationToken);
     }
 
     /// <summary>
@@ -211,7 +234,7 @@ public class ResourceController<TResource>(
         );
         if (!valid)
         {
-            return await EditView(resource, cancellationToken);
+            return await EditView(resource, id, cancellationToken);
         }
 
         var result = _resourceOptions.EditHandler is { } handler
@@ -229,7 +252,7 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, fields);
-            return await EditView(resource, cancellationToken);
+            return await EditView(resource, id, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
@@ -298,7 +321,11 @@ public class ResourceController<TResource>(
         );
     }
 
-    private async Task<ViewResult> EditView(object resource, CancellationToken cancellationToken)
+    private async Task<ViewResult> EditView(
+        object resource,
+        string id,
+        CancellationToken cancellationToken
+    )
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
@@ -308,6 +335,15 @@ public class ResourceController<TResource>(
             nameof(Edit),
             new ResourceFormPageViewModel
             {
+                Delete = _resourceOptions.Delete is { } delete
+                    ? new(
+                        delete.Title ?? _labelOptions.DeleteTitle(labels),
+                        delete.Message ?? _labelOptions.DeleteMessage(labels),
+                        delete.ConfirmLabel ?? _labelOptions.DeleteConfirmLabel(labels),
+                        delete.CancelLabel ?? _labelOptions.DeleteCancelLabel(labels),
+                        id
+                    )
+                    : null,
                 Entity = resource,
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),

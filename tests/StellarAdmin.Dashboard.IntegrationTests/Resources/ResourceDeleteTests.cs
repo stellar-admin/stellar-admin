@@ -10,6 +10,175 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 public class ResourceDeleteTests
 {
     [Test]
+    public async Task EditPageDeletion_RendersSeparateConfirmationForm()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)]);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Name))
+                );
+                resource.AllowDelete(delete =>
+                {
+                    delete.Title = "Remove product";
+                    delete.Message = "Remove this product permanently?";
+                    delete.ConfirmLabel = "Remove";
+                    delete.CancelLabel = "Keep";
+                });
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Edit/7");
+
+        // Assert
+        var trigger = document.RequiredElement("button[commandfor='delete-confirm-dialog']");
+        var dialog = document.RequiredElement("dialog[id='delete-confirm-dialog']");
+        var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/Product/Delete/7']");
+        await Assert.That(trigger.TextContent.Trim()).IsEqualTo("Remove product");
+        await Assert
+            .That(dialog.RequiredElement("[data-slot='alert-dialog-title']").TextContent.Trim())
+            .IsEqualTo("Remove product");
+        await Assert
+            .That(
+                dialog.RequiredElement("[data-slot='alert-dialog-description']").TextContent.Trim()
+            )
+            .IsEqualTo("Remove this product permanently?");
+        await Assert
+            .That(dialog.RequiredElement("[data-slot='alert-dialog-action']").TextContent.Trim())
+            .IsEqualTo("Remove");
+        await Assert
+            .That(dialog.RequiredElement("[data-slot='alert-dialog-cancel']").TextContent.Trim())
+            .IsEqualTo("Keep");
+        await Assert
+            .That(deleteForm.QuerySelector("input[name='__RequestVerificationToken']"))
+            .IsNotNull();
+        await Assert
+            .That(deleteForm.RequiredElement("input[name='origin']").GetAttribute("value"))
+            .IsEqualTo("edit");
+        await Assert.That(deleteForm.Closest(".sa-resource-form")).IsNull();
+    }
+
+    [Test]
+    public async Task EditPageWithoutDeletion_HidesConfirmation()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)]);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Name))
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Edit/7");
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("button[commandfor='delete-confirm-dialog']"))
+            .IsNull();
+        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNull();
+    }
+
+    [Test]
+    public async Task ConfirmedEditPageDeletion_RemovesResourceAndRedirectsToIndex()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)]);
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Name))
+                );
+                resource.AllowDelete();
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
+        values["origin"] = "edit";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Delete/7",
+            new FormUrlEncodedContent(values)
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert
+            .That(response.Headers.Location?.OriginalString)
+            .IsEqualTo("/stellaradmin/Product");
+        await Assert.That(state.DeleteCalls).IsEqualTo(1);
+        await Assert.That(state.Products).IsEmpty();
+    }
+
+    [Test]
+    public async Task RejectedEditPageDeletion_RedirectsToEditWithErrors()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)])
+        {
+            DeleteResult = ResourceOperationResult.ValidationFailed([
+                new(null, "This product is still in use."),
+                new(nameof(Product.Name), "<script>unsafe</script>"),
+            ]),
+        };
+        await using var sut = await DashboardTestHost.CreateAsync(
+            state,
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Name))
+                );
+                resource.AllowDelete();
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
+        values["origin"] = "edit";
+
+        // Act
+        using var response = await client.PostAsync(
+            "/stellaradmin/Product/Delete/7",
+            new FormUrlEncodedContent(values)
+        );
+        client.DefaultRequestHeaders.Remove("Cookie");
+        client.DefaultRequestHeaders.Add(
+            "Cookie",
+            response.Headers.GetValues("Set-Cookie").Select(cookie => cookie.Split(';')[0])
+        );
+        var document = await client.GetDocumentAsync(response.Headers.Location!.OriginalString);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert
+            .That(response.Headers.Location?.OriginalString)
+            .IsEqualTo("/stellaradmin/Product/Edit/7");
+        var summary = document.RequiredElement(".validation-summary-errors");
+        await Assert.That(summary.TextContent).Contains("This product is still in use.");
+        await Assert.That(summary.TextContent).Contains("<script>unsafe</script>");
+        await Assert.That(summary.QuerySelector("script")).IsNull();
+        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNotNull();
+        await Assert.That(state.Products.Count).IsEqualTo(1);
+        await Assert.That(state.DeleteCalls).IsEqualTo(1);
+    }
+
+    [Test]
     public async Task PersistenceRejection_RedisplaysIndexWithErrorsAndRetainsResource()
     {
         // Arrange
