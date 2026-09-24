@@ -1,4 +1,5 @@
 using DashboardPlayground.Data;
+using DashboardPlayground.Identity;
 using DashboardPlayground.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
@@ -19,8 +20,14 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder
     .Services.AddDefaultIdentity<IdentityUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true
-    )
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -44,6 +51,83 @@ builder
         {
             labels.CreateTitle = resource => $"Add new {resource.SingularLabel}";
             labels.CreateSubmitLabel = resource => $"Add {resource.SingularLabel}";
+        });
+
+        dashboard.AddResource<IdentityUser>(resource =>
+        {
+            resource.SingularLabel = "user";
+            resource.PluralLabel = "users";
+            resource.UseDataSource<UserDataSource>();
+            resource.UseKey(user => user.Id);
+            resource.Index(index =>
+            {
+                index.Columns(columns =>
+                {
+                    columns.Add(user => user.Email, column => column.Sortable());
+                    columns.Add(user => user.EmailConfirmed, column => column.Sortable());
+                });
+                index.DefaultSortBy(user => user.Email);
+                index.EnableSearch(search => search.Placeholder = "Search users...");
+                index.EnablePaging();
+            });
+            resource.AllowCreate<CreateUserModel, CreateUserHandler>(create =>
+                create.Fields(fields =>
+                {
+                    fields.AddSection(
+                        "Account",
+                        section =>
+                        {
+                            section.Add(model => model.Email);
+                            section.Add(model => model.EmailConfirmed);
+                        }
+                    );
+                    fields.AddSection(
+                        "Password",
+                        section =>
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.Password);
+                                row.Add(model => model.PasswordConfirmation);
+                            })
+                    );
+                })
+            );
+            resource.AllowEdit<EditUserModel, EditUserHandler>(edit =>
+                edit.Fields(fields =>
+                {
+                    fields.Add(model => model.Email);
+                    fields.Add(model => model.EmailConfirmed);
+                })
+            );
+            resource.AllowDelete(delete =>
+                delete.Message = "Delete this user account? This cannot be undone."
+            );
+        });
+
+        dashboard.AddResource<IdentityRole>(resource =>
+        {
+            resource.SingularLabel = "role";
+            resource.PluralLabel = "roles";
+            resource.UseDataSource<RoleDataSource>();
+            resource.UseKey(role => role.Id);
+            resource.Index(index =>
+            {
+                index.Columns(columns =>
+                    columns.Add(role => role.Name, column => column.Sortable())
+                );
+                index.DefaultSortBy(role => role.Name);
+                index.EnableSearch(search => search.Placeholder = "Search roles...");
+                index.EnablePaging();
+            });
+            resource.AllowCreate<RoleFormModel, CreateRoleHandler>(create =>
+                create.Fields(fields => fields.Add(model => model.Name))
+            );
+            resource.AllowEdit<RoleFormModel, EditRoleHandler>(edit =>
+                edit.Fields(fields => fields.Add(model => model.Name))
+            );
+            resource.AllowDelete(delete =>
+                delete.Message = "Delete this role? This cannot be undone."
+            );
         });
 
         dashboard.AddResource<Customer>(resource =>

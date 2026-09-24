@@ -149,6 +149,8 @@ Use integration-first scenario tests for each increment, without duplicate optio
 
 Adapt EF Core first, then Identity. Reattach each integration, its sample, and appropriate new tests only after adapting it to the proven core. EF supplies database operations and provider-specific behavior. Identity seeds fields through the normal resource builder, applies user configuration through the same builder, and performs writes through UserManager and RoleManager.
 
+The Identity package adaptation proposed above was superseded by the [Identity example on the resource baseline](identity-on-resource-baseline.md). The current work demonstrates Users and Roles in DashboardPlayground with ordinary resource registration and host-owned Identity behavior. The detached package is not being reattached.
+
 Prove Identity user creation with an action-specific model for password and confirmation through the shared controller workflow. Preserve integration domain requirements, including error translation and self-deletion prevention, and review routes, view overrides, authorization, and EF reference behavior during adaptation. Identity integration is not complete while password fields require a separate form configuration or CRUD flow.
 
 ### EF Core implementation checkpoints — revised 2026-09-22
