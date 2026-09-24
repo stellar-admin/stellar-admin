@@ -41,6 +41,9 @@ public class ResourceDeleteTests
         var dialog = document.RequiredElement("dialog[id='delete-confirm-dialog']");
         var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/Product/Delete/7']");
         await Assert.That(trigger.TextContent.Trim()).IsEqualTo("Remove product");
+        await Assert.That(trigger.GetAttribute("type")).IsEqualTo("button");
+        await Assert.That(trigger.Closest(".sa-resource-form-footer")).IsNotNull();
+        await Assert.That(trigger.Closest(".sa-resource-form-actions")).IsNull();
         await Assert
             .That(dialog.RequiredElement("[data-slot='alert-dialog-title']").TextContent.Trim())
             .IsEqualTo("Remove product");
@@ -62,6 +65,26 @@ public class ResourceDeleteTests
             .That(deleteForm.RequiredElement("input[name='origin']").GetAttribute("value"))
             .IsEqualTo("edit");
         await Assert.That(deleteForm.Closest(".sa-resource-form")).IsNull();
+    }
+
+    [Test]
+    public async Task CreatePageWithDeletion_HasNoDeleteControl()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new ProductState([]),
+            resource => resource.UseKey(product => product.Id).AllowDelete()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Create");
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("button[commandfor='delete-confirm-dialog']"))
+            .IsNull();
+        await Assert.That(document.QuerySelector("dialog[id='delete-confirm-dialog']")).IsNull();
     }
 
     [Test]

@@ -26,11 +26,7 @@
             <sa-slot-outlet name="post-form-fields"/>
 
             <div class="sa-resource-form-footer">
-                @if (Model.Delete is not null)
-                {
-                    <sa-button type="button" variant="ButtonVariant.Destructive"
-                               command="show-modal" commandfor="delete-confirm-dialog">@Model.Delete.Title</sa-button>
-                }
+                <sa-slot-outlet name="form-leading-actions"/>
                 <div class="sa-resource-form-actions">
                     <sa-slot-outlet name="pre-form-actions"/>
                     <sa-linkbutton asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-linkbutton>
