@@ -49,6 +49,11 @@ public sealed class ResourceOptions<TResource>
     }
 
     /// <summary>
+    ///     The resource's sidebar item configuration.
+    /// </summary>
+    public ResourceSidebarItemOptions SidebarItem { get; } = new();
+
+    /// <summary>
     ///     The singular resource label.
     /// </summary>
     /// <remarks>

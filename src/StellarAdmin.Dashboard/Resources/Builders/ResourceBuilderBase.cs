@@ -172,6 +172,18 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
         return (TBuilder)this;
     }
 
+    /// <summary>
+    ///     Configures the resource's sidebar item.
+    /// </summary>
+    public TBuilder SidebarItem(Action<ResourceSidebarItemBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(Services));
+
+        return (TBuilder)this;
+    }
+
     private ResourceCreateBuilder<TModel> CreateBuilder<TModel>() =>
         new(configure =>
             Services.Configure<ResourceOptions<TResource>>(options =>

@@ -1,5 +1,9 @@
 # Generic resource follow-ups
 
+## Sidebar update — 2026-09-24
+
+Resource sidebar registration now uses one shared Dashboard provider for ordinary and EF Core resources. The detached Identity package still has its separate provider; its adaptation remains open. Other deferred items remain parked. The older audit below records the source as it existed on 2026-09-18 and is historical.
+
 ## Code audit — 2026-09-18
 
 Current status: **parked**. All six deferred items remain relevant. EF registration still creates its own `ResourceSidebarProvider`; Identity has its separate provider. `EfCoreResourceController.cs` owns CRUD without a configurable operations class. `EfCoreReferenceBuilder.cs` exposes only `Choices`, `EfCoreReference.cs` requires a dependent navigation and materializes all choices, and `EditorOptions.cs`/`RadioEditorOptions.cs` expose class settings rather than masks or choice sources. The controller excludes concurrency-token properties from editable fields and does not round-trip GET tokens. Current sources are under `src/StellarAdmin.Dashboard*`, not a separate Pro repository.
@@ -21,6 +25,8 @@ Workspace, Pro, OSS, and website use `feature/generic-resources`; consumer skill
 ### 1. Shared Dashboard sidebar registration
 
 Priority: the remaining cleanup from the original effort. All Dashboard packages should add standard sidebar items through a simple method on StellarAdminDashboardBuilder, instead of registering providers for each controller/resource. Keep ISidebarItemsProvider as an escape hatch for custom behavior. The method signature remains open; propose it before implementing.
+
+The resource-specific part is implemented in [resource sidebar registration](resource-sidebar-registration.md). It covers resources registered through `AddResource` or `AddEfCoreResource`; adaptation of the detached Identity package remains a separate later step.
 
 Start in `src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdminDashboardBuilderExtensions.cs`, `src/StellarAdmin.Dashboard.Identity/StellarAdminDashboardBuilderExtensions.cs`, and `src/StellarAdmin.Dashboard/Sidebar/`. Rendering consumes providers in `src/StellarAdmin.Dashboard/Areas/StellarAdmin/ViewComponents/SidebarViewComponent.cs`.
 

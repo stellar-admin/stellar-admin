@@ -14,7 +14,7 @@ The detached `StellarAdmin.Dashboard.Identity` and `IdentitySimplePlayground` re
 - Use `UserManager` and `RoleManager` for writes and translate `IdentityResult` errors to `ResourceOperationResult`. Create and edit form models contain only the fields this example allows. User creation includes password and confirmation. User edit excludes password.
 - Keep `IdentityUser.UserName` equal to `Email`, because the playground's stock Identity login signs in by email. This was discovered in an HTTP check: an independently configured user name made newly created accounts unable to sign in.
 - Use queryable Identity stores for list, search, sort, count, and paging. Keep a key tie-breaker for stable pages.
-- Add a playground README with setup and the scope of account confirmation and role membership. The example does not configure Dashboard authorization, seed accounts and roles, or add navigation items.
+- Add a playground README with setup and the scope of account confirmation and role membership. The example does not configure Dashboard authorization or seed accounts and roles. Resource registration now adds sidebar items through the shared Dashboard provider, as recorded in [resource sidebar registration](resource-sidebar-registration.md).
 
 ## Verification
 

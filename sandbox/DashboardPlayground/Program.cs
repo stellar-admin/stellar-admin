@@ -57,6 +57,11 @@ builder
         {
             resource.SingularLabel = "user";
             resource.PluralLabel = "users";
+            resource.SidebarItem(item =>
+            {
+                item.Label = "Users";
+                item.Group = "Identity";
+            });
             resource.UseDataSource<UserDataSource>();
             resource.UseKey(user => user.Id);
             resource.Index(index =>
@@ -108,6 +113,12 @@ builder
         {
             resource.SingularLabel = "role";
             resource.PluralLabel = "roles";
+            resource.SidebarItem(item =>
+            {
+                item.Label = "Roles";
+                item.Group = "Identity";
+                item.Order = 10;
+            });
             resource.UseDataSource<RoleDataSource>();
             resource.UseKey(role => role.Id);
             resource.Index(index =>
@@ -132,6 +143,11 @@ builder
 
         dashboard.AddResource<Customer>(resource =>
         {
+            resource.SidebarItem(item =>
+            {
+                item.Group = "Commerce";
+                item.Order = 20;
+            });
             resource.UseDataSource<CustomerDataSource>();
             resource.AllowDelete();
             resource.UseKey(customer => customer.Id);
@@ -176,6 +192,11 @@ builder
 
         dashboard.AddEfCoreResource<ProductDbContext, Product>(resource =>
         {
+            resource.SidebarItem(item =>
+            {
+                item.Group = "Commerce";
+                item.Order = 10;
+            });
             resource.AllowCreate(create =>
                 create.Fields(fields =>
                 {

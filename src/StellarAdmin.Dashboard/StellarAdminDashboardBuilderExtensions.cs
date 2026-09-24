@@ -1,8 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.Controllers;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Sidebar;
 
 namespace StellarAdmin.Dashboard;
 
@@ -85,6 +88,39 @@ public static class StellarAdminDashboardBuilderExtensions
                 typeof(ResourceController<TResource>),
                 typeof(TResource).Name.Split('`')[0]
             );
+
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<ISidebarItemsProvider, ResourceSidebarItemsProvider>()
+            );
+            if (
+                !builder.Services.Any(descriptor =>
+                    descriptor.ServiceType == typeof(ResourceSidebarRegistration)
+                    && descriptor.ImplementationInstance is ResourceSidebarRegistration registration
+                    && registration.ResourceType == typeof(TResource)
+                )
+            )
+            {
+                builder.Services.AddSingleton(
+                    new ResourceSidebarRegistration(
+                        typeof(TResource),
+                        typeof(TResource).Name.Split('`')[0],
+                        services =>
+                        {
+                            var options = services
+                                .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
+                                .Value;
+                            var sidebarItem = options.SidebarItem;
+
+                            return new ResourceSidebarItem(
+                                sidebarItem.Label ?? options.PluralLabel,
+                                sidebarItem.Group,
+                                sidebarItem.Order,
+                                sidebarItem.Visible
+                            );
+                        }
+                    )
+                );
+            }
 
             return new(builder.Services);
         }
