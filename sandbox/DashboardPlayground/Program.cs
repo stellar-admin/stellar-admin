@@ -47,6 +47,12 @@ builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
     {
+        dashboard.ConfigureTheme(theme =>
+        {
+            theme.Name = DashboardTheme.Parallax;
+            theme.IncludeSuggestedFonts = true;
+        });
+
         dashboard.ConfigureResourceLabels(labels =>
         {
             labels.CreateTitle = resource => $"Add new {resource.SingularLabel}";
