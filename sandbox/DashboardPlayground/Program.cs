@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder
-    .Services.AddDefaultIdentity<IdentityUser>(options =>
+    .Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = true;
         options.Password.RequireDigit = false;
@@ -43,6 +43,7 @@ builder.Services.AddDbContext<ProductDbContext>(
 );
 builder.Services.AddSingleton<CustomerDataSource>();
 builder.Services.AddScoped<CategoryLookupProvider>();
+builder.Services.AddScoped<DepartmentLookupProvider>();
 builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
@@ -59,7 +60,7 @@ builder
             labels.CreateSubmitLabel = resource => $"Add {resource.SingularLabel}";
         });
 
-        dashboard.AddResource<IdentityUser>(resource =>
+        dashboard.AddResource<ApplicationUser>(resource =>
         {
             resource.SingularLabel = "user";
             resource.PluralLabel = "users";
@@ -74,7 +75,13 @@ builder
             {
                 index.Columns(columns =>
                 {
+                    columns.Add(user => user.FirstName, column => column.Sortable());
+                    columns.Add(user => user.LastName, column => column.Sortable());
                     columns.Add(user => user.Email, column => column.Sortable());
+                    columns.Add(
+                        user => user.Department!.Name,
+                        column => column.Title = "Department"
+                    );
                     columns.Add(user => user.EmailConfirmed, column => column.Sortable());
                 });
                 index.DefaultSortBy(user => user.Email);
@@ -93,6 +100,31 @@ builder
                         }
                     );
                     fields.AddSection(
+                        "Profile",
+                        section =>
+                        {
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.FirstName);
+                                row.Add(model => model.LastName);
+                            });
+                            section.Add(
+                                model => model.DepartmentId,
+                                field =>
+                                {
+                                    field.UseEditor<ReferenceLookupEditorOptions>(options =>
+                                        options.UseLookup<DepartmentLookupProvider>()
+                                    );
+                                }
+                            );
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.PreferredLanguage);
+                                row.Add(model => model.TimeZoneId);
+                            });
+                        }
+                    );
+                    fields.AddSection(
                         "Password",
                         section =>
                             section.AddRow(row =>
@@ -106,8 +138,39 @@ builder
             resource.AllowEdit<EditUserModel, EditUserHandler>(edit =>
                 edit.Fields(fields =>
                 {
-                    fields.Add(model => model.Email);
-                    fields.Add(model => model.EmailConfirmed);
+                    fields.AddSection(
+                        "Account",
+                        section =>
+                        {
+                            section.Add(model => model.Email);
+                            section.Add(model => model.EmailConfirmed);
+                        }
+                    );
+                    fields.AddSection(
+                        "Profile",
+                        section =>
+                        {
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.FirstName);
+                                row.Add(model => model.LastName);
+                            });
+                            section.Add(
+                                model => model.DepartmentId,
+                                field =>
+                                {
+                                    field.UseEditor<ReferenceLookupEditorOptions>(options =>
+                                        options.UseLookup<DepartmentLookupProvider>()
+                                    );
+                                }
+                            );
+                            section.AddRow(row =>
+                            {
+                                row.Add(model => model.PreferredLanguage);
+                                row.Add(model => model.TimeZoneId);
+                            });
+                        }
+                    );
                 })
             );
             resource.AllowDelete(delete =>
@@ -144,6 +207,34 @@ builder
             );
             resource.AllowDelete(delete =>
                 delete.Message = "Delete this role? This cannot be undone."
+            );
+        });
+
+        dashboard.AddEfCoreResource<ApplicationDbContext, Department>(resource =>
+        {
+            resource.SidebarItem(item =>
+            {
+                item.Label = "Departments";
+                item.Group = "Identity";
+                item.Order = 20;
+            });
+            resource.Index(index =>
+            {
+                index.Columns(columns =>
+                    columns.Add(department => department.Name, column => column.Sortable())
+                );
+                index.DefaultSortBy(department => department.Name);
+                index.EnableSearch(
+                    term => department => department.Name.Contains(term),
+                    search => search.Placeholder = "Search departments..."
+                );
+                index.EnablePaging();
+            });
+            resource.AllowCreate(create =>
+                create.Fields(fields => fields.Add(department => department.Name))
+            );
+            resource.AllowEdit(edit =>
+                edit.Fields(fields => fields.Add(department => department.Name))
             );
         });
 

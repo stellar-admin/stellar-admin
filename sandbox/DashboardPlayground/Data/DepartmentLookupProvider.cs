@@ -1,0 +1,27 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using StellarAdmin.Dashboard.Resources.Editors;
+
+namespace DashboardPlayground.Data;
+
+public sealed class DepartmentLookupProvider(ApplicationDbContext db) : IReferenceLookupProvider
+{
+    public async Task<IReadOnlyList<SelectListItem>> GetLookupsAsync(
+        CancellationToken cancellationToken
+    )
+    {
+        var departments = await db
+            .Departments.AsNoTracking()
+            .OrderBy(department => department.Name)
+            .ToListAsync(cancellationToken);
+
+        return
+        [
+            new("Not set", ""),
+            .. departments.Select(department => new SelectListItem(
+                department.Name,
+                department.Id.ToString()
+            )),
+        ];
+    }
+}

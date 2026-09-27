@@ -1,9 +1,10 @@
+using DashboardPlayground.Data;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Dashboard.Resources;
 
 namespace DashboardPlayground.Identity;
 
-public sealed class EditUserHandler(UserManager<IdentityUser> users)
+public sealed class EditUserHandler(UserManager<ApplicationUser> users)
     : IResourceEditHandler<EditUserModel>
 {
     public async Task<EditUserModel?> FindAsync(string id, CancellationToken cancellationToken)
@@ -14,7 +15,16 @@ public sealed class EditUserHandler(UserManager<IdentityUser> users)
 
         return user is null
             ? null
-            : new EditUserModel { Email = user.Email ?? "", EmailConfirmed = user.EmailConfirmed };
+            : new EditUserModel
+            {
+                DepartmentId = user.DepartmentId,
+                Email = user.Email ?? "",
+                EmailConfirmed = user.EmailConfirmed,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PreferredLanguage = user.PreferredLanguage,
+                TimeZoneId = user.TimeZoneId,
+            };
     }
 
     public async Task<ResourceOperationResult> UpdateAsync(
@@ -31,6 +41,11 @@ public sealed class EditUserHandler(UserManager<IdentityUser> users)
             return ResourceOperationResult.NotFound();
         }
 
+        user.DepartmentId = model.DepartmentId;
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.PreferredLanguage = model.PreferredLanguage;
+        user.TimeZoneId = model.TimeZoneId;
         user.UserName = model.Email;
         user.Email = model.Email;
         user.EmailConfirmed = model.EmailConfirmed;

@@ -1,9 +1,10 @@
+using DashboardPlayground.Data;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Dashboard.Resources;
 
 namespace DashboardPlayground.Identity;
 
-public sealed class CreateUserHandler(UserManager<IdentityUser> users)
+public sealed class CreateUserHandler(UserManager<ApplicationUser> users)
     : IResourceCreateHandler<CreateUserModel>
 {
     public async Task<ResourceOperationResult> CreateAsync(
@@ -13,8 +14,13 @@ public sealed class CreateUserHandler(UserManager<IdentityUser> users)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var user = new IdentityUser
+        var user = new ApplicationUser
         {
+            DepartmentId = model.DepartmentId,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            PreferredLanguage = model.PreferredLanguage,
+            TimeZoneId = model.TimeZoneId,
             UserName = model.Email,
             Email = model.Email,
             EmailConfirmed = model.EmailConfirmed,
