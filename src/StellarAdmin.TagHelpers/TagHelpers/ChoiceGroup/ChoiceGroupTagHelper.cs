@@ -10,16 +10,11 @@ namespace StellarAdmin.TagHelpers;
 /// <summary>
 ///     Shared binding and field attributes for radio and checkbox groups.
 /// </summary>
-public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
+public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
 {
     private static readonly object SequenceKey = new();
     private readonly IHtmlGenerator _generator;
     private readonly IOptions<IconOptions> _icons;
-
-    /// <summary>
-    ///     Supporting text for the group.
-    /// </summary>
-    public string? Description { get; set; }
 
     /// <summary>
     ///     Whether all options are disabled.
@@ -27,46 +22,19 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     An error message for the group.
-    /// </summary>
-    public string? Error { get; set; }
-
-    /// <summary>
-    ///     The property bound to this group.
-    /// </summary>
-    [HtmlAttributeName("asp-for")]
-    public ModelExpression? For { get; set; }
-
-    /// <summary>
     ///     Options to render instead of child item tags.
     /// </summary>
     [HtmlAttributeName("asp-items")]
     public IEnumerable<SelectListItem>? Items { get; set; }
 
-    /// <summary>
-    ///     The group legend.
-    /// </summary>
-    public string? Label { get; set; }
-
-    /// <summary>
-    ///     The submitted field name when not using model binding.
-    /// </summary>
-    public string? Name { get; set; }
-
-    /// <summary>
-    ///     The context of the executing view.
-    /// </summary>
-    [HtmlAttributeNotBound]
-    [ViewContext]
-    public required ViewContext ViewContext { get; set; }
-
     protected ChoiceGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
+        : base(generator)
     {
         _generator = generator;
         _icons = icons;
     }
 
-    protected async Task RenderAsync(
+    protected async Task<AutoFieldConfiguration> RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,
         bool multiple,
@@ -147,13 +115,8 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
         var id =
             output.Attributes["id"]?.Value?.ToString()
             ?? $"sa-choice-{GetUniqueId(context)}-{sequence}";
-        var description = Description ?? For?.Metadata.Description;
         var invalid = Error != null || entry?.Errors.Count > 0;
-        var describedBy = JoinCssClasses(
-            output.Attributes["aria-describedby"]?.Value?.ToString(),
-            description == null ? null : $"{id}-description",
-            For != null || Error != null ? $"{id}-error" : null
-        );
+        var describedBy = output.Attributes["aria-describedby"]?.Value?.ToString() ?? string.Empty;
         var itemIndex = 0;
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var group = new ChoiceGroupContext
@@ -193,7 +156,7 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
             throw new InvalidOperationException("Use asp-items or child items, not both.");
         }
 
-        output.TagName = "fieldset";
+        output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
         foreach (
             var attribute in new[]
@@ -206,6 +169,7 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
                 "label",
                 "description",
                 "error",
+                "render-field",
                 "asp-for",
                 "asp-items",
             }
@@ -215,14 +179,19 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
         }
 
         output.Attributes.SetAttribute("id", id);
-        output.Attributes.SetAttribute("data-slot", "field-set");
+        output.Attributes.SetAttribute("data-slot", multiple ? "checkbox-group" : "radio-group");
+        output.Attributes.SetAttribute("role", multiple ? "group" : "radiogroup");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-field-set", output.GetUserSuppliedClass())
+            JoinCssClasses(
+                "sa-field-group group/field-group",
+                multiple && !card ? "[&_[data-slot=field-label]]:font-normal" : null,
+                output.GetUserSuppliedClass()
+            )
         );
         if (Disabled == true)
         {
-            output.Attributes.SetAttribute("disabled", "disabled");
+            output.Attributes.SetAttribute("aria-disabled", "true");
         }
 
         if (invalid)
@@ -230,46 +199,25 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("aria-invalid", "true");
         }
 
-        if (describedBy.Length > 0)
+        if (
+            !output.Attributes.ContainsName("aria-label")
+            && !output.Attributes.ContainsName("aria-labelledby")
+            && (Label ?? For?.Metadata.DisplayName ?? For?.Name) is { } groupLabel
+        )
         {
-            output.Attributes.SetAttribute("aria-describedby", describedBy);
+            output.Attributes.SetAttribute("aria-label", groupLabel);
         }
 
         output.Content.Clear();
-        var legend = Label ?? For?.Metadata.DisplayName ?? For?.Name;
-        if (legend != null)
-        {
-            var tag = Element("legend", "field-legend", "sa-field-legend");
-            tag.Attributes["data-variant"] = "legend";
-            tag.InnerHtml.Append(legend);
-            output.Content.AppendHtml(tag);
-        }
-
-        if (description != null)
-        {
-            var tag = Element("p", "field-description", "sa-field-description");
-            tag.Attributes["id"] = $"{id}-description";
-            tag.InnerHtml.Append(description);
-            output.Content.AppendHtml(tag);
-        }
-
-        var options = Element(
-            "div",
-            multiple ? "checkbox-group" : "radio-group",
-            JoinCssClasses(
-                "sa-field-group group/field-group",
-                multiple && !card ? "[&_[data-slot=field-label]]:font-normal" : null
-            )
-        );
         if (items == null)
         {
-            options.InnerHtml.AppendHtml(children);
+            output.Content.AppendHtml(children);
         }
         else
         {
             foreach (var item in items)
             {
-                options.InnerHtml.AppendHtml(
+                output.Content.AppendHtml(
                     await group.RenderItem(
                         item.Value ?? item.Text,
                         new HtmlContentBuilder().Append(item.Text),
@@ -281,25 +229,6 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
             }
         }
 
-        output.Content.AppendHtml(options);
-        if (For != null || Error != null)
-        {
-            var error = new TagHelperOutput(
-                "div",
-                new TagHelperAttributeList { { "id", $"{id}-error" } },
-                (_, _) =>
-                    Task.FromResult<TagHelperContent>(
-                        new DefaultTagHelperContent().SetContent(Error ?? "")
-                    )
-            );
-            await new FieldErrorTagHelper(_generator)
-            {
-                For = For,
-                ViewContext = ViewContext,
-            }.ProcessAsync(context, error);
-            output.Content.AppendHtml(error);
-        }
-
         if (multiple && Disabled != true)
         {
             var marker = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };
@@ -308,6 +237,8 @@ public abstract class ChoiceGroupTagHelper : StellarAdminTagHelperBase
             marker.Attributes["value"] = "true";
             output.Content.AppendHtml(marker);
         }
+
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionAfterLabel);
     }
 
     private static TagBuilder Element(string tag, string slot, string css)

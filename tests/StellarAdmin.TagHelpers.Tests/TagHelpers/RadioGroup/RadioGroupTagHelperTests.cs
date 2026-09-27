@@ -31,8 +31,13 @@ public class RadioGroupTagHelperTests
 
         // Assert
         await Assert
-            .That(html.QuerySelector("fieldset > legend")?.TextContent)
+            .That(html.QuerySelector("[data-slot=field] > [data-slot=field-label]")?.TextContent)
             .IsEqualTo("Delivery");
+        await Assert
+            .That(html.QuerySelector("[data-slot=field] > [data-slot=field-description]")?.TextContent)
+            .IsEqualTo("Choose a delivery method");
+        await Assert.That(html.QuerySelector("[data-slot=radio-group]")?.GetAttribute("role"))
+            .IsEqualTo("radiogroup");
         await Assert
             .That(
                 html.QuerySelectorAll(

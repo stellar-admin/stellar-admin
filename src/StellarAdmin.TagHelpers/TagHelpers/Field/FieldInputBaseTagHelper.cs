@@ -173,7 +173,9 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     )
     {
         var fieldTagBuilder = new FieldTagBuilder(
-            autoFieldConfiguration.Layout == AutoFieldLayout.Vertical
+            autoFieldConfiguration.Layout
+                is AutoFieldLayout.VerticalDescriptionLast
+                    or AutoFieldLayout.VerticalDescriptionAfterLabel
                 ? FieldOrientation.Vertical
                 : FieldOrientation.Horizontal,
             FieldClasses?.Root
@@ -227,7 +229,9 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
             await RenderErrorControl(context, output.PostElement, autoFieldConfiguration.Elements);
             await RenderDescriptionControl(
                 context,
-                output.PostElement,
+                autoFieldConfiguration.Layout == AutoFieldLayout.VerticalDescriptionLast
+                    ? output.PostElement
+                    : output.PreElement,
                 autoFieldConfiguration.Elements
             );
         }

@@ -138,6 +138,6 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
 
         output.Content.AppendHtml(childContent);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 }

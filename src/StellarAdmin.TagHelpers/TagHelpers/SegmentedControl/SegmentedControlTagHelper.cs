@@ -91,6 +91,6 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
         output.Content.SetHtmlContent(await output.GetChildContentAsync());
         LabelForId = group.FirstInputId;
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 }

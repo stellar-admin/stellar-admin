@@ -50,6 +50,11 @@ public class CheckboxGroupTagHelperTests
             .That(html.QuerySelectorAll(".sa-checkbox-indicator > svg").Length)
             .IsEqualTo(3);
         await Assert
+            .That(html.QuerySelector("[data-slot=field] > [data-slot=field-label]")?.TextContent)
+            .IsEqualTo("Roles");
+        await Assert.That(html.QuerySelector("[data-slot=checkbox-group]")?.GetAttribute("role"))
+            .IsEqualTo("group");
+        await Assert
             .That(
                 html.QuerySelectorAll(
                     "[data-slot=checkbox-group] > label > [data-slot=field]"
@@ -99,7 +104,9 @@ public class CheckboxGroupTagHelperTests
         using var html = await TagHelperRenderer.RenderAsync(sut);
 
         // Assert
-        await Assert.That(html.QuerySelector("fieldset[disabled]")).IsNotNull();
+        await Assert
+            .That(html.QuerySelector("[data-slot=checkbox-group][aria-disabled=true]"))
+            .IsNotNull();
         await Assert
             .That(html.QuerySelector("input[type=checkbox][disabled][checked]"))
             .IsNotNull();

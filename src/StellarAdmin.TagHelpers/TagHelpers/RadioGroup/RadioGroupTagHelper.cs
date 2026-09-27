@@ -27,7 +27,11 @@ public class RadioGroupTagHelper : ChoiceGroupTagHelper
     public RadioGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
         : base(generator, icons) { }
 
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    protected override Task<AutoFieldConfiguration> RenderInput(
+        TagHelperContext context,
+        TagHelperOutput output,
+        IDictionary<string, object?>? htmlAttributes
+    )
     {
         var effectiveVariant = Variant ?? RadioGroupVariant.Default;
 

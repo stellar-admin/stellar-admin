@@ -5,8 +5,11 @@
 /// </summary>
 public enum AutoFieldLayout
 {
-    /// <summary>The label, input, and supporting text are stacked vertically.</summary>
-    Vertical,
+    /// <summary>The label, input, and supporting text are stacked vertically. The description appears last.</summary>
+    VerticalDescriptionLast,
+
+    /// <summary>The label, input, and supporting text are stacked vertically. The description appears after the label.</summary>
+    VerticalDescriptionAfterLabel,
 
     /// <summary>The input is placed first, with the label and supporting text following it horizontally.</summary>
     HorizontalInputFirst,

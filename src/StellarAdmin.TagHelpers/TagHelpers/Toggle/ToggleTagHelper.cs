@@ -137,6 +137,6 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
         output.Content.AppendHtml(inputOutput);
         output.Content.AppendHtml(childContent);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 }

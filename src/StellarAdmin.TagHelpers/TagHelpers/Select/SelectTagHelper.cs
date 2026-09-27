@@ -136,6 +136,6 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
             )
         );
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 }

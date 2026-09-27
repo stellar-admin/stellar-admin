@@ -18,6 +18,11 @@ internal static class TagHelperRenderer
             attributes.Add("type", input.InputTypeName);
         }
 
+        if (sut is FieldInputBaseTagHelper { Name: not null } fieldInput)
+        {
+            attributes.Add("name", fieldInput.Name);
+        }
+
         var context = new TagHelperContext(
             attributes,
             new Dictionary<object, object>(),

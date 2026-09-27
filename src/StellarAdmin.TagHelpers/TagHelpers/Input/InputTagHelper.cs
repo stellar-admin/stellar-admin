@@ -229,7 +229,7 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
             "checkbox" or "radio" => new AutoFieldConfiguration(
                 AutoFieldLayout.HorizontalInputFirst
             ),
-            _ => new AutoFieldConfiguration(AutoFieldLayout.Vertical),
+            _ => new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast),
         };
     }
 }

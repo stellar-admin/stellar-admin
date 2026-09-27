@@ -186,7 +186,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
         inputWrapper.InnerHtml.AppendHtml(inputOutput);
         output.Content.AppendHtml(inputWrapper);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 
     private TagHelperOutput RenderUnderlyingInput(

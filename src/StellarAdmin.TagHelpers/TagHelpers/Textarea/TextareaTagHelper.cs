@@ -67,7 +67,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
             output.Content.SetHtmlContent(childContent);
         }
 
-        return new AutoFieldConfiguration(AutoFieldLayout.Vertical);
+        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
     }
 
     private TagBuilder GenerateTextAreaTagBuilder(

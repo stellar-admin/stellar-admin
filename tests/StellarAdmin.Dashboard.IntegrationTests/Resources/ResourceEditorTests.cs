@@ -118,7 +118,7 @@ public class ResourceEditorTests
             )
             .IsTrue();
         await Assert
-            .That(document.RequiredElement("[id$='-error']").TextContent)
+            .That(document.RequiredElement("[data-slot='field-error']").TextContent)
             .Contains("Roles cannot change.");
     }
 

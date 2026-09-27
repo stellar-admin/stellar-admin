@@ -223,7 +223,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
         }
 
-        return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.Vertical));
+        return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast));
     }
 
     /// <summary>
