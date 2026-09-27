@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+using StellarAdmin.Dashboard.Infrastructure.Authorization;
 using StellarAdmin.Dashboard.Resources;
 
 namespace StellarAdmin.Dashboard.Sidebar;
@@ -7,19 +9,23 @@ internal sealed class ResourceSidebarItemsProvider(
     IServiceProvider services
 ) : ISidebarItemsProvider
 {
-    public SidebarItem[] GetItems()
+    public async Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)
     {
-        var items = resources
-            .Select(
-                (resource, index) =>
-                    new
-                    {
-                        resource.ControllerName,
-                        Item = resource.ResolveSidebarItem(services),
-                        Index = index,
-                    }
+        var items = new List<(string ControllerName, ResourceSidebarItem Item, int Index)>();
+        foreach (var (resource, index) in resources.Select((resource, index) => (resource, index)))
+        {
+            var item = resource.ResolveSidebarItem(services);
+            if (
+                item.Visible
+                && await AuthorizationMetadata.AuthorizeAsync(
+                    resource.ResolveAuthorizationMetadata(services),
+                    httpContext
+                )
             )
-            .Where(entry => entry.Item.Visible);
+            {
+                items.Add((resource.ControllerName, item, index));
+            }
+        }
 
         return items
             .GroupBy(entry => entry.Item.Group, StringComparer.Ordinal)

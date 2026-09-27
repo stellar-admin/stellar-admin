@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources.Options;
@@ -108,13 +109,14 @@ public class StellarAdminDashboardBuilderExtensionsTests
         // Act
         sut.AddResource<Product>();
         using var provider = services.BuildServiceProvider();
-        var items = provider
-            .GetServices<ISidebarItemsProvider>()
-            .SelectMany(sidebarProvider => sidebarProvider.GetItems())
-            .ToArray();
+        var items = new List<SidebarItem>();
+        foreach (var sidebarProvider in provider.GetServices<ISidebarItemsProvider>())
+        {
+            items.AddRange(await sidebarProvider.GetItemsAsync(new DefaultHttpContext()));
+        }
 
         // Assert
-        await Assert.That(items.Length).IsEqualTo(2);
+        await Assert.That(items.Count).IsEqualTo(2);
         await Assert.That(items[0]).IsTypeOf<SidebarLinkItem>();
         await Assert.That(items[1]).IsTypeOf<SidebarGroupItem>();
     }
@@ -132,7 +134,8 @@ public class StellarAdminDashboardBuilderExtensionsTests
         sut.AddResource<Product>();
         using var provider = services.BuildServiceProvider();
         var sidebarProviders = provider.GetServices<ISidebarItemsProvider>().ToArray();
-        var group = (SidebarGroupItem)sidebarProviders.Single().GetItems().Single();
+        var group = (SidebarGroupItem)
+            (await sidebarProviders.Single().GetItemsAsync(new DefaultHttpContext())).Single();
 
         // Assert
         await Assert.That(sidebarProviders.Length).IsEqualTo(1);
@@ -143,7 +146,8 @@ public class StellarAdminDashboardBuilderExtensionsTests
 
     private sealed class CustomSidebarProvider : ISidebarItemsProvider
     {
-        public SidebarItem[] GetItems() => [new SidebarLinkItem("Help", "/help")];
+        public Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext) =>
+            Task.FromResult<SidebarItem[]>([new SidebarLinkItem("Help", "/help")]);
     }
 
     private sealed class InventoryItem;

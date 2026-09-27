@@ -36,6 +36,8 @@ builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
     {
+        dashboard.RequireAuthorization();
+
         dashboard.ConfigureTheme(theme =>
         {
             theme.Name = DashboardTheme.Parallax;

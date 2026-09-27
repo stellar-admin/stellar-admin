@@ -6,11 +6,13 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewComponents;
 public class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItemsProviders)
     : ViewComponent
 {
-    public IViewComponentResult Invoke()
+    public async Task<IViewComponentResult> InvokeAsync()
     {
-        var sidebarItems = sidebarItemsProviders
-            .SelectMany(provider => provider.GetItems())
-            .ToList();
+        var sidebarItems = new List<SidebarItem>();
+        foreach (var provider in sidebarItemsProviders)
+        {
+            sidebarItems.AddRange(await provider.GetItemsAsync(HttpContext));
+        }
 
         return View(sidebarItems);
     }

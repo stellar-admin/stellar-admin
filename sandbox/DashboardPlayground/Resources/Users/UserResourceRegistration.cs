@@ -11,6 +11,10 @@ internal static class UserResourceRegistration
     {
         dashboard.AddResource<ApplicationUser>(resource =>
         {
+            resource.RequireAuthorization(policyBuilder =>
+                policyBuilder.RequireRole("Administrator", "User Admin")
+            );
+
             resource.SingularLabel = "user";
             resource.PluralLabel = "users";
             resource.SidebarItem(item =>

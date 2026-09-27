@@ -1,6 +1,6 @@
 # Dashboard authorization
 
-Status: active. Phase 1 implemented and awaiting review on 2026-09-28. Phases 2 and 3 are agreed but not started.
+Status: active. Phase 1 was committed on 2026-09-28 as `49a70c2`. Phase 2 is implemented and awaiting review. Phase 3 is agreed but not started.
 
 ## Decisions
 
@@ -31,7 +31,13 @@ Verification run on 2026-09-28: `dotnet build StellarAdmin.slnx --configuration 
 
 ## Phase 2: authorization-aware sidebar
 
-Not started. Hide resource sidebar links the current user cannot open, evaluating the combined policy with `AuthorizationPolicy.CombineAsync` and `IAuthorizationService`. `ISidebarItemsProvider` is public and synchronous, so making it async and user-aware is a public API change that needs a decision.
+Implemented and awaiting review. Jerrie approved making the public `ISidebarItemsProvider` asynchronous on 2026-09-28. It now declares `Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)`, which is a breaking change for custom providers. `SidebarViewComponent` awaits each provider in registration order.
+
+`ResourceSidebarItemsProvider` hides a resource link when the current user fails that resource's requirements. `AuthorizationMetadata.AuthorizeAsync` combines the metadata with `AuthorizationPolicy.CombineAsync` and evaluates it with `IAuthorizationService` against `HttpContext.User`, passing the `HttpContext` as the resource like the middleware does. Dashboard-level requirements are not re-evaluated because the user has already passed them to see the page. Policies that name authentication schemes are evaluated against the current user rather than re-authenticated, because authenticating would replace the rendering page's user.
+
+Tests: `ResourceAuthorizationTests.RequiredAuthorization_SidebarForUser_ShowsOnlyAuthorizedResources` covers users with and without the resource's role. Dashboard unit tests call the async provider API.
+
+Verification run on 2026-09-28: `dotnet build StellarAdmin.slnx --configuration Release` succeeded. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed 423 of 423 tests. No browser or DashboardPlayground checks were run.
 
 ## Phase 3: convention builder and playground
 

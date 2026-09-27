@@ -117,4 +117,44 @@ public class ResourceAuthorizationTests
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(expectedStatusCode);
     }
+
+    [Test]
+    [Arguments(new string[0], new[] { "/stellaradmin/CustomProduct" })]
+    [Arguments(
+        new[] { "Catalog" },
+        new[] { "/stellaradmin/Product", "/stellaradmin/CustomProduct" }
+    )]
+    public async Task RequiredAuthorization_SidebarForUser_ShowsOnlyAuthorizedResources(
+        string[] roles,
+        string[] expectedLinks
+    )
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource => resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
+            dashboard =>
+                dashboard.AddResource<CustomProduct>(resource =>
+                    resource.UseDataSource<CustomProductDataSource>()
+                ),
+            TestAuthenticationHandler.Register
+        );
+        using var client = sut.GetTestClient();
+        TestAuthenticationHandler.SignIn(client, "ada", roles);
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(
+                        "[data-slot='sidebar-group'] [data-slot='sidebar-menu-button']"
+                    )
+                    .Select(link => link.GetAttribute("href"))
+                    .ToArray()
+            )
+            .IsEquivalentTo(expectedLinks);
+    }
 }
