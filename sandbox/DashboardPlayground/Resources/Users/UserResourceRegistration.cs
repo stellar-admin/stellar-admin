@@ -46,15 +46,6 @@ internal static class UserResourceRegistration
                         {
                             section.Add(model => model.Email);
                             section.Add(model => model.EmailConfirmed);
-                            section
-                                .Add(model => model.RoleIds)
-                                .UseEditor<CheckboxGroupEditorOptions>(options =>
-                                    options.UseItems<ApplicationDbContext, ApplicationRole, string>(
-                                        role => role.Id,
-                                        role => role.Name!,
-                                        items => items.OrderBy(role => role.Name)
-                                    )
-                                );
                         }
                     );
                     fields.AddSection(
@@ -94,6 +85,30 @@ internal static class UserResourceRegistration
                                         options.UseItems(UserLookups.TimeZones())
                                     );
                             });
+                        }
+                    );
+                    fields.AddSection(
+                        "Roles",
+                        section =>
+                        {
+                            section.Description = "Select the roles the user belong to";
+                            section.Add(
+                                model => model.RoleIds,
+                                field =>
+                                {
+                                    field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        options.UseItems<
+                                            ApplicationDbContext,
+                                            ApplicationRole,
+                                            string
+                                        >(
+                                            role => role.Id,
+                                            role => role.Name!,
+                                            items => items.OrderBy(role => role.Name)
+                                        )
+                                    );
+                                }
+                            );
                         }
                     );
                     fields.AddSection(
@@ -116,15 +131,6 @@ internal static class UserResourceRegistration
                         {
                             section.Add(model => model.Email);
                             section.Add(model => model.EmailConfirmed);
-                            section
-                                .Add(model => model.RoleIds)
-                                .UseEditor<CheckboxGroupEditorOptions>(options =>
-                                    options.UseItems<ApplicationDbContext, ApplicationRole, string>(
-                                        role => role.Id,
-                                        role => role.Name!,
-                                        items => items.OrderBy(role => role.Name)
-                                    )
-                                );
                         }
                     );
                     fields.AddSection(
@@ -164,6 +170,30 @@ internal static class UserResourceRegistration
                                         options.UseItems(UserLookups.TimeZones())
                                     );
                             });
+                        }
+                    );
+                    fields.AddSection(
+                        "Roles",
+                        section =>
+                        {
+                            section.Description = "Select the roles the user belong to";
+                            section.Add(
+                                model => model.RoleIds,
+                                field =>
+                                {
+                                    field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        options.UseItems<
+                                            ApplicationDbContext,
+                                            ApplicationRole,
+                                            string
+                                        >(
+                                            role => role.Id,
+                                            role => role.Name!,
+                                            items => items.OrderBy(role => role.Name)
+                                        )
+                                    );
+                                }
+                            );
                         }
                     );
                 })
