@@ -24,7 +24,7 @@ public class ResourceEditorTests
                         fields
                             .Add(product => product.Name)
                             .UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItemsFrom<FixedSelectListItemsProvider>()
+                                options.UseItems<FixedSelectListItemsProvider>()
                             );
                     })
                 ),
@@ -46,7 +46,7 @@ public class ResourceEditorTests
     }
 
     [Test]
-    public async Task SelectListEditor_UsesChoicesAvailableWhenEachFormIsRendered()
+    public async Task SelectListEditor_UsesSnapshotOfConfiguredChoices()
     {
         // Arrange
         var choices = new List<SelectListItem> { new("Notebook", "notebook") };
@@ -60,7 +60,7 @@ public class ResourceEditorTests
                         fields
                             .Add(product => product.Name)
                             .UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItems(() => choices.ToArray())
+                                options.UseItems(choices)
                             );
                         fields.Add(product => product.Price);
                     })
@@ -79,7 +79,7 @@ public class ResourceEditorTests
             .IsNull();
         await Assert
             .That(secondDocument.QuerySelector("select[name='Entity.Name'] option[value='pen']"))
-            .IsNotNull();
+            .IsNull();
     }
 
     [Test]

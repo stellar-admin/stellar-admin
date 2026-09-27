@@ -1,5 +1,15 @@
 # Generic resource follow-ups
 
+## Select list item overloads — 2026-09-27
+
+`SelectListEditorOptions` now uses `UseItems` for fixed `IEnumerable<SelectListItem>` choices, request-aware asynchronous loaders, and registered `ISelectListItemsProvider` implementations. The fixed-list overload snapshots the sequence when configured. The EF Core extension is also named `UseItems<TContext, TEntity, TValue>` and uses a C# extension block; the previous `UseItemsFrom` overloads and fixed-choice factory overload were removed. DashboardPlayground and the consumer setup reference use the new signatures. `InternalsVisibleTo` was unchanged. Verification: the Dashboard HTTP suite passed 167 tests, the EF Core HTTP suite passed 58 tests after the extension-block conversion, and DashboardPlayground built with no warnings or errors. No database schema or data was changed.
+
+## EF Core select list items — 2026-09-27
+
+`StellarAdmin.Dashboard.EntityFrameworkCore` extends `SelectListEditorOptions` with `UseItems<TContext, TEntity, TValue>(value, text, configure?)`. The required expressions project key and label values in one no-tracking query; keys are converted to invariant strings after materialization. `OrderBy` is optional and `IncludeEmptyOption(text)` explicitly adds a blank-valued first choice, with no empty choice by default. DashboardPlayground's department and category fields use this overload and no longer register dedicated item providers. The generic `UseItems<TProvider>()` path remains for custom sources. No database schema or data was changed. The playground built; the EF Core HTTP suite passed 58 tests, including the default-empty-option scenario, and the Dashboard HTTP suite passed 167 tests. The older sections below describe the earlier implementation stages.
+
+`SelectListEditorOptions` stores one request-aware items loader. `UseItems(IEnumerable<SelectListItem>)` snapshots fixed choices when configured; the asynchronous callback, `UseItems<TProvider>()`, and the EF Core overload assign a loader for each request. The EF Core assembly still needs friend access to other Dashboard internals, and `InternalsVisibleTo` was left unchanged. After the earlier loader simplification, the Dashboard HTTP suite passed 167 tests and the EF Core HTTP suite passed 58 tests.
+
 ## Select list editor update — 2026-09-27
 
 Dashboard now has `SelectListEditorOptions` for select fields. `UseItems` evaluates a choice factory when each form renders, and `UseItemsFrom<TProvider>` resolves a registered `ISelectListItemsProvider` for request-scoped, asynchronous choices. The redundant `ReferenceLookupEditor`, its options, template, provider interface, and resolver were removed after migrating the playground and EF reference tests to `SelectListEditorOptions`. DashboardPlayground uses the select list editor for department, category, language, and time zone fields, with language choices from both neutral and specific .NET cultures. The form model and database still enforce the existing 35-character length limit; membership in the rendered choice list is not validated on POST. Verification for the final removal is recorded below.

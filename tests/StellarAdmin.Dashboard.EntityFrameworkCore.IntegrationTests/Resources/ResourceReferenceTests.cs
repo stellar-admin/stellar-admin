@@ -74,6 +74,40 @@ public class ResourceReferenceTests
     }
 
     [Test]
+    public async Task Create_OmitsEmptyOptionByDefault()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.AllowCreate(create =>
+                create.Fields(fields =>
+                    fields
+                        .Add(product => product.CategoryId)
+                        .UseEditor<SelectListEditorOptions>(options =>
+                            options.UseItems<CatalogDbContext, Category, int>(
+                                category => category.Id,
+                                category => category.Name
+                            )
+                        )
+                )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Product/Create");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelectorAll("select[name='Entity.CategoryId'] option").Length)
+            .IsEqualTo(3);
+        await Assert
+            .That(document.QuerySelector("select[name='Entity.CategoryId'] option[value='']"))
+            .IsNull();
+    }
+
+    [Test]
     public async Task Create_SavesSelectedForeignKey()
     {
         // Arrange
@@ -214,9 +248,7 @@ public class ResourceReferenceTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(options =>
-                        options.UseItemsFrom<CategorySelectListItemsProvider>()
-                    );
+                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems);
             })
         );
     }
@@ -230,9 +262,7 @@ public class ResourceReferenceTests
                 fields.Add(model => model.Name);
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(options =>
-                        options.UseItemsFrom<CategorySelectListItemsProvider>()
-                    );
+                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems);
             })
         );
 
@@ -244,12 +274,21 @@ public class ResourceReferenceTests
             edit.Fields(fields =>
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(options =>
-                        options.UseItemsFrom<CategorySelectListItemsProvider>()
-                    )
+                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems)
             )
         );
     }
+
+    private static void ConfigureCategoryItems(SelectListEditorOptions options) =>
+        options.UseItems<CatalogDbContext, Category, int>(
+            category => category.Id,
+            category => category.Name,
+            items =>
+            {
+                items.OrderBy(category => category.Name);
+                items.IncludeEmptyOption("Not set");
+            }
+        );
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
     {

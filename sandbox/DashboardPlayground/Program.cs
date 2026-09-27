@@ -32,8 +32,6 @@ builder
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<CustomerDataSource>();
-builder.Services.AddScoped<CategorySelectListItemsProvider>();
-builder.Services.AddScoped<DepartmentSelectListItemsProvider>();
 builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>

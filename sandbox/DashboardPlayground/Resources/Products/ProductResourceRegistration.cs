@@ -28,7 +28,15 @@ internal static class ProductResourceRegistration
                         {
                             field.Title = "Category";
                             field.UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItemsFrom<CategorySelectListItemsProvider>()
+                                options.UseItems<ApplicationDbContext, Category, int>(
+                                    category => category.Id,
+                                    category => category.Name,
+                                    items =>
+                                    {
+                                        items.OrderBy(category => category.Name);
+                                        items.IncludeEmptyOption("Not set");
+                                    }
+                                )
                             );
                         }
                     );
@@ -46,7 +54,15 @@ internal static class ProductResourceRegistration
                         {
                             field.Title = "Category";
                             field.UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItemsFrom<CategorySelectListItemsProvider>()
+                                options.UseItems<ApplicationDbContext, Category, int>(
+                                    category => category.Id,
+                                    category => category.Name,
+                                    items =>
+                                    {
+                                        items.OrderBy(category => category.Name);
+                                        items.IncludeEmptyOption("Not set");
+                                    }
+                                )
                             );
                         }
                     );

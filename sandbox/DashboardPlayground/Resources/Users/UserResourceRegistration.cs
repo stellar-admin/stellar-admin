@@ -1,6 +1,6 @@
 using DashboardPlayground.Data;
-using DashboardPlayground.Resources.Departments;
 using StellarAdmin.Dashboard;
+using StellarAdmin.Dashboard.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace DashboardPlayground.Resources.Users;
@@ -62,7 +62,15 @@ internal static class UserResourceRegistration
                                 field =>
                                 {
                                     field.UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItemsFrom<DepartmentSelectListItemsProvider>()
+                                        options.UseItems<ApplicationDbContext, Department, Guid>(
+                                            department => department.Id,
+                                            department => department.Name,
+                                            items =>
+                                            {
+                                                items.OrderBy(department => department.Name);
+                                                items.IncludeEmptyOption("Not set");
+                                            }
+                                        )
                                     );
                                 }
                             );
@@ -70,11 +78,11 @@ internal static class UserResourceRegistration
                             {
                                 row.Add(model => model.PreferredLanguage)
                                     .UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItems(UserLookups.Languages)
+                                        options.UseItems(UserLookups.Languages())
                                     );
                                 row.Add(model => model.TimeZoneId)
                                     .UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItems(UserLookups.TimeZones)
+                                        options.UseItems(UserLookups.TimeZones())
                                     );
                             });
                         }
@@ -115,7 +123,15 @@ internal static class UserResourceRegistration
                                 field =>
                                 {
                                     field.UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItemsFrom<DepartmentSelectListItemsProvider>()
+                                        options.UseItems<ApplicationDbContext, Department, Guid>(
+                                            department => department.Id,
+                                            department => department.Name,
+                                            items =>
+                                            {
+                                                items.OrderBy(department => department.Name);
+                                                items.IncludeEmptyOption("Not set");
+                                            }
+                                        )
                                     );
                                 }
                             );
@@ -123,11 +139,11 @@ internal static class UserResourceRegistration
                             {
                                 row.Add(model => model.PreferredLanguage)
                                     .UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItems(UserLookups.Languages)
+                                        options.UseItems(UserLookups.Languages())
                                     );
                                 row.Add(model => model.TimeZoneId)
                                     .UseEditor<SelectListEditorOptions>(options =>
-                                        options.UseItems(UserLookups.TimeZones)
+                                        options.UseItems(UserLookups.TimeZones())
                                     );
                             });
                         }

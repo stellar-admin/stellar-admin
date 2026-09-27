@@ -204,10 +204,17 @@ Reference `StellarAdmin.Dashboard.EntityFrameworkCore` and import its namespace 
 
 ```csharp
 using StellarAdmin.Dashboard.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 
-builder.Services.AddScoped<CategorySelectListItemsProvider>();
+Action<SelectListEditorOptions> categoryItems = options =>
+    options.UseItems<AppDbContext, Category, int>(
+        category => category.Id,
+        category => category.Name,
+        items =>
+        {
+            items.OrderBy(category => category.Name);
+            items.IncludeEmptyOption("Not set");
+        });
 
 dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
 {
@@ -238,13 +245,13 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
-        fields.Add(product => product.CategoryId).UseEditor<SelectListEditorOptions>(options => options.UseItemsFrom<CategorySelectListItemsProvider>());
+        fields.Add(product => product.CategoryId).UseEditor<SelectListEditorOptions>(categoryItems);
     }));
     resource.AllowEdit(edit => edit.Fields(fields =>
     {
         fields.Add(product => product.Name);
         fields.Add(product => product.Price);
-        fields.Add(product => product.CategoryId).UseEditor<SelectListEditorOptions>(options => options.UseItemsFrom<CategorySelectListItemsProvider>());
+        fields.Add(product => product.CategoryId).UseEditor<SelectListEditorOptions>(categoryItems);
     }));
     resource.AllowDelete();
 });
@@ -256,8 +263,8 @@ EF scopes accept an optional predicate on each entry. Omitting it leaves that sc
 
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 
-`UseEditor<SelectListEditorOptions>` selects the Razor select list editor template for a form field. `CategorySelectListItemsProvider` is an application service implementing `ISelectListItemsProvider`; its `GetItemsAsync` method returns `SelectListItem` values from EF or another source for each form request, including rejected submissions. This works with entity fields and custom create/edit models. Applications register the provider in DI. An index column configured for `CategoryId` displays and sorts by the foreign-key value. The database enforces foreign-key constraints when saving, and database errors propagate through the EF data source.
+`UseEditor<SelectListEditorOptions>` selects the Razor select list editor template for a form field. `UseItems(IEnumerable<SelectListItem>)` takes a snapshot of fixed choices when configured. `UseItems<TProvider>()` resolves a registered `ISelectListItemsProvider`, while `UseItems((services, cancellationToken) => ...)` accepts a request-aware asynchronous loader directly. The EF Core `UseItems<TContext, TEntity, TValue>` extension requires value and text expressions, resolves the registered DbContext for each form request, and projects those two values without loading full entities. It omits an empty choice unless `IncludeEmptyOption(text)` is called. These choices work with entity fields and custom create/edit models, including rejected submissions. An index column configured for `CategoryId` displays and sorts by the foreign-key value. The database enforces foreign-key constraints when saving, and database errors propagate through the EF data source.
 
-The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Lookup queries use the provider's own data access rules. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
+The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Select item queries honor EF query filters or a custom provider's own data access rules. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
 
-Query transformations, event callbacks, and richer editor behaviors remain deferred. DashboardPlayground demonstrates CRUD and a Product–Category lookup editor with a separate in-memory SQLite catalog. Its ProductDbContext maps two-decimal prices to integer cents so price sorting executes in SQLite. The existing Identity database is unchanged.
+Query transformations, event callbacks, and richer editor behaviors remain deferred. DashboardPlayground demonstrates CRUD and a Product–Category select list editor using its shared `ApplicationDbContext` and `app.db`. Product prices are mapped to integer cents so sorting executes in SQLite.

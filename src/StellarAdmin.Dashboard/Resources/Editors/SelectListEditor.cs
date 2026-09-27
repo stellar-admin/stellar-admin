@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Editors;
@@ -15,17 +14,10 @@ public sealed class SelectListEditor(SelectListEditorOptions options, IServicePr
     /// <inheritdoc />
     public async Task<object?> PrepareAsync(CancellationToken cancellationToken)
     {
-        if (options.ItemsFactory is { } itemsFactory)
-        {
-            return itemsFactory();
-        }
+        var itemsLoader =
+            options.ItemsLoader
+            ?? throw new InvalidOperationException("Select list editor choices are required.");
 
-        if (options.ItemsProviderType is { } providerType)
-        {
-            var provider = (ISelectListItemsProvider)services.GetRequiredService(providerType);
-            return await provider.GetItemsAsync(cancellationToken);
-        }
-
-        throw new InvalidOperationException("Select list editor choices are required.");
+        return await itemsLoader(services, cancellationToken);
     }
 }
