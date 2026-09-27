@@ -14,4 +14,6 @@ public class StellarAdminDashboardOptions
     ///     Gets the app-relative paths of the stylesheets the shell layout links, in registration order.
     /// </summary>
     public IList<string> Stylesheets { get; } = [];
+
+    internal List<object> AuthorizationMetadata { get; } = [];
 }

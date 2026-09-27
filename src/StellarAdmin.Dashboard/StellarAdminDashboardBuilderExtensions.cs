@@ -94,15 +94,15 @@ public static class StellarAdminDashboardBuilderExtensions
             );
             if (
                 !builder.Services.Any(descriptor =>
-                    descriptor.ServiceType == typeof(ResourceSidebarRegistration)
-                    && descriptor.ImplementationInstance is ResourceSidebarRegistration registration
-                    && registration.ResourceType == typeof(TResource)
+                    descriptor.ServiceType == typeof(ResourceRegistration)
+                    && descriptor.ImplementationInstance is ResourceRegistration registration
+                    && registration.ControllerType == typeof(ResourceController<TResource>)
                 )
             )
             {
                 builder.Services.AddSingleton(
-                    new ResourceSidebarRegistration(
-                        typeof(TResource),
+                    new ResourceRegistration(
+                        typeof(ResourceController<TResource>),
                         typeof(TResource).Name.Split('`')[0],
                         services =>
                         {
@@ -117,7 +117,13 @@ public static class StellarAdminDashboardBuilderExtensions
                                 sidebarItem.Order,
                                 sidebarItem.Visible
                             );
-                        }
+                        },
+                        services =>
+                            services
+                                .GetRequiredService<
+                                    IOptions<ResourceAuthorizationOptions<TResource>>
+                                >()
+                                .Value.Metadata
                     )
                 );
             }

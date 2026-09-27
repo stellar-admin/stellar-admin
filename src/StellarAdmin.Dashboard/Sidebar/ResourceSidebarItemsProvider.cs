@@ -1,7 +1,9 @@
+using StellarAdmin.Dashboard.Resources;
+
 namespace StellarAdmin.Dashboard.Sidebar;
 
 internal sealed class ResourceSidebarItemsProvider(
-    IEnumerable<ResourceSidebarRegistration> resources,
+    IEnumerable<ResourceRegistration> resources,
     IServiceProvider services
 ) : ISidebarItemsProvider
 {
@@ -13,7 +15,7 @@ internal sealed class ResourceSidebarItemsProvider(
                     new
                     {
                         resource.ControllerName,
-                        Item = resource.Resolve(services),
+                        Item = resource.ResolveSidebarItem(services),
                         Index = index,
                     }
             )

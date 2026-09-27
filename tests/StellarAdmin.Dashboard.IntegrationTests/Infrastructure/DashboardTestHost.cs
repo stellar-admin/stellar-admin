@@ -12,7 +12,8 @@ internal static class DashboardTestHost
     public static async Task<WebApplication> CreateAsync(
         ProductState state,
         Action<ResourceBuilder<Product>>? configure = null,
-        Action<StellarAdminDashboardBuilder>? configureDashboard = null
+        Action<StellarAdminDashboardBuilder>? configureDashboard = null,
+        Action<IServiceCollection>? configureServices = null
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -24,6 +25,7 @@ internal static class DashboardTestHost
         );
         builder.WebHost.UseTestServer();
         builder.Services.AddSingleton(state);
+        configureServices?.Invoke(builder.Services);
         builder
             .Services.AddStellarAdmin()
             .AddDashboard(dashboard =>

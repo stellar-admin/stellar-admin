@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Infrastructure.Authorization;
 using StellarAdmin.Dashboard.Infrastructure.Mvc;
 
 namespace StellarAdmin.Dashboard;
@@ -146,6 +148,68 @@ public class StellarAdminDashboardBuilder
         {
             _options.Stylesheets.Add(path);
         }
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Requires an authenticated user for every Dashboard page.
+    /// </summary>
+    public StellarAdminDashboardBuilder RequireAuthorization()
+    {
+        return RequireAuthorization(Array.Empty<IAuthorizeData>());
+    }
+
+    /// <summary>
+    ///     Requires every Dashboard page to satisfy an authorization policy.
+    /// </summary>
+    /// <param name="policy">The authorization policy.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public StellarAdminDashboardBuilder RequireAuthorization(AuthorizationPolicy policy)
+    {
+        _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(policy));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Requires every Dashboard page to satisfy an authorization policy built by a delegate.
+    /// </summary>
+    /// <param name="configurePolicy">The delegate that builds the authorization policy.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public StellarAdminDashboardBuilder RequireAuthorization(
+        Action<AuthorizationPolicyBuilder> configurePolicy
+    )
+    {
+        _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(configurePolicy));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Requires every Dashboard page to satisfy the given authorization data.
+    /// </summary>
+    /// <param name="authorizeData">
+    ///     The authorization data. When empty, an authenticated user is required.
+    /// </param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public StellarAdminDashboardBuilder RequireAuthorization(params IAuthorizeData[] authorizeData)
+    {
+        _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(authorizeData));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Requires every Dashboard page to satisfy the named authorization policies.
+    /// </summary>
+    /// <param name="policyNames">
+    ///     The authorization policy names. When empty, an authenticated user is required.
+    /// </param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public StellarAdminDashboardBuilder RequireAuthorization(params string[] policyNames)
+    {
+        _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(policyNames));
 
         return this;
     }
