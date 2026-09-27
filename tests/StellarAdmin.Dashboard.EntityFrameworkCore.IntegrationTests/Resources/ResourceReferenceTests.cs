@@ -70,7 +70,7 @@ public class ResourceReferenceTests
                         .Select(option => option.TextContent.Trim())
                 )
             )
-            .IsEqualTo("Not set,Beverage,Office,Technology");
+            .IsEqualTo("Not specified,Beverage,Office,Technology");
     }
 
     [Test]
@@ -286,7 +286,7 @@ public class ResourceReferenceTests
             items =>
             {
                 items.OrderBy(category => category.Name);
-                items.IncludeEmptyOption("Not set");
+                items.IncludeEmptyOption("Not specified");
             }
         );
 

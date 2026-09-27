@@ -34,7 +34,7 @@ internal static class ProductResourceRegistration
                                     items =>
                                     {
                                         items.OrderBy(category => category.Name);
-                                        items.IncludeEmptyOption("Not set");
+                                        items.IncludeEmptyOption("Not specified");
                                     }
                                 )
                             );
@@ -60,7 +60,7 @@ internal static class ProductResourceRegistration
                                     items =>
                                     {
                                         items.OrderBy(category => category.Name);
-                                        items.IncludeEmptyOption("Not set");
+                                        items.IncludeEmptyOption("Not specified");
                                     }
                                 )
                             );

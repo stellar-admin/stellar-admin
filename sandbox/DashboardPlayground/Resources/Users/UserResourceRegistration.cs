@@ -68,7 +68,7 @@ internal static class UserResourceRegistration
                                             items =>
                                             {
                                                 items.OrderBy(department => department.Name);
-                                                items.IncludeEmptyOption("Not set");
+                                                items.IncludeEmptyOption("Not specified");
                                             }
                                         )
                                     );
@@ -129,7 +129,7 @@ internal static class UserResourceRegistration
                                             items =>
                                             {
                                                 items.OrderBy(department => department.Name);
-                                                items.IncludeEmptyOption("Not set");
+                                                items.IncludeEmptyOption("Not specified");
                                             }
                                         )
                                     );

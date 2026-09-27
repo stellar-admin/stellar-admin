@@ -213,7 +213,7 @@ Action<SelectListEditorOptions> categoryItems = options =>
         items =>
         {
             items.OrderBy(category => category.Name);
-            items.IncludeEmptyOption("Not set");
+            items.IncludeEmptyOption("Not specified");
         });
 
 dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>

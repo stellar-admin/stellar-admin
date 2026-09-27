@@ -7,7 +7,7 @@ internal static class UserLookups
 {
     internal static IReadOnlyList<SelectListItem> Languages() =>
         [
-            new("Not set", ""),
+            new("Not specified", ""),
             .. CultureInfo
                 .GetCultures(CultureTypes.NeutralCultures | CultureTypes.SpecificCultures)
                 .Where(culture => !string.IsNullOrEmpty(culture.Name))
@@ -18,7 +18,7 @@ internal static class UserLookups
 
     internal static IReadOnlyList<SelectListItem> TimeZones() =>
         [
-            new("Not set", ""),
+            new("Not specified", ""),
             .. TimeZoneInfo
                 .GetSystemTimeZones()
                 .Select(timeZone => new SelectListItem(
