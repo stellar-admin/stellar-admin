@@ -17,6 +17,10 @@ Follow the user's current scope and authorization. Preserve existing edits. Do n
 
 When the user asks a question, answer it as a question. Do not treat a question as a command.
 
+Keep actions within the operation the user requested. Do not add adjacent work, routine checks, documentation edits, cleanup, or database inspection just because they seem useful. Read-only inspection needed to answer a question or carry out an action is allowed, but a question does not authorize changes. Ask before taking a genuinely necessary step outside the requested scope; do not treat an optional step as necessary.
+
+For a commit-only request, inspect Git status, stage the requested work, review the staged file list, commit, and report the hash. Include a modified tracked `sandbox/DashboardPlayground/app.db` in the commit unless the user explicitly excludes it. Do not run tests, query the database, change files, remove SQLite journal files, or add documentation as part of a commit-only request unless explicitly asked.
+
 Treat entity property configuration, migration generation, and database updates as separate steps. When adding or changing entity properties, show the types, nullability, required rules, lengths, and defaults for review. Do not generate or remove migrations, edit migration snapshots, or update a database unless the user explicitly requests that specific step. Authorization to generate a migration does not authorize applying it.
 
 Inspect Git status before changing files. For cross-repo work, inspect and report status separately for the product and website. Concurrent agents should use a separate worktree in each affected repository; coordinate generated outputs and ports. Stop only processes you started; port 5205 belongs to Jerrie.
