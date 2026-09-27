@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,117 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ResourceEditorTests
 {
+    [Test]
+    public async Task CheckboxGroupEditor_RendersSelectedChoices()
+    {
+        // Arrange
+        var state = new RoleSelectionState();
+        await using var sut = await CreateRoleSelectionHost(state);
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/Product/Edit/7");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement(
+                        "input[type='checkbox'][name='Entity.RoleIds'][value='auditor']"
+                    )
+                    .HasAttribute("checked")
+            )
+            .IsTrue();
+        await Assert
+            .That(
+                document
+                    .RequiredElement(
+                        "input[type='checkbox'][name='Entity.RoleIds'][value='manager']"
+                    )
+                    .HasAttribute("checked")
+            )
+            .IsFalse();
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_UncheckedSubmission_ClearsExistingSelections()
+    {
+        // Arrange
+        var state = new RoleSelectionState();
+        await using var sut = await CreateRoleSelectionHost(state);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
+        values["__sa_checkbox_group.Entity.RoleIds"] = "true";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Edit/7", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(state.RoleIds).IsEmpty();
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_SelectedSubmission_ReplacesExistingSelections()
+    {
+        // Arrange
+        var state = new RoleSelectionState();
+        await using var sut = await CreateRoleSelectionHost(state);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
+        values["Entity.RoleIds"] = "manager";
+        values["__sa_checkbox_group.Entity.RoleIds"] = "true";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Edit/7", content);
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(state.RoleIds).IsEquivalentTo(["manager"]);
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_RejectedSubmission_RetainsPostedSelection()
+    {
+        // Arrange
+        var state = new RoleSelectionState
+        {
+            UpdateResult =
+                StellarAdmin.Dashboard.Resources.ResourceOperationResult.ValidationFailed(
+                    nameof(RoleSelectionModel.RoleIds),
+                    "Roles cannot change."
+                ),
+        };
+        await using var sut = await CreateRoleSelectionHost(state);
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/7");
+        values["Entity.RoleIds"] = "manager";
+        values["__sa_checkbox_group.Entity.RoleIds"] = "true";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/Product/Edit/7", content);
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(state.RoleIds).IsEquivalentTo(["auditor"]);
+        await Assert
+            .That(
+                document
+                    .RequiredElement(
+                        "input[type='checkbox'][name='Entity.RoleIds'][value='manager']"
+                    )
+                    .HasAttribute("checked")
+            )
+            .IsTrue();
+        await Assert
+            .That(document.RequiredElement("[id$='-error']").TextContent)
+            .Contains("Roles cannot change.");
+    }
+
     [Test]
     public async Task SelectListEditor_UsesRegisteredProviderChoices()
     {
@@ -114,4 +226,28 @@ public class ResourceEditorTests
             .That(input.GetAttribute("data-editor-context"))
             .IsEqualTo("Product name:Development");
     }
+
+    private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateRoleSelectionHost(
+        RoleSelectionState state
+    ) =>
+        DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit<RoleSelectionModel, RoleSelectionEditHandler>(edit =>
+                    edit.Fields(fields =>
+                        fields
+                            .Add(model => model.RoleIds)
+                            .UseEditor<CheckboxGroupEditorOptions>(options =>
+                                options.UseItems([
+                                    new SelectListItem("Auditor", "auditor"),
+                                    new SelectListItem("Manager", "manager"),
+                                ])
+                            )
+                    )
+                );
+            },
+            dashboard => dashboard.Services.AddSingleton(state)
+        );
 }

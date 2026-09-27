@@ -1,0 +1,10 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model object?
+
+@{
+    var field = ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
+    var isReadOnly = field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
+}
+
+<sa-checkbox-group asp-for="@Model" asp-items="@(field?.EditorData as IReadOnlyList<SelectListItem>)"
+                   label="@field?.Title" disabled="@isReadOnly" />

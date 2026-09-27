@@ -32,6 +32,9 @@ public sealed class CreateUserModel
     [Display(Name = "Preferred language")]
     public string? PreferredLanguage { get; set; }
 
+    [Display(Name = "Roles")]
+    public string[] RoleIds { get; set; } = [];
+
     [StringLength(35)]
     [Display(Name = "Time zone")]
     public string? TimeZoneId { get; set; }

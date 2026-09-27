@@ -46,6 +46,15 @@ internal static class UserResourceRegistration
                         {
                             section.Add(model => model.Email);
                             section.Add(model => model.EmailConfirmed);
+                            section
+                                .Add(model => model.RoleIds)
+                                .UseEditor<CheckboxGroupEditorOptions>(options =>
+                                    options.UseItems<ApplicationDbContext, ApplicationRole, string>(
+                                        role => role.Id,
+                                        role => role.Name!,
+                                        items => items.OrderBy(role => role.Name)
+                                    )
+                                );
                         }
                     );
                     fields.AddSection(
@@ -107,6 +116,15 @@ internal static class UserResourceRegistration
                         {
                             section.Add(model => model.Email);
                             section.Add(model => model.EmailConfirmed);
+                            section
+                                .Add(model => model.RoleIds)
+                                .UseEditor<CheckboxGroupEditorOptions>(options =>
+                                    options.UseItems<ApplicationDbContext, ApplicationRole, string>(
+                                        role => role.Id,
+                                        role => role.Name!,
+                                        items => items.OrderBy(role => role.Name)
+                                    )
+                                );
                         }
                     );
                     fields.AddSection(

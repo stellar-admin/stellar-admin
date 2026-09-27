@@ -6,18 +6,8 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 ///     Displays a field using application-supplied select choices.
 /// </summary>
 public sealed class SelectListEditor(SelectListEditorOptions options, IServiceProvider services)
-    : IFieldEditor<SelectListEditorOptions>
+    : ChoiceItemsEditor<SelectListEditorOptions>(options, services)
 {
     /// <inheritdoc />
-    public string TemplateName => nameof(SelectListEditor);
-
-    /// <inheritdoc />
-    public async Task<object?> PrepareAsync(CancellationToken cancellationToken)
-    {
-        var itemsLoader =
-            options.ItemsLoader
-            ?? throw new InvalidOperationException("Select list editor choices are required.");
-
-        return await itemsLoader(services, cancellationToken);
-    }
+    public override string TemplateName => nameof(SelectListEditor);
 }

@@ -54,13 +54,17 @@ internal sealed class CheckboxGroupModelBinderProvider : IModelBinderProvider
             var request = bindingContext.HttpContext.Request;
             if (
                 request.HasFormContentType
-                && !ContainsSubmittedPrefix(bindingContext.ValueProvider, bindingContext.ModelName)
+                && bindingContext.ValueProvider.GetValue(bindingContext.ModelName)
+                    == ValueProviderResult.None
             )
             {
                 var form = await request.ReadFormAsync(bindingContext.HttpContext.RequestAborted);
                 // Unchecked checkboxes submit no value; the marker distinguishes an empty group
                 // from a field that was not submitted.
-                if (form[MarkerPrefix + bindingContext.ModelName] == "true")
+                if (
+                    form[MarkerPrefix + bindingContext.ModelName] == "true"
+                    && !form.ContainsKey(bindingContext.ModelName)
+                )
                 {
                     var empty = bindingContext.ModelType.IsArray
                         ? (object)Array.CreateInstance(elementType, 0)
@@ -77,19 +81,6 @@ internal sealed class CheckboxGroupModelBinderProvider : IModelBinderProvider
             }
 
             await inner.BindModelAsync(bindingContext);
-        }
-
-        private static bool ContainsSubmittedPrefix(IValueProvider provider, string name)
-        {
-            return provider switch
-            {
-                // This provider signals that the group exists, not that any items were selected.
-                CheckboxGroupPresenceValueProvider => false,
-                CompositeValueProvider composite => composite.Any(child =>
-                    ContainsSubmittedPrefix(child, name)
-                ),
-                _ => provider.ContainsPrefix(name),
-            };
         }
     }
 }

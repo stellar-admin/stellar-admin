@@ -2,18 +2,47 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
 
 public class ResourceReferenceTests
 {
+    [Test]
+    public async Task CheckboxGroupEditor_LoadsOrderedEntityChoices()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync();
+        await using var scope = sut.Services.CreateAsyncScope();
+        var options = new CheckboxGroupEditorOptions();
+        options.UseItems<CatalogDbContext, Category, int>(
+            category => category.Id,
+            category => category.Name,
+            items => items.OrderBy(category => category.Name)
+        );
+        var editor = new CheckboxGroupEditor(options, scope.ServiceProvider);
+
+        // Act
+        var choices =
+            (IReadOnlyList<SelectListItem>)(await editor.PrepareAsync(CancellationToken.None))!;
+
+        // Assert
+        await Assert
+            .That(string.Join(',', choices.Select(choice => choice.Text)))
+            .IsEqualTo("Beverage,Office,Technology");
+        await Assert
+            .That(choices.Select(choice => choice.Value).ToArray())
+            .IsEquivalentTo(["2", "1", "3"]);
+    }
+
     [Test]
     public async Task Index_DisplaysAndSortsByForeignKey()
     {
