@@ -56,7 +56,7 @@ Any future sidebar changes should preserve ordering/grouping and existing custom
 
 ### 2. Optional EF operations class
 
-Planning update 2026-09-19: the shared operations/controller work is now covered by [resource configuration and controller unification](resource-configuration-and-controller-unification.md). That plan covers EF and Identity together and records action-specific form models as deferred. The phase 1 implementation was reverted at the user’s request. The plan needs revision around a standalone resource foundation. Operations/controller work has not started. The other follow-ups remain parked.
+Planning update 2026-09-19: the shared operations/controller work is now covered by [resource configuration and controller unification](archive/resource-configuration-and-controller-unification.md). That plan covers EF and Identity together and records action-specific form models as deferred. The phase 1 implementation was reverted at the user’s request. The plan needs revision around a standalone resource foundation. Operations/controller work has not started. The other follow-ups remain parked.
 
 StellarAdmin must continue providing default reading and writing. Jerrie liked an optional operations class but explicitly deferred it. A consumer should be able to override one operation and retain/call defaults for the others, with a scoped DbContext. `UseOperations<T>()` is a historical sketch, not an agreed public contract.
 
