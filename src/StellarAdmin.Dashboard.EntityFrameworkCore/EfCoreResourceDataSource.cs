@@ -78,10 +78,11 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
 
         var totalCount = await query.LongCountAsync(cancellationToken);
         var parameter = Expression.Parameter(typeof(TEntity), "entity");
-        var key = Expression.Lambda(
-            Expression.Property(parameter, _resourceOptions.KeyPropertyName!),
-            parameter
-        );
+        var keyProperty = db
+            .Model.FindEntityType(typeof(TEntity))!
+            .FindPrimaryKey()!
+            .Properties.Single();
+        var key = Expression.Lambda(Expression.Property(parameter, keyProperty.Name), parameter);
 
         if (request.Sort is { } sort)
         {
@@ -194,7 +195,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var parameter = Expression.Parameter(typeof(TEntity), "entity");
         var predicate = Expression.Lambda<Func<TEntity, bool>>(
             Expression.Equal(
-                Expression.Property(parameter, _resourceOptions.KeyPropertyName!),
+                Expression.Property(parameter, property.Name),
                 Expression.Constant(key, property.ClrType)
             ),
             parameter

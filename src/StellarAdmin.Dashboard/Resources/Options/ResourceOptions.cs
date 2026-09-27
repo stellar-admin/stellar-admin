@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Reflection;
 using Humanizer;
 
 namespace StellarAdmin.Dashboard.Resources.Options;
@@ -89,4 +91,27 @@ public sealed class ResourceOptions<TResource>
         Task<object?>
     >? EditLoader { get; set; }
     internal string? KeyPropertyName { get; set; }
+
+    /// <summary>
+    ///     Specifies the property that identifies a resource.
+    /// </summary>
+    public void UseKey(PropertyInfo property)
+    {
+        ArgumentNullException.ThrowIfNull(property);
+        if (
+            property.GetMethod is not { IsPublic: true, IsStatic: false }
+            || property.GetIndexParameters().Length != 0
+            || property.DeclaringType?.IsAssignableFrom(typeof(TResource)) != true
+        )
+        {
+            throw new ArgumentException(
+                "Select a direct resource property with a public getter.",
+                nameof(property)
+            );
+        }
+
+        KeySelector = resource =>
+            Convert.ToString(property.GetValue(resource), CultureInfo.InvariantCulture)!;
+        KeyPropertyName = property.Name;
+    }
 }

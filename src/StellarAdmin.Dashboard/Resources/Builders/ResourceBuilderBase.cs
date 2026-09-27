@@ -30,9 +30,9 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
             );
     }
 
-    internal IServiceCollection Services { get; }
+    protected IServiceCollection Services { get; }
 
-    internal ResourceBuilderBase(IServiceCollection services) => Services = services;
+    protected ResourceBuilderBase(IServiceCollection services) => Services = services;
 
     /// <summary>
     ///     Enables and configures the create page.

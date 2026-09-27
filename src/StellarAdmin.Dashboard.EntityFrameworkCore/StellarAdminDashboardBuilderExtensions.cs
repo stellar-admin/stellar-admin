@@ -1,8 +1,6 @@
-using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
@@ -27,7 +25,6 @@ public static class StellarAdminDashboardBuilderExtensions
         resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
-            .Configure(options => options.Index = new EfCoreResourceIndexOptions<TEntity>())
             .PostConfigure<IServiceScopeFactory>(
                 (options, scopeFactory) =>
                 {
@@ -56,9 +53,7 @@ public static class StellarAdminDashboardBuilderExtensions
                         );
                     }
 
-                    options.KeyPropertyName = property.Name;
-                    options.KeySelector = item =>
-                        Convert.ToString(property.GetValue(item), CultureInfo.InvariantCulture)!;
+                    options.UseKey(property);
 
                     if (options.Create is { } create && create.ModelType == typeof(TEntity))
                     {

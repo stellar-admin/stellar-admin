@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,13 +62,7 @@ public sealed class ResourceBuilder<TResource>
             );
         }
 
-        var selector = key.Compile();
-        Services.Configure<ResourceOptions<TResource>>(options =>
-        {
-            options.KeySelector = resource =>
-                Convert.ToString(selector(resource), CultureInfo.InvariantCulture)!;
-            options.KeyPropertyName = property.Name;
-        });
+        Services.Configure<ResourceOptions<TResource>>(options => options.UseKey(property));
 
         return this;
     }

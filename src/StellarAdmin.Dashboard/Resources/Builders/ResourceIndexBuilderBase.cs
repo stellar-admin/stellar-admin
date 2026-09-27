@@ -52,9 +52,9 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             Services.Configure<ResourceOptions<TResource>>(options => options.Index.Title = value);
     }
 
-    internal IServiceCollection Services { get; }
+    protected IServiceCollection Services { get; }
 
-    internal ResourceIndexBuilderBase(IServiceCollection services) => Services = services;
+    protected ResourceIndexBuilderBase(IServiceCollection services) => Services = services;
 
     /// <summary>
     ///     Configures the index columns.
