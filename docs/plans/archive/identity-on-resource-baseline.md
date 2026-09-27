@@ -1,6 +1,6 @@
 # Identity example on the resource baseline
 
-Status: DashboardPlayground example implemented on 2026-09-24. The superseded dedicated Identity package and its playground were removed on 2026-09-27.
+Status: retired on 2026-09-27 at the user's request. This is a historical record of the DashboardPlayground Identity example, not an active plan. The superseded dedicated Identity package and its playground were removed on 2026-09-27.
 
 ## Decision
 
@@ -18,7 +18,7 @@ Removed the dedicated Identity package and its dependent playground, including t
 - Use `UserManager` and `RoleManager` for writes and translate `IdentityResult` errors to `ResourceOperationResult`. Create and edit form models contain only the fields this example allows. User creation includes password and confirmation. User edit excludes password.
 - Keep `IdentityUser.UserName` equal to `Email`, because the playground's stock Identity login signs in by email. This was discovered in an HTTP check: an independently configured user name made newly created accounts unable to sign in.
 - Use queryable Identity stores for list, search, sort, count, and paging. Keep a key tie-breaker for stable pages.
-- Add a playground README with setup and the scope of account confirmation and role membership. The example does not configure Dashboard authorization or seed accounts and roles. Resource registration now adds sidebar items through the shared Dashboard provider, as recorded in [resource sidebar registration](resource-sidebar-registration.md).
+- Add a playground README with setup and the scope of account confirmation and role membership. The example does not configure Dashboard authorization or seed accounts and roles. Resource registration now adds sidebar items through the shared Dashboard provider, as recorded in [resource sidebar registration](../resource-sidebar-registration.md).
 
 ## Extended user and department example — 2026-09-27
 
@@ -39,6 +39,14 @@ Moved Products and Categories from the separate in-memory `ProductDbContext` int
 ## Playground catalog data — 2026-09-27
 
 At the user's request, inserted 10 realistic categories and 150 products directly into the tracked `sandbox/DashboardPlayground/app.db`, without adding runtime seed code. Each category has 15 products. Product names and SKUs are distinct, SKUs fit the 20-character limit, names fit the 100-character limit, and prices are stored as integer cents to match the EF conversion. The insertion was validated on a temporary database copy before applying it to `app.db`; the transaction checked category counts, unique names and SKUs, foreign keys, and SQLite integrity. The existing 15 departments were preserved.
+
+## Extended role example — 2026-09-27
+
+`ApplicationRole` now extends `IdentityRole` with an optional description of up to 200 characters. The playground registers it with Identity and uses it for the Dashboard role resource, data source, and manager-backed handlers. Create and edit forms use the description, and the role index displays and searches it. The role resource route is now `/stellaradmin/ApplicationRole`.
+
+The generated 500-character migration and its change to the checked-in `app.db` were undone at the user's request. A subsequently generated 200-character migration was also removed at the user's request. The database and migration snapshot were returned to their earlier state at that point. An HTTP smoke test could not start because the sandbox denied Kestrel's local socket bind. The playground README was deleted at the user's request.
+
+After the user explicitly requested both migration generation and application, the new `AddApplicationRoleDescription` migration added a nullable `Description` column with a 200-character model limit to `AspNetRoles` in the checked-in database. The playground build passed with zero warnings or errors, EF reported no pending model changes, SQLite integrity passed, and the existing role row remained present. No HTTP check was run after this migration.
 
 ## Verification
 

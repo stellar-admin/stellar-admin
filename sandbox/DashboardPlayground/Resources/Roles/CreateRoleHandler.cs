@@ -1,10 +1,11 @@
+using DashboardPlayground.Data;
 using DashboardPlayground.Resources.Shared;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Dashboard.Resources;
 
 namespace DashboardPlayground.Resources.Roles;
 
-public sealed class CreateRoleHandler(RoleManager<IdentityRole> roles)
+public sealed class CreateRoleHandler(RoleManager<ApplicationRole> roles)
     : IResourceCreateHandler<RoleFormModel>
 {
     public async Task<ResourceOperationResult> CreateAsync(
@@ -15,7 +16,9 @@ public sealed class CreateRoleHandler(RoleManager<IdentityRole> roles)
         cancellationToken.ThrowIfCancellationRequested();
 
         return IdentityOperationResults.ForRole(
-            await roles.CreateAsync(new IdentityRole(model.Name))
+            await roles.CreateAsync(
+                new ApplicationRole { Name = model.Name, Description = model.Description }
+            )
         );
     }
 }

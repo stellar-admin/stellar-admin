@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DashboardPlayground.Data;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<ApplicationUser>(options)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 {
     public DbSet<Category> Categories => Set<Category>();
 
@@ -31,6 +31,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             user.HasOne(value => value.Department)
                 .WithMany(department => department.Users)
                 .HasForeignKey(value => value.DepartmentId);
+        });
+
+        builder.Entity<ApplicationRole>(role =>
+        {
+            role.Property(value => value.Description).HasMaxLength(200);
         });
 
         builder.Entity<Product>().OwnsOne(product => product.Details);

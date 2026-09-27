@@ -1,3 +1,4 @@
+using DashboardPlayground.Data;
 using DashboardPlayground.Resources.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -5,9 +6,9 @@ using StellarAdmin.Dashboard.Resources;
 
 namespace DashboardPlayground.Resources.Roles;
 
-public sealed class RoleDataSource(RoleManager<IdentityRole> roles)
-    : IResourceDataSource<IdentityRole>,
-        IResourceDeleteHandler<IdentityRole>
+public sealed class RoleDataSource(RoleManager<ApplicationRole> roles)
+    : IResourceDataSource<ApplicationRole>,
+        IResourceDeleteHandler<ApplicationRole>
 {
     public async Task<ResourceOperationResult> DeleteAsync(
         string id,
@@ -25,7 +26,7 @@ public sealed class RoleDataSource(RoleManager<IdentityRole> roles)
         return IdentityOperationResults.ForRole(await roles.DeleteAsync(role));
     }
 
-    public async Task<ResourceListResult<IdentityRole>> ListAsync(
+    public async Task<ResourceListResult<ApplicationRole>> ListAsync(
         ResourceListRequest request,
         CancellationToken cancellationToken
     )
@@ -33,13 +34,16 @@ public sealed class RoleDataSource(RoleManager<IdentityRole> roles)
         var query = roles.Roles.AsNoTracking();
         if (request.Search is { } term)
         {
-            query = query.Where(role => role.Name != null && role.Name.Contains(term));
+            query = query.Where(role =>
+                (role.Name != null && role.Name.Contains(term))
+                || (role.Description != null && role.Description.Contains(term))
+            );
         }
 
         var totalCount = await query.LongCountAsync(cancellationToken);
-        IOrderedQueryable<IdentityRole> ordered = request.Sort switch
+        IOrderedQueryable<ApplicationRole> ordered = request.Sort switch
         {
-            { Field: nameof(IdentityRole.Name), Direction: ResourceSortDirection.Descending } =>
+            { Field: nameof(ApplicationRole.Name), Direction: ResourceSortDirection.Descending } =>
                 query.OrderByDescending(role => role.Name),
             _ => query.OrderBy(role => role.Name),
         };

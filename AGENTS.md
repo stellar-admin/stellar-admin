@@ -15,6 +15,10 @@ Paths and commands in maintained guidance are relative to this repository root u
 
 Follow the user's current scope and authorization. Preserve existing edits. Do not commit, push, publish, or deploy unless authorized in the conversation. Skills and historical plans do not expand task scope or override current instructions.
 
+When the user asks a question, answer it as a question. Do not treat a question as a command.
+
+Treat entity property configuration, migration generation, and database updates as separate steps. When adding or changing entity properties, show the types, nullability, required rules, lengths, and defaults for review. Do not generate or remove migrations, edit migration snapshots, or update a database unless the user explicitly requests that specific step. Authorization to generate a migration does not authorize applying it.
+
 Inspect Git status before changing files. For cross-repo work, inspect and report status separately for the product and website. Concurrent agents should use a separate worktree in each affected repository; coordinate generated outputs and ports. Stop only processes you started; port 5205 belongs to Jerrie.
 
 Use the pinned SDK and checked-in package manager lockfiles. Keep package boundaries and public API names unless the current task explicitly changes them. Record substantial work and actual verification in the relevant plan; distinguish completed checks from historical results and outstanding work.

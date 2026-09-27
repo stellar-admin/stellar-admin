@@ -10,7 +10,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | --- | --- | --- |
 | [dashboard-theme-configuration](dashboard-theme-configuration.md) | implemented | Dashboard supports app-wide selection of all fifteen shipped themes and opt-in suggested fonts. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
-| [identity-on-resource-baseline](identity-on-resource-baseline.md) | implemented | DashboardPlayground demonstrates Users and Roles through ordinary Dashboard resources and manager-backed handlers. The dedicated Identity package and its playground have been removed. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
@@ -36,6 +35,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [grid-nested-field-binding](archive/grid-nested-field-binding.md) | completed |
 | [ice-theme](archive/ice-theme.md) | completed |
 | [identity-entity-constraint-research](archive/identity-entity-constraint-research.md) | completed |
+| [identity-on-resource-baseline](archive/identity-on-resource-baseline.md) | retired; historical Identity example. The role description migration was applied on 2026-09-27. |
 | [identity-options-builder](archive/identity-options-builder.md) | completed |
 | [identity-resource-layer](archive/identity-resource-layer.md) | completed |
 | [identity-user-forms](archive/identity-user-forms.md) | superseded |

@@ -27,7 +27,7 @@ builder
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
     })
-    .AddRoles<IdentityRole>()
+    .AddRoles<ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
