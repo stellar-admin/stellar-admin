@@ -5,20 +5,24 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 /// <summary>
 ///     Configures choices loaded from an EF Core entity set.
 /// </summary>
-public sealed class EfCoreSelectListItemsBuilder<TEntity>
+public sealed class EfCoreSelectListItemsBuilder<TEntity, TValue>
+    where TEntity : class
 {
-    internal string? EmptyOptionText { get; private set; }
+    private readonly EfCoreSelectListItemsOptions<TEntity, TValue> _options;
 
-    internal Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? OrderQuery { get; private set; }
+    internal EfCoreSelectListItemsBuilder(EfCoreSelectListItemsOptions<TEntity, TValue> options)
+    {
+        _options = options;
+    }
 
     /// <summary>
     ///     Adds an empty choice with the specified label before the entity choices.
     /// </summary>
-    public EfCoreSelectListItemsBuilder<TEntity> IncludeEmptyOption(string text)
+    public EfCoreSelectListItemsBuilder<TEntity, TValue> IncludeEmptyOption(string text)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
-        EmptyOptionText = text;
+        _options.EmptyOptionText = text;
 
         return this;
     }
@@ -26,13 +30,13 @@ public sealed class EfCoreSelectListItemsBuilder<TEntity>
     /// <summary>
     ///     Orders the choices by an entity property.
     /// </summary>
-    public EfCoreSelectListItemsBuilder<TEntity> OrderBy<TSort>(
+    public EfCoreSelectListItemsBuilder<TEntity, TValue> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
     {
         ArgumentNullException.ThrowIfNull(selector);
 
-        OrderQuery = query => query.OrderBy(selector);
+        _options.OrderQuery = query => query.OrderBy(selector);
 
         return this;
     }

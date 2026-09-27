@@ -1,5 +1,9 @@
 # Generic resource follow-ups
 
+## EF Core select list options — 2026-09-27
+
+`UseItems<TContext, TEntity, TValue>` now creates an internal `EfCoreSelectListItemsOptions<TEntity, TValue>` with the required value and text expressions and passes it to the public `EfCoreSelectListItemsBuilder<TEntity, TValue>`. The builder writes the optional ordering and empty-choice label into that options object. The extension reads the configured options when it builds the request-time loader. Consumer `UseItems` calls keep the same arguments and lambda syntax; explicitly named builder types need the new `TValue` argument. Verification: all 58 EF Core HTTP integration tests passed, including ordering and empty-choice rendering, and DashboardPlayground built. Both commands emitted the existing `ViewDataKeys.cs` unresolved XML `cref` warning. No database schema or data was changed.
+
 ## Select list item overloads — 2026-09-27
 
 `SelectListEditorOptions` now uses `UseItems` for fixed `IEnumerable<SelectListItem>` choices, request-aware asynchronous loaders, and registered `ISelectListItemsProvider` implementations. The fixed-list overload snapshots the sequence when configured. The EF Core extension is also named `UseItems<TContext, TEntity, TValue>` and uses a C# extension block; the previous `UseItemsFrom` overloads and fixed-choice factory overload were removed. DashboardPlayground and the consumer setup reference use the new signatures. `InternalsVisibleTo` was unchanged. Verification: the Dashboard HTTP suite passed 167 tests, the EF Core HTTP suite passed 58 tests after the extension-block conversion, and DashboardPlayground built with no warnings or errors. No database schema or data was changed.

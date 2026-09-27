@@ -20,7 +20,7 @@ public static class SelectListEditorOptionsExtensions
         public void UseItems<TContext, TEntity, TValue>(
             Expression<Func<TEntity, TValue>> value,
             Expression<Func<TEntity, string>> text,
-            Action<EfCoreSelectListItemsBuilder<TEntity>>? configure = null
+            Action<EfCoreSelectListItemsBuilder<TEntity, TValue>>? configure = null
         )
             where TContext : DbContext
             where TEntity : class
@@ -29,11 +29,15 @@ public static class SelectListEditorOptionsExtensions
             ArgumentNullException.ThrowIfNull(value);
             ArgumentNullException.ThrowIfNull(text);
 
-            var builder = new EfCoreSelectListItemsBuilder<TEntity>();
+            var itemOptions = new EfCoreSelectListItemsOptions<TEntity, TValue>(value, text);
+            var builder = new EfCoreSelectListItemsBuilder<TEntity, TValue>(itemOptions);
             configure?.Invoke(builder);
-            var projection = CreateProjection(value, text);
-            var orderQuery = builder.OrderQuery;
-            var emptyOptionText = builder.EmptyOptionText;
+            var projection = CreateProjection(
+                itemOptions.ValueExpression,
+                itemOptions.TextExpression
+            );
+            var orderQuery = itemOptions.OrderQuery;
+            var emptyOptionText = itemOptions.EmptyOptionText;
 
             options.UseItems(
                 async (services, cancellationToken) =>
