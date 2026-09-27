@@ -2,7 +2,7 @@
 
 ## Sidebar update — 2026-09-24
 
-Resource sidebar registration now uses one shared Dashboard provider for ordinary and EF Core resources. The detached Identity package still has its separate provider; its adaptation remains open. Other deferred items remain parked. The older audit below records the source as it existed on 2026-09-18 and is historical.
+Resource sidebar registration now uses one shared Dashboard provider for ordinary and EF Core resources. DashboardPlayground's Identity user and role examples use that same provider. The dedicated Identity package was removed on 2026-09-27, so its migration item below is superseded. Other deferred items remain parked. The older audit and backlog below record historical source and proposals.
 
 ## Code audit — 2026-09-18
 
@@ -26,11 +26,11 @@ Workspace, Pro, OSS, and website use `feature/generic-resources`; consumer skill
 
 Priority: the remaining cleanup from the original effort. All Dashboard packages should add standard sidebar items through a simple method on StellarAdminDashboardBuilder, instead of registering providers for each controller/resource. Keep ISidebarItemsProvider as an escape hatch for custom behavior. The method signature remains open; propose it before implementing.
 
-The resource-specific part is implemented in [resource sidebar registration](resource-sidebar-registration.md). It covers resources registered through `AddResource` or `AddEfCoreResource`; adaptation of the detached Identity package remains a separate later step.
+The resource-specific part is implemented in [resource sidebar registration](resource-sidebar-registration.md). It covers resources registered through `AddResource` or `AddEfCoreResource`, including DashboardPlayground's Identity example. The former package adaptation is superseded.
 
-Start in `src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdminDashboardBuilderExtensions.cs`, `src/StellarAdmin.Dashboard.Identity/StellarAdminDashboardBuilderExtensions.cs`, and `src/StellarAdmin.Dashboard/Sidebar/`. Rendering consumes providers in `src/StellarAdmin.Dashboard/Areas/StellarAdmin/ViewComponents/SidebarViewComponent.cs`.
+The historical starting paths included the removed Identity project. Current sidebar rendering consumes providers in `src/StellarAdmin.Dashboard/Areas/StellarAdmin/ViewComponents/SidebarViewComponent.cs`.
 
-Completion should migrate EF and Identity registration, preserve ordering/grouping and existing custom providers, and verify sidebar output when multiple packages/resources are registered.
+Any future sidebar changes should preserve ordering/grouping and existing custom providers, and verify sidebar output when multiple resources are registered.
 
 ### 2. Optional EF operations class
 
@@ -72,7 +72,7 @@ Stale-form optimistic concurrency detection is not implemented: edit reloads the
 
 ## Resuming and verification
 
-Read product AGENTS.md, the affected repo guides, and the public options-builder conventions. Inspect current code/status, select the item Jerrie actually requested, and turn its open decisions into a concrete API review where needed. Keep the existing IdentitySimplePlayground and ApplicationDbContext for demos; generate schema migrations with dotnet ef. Preserve logical blank-line spacing and file encoding. Do not start the other backlog items automatically.
+Read product AGENTS.md, the affected repo guides, and the public options-builder conventions. Inspect current code/status, select the item Jerrie actually requested, and turn its open decisions into a concrete API review where needed. Use DashboardPlayground for current demos; the former IdentitySimplePlayground was removed. Preserve logical blank-line spacing and file encoding. Do not start the other backlog items automatically.
 
 The baseline resource tests run from the product root with `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1`. The TUnit Dashboard unit and integration projects and EF integration project cover form builders, CRUD, references, query counts, editor rendering/binding, and form layouts using isolated temporary databases; the [EF runner migration](archive/ef-test-migration.md) records the replacement coverage. Use the SDK and conditional guidance in [development and verification](../development.md); the migration record distinguishes current verification from historical runs and existing warnings. For rendering changes, check desktop/mobile and dark mode; for reference changes, retain assertions that assigned labels are loaded with the entity and choice queries project only key/label. Do not alter the user's playground database for test fixtures or stop their process on port 5205.
 

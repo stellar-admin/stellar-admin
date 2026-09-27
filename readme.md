@@ -93,9 +93,9 @@ The skill is maintained alongside StellarAdmin; its references may include chang
 
 ## Resource and admin packages
 
-This repository also contains `StellarAdmin.Dashboard` (admin shell and resource screens), `StellarAdmin.Dashboard.Identity` (Identity management), and `StellarAdmin.Dashboard.EntityFrameworkCore` (EF Core resources). All are MIT licensed. Register the integrated admin application with `AddStellarAdmin().AddDashboard()`. There is no paid tier. These packages are available from source; their NuGet publication is a separate release step.
+This repository also contains `StellarAdmin.Dashboard` (admin shell and resource screens) and `StellarAdmin.Dashboard.EntityFrameworkCore` (EF Core resources). Both are MIT licensed. Register the integrated admin application with `AddStellarAdmin().AddDashboard()`. The DashboardPlayground demonstrates Identity user and role management through ordinary resources. There is no paid tier. The packages are available from source; their NuGet publication is a separate release step.
 
-The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, and the Identity playground used by the resource integration tests.
+The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, DashboardPlayground, and the Dashboard and EF Core resource integration tests.
 
 ## Contributing
 

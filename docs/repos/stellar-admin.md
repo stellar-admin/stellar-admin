@@ -10,7 +10,7 @@ Guidance for working in this repository.
 
 Each component is a server-rendered tag helper (`<sa-*>`). Interactivity that can't be done with HTML/CSS alone is provided by small **Lit web components** (`<sel-*>`) bundled into `stellar-admin.js`.
 
-**This repo contains the complete open-source product.** `StellarAdmin.Dashboard`, `StellarAdmin.Dashboard.Identity`, and `StellarAdmin.Dashboard.EntityFrameworkCore` provide the integrated admin application and its integrations; they share the MIT license.
+**This repo contains the complete open-source product.** `StellarAdmin.Dashboard` and `StellarAdmin.Dashboard.EntityFrameworkCore` provide the integrated admin application and EF Core resources; they share the MIT license. `sandbox/DashboardPlayground` demonstrates Identity management through ordinary resources.
 
 ### Registration
 
@@ -151,9 +151,9 @@ Parallax is hand-authored in `Client/css/themes/parallax.css`; see its [specific
 
 ## Resources, Identity, and Entity Framework Core
 
-The admin shell and resource layer live in `src/StellarAdmin.Dashboard/`, with Identity and EF Core integrations in their respective `src/StellarAdmin.Dashboard.*` projects. Register the application with `AddStellarAdmin().AddDashboard()`; its assets use `_content/StellarAdmin.Dashboard/`. Dashboard defaults to shadcn Nova and exposes `dashboard.ConfigureTheme(theme => { theme.Name = DashboardTheme.Ice; theme.IncludeSuggestedFonts = true; })` for app-wide selection and optional suggested web fonts. Maintained Identity designs live in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md`.
+The admin shell and resource layer live in `src/StellarAdmin.Dashboard/`, with the EF Core integration in `src/StellarAdmin.Dashboard.EntityFrameworkCore/`. Register the application with `AddStellarAdmin().AddDashboard()`; its assets use `_content/StellarAdmin.Dashboard/`. Dashboard defaults to shadcn Nova and exposes `dashboard.ConfigureTheme(theme => { theme.Name = DashboardTheme.Ice; theme.IncludeSuggestedFonts = true; })` for app-wide selection and optional suggested web fonts. `sandbox/DashboardPlayground/` demonstrates host-owned Identity user and role resources. The former dedicated Identity package designs in `docs/design/identity-configuration.md` and `docs/design/identity-user-forms.md` are retained as superseded history.
 
-`docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. `sandbox/IdentitySimplePlayground/` is also the host for the Dashboard and EF Core integration suites through `tests/StellarAdmin.Dashboard.Testing/`; keep it available when running tests. The fixtures use per-test temporary SQLite databases and in-process HTTP, leaving the playground database and running application untouched. See [integration test isolation](../development.md#integration-test-isolation).
+`docs/DocsSamples/` includes DataGrid. `docs/DocsSamplesGenerator/` exports website demos. Dashboard HTTP integration tests use an in-process host and private in-memory source. EF Core HTTP integration tests use an in-process host with private in-memory SQLite databases; neither suite needs DashboardPlayground or its database. See [development and verification](../development.md).
 
 ```bash
 dotnet build StellarAdmin.slnx

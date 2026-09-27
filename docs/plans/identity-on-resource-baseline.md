@@ -1,12 +1,16 @@
 # Identity example on the resource baseline
 
-Status: DashboardPlayground example implemented, 2026-09-24. The separate Identity package is not part of this work.
+Status: DashboardPlayground example implemented on 2026-09-24. The superseded dedicated Identity package and its playground were removed on 2026-09-27.
 
 ## Decision
 
 Use the ordinary Dashboard resource API to show how a host application can manage ASP.NET Core Identity users and roles. The example belongs in `sandbox/DashboardPlayground`, which already has an Identity database and login UI. This avoids maintaining a public Identity integration API for host-specific account and role membership policies.
 
-The detached `StellarAdmin.Dashboard.Identity` and `IdentitySimplePlayground` remain historical material. Their controllers depend on removed resource types and are not a template for this example.
+The removed `StellarAdmin.Dashboard.Identity` and `IdentitySimplePlayground` were historical material. Their controllers depended on removed resource types and are not a template for this example.
+
+## Dedicated package cleanup — 2026-09-27
+
+Removed the dedicated Identity package and its dependent playground, including the tracked playground SQLite database, migrations, and vendored assets. Both projects had been excluded from the solution; a direct Identity package build failed with 10 compile errors against removed resource APIs. The DashboardPlayground user and role example remains the supported starting point. Current repository and build guidance was updated; the former package design documents remain with superseded notices. A serial Release solution build passed with 12 existing warnings and no errors. Direct TUnit runs passed all 393 tests across Core (66), TagHelpers (76), Dashboard unit (29), Dashboard HTTP (165), and EF Core HTTP (57). The solution-wide `dotnet test --no-build` command could not start because the sandbox denied its named-pipe socket; direct project runs succeeded. `git diff --check` passed. No browser or hosted release check was run for this removal.
 
 ## Implementation
 

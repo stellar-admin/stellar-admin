@@ -6,7 +6,7 @@ Every run builds and validates Core, TagHelpers, Dashboard, and EF Core, discove
 
 ## Test discovery
 
-Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual test-project list or legacy runner step remains. The active suites cover Core, TagHelpers, Dashboard configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. The EF Core project and its replacement integration suite are reattached. Identity and IdentitySimplePlayground remain detached for later adaptation. See the [resource redesign baseline](../docs/development.md#resource-redesign-baseline).
+Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual test-project list or legacy runner step remains. The active suites cover Core, TagHelpers, Dashboard configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. DashboardPlayground demonstrates host-owned Identity resources; the former dedicated Identity package and its playground have been removed. See the [resource redesign baseline](../docs/development.md#resource-redesign-baseline).
 
 ## Publishing
 

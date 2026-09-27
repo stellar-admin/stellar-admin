@@ -1,5 +1,7 @@
 # Design: StellarAdmin Identity configuration
 
+Status: superseded on 2026-09-27. The dedicated Identity package was removed. See [Identity example on the resource baseline](../plans/identity-on-resource-baseline.md) for the host-owned user and role resource example in DashboardPlayground. The design below is retained as historical context and does not describe a current API.
+
 The consumer-facing configuration API for `StellarAdmin.Dashboard.Identity`, following the [options builder conventions](../conventions/options-builders.md) in this repository. **V1 scope is the Users index page and its data grid end-to-end, and it has shipped: column configuration rendered through grid expression binding (`field-for`) with `[Display]` attribute support for column titles, seeded default columns, page settings (`Title`/`Subtitle`), the sidebar group + users item, query transformation, sorting (column `Sortable()` + page `DefaultSortBy`), scopes, and opt-in search (all landed 2026-08-04/05).** The other levels (roles, sidebar icon/order) are designed here so future plans can add them without reshaping the API. **The 2026-08-10 resource layer refactor made the page machinery entity-agnostic — see [Resource layer](#resource-layer) for the vocabulary and the current class names; history sections may still narrate decisions using the old `Users*` names they were made under.**
 
 ## Target usage

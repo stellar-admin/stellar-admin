@@ -1,5 +1,7 @@
 # Design: StellarAdmin Identity user Create/Edit screens
 
+Status: superseded on 2026-09-27. The dedicated Identity package was removed. See [Identity example on the resource baseline](../plans/identity-on-resource-baseline.md) for the host-owned user and role resource example in DashboardPlayground. The design below is retained as historical context and does not describe current forms.
+
 The Create and Edit user pages for `StellarAdmin.Dashboard.Identity`, following the [options builder conventions](../conventions/options-builders.md) in this repository and extending the builder tree designed in [identity-configuration.md](identity-configuration.md) (which reserved `users.Edit(...)` / `users.Create(...)`). **Direction approved 2026-08-06** after the approaches comparison in the product plan docs (`docs/plans/identity-user-forms-approaches.md`); this is its "approach 1" — field schema + stock editor-template rendering. A hybrid that later adds a `UseModel<T>` escape hatch remains open.
 
 ## Problem

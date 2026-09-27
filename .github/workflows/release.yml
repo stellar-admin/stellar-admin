@@ -1,7 +1,7 @@
 name: Release
 run-name: Release ${{ inputs.version }}${{ inputs.publish && ' (publish)' || ' (dry run)' }}
 
-# Build and verify Core, TagHelpers, Dashboard, and EF Core. Identity remains detached for the resource redesign. Publishing is opt-in and limited to Core and TagHelpers.
+# Build and verify Core, TagHelpers, Dashboard, and EF Core. Publishing is opt-in and limited to Core and TagHelpers.
 on:
   workflow_dispatch:
     inputs:

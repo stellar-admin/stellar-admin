@@ -1,16 +1,20 @@
 # Resource configuration and controller unification
 
-Status: revised rebuild plan agreed on 2026-09-19. Integration detachment is committed as `f936c29`; the resource reset is committed as `2f8b9d1` on `resource-redesign`. Steps 1 and 2 (resource registration and naming, then a working index page) are implemented. Step 3 (basic create) is committed as `ffb7538`. Dashboard test consolidation and the create factory callback are implemented. Global delegate-based label defaults and step 4 (advanced layouts) are implemented. Step 5 was split for review. Edit is committed as `71635f8`. Delete is committed as `dd892b4`. Operation results are committed as `de44966`. Split data source contracts and custom create are committed. Custom edit is committed as `c13fe5b`. Step 7 paging is committed as `0cdfb12`. HTMX index paging and deletion are committed as `70c6a2a`. Sorting is committed as `05af889`, and explicit query preservation as `e3e82c1`. Search is committed as `9bb3e2e`. Scopes are committed and pushed as `ffb2059`. EF Core checkpoint 1 is committed as `ffb6f85`: shared-controller registration, metadata keys, a read-only SQLite Product index, paging, sorting, and solution/build reattachment. Builder and feature-options inheritance review precedes expression configuration in checkpoint 2. This sequence supersedes the original three-phase plan; action-specific form models now come immediately after basic CRUD and before integrations.
+Status: the shared resource baseline, EF Core integration, and host-owned Identity example are implemented on `resource-redesign`. The dedicated Identity package and its playground were removed on 2026-09-27. The sequence and checkpoint notes below preserve the development history; query transformations and event callbacks remain deferred.
 
 ## Objective
 
-Build a simple standalone resource foundation in Dashboard, then make EF Core and Identity integrations use its builders and controller workflow. Resource identity comes from TResource. Labels derive from that type with optional SingularLabel and PluralLabel overrides. Integrations supply configuration and persistence/domain operations without introducing a separate form configuration system.
+Build a standalone resource foundation in Dashboard and use its builders and controller workflow for EF Core and host-owned Identity examples. Resource identity comes from TResource. Labels derive from that type with optional SingularLabel and PluralLabel overrides. Data sources supply persistence and domain operations without a separate form configuration system.
 
 ## Current baseline
 
 The old resource builders, page/default options, controller base, query machinery, and related test projects have been removed. Dashboard retains its shell, Razor rendering, editors, field/layout definitions, and rendering models. These are reusable building blocks and may be simplified as the replacement API develops.
 
-EF Core is reattached with a read-only implementation and new SQLite HTTP integration tests. Identity and IdentitySimplePlayground remain detached from the solution and build pipeline, with source referencing removed APIs retained for later adaptation. The active tests cover Core, TagHelpers, and replacement Dashboard resource configuration. The Dashboard integration suite verifies index rendering and create/edit flows through HTTP.
+EF Core is included with resource listing and CRUD plus SQLite HTTP integration tests. DashboardPlayground demonstrates Identity users and roles through ordinary resources and manager-backed handlers. The old dedicated Identity package and IdentitySimplePlayground have been removed. Active tests cover Core, TagHelpers, Dashboard configuration and HTTP behavior, and EF Core SQLite HTTP behavior.
+
+## Dedicated Identity package closeout — 2026-09-27
+
+The user confirmed that the dedicated Identity package was superseded by the DashboardPlayground example and authorized removing its project directory and dependent playground directory. Removed both directories, including the playground's tracked database, migrations, and vendored assets. Updated current guidance and marked the former package design documents superseded. Historical implementation notes below still describe the prior work and should not be read as a plan to reattach the package. A serial Release solution build passed with 12 existing warnings and no errors. Direct TUnit runs passed all 393 active tests across five projects. The solution-wide test runner could not start because the sandbox denied its named-pipe socket; each project passed through direct execution. `git diff --check` passed. No browser or hosted release check was run for this removal.
 
 ## Design rules
 

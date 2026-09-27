@@ -34,7 +34,7 @@ The default order preserves resource registration order. Smaller `Order` values 
 4. Add focused unit tests for one provider across several resources, plural-label fallback and late overrides, explicit label/group/order, stable ties, hidden entries, and repeated registration. Add HTTP integration assertions for rendered sidebar links and routes in both the ordinary resource host and the EF Core resource host.
 5. Show resource sidebar configuration in `DashboardPlayground` using the user, role, customer, and product resources. Update development guidance after implementation and record the checks actually run here.
 
-The detached `StellarAdmin.Dashboard.Identity` package currently has its own provider and is outside the active resource registration path. Its eventual reattachment can reuse the shared registration mechanism after its API is adapted to the current resource baseline.
+The former dedicated Identity package was removed. DashboardPlayground registers user and role resources through the shared sidebar mechanism; no Identity package reattachment is planned.
 
 ## Implementation and verification
 
