@@ -1,8 +1,9 @@
+using DashboardPlayground.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources.Editors;
 
-namespace DashboardPlayground.Data;
+namespace DashboardPlayground.Resources.Departments;
 
 public sealed class DepartmentLookupProvider(ApplicationDbContext db) : IReferenceLookupProvider
 {

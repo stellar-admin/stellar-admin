@@ -28,6 +28,18 @@ Verification: `dotnet build sandbox/DashboardPlayground/DashboardPlayground.cspr
 
 The tracked `app.db` subsequently had the migration applied and was populated with 15 departments through a Chromium-driven Department create form on a separate local playground instance on port 5219. All 15 form submissions redirected to the Department index. A read-only database check found 15 unique department names and `PRAGMA integrity_check` returned `ok`. The temporary browser and playground instance were stopped without touching port 5205.
 
+## Playground resource organization — 2026-09-27
+
+Grouped the playground's user, role, department, customer, and product resource registrations and support files under `Resources/<resource>/`, with shared Identity result mapping under `Resources/Shared/`. `Program.cs` calls the five registration methods. The user requested that all EF Core models stay in `Data/`, alongside the DbContext and migrations; the in-memory Customer and its form models live under `Resources/Customers/`, and `ErrorViewModel` remains in `Models/`. The folder move itself did not change the schema. The playground build and `dotnet ef migrations has-pending-model-changes` passed. The repository-wide CSharpier check still reports pre-existing formatting in the project file, controller, and migration files. No browser or full solution test run was performed for this organization-only change.
+
+## Unified playground EF database — 2026-09-27
+
+Moved Products and Categories from the separate in-memory `ProductDbContext` into `ApplicationDbContext`, preserving the owned SKU mapping and the SQLite cents conversion for prices. The Product resource and category lookup now use `ApplicationDbContext`. Removed the in-memory SQLite connection, the second DbContext, and startup catalog seeding. The EF CLI generated `AddProductsAndCategories`, which creates only the Categories and Products tables and their foreign key/index; the migration was applied first to a copy of `app.db` and then to the tracked database. The copy retained all 15 departments and passed `PRAGMA integrity_check`. The playground build passed with zero warnings or errors. Product and category rows were added directly to `app.db` in the subsequent catalog data step.
+
+## Playground catalog data — 2026-09-27
+
+At the user's request, inserted 10 realistic categories and 150 products directly into the tracked `sandbox/DashboardPlayground/app.db`, without adding runtime seed code. Each category has 15 products. Product names and SKUs are distinct, SKUs fit the 20-character limit, names fit the 100-character limit, and prices are stored as integer cents to match the EF conversion. The insertion was validated on a temporary database copy before applying it to `app.db`; the transaction checked category counts, unique names and SKUs, foreign keys, and SQLite integrity. The existing 15 departments were preserved.
+
 ## Verification
 
 The playground built with `dotnet build sandbox/DashboardPlayground/DashboardPlayground.csproj --no-restore -m:1 -v quiet` with zero warnings on 2026-09-24 after the authorization additions were removed. CSharpier formatted the new C# files and `git diff --check` passed. The initial parallel build/restore commands exited without diagnostics in this environment, so the single-node build was used.

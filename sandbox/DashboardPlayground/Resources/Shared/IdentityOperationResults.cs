@@ -1,7 +1,9 @@
+using DashboardPlayground.Resources.Roles;
+using DashboardPlayground.Resources.Users;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Dashboard.Resources;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Shared;
 
 internal static class IdentityOperationResults
 {

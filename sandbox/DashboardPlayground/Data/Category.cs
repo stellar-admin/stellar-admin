@@ -1,4 +1,4 @@
-namespace DashboardPlayground.Models;
+namespace DashboardPlayground.Data;
 
 public sealed class Category
 {

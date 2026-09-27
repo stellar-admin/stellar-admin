@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Roles;
 
 public sealed class RoleFormModel
 {

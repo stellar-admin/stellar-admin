@@ -6,7 +6,11 @@ namespace DashboardPlayground.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<ApplicationUser>(options)
 {
+    public DbSet<Category> Categories => Set<Category>();
+
     public DbSet<Department> Departments => Set<Department>();
+
+    public DbSet<Product> Products => Set<Product>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -28,5 +32,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithMany(department => department.Users)
                 .HasForeignKey(value => value.DepartmentId);
         });
+
+        builder.Entity<Product>().OwnsOne(product => product.Details);
+
+        // Store this demo's two-decimal prices as cents so SQLite can order them exactly.
+        builder
+            .Entity<Product>()
+            .Property(product => product.Price)
+            .HasConversion(price => (long)(price * 100m), cents => cents / 100m);
     }
 }

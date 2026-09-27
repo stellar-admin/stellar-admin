@@ -1,8 +1,9 @@
+using DashboardPlayground.Resources.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Roles;
 
 public sealed class RoleDataSource(RoleManager<IdentityRole> roles)
     : IResourceDataSource<IdentityRole>,

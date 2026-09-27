@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DashboardPlayground.Models;
+namespace DashboardPlayground.Data;
 
 public sealed class Product
 {

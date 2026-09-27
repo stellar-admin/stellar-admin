@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Users;
 
-public sealed class EditUserModel
+public sealed class CreateUserModel
 {
     [Display(Name = "Department")]
     public Guid? DepartmentId { get; set; }
@@ -20,6 +20,13 @@ public sealed class EditUserModel
     [Required, StringLength(100)]
     [Display(Name = "Last name")]
     public required string LastName { get; set; }
+
+    [Required, DataType(DataType.Password)]
+    public string Password { get; set; } = "";
+
+    [Required, Compare(nameof(Password)), DataType(DataType.Password)]
+    [Display(Name = "Confirm password")]
+    public string PasswordConfirmation { get; set; } = "";
 
     [StringLength(35)]
     [Display(Name = "Preferred language")]

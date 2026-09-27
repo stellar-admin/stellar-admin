@@ -1,9 +1,10 @@
 using DashboardPlayground.Data;
+using DashboardPlayground.Resources.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Users;
 
 public sealed class UserDataSource(UserManager<ApplicationUser> users)
     : IResourceDataSource<ApplicationUser>,

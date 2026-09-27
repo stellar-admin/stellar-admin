@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DashboardPlayground.Models;
+namespace DashboardPlayground.Resources.Customers;
 
 public sealed class CreateCustomerModel
 {

@@ -1,7 +1,8 @@
+using DashboardPlayground.Resources.Shared;
 using Microsoft.AspNetCore.Identity;
 using StellarAdmin.Dashboard.Resources;
 
-namespace DashboardPlayground.Identity;
+namespace DashboardPlayground.Resources.Roles;
 
 public sealed class CreateRoleHandler(RoleManager<IdentityRole> roles)
     : IResourceCreateHandler<RoleFormModel>

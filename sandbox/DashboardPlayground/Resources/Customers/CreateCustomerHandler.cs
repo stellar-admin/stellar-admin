@@ -1,7 +1,6 @@
-using DashboardPlayground.Models;
 using StellarAdmin.Dashboard.Resources;
 
-namespace DashboardPlayground.Data;
+namespace DashboardPlayground.Resources.Customers;
 
 public sealed class CreateCustomerHandler(CustomerDataSource customers)
     : IResourceCreateHandler<CreateCustomerModel>
