@@ -4,9 +4,9 @@ using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
 
-public sealed class CategoryLookupProvider(CatalogDbContext db) : IReferenceLookupProvider
+public sealed class CategorySelectListItemsProvider(CatalogDbContext db) : ISelectListItemsProvider
 {
-    public async Task<IReadOnlyList<SelectListItem>> GetLookupsAsync(
+    public async Task<IReadOnlyList<SelectListItem>> GetItemsAsync(
         CancellationToken cancellationToken
     )
     {

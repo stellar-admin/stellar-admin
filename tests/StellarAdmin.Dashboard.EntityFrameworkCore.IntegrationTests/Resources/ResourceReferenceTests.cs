@@ -214,8 +214,8 @@ public class ResourceReferenceTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<ReferenceLookupEditorOptions>(options =>
-                        options.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<SelectListEditorOptions>(options =>
+                        options.UseItemsFrom<CategorySelectListItemsProvider>()
                     );
             })
         );
@@ -230,8 +230,8 @@ public class ResourceReferenceTests
                 fields.Add(model => model.Name);
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<ReferenceLookupEditorOptions>(options =>
-                        options.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<SelectListEditorOptions>(options =>
+                        options.UseItemsFrom<CategorySelectListItemsProvider>()
                     );
             })
         );
@@ -244,8 +244,8 @@ public class ResourceReferenceTests
             edit.Fields(fields =>
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<ReferenceLookupEditorOptions>(options =>
-                        options.UseLookup<CategoryLookupProvider>()
+                    .UseEditor<SelectListEditorOptions>(options =>
+                        options.UseItemsFrom<CategorySelectListItemsProvider>()
                     )
             )
         );

@@ -1,5 +1,13 @@
 # Generic resource follow-ups
 
+## Select list editor update — 2026-09-27
+
+Dashboard now has `SelectListEditorOptions` for select fields. `UseItems` evaluates a choice factory when each form renders, and `UseItemsFrom<TProvider>` resolves a registered `ISelectListItemsProvider` for request-scoped, asynchronous choices. The redundant `ReferenceLookupEditor`, its options, template, provider interface, and resolver were removed after migrating the playground and EF reference tests to `SelectListEditorOptions`. DashboardPlayground uses the select list editor for department, category, language, and time zone fields, with language choices from both neutral and specific .NET cultures. The form model and database still enforce the existing 35-character length limit; membership in the rendered choice list is not validated on POST. Verification for the final removal is recorded below.
+
+## Reference editor removal — 2026-09-27
+
+The separate reference editor had the same `SelectListItem` data and Razor output as `SelectListEditor`, with only a provider requirement. Department and category item providers now implement `ISelectListItemsProvider` directly and expose `GetItemsAsync`; the editor and EF reference scenarios use `UseItemsFrom<TProvider>`. No database schema or data was changed. The user's existing `DashboardPlayground.csproj` and `app.db` working-tree changes were left untouched. After the provider terminology cleanup, `DashboardPlayground` built successfully; all 57 EF Core and 167 Dashboard HTTP integration tests passed. CSharpier and `git diff --check` passed for the affected files.
+
 ## Sidebar update — 2026-09-24
 
 Resource sidebar registration now uses one shared Dashboard provider for ordinary and EF Core resources. DashboardPlayground's Identity user and role examples use that same provider. The dedicated Identity package was removed on 2026-09-27, so its migration item below is superseded. Other deferred items remain parked. The older audit and backlog below record historical source and proposals.
@@ -62,7 +70,9 @@ Start in `src/StellarAdmin.Dashboard.EntityFrameworkCore/EfCoreReference.cs`, `E
 
 ### 6. Richer typed EditorOptions
 
-EditorOptions currently carries typed ClassNames; RadioEditorOptions adds per-option part classes. Jerrie also suggested future behavioral options such as string masks and explicit select/radio items. Those are deferred, with a brief reminder already in code. Decide which editor-specific types are needed without turning the common options into a bag of unrelated settings. Editor options currently configure the selected editor; Template/MVC metadata select the editor itself.
+EditorOptions currently carries typed ClassNames; RadioEditorOptions adds per-option part classes. Jerrie also suggested future behavioral options such as string masks and explicit select/radio items. Masks and radio choices remain deferred, with a brief reminder already in code. Decide which editor-specific types are needed without turning the common options into a bag of unrelated settings. Editor options currently configure the selected editor; Template/MVC metadata select the editor itself.
+
+The 2026-09-27 select list editor implements explicit select choices through its own typed options; masks and radio choices remain deferred.
 
 Start in `src/StellarAdmin.Dashboard/Resources/Options/EditorOptions.cs`, `RadioEditorOptions.cs`, and the shared editor templates. Preserve repeated configuration composition, common-to-specialized upgrades, option isolation, and clear errors for incompatible specialized options. Coordinate with reference editor/source design to avoid competing choice APIs.
 

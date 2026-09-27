@@ -5,9 +5,10 @@ using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.Products;
 
-public sealed class CategoryLookupProvider(ApplicationDbContext db) : IReferenceLookupProvider
+public sealed class CategorySelectListItemsProvider(ApplicationDbContext db)
+    : ISelectListItemsProvider
 {
-    public async Task<IReadOnlyList<SelectListItem>> GetLookupsAsync(
+    public async Task<IReadOnlyList<SelectListItem>> GetItemsAsync(
         CancellationToken cancellationToken
     )
     {

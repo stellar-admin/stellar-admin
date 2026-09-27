@@ -61,15 +61,21 @@ internal static class UserResourceRegistration
                                 model => model.DepartmentId,
                                 field =>
                                 {
-                                    field.UseEditor<ReferenceLookupEditorOptions>(options =>
-                                        options.UseLookup<DepartmentLookupProvider>()
+                                    field.UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItemsFrom<DepartmentSelectListItemsProvider>()
                                     );
                                 }
                             );
                             section.AddRow(row =>
                             {
-                                row.Add(model => model.PreferredLanguage);
-                                row.Add(model => model.TimeZoneId);
+                                row.Add(model => model.PreferredLanguage)
+                                    .UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItems(UserLookups.Languages)
+                                    );
+                                row.Add(model => model.TimeZoneId)
+                                    .UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItems(UserLookups.TimeZones)
+                                    );
                             });
                         }
                     );
@@ -108,15 +114,21 @@ internal static class UserResourceRegistration
                                 model => model.DepartmentId,
                                 field =>
                                 {
-                                    field.UseEditor<ReferenceLookupEditorOptions>(options =>
-                                        options.UseLookup<DepartmentLookupProvider>()
+                                    field.UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItemsFrom<DepartmentSelectListItemsProvider>()
                                     );
                                 }
                             );
                             section.AddRow(row =>
                             {
-                                row.Add(model => model.PreferredLanguage);
-                                row.Add(model => model.TimeZoneId);
+                                row.Add(model => model.PreferredLanguage)
+                                    .UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItems(UserLookups.Languages)
+                                    );
+                                row.Add(model => model.TimeZoneId)
+                                    .UseEditor<SelectListEditorOptions>(options =>
+                                        options.UseItems(UserLookups.TimeZones)
+                                    );
                             });
                         }
                     );

@@ -27,8 +27,8 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<ReferenceLookupEditorOptions>(options =>
-                                options.UseLookup<CategoryLookupProvider>()
+                            field.UseEditor<SelectListEditorOptions>(options =>
+                                options.UseItemsFrom<CategorySelectListItemsProvider>()
                             );
                         }
                     );
@@ -45,8 +45,8 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<ReferenceLookupEditorOptions>(options =>
-                                options.UseLookup<CategoryLookupProvider>()
+                            field.UseEditor<SelectListEditorOptions>(options =>
+                                options.UseItemsFrom<CategorySelectListItemsProvider>()
                             );
                         }
                     );
