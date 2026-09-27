@@ -131,11 +131,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         foreach (var field in edit.Fields)
         {
-            var properties = ResourcePropertyPath.GetProperties(field.FieldExpression)!;
+            var properties = field.PropertyPath;
             object target = entity;
             object source = model;
-            foreach (var segment in properties[..^1])
+            for (var i = 0; i < properties.Count - 1; i++)
             {
+                var segment = properties[i];
                 target =
                     segment.GetValue(target)
                     ?? throw new InvalidOperationException(

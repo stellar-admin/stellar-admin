@@ -55,7 +55,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
             }
         );
 
-        return new(Services);
+        return CreateSearchBuilder();
     }
 
     /// <summary>

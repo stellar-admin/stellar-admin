@@ -42,7 +42,7 @@ public sealed class ResourceIndexBuilder<TResource>
     {
         Services.Configure<ResourceOptions<TResource>>(options => options.Index.Search = new());
 
-        return new(Services);
+        return CreateSearchBuilder();
     }
 
     /// <summary>

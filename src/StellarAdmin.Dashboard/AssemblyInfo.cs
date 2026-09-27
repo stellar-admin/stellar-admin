@@ -5,7 +5,3 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 // AddStellarAdmin().AddDashboard(). Requires GenerateRazorAssemblyInfo=false, since the Razor SDK
 // would otherwise emit its own (conflicting) ProvideApplicationPartFactory attribute.
 [assembly: ProvideApplicationPartFactory(typeof(NullApplicationPartFactory))]
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(
-    "StellarAdmin.Dashboard.EntityFrameworkCore"
-)]

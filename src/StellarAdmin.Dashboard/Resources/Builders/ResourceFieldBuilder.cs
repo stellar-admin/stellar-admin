@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 
@@ -12,6 +13,7 @@ public sealed class ResourceFieldBuilder
     private readonly List<Action<FormFieldOptions>> _configuration = [];
     private readonly LambdaExpression _field;
     private readonly string _fieldName;
+    private readonly PropertyInfo[] _propertyPath;
 
     /// <summary>
     ///     The field label.
@@ -21,10 +23,15 @@ public sealed class ResourceFieldBuilder
         set => _configuration.Add(options => options.Title = value);
     }
 
-    internal ResourceFieldBuilder(LambdaExpression field, string fieldName)
+    internal ResourceFieldBuilder(
+        LambdaExpression field,
+        string fieldName,
+        PropertyInfo[] propertyPath
+    )
     {
         _field = field;
         _fieldName = fieldName;
+        _propertyPath = propertyPath;
     }
 
     /// <summary>
@@ -62,7 +69,7 @@ public sealed class ResourceFieldBuilder
 
     internal FormFieldOptions Build()
     {
-        var options = new FormFieldOptions(_field, _fieldName);
+        var options = new FormFieldOptions(_field, _fieldName, _propertyPath);
         foreach (var configure in _configuration)
         {
             configure(options);

@@ -35,7 +35,8 @@ public class ResourceFieldsBuilder<TResource>
 
         var fieldBuilder = new ResourceFieldBuilder(
             field,
-            ResourcePropertyPath.GetName(properties)
+            ResourcePropertyPath.GetName(properties),
+            properties
         );
         _configure(items => items.Add(fieldBuilder.Build()));
 

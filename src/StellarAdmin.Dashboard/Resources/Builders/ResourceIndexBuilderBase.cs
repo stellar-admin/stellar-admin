@@ -102,6 +102,11 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         return (TBuilder)this;
     }
 
+    /// <summary>
+    ///     Creates a search builder for the resource.
+    /// </summary>
+    protected ResourceSearchBuilder<TResource> CreateSearchBuilder() => new(Services);
+
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
     {
         ArgumentNullException.ThrowIfNull(field);

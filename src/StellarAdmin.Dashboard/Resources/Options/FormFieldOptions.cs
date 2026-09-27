@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace StellarAdmin.Dashboard.Resources.Options;
 
@@ -11,8 +12,6 @@ public sealed class FormFieldOptions : FormItemOptions
     ///     The editor's configuration.
     /// </summary>
     public EditorOptions Editor { get; internal set; } = new();
-
-    internal Type? EditorType { get; set; }
 
     /// <summary>
     ///     The expression selecting the property the field renders and binds.
@@ -31,13 +30,25 @@ public sealed class FormFieldOptions : FormItemOptions
     public bool IsReadOnly { get; internal set; }
 
     /// <summary>
+    ///     The properties selected by <see cref="FieldExpression" />, in order.
+    /// </summary>
+    public IReadOnlyList<PropertyInfo> PropertyPath { get; }
+
+    /// <summary>
     ///     The field label, or <c>null</c> to derive it from the property's metadata.
     /// </summary>
     public string? Title { get; internal set; }
 
-    internal FormFieldOptions(LambdaExpression fieldExpression, string fieldName)
+    internal Type? EditorType { get; set; }
+
+    internal FormFieldOptions(
+        LambdaExpression fieldExpression,
+        string fieldName,
+        PropertyInfo[] propertyPath
+    )
     {
         FieldExpression = fieldExpression;
         FieldName = fieldName;
+        PropertyPath = Array.AsReadOnly((PropertyInfo[])propertyPath.Clone());
     }
 }
