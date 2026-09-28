@@ -5,6 +5,36 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 
 internal static class EditorClassNamesMapper
 {
+    public static string? ForCheckboxGroup(EditorOptions? options)
+    {
+        if (
+            options is not null
+            && options.GetType() != typeof(EditorOptions)
+            && options is not CheckboxGroupEditorOptions
+        )
+        {
+            throw new InvalidOperationException(
+                $"{options.GetType().Name} is not supported by a checkbox group editor."
+            );
+        }
+
+        var classes = options?.ClassNames;
+        if (
+            classes?.Content is not null
+            || classes?.Description is not null
+            || classes?.Error is not null
+            || classes?.Label is not null
+            || classes?.Root is not null
+        )
+        {
+            throw new InvalidOperationException(
+                "Checkbox group editors support only Control, which styles the choices container."
+            );
+        }
+
+        return classes?.Control;
+    }
+
     public static InputClassNames ForInput(EditorOptions? options)
     {
         ValidateScalar(options);

@@ -12,6 +12,51 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 public class ResourceEditorTests
 {
     [Test]
+    public async Task CheckboxGroupEditor_ControlClassName_StylesChoicesContainer()
+    {
+        // Arrange
+        var state = new RoleSelectionState();
+        await using var sut = await CreateRoleSelectionHost(
+            state,
+            classNames => classNames.Control = "role-choices"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("[data-slot='checkbox-group']")
+                    .ClassList.Contains("role-choices")
+            )
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_UnsupportedClassName_FailsRendering()
+    {
+        // Arrange
+        var state = new RoleSelectionState();
+        await using var sut = await CreateRoleSelectionHost(
+            state,
+            classNames => classNames.Label = "role-label"
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
+        await Assert
+            .That(await response.Content.ReadAsStringAsync())
+            .Contains("Checkbox group editors support only Control");
+    }
+
+    [Test]
     public async Task CheckboxGroupEditor_RendersSelectedChoices()
     {
         // Arrange
@@ -228,7 +273,8 @@ public class ResourceEditorTests
     }
 
     private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateRoleSelectionHost(
-        RoleSelectionState state
+        RoleSelectionState state,
+        Action<EditorClassNames>? classNames = null
     ) =>
         DashboardTestHost.CreateAsync(
             new([new(7, "Notebook", 8.50m)]),
@@ -240,11 +286,13 @@ public class ResourceEditorTests
                         fields
                             .Add(model => model.RoleIds)
                             .UseEditor<CheckboxGroupEditorOptions>(options =>
+                            {
                                 options.UseItems([
                                     new SelectListItem("Auditor", "auditor"),
                                     new SelectListItem("Manager", "manager"),
-                                ])
-                            )
+                                ]);
+                                classNames?.Invoke(options.ClassNames);
+                            })
                     )
                 );
             },

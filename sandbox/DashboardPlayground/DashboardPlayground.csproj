@@ -33,4 +33,48 @@
     <ProjectReference Include="..\..\src\StellarAdmin.Dashboard\StellarAdmin.Dashboard.csproj" />
     <ProjectReference Include="..\..\src\StellarAdmin.Dashboard.EntityFrameworkCore\StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
   </ItemGroup>
+
+  <!-- Client -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/package.json" />
+    <ClientInput Include="Resources/**/*.cs" />
+  </ItemGroup>
+
+  <!-- Declared at execution time, as in StellarAdmin.Dashboard, so Rider doesn't strip the
+       item when the generated file is deleted. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientOutput Include="wwwroot/css/dashboard.css" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Trigger client build -->
+  <Target
+    Name="Client"
+    DependsOnTargets="ClientItems"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+    Inputs="@(ClientInput)"
+    Outputs="@(ClientOutput)"
+  >
+    <Exec
+      Command="npm install"
+      WorkingDirectory="Client"
+      Condition=" !Exists('Client/node_modules') "
+    />
+    <Exec Command="npm run build" WorkingDirectory="Client" />
+
+    <!-- Tailwind skips the write when output is unchanged, leaving it older than the
+         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <Touch Files="@(ClientOutput)" />
+
+    <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
 </Project>

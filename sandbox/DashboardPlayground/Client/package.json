@@ -1,0 +1,12 @@
+{
+  "name": "dashboard-playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tailwindcss -i css/dashboard.css -o ../wwwroot/css/dashboard.css"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

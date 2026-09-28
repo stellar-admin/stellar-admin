@@ -107,6 +107,7 @@ internal static class UserResourceRegistration
                                     field =>
                                     {
                                         field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        {
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 ApplicationRole,
@@ -115,8 +116,10 @@ internal static class UserResourceRegistration
                                                 role => role.Id,
                                                 role => role.Name!,
                                                 items => items.OrderBy(role => role.Name)
-                                            )
-                                        );
+                                            );
+                                            options.ClassNames.Control =
+                                                "sm:block sm:columns-2 sm:-mb-3 sm:*:pb-3 sm:*:break-inside-avoid";
+                                        });
                                     }
                                 );
                             }
@@ -196,6 +199,7 @@ internal static class UserResourceRegistration
                                     field =>
                                     {
                                         field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        {
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 ApplicationRole,
@@ -204,8 +208,10 @@ internal static class UserResourceRegistration
                                                 role => role.Id,
                                                 role => role.Name!,
                                                 items => items.OrderBy(role => role.Name)
-                                            )
-                                        );
+                                            );
+                                            options.ClassNames.Control =
+                                                "sm:block sm:columns-2 sm:-mb-3 sm:*:pb-3 sm:*:break-inside-avoid";
+                                        });
                                     }
                                 );
                             }

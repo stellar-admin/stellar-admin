@@ -37,6 +37,7 @@ builder
     .AddDashboard(dashboard =>
     {
         dashboard.RequireAuthorization();
+        dashboard.AddStylesheet("~/css/dashboard.css");
 
         dashboard.ConfigureTheme(theme =>
         {

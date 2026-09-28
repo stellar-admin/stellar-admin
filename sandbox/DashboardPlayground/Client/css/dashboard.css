@@ -1,0 +1,14 @@
+/* DashboardPlayground — utilities for class names set in resource registrations, linked
+   after the theme bundle and the Dashboard stylesheet. Those already ship preflight, the
+   theme variables, and all component rules, so this file emits utilities only.
+
+   Both theme imports are reference-only, so no variables are re-emitted here and the
+   generated utilities resolve against the linked theme bundle at runtime. */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) theme(inline reference);
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css" theme(reference);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "../../Resources";
