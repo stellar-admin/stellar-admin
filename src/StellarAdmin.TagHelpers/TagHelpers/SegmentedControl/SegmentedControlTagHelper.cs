@@ -27,7 +27,7 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
     public SegmentedControlTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -91,6 +91,6 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
         output.Content.SetHtmlContent(await output.GetChildContentAsync());
         LabelForId = group.FirstInputId;
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 }

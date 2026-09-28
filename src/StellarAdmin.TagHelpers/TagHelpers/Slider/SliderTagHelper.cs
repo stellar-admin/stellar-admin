@@ -83,7 +83,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
-    protected override Task<AutoFieldConfiguration> RenderInput(
+    protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -223,7 +223,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
         }
 
-        return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast));
+        return Task.FromResult(FieldLayout.Stacked);
     }
 
     /// <summary>

@@ -27,7 +27,7 @@ public class RadioGroupTagHelper : ChoiceGroupTagHelper
     public RadioGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
         : base(generator, icons) { }
 
-    protected override Task<AutoFieldConfiguration> RenderInput(
+    protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes

@@ -54,7 +54,7 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -222,14 +222,9 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
             // individual radio button. Rather, the error will be displayed for the
             // group of radio buttons as a whole. As such, the developer will need
             // to add the sa-field-error Tag Helper explicitly to their form.
-            "radio" when For != null => new AutoFieldConfiguration(
-                AutoFieldLayout.HorizontalInputFirst,
-                AutoFieldElement.Label | AutoFieldElement.Description
-            ),
-            "checkbox" or "radio" => new AutoFieldConfiguration(
-                AutoFieldLayout.HorizontalInputFirst
-            ),
-            _ => new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast),
+            "radio" when For != null => FieldLayout.ControlFirst.Without(FieldPart.Error),
+            "checkbox" or "radio" => FieldLayout.ControlFirst,
+            _ => FieldLayout.Stacked,
         };
     }
 }

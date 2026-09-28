@@ -58,7 +58,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         }
     }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -136,6 +136,6 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
             )
         );
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 }

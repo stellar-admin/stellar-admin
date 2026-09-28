@@ -88,7 +88,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -186,7 +186,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
         inputWrapper.InnerHtml.AppendHtml(inputOutput);
         output.Content.AppendHtml(inputWrapper);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 
     private TagHelperOutput RenderUnderlyingInput(

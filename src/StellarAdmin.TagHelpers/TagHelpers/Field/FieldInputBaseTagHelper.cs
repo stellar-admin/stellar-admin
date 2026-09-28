@@ -79,21 +79,21 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var autoFieldLayout = await InternalRenderInput(context, output);
+        var fieldLayout = await InternalRenderInput(context, output);
 
         if (ShouldRenderFieldWrapper())
         {
-            await RenderFieldWrapper(context, output, autoFieldLayout);
+            await RenderFieldWrapper(context, output, fieldLayout);
         }
     }
 
-    protected abstract Task<AutoFieldConfiguration> RenderInput(
+    protected abstract Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
     );
 
-    private async Task<AutoFieldConfiguration> InternalRenderInput(
+    private async Task<FieldLayout> InternalRenderInput(
         TagHelperContext context,
         TagHelperOutput output
     )
@@ -138,14 +138,10 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
 
     private async Task RenderDescriptionControl(
         TagHelperContext context,
-        TagHelperContent targetContent,
-        AutoFieldElement elements
+        TagHelperContent targetContent
     )
     {
-        if (
-            (For != null || Description != null)
-            && elements.HasFlagFast(AutoFieldElement.Description)
-        )
+        if (For != null || Description != null)
         {
             var descriptionTagHelperOutput = new TagHelperOutput(
                 string.Empty,
@@ -166,87 +162,92 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         }
     }
 
+    private async Task RenderFieldPart(
+        TagHelperContext context,
+        TagHelperContent targetContent,
+        FieldPart part
+    )
+    {
+        switch (part)
+        {
+            case FieldPart.Label:
+                await RenderLabelControl(context, targetContent);
+                break;
+            case FieldPart.Description:
+                await RenderDescriptionControl(context, targetContent);
+                break;
+            case FieldPart.Error:
+                await RenderErrorControl(context, targetContent);
+                break;
+        }
+    }
+
+    private async Task RenderFieldParts(
+        TagHelperContext context,
+        TagHelperContent targetContent,
+        IReadOnlyList<FieldPart> parts,
+        FieldOrientation orientation
+    )
+    {
+        if (parts.Count == 0)
+        {
+            return;
+        }
+
+        if (orientation == FieldOrientation.Vertical)
+        {
+            foreach (var part in parts)
+            {
+                await RenderFieldPart(context, targetContent, part);
+            }
+
+            return;
+        }
+
+        // Beside the control, the parts are kept stacked together in a field content container
+        var fieldContentOutput = new TagHelperOutput(
+            string.Empty,
+            [new TagHelperAttribute("class", FieldClasses?.Content ?? string.Empty)],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+        var fieldContentTagHelper = new FieldContentTagHelper();
+        await fieldContentTagHelper.ProcessAsync(context, fieldContentOutput);
+
+        foreach (var part in parts)
+        {
+            await RenderFieldPart(context, fieldContentOutput.Content, part);
+        }
+
+        targetContent.AppendHtml(fieldContentOutput);
+    }
+
     private async Task RenderFieldWrapper(
         TagHelperContext context,
         TagHelperOutput output,
-        AutoFieldConfiguration autoFieldConfiguration
+        FieldLayout fieldLayout
     )
     {
-        var fieldTagBuilder = new FieldTagBuilder(
-            autoFieldConfiguration.Layout
-                is AutoFieldLayout.VerticalDescriptionLast
-                    or AutoFieldLayout.VerticalDescriptionAfterLabel
-                ? FieldOrientation.Vertical
-                : FieldOrientation.Horizontal,
-            FieldClasses?.Root
-        );
+        var fieldTagBuilder = new FieldTagBuilder(fieldLayout.Orientation, FieldClasses?.Root);
 
-        // Render the opening tag of the Field wrapper
         output.PreElement.AppendHtml(fieldTagBuilder.RenderStartTag());
-
-        if (
-            autoFieldConfiguration.Layout
-            is AutoFieldLayout.HorizontalInputFirst
-                or AutoFieldLayout.HorizontalInputLast
-        )
-        {
-            // Render the label and description inside a field content, and also render the error
-            TagHelperContent targetContent =
-                autoFieldConfiguration.Layout == AutoFieldLayout.HorizontalInputFirst
-                    ? output.PostElement
-                    : output.PreElement;
-
-            var fieldContentOutput = new TagHelperOutput(
-                string.Empty,
-                [new TagHelperAttribute("class", FieldClasses?.Content ?? string.Empty)],
-                (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-            );
-
-            var fieldContentTagHelper = new FieldContentTagHelper();
-            await fieldContentTagHelper.ProcessAsync(context, fieldContentOutput);
-
-            await RenderLabelControl(
-                context,
-                fieldContentOutput.Content,
-                autoFieldConfiguration.Elements
-            );
-            await RenderDescriptionControl(
-                context,
-                fieldContentOutput.Content,
-                autoFieldConfiguration.Elements
-            );
-            await RenderErrorControl(
-                context,
-                fieldContentOutput.Content,
-                autoFieldConfiguration.Elements
-            );
-
-            targetContent.AppendHtml(fieldContentOutput);
-        }
-        else
-        {
-            await RenderLabelControl(context, output.PreElement, autoFieldConfiguration.Elements);
-            await RenderErrorControl(context, output.PostElement, autoFieldConfiguration.Elements);
-            await RenderDescriptionControl(
-                context,
-                autoFieldConfiguration.Layout == AutoFieldLayout.VerticalDescriptionLast
-                    ? output.PostElement
-                    : output.PreElement,
-                autoFieldConfiguration.Elements
-            );
-        }
-
-        // Render the closing tag of the field wrapper
+        await RenderFieldParts(
+            context,
+            output.PreElement,
+            fieldLayout.BeforeControl,
+            fieldLayout.Orientation
+        );
+        await RenderFieldParts(
+            context,
+            output.PostElement,
+            fieldLayout.AfterControl,
+            fieldLayout.Orientation
+        );
         output.PostElement.AppendHtml(fieldTagBuilder.RenderEndTag());
     }
 
-    private async Task RenderErrorControl(
-        TagHelperContext context,
-        TagHelperContent targetContent,
-        AutoFieldElement elements
-    )
+    private async Task RenderErrorControl(TagHelperContext context, TagHelperContent targetContent)
     {
-        if ((For != null || Error != null) && elements.HasFlag(AutoFieldElement.Error))
+        if (For != null || Error != null)
         {
             var errorTagHelperOutput = new TagHelperOutput(
                 string.Empty,
@@ -267,13 +268,9 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         }
     }
 
-    private async Task RenderLabelControl(
-        TagHelperContext context,
-        TagHelperContent targetContent,
-        AutoFieldElement elements
-    )
+    private async Task RenderLabelControl(TagHelperContext context, TagHelperContent targetContent)
     {
-        if ((For != null || Label != null) && elements.HasFlagFast(AutoFieldElement.Label))
+        if (For != null || Label != null)
         {
             var labelTagHelperOutput = new TagHelperOutput(
                 string.Empty,

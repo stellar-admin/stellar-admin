@@ -34,7 +34,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         _icons = icons;
     }
 
-    protected async Task<AutoFieldConfiguration> RenderAsync(
+    protected async Task<FieldLayout> RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,
         bool multiple,
@@ -238,7 +238,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             output.Content.AppendHtml(marker);
         }
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionAfterLabel);
+        return FieldLayout.StackedDescriptionFirst;
     }
 
     private static TagBuilder Element(string tag, string slot, string css)

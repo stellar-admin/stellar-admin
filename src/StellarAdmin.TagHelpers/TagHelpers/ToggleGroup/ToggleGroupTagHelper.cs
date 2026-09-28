@@ -57,7 +57,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
     [HtmlAttributeName("spacing")]
     public int? Spacing { get; set; }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -138,6 +138,6 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
 
         output.Content.AppendHtml(childContent);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 }

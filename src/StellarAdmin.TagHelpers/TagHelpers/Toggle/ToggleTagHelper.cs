@@ -49,7 +49,7 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -137,6 +137,6 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
         output.Content.AppendHtml(inputOutput);
         output.Content.AppendHtml(childContent);
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 }

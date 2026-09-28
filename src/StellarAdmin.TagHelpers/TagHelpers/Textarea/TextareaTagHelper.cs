@@ -21,7 +21,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
-    protected override async Task<AutoFieldConfiguration> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -67,7 +67,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
             output.Content.SetHtmlContent(childContent);
         }
 
-        return new AutoFieldConfiguration(AutoFieldLayout.VerticalDescriptionLast);
+        return FieldLayout.Stacked;
     }
 
     private TagBuilder GenerateTextAreaTagBuilder(

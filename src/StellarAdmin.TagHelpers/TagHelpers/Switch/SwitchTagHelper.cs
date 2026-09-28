@@ -43,7 +43,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    protected override Task<AutoFieldConfiguration> RenderInput(
+    protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -131,6 +131,6 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
         thumb.Attributes.Add("class", "sa-switch-thumb");
         output.Content.AppendHtml(thumb);
 
-        return Task.FromResult(new AutoFieldConfiguration(AutoFieldLayout.HorizontalInputFirst));
+        return Task.FromResult(FieldLayout.ControlFirst);
     }
 }
