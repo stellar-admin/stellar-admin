@@ -1,0 +1,72 @@
+<div class="min-h-[450px]">
+    <!-- code begin -->
+    <p class="text-muted-foreground text-center text-sm">
+        Press
+        <sa-kbd-group>
+            <sa-kbd>⌘</sa-kbd>
+            <sa-kbd>K</sa-kbd>
+        </sa-kbd-group>
+        or
+        <sa-kbd-group>
+            <sa-kbd>Ctrl</sa-kbd>
+            <sa-kbd>K</sa-kbd>
+        </sa-kbd-group>
+        to search Voyager
+    </p>
+    <sa-command-dialog id="--command-shortcut-dialog">
+        <sa-command>
+            <sa-command-input placeholder="Type a command or search..." />
+            <sa-command-list>
+                <sa-command-empty>No results found.</sa-command-empty>
+                <sa-command-group heading="Suggestions">
+                    <sa-command-item>
+                        <sa-icon name="plane" />
+                        <span>Search flights</span>
+                    </sa-command-item>
+                    <sa-command-item keywords="accommodation stay">
+                        <sa-icon name="bed-double" />
+                        <span>Find a hotel</span>
+                    </sa-command-item>
+                    <sa-command-item>
+                        <sa-icon name="car" />
+                        <span>Rent a car</span>
+                    </sa-command-item>
+                </sa-command-group>
+                <sa-command-separator />
+                <sa-command-group heading="Account">
+                    <sa-command-item>
+                        <sa-icon name="luggage" />
+                        <span>My trips</span>
+                        <sa-command-shortcut>⌘T</sa-command-shortcut>
+                    </sa-command-item>
+                    <sa-command-item>
+                        <sa-icon name="settings" />
+                        <span>Settings</span>
+                        <sa-command-shortcut>⌘S</sa-command-shortcut>
+                    </sa-command-item>
+                </sa-command-group>
+            </sa-command-list>
+        </sa-command>
+    </sa-command-dialog>
+    <script>
+        (() => {
+            const dialog = document.getElementById('--command-shortcut-dialog');
+
+            // ⌘K on macOS, Ctrl+K elsewhere, toggles the palette. Escape closes it natively.
+            // Inside the palette Ctrl+K moves to the previous item, which marks the event as handled.
+            document.addEventListener('keydown', (event) => {
+                if (event.defaultPrevented) {
+                    return;
+                }
+                if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
+                    event.preventDefault();
+                    dialog.open ? dialog.close() : dialog.showModal();
+                }
+            });
+
+            // Close the palette once an item is chosen.
+            dialog.addEventListener('itemselect', () => dialog.close());
+        })();
+    </script>
+    <!-- code end -->
+</div>

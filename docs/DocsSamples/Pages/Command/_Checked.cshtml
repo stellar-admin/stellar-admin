@@ -1,0 +1,46 @@
+<div class="flex min-h-[380px] flex-col items-center gap-4">
+    <!-- code begin -->
+    <sa-command id="--currency-command" label="Display currency" class="h-auto w-full max-w-sm border shadow-md">
+        <sa-command-input placeholder="Search currencies..." />
+        <sa-command-list>
+            <sa-command-empty>No currency found.</sa-command-empty>
+            <sa-command-group heading="Display prices in">
+                <sa-command-item value="USD" keywords="us dollar united states">
+                    <span>US dollar</span>
+                    <span class="text-muted-foreground">USD</span>
+                </sa-command-item>
+                <sa-command-item value="EUR" keywords="euro europe" checked="true">
+                    <span>Euro</span>
+                    <span class="text-muted-foreground">EUR</span>
+                </sa-command-item>
+                <sa-command-item value="GBP" keywords="pound sterling united kingdom">
+                    <span>British pound</span>
+                    <span class="text-muted-foreground">GBP</span>
+                </sa-command-item>
+                <sa-command-item value="JPY" keywords="yen japan">
+                    <span>Japanese yen</span>
+                    <span class="text-muted-foreground">JPY</span>
+                </sa-command-item>
+                <sa-command-item value="ZAR" keywords="rand south africa">
+                    <span>South African rand</span>
+                    <span class="text-muted-foreground">ZAR</span>
+                </sa-command-item>
+            </sa-command-group>
+        </sa-command-list>
+    </sa-command>
+    <p class="text-muted-foreground text-sm" id="--currency-output">Prices are shown in EUR.</p>
+    <script>
+        (() => {
+            const command = document.getElementById('--currency-command');
+            const output = document.getElementById('--currency-output');
+
+            // "itemselect" bubbles from the chosen item; move the check mark to it.
+            command.addEventListener('itemselect', (event) => {
+                command.querySelectorAll('[data-checked]').forEach((item) => item.removeAttribute('data-checked'));
+                event.target.setAttribute('data-checked', 'true');
+                output.textContent = `Prices are shown in ${event.detail.value}.`;
+            });
+        })();
+    </script>
+    <!-- code end -->
+</div>

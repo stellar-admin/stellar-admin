@@ -2138,6 +2138,7 @@
     }
   }
   .sa-command-list {
+    @apply no-scrollbar;
     max-height: 300px;
     scroll-padding-block: 4px;
   }

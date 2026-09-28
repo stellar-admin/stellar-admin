@@ -1,6 +1,6 @@
 # Command
 
-Status: **active** — Phase 3 committed (`67ee449`); Phase 4 complete, awaiting review. Last updated: 2026-09-29.
+Status: **active** — Phase 4 committed (`7bb0f62`); Phase 5 in progress: demos done and awaiting review, website docs and skills reference not started. Last updated: 2026-09-29.
 
 Port shadcn's Command component (`cmdk`-based command palette) into `StellarAdmin.TagHelpers`, following the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -13,8 +13,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | 1 | Research and API proposal | ✅ approved 2026-09-28 |
 | 2 | Tag helpers, structural CSS, custom-theme coverage, static DocsSamples demo | ✅ approved and committed 2026-09-28 (`7daaadb`) |
 | 3 | `sel-command` web component — client filter mode, keyboard, selection | ✅ approved and committed 2026-09-28 (`67ee449`) |
-| 4 | Filter `None` mode, list mutation re-scan; htmx server-search demo in ComponentPlayground | ✅ implemented 2026-09-29, awaiting review |
-| 5 | Remaining demos, website docs, skills reference, tests, handover | ☐ |
+| 4 | Filter `None` mode, list mutation re-scan; htmx server-search demo in ComponentPlayground | ✅ approved and committed 2026-09-29 (`7bb0f62`) |
+| 5 | Remaining demos, website docs, skills reference, tests, handover | ◐ demos done 2026-09-29, awaiting review; docs, skills, theme-spec notes, handover remaining |
 
 Dashboard integration is a separate task after Phase 5.
 
@@ -98,6 +98,14 @@ Dashboard integration is a separate task after Phase 5.
 - No library C# changed. The input's `hx-*` attributes pass through `sa-command-input` as designed in Phase 2.
 - Demo: `sandbox/ComponentPlayground/Pages/Demo/Command.cshtml` (+ `.cshtml.cs`, `_CommandResults.cshtml`), registered under Navigation in the playground layout. `filter="CommandFilter.None"`; the input uses `hx-get="?handler=Search" hx-trigger="input changed delay:200ms" hx-target="#trip-search-list" hx-sync="this:replace"`. The handler adds 250 ms of simulated latency and matches destinations and bookings with a case-insensitive `Contains`; an empty query returns four popular destinations. A small script shows the `itemselect` value. Building the playground regenerates the tracked `wwwroot/css/site.css` with the demo's utilities.
 
+### Phase 5 implementation notes
+
+- New DocsSamples demos, in page order after Intro and Dialog:
+  - `_KeyboardShortcut`: ⌘K / Ctrl+K toggles a `sa-command-dialog` from a document `keydown` listener in the demo's own script; choosing an item closes the dialog. The listener ignores events already handled (`defaultPrevented`), because inside the palette Ctrl+K is cmdk's "previous item" binding.
+  - `_Checked`: a display-currency picker. The chosen item carries `data-checked="true"`; the demo's `itemselect` handler moves it (the indicator CSS matches the value `true`, so `toggleAttribute` is not enough).
+  - `_Scrollable` (requested by Jerrie): 25 items in four groups, inline so the list's own scrolling is visible (upstream's "Scrollable" example uses a dialog).
+- Theme fix: the seven custom themes' `.sa-command-list` now apply `no-scrollbar`, as every shadcn theme does and as the custom themes already do for navigation. Phase 2 had left a native scrollbar in those themes.
+
 ## Source paths
 
 - Tag helpers: `src/StellarAdmin.TagHelpers/TagHelpers/Command/` (`CommandTagHelper`, `CommandInputTagHelper`, `CommandListTagHelper`, `CommandEmptyTagHelper`, `CommandGroupTagHelper`, `CommandItemTagHelper`, `CommandLinkItemTagHelper`, `CommandSeparatorTagHelper`, `CommandShortcutTagHelper`, `CommandDialogTagHelper`, `CommandFilter`, `CommandContext`, `CommandRenderingHelper`).
@@ -105,7 +113,7 @@ Dashboard integration is a separate task after Phase 5.
 - Structural CSS: `src/StellarAdmin.TagHelpers/Client/css/components.css` (`.sa-command*`).
 - Custom theme CSS: final block of each of `aurora`, `concourse`, `ice`, `ledger`, `meridian`, `observatory`, `parallax` `.css` under `Client/css/themes/`.
 - Coverage: `util/theme-coverage/coverage.json` (`Command`).
-- Samples: `docs/DocsSamples/Pages/Command/` (`_Intro`, `_Dialog`), registered under Navigation in `Pages/Shared/_NavigationLayout.cshtml`.
+- Samples: `docs/DocsSamples/Pages/Command/` (`_Intro`, `_Dialog`, `_KeyboardShortcut`, `_Checked`, `_Scrollable`), registered under Navigation in `Pages/Shared/_NavigationLayout.cshtml`.
 - Server-search demo: `sandbox/ComponentPlayground/Pages/Demo/Command.cshtml`, `Command.cshtml.cs`, `_CommandResults.cshtml`; nav entry in `Pages/Shared/_Layout.cshtml`.
 - Web component: `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-command.ts` and `command-score.ts`; registration in `Client/js/stellar-admin-ui.ts`.
 
@@ -116,3 +124,4 @@ Dashboard integration is a separate task after Phase 5.
 - 2026-09-28 — Phase 3: `sel-command` web component and cmdk scorer port. Verified: `tsc --noEmit` clean, `oxfmt` on the new files, `npm run build:js`; DocsSamples on port 5206 driven over CDP with 52 passing checks (initial selection and `aria-activedescendant`, arrow/Home/End/Ctrl bindings, disabled skipping, loop on/off, fuzzy and keyword filtering, sorting of items and groups with order restore, empty state, separators, Enter/click `itemselect`, hover selection, focus retention, link navigation via Enter, dialog focus and reset on reopen, list-only scrolling); screenshots of the filtered and empty states (Observatory) and Vega dark. Server stopped. Not run: .NET builds/tests (no C# changed).
 - 2026-09-28 — Phase 3 revision: Jerrie reported groups jumping (typing "t" moved Bookings above Destinations) and could not reproduce it in shadcn. Root cause: our port reordered groups, while cmdk's group reordering never takes effect (ID/value selector mismatch). Group sorting removed; items now sort in place within their slots. Re-verified over CDP: all checks pass, including new ones for the dialog "t" case (groups and separator keep their DOM order; Cape Town ranks first within Destinations). Server stopped.
 - 2026-09-29 — Phase 4: list mutation re-scan in `sel-command`, collision-free generated item IDs, and the htmx server-search demo in ComponentPlayground. Verified: `tsc --noEmit` clean, `oxfmt`, `npm run build:js`; ComponentPlayground build 0 warnings/0 errors and CSharpier on `Command.cshtml.cs`; playground on port 5206 driven over CDP with 35 passing checks (hx attributes on the input, no unresolved `sa-*`, no client filtering before the response, server results with IDs and `aria-activedescendant`, first result activated, focus retained, stable `aria-controls`, keyboard into the second group, Enter `itemselect`, server-rendered empty state, overlapping requests settle on the last query via `hx-sync`, developer-appended item keeps the active item, removing the active item activates the first, client-mode copy filters added items against the current query and restores order with them appended); screenshots of results and empty state. Phase 3 suite re-run against DocsSamples on port 5206: 54 checks pass. DocsSamples build: 0 errors, 10 existing CS8618 warnings in unrelated sample models. Servers stopped.
+- 2026-09-29 — Phase 5 (demos): keyboard-shortcut, checked-items and scrollable demos; `no-scrollbar` on the custom themes' command list. Verified: DocsSamples build 0 errors; `npm run build:css`; `node util/theme-coverage/check.mjs` (57 × 15 reviewed); DocsSamples on port 5206 over CDP: 26 new demo checks (check-mark indicator visibility and move on `itemselect`, keyword search, list overflow with no native scrollbar, End/ArrowUp keep the active item inside the list without scrolling the page, filtering resets the list scroll, Ctrl+K/⌘K open, ⌘K toggle, Ctrl+K inside the palette moves up without closing, Escape and item choice close, reopen resets the search) and the 54-check Phase 3 suite all pass; list scrollbar hidden and max height checked in all seven custom themes plus Vega light/dark; screenshots in Observatory dark, Vega light, Ledger light and at 390 px width (no horizontal page overflow). Server stopped.
