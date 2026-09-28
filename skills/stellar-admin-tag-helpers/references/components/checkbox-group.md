@@ -46,13 +46,14 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 |-----------|------|---------|--------|
 | `values` | `IEnumerable<string>` | — | — |
 | `variant` | `CheckboxGroupVariant` | `Default` | `Default`, `ChoiceCard` |
-| `description` | `string` | — | — |
 | `disabled` | `bool` | — | `true`, `false` |
+| `asp-items` | `IEnumerable<SelectListItem>` | — | — |
+| `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
-| `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | — | — |
+| `name` | `string` | `Name` | — |
+| `render-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
