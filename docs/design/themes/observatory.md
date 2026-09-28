@@ -72,7 +72,9 @@ For additional families, use these retained handoff suggestions as inference sta
 | Upload/editor/grid editing | Existing field geometry and grouped-focus ownership; compose attachments/cards where appropriate. |
 | Tooltip/toast behavior | Reuse maintained tooltip/toast styles; positioning, queues, dismissal and focus belong to existing component behavior. |
 
-Command-palette active-descendant highlighting can use accent tint because it represents the active search result; do not copy that fill into resting checked dropdown rows. The original handoff did not address forced-colors or RTL, and current verification does not establish support for them. Review direction-sensitive rails, indicator positioning and disclosure icons when adding RTL support.
+Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result represents the active search result, so it uses the menu hover surface plus the menu keyboard-focus bar (`inset 2px 0 0 var(--primary)`); the hover fill alone is nearly invisible in dark mode. Do not copy that highlight into resting checked dropdown rows.
+
+The original handoff did not address forced-colors or RTL, and current verification does not establish support for them. Review direction-sensitive rails, indicator positioning and disclosure icons when adding RTL support.
 
 Horizontal line tab lists have no full-width bottom border; only the active tab draws its accent underline. This review preference applies to standalone tabs and page-header navigation.
 

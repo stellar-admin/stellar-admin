@@ -64,6 +64,8 @@ For future components, compose existing recipes: steppers use grouped selection 
 
 Horizontal line tab lists have no full-width bottom border; only the active tab draws its accent underline. This review preference applies to standalone tabs and page-header navigation.
 
+Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result uses the muted fill with Ice's bright accent bar.
+
 ## Extension and verification
 
 Before extending Ice, inspect the component's actual `.sa-*` hooks, DOM, slots, state attributes and client behavior. Derive appearance from the recipes above, implement all supported sizes/variants/orientations, then update `util/theme-coverage/coverage.json` with real rule evidence or a structural-only rationale. Coverage detects inventory omissions, not visual fidelity.

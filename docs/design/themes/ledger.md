@@ -78,6 +78,7 @@ The component-porting workflow requires custom-theme inference, real state examp
 - Attachments and items use bordered 6px surfaces. Messages use flat bordered bubbles with semantic tints, 13.5px body text, and 12px metadata. Questionnaire choices compose the field surface, native selection indicator, and keyboard focus treatment.
 - Pro data grids inherit their card/table shell and existing structural rules. Pro features stay in the Pro repository; the theme does not add unsupported alert variants, chart widgets, or new component APIs.
 - The success/warning colours remain private and unused by components without those variants. Full chart UI, calendar, combobox, and toast implementations are outside this theme task because those tag helpers are not currently shipped.
+- Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result uses the accent fill and accent foreground of Ledger's menu rows.
 
 ## Token and recipe selection
 

@@ -48,6 +48,7 @@ Cards own borders, surface and section insets: 12px/16px headers, 16px bodies, 1
 - Preserve the original accent, surfaces and status families. Explicitly measure relevant foreground/background pairs during verification; this is not an exhaustive accessibility certification.
 - Infer unsupported designs from maintained primitives: OTP and questionnaire fields from inputs; attachments/messages/bubbles from cards and badges; future date pickers from square accent endpoints and tinted ranges. Do not introduce new components merely because the export mentions them.
 - Preserve existing Lucide icons and runtime behavior. Prototype scripts, simulated state classes, icon sprite and topology diagram are reference material, not production dependencies.
+- Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result also takes the menu keyboard-focus bar (`inset 2px 0 0 var(--primary)`) because the hover fill alone is nearly invisible in dark mode.
 
 ## Adding controls
 

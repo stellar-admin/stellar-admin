@@ -44,6 +44,12 @@ internal static class TagHelperRenderer
         );
         await sut.ProcessAsync(context, output);
 
+        // As Razor does, render the children when the tag helper left its content untouched.
+        if (!output.IsContentModified)
+        {
+            output.Content.SetHtmlContent(await output.GetChildContentAsync());
+        }
+
         return new HtmlParser().ParseDocument(Serialize(output));
     }
 

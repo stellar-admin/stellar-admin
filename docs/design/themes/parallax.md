@@ -50,6 +50,7 @@ Cards own their border, radius and shadow. Headers use 12px/16px insets, bodies 
 - Automatic table-to-card conversion, bottom navigation, forced mobile bottom sheets and example-specific sidebar breakpoints are application behavior, not theme requirements.
 - Use real checkbox indicator markup to avoid the prototype's disabled tick loss. Suppress reduced-motion animations instead of stretching all overlay entrances to two seconds.
 - Infer OTP/questionnaire fields from inputs; attachments, messages and bubbles from cards/badges; future calendars from accent endpoints and tinted ranges; future pickers from input groups and menu panels. Do not add new components merely because the export mentions them.
+- Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result also takes the menu keyboard-focus bar (`inset 2px 0 0 var(--primary)`) because the hover fill alone is nearly invisible in dark mode.
 
 ## Mapping future controls
 

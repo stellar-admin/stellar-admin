@@ -52,6 +52,7 @@ Menus and overlays own border and elevation; existing positioning, keyboard navi
 - **Dark input correction:** the handoff’s late `:root` alias overwrites its explicit dark input token. Restrict the alias to light mode so dark inputs use the intended raised `#23201a` surface.
 - Keep native selects at the source's 13px. Observatory's platform-specific 12.5px workaround is not evidence that Meridian needs it.
 - Use existing Lucide icons and runtime behavior. The export's topology illustration, icon sprite, simulated states and scripts remain reference assets.
+- Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result also takes the menu keyboard-focus bar (`inset 2px 0 0 var(--primary)`) because the hover fill alone is nearly invisible in dark mode.
 
 Horizontal line tab lists have no full-width bottom border; only the active tab draws its accent underline. This review preference applies to standalone tabs and page-header navigation.
 
