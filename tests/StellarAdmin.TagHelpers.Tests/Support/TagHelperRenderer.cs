@@ -18,6 +18,11 @@ internal static class TagHelperRenderer
             attributes.Add("type", input.InputTypeName);
         }
 
+        if (sut is InputTagHelper { Value: not null } valuedInput)
+        {
+            attributes.Add("value", valuedInput.Value);
+        }
+
         if (sut is FieldInputBaseTagHelper { Name: not null } fieldInput)
         {
             attributes.Add("name", fieldInput.Name);
