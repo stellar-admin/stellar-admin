@@ -660,9 +660,7 @@
     border-radius: 50%;
     background: var(--primary);
   }
-  .sa-radio-group,
-  .sa-checkbox-group {
-    display: grid;
+  .sa-field-group:is([data-slot="radio-group"], [data-slot="checkbox-group"]) {
     gap: 12px;
   }
   .sa-switch {

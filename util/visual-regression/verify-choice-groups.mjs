@@ -41,11 +41,11 @@ try {
           unique: new Set(inputs.map(input => input.id)).size === inputs.length,
           labels: inputs.every(input => document.querySelector('label[for="' + input.id + '"]')),
           overflow: document.documentElement.scrollWidth > innerWidth,
-          errors: [...document.querySelectorAll('fieldset[aria-invalid=true]')].map(group => ({
-            message: group.querySelector('.field-validation-error')?.textContent.trim(),
+          errors: [...document.querySelectorAll('[data-slot$="-group"][aria-invalid=true]')].map(group => ({
+            message: group.closest('[data-slot=field]')?.querySelector('.field-validation-error')?.textContent.trim(),
             invalidInputs: group.querySelectorAll('input[aria-invalid=true]').length,
           })),
-          clientValidation: document.querySelectorAll("fieldset input[required], [data-choice-min], [data-choice-max]").length,
+          clientValidation: document.querySelectorAll('[data-slot$="-group"] input[required], [data-choice-min], [data-choice-max]').length,
           cardWidth: document.querySelector('[data-slot$="-group"] > label')?.getBoundingClientRect().width,
           card: document.querySelectorAll('[data-slot$="-group"] > label > [data-slot=field]').length,
         };
@@ -84,18 +84,19 @@ try {
 
   const behavior = await browser.evaluate(`(async () => {
     const form = document.querySelector('form[method=post]');
-    const group = form.querySelector('fieldset');
+    const group = form.querySelector('[data-slot=checkbox-group]');
     const inputs = [...group.querySelectorAll('input[type=checkbox]')];
     for (const input of inputs) input.checked = false;
     form.reset();
     const resetCount = inputs.filter(input => input.checked).length;
-    group.disabled = true;
-    const disabledMarkerAbsent = ![...new FormData(form).keys()].some(key => key.startsWith('__sa_checkbox_group.'));
-    group.disabled = false;
+    const unavailable = inputs.find(input => input.disabled);
+    unavailable.checked = true;
+    const disabledItemExcluded = !new FormData(form).getAll(unavailable.name).includes(unavailable.value);
+    unavailable.checked = false;
     for (const input of inputs) input.checked = false;
     const response = await fetch(location.href, { method: 'POST', body: new FormData(form) });
     const html = new DOMParser().parseFromString(await response.text(), 'text/html');
-    return { resetCount, disabledMarkerAbsent,
+    return { resetCount, disabledItemExcluded,
       postStatus: response.status,
       emptyAfterPost: html.querySelectorAll('form input[type=checkbox]:checked').length,
       saved: html.querySelector('output')?.textContent.trim(),
@@ -103,7 +104,7 @@ try {
   })()`);
   assert.deepEqual(behavior, {
     resetCount: 2,
-    disabledMarkerAbsent: true,
+    disabledItemExcluded: true,
     postStatus: 200,
     emptyAfterPost: 0,
     saved: "Saved:",
