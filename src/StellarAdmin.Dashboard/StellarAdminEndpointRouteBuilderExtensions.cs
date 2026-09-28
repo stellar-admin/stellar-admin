@@ -7,16 +7,34 @@ using StellarAdmin.Dashboard.Resources;
 
 namespace StellarAdmin.Dashboard;
 
+/// <summary>
+///     Maps the StellarAdmin Dashboard routes.
+/// </summary>
 public static class StellarAdminEndpointRouteBuilderExtensions
 {
     extension(IEndpointRouteBuilder endpoints)
     {
-        public void MapStellarAdmin()
+        /// <summary>
+        ///     Maps the Dashboard under <c>/stellaradmin</c>.
+        /// </summary>
+        /// <returns>
+        ///     A builder for adding conventions to the Dashboard endpoints.
+        /// </returns>
+        public ControllerActionEndpointConventionBuilder MapStellarAdmin()
         {
-            endpoints.MapStellarAdmin("/stellaradmin");
+            return endpoints.MapStellarAdmin("/stellaradmin");
         }
 
-        public void MapStellarAdmin(PathString stellarAdminPath)
+        /// <summary>
+        ///     Maps the Dashboard under the given path.
+        /// </summary>
+        /// <param name="stellarAdminPath">The path the Dashboard is served from.</param>
+        /// <returns>
+        ///     A builder for adding conventions to the Dashboard endpoints.
+        /// </returns>
+        public ControllerActionEndpointConventionBuilder MapStellarAdmin(
+            PathString stellarAdminPath
+        )
         {
             var routePrefix = stellarAdminPath.ToString().Trim('/');
 
@@ -37,6 +55,8 @@ public static class StellarAdminEndpointRouteBuilderExtensions
             // Authorization is endpoint metadata, so the host's authorization middleware enforces it
             // before MVC runs. Conventions run when the endpoints are built, after configuration is final.
             route.Add(builder => AddAuthorizationMetadata(builder, endpoints.ServiceProvider));
+
+            return route;
         }
     }
 

@@ -58,7 +58,7 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 });
 ```
 
-Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product index is available at `/stellaradmin/Product`. The route uses the resource type name, independently of its display labels. Register a data source and columns for each resource whose index you want to display. Register `.AllowCreate(...)` to enable `/stellaradmin/Product/Create`. Register `.AllowEdit(...)` and configure a key with `resource.UseKey(product => product.Id)` to enable `/stellaradmin/Product/Edit/{id}`. Register `.AllowDelete()` or `.AllowDelete(...)` to enable deletion through an antiforgery-protected POST with confirmation on the index and edit pages; deletion also requires a key. A rejected delete from the edit page returns to Edit with its errors, while a rejected index delete redisplays the index. Automatic sidebar entries remain deferred.
+Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product index is available at `/stellaradmin/Product`. The route uses the resource type name, independently of its display labels. Register a data source and columns for each resource whose index you want to display. Register `.AllowCreate(...)` to enable `/stellaradmin/Product/Create`. Register `.AllowEdit(...)` and configure a key with `resource.UseKey(product => product.Id)` to enable `/stellaradmin/Product/Edit/{id}`. Register `.AllowDelete()` or `.AllowDelete(...)` to enable deletion through an antiforgery-protected POST with confirmation on the index and edit pages; deletion also requires a key. A rejected delete from the edit page returns to Edit with its errors, while a rejected index delete redisplays the index. Each resource adds a sidebar link to its index, configurable through `resource.SidebarItem(...)`.
 
 `ProductDataSource` implements `IResourceCrudDataSource<Product>` from `StellarAdmin.Dashboard.Resources` for all CRUD operations. The combined interface includes `IResourceDataSource<Product>` (`ListAsync`), `IResourceCreateHandler<Product>` (`CreateAsync`), `IResourceEditHandler<Product>` (`FindAsync` and `UpdateAsync`), and `IResourceDeleteHandler<Product>` (`DeleteAsync`). A source can instead implement just the individual interfaces it supports. The shared controller forwards the request cancellation token. Unregistered actions have no buttons and direct requests are rejected, even when the data source implements the corresponding handler. Configuring a form or deletion without a matching implementation produces an options validation error. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
 
@@ -77,6 +77,28 @@ var resource = dashboard.AddResource<Product>();
 resource.SingularLabel = "Item";
 resource.PluralLabel = "Inventory";
 ```
+
+## Authorization
+
+Dashboard pages are open unless the application requires authorization. Call `RequireAuthorization` on the Dashboard builder to protect every page, or on a resource builder to protect one resource:
+
+```csharp
+builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+{
+    dashboard.RequireAuthorization();
+
+    dashboard.AddResource<Product>(resource =>
+    {
+        resource.RequireAuthorization(policy => policy.RequireRole("Catalog"));
+    });
+});
+```
+
+Both builders accept the same overloads as the framework's endpoint `RequireAuthorization`: no arguments for any authenticated user, policy names, `IAuthorizeData` such as `new AuthorizeAttribute { Roles = "Admin" }`, an `AuthorizationPolicy`, or a policy-builder callback. Requirements accumulate. A user must satisfy every Dashboard requirement, every requirement of the resource, and every repeated call. EF Core resource builders provide the same methods.
+
+Requirements are applied as endpoint metadata when `app.MapStellarAdmin()` maps the routes, so the application's authentication and authorization middleware enforce them for page requests and form posts alike. Anonymous users receive the authentication challenge and signed-in users without access receive the forbidden response. `MapStellarAdmin()` also returns the route's convention builder, so standard conventions such as `app.MapStellarAdmin().RequireAuthorization("Admin")` or `RequireHost(...)` can be added there.
+
+The sidebar hides a resource's link when the current user does not satisfy that resource's requirements. Hiding a link with `resource.SidebarItem(item => item.Visible = false)` never protects the route. Custom `ISidebarItemsProvider` implementations return their items from `Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)`, which can inspect the current user. Scopes and data sources remain responsible for record-level access rules.
 
 ## Index sorting
 

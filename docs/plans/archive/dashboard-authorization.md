@@ -1,12 +1,12 @@
 # Dashboard authorization
 
-Status: active. Phase 1 was committed on 2026-09-28 as `49a70c2`. Phase 2 is implemented and awaiting review. Phase 3 is agreed but not started.
+Status: completed on 2026-09-28. Phase 1 was committed as `49a70c2`, phase 2 as `beb45b7`, and phase 3 with this closeout. Jerrie reviewed each phase and considers the feature done. Per-action requirements remain deferred and need separately scoped work.
 
 ## Decisions
 
 Agreed with Jerrie on 2026-09-28:
 
-- The API is `RequireAuthorization`, matching the framework's endpoint extension and the `Require*` precedent in the [options builder conventions](../conventions/options-builders.md).
+- The API is `RequireAuthorization`, matching the framework's endpoint extension and the `Require*` precedent in the [options builder conventions](../../conventions/options-builders.md).
 - It is available on `StellarAdminDashboardBuilder` for every Dashboard page and on `ResourceBuilderBase<TResource, TBuilder>` for one resource. EF Core resources inherit it.
 - Overloads mirror the framework: none (authenticated user), `AuthorizationPolicy`, `Action<AuthorizationPolicyBuilder>`, `params IAuthorizeData[]`, and `params string[]` policy names.
 - Requirements accumulate. Dashboard and resource requirements, and repeated calls, must all succeed.
@@ -31,7 +31,7 @@ Verification run on 2026-09-28: `dotnet build StellarAdmin.slnx --configuration 
 
 ## Phase 2: authorization-aware sidebar
 
-Implemented and awaiting review. Jerrie approved making the public `ISidebarItemsProvider` asynchronous on 2026-09-28. It now declares `Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)`, which is a breaking change for custom providers. `SidebarViewComponent` awaits each provider in registration order.
+Implemented and reviewed. Jerrie approved making the public `ISidebarItemsProvider` asynchronous on 2026-09-28. It now declares `Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)`, which is a breaking change for custom providers. `SidebarViewComponent` awaits each provider in registration order.
 
 `ResourceSidebarItemsProvider` hides a resource link when the current user fails that resource's requirements. `AuthorizationMetadata.AuthorizeAsync` combines the metadata with `AuthorizationPolicy.CombineAsync` and evaluates it with `IAuthorizationService` against `HttpContext.User`, passing the `HttpContext` as the resource like the middleware does. Dashboard-level requirements are not re-evaluated because the user has already passed them to see the page. Policies that name authentication schemes are evaluated against the current user rather than re-authenticated, because authenticating would replace the rendering page's user.
 
@@ -41,4 +41,16 @@ Verification run on 2026-09-28: `dotnet build StellarAdmin.slnx --configuration 
 
 ## Phase 3: convention builder and playground
 
-Not started. Return the route's convention builder from `MapStellarAdmin` instead of `void`, and demonstrate resource authorization in `sandbox/DashboardPlayground`.
+Implemented and reviewed. Both `MapStellarAdmin` overloads return the route's `ControllerActionEndpointConventionBuilder` instead of `void`, so a host can add framework conventions such as `app.MapStellarAdmin().RequireAuthorization()`. The overloads and their class now have XML documentation. `DashboardTestHost` accepts a route configuration callback, and `DashboardAuthorizationTests.RouteConvention_AnonymousRequest_ReturnsUnauthorized` covers the returned builder.
+
+Jerrie added the DashboardPlayground demo himself, committed in `beb45b7`. The whole Dashboard requires an authenticated user, and the Users and Roles resources require the `Administrator` or `User Admin` role.
+
+Verification run on 2026-09-28: `dotnet build StellarAdmin.slnx --configuration Release` succeeded. `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` passed 424 of 424 tests. No browser checks were run.
+
+## Documentation
+
+Consumer guidance is in the Authorization section of `skills/stellar-admin-dashboard/references/setup.md`, which also replaces a stale note that automatic sidebar entries were deferred. `docs/repos/stellar-admin.md` and `docs/development.md` summarize the feature and its tests. The separate website repository was not changed.
+
+## Deferred
+
+Per-action requirements, such as a policy only for delete, remain deferred. They also need the index and form views to hide actions the user cannot perform.

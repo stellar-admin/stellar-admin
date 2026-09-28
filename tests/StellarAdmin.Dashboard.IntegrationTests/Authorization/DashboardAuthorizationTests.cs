@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
@@ -147,5 +148,23 @@ public class DashboardAuthorizationTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(expectedStatusCode);
+    }
+
+    [Test]
+    public async Task RouteConvention_AnonymousRequest_ReturnsUnauthorized()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            configureServices: TestAuthenticationHandler.Register,
+            configureRoute: route => route.RequireAuthorization()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Product");
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 }

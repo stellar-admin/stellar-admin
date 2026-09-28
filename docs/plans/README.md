@@ -8,7 +8,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [dashboard-authorization](dashboard-authorization.md) | active | `RequireAuthorization` on the Dashboard and resource builders is committed. The authorization-aware sidebar, with an async `ISidebarItemsProvider`, awaits review. The `MapStellarAdmin` convention builder and playground demo remain. |
 | [dashboard-theme-configuration](dashboard-theme-configuration.md) | implemented | Dashboard supports app-wide selection of all fifteen shipped themes and opt-in suggested fonts. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
@@ -28,6 +27,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [component-showcases](archive/component-showcases.md) | completed |
 | [concourse-theme](archive/concourse-theme.md) | completed |
 | [consumer-skill-consolidation](archive/consumer-skill-consolidation.md) | completed |
+| [dashboard-authorization](archive/dashboard-authorization.md) | completed; `RequireAuthorization` on Dashboard and resource builders, an authorization-aware async sidebar, and the `MapStellarAdmin` convention builder, with HTTP integration tests. Per-action requirements are deferred. |
 | [demo-theme-selector](archive/demo-theme-selector.md) | completed |
 | [ef-test-migration](archive/ef-test-migration.md) | completed; all 325 solution tests pass through discovery on 2026-09-18 |
 | [form-section](oss/archive/form-section.md) | completed |
