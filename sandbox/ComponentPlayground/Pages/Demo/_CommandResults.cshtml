@@ -1,0 +1,39 @@
+@model ComponentPlayground.Pages.Demo.CommandResults
+
+@* Rendered into the command list on the first load and after every search; the list itself stays in place. *@
+
+<sa-command-empty>No trips match "@Model.Query".</sa-command-empty>
+
+@if (Model.Destinations.Count > 0)
+{
+    <sa-command-group heading="@(Model.Query.Length == 0 ? "Popular destinations" : "Destinations")">
+        @foreach (var destination in Model.Destinations)
+        {
+            <sa-command-item value="@destination.Slug">
+                <sa-icon name="map-pin"/>
+                <span>@destination.City</span>
+                <span class="text-muted-foreground">@destination.Country</span>
+            </sa-command-item>
+        }
+    </sa-command-group>
+}
+
+@if (Model.Destinations.Count > 0 && Model.Bookings.Count > 0)
+{
+    <sa-command-separator/>
+}
+
+@if (Model.Bookings.Count > 0)
+{
+    <sa-command-group heading="Bookings">
+        @foreach (var booking in Model.Bookings)
+        {
+            <sa-command-item value="@booking.Reference">
+                <sa-icon name="ticket"/>
+                <span>@booking.Trip</span>
+                <span class="text-muted-foreground">@booking.Traveller</span>
+                <sa-command-shortcut>@booking.Reference</sa-command-shortcut>
+            </sa-command-item>
+        }
+    </sa-command-group>
+}

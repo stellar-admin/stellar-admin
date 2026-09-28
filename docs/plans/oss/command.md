@@ -1,6 +1,6 @@
 # Command
 
-Status: **active** — Phase 3 complete, awaiting review; Phase 4 not started. Last updated: 2026-09-28.
+Status: **active** — Phase 3 committed (`67ee449`); Phase 4 complete, awaiting review. Last updated: 2026-09-29.
 
 Port shadcn's Command component (`cmdk`-based command palette) into `StellarAdmin.TagHelpers`, following the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -12,8 +12,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | --- | --- | --- |
 | 1 | Research and API proposal | ✅ approved 2026-09-28 |
 | 2 | Tag helpers, structural CSS, custom-theme coverage, static DocsSamples demo | ✅ approved and committed 2026-09-28 (`7daaadb`) |
-| 3 | `sel-command` web component — client filter mode, keyboard, selection | ✅ implemented 2026-09-28, awaiting review |
-| 4 | Filter `None` mode, list mutation re-scan; htmx server-search demo in ComponentPlayground | ☐ |
+| 3 | `sel-command` web component — client filter mode, keyboard, selection | ✅ approved and committed 2026-09-28 (`67ee449`) |
+| 4 | Filter `None` mode, list mutation re-scan; htmx server-search demo in ComponentPlayground | ✅ implemented 2026-09-29, awaiting review |
 | 5 | Remaining demos, website docs, skills reference, tests, handover | ☐ |
 
 Dashboard integration is a separate task after Phase 5.
@@ -49,7 +49,7 @@ Dashboard integration is a separate task after Phase 5.
 - Item IDs are assigned client-side when missing, so server-rendered fragments need none.
 - Enter or click calls `item.click()` then dispatches a bubbling `itemselect` `CustomEvent` with `{ value }` from the item. Links navigate; `hx-*` on items fire unaided.
 - `Client` mode: fuzzy-score value + keywords, hide non-matches, sort items by score within their own container (groups keep their order), hide empty groups, hide separators while a query is active, toggle the empty state.
-- Both modes: `MutationObserver` on the list re-scans items after any change and activates the first enabled visible item.
+- Both modes: a `MutationObserver` (child-list changes anywhere in the component) re-scans items after any change made outside the component: new items get IDs, client mode filters them against the current search, the empty state is updated, and the active item is kept if still selectable, otherwise the first enabled visible item is activated.
 
 ### Upstream deviations
 
@@ -86,7 +86,17 @@ Dashboard integration is a separate task after Phase 5.
 - `mousedown` on an item is prevented so focus stays in the input; items keep `tabindex="-1"` so link items stay out of the tab order.
 - `itemselect` is dispatched from the item's click handler, so Enter and pointer clicks raise it exactly once; it is not cancelable.
 - Addition beyond the approved spec: inside a `<dialog>`, the dialog's `close` event clears the query and resets the list, matching upstream where the dialog content unmounts on close.
-- `MutationObserver` re-scan and `data-filter="none"` handling beyond skipping filtering are Phase 4. `None` mode already skips scoring, hiding, sorting and separator/group toggling.
+- `None` mode skips scoring, hiding, sorting and separator/group toggling; the list mutation re-scan followed in Phase 4.
+
+### Phase 4 implementation notes
+
+- `sel-command` observes itself (`childList`, `subtree`) rather than only the list, so a developer who swaps the whole list element (`outerHTML`) is covered too. Attribute changes are not observed, so the component's own `hidden`/`data-selected`/`id` writes and htmx's settle classes never trigger a refresh. The component's own reordering is discarded with `takeRecords()` at the end of every filter pass.
+- After an external mutation the active item is kept when it is still connected, visible and enabled (as cmdk does when items mount); otherwise the first selectable item is activated and scrolled into the list's view. An htmx `innerHTML` swap replaces every node, so the first result is activated.
+- Remembered sort order survives mutations: containers that left the component are forgotten, removed children are dropped, and children added while a query was active are restored after the remembered ones when the query clears.
+- Generated item IDs skip IDs already present in the document (for example a copy of rendered markup), so `aria-activedescendant` never points at the wrong element. Author-supplied IDs are never changed.
+- The empty element lives inside the list, so a server fragment that replaces the list contents must render `<sa-command-empty>` itself; the component shows it whenever no item is present.
+- No library C# changed. The input's `hx-*` attributes pass through `sa-command-input` as designed in Phase 2.
+- Demo: `sandbox/ComponentPlayground/Pages/Demo/Command.cshtml` (+ `.cshtml.cs`, `_CommandResults.cshtml`), registered under Navigation in the playground layout. `filter="CommandFilter.None"`; the input uses `hx-get="?handler=Search" hx-trigger="input changed delay:200ms" hx-target="#trip-search-list" hx-sync="this:replace"`. The handler adds 250 ms of simulated latency and matches destinations and bookings with a case-insensitive `Contains`; an empty query returns four popular destinations. A small script shows the `itemselect` value. Building the playground regenerates the tracked `wwwroot/css/site.css` with the demo's utilities.
 
 ## Source paths
 
@@ -96,6 +106,7 @@ Dashboard integration is a separate task after Phase 5.
 - Custom theme CSS: final block of each of `aurora`, `concourse`, `ice`, `ledger`, `meridian`, `observatory`, `parallax` `.css` under `Client/css/themes/`.
 - Coverage: `util/theme-coverage/coverage.json` (`Command`).
 - Samples: `docs/DocsSamples/Pages/Command/` (`_Intro`, `_Dialog`), registered under Navigation in `Pages/Shared/_NavigationLayout.cshtml`.
+- Server-search demo: `sandbox/ComponentPlayground/Pages/Demo/Command.cshtml`, `Command.cshtml.cs`, `_CommandResults.cshtml`; nav entry in `Pages/Shared/_Layout.cshtml`.
 - Web component: `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-command.ts` and `command-score.ts`; registration in `Client/js/stellar-admin-ui.ts`.
 
 ## Phase log
@@ -104,3 +115,4 @@ Dashboard integration is a separate task after Phase 5.
 - 2026-09-28 — Phase 2: tag helpers, Search icon role, structural CSS, seven custom-theme blocks, coverage entry and two static demos. Verified: TagHelpers build 0 warnings; `node util/theme-coverage/check.mjs` (57 components × 15 themes) and `check.test.mjs` (9 pass); `npm run build:css`; Core tests 67/67 and TagHelpers tests 136/136; DocsSamples on port 5206 rendered with no unresolved `sa-*` elements; headless-Chromium screenshots of the intro (static `data-selected` preview) in default, Vega dark, Ledger light/dark, Aurora, Concourse, Ice, Meridian dark, Observatory and Parallax, and the dialog in Ledger desktop and default mobile. Not yet done: interaction (Phase 3), website docs, skills examples, theme-spec notes.
 - 2026-09-28 — Phase 3: `sel-command` web component and cmdk scorer port. Verified: `tsc --noEmit` clean, `oxfmt` on the new files, `npm run build:js`; DocsSamples on port 5206 driven over CDP with 52 passing checks (initial selection and `aria-activedescendant`, arrow/Home/End/Ctrl bindings, disabled skipping, loop on/off, fuzzy and keyword filtering, sorting of items and groups with order restore, empty state, separators, Enter/click `itemselect`, hover selection, focus retention, link navigation via Enter, dialog focus and reset on reopen, list-only scrolling); screenshots of the filtered and empty states (Observatory) and Vega dark. Server stopped. Not run: .NET builds/tests (no C# changed).
 - 2026-09-28 — Phase 3 revision: Jerrie reported groups jumping (typing "t" moved Bookings above Destinations) and could not reproduce it in shadcn. Root cause: our port reordered groups, while cmdk's group reordering never takes effect (ID/value selector mismatch). Group sorting removed; items now sort in place within their slots. Re-verified over CDP: all checks pass, including new ones for the dialog "t" case (groups and separator keep their DOM order; Cape Town ranks first within Destinations). Server stopped.
+- 2026-09-29 — Phase 4: list mutation re-scan in `sel-command`, collision-free generated item IDs, and the htmx server-search demo in ComponentPlayground. Verified: `tsc --noEmit` clean, `oxfmt`, `npm run build:js`; ComponentPlayground build 0 warnings/0 errors and CSharpier on `Command.cshtml.cs`; playground on port 5206 driven over CDP with 35 passing checks (hx attributes on the input, no unresolved `sa-*`, no client filtering before the response, server results with IDs and `aria-activedescendant`, first result activated, focus retained, stable `aria-controls`, keyboard into the second group, Enter `itemselect`, server-rendered empty state, overlapping requests settle on the last query via `hx-sync`, developer-appended item keeps the active item, removing the active item activates the first, client-mode copy filters added items against the current query and restores order with them appended); screenshots of results and empty state. Phase 3 suite re-run against DocsSamples on port 5206: 54 checks pass. DocsSamples build: 0 errors, 10 existing CS8618 warnings in unrelated sample models. Servers stopped.

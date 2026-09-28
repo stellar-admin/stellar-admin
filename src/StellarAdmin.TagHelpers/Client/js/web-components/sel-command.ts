@@ -16,6 +16,10 @@ const SEPARATOR = '[data-slot="command-separator"]';
  *     on the server
  *   - `data-loop="true"` wraps keyboard navigation at either end of the list
  *
+ * Items added or replaced later (for example by an htmx swap of the list contents) are picked up
+ * automatically: they get IDs, are filtered against the current search in client mode, and the
+ * empty state and active item are updated.
+ *
  * Enter or a click activates an item (links navigate) and dispatches a bubbling `itemselect`
  * event with the item's value in `detail.value`.
  */
@@ -27,6 +31,7 @@ export class Command extends LitElement {
 
   #dialog: HTMLDialogElement | null = null;
   #itemCount = 0;
+  #observer = new MutationObserver(() => this.#refresh(true));
   // Children of each container reordered by sorting, in their original order.
   #originalOrder = new Map<Element, Element[]>();
   #selected: HTMLElement | null = null;
@@ -42,10 +47,12 @@ export class Command extends LitElement {
     this.#dialog = this.closest("dialog");
     this.#dialog?.addEventListener("close", this.#onDialogClose);
     this.#refresh();
+    this.#observer.observe(this, { childList: true, subtree: true });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.#observer.disconnect();
     this.removeEventListener("input", this.#onInput);
     this.removeEventListener("keydown", this.#onKeydown);
     this.removeEventListener("click", this.#onClick);
@@ -95,17 +102,29 @@ export class Command extends LitElement {
     return value;
   }
 
-  #refresh() {
+  /**
+   * Assigns missing item IDs and re-filters. After a change to the list made outside this
+   * component (`fromMutation`), the active item is kept when it is still selectable.
+   */
+  #refresh(fromMutation = false) {
+    if (fromMutation) {
+      this.#forgetStaleOrder();
+    }
     const prefix = this.id || "sel-command";
     for (const item of this.#items()) {
       if (!item.id) {
-        item.id = `${prefix}-item-${++this.#itemCount}`;
+        // Skip IDs already on the page, such as those in a copy of generated markup.
+        let id;
+        do {
+          id = `${prefix}-item-${++this.#itemCount}`;
+        } while (document.getElementById(id));
+        item.id = id;
       }
     }
-    this.#filter();
+    this.#filter(fromMutation);
   }
 
-  #filter() {
+  #filter(keepSelection = false) {
     const search = this.#clientFiltering ? (this.#input?.value ?? "").trim() : "";
     const items = this.#items();
 
@@ -138,7 +157,12 @@ export class Command extends LitElement {
       empty.hidden = items.some((item) => !item.hidden);
     }
 
-    this.#select(this.#selectableItems()[0] ?? null);
+    const selectable = this.#selectableItems();
+    const keep = keepSelection && this.#selected && selectable.includes(this.#selected);
+    this.#select(keep ? this.#selected : (selectable[0] ?? null), !keep);
+
+    // Discard the records of this component's own reordering so it does not trigger a refresh.
+    this.#observer.takeRecords();
   }
 
   /**
@@ -168,6 +192,22 @@ export class Command extends LitElement {
   #rememberOrder(container: Element) {
     if (!this.#originalOrder.has(container)) {
       this.#originalOrder.set(container, Array.from(container.children));
+    }
+  }
+
+  /**
+   * Drops remembered containers that have left the component and remembered children that have
+   * left their container; children added since are restored after the remembered ones.
+   */
+  #forgetStaleOrder() {
+    for (const [container, children] of this.#originalOrder) {
+      if (!this.contains(container)) {
+        this.#originalOrder.delete(container);
+        continue;
+      }
+      const remaining = children.filter((child) => child.parentElement === container);
+      const added = Array.from(container.children).filter((child) => !remaining.includes(child));
+      this.#originalOrder.set(container, [...remaining, ...added]);
     }
   }
 

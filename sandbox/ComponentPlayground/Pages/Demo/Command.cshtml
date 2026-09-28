@@ -1,0 +1,43 @@
+@page
+@model ComponentPlayground.Pages.Demo.Command
+
+@*
+    Server-side search: with filter="None" the command never filters in the browser. The input's
+    hx-* attributes (passed through by sa-command-input) fetch the results partial and swap it into
+    the list; sel-command notices the new items, assigns IDs, toggles the empty state and highlights
+    the first result.
+*@
+
+<div class="flex max-w-3xl flex-col gap-8 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Command - server search</h1>
+        <p class="text-sm text-muted-foreground">
+            Search destinations and bookings on the server with htmx. Results arrive after a simulated 250 ms delay.
+        </p>
+    </div>
+
+    <sa-command id="trip-search" filter="CommandFilter.None" label="Search trips" class="h-auto w-full max-w-md border shadow-md">
+        <sa-command-input name="q"
+                          placeholder="Search destinations and bookings..."
+                          hx-get="?handler=Search"
+                          hx-trigger="input changed delay:200ms"
+                          hx-target="#trip-search-list"
+                          hx-sync="this:replace"/>
+        <sa-command-list>
+            <partial name="_CommandResults" model="Model.Results"/>
+        </sa-command-list>
+    </sa-command>
+
+    <p class="text-sm text-muted-foreground">
+        Selected: <span id="trip-search-selected" class="font-medium text-foreground">nothing yet</span>
+    </p>
+</div>
+
+@section Scripts {
+    <script src="/js/htmx.min.js"></script>
+    <script>
+        document.getElementById("trip-search").addEventListener("itemselect", (event) => {
+            document.getElementById("trip-search-selected").textContent = event.detail.value;
+        });
+    </script>
+}
