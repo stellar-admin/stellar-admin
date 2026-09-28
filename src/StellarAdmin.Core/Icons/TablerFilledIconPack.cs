@@ -32,6 +32,7 @@ public class TablerFilledIconPack : IIconPack
             [SemanticIconRole.PaginationPrevious] = "caret-left",
             [SemanticIconRole.RadioSelected] = "circle",
             [SemanticIconRole.ScrollToEnd] = "arrow-big-down",
+            [SemanticIconRole.Search] = "search",
             [SemanticIconRole.SortAscending] = "caret-up",
             [SemanticIconRole.SortDescending] = "caret-down",
             [SemanticIconRole.SortUnsorted] = "caret-up-down",

@@ -1,0 +1,38 @@
+<sa-command label="Search Voyager" class="h-auto w-full max-w-md border shadow-md">
+    <sa-command-input placeholder="Type a command or search..." />
+    <sa-command-list>
+        <sa-command-empty>No results found.</sa-command-empty>
+        <sa-command-group heading="Suggestions">
+            <sa-command-item>
+                <sa-icon name="plane" />
+                <span>Search flights</span>
+            </sa-command-item>
+            <sa-command-item keywords="accommodation stay">
+                <sa-icon name="bed-double" />
+                <span>Find a hotel</span>
+            </sa-command-item>
+            <sa-command-item disabled="true">
+                <sa-icon name="car" />
+                <span>Rent a car</span>
+            </sa-command-item>
+        </sa-command-group>
+        <sa-command-separator />
+        <sa-command-group heading="Account">
+            <sa-command-item>
+                <sa-icon name="luggage" />
+                <span>My trips</span>
+                <sa-command-shortcut>⌘T</sa-command-shortcut>
+            </sa-command-item>
+            <sa-command-item>
+                <sa-icon name="credit-card" />
+                <span>Payment methods</span>
+                <sa-command-shortcut>⌘B</sa-command-shortcut>
+            </sa-command-item>
+            <sa-command-item>
+                <sa-icon name="settings" />
+                <span>Settings</span>
+                <sa-command-shortcut>⌘S</sa-command-shortcut>
+            </sa-command-item>
+        </sa-command-group>
+    </sa-command-list>
+</sa-command>

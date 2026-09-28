@@ -32,6 +32,7 @@ public class TablerOutlineIconPack : IIconPack
             [SemanticIconRole.PaginationPrevious] = "chevron-left",
             [SemanticIconRole.RadioSelected] = "circle",
             [SemanticIconRole.ScrollToEnd] = "arrow-down",
+            [SemanticIconRole.Search] = "search",
             [SemanticIconRole.SortAscending] = "arrow-up",
             [SemanticIconRole.SortDescending] = "arrow-down",
             [SemanticIconRole.SortUnsorted] = "selector",

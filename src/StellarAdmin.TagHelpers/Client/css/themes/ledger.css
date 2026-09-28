@@ -2108,3 +2108,85 @@
     }
   }
 }
+
+/* Command composes the menu surface, rows, and labels with a flat search field. Focus stays in
+   the field, so the web component's data-selected row carries the highlight that hover and
+   focus give menu rows, and the field does not show a permanent focus ring. */
+@layer components.theme {
+  .sa-command {
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border-radius: var(--sa-ledger-radius-lg);
+  }
+  .sa-command-input-wrapper {
+    padding: 4px 4px 0;
+  }
+  .sa-command-input-group,
+  .sa-command-input-group:has(:focus-visible) {
+    border-color: var(--input);
+    box-shadow: none;
+  }
+  .sa-command-input {
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    padding-inline: 6px;
+    font-size: 13px;
+    background: transparent;
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+  }
+  .sa-command-list {
+    max-height: 300px;
+    scroll-padding-block: 4px;
+  }
+  .sa-command-empty {
+    padding: 24px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted-foreground);
+  }
+  .sa-command-group {
+    padding: 4px;
+    color: var(--foreground);
+    & [cmdk-group-heading] {
+      padding: 6px 9px 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+  }
+  .sa-command-separator {
+    height: 1px;
+    margin: 4px 0;
+    background: var(--border);
+  }
+  .sa-command-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: var(--sa-ledger-radius-md);
+    font-size: 13px;
+    cursor: default;
+    user-select: none;
+    & svg:not([class*="size-"]) {
+      width: 16px;
+      height: 16px;
+    }
+    &[data-selected]:not([data-disabled="true"]) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+  .sa-command-shortcut {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted-foreground);
+  }
+}

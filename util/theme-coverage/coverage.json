@@ -9546,6 +9546,293 @@
           ]
         }
       }
+    },
+    "Command": {
+      "tags": [
+        "sa-command",
+        "sa-command-dialog",
+        "sa-command-empty",
+        "sa-command-group",
+        "sa-command-input",
+        "sa-command-item",
+        "sa-command-link-item",
+        "sa-command-list",
+        "sa-command-separator",
+        "sa-command-shortcut"
+      ],
+      "hooks": [
+        "sa-command",
+        "sa-command-dialog",
+        "sa-command-empty",
+        "sa-command-group",
+        "sa-command-input",
+        "sa-command-input-group",
+        "sa-command-input-icon",
+        "sa-command-input-wrapper",
+        "sa-command-item",
+        "sa-command-item-indicator",
+        "sa-command-list",
+        "sa-command-separator",
+        "sa-command-shortcut",
+        "sa-dialog-close",
+        "sa-dialog-content",
+        "sa-dialog-description",
+        "sa-dialog-header",
+        "sa-dialog-title",
+        "sa-font-heading",
+        "sa-input-group",
+        "sa-input-group-addon",
+        "sa-input-group-addon-align-inline-start"
+      ],
+      "example": "docs/DocsSamples/Pages/Command/Index.cshtml",
+      "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "shadcn.vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-dialog",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-icon",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-item-indicator",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-item-indicator",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-item-indicator",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-item-indicator",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-command",
+            "sa-command-empty",
+            "sa-command-group",
+            "sa-command-input",
+            "sa-command-input-group",
+            "sa-command-input-wrapper",
+            "sa-command-item",
+            "sa-command-item-indicator",
+            "sa-command-list",
+            "sa-command-separator",
+            "sa-command-shortcut"
+          ]
+        }
+      }
     }
   }
 }
