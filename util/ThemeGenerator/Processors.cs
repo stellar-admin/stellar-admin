@@ -341,6 +341,27 @@ public static partial class Processors
         }
 
         /// <summary>
+        ///     sa-command-group styles its heading through the cmdk-group-heading attribute that cmdk
+        ///     renders. Our heading carries data-slot="command-group-heading" instead, so the heading
+        ///     utilities target that slot while keeping upstream's descendant variant.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> ReplaceCommandGroupHeadingAttribute()
+        {
+            var tokens = new Dictionary<string, string>(input);
+
+            if (tokens.TryGetValue("sa-command-group", out var classes))
+            {
+                tokens["sa-command-group"] = classes.Replace(
+                    "**:[[cmdk-group-heading]]:",
+                    "**:data-[slot=command-group-heading]:"
+                );
+            }
+
+            return tokens;
+        }
+
+        /// <summary>
         ///     sa-switch uses the data-checked/data-unchecked attributes to style the on/off state since that is
         ///     what is being used by BaseUI. Since we render a native checkbox as the switch track (so the value
         ///     posts back), we drive the state purely from CSS instead:

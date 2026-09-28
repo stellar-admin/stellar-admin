@@ -91,6 +91,7 @@ public partial class Program
                 .ReplaceDuiCheckboxDataChecked()
                 .ReplaceDuiRadioGroupItemDataChecked()
                 .ReplaceFieldLabelDataChecked()
+                .ReplaceCommandGroupHeadingAttribute()
                 .CleanSwitchClasses()
                 .CleanToggleClasses()
                 .CleanQuestionnaireClasses()

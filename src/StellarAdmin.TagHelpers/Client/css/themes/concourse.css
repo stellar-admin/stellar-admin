@@ -2403,7 +2403,7 @@
   .sa-command-group {
     padding: 4px;
     color: var(--foreground);
-    & [cmdk-group-heading] {
+    & [data-slot="command-group-heading"] {
       padding: 7px 10px 4px;
       font-size: var(--sa-concourse-text-xs);
       font-weight: 700;

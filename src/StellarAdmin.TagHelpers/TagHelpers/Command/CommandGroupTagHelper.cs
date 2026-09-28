@@ -35,11 +35,11 @@ public class CommandGroupTagHelper : StellarAdminTagHelperBase
         {
             var headingId = $"sa-command-group-{GetUniqueId(context)}-heading";
 
-            // The theme styles headings through this attribute selector, so it must be kept.
+            // Themes style the heading through its data-slot, so it must be kept.
             var heading = new TagBuilder("div");
             heading.Attributes["id"] = headingId;
             heading.Attributes["aria-hidden"] = "true";
-            heading.Attributes["cmdk-group-heading"] = "";
+            heading.Attributes["data-slot"] = "command-group-heading";
             heading.InnerHtml.Append(Heading);
             output.PreContent.AppendHtml(heading);
 

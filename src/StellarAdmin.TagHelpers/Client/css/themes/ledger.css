@@ -2151,7 +2151,7 @@
   .sa-command-group {
     padding: 4px;
     color: var(--foreground);
-    & [cmdk-group-heading] {
+    & [data-slot="command-group-heading"] {
       padding: 6px 9px 4px;
       font-size: 11.5px;
       font-weight: 600;

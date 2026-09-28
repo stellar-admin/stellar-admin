@@ -3162,7 +3162,7 @@
   .sa-command-group {
     padding: 0;
     color: var(--foreground);
-    & [cmdk-group-heading] {
+    & [data-slot="command-group-heading"] {
       padding: 6px 9px;
       font-family: var(--font-mono);
       font-size: 9px;
