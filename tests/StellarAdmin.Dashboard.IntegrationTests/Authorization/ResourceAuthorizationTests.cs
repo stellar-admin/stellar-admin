@@ -10,7 +10,7 @@ public class ResourceAuthorizationTests
 {
     [Test]
     [Arguments("/stellaradmin/products", HttpStatusCode.Unauthorized)]
-    [Arguments("/stellaradmin/products/Create", HttpStatusCode.Unauthorized)]
+    [Arguments("/stellaradmin/products/create", HttpStatusCode.Unauthorized)]
     [Arguments("/stellaradmin/custom-products", HttpStatusCode.OK)]
     [Arguments("/stellaradmin", HttpStatusCode.OK)]
     public async Task RequiredAuthorization_AnonymousRequest_ProtectsOnlyThatResource(

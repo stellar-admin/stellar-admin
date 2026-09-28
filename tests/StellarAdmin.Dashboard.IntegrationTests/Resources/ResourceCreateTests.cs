@@ -42,13 +42,13 @@ public class ResourceCreateTests
             }
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Attempted name";
         values["Entity.Price"] = "12.50";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Create", content);
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -88,7 +88,7 @@ public class ResourceCreateTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert.That(document.QuerySelectorAll("input[name^='Entity.']").Length).IsEqualTo(0);
@@ -129,7 +129,7 @@ public class ResourceCreateTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -161,7 +161,7 @@ public class ResourceCreateTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/inventory-items/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/inventory-items/create");
 
         // Assert
         await Assert
@@ -179,13 +179,16 @@ public class ResourceCreateTests
         var created = new List<InventoryItem>();
         await using var sut = await CreateInventoryHost(items, created);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/inventory-items/Create");
+        var values = await PrepareForm(client, "/stellaradmin/inventory-items/create");
         values["Entity.Name"] = name;
         values["Entity.Sku"] = "forged";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/inventory-items/Create", content);
+        using var response = await client.PostAsync(
+            "/stellaradmin/inventory-items/create",
+            content
+        );
 
         // Assert
         await Assert.That(created.Count).IsEqualTo(2);
@@ -249,7 +252,7 @@ public class ResourceCreateTests
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Create", content);
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
         var document = await response.ReadDocumentAsync();
 
         // Assert
@@ -300,7 +303,7 @@ public class ResourceCreateTests
         );
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Create", content);
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
@@ -336,7 +339,7 @@ public class ResourceCreateTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         var section = document.RequiredElement("[data-slot='form-section']");
@@ -388,7 +391,7 @@ public class ResourceCreateTests
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Create", content);
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);

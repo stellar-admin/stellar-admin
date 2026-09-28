@@ -303,7 +303,7 @@ public class ResourceSortingTests
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/2");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/delete/2");
         if (rejected)
         {
             var result = await response.ReadDocumentAsync();

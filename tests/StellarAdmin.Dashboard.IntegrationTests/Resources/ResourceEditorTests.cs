@@ -20,7 +20,7 @@ public class ResourceEditorTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
         await Assert
@@ -50,12 +50,12 @@ public class ResourceEditorTests
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(state);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
@@ -69,13 +69,13 @@ public class ResourceEditorTests
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(state);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.RoleIds"] = "manager";
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
@@ -96,13 +96,13 @@ public class ResourceEditorTests
         };
         await using var sut = await CreateRoleSelectionHost(state);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.RoleIds"] = "manager";
         values["__sa_checkbox_group.Entity.RoleIds"] = "true";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
         var document = await response.ReadDocumentAsync();
 
         // Assert
@@ -145,7 +145,7 @@ public class ResourceEditorTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -179,11 +179,11 @@ public class ResourceEditorTests
                 )
         );
         using var client = sut.GetTestClient();
-        var firstDocument = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var firstDocument = await client.GetDocumentAsync("/stellaradmin/products/create");
         choices.Add(new("Pen", "pen"));
 
         // Act
-        var secondDocument = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var secondDocument = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -216,7 +216,7 @@ public class ResourceEditorTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         var input = document.RequiredElement("input[data-custom-editor='product-name']");

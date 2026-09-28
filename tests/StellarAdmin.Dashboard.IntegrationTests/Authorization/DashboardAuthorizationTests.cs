@@ -12,7 +12,7 @@ public class DashboardAuthorizationTests
     [Test]
     [Arguments("/stellaradmin")]
     [Arguments("/stellaradmin/products")]
-    [Arguments("/stellaradmin/products/Create")]
+    [Arguments("/stellaradmin/products/create")]
     public async Task RequiredAuthorization_AnonymousRequest_ReturnsUnauthorized(string url)
     {
         // Arrange
@@ -62,7 +62,7 @@ public class DashboardAuthorizationTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Create",
+            "/stellaradmin/products/create",
             new FormUrlEncodedContent(new Dictionary<string, string> { ["Name"] = "Tent" })
         );
 

@@ -4,7 +4,7 @@ internal static class FormTestHelpers
 {
     public static async Task<Dictionary<string, string>> PrepareForm(
         HttpClient client,
-        string url = "/stellaradmin/products/Create"
+        string url = "/stellaradmin/products/create"
     )
     {
         using var response = await client.GetAsync(url);

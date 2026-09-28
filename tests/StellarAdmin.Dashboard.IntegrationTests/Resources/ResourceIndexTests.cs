@@ -44,7 +44,7 @@ public class ResourceIndexTests
         await Assert
             .That(
                 document
-                    .RequiredElement("a[href='/stellaradmin/products/Create']")
+                    .RequiredElement("a[href='/stellaradmin/products/create']")
                     .TextContent.Trim()
             )
             .IsEqualTo("Create");
@@ -58,7 +58,7 @@ public class ResourceIndexTests
             .IsEqualTo("12.50");
         await Assert
             .That(
-                document.QuerySelector("a[href*='/Edit'], [hx-post], [data-slot='data-grid-pager']")
+                document.QuerySelector("a[href*='/edit'], [hx-post], [data-slot='data-grid-pager']")
             )
             .IsNull();
     }

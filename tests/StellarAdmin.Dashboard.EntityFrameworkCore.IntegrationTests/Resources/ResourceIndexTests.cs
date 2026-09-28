@@ -123,7 +123,7 @@ public class ResourceIndexTests
         await Assert
             .That(document.QuerySelector("h1")!.TextContent.Trim())
             .IsEqualTo("Catalog entries");
-        await Assert.That(document.QuerySelector("a[href$='/Create']")).IsNull();
+        await Assert.That(document.QuerySelector("a[href$='/create']")).IsNull();
         var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
         await Assert.That(options.KeySelector!(new Product { Number = 42 })).IsEqualTo("42");
     }

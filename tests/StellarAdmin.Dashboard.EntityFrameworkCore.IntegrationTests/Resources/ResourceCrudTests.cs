@@ -23,20 +23,20 @@ public class ResourceCrudTests
         // Act
         using var indexResponse = await client.GetAsync("/stellaradmin/products");
         var index = await ReadDocument(indexResponse);
-        using var createResponse = await client.GetAsync("/stellaradmin/products/Create");
+        using var createResponse = await client.GetAsync("/stellaradmin/products/create");
         var create = await ReadDocument(createResponse);
-        using var editResponse = await client.GetAsync("/stellaradmin/products/Edit/2");
+        using var editResponse = await client.GetAsync("/stellaradmin/products/edit/2");
         var edit = await ReadDocument(editResponse);
 
         // Assert
         await Assert
-            .That(index.QuerySelector("a[href='/stellaradmin/products/Create']"))
+            .That(index.QuerySelector("a[href='/stellaradmin/products/create']"))
             .IsNotNull();
         await Assert
-            .That(index.QuerySelector("a[href='/stellaradmin/products/Edit/2']"))
+            .That(index.QuerySelector("a[href='/stellaradmin/products/edit/2']"))
             .IsNotNull();
         await Assert
-            .That(index.QuerySelector("form[action='/stellaradmin/products/Delete/2']"))
+            .That(index.QuerySelector("form[action='/stellaradmin/products/delete/2']"))
             .IsNotNull();
         await Assert.That(create.QuerySelector("input[name='Entity.Name']")).IsNotNull();
         await Assert.That(create.QuerySelector("input[name='Entity.Number']")).IsNull();
@@ -52,7 +52,7 @@ public class ResourceCrudTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
         values["Entity.Number"] = "99";
@@ -60,7 +60,7 @@ public class ResourceCrudTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Create",
+            "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
 
@@ -89,12 +89,12 @@ public class ResourceCrudTests
             })
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "Factory product";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Create",
+            "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
 
@@ -113,13 +113,13 @@ public class ResourceCrudTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "-1";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Create",
+            "/stellaradmin/products/create",
             new FormUrlEncodedContent(values)
         );
         var document = await ReadDocument(response);
@@ -140,13 +140,13 @@ public class ResourceCrudTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/2");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "";
         values["Entity.Price"] = "-1";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Edit/2",
+            "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
         var document = await ReadDocument(response);
@@ -169,7 +169,7 @@ public class ResourceCrudTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/2");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/2");
         values["Entity.Name"] = "Renamed";
         values["Entity.Price"] = "26";
         values["Entity.Number"] = "99";
@@ -177,7 +177,7 @@ public class ResourceCrudTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Edit/2",
+            "/stellaradmin/products/edit/2",
             new FormUrlEncodedContent(values)
         );
 
@@ -193,8 +193,8 @@ public class ResourceCrudTests
     }
 
     [Test]
-    [Arguments("/stellaradmin/products/Edit/5")]
-    [Arguments("/stellaradmin/products/Edit/not-a-number")]
+    [Arguments("/stellaradmin/products/edit/5")]
+    [Arguments("/stellaradmin/products/edit/not-a-number")]
     public async Task HiddenOrInvalidKey_EditReturnsNotFound(string url)
     {
         // Arrange
@@ -214,15 +214,15 @@ public class ResourceCrudTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCrud);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
 
         // Act
         using var deleted = await client.PostAsync(
-            "/stellaradmin/products/Delete/4",
+            "/stellaradmin/products/delete/4",
             new FormUrlEncodedContent(values)
         );
         using var filtered = await client.PostAsync(
-            "/stellaradmin/products/Delete/5",
+            "/stellaradmin/products/delete/5",
             new FormUrlEncodedContent(values)
         );
 
@@ -319,7 +319,7 @@ public class ResourceCrudTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Delete/4",
+            "/stellaradmin/products/delete/4",
             new FormUrlEncodedContent([])
         );
 

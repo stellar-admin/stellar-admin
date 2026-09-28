@@ -96,7 +96,7 @@ public class ResourceConfigurationTests
 
         // Act
         var index = await client.GetDocumentAsync("/stellaradmin/products");
-        var create = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var create = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -107,12 +107,26 @@ public class ResourceConfigurationTests
             .IsEqualTo(createTitle);
         await Assert
             .That(
-                index.RequiredElement("a[href='/stellaradmin/products/Create']").TextContent.Trim()
+                index.RequiredElement("a[href='/stellaradmin/products/create']").TextContent.Trim()
             )
             .IsEqualTo(indexCreateLabel);
         await Assert
             .That(create.RequiredElement("button[type='submit']").TextContent.Trim())
             .IsEqualTo(submitLabel);
+    }
+
+    [Test]
+    public async Task PascalCaseRequest_ResolvesAction()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(new([]));
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/Products/Create");
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
     [Test]

@@ -34,12 +34,12 @@ public class ResourceDeleteTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
         var trigger = document.RequiredElement("button[commandfor='delete-confirm-dialog']");
         var dialog = document.RequiredElement("dialog[id='delete-confirm-dialog']");
-        var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/products/Delete/7']");
+        var deleteForm = dialog.RequiredElement("form[action='/stellaradmin/products/delete/7']");
         await Assert.That(trigger.TextContent.Trim()).IsEqualTo("Remove product");
         await Assert.That(trigger.GetAttribute("type")).IsEqualTo("button");
         await Assert.That(trigger.Closest(".sa-resource-form-footer")).IsNotNull();
@@ -78,7 +78,7 @@ public class ResourceDeleteTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Create");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
         await Assert
@@ -105,7 +105,7 @@ public class ResourceDeleteTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
         await Assert
@@ -131,12 +131,12 @@ public class ResourceDeleteTests
             }
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["origin"] = "edit";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Delete/7",
+            "/stellaradmin/products/delete/7",
             new FormUrlEncodedContent(values)
         );
 
@@ -172,12 +172,12 @@ public class ResourceDeleteTests
             }
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["origin"] = "edit";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Delete/7",
+            "/stellaradmin/products/delete/7",
             new FormUrlEncodedContent(values)
         );
         client.DefaultRequestHeaders.Remove("Cookie");
@@ -191,7 +191,7 @@ public class ResourceDeleteTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/products/Edit/7");
+            .IsEqualTo("/stellaradmin/products/edit/7");
         var summary = document.RequiredElement(".validation-summary-errors");
         await Assert.That(summary.TextContent).Contains("This product is still in use.");
         await Assert.That(summary.TextContent).Contains("<script>unsafe</script>");
@@ -222,7 +222,7 @@ public class ResourceDeleteTests
         );
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Delete/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/delete/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -232,7 +232,7 @@ public class ResourceDeleteTests
         await Assert.That(summary.TextContent).Contains("<script>unsafe</script>");
         await Assert.That(summary.QuerySelector("script")).IsNull();
         await Assert
-            .That(document.QuerySelector("form[action='/stellaradmin/products/Delete/7']"))
+            .That(document.QuerySelector("form[action='/stellaradmin/products/delete/7']"))
             .IsNotNull();
         await Assert.That(state.Products.Count).IsEqualTo(1);
         await Assert.That(state.DeleteCalls).IsEqualTo(1);
@@ -319,7 +319,7 @@ public class ResourceDeleteTests
 
         // Assert
         var form = document.RequiredElement("form[data-resource-delete]");
-        await Assert.That(form.GetAttribute("action")).IsEqualTo("/stellaradmin/products/Delete/7");
+        await Assert.That(form.GetAttribute("action")).IsEqualTo("/stellaradmin/products/delete/7");
         await Assert.That(form.GetAttribute("method")).IsEqualTo("post");
         await Assert
             .That(form.QuerySelector("input[name='__RequestVerificationToken']"))
@@ -366,7 +366,10 @@ public class ResourceDeleteTests
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Delete/7?id=8", content);
+        using var response = await client.PostAsync(
+            "/stellaradmin/products/delete/7?id=8",
+            content
+        );
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
@@ -378,7 +381,7 @@ public class ResourceDeleteTests
         await Assert.That(state.Products[0].Id).IsEqualTo(8);
         var index = await client.GetDocumentAsync("/stellaradmin/products");
         await Assert
-            .That(index.QuerySelector("form[action='/stellaradmin/products/Delete/7']"))
+            .That(index.QuerySelector("form[action='/stellaradmin/products/delete/7']"))
             .IsNull();
     }
 
@@ -401,7 +404,7 @@ public class ResourceDeleteTests
         state.Products.Clear();
 
         // Act
-        using var response = await client.PostAsync($"/stellaradmin/products/Delete/{id}", content);
+        using var response = await client.PostAsync($"/stellaradmin/products/delete/{id}", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
@@ -424,8 +427,8 @@ public class ResourceDeleteTests
 
         // Act
         using var response = get
-            ? await client.GetAsync("/stellaradmin/products/Delete/7")
-            : await client.PostAsync("/stellaradmin/products/Delete/7", content);
+            ? await client.GetAsync("/stellaradmin/products/delete/7")
+            : await client.PostAsync("/stellaradmin/products/delete/7", content);
 
         // Assert
         await Assert
@@ -449,7 +452,7 @@ public class ResourceDeleteTests
 
         // Act
         var index = await client.GetDocumentAsync("/stellaradmin/products");
-        using var response = await client.PostAsync("/stellaradmin/products/Delete/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/delete/7", content);
 
         // Assert
         await Assert.That(index.QuerySelector("form[data-resource-delete]")).IsNull();

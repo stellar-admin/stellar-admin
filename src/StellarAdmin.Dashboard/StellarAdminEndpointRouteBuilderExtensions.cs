@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Infrastructure.Routing;
 using StellarAdmin.Dashboard.Resources;
 
 namespace StellarAdmin.Dashboard;
@@ -38,10 +39,12 @@ public static class StellarAdminEndpointRouteBuilderExtensions
         {
             var routePrefix = stellarAdminPath.ToString().Trim('/');
 
+            // Only this route references the transformer, so host routes keep their casing.
+            var lowercase = LowercaseParameterTransformer.Name;
             var route = endpoints.MapAreaControllerRoute(
                 name: "StellarAdmin",
                 areaName: "StellarAdmin",
-                pattern: $"{routePrefix}/{{controller=Home}}/{{action=Index}}/{{id?}}"
+                pattern: $"{routePrefix}/{{controller:{lowercase}=Home}}/{{action:{lowercase}=Index}}/{{id?}}"
             );
 
             // Conventional routing is order-dependent, and link generation resolves ties by endpoint

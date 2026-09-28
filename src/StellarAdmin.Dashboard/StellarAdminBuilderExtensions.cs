@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Infrastructure.Routing;
 using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard;
@@ -13,6 +15,10 @@ public static class StellarAdminBuilderExtensions
         public StellarAdminDashboardBuilder AddDashboard()
         {
             builder.Services.AddMvc();
+            builder.Services.Configure<RouteOptions>(options =>
+                options.ConstraintMap[LowercaseParameterTransformer.Name] =
+                    typeof(LowercaseParameterTransformer)
+            );
             builder.AddTagHelpers();
             builder
                 .Services.AddOptions<DashboardThemeOptions>()

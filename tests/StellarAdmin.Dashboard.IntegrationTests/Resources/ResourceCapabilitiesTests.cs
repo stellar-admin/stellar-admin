@@ -27,18 +27,18 @@ public class ResourceCapabilitiesTests
 
         // Assert
         await Assert.That(document.Body!.TextContent).Contains("Read-only item");
-        await Assert.That(document.QuerySelector("a[href*='/Create']")).IsNull();
-        await Assert.That(document.QuerySelector("a[href*='/Edit/']")).IsNull();
-        await Assert.That(document.QuerySelector("form[action*='/Delete/']")).IsNull();
+        await Assert.That(document.QuerySelector("a[href*='/create']")).IsNull();
+        await Assert.That(document.QuerySelector("a[href*='/edit/']")).IsNull();
+        await Assert.That(document.QuerySelector("form[action*='/delete/']")).IsNull();
     }
 
     [Test]
-    [Arguments("Create", "", false)]
-    [Arguments("Create", "", true)]
-    [Arguments("Edit", "/SKU-123", false)]
-    [Arguments("Edit", "/SKU-123", true)]
-    [Arguments("Delete", "/SKU-123", false)]
-    [Arguments("Delete", "/SKU-123", true)]
+    [Arguments("create", "", false)]
+    [Arguments("create", "", true)]
+    [Arguments("edit", "/SKU-123", false)]
+    [Arguments("edit", "/SKU-123", true)]
+    [Arguments("delete", "/SKU-123", false)]
+    [Arguments("delete", "/SKU-123", true)]
     public async Task UnregisteredAction_RejectsDirectRequests(
         string action,
         string key,
@@ -65,7 +65,7 @@ public class ResourceCapabilitiesTests
         await Assert
             .That(get.StatusCode)
             .IsEqualTo(
-                action == "Delete" ? HttpStatusCode.MethodNotAllowed : HttpStatusCode.NotFound
+                action == "delete" ? HttpStatusCode.MethodNotAllowed : HttpStatusCode.NotFound
             );
         await Assert.That(post.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }

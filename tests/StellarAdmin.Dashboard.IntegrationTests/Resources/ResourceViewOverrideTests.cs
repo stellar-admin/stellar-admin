@@ -8,8 +8,8 @@ public class ResourceViewOverrideTests
 {
     [Test]
     [Arguments("", "Custom inventory")]
-    [Arguments("/Create", "Create Custom item")]
-    [Arguments("/Edit/item-1", "Edit Custom item")]
+    [Arguments("/create", "Create Custom item")]
+    [Arguments("/edit/item-1", "Edit Custom item")]
     public async Task ApplicationOverride_RendersResourceSpecificRazorView(
         string action,
         string expected

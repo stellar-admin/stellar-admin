@@ -21,7 +21,7 @@ public class ResourceCustomEditTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
         await Assert
@@ -59,7 +59,7 @@ public class ResourceCustomEditTests
             }
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated notebook";
         values["Entity.Price"] = "999";
         values["Entity.Id"] = "999";
@@ -67,7 +67,7 @@ public class ResourceCustomEditTests
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
@@ -91,7 +91,7 @@ public class ResourceCustomEditTests
         using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
@@ -107,15 +107,15 @@ public class ResourceCustomEditTests
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
         await using var sut = await DashboardTestHost.CreateAsync(state, Configure);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated";
         state.Products.Clear();
         using var content = new FormUrlEncodedContent(values);
 
         // Act
         using var response = post
-            ? await client.PostAsync("/stellaradmin/products/Edit/7", content)
-            : await client.GetAsync("/stellaradmin/products/Edit/7");
+            ? await client.PostAsync("/stellaradmin/products/edit/7", content)
+            : await client.GetAsync("/stellaradmin/products/edit/7");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
@@ -129,12 +129,12 @@ public class ResourceCustomEditTests
         var state = new ProductState([new(7, "Notebook", 8.50m)]) { DisappearOnUpdate = true };
         await using var sut = await DashboardTestHost.CreateAsync(state, Configure);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = "Updated";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
@@ -160,12 +160,12 @@ public class ResourceCustomEditTests
         };
         await using var sut = await DashboardTestHost.CreateAsync(state, Configure);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values["Entity.ProductName"] = handlerRejection ? "Attempted name" : "";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -227,17 +227,17 @@ public class ResourceCustomEditTests
         );
         using var client = sut.GetTestClient();
         var field = customModel ? "ProductName" : "Name";
-        var values = await PrepareForm(client, "/stellaradmin/products/Edit/7");
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
         values[$"Entity.{field}"] = "Updated";
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var response = await client.PostAsync("/stellaradmin/products/Edit/7", content);
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert.That(state.Products.Single().Name).IsEqualTo("Updated");
-        var document = await client.GetDocumentAsync("/stellaradmin/products/Edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
         await Assert
             .That(document.RequiredElement("[data-slot='page-header-title']").TextContent.Trim())
             .IsEqualTo("Edit Product");

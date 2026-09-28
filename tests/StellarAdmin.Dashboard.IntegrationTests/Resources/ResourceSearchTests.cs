@@ -167,7 +167,7 @@ public class ResourceSearchTests
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/1?search=lamp");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/delete/1?search=lamp");
         if (rejected)
         {
             var result = await response.ReadDocumentAsync();

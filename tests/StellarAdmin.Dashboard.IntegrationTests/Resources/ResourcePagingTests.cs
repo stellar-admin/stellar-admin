@@ -82,7 +82,7 @@ public class ResourcePagingTests
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/5?page=3&pageSize=2");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/delete/5?page=3&pageSize=2");
         await Assert.That(state.Products.Count).IsEqualTo(4);
         await Assert
             .That(response.Headers.Location?.OriginalString)
@@ -182,7 +182,7 @@ public class ResourcePagingTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/products/Delete/5?page=3&pageSize=2",
+            "/stellaradmin/products/delete/5?page=3&pageSize=2",
             content
         );
 
@@ -199,7 +199,7 @@ public class ResourcePagingTests
                     .TextContent.Trim()
             )
             .IsEqualTo(pageDisappeared ? "2" : "3");
-        await Assert.That(document.QuerySelector("form[action*='/Delete/5']")).IsNotNull();
+        await Assert.That(document.QuerySelector("form[action*='/delete/5']")).IsNotNull();
     }
 
     [Test]
