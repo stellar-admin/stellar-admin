@@ -16,8 +16,8 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var first = await client.GetAsync("/stellaradmin/Product");
-        using var second = await client.GetAsync("/stellaradmin/Product");
+        using var first = await client.GetAsync("/stellaradmin/products");
+        using var second = await client.GetAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(first.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -44,7 +44,7 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(document.TextContents("thead th")).IsEquivalentTo(["Item"]);
@@ -95,8 +95,8 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var index = await client.GetDocumentAsync("/stellaradmin/Product");
-        var create = await client.GetDocumentAsync("/stellaradmin/Product/Create");
+        var index = await client.GetDocumentAsync("/stellaradmin/products");
+        var create = await client.GetDocumentAsync("/stellaradmin/products/Create");
 
         // Assert
         await Assert
@@ -107,7 +107,7 @@ public class ResourceConfigurationTests
             .IsEqualTo(createTitle);
         await Assert
             .That(
-                index.RequiredElement("a[href='/stellaradmin/Product/Create']").TextContent.Trim()
+                index.RequiredElement("a[href='/stellaradmin/products/Create']").TextContent.Trim()
             )
             .IsEqualTo(indexCreateLabel);
         await Assert
@@ -135,7 +135,7 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -168,7 +168,7 @@ public class ResourceConfigurationTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert

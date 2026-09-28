@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -12,16 +14,31 @@ namespace StellarAdmin.Dashboard;
 /// <summary>
 ///     Registers Dashboard resources.
 /// </summary>
-public static class StellarAdminDashboardBuilderExtensions
+public static partial class StellarAdminDashboardBuilderExtensions
 {
     extension(StellarAdminDashboardBuilder builder)
     {
         /// <summary>
         ///     Adds a resource.
         /// </summary>
-        public ResourceBuilder<TResource> AddResource<TResource>()
+        /// <remarks>
+        ///     The resource's URL slug defaults to the kebab-case plural of the resource type's
+        ///     name, e.g. <c>order-items</c> for <c>OrderItem</c>.
+        /// </remarks>
+        public ResourceBuilder<TResource> AddResource<TResource>() =>
+            builder.AddResource<TResource>(DefaultSlug<TResource>());
+
+        /// <summary>
+        ///     Adds a resource under the specified URL slug.
+        /// </summary>
+        /// <param name="slug">
+        ///     The resource's URL segment: lowercase letters and digits, optionally separated by
+        ///     single hyphens.
+        /// </param>
+        public ResourceBuilder<TResource> AddResource<TResource>(string slug)
         {
             ArgumentNullException.ThrowIfNull(builder);
+            ValidateSlug(slug);
 
             builder.Services.AddOptions<ResourceLabelOptions>();
             builder
@@ -84,10 +101,7 @@ public static class StellarAdminDashboardBuilderExtensions
                             && typeof(IResourceDeleteHandler<TResource>).IsAssignableFrom(type),
                     "Delete configuration requires a data source implementing IResourceDeleteHandler."
                 );
-            builder.AddController(
-                typeof(ResourceController<TResource>),
-                typeof(TResource).Name.Split('`')[0]
-            );
+            builder.AddController(typeof(ResourceController<TResource>), slug);
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<ISidebarItemsProvider, ResourceSidebarItemsProvider>()
@@ -103,7 +117,7 @@ public static class StellarAdminDashboardBuilderExtensions
                 builder.Services.AddSingleton(
                     new ResourceRegistration(
                         typeof(ResourceController<TResource>),
-                        typeof(TResource).Name.Split('`')[0],
+                        slug,
                         services =>
                         {
                             var options = services
@@ -147,6 +161,27 @@ public static class StellarAdminDashboardBuilderExtensions
         }
 
         /// <summary>
+        ///     Adds and configures a resource under the specified URL slug.
+        /// </summary>
+        /// <param name="slug">
+        ///     The resource's URL segment: lowercase letters and digits, optionally separated by
+        ///     single hyphens.
+        /// </param>
+        /// <param name="configure">Configures the resource.</param>
+        public StellarAdminDashboardBuilder AddResource<TResource>(
+            string slug,
+            Action<ResourceBuilder<TResource>> configure
+        )
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(configure);
+
+            configure(builder.AddResource<TResource>(slug));
+
+            return builder;
+        }
+
+        /// <summary>
         ///     Configures default page text for resources.
         /// </summary>
         public StellarAdminDashboardBuilder ConfigureResourceLabels(
@@ -174,4 +209,22 @@ public static class StellarAdminDashboardBuilderExtensions
             return builder;
         }
     }
+
+    private static string DefaultSlug<TResource>() =>
+        typeof(TResource).Name.Split('`')[0].Kebaberize().Pluralize();
+
+    private static void ValidateSlug(string slug)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(slug);
+        if (!SlugPattern().IsMatch(slug))
+        {
+            throw new ArgumentException(
+                "Use lowercase letters and digits, optionally separated by single hyphens.",
+                nameof(slug)
+            );
+        }
+    }
+
+    [GeneratedRegex("^[a-z0-9]+(?:-[a-z0-9]+)*$")]
+    private static partial Regex SlugPattern();
 }

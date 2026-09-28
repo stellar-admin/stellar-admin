@@ -27,7 +27,7 @@ public class ResourceScopesTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product" + query);
+        var document = await client.GetDocumentAsync("/stellaradmin/products" + query);
 
         // Assert
         await Assert.That(state.ListRequests.Single().Scope).IsEqualTo(expectedScope);
@@ -43,7 +43,7 @@ public class ResourceScopesTests
                     .RequiredElement("#index-page-scopes [aria-selected='true']")
                     .GetAttribute("href")
             )
-            .Contains(expectedScope == "all" ? "/stellaradmin/Product" : "scope=" + expectedScope);
+            .Contains(expectedScope == "all" ? "/stellaradmin/products" : "scope=" + expectedScope);
     }
 
     [Test]
@@ -55,7 +55,7 @@ public class ResourceScopesTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product?scope=under-50");
+        var document = await client.GetDocumentAsync("/stellaradmin/products?scope=under-50");
 
         // Assert
         await Assert.That(state.ListRequests.Single().Scope).IsNull();
@@ -73,7 +73,7 @@ public class ResourceScopesTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?page=2&pageSize=2&sortBy=Name&sortDirection=desc&search=lamp"
+            "/stellaradmin/products?page=2&pageSize=2&sortBy=Name&sortDirection=desc&search=lamp"
         );
         var target = document
             .RequiredElement("#index-page-scopes a[href*='scope=under-50']")
@@ -84,7 +84,7 @@ public class ResourceScopesTests
         await Assert
             .That(target)
             .IsEqualTo(
-                "/stellaradmin/Product?scope=under-50&search=lamp&sortBy=Name&sortDirection=desc&pageSize=2"
+                "/stellaradmin/products?scope=under-50&search=lamp&sortBy=Name&sortDirection=desc&pageSize=2"
             );
         await Assert.That(state.ListRequests.Last().Scope).IsEqualTo("under-50");
         await Assert.That(state.ListRequests.Last().Search).IsEqualTo("lamp");
@@ -104,13 +104,13 @@ public class ResourceScopesTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?scope=50-and-over&search=lamp"
+            "/stellaradmin/products?scope=50-and-over&search=lamp"
         );
         var searchUrl = document.RequiredElement("input[name='search']").GetAttribute("hx-get")!;
         var cleared = await client.GetDocumentAsync(searchUrl + "&search=");
 
         // Assert
-        await Assert.That(searchUrl).IsEqualTo("/stellaradmin/Product?scope=50-and-over");
+        await Assert.That(searchUrl).IsEqualTo("/stellaradmin/products?scope=50-and-over");
         await Assert.That(state.ListRequests.Last().Scope).IsEqualTo("50-and-over");
         await Assert.That(state.ListRequests.Last().Search).IsNull();
         foreach (
@@ -123,7 +123,7 @@ public class ResourceScopesTests
         }
 
         var all = document.RequiredElement("#index-page-scopes a");
-        await Assert.That(all.GetAttribute("href")).IsEqualTo("/stellaradmin/Product?search=lamp");
+        await Assert.That(all.GetAttribute("href")).IsEqualTo("/stellaradmin/products?search=lamp");
     }
 
     [Test]
@@ -147,7 +147,7 @@ public class ResourceScopesTests
             }
         );
         using var client = sut.GetTestClient();
-        const string url = "/stellaradmin/Product?scope=under-50";
+        const string url = "/stellaradmin/products?scope=under-50";
         var document = await client.GetDocumentAsync(url);
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(await PrepareForm(client, url));
@@ -156,7 +156,7 @@ public class ResourceScopesTests
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/Product/Delete/1?scope=under-50");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/1?scope=under-50");
         if (rejected)
         {
             var result = await response.ReadDocumentAsync();
@@ -176,7 +176,7 @@ public class ResourceScopesTests
         {
             await Assert
                 .That(response.Headers.Location?.OriginalString)
-                .IsEqualTo("/stellaradmin/Product?scope=under-50");
+                .IsEqualTo("/stellaradmin/products?scope=under-50");
         }
     }
 
@@ -189,14 +189,14 @@ public class ResourceScopesTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?page=9&scope=50-and-over"
+            "/stellaradmin/products?page=9&scope=50-and-over"
         );
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&scope=50-and-over");
+            .IsEqualTo("/stellaradmin/products?page=2&scope=50-and-over");
     }
 
     private static void ConfigureScopes(ResourceBuilder<Product> resource) =>

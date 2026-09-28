@@ -46,7 +46,7 @@ public class ResourceScopesTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product" + query);
+        using var response = await client.GetAsync("/stellaradmin/products" + query);
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -104,7 +104,7 @@ public class ResourceScopesTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?scope=old");
+        using var response = await client.GetAsync("/stellaradmin/products?scope=old");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -140,13 +140,13 @@ public class ResourceScopesTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?scope=expensive&search=Apple&page=4"
+            "/stellaradmin/products?scope=expensive&search=Apple&page=4"
         );
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=1&search=Apple&scope=expensive");
+            .IsEqualTo("/stellaradmin/products?page=1&search=Apple&scope=expensive");
     }
 }

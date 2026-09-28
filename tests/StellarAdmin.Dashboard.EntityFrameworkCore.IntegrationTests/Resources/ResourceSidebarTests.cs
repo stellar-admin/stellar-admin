@@ -18,7 +18,7 @@ public class ResourceSidebarTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -40,6 +40,6 @@ public class ResourceSidebarTests
                     .QuerySelector("[data-slot='sidebar-group'] [data-slot='sidebar-menu-button']")
                     ?.GetAttribute("href")
             )
-            .IsEqualTo("/stellaradmin/Product");
+            .IsEqualTo("/stellaradmin/products");
     }
 }

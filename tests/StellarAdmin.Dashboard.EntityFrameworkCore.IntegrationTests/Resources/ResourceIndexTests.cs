@@ -31,13 +31,13 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=3");
+        using var response = await client.GetAsync("/stellaradmin/products?page=3");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2");
+            .IsEqualTo("/stellaradmin/products?page=2");
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync($"/stellaradmin/Product/{action}");
+        using var response = await client.GetAsync($"/stellaradmin/products/{action}");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
@@ -69,7 +69,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -89,7 +89,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=invalid");
+        using var response = await client.GetAsync("/stellaradmin/products?page=invalid");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
@@ -105,7 +105,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -154,7 +154,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync($"/stellaradmin/Product?page=2{sort}");
+        using var response = await client.GetAsync($"/stellaradmin/products?page=2{sort}");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -193,7 +193,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?sortBy=Hidden");
+        using var response = await client.GetAsync("/stellaradmin/products?sortBy=Hidden");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );

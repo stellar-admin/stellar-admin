@@ -14,7 +14,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -35,7 +35,7 @@ public class ResourceIndexTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -44,7 +44,7 @@ public class ResourceIndexTests
         await Assert
             .That(
                 document
-                    .RequiredElement("a[href='/stellaradmin/Product/Create']")
+                    .RequiredElement("a[href='/stellaradmin/products/Create']")
                     .TextContent.Trim()
             )
             .IsEqualTo("Create");

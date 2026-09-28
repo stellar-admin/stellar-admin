@@ -13,7 +13,7 @@ public class DashboardThemeTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -56,7 +56,7 @@ public class DashboardThemeTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -85,7 +85,7 @@ public class DashboardThemeTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
         var fontLink = document.RequiredElement("link[href^='https://fonts.googleapis.com/css2']");
 
         // Assert

@@ -47,7 +47,7 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product" + query);
+        using var response = await client.GetAsync("/stellaradmin/products" + query);
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -115,7 +115,7 @@ public class ResourceSortingTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?sortBy=Name&sortDirection=desc"
+            "/stellaradmin/products?sortBy=Name&sortDirection=desc"
         );
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()

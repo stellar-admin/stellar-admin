@@ -21,13 +21,13 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=9&pageSize=2");
+        using var response = await client.GetAsync("/stellaradmin/products?page=9&pageSize=2");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo($"/stellaradmin/Product?page={lastPage}&pageSize=2");
+            .IsEqualTo($"/stellaradmin/products?page={lastPage}&pageSize=2");
         var document = await client.GetDocumentAsync(response.Headers.Location!.OriginalString);
         await Assert
             .That(document.QuerySelector("[data-slot='empty-title']") is not null)
@@ -48,7 +48,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(state.ListRequests.Single().Paging).IsEqualTo(new ResourcePaging(1, 25));
@@ -72,25 +72,25 @@ public class ResourcePagingTests
             }
         );
         using var client = sut.GetTestClient();
-        var document = await client.GetDocumentAsync("/stellaradmin/Product?page=3&pageSize=2");
+        var document = await client.GetDocumentAsync("/stellaradmin/products?page=3&pageSize=2");
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(
-            await PrepareForm(client, "/stellaradmin/Product?page=3&pageSize=2")
+            await PrepareForm(client, "/stellaradmin/products?page=3&pageSize=2")
         );
 
         // Act
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/Product/Delete/5?page=3&pageSize=2");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/5?page=3&pageSize=2");
         await Assert.That(state.Products.Count).IsEqualTo(4);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=3&pageSize=2");
+            .IsEqualTo("/stellaradmin/products?page=3&pageSize=2");
         using var index = await client.GetAsync(response.Headers.Location!.OriginalString);
         await Assert
             .That(index.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&pageSize=2");
+            .IsEqualTo("/stellaradmin/products?page=2&pageSize=2");
         var lastPage = await client.GetDocumentAsync(index.Headers.Location!.OriginalString);
         await Assert
             .That(lastPage.RequiredElement("tbody td").TextContent.Trim())
@@ -106,7 +106,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product?page=2&pageSize=1");
+        var document = await client.GetDocumentAsync("/stellaradmin/products?page=2&pageSize=1");
 
         // Assert
         await Assert.That(document.QuerySelectorAll("tbody tr").Length).IsEqualTo(5);
@@ -126,7 +126,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?" + query);
+        using var response = await client.GetAsync("/stellaradmin/products?" + query);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
@@ -148,7 +148,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?" + query);
+        using var response = await client.GetAsync("/stellaradmin/products?" + query);
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
@@ -173,7 +173,7 @@ public class ResourcePagingTests
         );
         using var client = sut.GetTestClient();
         using var content = new FormUrlEncodedContent(
-            await PrepareForm(client, "/stellaradmin/Product?page=3&pageSize=2")
+            await PrepareForm(client, "/stellaradmin/products?page=3&pageSize=2")
         );
         if (pageDisappeared)
         {
@@ -182,7 +182,7 @@ public class ResourcePagingTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Delete/5?page=3&pageSize=2",
+            "/stellaradmin/products/Delete/5?page=3&pageSize=2",
             content
         );
 
@@ -222,7 +222,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product" + query);
+        var document = await client.GetDocumentAsync("/stellaradmin/products" + query);
 
         // Assert
         await Assert
@@ -250,13 +250,13 @@ public class ResourcePagingTests
             )
             .IsEqualTo(
                 query.Contains("pageSize=")
-                    ? $"/stellaradmin/Product?page=1&pageSize={pageSize}"
-                    : "/stellaradmin/Product?page=1"
+                    ? $"/stellaradmin/products?page=1&pageSize={pageSize}"
+                    : "/stellaradmin/products?page=1"
             );
         await Assert
             .That(
                 document.QuerySelector(
-                    "[data-slot='data-grid-page-size'] a[href='/stellaradmin/Product?page=1&pageSize=3']"
+                    "[data-slot='data-grid-page-size'] a[href='/stellaradmin/products?page=1&pageSize=3']"
                 )
             )
             .IsNotNull();
@@ -276,7 +276,7 @@ public class ResourcePagingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert

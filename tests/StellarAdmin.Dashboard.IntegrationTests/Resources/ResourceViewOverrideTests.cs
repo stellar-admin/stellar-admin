@@ -32,7 +32,7 @@ public class ResourceViewOverrideTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/CustomProduct" + action);
+        var document = await client.GetDocumentAsync("/stellaradmin/custom-products" + action);
 
         // Assert
         await Assert

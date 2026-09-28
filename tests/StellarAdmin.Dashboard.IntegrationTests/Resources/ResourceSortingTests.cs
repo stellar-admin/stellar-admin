@@ -33,7 +33,7 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product" + query);
+        var document = await client.GetDocumentAsync("/stellaradmin/products" + query);
 
         // Assert
         await Assert
@@ -60,7 +60,7 @@ public class ResourceSortingTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?page=2&pageSize=2&sortBy=Price&sortDirection=desc"
+            "/stellaradmin/products?page=2&pageSize=2&sortBy=Price&sortDirection=desc"
         );
         var sortLink = document
             .RequiredElement("[data-slot='data-grid-sort-link'][data-active='true']")
@@ -92,8 +92,8 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var first = await client.GetDocumentAsync("/stellaradmin/Product?sortBy=Price");
-        var second = await client.GetDocumentAsync("/stellaradmin/Product?sortBy=Price&page=2");
+        var first = await client.GetDocumentAsync("/stellaradmin/products?sortBy=Price");
+        var second = await client.GetDocumentAsync("/stellaradmin/products?sortBy=Price&page=2");
 
         // Assert
         await Assert
@@ -123,7 +123,7 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         await Assert
@@ -145,7 +145,7 @@ public class ResourceSortingTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?sortBy=Name&sortDirection=desc"
+            "/stellaradmin/products?sortBy=Name&sortDirection=desc"
         );
 
         // Assert
@@ -163,7 +163,7 @@ public class ResourceSortingTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?sortBy=Name&sortDirection=invalid"
+            "/stellaradmin/products?sortBy=Name&sortDirection=invalid"
         );
 
         // Assert
@@ -192,7 +192,7 @@ public class ResourceSortingTests
         );
         using var client = sut.GetTestClient();
         const string url =
-            "/stellaradmin/Product?page=2&pageSize=2&sortBy=Price&sortDirection=desc";
+            "/stellaradmin/products?page=2&pageSize=2&sortBy=Price&sortDirection=desc";
         var document = await client.GetDocumentAsync(url);
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(await PrepareForm(client, url));
@@ -230,13 +230,13 @@ public class ResourceSortingTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?page=9&sortBy=Price&sortDirection=desc"
+            "/stellaradmin/products?page=9&sortBy=Price&sortDirection=desc"
         );
 
         // Assert
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&sortBy=Price&sortDirection=desc");
+            .IsEqualTo("/stellaradmin/products?page=2&sortBy=Price&sortDirection=desc");
     }
 
     [Test]
@@ -247,14 +247,14 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
         var nextLink = document
             .RequiredElement("a[aria-label='Go to next page']")
             .GetAttribute("href")!;
         var secondPage = await client.GetDocumentAsync(nextLink);
 
         // Assert
-        await Assert.That(nextLink).IsEqualTo("/stellaradmin/Product?page=2");
+        await Assert.That(nextLink).IsEqualTo("/stellaradmin/products?page=2");
         await Assert
             .That(secondPage.RequiredElement("th[aria-sort]").GetAttribute("aria-sort"))
             .IsEqualTo("ascending");
@@ -264,12 +264,12 @@ public class ResourceSortingTests
                     .RequiredElement("[data-slot='data-grid-sort-link'][data-active='true']")
                     .GetAttribute("href")
             )
-            .IsEqualTo("/stellaradmin/Product?sortBy=Name&sortDirection=desc");
+            .IsEqualTo("/stellaradmin/products?sortBy=Name&sortDirection=desc");
         await Assert
             .That(
                 document.RequiredElement("[data-slot='data-grid-page-size'] a").GetAttribute("href")
             )
-            .IsEqualTo("/stellaradmin/Product?page=1&pageSize=2");
+            .IsEqualTo("/stellaradmin/products?page=1&pageSize=2");
     }
 
     [Test]
@@ -293,17 +293,17 @@ public class ResourceSortingTests
             }
         );
         using var client = sut.GetTestClient();
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(
-            await PrepareForm(client, "/stellaradmin/Product")
+            await PrepareForm(client, "/stellaradmin/products")
         );
 
         // Act
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/Product/Delete/2");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/2");
         if (rejected)
         {
             var result = await response.ReadDocumentAsync();
@@ -314,13 +314,13 @@ public class ResourceSortingTests
                 .That(
                     result.RequiredElement("a[aria-label='Go to next page']").GetAttribute("href")
                 )
-                .IsEqualTo("/stellaradmin/Product?page=2");
+                .IsEqualTo("/stellaradmin/products?page=2");
         }
         else
         {
             await Assert
                 .That(response.Headers.Location?.OriginalString)
-                .IsEqualTo("/stellaradmin/Product");
+                .IsEqualTo("/stellaradmin/products");
         }
     }
 
@@ -332,12 +332,12 @@ public class ResourceSortingTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=9");
+        using var response = await client.GetAsync("/stellaradmin/products?page=9");
 
         // Assert
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2");
+            .IsEqualTo("/stellaradmin/products?page=2");
     }
 
     private static void ConfigureSorting(ResourceBuilder<Product> resource) =>

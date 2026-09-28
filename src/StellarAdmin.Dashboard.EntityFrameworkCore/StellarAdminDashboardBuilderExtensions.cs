@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
@@ -13,6 +14,10 @@ public static class StellarAdminDashboardBuilderExtensions
     /// <summary>
     ///     Adds an EF Core resource.
     /// </summary>
+    /// <remarks>
+    ///     The resource's URL slug defaults to the kebab-case plural of the entity type's name,
+    ///     e.g. <c>order-items</c> for <c>OrderItem</c>.
+    /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminDashboardBuilder builder
     )
@@ -21,7 +26,78 @@ public static class StellarAdminDashboardBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        var resource = builder.AddResource<TEntity>();
+        return ConfigureEfCoreResource<TContext, TEntity>(builder, builder.AddResource<TEntity>());
+    }
+
+    /// <summary>
+    ///     Adds an EF Core resource under the specified URL slug.
+    /// </summary>
+    /// <param name="builder">The Dashboard builder.</param>
+    /// <param name="slug">
+    ///     The resource's URL segment: lowercase letters and digits, optionally separated by
+    ///     single hyphens.
+    /// </param>
+    public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
+        this StellarAdminDashboardBuilder builder,
+        string slug
+    )
+        where TContext : DbContext
+        where TEntity : class
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        return ConfigureEfCoreResource<TContext, TEntity>(
+            builder,
+            builder.AddResource<TEntity>(slug)
+        );
+    }
+
+    /// <summary>
+    ///     Adds and configures an EF Core resource.
+    /// </summary>
+    public static StellarAdminDashboardBuilder AddEfCoreResource<TContext, TEntity>(
+        this StellarAdminDashboardBuilder builder,
+        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+    )
+        where TContext : DbContext
+        where TEntity : class
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(builder.AddEfCoreResource<TContext, TEntity>());
+
+        return builder;
+    }
+
+    /// <summary>
+    ///     Adds and configures an EF Core resource under the specified URL slug.
+    /// </summary>
+    /// <param name="builder">The Dashboard builder.</param>
+    /// <param name="slug">
+    ///     The resource's URL segment: lowercase letters and digits, optionally separated by
+    ///     single hyphens.
+    /// </param>
+    /// <param name="configure">Configures the resource.</param>
+    public static StellarAdminDashboardBuilder AddEfCoreResource<TContext, TEntity>(
+        this StellarAdminDashboardBuilder builder,
+        string slug,
+        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
+    )
+        where TContext : DbContext
+        where TEntity : class
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(builder.AddEfCoreResource<TContext, TEntity>(slug));
+
+        return builder;
+    }
+
+    private static EfCoreResourceBuilder<TContext, TEntity> ConfigureEfCoreResource<
+        TContext,
+        TEntity
+    >(this StellarAdminDashboardBuilder builder, ResourceBuilder<TEntity> resource)
+        where TContext : DbContext
+        where TEntity : class
+    {
         resource.UseDataSource<EfCoreResourceDataSource<TContext, TEntity>>();
         builder
             .Services.AddOptions<ResourceOptions<TEntity>>()
@@ -67,22 +143,6 @@ public static class StellarAdminDashboardBuilderExtensions
             );
 
         return new(builder.Services);
-    }
-
-    /// <summary>
-    ///     Adds and configures an EF Core resource.
-    /// </summary>
-    public static StellarAdminDashboardBuilder AddEfCoreResource<TContext, TEntity>(
-        this StellarAdminDashboardBuilder builder,
-        Action<EfCoreResourceBuilder<TContext, TEntity>> configure
-    )
-        where TContext : DbContext
-        where TEntity : class
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-        configure(builder.AddEfCoreResource<TContext, TEntity>());
-
-        return builder;
     }
 
     private static void ValidateEntityFormFields<TEntity>(

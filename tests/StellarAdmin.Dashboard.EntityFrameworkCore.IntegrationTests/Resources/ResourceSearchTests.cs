@@ -40,7 +40,7 @@ public class ResourceSearchTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?search=" + Uri.EscapeDataString(term)
+            "/stellaradmin/products?search=" + Uri.EscapeDataString(term)
         );
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
@@ -94,7 +94,7 @@ public class ResourceSearchTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?search=Apple");
+        using var response = await client.GetAsync("/stellaradmin/products?search=Apple");
         var document = await new HtmlParser().ParseDocumentAsync(
             await response.Content.ReadAsStringAsync()
         );
@@ -126,12 +126,12 @@ public class ResourceSearchTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=4&search=Apple");
+        using var response = await client.GetAsync("/stellaradmin/products?page=4&search=Apple");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&search=Apple");
+            .IsEqualTo("/stellaradmin/products?page=2&search=Apple");
     }
 }

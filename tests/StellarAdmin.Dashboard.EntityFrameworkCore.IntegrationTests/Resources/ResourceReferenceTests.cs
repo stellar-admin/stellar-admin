@@ -59,7 +59,7 @@ public class ResourceReferenceTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?sortBy=CategoryId&sortDirection=asc"
+            "/stellaradmin/products?sortBy=CategoryId&sortDirection=asc"
         );
         var document = await ReadDocument(response);
 
@@ -85,7 +85,7 @@ public class ResourceReferenceTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product/Create");
+        using var response = await client.GetAsync("/stellaradmin/products/Create");
         var document = await ReadDocument(response);
 
         // Assert
@@ -123,7 +123,7 @@ public class ResourceReferenceTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product/Create");
+        using var response = await client.GetAsync("/stellaradmin/products/Create");
         var document = await ReadDocument(response);
 
         // Assert
@@ -142,7 +142,7 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceCreate);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/Create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
         values["Entity.CategoryId"] = "2";
@@ -150,7 +150,7 @@ public class ResourceReferenceTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Create",
+            "/stellaradmin/products/Create",
             new FormUrlEncodedContent(values)
         );
 
@@ -171,7 +171,7 @@ public class ResourceReferenceTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product/Edit/1");
+        using var response = await client.GetAsync("/stellaradmin/products/Edit/1");
         var document = await ReadDocument(response);
 
         // Assert
@@ -191,13 +191,13 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureReferenceEdit);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/1");
+        var values = await PrepareForm(client, "/stellaradmin/products/Edit/1");
         values["Entity.CategoryId"] = "3";
         values["Entity.Name"] = "Forged";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Edit/1",
+            "/stellaradmin/products/Edit/1",
             new FormUrlEncodedContent(values)
         );
 
@@ -216,15 +216,15 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
         using var client = sut.GetTestClient();
-        using var form = await client.GetAsync("/stellaradmin/Product/Create");
+        using var form = await client.GetAsync("/stellaradmin/products/Create");
         var document = await ReadDocument(form);
-        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/Create");
         values["Entity.Name"] = "Custom product";
         values["Entity.CategoryId"] = "2";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Create",
+            "/stellaradmin/products/Create",
             new FormUrlEncodedContent(values)
         );
 
@@ -246,12 +246,12 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(ConfigureCustomCreate);
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/Create");
         values["Entity.CategoryId"] = "2";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Create",
+            "/stellaradmin/products/Create",
             new FormUrlEncodedContent(values)
         );
         var document = await ReadDocument(response);

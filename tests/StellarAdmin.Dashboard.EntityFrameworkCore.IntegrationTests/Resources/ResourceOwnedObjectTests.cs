@@ -28,7 +28,7 @@ public class ResourceOwnedObjectTests
 
         // Act
         using var response = await client.GetAsync(
-            "/stellaradmin/Product?sortBy=Details.Sku&sortDirection=desc"
+            "/stellaradmin/products?sortBy=Details.Sku&sortDirection=desc"
         );
         var document = await ReadDocument(response);
 
@@ -65,7 +65,7 @@ public class ResourceOwnedObjectTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
         var document = await ReadDocument(response);
 
         // Assert
@@ -97,7 +97,7 @@ public class ResourceOwnedObjectTests
             )
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Create");
+        var values = await PrepareForm(client, "/stellaradmin/products/Create");
         values["Entity.Name"] = "New product";
         values["Entity.Price"] = "25";
         values["Entity.Details.Sku"] = "N-6";
@@ -105,7 +105,7 @@ public class ResourceOwnedObjectTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Create",
+            "/stellaradmin/products/Create",
             new FormUrlEncodedContent(values)
         );
 
@@ -133,14 +133,14 @@ public class ResourceOwnedObjectTests
             )
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/2");
+        var values = await PrepareForm(client, "/stellaradmin/products/Edit/2");
         values["Entity.Details.Sku"] = "NEW-2";
         values["Entity.Details.InternalNote"] = "Forged";
         values["Entity.Name"] = "Forged";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Edit/2",
+            "/stellaradmin/products/Edit/2",
             new FormUrlEncodedContent(values)
         );
 
@@ -166,7 +166,7 @@ public class ResourceOwnedObjectTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product/Edit/2");
+        using var response = await client.GetAsync("/stellaradmin/products/Edit/2");
         var document = await ReadDocument(response);
 
         // Assert
@@ -186,12 +186,12 @@ public class ResourceOwnedObjectTests
             )
         );
         using var client = sut.GetTestClient();
-        var values = await PrepareForm(client, "/stellaradmin/Product/Edit/2");
+        var values = await PrepareForm(client, "/stellaradmin/products/Edit/2");
         values["Entity.Details.Sku"] = "SKU-TOO-LONG";
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Edit/2",
+            "/stellaradmin/products/Edit/2",
             new FormUrlEncodedContent(values)
         );
         var document = await ReadDocument(response);

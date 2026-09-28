@@ -28,7 +28,7 @@ public class ResourceSearchTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?search=" + Uri.EscapeDataString(term)
+            "/stellaradmin/products?search=" + Uri.EscapeDataString(term)
         );
 
         // Assert
@@ -53,7 +53,7 @@ public class ResourceSearchTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product?search=missing");
+        var document = await client.GetDocumentAsync("/stellaradmin/products?search=missing");
 
         // Assert
         await Assert.That(state.ListRequests.Single().Search).IsNull();
@@ -92,7 +92,7 @@ public class ResourceSearchTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/Product");
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
         var input = document.RequiredElement("input[name='search']");
@@ -110,7 +110,7 @@ public class ResourceSearchTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/Product?page=2&pageSize=2&sortBy=Name&sortDirection=desc&search=lamp"
+            "/stellaradmin/products?page=2&pageSize=2&sortBy=Name&sortDirection=desc&search=lamp"
         );
         var target = document.RequiredElement("input[name='search']").GetAttribute("hx-get")!;
         var cleared = await client.GetDocumentAsync(target + "&search=");
@@ -118,7 +118,7 @@ public class ResourceSearchTests
         // Assert
         await Assert
             .That(target)
-            .IsEqualTo("/stellaradmin/Product?sortBy=Name&sortDirection=desc&pageSize=2");
+            .IsEqualTo("/stellaradmin/products?sortBy=Name&sortDirection=desc&pageSize=2");
         await Assert.That(state.ListRequests.Last().Search).IsNull();
         await Assert.That(state.ListRequests.Last().Paging).IsEqualTo(new ResourcePaging(1, 2));
         await Assert
@@ -158,7 +158,7 @@ public class ResourceSearchTests
             }
         );
         using var client = sut.GetTestClient();
-        const string url = "/stellaradmin/Product?search=lamp";
+        const string url = "/stellaradmin/products?search=lamp";
         var document = await client.GetDocumentAsync(url);
         var action = document.RequiredElement("form[data-resource-delete]").GetAttribute("action")!;
         using var content = new FormUrlEncodedContent(await PrepareForm(client, url));
@@ -167,7 +167,7 @@ public class ResourceSearchTests
         using var response = await client.PostAsync(action, content);
 
         // Assert
-        await Assert.That(action).IsEqualTo("/stellaradmin/Product/Delete/1?search=lamp");
+        await Assert.That(action).IsEqualTo("/stellaradmin/products/Delete/1?search=lamp");
         if (rejected)
         {
             var result = await response.ReadDocumentAsync();
@@ -183,7 +183,7 @@ public class ResourceSearchTests
         {
             await Assert
                 .That(response.Headers.Location?.OriginalString)
-                .IsEqualTo("/stellaradmin/Product?search=lamp");
+                .IsEqualTo("/stellaradmin/products?search=lamp");
         }
     }
 
@@ -195,13 +195,13 @@ public class ResourceSearchTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product?page=9&search=lamp");
+        using var response = await client.GetAsync("/stellaradmin/products?page=9&search=lamp");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
         await Assert
             .That(response.Headers.Location?.OriginalString)
-            .IsEqualTo("/stellaradmin/Product?page=2&search=lamp");
+            .IsEqualTo("/stellaradmin/products?page=2&search=lamp");
     }
 
     private static void ConfigureSearch(ResourceBuilder<Product> resource) =>

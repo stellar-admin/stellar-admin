@@ -44,6 +44,42 @@ public class StellarAdminDashboardBuilderExtensionsTests
     }
 
     [Test]
+    [Arguments("")]
+    [Arguments(" ")]
+    [Arguments("Products")]
+    [Arguments("order_items")]
+    [Arguments("order--items")]
+    [Arguments("-products")]
+    [Arguments("catalog/products")]
+    public async Task AddResource_WithInvalidSlug_ThrowsArgumentException(string slug)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard();
+
+        // Act
+        Action act = () => sut.AddResource<Product>(slug);
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    public async Task AddResource_WithSlugOfAnotherResource_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard();
+        sut.AddResource<Product>();
+
+        // Act
+        Action act = () => sut.AddResource<InventoryItem>("products");
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
     [Arguments("", true)]
     [Arguments(" ", true)]
     [Arguments("", false)]

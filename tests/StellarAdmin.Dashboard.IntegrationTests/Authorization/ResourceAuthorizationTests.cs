@@ -9,9 +9,9 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Authorization;
 public class ResourceAuthorizationTests
 {
     [Test]
-    [Arguments("/stellaradmin/Product", HttpStatusCode.Unauthorized)]
-    [Arguments("/stellaradmin/Product/Create", HttpStatusCode.Unauthorized)]
-    [Arguments("/stellaradmin/CustomProduct", HttpStatusCode.OK)]
+    [Arguments("/stellaradmin/products", HttpStatusCode.Unauthorized)]
+    [Arguments("/stellaradmin/products/Create", HttpStatusCode.Unauthorized)]
+    [Arguments("/stellaradmin/custom-products", HttpStatusCode.OK)]
     [Arguments("/stellaradmin", HttpStatusCode.OK)]
     public async Task RequiredAuthorization_AnonymousRequest_ProtectsOnlyThatResource(
         string url,
@@ -38,7 +38,7 @@ public class ResourceAuthorizationTests
     }
 
     [Test]
-    [Arguments("/stellaradmin/Product", HttpStatusCode.Forbidden)]
+    [Arguments("/stellaradmin/products", HttpStatusCode.Forbidden)]
     [Arguments("/stellaradmin", HttpStatusCode.OK)]
     public async Task DashboardAndResourceRequirements_UserMissingResourceRole_AppliesBoth(
         string url,
@@ -76,7 +76,7 @@ public class ResourceAuthorizationTests
         TestAuthenticationHandler.SignIn(client, "ada", "Staff", "Catalog");
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -112,17 +112,17 @@ public class ResourceAuthorizationTests
         TestAuthenticationHandler.SignIn(client, "ada", roles);
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(expectedStatusCode);
     }
 
     [Test]
-    [Arguments(new string[0], new[] { "/stellaradmin/CustomProduct" })]
+    [Arguments(new string[0], new[] { "/stellaradmin/custom-products" })]
     [Arguments(
         new[] { "Catalog" },
-        new[] { "/stellaradmin/Product", "/stellaradmin/CustomProduct" }
+        new[] { "/stellaradmin/products", "/stellaradmin/custom-products" }
     )]
     public async Task RequiredAuthorization_SidebarForUser_ShowsOnlyAuthorizedResources(
         string[] roles,

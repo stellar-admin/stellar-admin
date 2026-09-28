@@ -23,7 +23,7 @@ public class ResourceCapabilitiesTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/InventoryItem");
+        var document = await client.GetDocumentAsync("/stellaradmin/inventory-items");
 
         // Assert
         await Assert.That(document.Body!.TextContent).Contains("Read-only item");
@@ -55,9 +55,9 @@ public class ResourceCapabilitiesTests
         using var content = new FormUrlEncodedContent(values);
 
         // Act
-        using var get = await client.GetAsync($"/stellaradmin/InventoryItem/{action}{key}");
+        using var get = await client.GetAsync($"/stellaradmin/inventory-items/{action}{key}");
         using var post = await client.PostAsync(
-            $"/stellaradmin/InventoryItem/{action}{key}",
+            $"/stellaradmin/inventory-items/{action}{key}",
             content
         );
 

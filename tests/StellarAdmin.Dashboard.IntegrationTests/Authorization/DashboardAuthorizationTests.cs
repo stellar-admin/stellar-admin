@@ -11,8 +11,8 @@ public class DashboardAuthorizationTests
 {
     [Test]
     [Arguments("/stellaradmin")]
-    [Arguments("/stellaradmin/Product")]
-    [Arguments("/stellaradmin/Product/Create")]
+    [Arguments("/stellaradmin/products")]
+    [Arguments("/stellaradmin/products/Create")]
     public async Task RequiredAuthorization_AnonymousRequest_ReturnsUnauthorized(string url)
     {
         // Arrange
@@ -43,7 +43,7 @@ public class DashboardAuthorizationTests
         TestAuthenticationHandler.SignIn(client, "ada");
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -62,7 +62,7 @@ public class DashboardAuthorizationTests
 
         // Act
         using var response = await client.PostAsync(
-            "/stellaradmin/Product/Create",
+            "/stellaradmin/products/Create",
             new FormUrlEncodedContent(new Dictionary<string, string> { ["Name"] = "Tent" })
         );
 
@@ -162,7 +162,7 @@ public class DashboardAuthorizationTests
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/Product");
+        using var response = await client.GetAsync("/stellaradmin/products");
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
