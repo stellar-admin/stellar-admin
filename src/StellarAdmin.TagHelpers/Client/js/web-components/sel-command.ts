@@ -1,0 +1,334 @@
+import { LitElement } from "lit";
+import { customElement } from "lit/decorators.js";
+import { commandScore } from "./command-score";
+
+const ITEM = '[data-slot="command-item"]';
+const GROUP = '[data-slot="command-group"]';
+const SEPARATOR = '[data-slot="command-separator"]';
+
+/**
+ * Command palette web component rendered by the `sa-command` tag helper. Focus stays in the
+ * search input while the arrow keys move a highlighted item, announced to assistive technology
+ * through `aria-activedescendant`.
+ *
+ *   - `data-filter="client"` (default) fuzzy-filters and sorts the items as the user types
+ *   - `data-filter="none"` leaves the items alone so the developer can filter them, for example
+ *     on the server
+ *   - `data-loop="true"` wraps keyboard navigation at either end of the list
+ *
+ * Enter or a click activates an item (links navigate) and dispatches a bubbling `itemselect`
+ * event with the item's value in `detail.value`.
+ */
+@customElement("sel-command")
+export class Command extends LitElement {
+  override createRenderRoot() {
+    return this;
+  }
+
+  #dialog: HTMLDialogElement | null = null;
+  #itemCount = 0;
+  // Children of each container reordered by sorting, in their original order.
+  #originalOrder = new Map<Element, Element[]>();
+  #selected: HTMLElement | null = null;
+  #values = new WeakMap<HTMLElement, string>();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("input", this.#onInput);
+    this.addEventListener("keydown", this.#onKeydown);
+    this.addEventListener("click", this.#onClick);
+    this.addEventListener("mousedown", this.#onMousedown);
+    this.addEventListener("pointermove", this.#onPointerMove);
+    this.#dialog = this.closest("dialog");
+    this.#dialog?.addEventListener("close", this.#onDialogClose);
+    this.#refresh();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("input", this.#onInput);
+    this.removeEventListener("keydown", this.#onKeydown);
+    this.removeEventListener("click", this.#onClick);
+    this.removeEventListener("mousedown", this.#onMousedown);
+    this.removeEventListener("pointermove", this.#onPointerMove);
+    this.#dialog?.removeEventListener("close", this.#onDialogClose);
+    this.#dialog = null;
+  }
+
+  get #input() {
+    return this.querySelector<HTMLInputElement>('[data-slot="command-input"]');
+  }
+
+  get #list() {
+    return this.querySelector<HTMLElement>('[data-slot="command-list"]');
+  }
+
+  get #clientFiltering() {
+    return this.dataset.filter !== "none";
+  }
+
+  #items() {
+    return Array.from(this.querySelectorAll<HTMLElement>(ITEM));
+  }
+
+  /** Visible, enabled items in display order. */
+  #selectableItems() {
+    return this.#items().filter((item) => !item.hidden && !this.#isDisabled(item));
+  }
+
+  #isDisabled(item: HTMLElement) {
+    return item.dataset.disabled === "true";
+  }
+
+  /** The item's `data-value`, or its text without any shortcut. */
+  #valueOf(item: HTMLElement) {
+    if (item.dataset.value) {
+      return item.dataset.value;
+    }
+    let value = this.#values.get(item);
+    if (value === undefined) {
+      const copy = item.cloneNode(true) as HTMLElement;
+      copy.querySelectorAll('[data-slot="command-shortcut"]').forEach((el) => el.remove());
+      value = (copy.textContent ?? "").replace(/\s+/g, " ").trim();
+      this.#values.set(item, value);
+    }
+    return value;
+  }
+
+  #refresh() {
+    const prefix = this.id || "sel-command";
+    for (const item of this.#items()) {
+      if (!item.id) {
+        item.id = `${prefix}-item-${++this.#itemCount}`;
+      }
+    }
+    this.#filter();
+  }
+
+  #filter() {
+    const search = this.#clientFiltering ? (this.#input?.value ?? "").trim() : "";
+    const items = this.#items();
+
+    if (search) {
+      const scores = new Map<HTMLElement, number>();
+      for (const item of items) {
+        const score = commandScore(this.#valueOf(item), search, item.dataset.keywords ?? "");
+        scores.set(item, score);
+        item.hidden = score === 0;
+      }
+      this.#sort(scores);
+    } else if (this.#clientFiltering) {
+      for (const item of items) {
+        item.hidden = false;
+      }
+      this.#restoreOrder();
+    }
+
+    if (this.#clientFiltering) {
+      for (const group of this.querySelectorAll<HTMLElement>(GROUP)) {
+        group.hidden = !!search && !group.querySelector(`${ITEM}:not([hidden])`);
+      }
+      for (const separator of this.querySelectorAll<HTMLElement>(SEPARATOR)) {
+        separator.hidden = !!search;
+      }
+    }
+
+    const empty = this.querySelector<HTMLElement>('[data-slot="command-empty"]');
+    if (empty) {
+      empty.hidden = items.some((item) => !item.hidden);
+    }
+
+    this.#select(this.#selectableItems()[0] ?? null);
+  }
+
+  /**
+   * Sorts items by score within the slots they occupy in their container, so groups, separators
+   * and other children keep their authored positions.
+   */
+  #sort(scores: Map<HTMLElement, number>) {
+    const byContainer = new Map<Element, HTMLElement[]>();
+    for (const item of scores.keys()) {
+      const container = item.parentElement;
+      if (container) {
+        byContainer.set(container, [...(byContainer.get(container) ?? []), item]);
+      }
+    }
+    for (const [container, items] of byContainer) {
+      this.#rememberOrder(container);
+      const sorted = [...items].sort((a, b) => scores.get(b)! - scores.get(a)!);
+      const slots = items.map((item) => {
+        const slot = document.createComment("");
+        item.before(slot);
+        return slot;
+      });
+      slots.forEach((slot, index) => slot.replaceWith(sorted[index]));
+    }
+  }
+
+  #rememberOrder(container: Element) {
+    if (!this.#originalOrder.has(container)) {
+      this.#originalOrder.set(container, Array.from(container.children));
+    }
+  }
+
+  #restoreOrder() {
+    for (const [container, children] of this.#originalOrder) {
+      container.append(...children.filter((child) => child.parentElement === container));
+    }
+    this.#originalOrder.clear();
+  }
+
+  #select(item: HTMLElement | null, scroll = true) {
+    if (this.#selected && this.#selected !== item) {
+      this.#selected.removeAttribute("data-selected");
+      this.#selected.setAttribute("aria-selected", "false");
+    }
+    this.#selected = item;
+
+    const input = this.#input;
+    if (!item) {
+      input?.removeAttribute("aria-activedescendant");
+      return;
+    }
+
+    item.setAttribute("data-selected", "true");
+    item.setAttribute("aria-selected", "true");
+    input?.setAttribute("aria-activedescendant", item.id);
+    if (scroll) {
+      this.#scrollIntoList(item);
+    }
+  }
+
+  /**
+   * Scrolls the list (never the page) so the item is visible, along with its whole group heading
+   * when it is the group's first selectable item.
+   */
+  #scrollIntoList(item: HTMLElement) {
+    const list = this.#list;
+    if (!list) {
+      return;
+    }
+
+    const group = item.closest<HTMLElement>(GROUP);
+    const firstInGroup =
+      group?.querySelector(`${ITEM}:not([hidden]):not([data-disabled="true"])`) === item;
+    const target = group && firstInGroup ? group : item;
+
+    const listRect = list.getBoundingClientRect();
+    const top = target.getBoundingClientRect().top;
+    const bottom = item.getBoundingClientRect().bottom;
+    if (top < listRect.top) {
+      list.scrollTop -= listRect.top - top;
+    } else if (bottom > listRect.bottom) {
+      list.scrollTop += bottom - listRect.bottom;
+    }
+  }
+
+  #move(delta: 1 | -1) {
+    const items = this.#selectableItems();
+    if (items.length === 0) {
+      return;
+    }
+
+    const index = this.#selected ? items.indexOf(this.#selected) : -1;
+    let next = index < 0 ? (delta > 0 ? 0 : items.length - 1) : index + delta;
+    if (this.dataset.loop === "true") {
+      next = (next + items.length) % items.length;
+    } else {
+      next = Math.min(Math.max(next, 0), items.length - 1);
+    }
+    this.#select(items[next]);
+  }
+
+  #onInput = (event: Event) => {
+    if (event.target === this.#input) {
+      this.#filter();
+    }
+  };
+
+  #onKeydown = (event: KeyboardEvent) => {
+    if (event.defaultPrevented || event.isComposing || event.keyCode === 229) {
+      return;
+    }
+
+    let handled = true;
+    switch (event.key) {
+      case "ArrowDown":
+        this.#move(1);
+        break;
+      case "ArrowUp":
+        this.#move(-1);
+        break;
+      case "Home":
+        this.#select(this.#selectableItems()[0] ?? null);
+        break;
+      case "End":
+        this.#select(this.#selectableItems().at(-1) ?? null);
+        break;
+      case "n":
+      case "j":
+        handled = event.ctrlKey;
+        if (handled) {
+          this.#move(1);
+        }
+        break;
+      case "p":
+      case "k":
+        handled = event.ctrlKey;
+        if (handled) {
+          this.#move(-1);
+        }
+        break;
+      case "Enter":
+        handled = !!this.#selected;
+        this.#selected?.click();
+        break;
+      default:
+        handled = false;
+    }
+
+    if (handled) {
+      event.preventDefault();
+    }
+  };
+
+  #onClick = (event: MouseEvent) => {
+    const item = (event.target as Element | null)?.closest<HTMLElement>(ITEM);
+    if (!item || !this.contains(item)) {
+      return;
+    }
+
+    if (this.#isDisabled(item)) {
+      event.preventDefault();
+      return;
+    }
+
+    this.#select(item, false);
+    item.dispatchEvent(
+      new CustomEvent("itemselect", { detail: { value: this.#valueOf(item) }, bubbles: true }),
+    );
+  };
+
+  // Keeps focus in the input when an item is pressed, so typing and arrow keys keep working.
+  #onMousedown = (event: MouseEvent) => {
+    if ((event.target as Element | null)?.closest(ITEM)) {
+      event.preventDefault();
+    }
+  };
+
+  #onPointerMove = (event: PointerEvent) => {
+    const item = (event.target as Element | null)?.closest<HTMLElement>(ITEM);
+    if (item && item !== this.#selected && !item.hidden && !this.#isDisabled(item)) {
+      this.#select(item, false);
+    }
+  };
+
+  // A dialog keeps its content between openings, so start each one with a fresh search.
+  #onDialogClose = () => {
+    const input = this.#input;
+    if (input) {
+      input.value = "";
+    }
+    this.#filter();
+  };
+}

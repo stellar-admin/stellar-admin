@@ -1,6 +1,6 @@
 # Command
 
-Status: **active** — Phase 2 complete, awaiting review; Phase 3 not started. Last updated: 2026-09-28.
+Status: **active** — Phase 3 complete, awaiting review; Phase 4 not started. Last updated: 2026-09-28.
 
 Port shadcn's Command component (`cmdk`-based command palette) into `StellarAdmin.TagHelpers`, following the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -11,8 +11,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Research and API proposal | ✅ approved 2026-09-28 |
-| 2 | Tag helpers, structural CSS, custom-theme coverage, static DocsSamples demo | ✅ implemented 2026-09-28, awaiting review |
-| 3 | `sel-command` web component — client filter mode, keyboard, selection | ☐ |
+| 2 | Tag helpers, structural CSS, custom-theme coverage, static DocsSamples demo | ✅ approved and committed 2026-09-28 (`7daaadb`) |
+| 3 | `sel-command` web component — client filter mode, keyboard, selection | ✅ implemented 2026-09-28, awaiting review |
 | 4 | Filter `None` mode, list mutation re-scan; htmx server-search demo in ComponentPlayground | ☐ |
 | 5 | Remaining demos, website docs, skills reference, tests, handover | ☐ |
 
@@ -48,13 +48,13 @@ Dashboard integration is a separate task after Phase 5.
 - Focus stays in the input. ↑/↓, Home/End, Ctrl+N/P/J/K move the active item via `aria-activedescendant` + `data-selected`; `loop` wraps. Pointer hover sets the active item. Disabled items are skipped.
 - Item IDs are assigned client-side when missing, so server-rendered fragments need none.
 - Enter or click calls `item.click()` then dispatches a bubbling `itemselect` `CustomEvent` with `{ value }` from the item. Links navigate; `hx-*` on items fire unaided.
-- `Client` mode: fuzzy-score value + keywords, hide non-matches, sort by score, sort groups by best score, hide empty groups, hide separators while a query is active, toggle the empty state.
+- `Client` mode: fuzzy-score value + keywords, hide non-matches, sort items by score within their own container (groups keep their order), hide empty groups, hide separators while a query is active, toggle the empty state.
 - Both modes: `MutationObserver` on the list re-scans items after any change and activates the first enabled visible item.
 
 ### Upstream deviations
 
 - ARIA/roles mirror `cmdk`'s output; other `cmdk-*` attributes are not emitted (only `cmdk-group-heading`, needed by theme CSS).
-- Group sorting by best score is kept in `Client` mode; may be dropped if DOM reordering proves problematic (record here if so).
+- Groups are not sorted. cmdk's `sort()` intends to reorder groups by their best item's score, but it looks groups up by `[cmdk-group][data-value="<React useId>"]` while the group's `data-value` is its heading text, so the lookup never matches and shadcn's groups keep their authored order. We match that observed behaviour (decided 2026-09-28 after Jerrie found groups jumping).
 
 ## Phase 1 findings
 
@@ -74,6 +74,20 @@ Dashboard integration is a separate task after Phase 5.
 - Custom themes: each of the seven gets one appended `@layer components.theme` block composing that theme's menu surface, rows, labels, separators and shortcuts with a flat input-group field (no permanent focus ring, since focus stays in the field). `data-selected` replaces hover/focus feedback. Aurora, Meridian, Observatory and Parallax add their menu keyboard-focus bar (`inset 2px 0 0 var(--primary)`) to the selected row because their hover fill alone is nearly invisible in dark mode; Ice keeps its accent bar. Record these inferences in the theme specifications during Phase 5.
 - Demo layout: `size-full` stretches the root in flex-column parents with a definite height (as upstream); the intro demo adds `h-auto`.
 
+### Phase 3 implementation notes
+
+- `Client/js/web-components/sel-command.ts` (registered in `stellar-admin-ui.ts`) plus `command-score.ts`, a typed port of cmdk's `command-score` fuzzy scorer. cmdk's MIT notice was added to `THIRD-PARTY-NOTICES.txt`.
+- Matching text is `data-value` (else the item text without its shortcut) followed by `data-keywords`; the query is trimmed. Score 0 hides the item via `hidden` (Tailwind preflight's `[hidden]` rule is `!important`, so theme `display` rules cannot override it).
+- Sorting reorders items only among the slots items occupy in their parent container, so groups, separators and the empty element never move (see [Upstream deviations](#upstream-deviations) for why groups stay put in shadcn too). The original child order of every touched container is recorded and restored when the query is cleared (cmdk leaves the sorted order in place).
+- Groups are hidden only while a query is active and they have no visible item; separators are hidden while a query is active; the empty element is shown whenever no item is visible (in any mode, so a server-returned empty list shows it too).
+- `data-selected="true"` is added and removed (the shipped themes key off its presence), and `aria-selected` toggles `true`/`false`. The first selectable item is selected on connect and after every filter.
+- Keys: ↑/↓, Home/End, Ctrl+N/J (next), Ctrl+P/K (previous), Enter (`item.click()`). IME composition is ignored. cmdk's Alt+↑/↓ group jump and Meta+↑/↓ are not implemented.
+- Scrolling adjusts only the list's `scrollTop` (never `scrollIntoView`, which would scroll the page); a group's first selectable item brings the whole group, heading included, into view. Pointer hover and click select without scrolling.
+- `mousedown` on an item is prevented so focus stays in the input; items keep `tabindex="-1"` so link items stay out of the tab order.
+- `itemselect` is dispatched from the item's click handler, so Enter and pointer clicks raise it exactly once; it is not cancelable.
+- Addition beyond the approved spec: inside a `<dialog>`, the dialog's `close` event clears the query and resets the list, matching upstream where the dialog content unmounts on close.
+- `MutationObserver` re-scan and `data-filter="none"` handling beyond skipping filtering are Phase 4. `None` mode already skips scoring, hiding, sorting and separator/group toggling.
+
 ## Source paths
 
 - Tag helpers: `src/StellarAdmin.TagHelpers/TagHelpers/Command/` (`CommandTagHelper`, `CommandInputTagHelper`, `CommandListTagHelper`, `CommandEmptyTagHelper`, `CommandGroupTagHelper`, `CommandItemTagHelper`, `CommandLinkItemTagHelper`, `CommandSeparatorTagHelper`, `CommandShortcutTagHelper`, `CommandDialogTagHelper`, `CommandFilter`, `CommandContext`, `CommandRenderingHelper`).
@@ -82,8 +96,11 @@ Dashboard integration is a separate task after Phase 5.
 - Custom theme CSS: final block of each of `aurora`, `concourse`, `ice`, `ledger`, `meridian`, `observatory`, `parallax` `.css` under `Client/css/themes/`.
 - Coverage: `util/theme-coverage/coverage.json` (`Command`).
 - Samples: `docs/DocsSamples/Pages/Command/` (`_Intro`, `_Dialog`), registered under Navigation in `Pages/Shared/_NavigationLayout.cshtml`.
+- Web component: `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-command.ts` and `command-score.ts`; registration in `Client/js/stellar-admin-ui.ts`.
 
 ## Phase log
 
 - 2026-09-28 — Phase 1: read upstream Base UI and Radix sources, shipped theme CSS, sibling helpers and web components. API proposal approved with the decisions above. No product code changed.
 - 2026-09-28 — Phase 2: tag helpers, Search icon role, structural CSS, seven custom-theme blocks, coverage entry and two static demos. Verified: TagHelpers build 0 warnings; `node util/theme-coverage/check.mjs` (57 components × 15 themes) and `check.test.mjs` (9 pass); `npm run build:css`; Core tests 67/67 and TagHelpers tests 136/136; DocsSamples on port 5206 rendered with no unresolved `sa-*` elements; headless-Chromium screenshots of the intro (static `data-selected` preview) in default, Vega dark, Ledger light/dark, Aurora, Concourse, Ice, Meridian dark, Observatory and Parallax, and the dialog in Ledger desktop and default mobile. Not yet done: interaction (Phase 3), website docs, skills examples, theme-spec notes.
+- 2026-09-28 — Phase 3: `sel-command` web component and cmdk scorer port. Verified: `tsc --noEmit` clean, `oxfmt` on the new files, `npm run build:js`; DocsSamples on port 5206 driven over CDP with 52 passing checks (initial selection and `aria-activedescendant`, arrow/Home/End/Ctrl bindings, disabled skipping, loop on/off, fuzzy and keyword filtering, sorting of items and groups with order restore, empty state, separators, Enter/click `itemselect`, hover selection, focus retention, link navigation via Enter, dialog focus and reset on reopen, list-only scrolling); screenshots of the filtered and empty states (Observatory) and Vega dark. Server stopped. Not run: .NET builds/tests (no C# changed).
+- 2026-09-28 — Phase 3 revision: Jerrie reported groups jumping (typing "t" moved Bookings above Destinations) and could not reproduce it in shadcn. Root cause: our port reordered groups, while cmdk's group reordering never takes effect (ID/value selector mismatch). Group sorting removed; items now sort in place within their slots. Re-verified over CDP: all checks pass, including new ones for the dialog "t" case (groups and separator keep their DOM order; Cape Town ranks first within Destinations). Server stopped.
