@@ -88,11 +88,21 @@ Steps 1–4 give you the prebuilt stylesheet, which styles the `<sa-*>` componen
 If the app runs its own Tailwind v4 build, copy [`theme-tokens.css`](https://github.com/stellar-admin/stellar-admin/blob/master/src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css) (`src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css`) into the project and import it from the Tailwind entry stylesheet:
 
 ```css
-@import "tailwindcss";
-@import "./theme-tokens.css";
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) theme(inline reference);
+@import "./theme-tokens.css" theme(reference);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme reference {
+  --font-sans: sans-serif;
+  --font-mono: monospace;
+}
 
 @source "../../Pages/";
 ```
+
+The theme bundle already ships preflight, the theme variables and every component rule, so this entry emits **utilities only**. A plain `@import "tailwindcss"` would re-emit preflight and Tailwind's default theme variables (such as `--font-sans`), which override the theme's values whenever the app's stylesheet is linked after the bundle. The reference imports avoid that, so link order doesn't matter. The `@theme reference` block makes `font-sans` and `font-mono` resolve to the theme's fonts rather than Tailwind's defaults.
 
 Then `bg-primary`, `text-muted-foreground`, `rounded-lg`, `dark:*` and the rest work in the app's own markup. The file carries only the token *vocabulary* — the generated utilities compile to `var(--…)` references whose values come from the linked theme bundle at runtime, so the `<link>` from step 4 stays in place, and any `:root` customizations apply to both stylesheets.
 
