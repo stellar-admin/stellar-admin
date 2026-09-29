@@ -199,11 +199,19 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             output.Attributes.SetAttribute("aria-invalid", "true");
         }
 
-        if (
-            !output.Attributes.ContainsName("aria-label")
-            && !output.Attributes.ContainsName("aria-labelledby")
-            && (Label ?? For?.Metadata.DisplayName ?? For?.Name) is { } groupLabel
-        )
+        // A label cannot target a div, so a rendered field label is referenced by id instead
+        var labelled =
+            output.Attributes.ContainsName("aria-label")
+            || output.Attributes.ContainsName("aria-labelledby");
+        if (WillRenderFieldLabel())
+        {
+            LabelId = $"{id}-label";
+            if (!labelled)
+            {
+                output.Attributes.SetAttribute("aria-labelledby", LabelId);
+            }
+        }
+        else if (!labelled && (Label ?? For?.Metadata.DisplayName ?? For?.Name) is { } groupLabel)
         {
             output.Attributes.SetAttribute("aria-label", groupLabel);
         }

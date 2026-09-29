@@ -9,7 +9,8 @@ internal static class TagHelperRenderer
 {
     public static async Task<IHtmlDocument> RenderAsync(
         TagHelper sut,
-        Func<TagHelperContext, Task<string>>? children = null
+        Func<TagHelperContext, Task<string>>? children = null,
+        IEnumerable<TagHelperAttribute>? outputAttributes = null
     )
     {
         var attributes = new TagHelperAttributeList();
@@ -36,7 +37,10 @@ internal static class TagHelperRenderer
         sut.Init(context);
         var output = new TagHelperOutput(
             "sa-test",
-            new TagHelperAttributeList { { "class", "existing-class" } },
+            new TagHelperAttributeList([
+                new TagHelperAttribute("class", "existing-class"),
+                .. outputAttributes ?? [],
+            ]),
             async (_, _) =>
                 new DefaultTagHelperContent().SetHtmlContent(
                     children == null ? "" : await children(context)

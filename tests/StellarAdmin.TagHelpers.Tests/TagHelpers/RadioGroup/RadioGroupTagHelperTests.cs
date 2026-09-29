@@ -34,9 +34,12 @@ public class RadioGroupTagHelperTests
             .That(html.QuerySelector("[data-slot=field] > [data-slot=field-label]")?.TextContent)
             .IsEqualTo("Delivery");
         await Assert
-            .That(html.QuerySelector("[data-slot=field] > [data-slot=field-description]")?.TextContent)
+            .That(
+                html.QuerySelector("[data-slot=field] > [data-slot=field-description]")?.TextContent
+            )
             .IsEqualTo("Choose a delivery method");
-        await Assert.That(html.QuerySelector("[data-slot=radio-group]")?.GetAttribute("role"))
+        await Assert
+            .That(html.QuerySelector("[data-slot=radio-group]")?.GetAttribute("role"))
             .IsEqualTo("radiogroup");
         await Assert
             .That(
@@ -295,6 +298,107 @@ public class RadioGroupTagHelperTests
         // Assert
         await Assert.That(html.QuerySelectorAll("input:checked").Length).IsEqualTo(0);
         await Assert.That(html.QuerySelectorAll("input[required]").Length).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task ProcessAsync_UnboundWithLabel_LabelsGroupByReference()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "delivery",
+            Label = "Delivery",
+            Items = [new("Standard", "standard")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var label = html.QuerySelector("[data-slot=field] > [data-slot=field-label]");
+        var group = html.QuerySelector("[data-slot=radio-group]");
+        await Assert.That(label?.Id).IsEqualTo($"{group?.Id}-label");
+        await Assert.That(label?.HasAttribute("for")).IsFalse();
+        await Assert.That(group?.GetAttribute("aria-labelledby")).IsEqualTo(label?.Id);
+        await Assert.That(group?.HasAttribute("aria-label")).IsFalse();
+    }
+
+    [Test]
+    public async Task ProcessAsync_BoundWithLabel_OmitsFrameworkLabelTarget()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            For = new ModelExpression(
+                "Speed",
+                context.Metadata.GetModelExplorerForType(typeof(Speed), Speed.Standard)
+            ),
+            Items = [new("Standard", "Standard")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var label = html.QuerySelector("[data-slot=field] > [data-slot=field-label]");
+        var group = html.QuerySelector("[data-slot=radio-group]");
+        await Assert.That(label?.TextContent).IsEqualTo("Speed");
+        await Assert.That(label?.HasAttribute("for")).IsFalse();
+        await Assert.That(group?.GetAttribute("aria-labelledby")).IsEqualTo(label?.Id);
+    }
+
+    [Test]
+    public async Task ProcessAsync_AuthorAriaLabel_KeepsAuthorName()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "delivery",
+            Label = "Delivery",
+            Items = [new("Standard", "standard")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            outputAttributes: [new("aria-label", "Delivery speed")]
+        );
+
+        // Assert
+        var label = html.QuerySelector("[data-slot=field] > [data-slot=field-label]");
+        var group = html.QuerySelector("[data-slot=radio-group]");
+        await Assert.That(group?.GetAttribute("aria-label")).IsEqualTo("Delivery speed");
+        await Assert.That(group?.HasAttribute("aria-labelledby")).IsFalse();
+        await Assert.That(label?.HasAttribute("for")).IsFalse();
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithoutFieldWrapper_NamesGroupFromLabel()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "delivery",
+            Label = "Delivery",
+            ShouldRenderField = false,
+            Items = [new("Standard", "standard")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var group = html.QuerySelector("[data-slot=radio-group]");
+        await Assert.That(group?.GetAttribute("aria-label")).IsEqualTo("Delivery");
+        await Assert.That(group?.HasAttribute("aria-labelledby")).IsFalse();
     }
 
     public enum Speed

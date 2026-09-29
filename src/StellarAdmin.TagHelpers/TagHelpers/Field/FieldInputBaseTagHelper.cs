@@ -53,6 +53,10 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     /// </summary>
     protected string? LabelForId { get; set; }
 
+    // When set, the automatically rendered label gets this id and no for attribute, so a
+    // non-labelable control (such as a choice group) can reference it with aria-labelledby.
+    private protected string? LabelId { get; set; }
+
     /// <summary>
     ///     The name of the &lt;input&gt; element.
     /// </summary>
@@ -274,8 +278,14 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var labelTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                LabelForId == null
-                    ? [new TagHelperAttribute("class", FieldClasses?.Label ?? string.Empty)]
+                LabelId != null
+                        ?
+                        [
+                            new TagHelperAttribute("id", LabelId),
+                            new TagHelperAttribute("class", FieldClasses?.Label ?? string.Empty),
+                        ]
+                    : LabelForId == null
+                        ? [new TagHelperAttribute("class", FieldClasses?.Label ?? string.Empty)]
                     :
                     [
                         new TagHelperAttribute("for", LabelForId),
@@ -292,10 +302,18 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
                 ViewContext = ViewContext,
             };
             await fieldLabelTagHelper.ProcessAsync(context, labelTagHelperOutput);
+            if (LabelId != null)
+            {
+                // The framework label adds a for attribute from asp-for
+                labelTagHelperOutput.Attributes.RemoveAll("for");
+            }
 
             targetContent.AppendHtml(labelTagHelperOutput);
         }
     }
+
+    private protected bool WillRenderFieldLabel() =>
+        ShouldRenderFieldWrapper() && (For != null || Label != null);
 
     private bool ShouldRenderFieldWrapper()
     {
