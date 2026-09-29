@@ -31,6 +31,7 @@ Commands below run from the product repository root unless a working directory i
 | Dashboard HTTP integration tests | `dotnet run --project tests/StellarAdmin.Dashboard.IntegrationTests --configuration Release`; uses an in-process TestServer with a private in-memory data source per test, no database or EF/Identity dependency. |
 | EF Core HTTP integration tests | `dotnet test --project tests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests --minimum-expected-tests 1`; uses TestServer and a private in-memory SQLite database per test, with no external database service. |
 | Dashboard unit tests | `dotnet run --project tests/StellarAdmin.Dashboard.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
+| TagHelpers HTTP integration tests | `dotnet run --project tests/StellarAdmin.TagHelpers.IntegrationTests --configuration Release`; uses an in-process TestServer with MVC controllers and a Razor Page, and carries the TempData cookie between requests. No database. |
 | TagHelpers unit tests | `dotnet run --project tests/StellarAdmin.TagHelpers.Tests --configuration Release`; append `-- --list-tests` to verify discovery. |
 | OSS C# | `dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj`; exercise the affected DocsSamples page. |
 | OSS CSS/JS | `npm run build` in `src/StellarAdmin.TagHelpers/Client/`; inspect the compiled bundle and exercise changed states. Run `build:css` directly for CSS changes because MSBuild has historically hidden client failures. |

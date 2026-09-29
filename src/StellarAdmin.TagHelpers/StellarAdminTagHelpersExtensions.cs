@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace StellarAdmin.TagHelpers;
 
@@ -12,6 +13,8 @@ public static class StellarAdminTagHelpersExtensions
         public StellarAdminTagHelpersBuilder AddTagHelpers()
         {
             stellarAdminBuilder.Services.AddOptions<StellarAdminTagHelpersOptions>();
+            stellarAdminBuilder.Services.AddHttpContextAccessor();
+            stellarAdminBuilder.Services.TryAddScoped<IToastNotifier, TempDataToastNotifier>();
             stellarAdminBuilder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
             {
                 if (!options.ModelBinderProviders.OfType<CheckboxGroupModelBinderProvider>().Any())
@@ -27,6 +30,11 @@ public static class StellarAdminTagHelpersExtensions
                         new CheckboxGroupModelBinderProvider()
                     );
                     options.ValueProviderFactories.Add(new CheckboxGroupValueProviderFactory());
+                }
+
+                if (!options.Filters.OfType<ToastResultFilter>().Any())
+                {
+                    options.Filters.Add(new ToastResultFilter());
                 }
             });
 
