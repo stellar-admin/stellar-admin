@@ -46,7 +46,6 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
                 && entry.Errors.Count > 0;
         var group = new SegmentedControlContext
         {
-            DescribedBy = output.Attributes["aria-describedby"]?.Value?.ToString(),
             Disabled = Disabled ?? false,
             For = For,
             Invalid = invalid,
@@ -76,6 +75,8 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
         {
             output.Attributes.SetAttribute("aria-invalid", "true");
         }
+
+        ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
 
         foreach (var attribute in new[] { "name", "value", "disabled", "required" })
         {

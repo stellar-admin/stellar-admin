@@ -167,6 +167,20 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         track.InnerHtml.AppendHtml(range);
         output.Content.AppendHtml(track);
 
+        // The thumbs are what a screen reader reaches, so they carry the field's descriptions and
+        // invalid state rather than the host.
+        var thumbAttributes = new TagHelperAttributeList();
+        foreach (var name in new[] { "aria-describedby", "aria-invalid" })
+        {
+            if (output.Attributes[name] is { } attribute)
+            {
+                thumbAttributes.Add(attribute);
+                output.Attributes.Remove(attribute);
+            }
+        }
+
+        ApplyFieldAttributes(context, thumbAttributes, FieldLayout.Stacked);
+
         // One thumb (+ a hidden input so it posts) per value.
         for (var index = 0; index < values.Count; index++)
         {
@@ -197,6 +211,11 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 // host wrapper only, so per-thumb disabled utilities are left inert here.
                 thumb.Attributes.Add("aria-disabled", "true");
             }
+            foreach (var attribute in thumbAttributes)
+            {
+                thumb.Attributes.Add(attribute.Name, attribute.Value?.ToString());
+            }
+
             thumb.Attributes.Add("class", JoinCssClasses("sa-slider-thumb", ClassNames?.Thumb));
             thumb.Attributes.Add(
                 "style",

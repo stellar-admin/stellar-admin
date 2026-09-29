@@ -116,7 +116,6 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             output.Attributes["id"]?.Value?.ToString()
             ?? $"sa-choice-{GetUniqueId(context)}-{sequence}";
         var invalid = Error != null || entry?.Errors.Count > 0;
-        var describedBy = output.Attributes["aria-describedby"]?.Value?.ToString() ?? string.Empty;
         var itemIndex = 0;
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var group = new ChoiceGroupContext
@@ -144,7 +143,6 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
                     Disabled == true || disabled,
                     invalid,
                     selected.Contains(formatted),
-                    describedBy,
                     css
                 );
             },
@@ -198,6 +196,9 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         {
             output.Attributes.SetAttribute("aria-invalid", "true");
         }
+
+        // The group carries the field's descriptions, so each option announces only its own
+        ApplyFieldAttributes(context, output.Attributes, FieldLayout.StackedDescriptionFirst);
 
         // A label cannot target a div, so a rendered field label is referenced by id instead
         var labelled =
@@ -269,7 +270,6 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         bool disabled,
         bool invalid,
         bool selected,
-        string describedBy,
         string? css
     )
     {
@@ -295,13 +295,9 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             attributes.Add("aria-invalid", "true");
         }
 
-        var itemDescribedBy = JoinCssClasses(
-            describedBy,
-            description == null ? null : $"{id}-description"
-        );
-        if (itemDescribedBy.Length > 0)
+        if (description != null)
         {
-            attributes.Add("aria-describedby", itemDescribedBy);
+            attributes.Add("aria-describedby", $"{id}-description");
         }
 
         var input = new TagHelperOutput(

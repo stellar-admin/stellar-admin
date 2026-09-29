@@ -101,6 +101,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.SetAttribute("role", "group");
+        ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
         output.Attributes.SetAttribute("data-slot", "toggle-group");
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());

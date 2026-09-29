@@ -89,11 +89,6 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
             input.Attributes["aria-invalid"] = "true";
         }
 
-        if (!string.IsNullOrEmpty(group.DescribedBy))
-        {
-            input.Attributes["aria-describedby"] = group.DescribedBy;
-        }
-
         output.TagName = "label";
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.RemoveAll("value");
