@@ -12,6 +12,8 @@ namespace StellarAdmin.TagHelpers;
 public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
+    private string? _descriptionId;
+    private string? _errorId;
 
     protected FieldInputBaseTagHelper(IHtmlGenerator htmlGenerator)
     {
@@ -149,7 +151,13 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var descriptionTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                [new TagHelperAttribute("class", FieldClasses?.Description ?? string.Empty)],
+                _descriptionId == null
+                    ? [new TagHelperAttribute("class", FieldClasses?.Description ?? string.Empty)]
+                    :
+                    [
+                        new TagHelperAttribute("id", _descriptionId),
+                        new TagHelperAttribute("class", FieldClasses?.Description ?? string.Empty),
+                    ],
                 (_, _) =>
                     Description == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -255,7 +263,13 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         {
             var errorTagHelperOutput = new TagHelperOutput(
                 string.Empty,
-                [new TagHelperAttribute("class", FieldClasses?.Error ?? string.Empty)],
+                _errorId == null
+                    ? [new TagHelperAttribute("class", FieldClasses?.Error ?? string.Empty)]
+                    :
+                    [
+                        new TagHelperAttribute("id", _errorId),
+                        new TagHelperAttribute("class", FieldClasses?.Error ?? string.Empty),
+                    ],
                 (_, _) =>
                     Error == null
                         ? Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
@@ -311,6 +325,61 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
             targetContent.AppendHtml(labelTagHelperOutput);
         }
     }
+
+    // Points the control at the field's rendered description and error, after any ids the author
+    // supplied, and marks it invalid when the field has an error unless the author set a value.
+    private protected void ApplyFieldAttributes(
+        TagHelperContext context,
+        TagHelperAttributeList attributes,
+        FieldLayout layout
+    )
+    {
+        if (!attributes.ContainsName("aria-invalid") && IsInvalid())
+        {
+            attributes.SetAttribute("aria-invalid", "true");
+        }
+
+        if (!ShouldRenderFieldWrapper())
+        {
+            return;
+        }
+
+        var describedBy = attributes["aria-describedby"]?.Value?.ToString();
+        if (
+            HasFieldPart(layout, FieldPart.Description)
+            && (
+                !string.IsNullOrWhiteSpace(Description)
+                || For?.Metadata.Description is { Length: > 0 }
+            )
+        )
+        {
+            _descriptionId = $"sa-{GetUniqueId(context)}-description";
+            describedBy = JoinCssClasses(describedBy, _descriptionId);
+        }
+
+        if (HasFieldPart(layout, FieldPart.Error) && (For != null || Error != null))
+        {
+            _errorId = $"sa-{GetUniqueId(context)}-error";
+            describedBy = JoinCssClasses(describedBy, _errorId);
+        }
+
+        if (!string.IsNullOrEmpty(describedBy))
+        {
+            attributes.SetAttribute("aria-describedby", describedBy);
+        }
+    }
+
+    private protected bool IsInvalid() =>
+        !string.IsNullOrEmpty(Error)
+        || For != null
+            && ViewContext.ViewData.ModelState.TryGetValue(
+                ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name),
+                out var entry
+            )
+            && entry.Errors.Count > 0;
+
+    private static bool HasFieldPart(FieldLayout layout, FieldPart part) =>
+        layout.BeforeControl.Contains(part) || layout.AfterControl.Contains(part);
 
     private protected bool WillRenderFieldLabel() =>
         ShouldRenderFieldWrapper() && (For != null || Label != null);

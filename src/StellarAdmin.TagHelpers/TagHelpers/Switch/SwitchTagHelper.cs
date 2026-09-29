@@ -113,6 +113,8 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
             )
         );
 
+        ApplyFieldAttributes(context, inputOutput.Attributes, FieldLayout.ControlFirst);
+
         output.Content.AppendHtml(inputOutput);
 
         // Turn the host element into the switch wrapper, then overlay the thumb.

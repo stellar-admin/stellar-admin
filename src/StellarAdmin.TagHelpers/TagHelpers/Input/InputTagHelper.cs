@@ -147,6 +147,19 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
             )
         );
 
+        var layout = type switch
+        {
+            // We do not automatically display the error label for radio buttons,
+            // since you typically do not want to have the error displayed on each
+            // individual radio button. Rather, the error will be displayed for the
+            // group of radio buttons as a whole. As such, the developer will need
+            // to add the sa-field-error Tag Helper explicitly to their form.
+            "radio" when For != null => FieldLayout.ControlFirst.Without(FieldPart.Error),
+            "checkbox" or "radio" => FieldLayout.ControlFirst,
+            _ => FieldLayout.Stacked,
+        };
+        ApplyFieldAttributes(context, inputOutput.Attributes, layout);
+
         output.Content.AppendHtml(inputOutput);
 
         output.Attributes.Clear();
@@ -215,16 +228,6 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
                 break;
         }
 
-        return type switch
-        {
-            // We do not automatically display the error label for radio buttons,
-            // since you typically do not want to have the error displayed on each
-            // individual radio button. Rather, the error will be displayed for the
-            // group of radio buttons as a whole. As such, the developer will need
-            // to add the sa-field-error Tag Helper explicitly to their form.
-            "radio" when For != null => FieldLayout.ControlFirst.Without(FieldPart.Error),
-            "checkbox" or "radio" => FieldLayout.ControlFirst,
-            _ => FieldLayout.Stacked,
-        };
+        return layout;
     }
 }

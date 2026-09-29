@@ -94,6 +94,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         {
             selectOutput.Content.SetHtmlContent(await output.GetChildContentAsync());
         }
+        ApplyFieldAttributes(context, selectOutput.Attributes, FieldLayout.Stacked);
         output.Content.AppendHtml(selectOutput);
 
         /*

@@ -101,7 +101,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
 
         var code = For?.Model?.ToString() ?? Value ?? string.Empty;
         var fieldName = ResolveName();
-        var hasError = AriaInvalid == true || HasModelError(fieldName);
+        var hasError = AriaInvalid ?? (!string.IsNullOrEmpty(Error) || HasModelError(fieldName));
         var userClass = output.GetUserSuppliedClass();
 
         // The single real input: it holds the whole code and posts it as one value. We overlay it
@@ -123,6 +123,20 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
             inputOutput.Attributes.SetAttribute("id", hostId);
             output.Attributes.RemoveAll("id");
         }
+
+        // The real input is the control a screen reader reaches, so it carries the descriptions.
+        if (output.Attributes["aria-describedby"] is { } describedBy)
+        {
+            inputOutput.Attributes.SetAttribute(describedBy);
+            output.Attributes.Remove(describedBy);
+        }
+
+        if (AriaInvalid == false)
+        {
+            inputOutput.Attributes.SetAttribute("aria-invalid", "false");
+        }
+
+        ApplyFieldAttributes(context, inputOutput.Attributes, FieldLayout.Stacked);
         output.TagName = "sel-input-otp";
         output.TagMode = TagMode.StartTagAndEndTag;
 

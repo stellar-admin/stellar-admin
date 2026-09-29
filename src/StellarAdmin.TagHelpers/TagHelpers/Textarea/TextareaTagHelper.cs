@@ -43,6 +43,7 @@ public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
                 );
 
         output.MergeAttributes(tagBuilder);
+        ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
 
         if (!output.Attributes.ContainsName("data-slot"))
         {

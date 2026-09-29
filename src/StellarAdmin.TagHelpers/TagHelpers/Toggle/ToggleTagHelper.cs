@@ -114,6 +114,7 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
         // The input is visually hidden but stays focusable, so keyboard focus + Space toggle it
         // and the label reflects its state via the has-* variants.
         inputOutput.Attributes.SetAttribute("class", "peer sr-only");
+        ApplyFieldAttributes(context, inputOutput.Attributes, FieldLayout.Stacked);
 
         var userClass = output.GetUserSuppliedClass();
 
