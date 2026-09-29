@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.TagHelpers.Tests.Support;
 
 namespace StellarAdmin.TagHelpers.Tests.TagHelpers.Command;
@@ -63,5 +65,47 @@ public class CommandTagHelperTests
         await Assert.That(label?.Id).IsEqualTo($"{commandId}-label");
         await Assert.That(label?.TextContent).IsEqualTo("Search trips");
         await Assert.That(input?.GetAttribute("aria-labelledby")).IsEqualTo(label?.Id);
+    }
+
+    [Test]
+    public async Task ProcessAsync_WhenGroupsRenderFromOneSourceTag_GivesEachHeadingItsOwnId()
+    {
+        // Arrange
+        var sut = new CommandTagHelper();
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            async parent =>
+                await RenderGroupAsync("Flights", parent) + await RenderGroupAsync("Hotels", parent)
+        );
+
+        // Assert
+        var headings = html.QuerySelectorAll("[data-slot=command-group-heading]");
+        var groups = html.QuerySelectorAll("[role=group]");
+        await Assert.That(headings.Length).IsEqualTo(2);
+        await Assert.That(headings[0].Id).IsNotEqualTo(headings[1].Id);
+        await Assert.That(groups[0].GetAttribute("aria-labelledby")).IsEqualTo(headings[0].Id);
+        await Assert.That(groups[1].GetAttribute("aria-labelledby")).IsEqualTo(headings[1].Id);
+    }
+
+    // Razor gives every execution of a tag in a loop the same unique id.
+    private static async Task<string> RenderGroupAsync(string heading, TagHelperContext parent)
+    {
+        var context = new TagHelperContext(
+            new TagHelperAttributeList(),
+            new Dictionary<object, object>(parent.Items),
+            "group"
+        );
+        var output = new TagHelperOutput(
+            "sa-command-group",
+            new TagHelperAttributeList(),
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+        await new CommandGroupTagHelper { Heading = heading }.ProcessAsync(context, output);
+        using var writer = new StringWriter();
+        output.WriteTo(writer, HtmlEncoder.Default);
+
+        return writer.ToString();
     }
 }

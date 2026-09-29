@@ -33,7 +33,12 @@ public class CommandGroupTagHelper : StellarAdminTagHelperBase
 
         if (!string.IsNullOrEmpty(Heading))
         {
-            var headingId = $"sa-command-group-{GetUniqueId(context)}-heading";
+            // Groups rendered in a loop share a unique id, so number them within their command
+            var commandContext = GetContext<CommandContext>(context);
+            var headingId =
+                commandContext == null
+                    ? $"sa-command-group-{GetUniqueId(context)}-heading"
+                    : $"{commandContext.ListId}-group-{++commandContext.GroupCount}-heading";
 
             // Themes style the heading through its data-slot, so it must be kept.
             var heading = new TagBuilder("div");

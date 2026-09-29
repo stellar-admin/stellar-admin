@@ -17,6 +17,17 @@
                 </sa-sidebar-menu-link>
             </sa-sidebar-menu-item>
         </sa-sidebar-menu>
+        <sa-button variant="ButtonVariant.Outline" commandfor="--command-palette" command="show-modal"
+                   class="w-full justify-between text-muted-foreground">
+            <span class="flex items-center gap-2">
+                <sa-icon name="search" aria-hidden="true"/>
+                Search...
+            </span>
+            <sa-kbd-group id="--command-palette-shortcut" aria-hidden="true">
+                <sa-kbd>Ctrl</sa-kbd>
+                <sa-kbd>K</sa-kbd>
+            </sa-kbd-group>
+        </sa-button>
     </sa-sidebar-header>
 
     <sa-sidebar-content>
@@ -82,6 +93,8 @@
         </sa-sidebar-menu>
     </sa-sidebar-footer>
 </sa-sidebar>
+
+<partial name="_CommandPalette" model="Model"/>
 
 @{
     async Task RenderSidebarItem(SidebarItem sidebarItem)

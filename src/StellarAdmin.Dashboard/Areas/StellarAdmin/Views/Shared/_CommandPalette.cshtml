@@ -1,0 +1,77 @@
+@using StellarAdmin.Dashboard.Sidebar
+@model List<SidebarItem>
+@{
+    var ungroupedItems = Model.OfType<SidebarLinkItemBase>().ToList();
+}
+
+<sa-command-dialog id="--command-palette" title="Search resources" description="Search for a resource to open.">
+    <sa-command>
+        <sa-command-input placeholder="Search..."/>
+        <sa-command-list>
+            <sa-command-empty>No resources found.</sa-command-empty>
+            @if (ungroupedItems.Count > 0)
+            {
+                <sa-command-group>
+                    @foreach (var item in ungroupedItems)
+                    {
+                        await RenderItem(item, null);
+                    }
+                </sa-command-group>
+            }
+            @foreach (var group in Model.OfType<SidebarGroupItem>())
+            {
+                <sa-command-group heading="@group.Label">
+                    @foreach (var item in group.Items)
+                    {
+                        await RenderItem(item, group.Label);
+                    }
+                </sa-command-group>
+            }
+        </sa-command-list>
+    </sa-command>
+</sa-command-dialog>
+
+<script>
+    (() => {
+        const dialog = document.getElementById("--command-palette");
+        const shortcut = document.getElementById("--command-palette-shortcut");
+        const platform = navigator.userAgentData?.platform ?? navigator.platform;
+        const mac = /mac|iphone|ipad/i.test(platform);
+        if (mac && shortcut) {
+            shortcut.querySelector("kbd").textContent = "⌘";
+        }
+
+        // ⌘K on macOS, Ctrl+K elsewhere, toggles the palette. Escape closes it natively.
+        document.addEventListener("keydown", event => {
+            if (event.defaultPrevented) {
+                return;
+            }
+
+            if (event.key.toLowerCase() === "k" && (mac ? event.metaKey : event.ctrlKey) && !event.altKey && !event.shiftKey) {
+                event.preventDefault();
+                dialog.open ? dialog.close() : dialog.showModal();
+            }
+        });
+        dialog.addEventListener("itemselect", () => dialog.close());
+    })();
+</script>
+
+@{
+    async Task RenderItem(SidebarLinkItemBase item, string? groupLabel)
+    {
+        switch (item)
+        {
+            case SidebarActionLinkItem actionLinkItem:
+                <sa-command-link-item asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
+                                      asp-area="@actionLinkItem.Area" keywords="@groupLabel">
+                    @actionLinkItem.Label
+                </sa-command-link-item>
+                break;
+            case SidebarLinkItem linkItem:
+                <sa-command-link-item href="@linkItem.Href" keywords="@groupLabel">
+                    @linkItem.Label
+                </sa-command-link-item>
+                break;
+        }
+    }
+}
