@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toast prototype — sa-toaster candidate visuals and behavior (nova)</title>
+
+    <!-- Geist, same link the docs layout uses -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"
+    />
+
+    <!--
+      Real built library assets. The bundles already ship the themed half of the
+      toast (.sa-toast { rounded-2xl } in nova/vega, rounded-none in lyra), swept
+      from upstream's .cn-toast by ThemeGenerator. Everything else is structural.
+      The theme <link> is swappable from the control bar (bottom left).
+    -->
+    <link
+      id="theme-css"
+      rel="stylesheet"
+      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css"
+    />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build, only for prototype-authored utility classes. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @custom-variant dark (&:is(.dark *));
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      /* Token vocabulary (copy of Client/css/theme-tokens.css). */
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+        --radius-2xl: calc(var(--radius) + 8px);
+        --radius-3xl: calc(var(--radius) + 12px);
+        --radius-4xl: calc(var(--radius) + 16px);
+      }
+      /* The browser build's preflight lands after the bundle's base layer and
+         would reset border-color to currentColor; restore the library default. */
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+
+    <!--
+      STRUCTURAL ADDITION (not upstream): top positions. Upstream only ships a
+      bottom-anchored viewport, so its transforms all move toasts upwards. For
+      top-* positions the stack mirrors: origin-top, positive offsets, enter and
+      exit from above, and the hover bridge (::after) sits above each toast.
+      Unlayered on purpose so it beats the upstream utilities; on extraction this
+      becomes data-[position^=top] rules in components.css.
+    -->
+    <style>
+      [data-slot="toast-viewport"][data-position^="top"] [data-slot="toast"] {
+        top: 0;
+        bottom: auto;
+        transform-origin: top;
+        --offset-y: calc(
+          var(--toast-offset-y) + var(--toast-index) * var(--gap) + var(--toast-swipe-movement-y)
+        );
+        transform: translateX(var(--toast-swipe-movement-x))
+          translateY(
+            calc(
+              var(--toast-swipe-movement-y) + var(--toast-index) * var(--peek) + var(--shrink) *
+                var(--height)
+            )
+          )
+          scale(var(--scale));
+      }
+      [data-slot="toast-viewport"][data-position^="top"] [data-slot="toast"]::after {
+        top: auto;
+        bottom: 100%;
+      }
+      [data-slot="toast-viewport"][data-position^="top"] [data-slot="toast"][data-expanded] {
+        transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--offset-y));
+      }
+      [data-slot="toast-viewport"][data-position^="top"] [data-slot="toast"][data-starting-style],
+      [data-slot="toast-viewport"][data-position^="top"]
+        [data-slot="toast"][data-ending-style]:not([data-limited]):not([data-swipe-direction]) {
+        transform: translateY(-150%);
+      }
+      [data-slot="toast-viewport"][data-position^="top"]
+        [data-slot="toast"][data-ending-style][data-swipe-direction="up"] {
+        transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+      }
+      [data-slot="toast-viewport"][data-position^="top"]
+        [data-slot="toast"][data-ending-style][data-swipe-direction="left"] {
+        transform: translateX(calc(var(--toast-swipe-movement-x) - 150%)) translateY(var(--offset-y));
+      }
+      [data-slot="toast-viewport"][data-position^="top"]
+        [data-slot="toast"][data-ending-style][data-swipe-direction="right"] {
+        transform: translateX(calc(var(--toast-swipe-movement-x) + 150%)) translateY(var(--offset-y));
+      }
+      @media (prefers-reduced-motion: reduce) {
+        [data-slot="toast-viewport"] [data-slot="toast"] {
+          transition-property: opacity !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <!--
+      ================= toast template =================
+      What <sa-toaster> would emit inside <sel-toaster>: server-owned markup the
+      JS clones for every toast, server-sent or browser-raised. Classes are the
+      upstream ones verbatim, grouped by the future structural / themed split.
+      Themed: bg-popover text-popover-foreground border shadow-lg + .sa-toast
+      (radius, from the bundle). Everything else is structural.
+    -->
+    <template id="toast-template">
+      <div
+        data-slot="toast"
+        tabindex="0"
+        role="dialog"
+        aria-modal="false"
+        class="sa-toast group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom border bg-popover text-popover-foreground shadow-lg will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))] h-(--height) [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms] after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-[''] data-expanded:h-(--toast-height) data-expanded:[transform:translateX(var(--toast-swipe-movement-x))_translateY(var(--offset-y))] data-limited:opacity-0 data-starting-style:[transform:translateY(150%)] [&[data-ending-style]:not([data-limited]):not([data-swipe-direction])]:[transform:translateY(150%)] data-ending-style:data-[swipe-direction=down]:[transform:translateY(calc(var(--toast-swipe-movement-y)+150%))] data-ending-style:data-[swipe-direction=left]:[transform:translateX(calc(var(--toast-swipe-movement-x)-150%))_translateY(var(--offset-y))] data-ending-style:data-[swipe-direction=right]:[transform:translateX(calc(var(--toast-swipe-movement-x)+150%))_translateY(var(--offset-y))] data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]"
+      >
+        <div
+          data-slot="toast-content"
+          class="flex h-full items-center gap-3 overflow-hidden p-4 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] data-behind:opacity-0 data-expanded:opacity-100"
+        >
+          <span
+            data-slot="toast-icon"
+            class="shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
+          >
+            <svg data-toast-icon="success" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+            <svg data-toast-icon="info" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
+            <svg data-toast-icon="warning" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+            <svg data-toast-icon="error" class="text-destructive" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 9-6 6" /><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z" /><path d="m9 9 6 6" /></svg>
+            <svg data-toast-icon="loading" class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+          </span>
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <div data-slot="toast-title" class="text-sm font-medium"></div>
+            <div data-slot="toast-description" class="text-sm text-muted-foreground"></div>
+          </div>
+          <!-- Upstream renders the action through <Button variant="outline" size="sm" />; server actions are links. -->
+          <a
+            data-slot="toast-action"
+            class="sa-button group/button sa-button-variant-outline sa-button-size-sm shrink-0"
+          ></a>
+          <button
+            type="button"
+            data-slot="toast-close"
+            aria-label="Close toast"
+            class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm relative shrink-0 text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-foreground"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- ================= page content (Voyager Travel) ================= -->
+    <main class="mx-auto flex max-w-4xl flex-col gap-10 px-6 pt-10 pb-40">
+      <header class="flex flex-col gap-2">
+        <h1 class="text-2xl font-semibold tracking-tight">Toast prototype</h1>
+        <p class="max-w-2xl text-sm text-muted-foreground">
+          The live candidate is the toaster in the page's top layer: use the buttons below to raise toasts, hover or press
+          <kbd class="rounded border px-1 text-xs">F6</kbd> to expand the stack, and use the control bar (bottom left) to
+          change position, swipe, theme and dark mode. The strips further down are static snapshots of the same markup.
+        </p>
+      </header>
+
+      <section class="flex flex-col gap-3">
+        <h2 class="text-sm font-medium">Raise a toast</h2>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" data-demo="default" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Default</button>
+          <button type="button" data-demo="success" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Success</button>
+          <button type="button" data-demo="info" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Info</button>
+          <button type="button" data-demo="warning" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Warning</button>
+          <button type="button" data-demo="error" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Error</button>
+          <button type="button" data-demo="action" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">With action</button>
+          <button type="button" data-demo="promise" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Loading → success</button>
+          <button type="button" data-demo="sticky" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Stays open</button>
+          <button type="button" data-demo="long" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Long text</button>
+          <button type="button" data-demo="burst" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Five at once</button>
+          <button type="button" data-demo="dialog" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Open a modal dialog</button>
+        </div>
+      </section>
+
+      <!-- ================= comparison strips (static snapshots) ================= -->
+      <section class="flex flex-col gap-3">
+        <h2 class="text-sm font-medium">Strip 1 — types, one toast each (upstream icons; only Error colors its icon)</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Itinerary archived","description":"3 bookings moved to archive."}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Booking confirmed","description":"Your trip to Lisbon departs 14 October.","type":"success"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Fare alert","description":"Flights to Kyoto dropped 12% this week.","type":"info"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Passport expires soon","description":"Renew it before your March trip to Cape Town.","type":"warning"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Payment declined","description":"Your card ending 4242 was declined.","type":"error"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Uploading travel documents…","type":"loading"}]</script>
+            </proto-toaster>
+          </figure>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-3">
+        <h2 class="text-sm font-medium">Strip 2 — action link and long content</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <figure class="relative h-32 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Itinerary archived","description":"3 bookings moved to archive.","action":{"label":"Undo","href":"#undo"}}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-56 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Schedule change on your Reykjavík flight","description":"Flight VT 204 now departs at 07:45 instead of 09:10. Your connection in Oslo is still protected, and your seat assignments are unchanged.","type":"warning","action":{"label":"Review","href":"#review"}}]</script>
+            </proto-toaster>
+          </figure>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-3">
+        <h2 class="text-sm font-medium">Strip 3 — stack of three: collapsed (left) and expanded on hover/focus (right)</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <figure class="relative h-44 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Fare alert","description":"Flights to Kyoto dropped 12% this week.","type":"info"},{"title":"Seat upgraded","description":"You're in 3A on VT 118 to Lisbon.","type":"success"},{"title":"Booking confirmed","description":"Your trip to Lisbon departs 14 October.","type":"success"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-80 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="bottom-right" class="pointer-events-none absolute inset-x-4 bottom-4 outline-none"></div>
+              <script type="application/json">[{"title":"Fare alert","description":"Flights to Kyoto dropped 12% this week.","type":"info"},{"title":"Seat upgraded","description":"You're in 3A on VT 118 to Lisbon.","type":"success"},{"title":"Booking confirmed","description":"Your trip to Lisbon departs 14 October.","type":"success"}]</script>
+            </proto-toaster>
+          </figure>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-3">
+        <h2 class="text-sm font-medium">Strip 4 — top anchoring (structural addition, mirrored stack)</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <figure class="relative h-44 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static>
+              <div data-slot="toast-viewport" data-position="top-center" class="pointer-events-none absolute inset-x-4 top-4 outline-none"></div>
+              <script type="application/json">[{"title":"Fare alert","description":"Flights to Kyoto dropped 12% this week.","type":"info"},{"title":"Seat upgraded","description":"You're in 3A on VT 118 to Lisbon.","type":"success"},{"title":"Booking confirmed","description":"Your trip to Lisbon departs 14 October.","type":"success"}]</script>
+            </proto-toaster>
+          </figure>
+          <figure class="relative h-80 overflow-hidden rounded-lg border bg-muted/40">
+            <proto-toaster data-static data-expanded-always>
+              <div data-slot="toast-viewport" data-position="top-center" class="pointer-events-none absolute inset-x-4 top-4 outline-none"></div>
+              <script type="application/json">[{"title":"Fare alert","description":"Flights to Kyoto dropped 12% this week.","type":"info"},{"title":"Seat upgraded","description":"You're in 3A on VT 118 to Lisbon.","type":"success"},{"title":"Booking confirmed","description":"Your trip to Lisbon departs 14 October.","type":"success"}]</script>
+            </proto-toaster>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <!-- A plain modal dialog, only to prove toasts render above (and stay usable over) the top-layer backdrop. -->
+    <dialog
+      id="proto-dialog"
+      class="m-auto w-full max-w-md rounded-xl border bg-background p-6 text-foreground shadow-lg backdrop:bg-black/50"
+    >
+      <h2 class="text-lg font-semibold">Change your seat</h2>
+      <p class="mt-2 text-sm text-muted-foreground">Toasts raised while this modal dialog is open should appear above its backdrop.</p>
+      <div class="mt-6 flex justify-end gap-2">
+        <button type="button" data-demo="success" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default">Raise a toast</button>
+        <button type="button" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default" onclick="this.closest('dialog').close()">Done</button>
+      </div>
+    </dialog>
+
+    <!--
+      ================= live candidate: <sa-toaster> output =================
+      popover="manual" puts the viewport in the top layer. The popover UA styles
+      (inset:0, margin:auto, border, padding, Canvas colors, overflow:auto) are
+      reset here; the rest is the upstream viewport class, plus position variants.
+    -->
+    <proto-toaster id="toaster" data-limit="3" data-duration="5000" data-swipe>
+      <div
+        data-slot="toast-viewport"
+        data-position="bottom-right"
+        popover="manual"
+        tabindex="-1"
+        role="region"
+        aria-label="Notifications"
+        aria-live="polite"
+        aria-atomic="false"
+        aria-relevant="additions text"
+        class="pointer-events-none fixed inset-x-4 z-50 mx-auto my-0 w-auto max-w-sm overflow-visible border-0 bg-transparent p-0 outline-none sm:w-full data-[position^=bottom]:top-auto data-[position^=bottom]:bottom-4 data-[position^=top]:top-4 data-[position^=top]:bottom-auto sm:data-[position$=left]:right-auto sm:data-[position$=left]:left-4 sm:data-[position$=left]:mx-0 sm:data-[position$=right]:right-4 sm:data-[position$=right]:left-auto sm:data-[position$=right]:mx-0"
+      >
+        <!-- Error toasts are also announced here; inside the viewport so it moves into a modal with it. -->
+        <div data-slot="toast-announcer" aria-live="assertive" class="sr-only"></div>
+      </div>
+      <!-- TempData toasts drained on a full page load would be serialized here. -->
+      <script type="application/json">[{"title":"Welcome back, Amara","description":"You have 2 upcoming trips.","type":"info"}]</script>
+    </proto-toaster>
+
+    <!-- ================= prototype control bar (not part of the design) ================= -->
+    <div class="fixed bottom-4 left-4 z-40 flex max-w-[calc(100vw-2rem)] flex-wrap items-center gap-2 rounded-lg border border-border bg-popover p-2 text-xs shadow-md">
+      <span class="text-muted-foreground">position</span>
+      <button type="button" data-set-position="top-left" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↖</button>
+      <button type="button" data-set-position="top-center" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↑</button>
+      <button type="button" data-set-position="top-right" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↗</button>
+      <button type="button" data-set-position="bottom-left" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↙</button>
+      <button type="button" data-set-position="bottom-center" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↓</button>
+      <button type="button" data-set-position="bottom-right" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">↘</button>
+      <button type="button" data-toggle-swipe class="ml-2 rounded-md border border-border px-2 py-1 data-[active]:bg-accent">swipe</button>
+      <span class="ml-2 text-muted-foreground">theme</span>
+      <button type="button" data-set-theme="shadcn.nova" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">nova</button>
+      <button type="button" data-set-theme="shadcn.vega" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">vega</button>
+      <button type="button" data-set-theme="shadcn.lyra" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">lyra</button>
+      <button type="button" data-set-theme="shadcn.maia" class="rounded-md border border-border px-2 py-1 data-[active]:bg-accent">maia</button>
+      <button type="button" data-toggle-dark class="ml-2 rounded-md border border-border px-2 py-1">dark</button>
+    </div>
+
+    <!--
+      ================= prototype toaster behavior =================
+      Throwaway stand-in for the future sel-toaster Lit component. It reproduces
+      Base UI's Toast contract so upstream's classes work unchanged:
+        toast: data-type, data-expanded, data-limited, data-starting-style,
+               data-ending-style, data-swipe-direction, data-swiping,
+               --toast-index, --toast-offset-y, --toast-height,
+               --toast-swipe-movement-x/-y
+        content: data-expanded, data-behind
+        viewport: --toast-frontmost-height
+      Newest toast is first in the DOM and in `this.toasts`, as in Base UI.
+    -->
+    <script>
+      const SWIPE_THRESHOLD = 40;
+      let nextId = 1;
+
+      class ProtoToaster extends HTMLElement {
+        connectedCallback() {
+          this.viewport = this.querySelector('[data-slot="toast-viewport"]');
+          this.announcer = this.querySelector('[data-slot="toast-announcer"]');
+          this.template = this.querySelector("template") ?? document.getElementById("toast-template");
+          this.isStatic = this.hasAttribute("data-static");
+          this.limit = Number(this.dataset.limit ?? 3);
+          this.duration = Number(this.dataset.duration ?? 5000);
+          this.toasts = [];
+          this.hovering = false;
+          this.focused = this.hasAttribute("data-expanded-always");
+          this.windowFocused = true;
+          // Heights change when fonts load, the theme stylesheet swaps, or the width
+          // changes the wrapping. The text column is never stretched, so it reports
+          // the natural size.
+          this.resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              const toast = this.toasts.find((t) => t.el.contains(entry.target));
+              if (toast && !toast.ending) toast.height = this.#measure(toast.el);
+            }
+            this.#sync();
+          });
+
+          if (!this.isStatic) {
+            // Keep the (empty, zero-height) popover open for the page's lifetime, so the
+            // live region is always in the accessibility tree before anything is announced.
+            this.viewport.showPopover();
+            this.#listen();
+          }
+
+          const seed = this.querySelector('script[type="application/json"]');
+          if (seed) {
+            for (const toast of JSON.parse(seed.textContent)) {
+              this.add(this.isStatic ? { ...toast, duration: 0 } : toast);
+            }
+          }
+        }
+
+        get expanded() {
+          return this.hovering || this.focused;
+        }
+
+        get paused() {
+          return this.hovering || this.focused || document.hidden || !this.windowFocused;
+        }
+
+        add(options) {
+          const id = options.id ?? `toast-${nextId++}`;
+          const el = this.template.content.firstElementChild.cloneNode(true);
+          const toast = { id, el, height: 0, ending: false, remaining: 0, startedAt: 0, timer: 0 };
+          el.id = id;
+          el.style.setProperty("--toast-swipe-movement-x", "0px");
+          el.style.setProperty("--toast-swipe-movement-y", "0px");
+          this.#fill(toast, options);
+
+          if (!this.isStatic) {
+            el.setAttribute("data-starting-style", "");
+            this.#wireToast(toast);
+          }
+
+          this.viewport.prepend(el);
+          this.toasts.unshift(toast);
+          toast.height = this.#measure(el);
+          this.resizeObserver.observe(el.querySelector('[data-slot="toast-title"]').parentElement);
+          this.#syncHost();
+          this.#sync();
+
+          if (!this.isStatic) {
+            requestAnimationFrame(() => requestAnimationFrame(() => el.removeAttribute("data-starting-style")));
+          }
+          return id;
+        }
+
+        update(id, options) {
+          const toast = this.toasts.find((t) => t.id === id);
+          if (!toast || toast.ending) return;
+          clearTimeout(toast.timer);
+          toast.timer = 0;
+          this.#fill(toast, options);
+          toast.height = this.#measure(toast.el);
+          this.#sync();
+        }
+
+        async close(id, swipeDirection) {
+          const toast = this.toasts.find((t) => t.id === id);
+          if (!toast || toast.ending) return;
+          clearTimeout(toast.timer);
+          toast.ending = true;
+          const hadFocus = toast.el.contains(document.activeElement);
+          if (swipeDirection) toast.el.setAttribute("data-swipe-direction", swipeDirection);
+          toast.el.setAttribute("data-ending-style", "");
+          this.#sync();
+
+          // getAnimations() flushes style, so the exit transitions have started by now.
+          await Promise.allSettled(toast.el.getAnimations({ subtree: true }).map((a) => a.finished));
+          this.resizeObserver.unobserve(toast.el.querySelector('[data-slot="toast-title"]').parentElement);
+          toast.el.remove();
+          this.toasts = this.toasts.filter((t) => t !== toast);
+          if (hadFocus) this.#focusAfterClose();
+          this.#sync();
+          this.#flushMouseLeave();
+        }
+
+        #fill(toast, options) {
+          const { el } = toast;
+          const type = options.type ?? "default";
+          toast.options = options;
+          el.dataset.type = type;
+
+          // Icons: keep only the one for this type (the template carries all of them).
+          const iconSlot = el.querySelector('[data-slot="toast-icon"]') ?? toast.iconSlot;
+          toast.iconSlot ??= iconSlot;
+          toast.icons ??= [...iconSlot.querySelectorAll("[data-toast-icon]")];
+          iconSlot.replaceChildren(...toast.icons.filter((svg) => svg.dataset.toastIcon === type));
+          if (iconSlot.childElementCount === 0) iconSlot.remove();
+          else if (!iconSlot.isConnected || !el.contains(iconSlot))
+            el.querySelector('[data-slot="toast-content"]').prepend(iconSlot);
+
+          const title = el.querySelector('[data-slot="toast-title"]');
+          title.id = `${toast.id}-title`;
+          title.textContent = options.title;
+          el.setAttribute("aria-labelledby", title.id);
+
+          toast.description ??= el.querySelector('[data-slot="toast-description"]');
+          if (options.description) {
+            toast.description.id = `${toast.id}-description`;
+            toast.description.textContent = options.description;
+            if (!toast.description.isConnected) title.after(toast.description);
+            el.setAttribute("aria-describedby", toast.description.id);
+          } else {
+            toast.description.remove();
+            el.removeAttribute("aria-describedby");
+          }
+
+          toast.action ??= el.querySelector('[data-slot="toast-action"]');
+          if (options.action) {
+            toast.action.textContent = options.action.label;
+            toast.action.href = options.action.href;
+            if (!toast.action.isConnected) el.querySelector('[data-slot="toast-close"]').before(toast.action);
+          } else {
+            toast.action.remove();
+          }
+
+          // Error toasts are announced assertively; the toast itself stays a polite dialog.
+          if (type === "error" && this.announcer) {
+            this.announcer.textContent = [options.title, options.description].filter(Boolean).join(". ");
+          }
+
+          const duration = options.duration ?? (type === "loading" ? 0 : this.duration);
+          toast.remaining = duration;
+          if (!this.paused && duration > 0) this.#startTimer(toast);
+        }
+
+        #startTimer(toast) {
+          if (toast.remaining <= 0 || toast.ending) return;
+          toast.startedAt = performance.now();
+          toast.timer = setTimeout(() => this.close(toast.id), toast.remaining);
+        }
+
+        #pauseTimers() {
+          for (const toast of this.toasts) {
+            if (!toast.timer) continue;
+            clearTimeout(toast.timer);
+            toast.timer = 0;
+            toast.remaining = Math.max(0, toast.remaining - (performance.now() - toast.startedAt));
+          }
+        }
+
+        #resumeTimers() {
+          if (this.paused) return;
+          for (const toast of this.toasts) if (!toast.timer) this.#startTimer(toast);
+        }
+
+        #measure(el) {
+          const previous = el.style.height;
+          el.style.height = "auto";
+          const height = el.offsetHeight;
+          el.style.height = previous;
+          return height;
+        }
+
+        #sync() {
+          let visibleIndex = 0;
+          let offsetY = 0;
+          this.toasts.forEach((toast, domIndex) => {
+            const { el } = toast;
+            const limited = !toast.ending && visibleIndex >= this.limit;
+            el.style.setProperty("--toast-index", String(toast.ending ? domIndex : visibleIndex));
+            el.style.setProperty("--toast-offset-y", `${offsetY}px`);
+            el.style.setProperty("--toast-height", `${toast.height}px`);
+            el.toggleAttribute("data-expanded", this.expanded);
+            el.toggleAttribute("data-limited", limited);
+            el.inert = limited;
+            const content = el.querySelector('[data-slot="toast-content"]');
+            content.toggleAttribute("data-expanded", this.expanded);
+            content.toggleAttribute("data-behind", !toast.ending && visibleIndex > 0);
+            offsetY += toast.height;
+            if (!toast.ending) visibleIndex += 1;
+          });
+          const frontmost = this.toasts[0];
+          if (frontmost) this.viewport.style.setProperty("--toast-frontmost-height", `${frontmost.height}px`);
+          else this.viewport.style.removeProperty("--toast-frontmost-height");
+        }
+
+        // A modal dialog makes everything outside it inert, top layer included, so
+        // toasts would show above it but ignore clicks and focus. While a modal is
+        // open the viewport moves into it (re-shown, so it is above the dialog in
+        // the top layer too) and moves back when it closes.
+        #syncHost() {
+          if (this.isStatic) return;
+          const modals = [...document.querySelectorAll("dialog:modal")];
+          const host = modals.at(-1) ?? this;
+          // Removing an open popover from the DOM hides it, so a move always re-shows it.
+          if (this.viewport.parentElement !== host) host.append(this.viewport);
+          if (!this.viewport.matches(":popover-open")) this.viewport.showPopover();
+        }
+
+        #focusAfterClose() {
+          const next = this.toasts.find((t) => !t.ending && !t.el.inert);
+          if (next) next.el.focus({ preventScroll: true });
+          else this.#restoreFocus();
+        }
+
+        #restoreFocus() {
+          const target = this.previousFocus;
+          this.previousFocus = null;
+          if (target?.isConnected) target.focus({ preventScroll: true });
+        }
+
+        #setHovering(value) {
+          if (this.hovering === value) return;
+          this.hovering = value;
+          value ? this.#pauseTimers() : this.#resumeTimers();
+          this.#sync();
+        }
+
+        #setFocused(value) {
+          if (this.focused === value) return;
+          this.focused = value;
+          value ? this.#pauseTimers() : this.#resumeTimers();
+          this.#sync();
+        }
+
+        // Base UI defers collapsing while a toast is animating out, so the stack
+        // doesn't reshuffle under the pointer mid-exit.
+        #flushMouseLeave() {
+          if (!this.pendingLeave || this.toasts.some((t) => t.ending)) return;
+          this.pendingLeave = false;
+          this.#setHovering(false);
+        }
+
+        #listen() {
+          const vp = this.viewport;
+          vp.addEventListener("mouseenter", () => {
+            this.pendingLeave = false;
+            this.#setHovering(true);
+          });
+          vp.addEventListener("mousemove", () => {
+            this.pendingLeave = false;
+            this.#setHovering(true);
+          });
+          vp.addEventListener("mouseleave", () => {
+            this.pendingLeave = true;
+            this.#flushMouseLeave();
+          });
+
+          vp.addEventListener("focusin", (event) => {
+            if (event.target.matches(":focus-visible")) this.#setFocused(true);
+          });
+          vp.addEventListener("focusout", (event) => {
+            if (!vp.contains(event.relatedTarget)) this.#setFocused(false);
+          });
+          vp.addEventListener("keydown", (event) => {
+            if (event.key === "Tab" && event.shiftKey && event.target === vp) {
+              event.preventDefault();
+              this.#restoreFocus();
+            }
+            if (event.key === "Escape") {
+              const toast = this.toasts.find((t) => t.el.contains(event.target));
+              if (toast) {
+                event.preventDefault();
+                this.close(toast.id);
+              }
+            }
+          });
+          vp.addEventListener("click", (event) => {
+            const close = event.target.closest('[data-slot="toast-close"]');
+            const toast = close && this.toasts.find((t) => t.el.contains(close));
+            if (toast) this.close(toast.id);
+          });
+
+          document.addEventListener("keydown", (event) => {
+            if (event.key !== "F6" || event.target === vp || this.toasts.length === 0) return;
+            event.preventDefault();
+            this.previousFocus = document.activeElement;
+            vp.focus({ preventScroll: true });
+            this.#setFocused(true);
+          });
+          document.addEventListener("visibilitychange", () =>
+            document.hidden ? this.#pauseTimers() : this.#resumeTimers(),
+          );
+          window.addEventListener("blur", () => {
+            this.windowFocused = false;
+            this.#pauseTimers();
+          });
+          window.addEventListener("focus", () => {
+            this.windowFocused = true;
+          // Heights change when fonts load, the theme stylesheet swaps, or the width
+          // changes the wrapping. The text column is never stretched, so it reports
+          // the natural size.
+          this.resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              const toast = this.toasts.find((t) => t.el.contains(entry.target));
+              if (toast && !toast.ending) toast.height = this.#measure(toast.el);
+            }
+            this.#sync();
+          });
+            this.#resumeTimers();
+          });
+          // Dialogs fire toggle (open and close) and close; neither bubbles, so capture.
+          const onDialog = (event) => {
+            if (event.target instanceof HTMLDialogElement) queueMicrotask(() => this.#syncHost());
+          };
+          document.addEventListener("toggle", onDialog, true);
+          document.addEventListener("close", onDialog, true);
+        }
+
+        #wireToast(toast) {
+          const { el } = toast;
+          let start = null;
+
+          el.addEventListener("pointerdown", (event) => {
+            if (!this.hasAttribute("data-swipe") || event.button !== 0) return;
+            if (event.target.closest("a, button")) return;
+            start = { x: event.clientX, y: event.clientY, id: event.pointerId };
+            el.setPointerCapture(event.pointerId);
+          });
+          el.addEventListener("pointermove", (event) => {
+            if (!start || event.pointerId !== start.id) return;
+            const { dx, dy } = this.#clampSwipe(event.clientX - start.x, event.clientY - start.y);
+            if (!el.hasAttribute("data-swiping") && Math.hypot(dx, dy) < 4) return;
+            el.setAttribute("data-swiping", "");
+            el.style.transition = "none";
+            el.style.setProperty("--toast-swipe-movement-x", `${dx}px`);
+            el.style.setProperty("--toast-swipe-movement-y", `${dy}px`);
+          });
+          const end = (event) => {
+            if (!start || event.pointerId !== start.id) return;
+            const { dx, dy } = this.#clampSwipe(event.clientX - start.x, event.clientY - start.y);
+            start = null;
+            el.removeAttribute("data-swiping");
+            el.style.transition = "";
+            const direction = this.#swipeDirection(dx, dy);
+            if (direction && event.type === "pointerup") {
+              this.close(toast.id, direction);
+            } else {
+              el.style.setProperty("--toast-swipe-movement-x", "0px");
+              el.style.setProperty("--toast-swipe-movement-y", "0px");
+            }
+          };
+          el.addEventListener("pointerup", end);
+          el.addEventListener("pointercancel", end);
+        }
+
+        // Base UI's default is ["down", "right"] for a bottom-right toaster; each
+        // position swipes towards its own edges.
+        #allowedDirections() {
+          const [vertical, horizontal] = this.viewport.dataset.position.split("-");
+          const directions = [vertical === "top" ? "up" : "down"];
+          if (horizontal !== "center") directions.push(horizontal);
+          return directions;
+        }
+
+        #clampSwipe(dx, dy) {
+          const allowed = this.#allowedDirections();
+          const damp = (d) => Math.sign(d) * Math.sqrt(Math.abs(d)) * 2;
+          const x = (dx > 0 && allowed.includes("right")) || (dx < 0 && allowed.includes("left")) ? dx : damp(dx);
+          const y = (dy > 0 && allowed.includes("down")) || (dy < 0 && allowed.includes("up")) ? dy : damp(dy);
+          return Math.abs(x) >= Math.abs(y) ? { dx: x, dy: 0 } : { dx: 0, dy: y };
+        }
+
+        #swipeDirection(dx, dy) {
+          const candidates = { right: dx, left: -dx, down: dy, up: -dy };
+          return this.#allowedDirections().find((d) => candidates[d] > SWIPE_THRESHOLD);
+        }
+      }
+      customElements.define("proto-toaster", ProtoToaster);
+
+      // ---------------- demo wiring ----------------
+      const toaster = document.getElementById("toaster");
+      const demos = {
+        default: () => toaster.add({ title: "Itinerary archived", description: "3 bookings moved to archive." }),
+        success: () =>
+          toaster.add({ title: "Booking confirmed", description: "Your trip to Lisbon departs 14 October.", type: "success" }),
+        info: () => toaster.add({ title: "Fare alert", description: "Flights to Kyoto dropped 12% this week.", type: "info" }),
+        warning: () =>
+          toaster.add({
+            title: "Passport expires soon",
+            description: "Renew it before your March trip to Cape Town.",
+            type: "warning",
+          }),
+        error: () =>
+          toaster.add({ title: "Payment declined", description: "Your card ending 4242 was declined.", type: "error" }),
+        action: () =>
+          toaster.add({
+            title: "Itinerary archived",
+            description: "3 bookings moved to archive.",
+            duration: 8000,
+            action: { label: "Undo", href: "#undo" },
+          }),
+        promise: () => {
+          const id = toaster.add({ title: "Uploading travel documents…", type: "loading" });
+          setTimeout(
+            () => toaster.update(id, { title: "Documents uploaded", description: "4 files added to your Lisbon trip.", type: "success" }),
+            2000,
+          );
+        },
+        sticky: () =>
+          toaster.add({ title: "Check-in is open", description: "This one stays until you close it.", duration: 0 }),
+        long: () =>
+          toaster.add({
+            title: "Schedule change on your Reykjavík flight",
+            description:
+              "Flight VT 204 now departs at 07:45 instead of 09:10. Your connection in Oslo is still protected, and your seat assignments are unchanged.",
+            type: "warning",
+            action: { label: "Review", href: "#review" },
+          }),
+        burst: () => {
+          const titles = ["Lisbon", "Kyoto", "Cape Town", "Reykjavík", "Oaxaca"];
+          titles.forEach((city, i) =>
+            setTimeout(() => toaster.add({ title: `Trip to ${city} saved`, type: "success" }), i * 150),
+          );
+        },
+        dialog: () => document.getElementById("proto-dialog").showModal(),
+      };
+      document
+        .querySelectorAll("[data-demo]")
+        .forEach((button) => button.addEventListener("click", () => demos[button.dataset.demo]()));
+
+      // ---------------- control bar ----------------
+      const mark = (selector, key, active) =>
+        document.querySelectorAll(selector).forEach((b) => b.toggleAttribute("data-active", b.dataset[key] === active));
+      document.querySelectorAll("[data-set-position]").forEach((button) =>
+        button.addEventListener("click", () => {
+          toaster.viewport.dataset.position = button.dataset.setPosition;
+          mark("[data-set-position]", "setPosition", button.dataset.setPosition);
+        }),
+      );
+      document.querySelector("[data-toggle-swipe]").addEventListener("click", (event) => {
+        toaster.toggleAttribute("data-swipe");
+        event.currentTarget.toggleAttribute("data-active", toaster.hasAttribute("data-swipe"));
+      });
+      document.querySelectorAll("[data-set-theme]").forEach((button) =>
+        button.addEventListener("click", () => {
+          document.getElementById("theme-css").href =
+            `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${button.dataset.setTheme}.css`;
+          mark("[data-set-theme]", "setTheme", button.dataset.setTheme);
+        }),
+      );
+      document
+        .querySelector("[data-toggle-dark]")
+        .addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+      mark("[data-set-position]", "setPosition", "bottom-right");
+      mark("[data-set-theme]", "setTheme", "shadcn.nova");
+      document.querySelector("[data-toggle-swipe]").setAttribute("data-active", "");
+    </script>
+  </body>
+</html>
