@@ -166,23 +166,39 @@ export class Command extends LitElement {
   }
 
   /**
-   * Sorts items by score within the slots they occupy in their container, so groups, separators
-   * and other children keep their authored positions.
+   * Sorts items by score, then groups by their best item's score. Each is sorted within the slots
+   * it occupies in its container, so separators and other children keep their authored positions.
    */
   #sort(scores: Map<HTMLElement, number>) {
+    this.#sortInSlots(scores);
+
+    const groupScores = new Map<HTMLElement, number>();
+    for (const group of this.querySelectorAll<HTMLElement>(GROUP)) {
+      let best = 0;
+      for (const item of group.querySelectorAll<HTMLElement>(ITEM)) {
+        best = Math.max(best, scores.get(item) ?? 0);
+      }
+      groupScores.set(group, best);
+    }
+    this.#sortInSlots(groupScores);
+  }
+
+  /** Sorts elements by descending score within the slots they occupy in their container. */
+  #sortInSlots(scores: Map<HTMLElement, number>) {
     const byContainer = new Map<Element, HTMLElement[]>();
-    for (const item of scores.keys()) {
-      const container = item.parentElement;
+    for (const element of scores.keys()) {
+      const container = element.parentElement;
       if (container) {
-        byContainer.set(container, [...(byContainer.get(container) ?? []), item]);
+        byContainer.set(container, [...(byContainer.get(container) ?? []), element]);
       }
     }
-    for (const [container, items] of byContainer) {
+    for (const [container, elements] of byContainer) {
       this.#rememberOrder(container);
-      const sorted = [...items].sort((a, b) => scores.get(b)! - scores.get(a)!);
-      const slots = items.map((item) => {
+      // Array.prototype.sort is stable, so equal scores keep their authored order.
+      const sorted = [...elements].sort((a, b) => scores.get(b)! - scores.get(a)!);
+      const slots = elements.map((element) => {
         const slot = document.createComment("");
-        item.before(slot);
+        element.before(slot);
         return slot;
       });
       slots.forEach((slot, index) => slot.replaceWith(sorted[index]));
