@@ -1,6 +1,6 @@
 import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
-import { commandScore } from "./command-score";
+import { commandScore, RELATIVE_SCORE_CUTOFF } from "./command-score";
 
 const ITEM = '[data-slot="command-item"]';
 const GROUP = '[data-slot="command-group"]';
@@ -131,9 +131,11 @@ export class Command extends LitElement {
     if (search) {
       const scores = new Map<HTMLElement, number>();
       for (const item of items) {
-        const score = commandScore(this.#valueOf(item), search, item.dataset.keywords ?? "");
-        scores.set(item, score);
-        item.hidden = score === 0;
+        scores.set(item, commandScore(this.#valueOf(item), search, item.dataset.keywords ?? ""));
+      }
+      const cutoff = Math.max(...scores.values(), 0) * RELATIVE_SCORE_CUTOFF;
+      for (const [item, score] of scores) {
+        item.hidden = score === 0 || score < cutoff;
       }
       this.#sort(scores);
     } else if (this.#clientFiltering) {

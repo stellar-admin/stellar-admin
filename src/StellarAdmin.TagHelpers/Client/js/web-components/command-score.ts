@@ -17,6 +17,15 @@ const PENALTY_SKIPPED = 0.999;
 const PENALTY_CASE_MISMATCH = 0.9999;
 // A string with more characters than were typed scores slightly lower.
 const PENALTY_NOT_COMPLETE = 0.99;
+// A keyword match scores lower than the same match in the value.
+const KEYWORD_WEIGHT = 0.8;
+
+/**
+ * Items scoring below this fraction of the best score are hidden. Matches that jump into the
+ * middle of a word score about a sixth of those at word starts, so this drops them whenever a
+ * cleaner match exists while still comparing weak matches with each other.
+ */
+export const RELATIVE_SCORE_CUTOFF = 0.25;
 
 const IS_GAP_REGEXP = /[\\/_+.#"@[({&]/;
 const COUNT_GAPS_REGEXP = /[\\/_+.#"@[({&]/g;
@@ -112,8 +121,15 @@ function formatInput(value: string) {
   return value.toLowerCase().replace(COUNT_SPACE_REGEXP, " ");
 }
 
-/** Scores how well `search` fuzzy-matches `value` followed by `keywords`; 0 means no match. */
-export function commandScore(value: string, search: string, keywords: string) {
-  const text = keywords ? `${value} ${keywords}` : value;
+function scoreText(text: string, search: string) {
   return scoreInner(text, search, formatInput(text), formatInput(search), 0, 0, new Map());
+}
+
+/**
+ * Scores how well `search` fuzzy-matches `value` or, at a lower weight, `keywords`; 0 means no
+ * match. A match cannot run from the value into the keywords.
+ */
+export function commandScore(value: string, search: string, keywords: string) {
+  const valueScore = scoreText(value, search);
+  return keywords ? Math.max(valueScore, KEYWORD_WEIGHT * scoreText(keywords, search)) : valueScore;
 }
