@@ -845,6 +845,10 @@ internal sealed partial class Generator
             OutputFileName: "theme-override",
             Layout: "_ThemeOverrideDemoLayout"
         ),
+        new("Toast/_Action"),
+        new("Toast/_Intro"),
+        new("Toast/_Promise"),
+        new("Toast/_Types"),
         new("Toggle/_Disabled"),
         new("Toggle/_Intro"),
         new("Toggle/_ModelBinding"),

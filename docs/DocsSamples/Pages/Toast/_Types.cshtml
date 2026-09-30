@@ -1,0 +1,27 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <div class="flex flex-wrap justify-center gap-2">
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="default">Default</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="success">Success</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="info">Info</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="warning">Warning</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="error">Error</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-type="loading">Loading</sa-button>
+    </div>
+    <sa-toaster />
+    <script type="module">
+        const toast = window.stellarAdmin.toast;
+        const types = {
+            default: () => toast.add({ title: "Itinerary archived", description: "3 bookings moved to archive." }),
+            success: () => toast.success("Booking confirmed", "Your trip to Lisbon departs 14 October."),
+            info: () => toast.info("Fare alert", "Flights to Kyoto dropped 12% this week."),
+            warning: () => toast.warning("Passport expires soon", "Renew it before your March trip to Cape Town."),
+            error: () => toast.error("Payment declined", "Your card ending 4242 was declined."),
+            loading: () => toast.add({ title: "Checking seat availability...", type: "loading", duration: 3000 }),
+        };
+
+        document.querySelectorAll("[data-toast-type]").forEach((button) =>
+            button.addEventListener("click", () => types[button.dataset.toastType]()));
+    </script>
+    <!-- code end -->
+</div>

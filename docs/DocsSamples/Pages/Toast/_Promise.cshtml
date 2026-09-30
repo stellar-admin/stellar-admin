@@ -1,0 +1,18 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-button variant="ButtonVariant.Outline" id="--toast-promise-button">Request refund</sa-button>
+    <sa-toaster />
+    <script type="module">
+        function requestRefund() {
+            return new Promise((resolve) => setTimeout(() => resolve({ amount: "€284.00" }), 2000));
+        }
+
+        document.getElementById("--toast-promise-button").addEventListener("click", () =>
+            window.stellarAdmin.toast.promise(requestRefund(), {
+                loading: "Requesting your refund...",
+                success: (refund) => `Refund of ${refund.amount} requested`,
+                error: "We couldn't request your refund",
+            }));
+    </script>
+    <!-- code end -->
+</div>

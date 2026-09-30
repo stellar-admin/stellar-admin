@@ -178,8 +178,14 @@ export class Toaster extends LitElement {
     toast.el.setAttribute("data-ending-style", "");
     this.#sync();
 
-    // getAnimations() flushes style, so the exit transitions have started by now.
-    await Promise.allSettled(toast.el.getAnimations({ subtree: true }).map((a) => a.finished));
+    // getAnimations() flushes style, so the exit transitions have started by now. Infinite
+    // animations, such as the loading spinner, never finish, so they are not waited for.
+    await Promise.allSettled(
+      toast.el
+        .getAnimations({ subtree: true })
+        .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
+        .map((a) => a.finished),
+    );
     this.#resizeObserver.unobserve(toast.el.querySelector('[data-slot="toast-text"]')!);
     toast.el.remove();
     this.#toasts = this.#toasts.filter((t) => t !== toast);

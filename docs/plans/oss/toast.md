@@ -1,6 +1,6 @@
 # Toast
 
-Status: **in progress**. Phases 1 to 3 are committed; phase 4 is implemented and awaiting review. Last updated: 2026-09-30.
+Status: **in progress**. Phases 1 to 4 are committed; phase 5 is implemented and awaiting review. Last updated: 2026-09-30.
 
 Port shadcn's Toast into `StellarAdmin.TagHelpers`, with a server-side API that works for full page loads, redirects and AJAX responses. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -13,8 +13,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | 1 | Server API: `IToastNotifier`, TempData storage, result filter, `SA-Toasts` header; HTTP integration tests | ☑ |
 | 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ☑ |
 | 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ☑ |
-| 4 | Theme coverage across all shipped themes and the custom-theme specifications | ◐ implemented, awaiting review |
-| 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ☐ |
+| 4 | Theme coverage across all shipped themes and the custom-theme specifications | ☑ |
+| 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ◐ implemented, awaiting review |
 
 ## Research summary
 
@@ -236,7 +236,10 @@ Phase 1 paths are confirmed; later paths are expected locations.
 - `util/theme-coverage/coverage.json`: the `Toaster` entry.
 - `util/ThemeGenerator/Processors.cs`: `AddToastSurfaceClasses`, which adds the toast surface to the generated shadcn themes.
 - `docs/design/themes/*.md`: the Toast entry in each custom-theme specification.
-- `docs/DocsSamples/Pages/Toast/`: the demo page, listed under Overlays in `Pages/Shared/DemoNavigation.cs`.
+- `docs/DocsSamples/Pages/Toast/`: the demo page (`_Intro`, `_Types`, `_Action`, `_Promise`), listed under Overlays in `Pages/Shared/DemoNavigation.cs` and registered in `docs/DocsSamplesGenerator/Generator.cs`.
+- `tests/StellarAdmin.TagHelpers.Tests/TagHelpers/Toaster/ToasterTagHelperTests.cs`: rendering and validation unit tests for `sa-toaster`.
+- `util/SkillsGenerator/skills.examples.json` (the `Toaster` entry), `skills/stellar-admin-tag-helpers/references/components/toaster.md` (generated, with a hand-written structure region) and `references/javascript.md` (the `window.stellarAdmin.toast` section and AJAX snippets).
+- Website: `content/docs/tag-helpers/components/toast.mdx` (under Overlays in `meta.json`) and the toast mentions in `content/docs/tag-helpers/javascript.mdx`.
 - `sandbox/ComponentPlayground/Pages/Demo/Toast.cshtml`: the server delivery demo (htmx 4, redirects, `fetch`), with `<sa-toaster />` in the playground layout.
 
 ## Phase log
@@ -284,3 +287,18 @@ Phase 1 paths are confirmed; later paths are expected locations.
   - The seven custom themes each have a `.sa-toast` rule copied from their Popover surface: a 1px `--border` edge, popover background and foreground, the popover radius and the popover shadow. Toasts are non-modal, so they take the popover elevation rather than the dialog's. Ice has square corners and no shadow, as its popovers do. Each specification has a Toast entry beside its Command palette entry, and the `Toaster` coverage entries for the custom themes are now `reviewed` against `sa-toast`.
   - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: all 15 themes in light and dark mode (30 renders) with an expanded stack of three toasts. In each render the toast's border width, border color, background and text color matched the theme's `--border`, `--popover` and `--popover-foreground`. The shadcn themes kept upstream's radii and `shadow-lg`. The custom themes' radius and shadow matched their popovers, and Ice had none, by design. A contact sheet of the 30 renders was reviewed.
   - Verified: `npm run build:css`, `check:themes` (58 components × 15 themes) and `test:themes` (9 of 9) passed.
+- 2026-09-30: Phase 4 reviewed and committed (66f73bf).
+- 2026-09-30: Phase 5 implemented, not committed.
+  - DocsSamples: `_Intro` (one success toast), `_Types` (every type, with a loading toast given a 3 s duration), `_Action` (a success toast with a View link) and `_Promise` (`promise()` from loading to success). The demos now use `window.stellarAdmin.toast` instead of the element's methods. Each partial has its own `<sa-toaster />` inside the code markers, because the website renders each partial alone in an iframe. On the DocsSamples index page, every demo therefore uses the first toaster, which is harmless because they all use the default position. For the same reason there is no Position demo: the website shows `position`, `duration` and `limit` as code.
+  - Library fix: `closeToast` waited on every animation in the toast's subtree, and the loading spinner's animation never finishes. So a loading toast could not be closed by its timer, the close button, a swipe or `close(id)`. It now skips infinite animations. Found while checking the Types demo. Phases 2 and 3 checked loading only by updating it to success.
+  - XML docs: the `duration` and `limit` remarks on `sa-toaster` now lead with `<c>TimeSpan.FromSeconds(5)</c>` and `<c>3</c>`, because SkillsGenerator takes the first `cref` or `<c>` in the remarks as the default. Before, it reported `Zero` for the duration and nothing for the limit.
+  - Website: `toast.mdx` covers usage (layout placement, `IToastNotifier`, the client API, and accessibility and timer behavior), the four demos, position, duration and limit, the delivery table, the header budget, the htmx 4, htmx 2 and `fetch` snippets, the known limitations, and an API reference for `<sa-toaster>`, `IToastNotifier`/`Toast`, `window.stellarAdmin.toast` and `ToastOptions`. `javascript.mdx` lists `<sel-toaster>` and links to the toast API.
+  - Skills: examples registered under `Toaster`; the generated `toaster.md` has a structure region for server delivery and the rules; `javascript.md` has the client API and AJAX snippets; `SKILL.md` mentions toasts in the javascript entry.
+  - Tests: six `ToasterTagHelperTests` (defaults, set attributes, class on the viewport, the template's icons, close button and action, negative duration and a limit below 1). There is no JavaScript test runner in the repository, so the client was verified in the browser.
+  - [Component parity](component-parity.md): Toast marked done.
+  - Generator output: the export regenerated every demo page. Every page picked up the new `stellar-admin.<hash>.js` name, because `sel-toaster.ts` changed. Many pages also reorder SVG attributes, which the generator does between runs. The only change to the 15 theme bundles is the added `.sa-toast*` rules, which had not been exported before.
+  - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: each standalone demo (the intro success toast, all six types newest first, the loading toast closing after its duration, the action's href and label, and the promise going from loading to success with the refund amount), a toast from the index page in Ledger dark, no unresolved `sa-*` elements, and 390 px width. Loading toasts closing by timer, by `close(id)` and by the close button were checked before and after the fix.
+  - Verified on the built website (`pnpm build` then `vite preview` on port 4317): the page renders with its navigation entry and API tables, and the intro demo's iframe raises a toast.
+  - Verified: `dotnet test --solution StellarAdmin.slnx --configuration Release` passed with 571 tests and 0 failures. The TagHelpers library builds with 0 warnings. The solution build's two remaining warnings (`ViewDataKeys.cs` CS1574 and `ResourceAuthorizationTests.cs` CS8631) are in files this phase did not touch. `SkillsGenerator --check` reports no drift. `npm run build` and `oxfmt --check` on `sel-toaster.ts` pass. Website `pnpm lint`, `pnpm types:check` and `pnpm build` pass.
+  - Not done: using toasts in the Dashboard, which is a separate task.
+  - Review fix: the Types demo's buttons were in a wrapping `sa-group`, which leaves no gap between wrapped rows. They now use `flex flex-wrap justify-center gap-2`, as the other multi-button demos do. Checked at 1280 px and 560 px in Ice and at 390 px in Nova, then the website export and skills reference were regenerated (no drift).

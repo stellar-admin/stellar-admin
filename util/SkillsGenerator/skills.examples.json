@@ -63,6 +63,7 @@
   "Table": ["Table/_Intro", "Table/_Select"],
   "Tabs": ["Tabs/_Intro", "Tabs/_Icons", "Tabs/_Url"],
   "Textarea": ["Textarea/_Intro", "Textarea/_ModelBinding"],
+  "Toaster": ["Toast/_Intro", "Toast/_Types", "Toast/_Action", "Toast/_Promise"],
   "Toggle": ["Toggle/_Intro", "Toggle/_WithText"],
   "ToggleGroup": ["ToggleGroup/_Intro", "ToggleGroup/_ModelBinding"],
   "Tooltip": ["Tooltip/_Intro", "Tooltip/_Elements"]

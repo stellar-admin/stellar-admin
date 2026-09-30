@@ -1,0 +1,13 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-button variant="ButtonVariant.Outline" id="--toast-action-button">Book hotel</sa-button>
+    <sa-toaster />
+    <script type="module">
+        document.getElementById("--toast-action-button").addEventListener("click", () =>
+            window.stellarAdmin.toast.success("Hotel booked", {
+                description: "Casa do Mar, Lisbon. 3 nights from 14 October.",
+                action: { label: "View", href: "#booking-2048" },
+            }));
+    </script>
+    <!-- code end -->
+</div>

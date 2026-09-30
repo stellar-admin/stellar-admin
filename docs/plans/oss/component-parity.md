@@ -134,7 +134,7 @@ machinery the rest of this tier reuses.
 | Calendar | ☐ | yes | date grid + keyboard nav |
 | Date Picker | ☐ | yes | Calendar + Popover |
 | Carousel | ✅ | yes — `sel-carousel` | native scroll-snap; helpers, themes, samples, exports and website docs implemented |
-| Sonner / Toast | ☐ | yes | toast queue |
+| Sonner / Toast | ✅ | yes — `sel-toaster` | `<sa-toaster>`, `window.stellarAdmin.toast`, and `IToastNotifier` for server toasts (page loads, redirects and the `SA-Toasts` header on AJAX responses); themes, samples, exports, website docs and skills reference implemented. See [the toast plan](toast.md). |
 | Drawer | ☐ | yes | Sheet covers most side-panel cases; Drawer is the draggable bottom sheet |
 | Resizable | ☐ | yes | drag-to-resize panels |
 | Scroll Area | ☐ | yes | custom scrollbars |

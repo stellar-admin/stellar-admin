@@ -39,8 +39,8 @@ public class ToasterTagHelper : StellarAdminTagHelperBase
     ///     How long a toast stays visible when it doesn't set its own duration.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 5 seconds. <see cref="TimeSpan.Zero" /> keeps toasts open until they are
-    ///     closed.
+    ///     Defaults to <c>TimeSpan.FromSeconds(5)</c>. <c>TimeSpan.Zero</c> keeps toasts open
+    ///     until they are closed.
     /// </remarks>
     [HtmlAttributeName("duration")]
     public TimeSpan? Duration { get; set; }
@@ -50,7 +50,7 @@ public class ToasterTagHelper : StellarAdminTagHelperBase
     ///     ones close.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 3.
+    ///     Defaults to <c>3</c>.
     /// </remarks>
     [HtmlAttributeName("limit")]
     public int? Limit { get; set; }

@@ -33,7 +33,7 @@ The detail lives in `references/`, loaded on demand — open only what the task 
 - **[components-index](references/components-index.md)** — one-line-per-component table (tags + summary). Scan this to find the right component.
 - **`references/components/<name>.md`** — per-component reference: exact tag names, every attribute with its type / default / allowed values, and working examples taken from the StellarAdmin docs samples. Open the specific component(s) you're using.
 - **[icons](references/icons.md)** — `<sa-icon>` names, and registering custom icons or an icon pack.
-- **[javascript](references/javascript.md)** — the `stellar-admin.js` bundle: which components need it, Invoker Commands, and the promise-based `window.stellarAdmin.dialog()` / `alertDialog()` helpers.
+- **[javascript](references/javascript.md)** — the `stellar-admin.js` bundle: which components need it, Invoker Commands, the promise-based `window.stellarAdmin.dialog()` / `alertDialog()` helpers, and `window.stellarAdmin.toast` (including showing server toasts after htmx or `fetch` requests).
 - **[templated-views](references/templated-views.md)** — writing your own tag helpers that render through a Razor view, and passing content into named slots with `<sa-slot-content>` / `<sa-slot-outlet>`.
 
 For focused tasks, read the relevant workflow guide:

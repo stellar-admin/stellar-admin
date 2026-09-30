@@ -54,6 +54,7 @@
 | [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | A responsive data table, rendered as a `<table>` inside a scrollable container. |
 | [Tabs](components/tabs.md) | `<sa-tab-link>`, `<sa-tab-list>` | A single tab within a `<sa-tab-list>`, rendered as a link to its target view. |
 | [Textarea](components/textarea.md) | `<sa-textarea>` | A styled multi-line text input that grows with its content. |
+| [Toaster](components/toaster.md) | `<sa-toaster>` | The region that shows toast notifications. |
 | [Toggle](components/toggle.md) | `<sa-toggle>` | Renders a two-state button that can be toggled on or off. |
 | [ToggleGroup](components/toggle-group.md) | `<sa-toggle-group>`, `<sa-toggle-group-item>` | Groups a set of toggle items into a single-select or multi-select control. |
 | [Tooltip](components/tooltip.md) | `<sa-tooltip>` | A small floating label that appears when the user hovers or focuses a trigger element, rendered as a native hint popover. |
