@@ -13,10 +13,11 @@ import "./web-components/sel-toaster";
 
 import { alertDialog } from "./wrappers/alert-dialog";
 import { dialog } from "./wrappers/dialog";
+import { toast } from "./wrappers/toast";
 
 import "interestfor";
 
-const stellarAdmin = { alertDialog, dialog };
+const stellarAdmin = { alertDialog, dialog, toast };
 
 // augment the Window type so TS knows about window.stellarAdmin
 declare global {

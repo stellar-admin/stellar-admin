@@ -22,6 +22,21 @@ internal static class ToastQueue
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
     };
 
+    // Moves every queued toast into a JSON array for <sa-toaster> to render into the page. The
+    // default encoder also escapes <, > and &, so the array is safe inside a <script> element.
+    public static string? DrainAll(ITempDataDictionary tempData)
+    {
+        var messages = Peek(tempData);
+        if (messages.Count == 0)
+        {
+            return null;
+        }
+
+        tempData.Remove(TempDataKey);
+
+        return JsonSerializer.Serialize(messages, SerializerOptions);
+    }
+
     // Moves as many queued toasts as fit in maxBytes into a JSON array and leaves the rest queued.
     // The first toast is always taken so that an oversized toast cannot block the queue.
     public static string? DrainToHeader(ITempDataDictionary tempData, int maxBytes)

@@ -1,0 +1,104 @@
+@page
+@model ComponentPlayground.Pages.Demo.ToastPage
+
+@*
+    Every server toast below is added with IToastNotifier; the library decides where it goes.
+    Full page loads render it from TempData, and AJAX responses carry it in the SA-Toasts header,
+    which the scripts at the bottom pass to window.stellarAdmin.toast.fromResponse.
+*@
+
+<div class="flex max-w-3xl flex-col gap-8 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Toast - server and client</h1>
+        <p class="text-sm text-muted-foreground">
+            Toasts added on the server during htmx, fetch and full page requests, and toasts raised in the browser.
+        </p>
+    </div>
+
+    <section class="flex flex-col gap-3">
+        <h2 class="text-lg font-medium">htmx form post</h2>
+        <p class="text-sm text-muted-foreground">Returns a fragment and a toast. Leave the name empty for an error toast.</p>
+        <form method="post" asp-page-handler="Save" hx-post="?handler=Save" hx-target="#save-status" class="flex max-w-md items-end gap-2">
+            <sa-field class="flex-1">
+                <sa-field-label for="traveller">Traveller</sa-field-label>
+                <sa-input id="traveller" name="traveller" value="Amara Okafor"/>
+            </sa-field>
+            <sa-button type="submit">Save booking</sa-button>
+        </form>
+        <p id="save-status" class="text-sm text-muted-foreground">Not saved yet.</p>
+    </section>
+
+    <section class="flex flex-col gap-3">
+        <h2 class="text-lg font-medium">Posts that redirect</h2>
+        <p class="text-sm text-muted-foreground">
+            The plain form redirects to this page, which renders the toast from TempData. The htmx post redirects to a
+            fragment, and the toast arrives in the header of the redirected response.
+        </p>
+        <div class="flex flex-wrap items-center gap-2">
+            <form method="post" asp-page-handler="Redirect">
+                <sa-button type="submit" variant="ButtonVariant.Outline">Email itinerary (full page)</sa-button>
+            </form>
+            <form method="post" asp-page-handler="RedirectHtmx" hx-post="?handler=RedirectHtmx" hx-target="#redirect-status">
+                <sa-button type="submit" variant="ButtonVariant.Outline">Schedule reminder (htmx)</sa-button>
+            </form>
+        </div>
+        <p id="redirect-status" class="text-sm text-muted-foreground">No reminder yet.</p>
+    </section>
+
+    <section class="flex flex-col gap-3">
+        <h2 class="text-lg font-medium">Plain fetch</h2>
+        <p class="text-sm text-muted-foreground">
+            The app's own fetch call passes the response to <code>fromResponse</code>. Undo navigates, so its toast
+            comes back on the redirected page.
+        </p>
+        <form id="fetch-form" method="post" class="flex flex-wrap gap-2">
+            <sa-button type="button" variant="ButtonVariant.Outline" data-handler="Archive">Archive itinerary</sa-button>
+            <sa-button type="button" variant="ButtonVariant.Outline" data-handler="CheckIn">Check in 3 travellers</sa-button>
+        </form>
+    </section>
+
+    <section class="flex flex-col gap-3">
+        <h2 class="text-lg font-medium">Client only</h2>
+        <div class="flex flex-wrap gap-2">
+            <sa-button variant="ButtonVariant.Outline" id="client-copy">Copy booking reference</sa-button>
+            <sa-button variant="ButtonVariant.Outline" id="client-promise">Upload passport (succeeds)</sa-button>
+            <sa-button variant="ButtonVariant.Outline" id="client-promise-fail">Upload passport (fails)</sa-button>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="/js/htmx.min.js"></script>
+    <script>
+        // htmx 4
+        document.addEventListener("htmx:after:request", (e) =>
+            window.stellarAdmin.toast.fromResponse(e.detail.ctx.response.headers));
+
+        const fetchForm = document.getElementById("fetch-form");
+        fetchForm.addEventListener("click", async (e) => {
+            const button = e.target.closest("[data-handler]");
+            if (!button) return;
+
+            const res = await fetch(`?handler=${button.dataset.handler}`, {
+                method: "POST",
+                body: new FormData(fetchForm),
+            });
+            window.stellarAdmin.toast.fromResponse(res);
+        });
+
+        document.getElementById("client-copy").addEventListener("click", () =>
+            window.stellarAdmin.toast.success("Copied to clipboard", "Booking reference VY-2041"));
+
+        const upload = (succeed) => new Promise((resolve, reject) =>
+            setTimeout(() => succeed ? resolve("passport.pdf") : reject(new Error("the file is too large")), 1500));
+
+        for (const [id, succeed] of [["client-promise", true], ["client-promise-fail", false]]) {
+            document.getElementById(id).addEventListener("click", () =>
+                window.stellarAdmin.toast.promise(upload(succeed), {
+                    loading: "Uploading passport…",
+                    success: (file) => `Uploaded ${file}`,
+                    error: (err) => `Upload failed: ${err.message}`,
+                }).catch(() => {}));
+        }
+    </script>
+}

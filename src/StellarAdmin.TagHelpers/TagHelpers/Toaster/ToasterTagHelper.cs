@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Icons;
@@ -11,7 +12,9 @@ namespace StellarAdmin.TagHelpers;
 ///     that AJAX requests replace.
 /// </summary>
 /// <remarks>
-///     Classes set on the element apply to the viewport that positions the toasts.
+///     Toasts added with <see cref="IToastNotifier" /> during a full page load, or before a
+///     redirect to it, appear when the page loads. Classes set on the element apply to the
+///     viewport that positions the toasts.
 /// </remarks>
 [HtmlTargetElement("sa-toaster", TagStructure = TagStructure.WithoutEndTag)]
 public class ToasterTagHelper : StellarAdminTagHelperBase
@@ -61,6 +64,10 @@ public class ToasterTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("position")]
     public ToasterPosition? Position { get; set; }
 
+    [HtmlAttributeNotBound]
+    [ViewContext]
+    public required ViewContext ViewContext { get; set; }
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDuration = Duration ?? TimeSpan.FromSeconds(5);
@@ -92,6 +99,17 @@ public class ToasterTagHelper : StellarAdminTagHelperBase
 
         output.Content.AppendHtml(await RenderToastTemplateAsync(context));
         output.Content.AppendHtml(RenderViewport(effectivePosition, userClass));
+
+        // Toasts queued for this page, from this request or carried over a redirect. AJAX
+        // responses have already moved theirs into the SA-Toasts header.
+        var queued = ToastQueue.DrainAll(ViewContext.TempData);
+        if (queued is not null)
+        {
+            var script = new TagBuilder("script");
+            script.Attributes.Add("type", "application/json");
+            script.InnerHtml.AppendHtml(queued);
+            output.Content.AppendHtml(script);
+        }
     }
 
     private static TagBuilder RenderViewport(ToasterPosition position, string? userClass)

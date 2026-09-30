@@ -1,6 +1,6 @@
 # Toast
 
-Status: **in progress**. Phase 1 and the phase 2 prototype are committed; the phase 2 extraction is awaiting review. Last updated: 2026-09-30.
+Status: **in progress**. Phases 1 and 2 are committed; phase 3 is implemented and awaiting review. Last updated: 2026-09-30.
 
 Port shadcn's Toast into `StellarAdmin.TagHelpers`, with a server-side API that works for full page loads, redirects and AJAX responses. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -11,8 +11,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Server API: `IToastNotifier`, TempData storage, result filter, `SA-Toasts` header; HTTP integration tests | ☑ |
-| 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ◐ extracted, awaiting review |
-| 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ☐ |
+| 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ☑ |
+| 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ◐ implemented, awaiting review |
 | 4 | Theme coverage across all shipped themes and the custom-theme specifications | ☐ |
 | 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ☐ |
 
@@ -227,14 +227,15 @@ Phase 1 paths are confirmed; later paths are expected locations.
 
 - `src/StellarAdmin.TagHelpers/StellarAdminTagHelpersExtensions.cs`: service and filter registration.
 - `src/StellarAdmin.TagHelpers/Toasts/`: `Toast`, `ToastType`, `ToastAction`, `IToastNotifier`, `ToastNotifierExtensions`, `TempDataToastNotifier`, `ToastResultFilter` and `ToastQueue` (TempData storage and header serialization). All types use the `StellarAdmin.TagHelpers` namespace.
-- `tests/StellarAdmin.TagHelpers.IntegrationTests/`: HTTP delivery tests (`Toasts/ToastDeliveryTests.cs`).
+- `tests/StellarAdmin.TagHelpers.IntegrationTests/`: HTTP delivery tests (`Toasts/ToastDeliveryTests.cs`) and page rendering tests (`Toasts/ToasterRenderingTests.cs` with `Pages/Toaster.cshtml`).
 - `tests/StellarAdmin.TagHelpers.Tests/Toasts/TempDataToastNotifierTests.cs`: validation unit tests.
 - `src/StellarAdmin.TagHelpers/TagHelpers/Toaster/`: `ToasterTagHelper` (`sa-toaster`) and `ToasterPosition`.
 - `src/StellarAdmin.Core/Icons/SemanticIconRole.cs` and the three icon packs: the `Success`, `Info`, `Warning` and `Error` roles.
-- `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-toaster.ts`: the client component, registered in `Client/js/stellar-admin-ui.ts`. The phase 3 API is expected in `Client/js/wrappers/toast.ts`.
+- `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-toaster.ts`: the client component, registered in `Client/js/stellar-admin-ui.ts`. The client API is `Client/js/wrappers/toast.ts`, exposed as `window.stellarAdmin.toast`.
 - `src/StellarAdmin.TagHelpers/Client/css/components.css` (the `.sa-toast*` rules) and `Client/css/themes/`: styles.
 - `util/theme-coverage/coverage.json`: the `Toaster` entry.
 - `docs/DocsSamples/Pages/Toast/`: the demo page, listed under Overlays in `Pages/Shared/DemoNavigation.cs`.
+- `sandbox/ComponentPlayground/Pages/Demo/Toast.cshtml`: the server delivery demo (htmx 4, redirects, `fetch`), with `<sa-toaster />` in the playground layout.
 
 ## Phase log
 
@@ -264,3 +265,12 @@ Phase 1 paths are confirmed; later paths are expected locations.
   - DocsSamples: `Pages/Toast/Index.cshtml` with an `_Intro` partial whose buttons raise every type, an action and a loading toast that updates to success. For this phase the partial contains its own `<sa-toaster>`; where the toaster lives in the docs layout is left to phase 5.
   - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: the limit of 3 (two older toasts `data-limited`, inert, opacity 0), hover expanding the stack and pausing a 1.5 s timer until the pointer left, F6, Tab to the newest toast, Escape closing it with focus moving to the next toast and then back to the trigger, a short swipe snapping back and a right swipe closing, the assertive announcer text, loading updated to success (icon, type and description), a toast over a modal dialog closed by a real click with the dialog still open, the viewport returning afterwards, a seeded JSON toast rendering, cleanup on disconnect, top-center anchoring, reduced motion (`transition-property: opacity`), and 390 px width. Screenshots of nova (dark), lyra (0 px radius) and vega at 390 px match the prototype.
   - Verified: `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed with 560 tests and 0 failures. The existing per-role test covers the four new roles. `npm run build`, `node util/theme-coverage/check.mjs`, `npm run test:themes` and `oxfmt --check` also passed.
+- 2026-09-30: Phase 2 extraction reviewed and committed (d99c9c4).
+- 2026-09-30: Phase 3 implemented, not committed.
+  - `sa-toaster` moves every toast queued in TempData into a `<script type="application/json">` child of `<sel-toaster>` (`ToastQueue.DrainAll`, with no byte budget). This covers toasts added during a full page load and toasts carried over a redirect. The serializer's default encoder escapes `<`, `>` and `&`, so the JSON cannot close the script element. AJAX responses have already drained into the header before the page renders, so the tag helper drains unconditionally.
+  - `window.stellarAdmin.toast` (`Client/js/wrappers/toast.ts`): `add`, `success`/`info`/`warning`/`error` (a title plus a description string or the remaining options, mirroring the server extensions), `update`, `close` (resolves after the exit animation), `promise` (a loading toast that becomes success or error; it returns the original promise, and the settled toast goes back to the toaster's default duration), and `fromResponse`. `fromResponse` takes a `Response`, `Headers`, an `XMLHttpRequest`, the header string, or null; it returns the new ids and ignores a missing or invalid header with a console warning for invalid JSON. Every method throws if the page has no `<sa-toaster>`.
+  - ComponentPlayground: `<sa-toaster />` in `_Layout.cshtml`, and `Demo/Toast` (listed under Feedback) with an htmx 4 form post that returns a fragment plus a success or error toast, a plain form post that redirects (TempData render), an htmx post that redirects to a fragment (fetch follows the redirect, so the toast arrives in the redirected response's header), `fetch` calls returning an info toast with an Undo link and three toasts in one header, and client-only `success` and `promise` buttons. The page model is `ToastPage` because `Toast` would shadow the library type. The playground's Tailwind build added `.items-end` to `wwwroot/css/site.css`.
+  - The htmx 4 snippet (`htmx:after:request`, `e.detail.ctx.response.headers`) was confirmed against the playground's htmx 4 build, which fires the event for every response before its error handling.
+  - Verified: five new HTTP tests in `ToasterRenderingTests` (a queued toast rendered into the page, not repeated on the next response, a Razor Pages redirect rendered on the target page, no script without toasts, HTML escaped inside the script).
+  - Verified in headless Chromium 151 over CDP against ComponentPlayground on port 5206, 22 checks: the htmx post's success and error toasts plus the swapped fragment, the assertive announcer, the htmx redirect's toast and fragment, three `fetch` toasts newest first, the Undo link's href and its navigation rendering the restored toast from TempData, the seed script in the markup, a reload not repeating the toast, the plain form's redirect toast, client `success` with a description, `promise` from loading to success (auto-closing after the default 5 s) and to error, `fromResponse` with a string, `Headers`, `Response`, null, a missing header, invalid JSON and an `XMLHttpRequest`, and `add`/`update`/`close`.
+  - Verified: `dotnet test` passed with 565 tests and 0 failures. `npm run build`, `check:themes` and `test:themes` passed. `oxfmt --check` passes for the changed TypeScript; it reports 17 files (the CSS files and `sel-message-scroller.ts`) that are unchanged and fail the same way on the committed tree.
