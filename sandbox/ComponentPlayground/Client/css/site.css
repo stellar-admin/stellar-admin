@@ -1,12 +1,20 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
 
 /*
-  Two-bundle mode: the theme bundle supplies the component CSS and the runtime token variables,
-  so this build only needs the token/utility definitions to resolve token-named utilities
-  (text-muted-foreground, ...) and the custom utilities (scroll-fade-b, ...) in this app's markup.
+  Two-bundle mode: the theme bundle supplies preflight, the component CSS and the runtime token variables,
+  so this build emits utilities only. The reference imports resolve token-named utilities (text-muted-foreground, ...)
+  and the custom utilities (scroll-fade-b, ...) in this app's markup without re-emitting preflight or Tailwind's
+  default theme variables over the bundle's.
 */
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
+@import "tailwindcss/theme.css" layer(theme) theme(inline reference);
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css" theme(reference);
 @import "../../../../src/StellarAdmin.TagHelpers/Client/css/shadcn-tailwind.css";
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme reference {
+    --font-sans: sans-serif;
+    --font-mono: monospace;
+}
 
 @plugin "@tailwindcss/forms" {
     strategy: "class";
