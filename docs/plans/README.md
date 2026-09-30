@@ -14,7 +14,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
-| [toast](oss/toast.md) | in progress | shadcn Toast port with a TempData-backed server API and header delivery for AJAX; phase 1 (server API) done 2026-09-30, awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 
 ## Retired implementation and research records
@@ -70,6 +69,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [semantic-icons](archive/semantic-icons.md) | completed; IconOptions tests migrated to TUnit on 2026-09-18 |
 | [shadcn-theme-fonts](archive/shadcn-theme-fonts.md) | completed |
 | [shadcn-theme-namespace](archive/shadcn-theme-namespace.md) | completed |
+| [toast](oss/archive/toast.md) | completed; `<sa-toaster>`, `window.stellarAdmin.toast` and the TempData-backed `IToastNotifier` with page-load, redirect and `SA-Toasts` header delivery, across all themes, with demos, website docs, skills reference and tests. Dashboard use is a separate task. |
 | [taghelper-test-migration](archive/taghelper-test-migration.md) | completed; solution-wide CI/release test discovery verified on 2026-09-18 |
 | [templated-view-slots](archive/templated-view-slots.md) | completed |
 | [upstream-references-cleanup](oss/archive/upstream-references-cleanup.md) | completed |

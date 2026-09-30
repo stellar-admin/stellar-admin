@@ -1,6 +1,6 @@
 # Toast
 
-Status: **in progress**. Phases 1 to 4 are committed; phase 5 is implemented and awaiting review. Last updated: 2026-09-30.
+Status: **completed**. All five phases are committed and pushed. Last updated: 2026-09-30.
 
 Port shadcn's Toast into `StellarAdmin.TagHelpers`, with a server-side API that works for full page loads, redirects and AJAX responses. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -14,7 +14,7 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ☑ |
 | 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ☑ |
 | 4 | Theme coverage across all shipped themes and the custom-theme specifications | ☑ |
-| 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ◐ implemented, awaiting review |
+| 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ☑ |
 
 ## Research summary
 
@@ -181,13 +181,13 @@ To settle in the phase that needs them:
 ### Phase 1: server API
 
 - `Toast`, `ToastType`, `ToastAction`, `IToastNotifier` and its extensions, the TempData-backed implementation, and the result filter, all registered from `AddTagHelpers()`.
-- HTTP integration tests (TUnit, following the [unit testing convention](../../conventions/unit-testing.md)) that cover every row of the delivery table. The most important test proves that the filter runs before `SaveTempDataFilter`: a toast drained into the header must not also come back on the next request.
+- HTTP integration tests (TUnit, following the [unit testing convention](../../../conventions/unit-testing.md)) that cover every row of the delivery table. The most important test proves that the filter runs before `SaveTempDataFilter`: a toast drained into the header must not also come back on the next request.
 - Unit tests for serialization: ASCII escaping and the cap with overflow.
 - No UI in this phase.
 
 ### Phase 2: visual prototype
 
-- Follow the [prototype-component](../../../.agents/skills/prototype-component/SKILL.md) workflow.
+- Follow the [prototype-component](../../../../.agents/skills/prototype-component/SKILL.md) workflow.
 - `sa-toaster`, the toast template, the `sel-toaster` rendering path from JSON, stacking and animation, structural CSS in `Client/css/components.css`, and one theme.
 - A static DocsSamples demo that raises toasts from buttons.
 - Verify in headless Chromium on port 5206:
@@ -212,13 +212,13 @@ To settle in the phase that needs them:
 
 ### Phase 5: documentation and handover
 
-- Follow the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow for the remaining pieces:
+- Follow the [port-shadcn-component](../../../../.agents/skills/port-shadcn-component/SKILL.md) workflow for the remaining pieces:
   - DocsSamples demos, re-themed to the Voyager Travel content.
   - Website docs and exports.
   - The consumer skills reference.
   - Per-library AJAX guidance for htmx 2, htmx 4 and `fetch`.
   - Remaining tests.
-  - Updating the [component parity](component-parity.md) row.
+  - Updating the [component parity](../component-parity.md) row.
 - Using toasts in the Dashboard (for example after a resource is saved) is a separate task after phase 5.
 
 ## Source paths
@@ -295,7 +295,7 @@ Phase 1 paths are confirmed; later paths are expected locations.
   - Website: `toast.mdx` covers usage (layout placement, `IToastNotifier`, the client API, and accessibility and timer behavior), the four demos, position, duration and limit, the delivery table, the header budget, the htmx 4, htmx 2 and `fetch` snippets, the known limitations, and an API reference for `<sa-toaster>`, `IToastNotifier`/`Toast`, `window.stellarAdmin.toast` and `ToastOptions`. `javascript.mdx` lists `<sel-toaster>` and links to the toast API.
   - Skills: examples registered under `Toaster`; the generated `toaster.md` has a structure region for server delivery and the rules; `javascript.md` has the client API and AJAX snippets; `SKILL.md` mentions toasts in the javascript entry.
   - Tests: six `ToasterTagHelperTests` (defaults, set attributes, class on the viewport, the template's icons, close button and action, negative duration and a limit below 1). There is no JavaScript test runner in the repository, so the client was verified in the browser.
-  - [Component parity](component-parity.md): Toast marked done.
+  - [Component parity](../component-parity.md): Toast marked done.
   - Generator output: the export regenerated every demo page. Every page picked up the new `stellar-admin.<hash>.js` name, because `sel-toaster.ts` changed. Many pages also reorder SVG attributes, which the generator does between runs. The only change to the 15 theme bundles is the added `.sa-toast*` rules, which had not been exported before.
   - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: each standalone demo (the intro success toast, all six types newest first, the loading toast closing after its duration, the action's href and label, and the promise going from loading to success with the refund amount), a toast from the index page in Ledger dark, no unresolved `sa-*` elements, and 390 px width. Loading toasts closing by timer, by `close(id)` and by the close button were checked before and after the fix.
   - Verified on the built website (`pnpm build` then `vite preview` on port 4317): the page renders with its navigation entry and API tables, and the intro demo's iframe raises a toast.
