@@ -22,6 +22,8 @@ public class TablerOutlineIconPack : IIconPack
             [SemanticIconRole.ChoiceSelected] = "check",
             [SemanticIconRole.Close] = "x",
             [SemanticIconRole.DropdownIndicator] = "chevron-down",
+            [SemanticIconRole.Error] = "alert-octagon",
+            [SemanticIconRole.Info] = "info-circle",
             [SemanticIconRole.Loading] = "loader-2",
             [SemanticIconRole.MenuItemSelected] = "check",
             [SemanticIconRole.OtpSeparator] = "minus",
@@ -37,7 +39,9 @@ public class TablerOutlineIconPack : IIconPack
             [SemanticIconRole.SortDescending] = "arrow-down",
             [SemanticIconRole.SortUnsorted] = "selector",
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
+            [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "layout-sidebar",
+            [SemanticIconRole.Warning] = "alert-triangle",
         };
     }
 }

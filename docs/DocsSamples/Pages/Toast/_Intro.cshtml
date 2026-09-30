@@ -1,0 +1,44 @@
+﻿<div class="min-h-[450px]">
+    <!-- code begin -->
+    <sa-group justify="GroupJustify.Center" class="flex-wrap">
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="default">Default</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="success">Success</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="info">Info</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="warning">Warning</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="error">Error</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="action">With action</sa-button>
+        <sa-button variant="ButtonVariant.Outline" data-toast-demo="loading">Loading</sa-button>
+    </sa-group>
+    <sa-toaster id="--toast-intro-toaster" />
+    <script>
+        (function() {
+            const toaster = document.getElementById("--toast-intro-toaster");
+            const demos = {
+                default: () => toaster.addToast({ title: "Itinerary archived", description: "3 bookings moved to archive." }),
+                success: () => toaster.addToast({ title: "Booking confirmed", description: "Your trip to Lisbon departs 14 October.", type: "success" }),
+                info: () => toaster.addToast({ title: "Fare alert", description: "Flights to Kyoto dropped 12% this week.", type: "info" }),
+                warning: () => toaster.addToast({ title: "Passport expires soon", description: "Renew it before your March trip to Cape Town.", type: "warning" }),
+                error: () => toaster.addToast({ title: "Payment declined", description: "Your card ending 4242 was declined.", type: "error" }),
+                action: () => toaster.addToast({
+                    title: "Itinerary archived",
+                    description: "3 bookings moved to archive.",
+                    duration: 8000,
+                    action: { label: "Undo", href: "#undo" },
+                }),
+                loading: () => {
+                    const id = toaster.addToast({ title: "Uploading travel documents…", type: "loading" });
+                    setTimeout(() => toaster.updateToast(id, {
+                        title: "Documents uploaded",
+                        description: "4 files added to your Lisbon trip.",
+                        type: "success",
+                        duration: 5000,
+                    }), 2000);
+                },
+            };
+
+            document.querySelectorAll("[data-toast-demo]").forEach((button) =>
+                button.addEventListener("click", () => demos[button.dataset.toastDemo]()));
+        })();
+    </script>
+    <!-- code end -->
+</div>

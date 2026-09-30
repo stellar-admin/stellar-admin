@@ -129,4 +129,24 @@ public enum SemanticIconRole
     ///     A search field.
     /// </summary>
     Search,
+
+    /// <summary>
+    ///     A successful outcome.
+    /// </summary>
+    Success,
+
+    /// <summary>
+    ///     An informational message.
+    /// </summary>
+    Info,
+
+    /// <summary>
+    ///     A message that needs attention.
+    /// </summary>
+    Warning,
+
+    /// <summary>
+    ///     A failed operation.
+    /// </summary>
+    Error,
 }

@@ -9161,6 +9161,101 @@
         }
       }
     },
+    "Toaster": {
+      "tags": [
+        "sa-toaster"
+      ],
+      "hooks": [
+        "sa-toast",
+        "sa-toast-action",
+        "sa-toast-close",
+        "sa-toast-content",
+        "sa-toast-description",
+        "sa-toast-icon",
+        "sa-toast-text",
+        "sa-toast-title",
+        "sa-toast-viewport"
+      ],
+      "example": "docs/DocsSamples/Pages/Toast/Index.cshtml",
+      "themes": {
+        "concourse": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "ledger": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "shadcn.luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "shadcn.vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "ice": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "observatory": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "meridian": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "aurora": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        },
+        "parallax": {
+          "status": "shared-only",
+          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+        }
+      }
+    },
     "Toggle": {
       "tags": [
         "sa-toggle"

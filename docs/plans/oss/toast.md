@@ -1,6 +1,6 @@
 # Toast
 
-Status: **in progress**. Phase 1 is complete and awaiting review. Last updated: 2026-09-30.
+Status: **in progress**. Phase 1 and the phase 2 prototype are committed; the phase 2 extraction is awaiting review. Last updated: 2026-09-30.
 
 Port shadcn's Toast into `StellarAdmin.TagHelpers`, with a server-side API that works for full page loads, redirects and AJAX responses. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -11,7 +11,7 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 1 | Server API: `IToastNotifier`, TempData storage, result filter, `SA-Toasts` header; HTTP integration tests | ☑ |
-| 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ☐ |
+| 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ◐ extracted, awaiting review |
 | 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ☐ |
 | 4 | Theme coverage across all shipped themes and the custom-theme specifications | ☐ |
 | 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ☐ |
@@ -150,7 +150,7 @@ window.stellarAdmin.toast.fromResponse(res);
   - `limit`: defaults to 3.
   - `duration`: the default timeout, 5000 ms.
 - **Top layer.** The viewport uses `popover="manual"`, so toasts appear above page content and dialogs.
-  - A modal dialog opened *after* the toaster sits above it in the top layer, so `sel-toaster` re-shows its popover when a toast is added.
+  - A modal dialog makes everything outside it inert, top layer included. While a modal is open, `sel-toaster` moves the viewport into the topmost modal dialog and re-shows it, then moves it back when the dialog closes (found in the phase 2 prototype; re-showing alone left toasts visible but unclickable).
 - **Animation.** Enter and exit use `@starting-style` and the `data-starting-style`/`data-ending-style` attributes.
 - **Stacking.** Stacked while collapsed, expanded on hover or focus, driven by Base UI's CSS variables.
 - **Accessibility:**
@@ -158,17 +158,18 @@ window.stellarAdmin.toast.fromResponse(res);
   - F6 moves focus to the toaster landmark.
   - Timers pause on hover, on focus and while the document is hidden.
   - Every toast has a close button.
-- Swipe-to-dismiss is decided in phase 2, based on how much it costs.
+- Swipe-to-dismiss is always on. Each position swipes towards its own edges (decided in phase 2).
 
 ## Open decisions
 
 To settle in the phase that needs them:
 
-1. **Naming.** Settled at the phase 1 review: `IToastNotifier` (renamed from `IToasts`), the `SA-Toasts` header and `ToastType`. `ToasterPosition` is decided in phase 2.
+1. **Naming.** Settled at the phase 1 review: `IToastNotifier` (renamed from `IToasts`), the `SA-Toasts` header and `ToastType`. Settled in phase 2: `ToasterPosition` with six members (`TopLeft`, `TopCenter`, `TopRight`, `BottomLeft`, `BottomCenter`, `BottomRight`), defaulting to `BottomRight`.
 2. **Header cap.** Settled in phase 1: a 4096-byte budget rather than a toast count, always sending at least one toast.
 3. **Registration.** Phase 1 made it always on through `AddTagHelpers()`, which also calls `AddHttpContextAccessor()`. The filter loads TempData only for non-navigation, non-redirect results; confirm at the phase 1 review.
-4. **Swipe-to-dismiss.** Whether to include it. (Phase 2)
-5. **Theme stubs.** The shadcn theme files contain a leftover `.sa-toast { @apply rounded-2xl; }` from the Sonner era. Decide whether the ThemeGenerator needs re-running to pick up the Base UI toast rules. (Phase 4)
+4. **Swipe-to-dismiss.** Settled at the phase 2 prototype review: keep it. It is about 60 lines: each position swipes towards its own edges, a 40 px threshold as in Base UI, and damped movement in other directions.
+5. **Theme stubs.** Settled in phase 2: the shipped `.sa-toast` rules match upstream's current `.cn-toast` (`rounded-2xl` in nova and vega, `rounded-none` in lyra), which is the whole themed half. Everything else in upstream's toast is structural, so ThemeGenerator does not need re-running.
+6. **Surface in custom themes.** (Phase 4) Upstream puts `bg-popover text-popover-foreground border shadow-lg` in the component's own classes, so phase 2 placed them in the structural `.sa-toast` rule, as Tooltip does with its colors. Structural declarations beat theme rules, so a custom theme can change the colors through its tokens but cannot give the toast its own border or shadow. Decide in phase 4 whether to move border and shadow into the theme files.
 
 ## Known limitations to document
 
@@ -228,9 +229,12 @@ Phase 1 paths are confirmed; later paths are expected locations.
 - `src/StellarAdmin.TagHelpers/Toasts/`: `Toast`, `ToastType`, `ToastAction`, `IToastNotifier`, `ToastNotifierExtensions`, `TempDataToastNotifier`, `ToastResultFilter` and `ToastQueue` (TempData storage and header serialization). All types use the `StellarAdmin.TagHelpers` namespace.
 - `tests/StellarAdmin.TagHelpers.IntegrationTests/`: HTTP delivery tests (`Toasts/ToastDeliveryTests.cs`).
 - `tests/StellarAdmin.TagHelpers.Tests/Toasts/TempDataToastNotifierTests.cs`: validation unit tests.
-- `src/StellarAdmin.TagHelpers/TagHelpers/`: `sa-toaster`.
-- `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-toaster.ts` and `Client/js/wrappers/toast.ts`: the client component and API, registered in `Client/js/stellar-admin-ui.ts`.
-- `src/StellarAdmin.TagHelpers/Client/css/components.css` and `Client/css/themes/`: styles.
+- `src/StellarAdmin.TagHelpers/TagHelpers/Toaster/`: `ToasterTagHelper` (`sa-toaster`) and `ToasterPosition`.
+- `src/StellarAdmin.Core/Icons/SemanticIconRole.cs` and the three icon packs: the `Success`, `Info`, `Warning` and `Error` roles.
+- `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-toaster.ts`: the client component, registered in `Client/js/stellar-admin-ui.ts`. The phase 3 API is expected in `Client/js/wrappers/toast.ts`.
+- `src/StellarAdmin.TagHelpers/Client/css/components.css` (the `.sa-toast*` rules) and `Client/css/themes/`: styles.
+- `util/theme-coverage/coverage.json`: the `Toaster` entry.
+- `docs/DocsSamples/Pages/Toast/`: the demo page, listed under Overlays in `Pages/Shared/DemoNavigation.cs`.
 
 ## Phase log
 
@@ -245,3 +249,18 @@ Phase 1 paths are confirmed; later paths are expected locations.
   - 14 HTTP tests cover each row of the delivery table: fetch modes, redirect, navigation, a missing `Sec-Fetch-Mode`, detailed serialization, ASCII escaping, overflow, an oversized toast, and a Razor Pages handler and redirect.
   - Verified: `FetchResponse_DoesNotKeepHeaderToastsForNextResponse` failed when draining was changed to leave toasts in TempData, and passed again after the change was reverted. This confirms the filter runs before TempData is saved.
   - Verified: `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed with 556 tests and 0 failures.
+- 2026-09-30: Phase 2 prototype built, not committed. Extraction has not started.
+  - `sandbox/html/toast.html`: upstream's toast classes verbatim against the real bundles, a template the JS clones, and a throwaway `proto-toaster` element that reproduces Base UI's data attributes and CSS variables. It has static strips (types, action and long content, collapsed and expanded stacks, top anchoring), a live toaster with demo buttons, and a control bar (six positions, swipe, nova/vega/lyra/maia, dark).
+  - Structural additions beyond upstream: top positions (mirrored stack), a popover UA-style reset on the viewport, opacity-only transitions under reduced motion, a hidden assertive announcer for `Error` toasts, and a `ResizeObserver` that remeasures heights when fonts, themes or widths change.
+  - Verified in headless Chromium 151 over CDP: the limit of 3 (older toasts marked `data-limited` and inert), hover expanding the stack and pausing the timers (a 5 s toast survived 5.7 s of hover and closed after it ended), F6 focusing the viewport and Tab reaching the toast, Escape closing the focused toast with focus restored, swipe right closing and a short or disallowed swipe snapping back, toasts over a modal dialog receiving clicks with the dialog left open, the viewport returning after the dialog closed, reduced motion removing toasts without transform transitions, 390 px mobile width, top-center stacking, dark mode, and lyra and vega.
+- 2026-09-30: Phase 2 prototype reviewed and committed (05b5b93). Approved: keep swipe, the six `ToasterPosition` values with `BottomRight` as the default, and the visuals.
+- 2026-09-30: Phase 2 extracted, not committed.
+  - `sa-toaster` renders `<sel-toaster>` holding the toast `<template>` and the viewport. It has `position`, `limit` (at least 1) and `duration` (a `TimeSpan`, not negative) and emits `limit` and `duration` (in milliseconds) attributes. Classes set on `sa-toaster` go on the viewport, because `sel-toaster` itself has no box.
+  - The template takes its type icons from four new semantic icon roles (`Success`, `Info`, `Warning`, `Error`, appended to the enum) plus the existing `Loading` and `Close`. Lucide maps them to upstream's `circle-check`, `info`, `triangle-alert` and `octagon-x`; both Tabler packs use `circle-check`, `info-circle`, `alert-triangle` and `alert-octagon`. The action link and close button use `ButtonRenderingHelper` (outline small, ghost icon-small).
+  - `sel-toaster` is the prototype's element ported to a Lit component, without the prototype's static mode and swipe toggle. It reads a `<script type="application/json">` child for seeded toasts, which phase 3 fills from TempData. Global listeners are removed on disconnect, and the viewport returns from a dialog.
+  - Deviation: the element methods are `addToast`, `updateToast` and `closeToast`, because `update` would override LitElement's lifecycle method. `updateToast` merges into the current options, as Base UI's `update` does. Phase 3's `window.stellarAdmin.toast` wraps them.
+  - Structural CSS: `.sa-toast-viewport`, `.sa-toast` (including the top-position mirror and reduced motion) and the part rules, written as plain CSS and `@apply` in `components.css`. The text column has a new `toast-text` slot, which the `ResizeObserver` watches.
+  - The CSS build runs the theme coverage gate, so `coverage.json` has a `Toaster` entry: the eight shadcn themes are `reviewed` against their `.sa-toast` rule, and the seven custom themes are `shared-only` with a rationale that names phase 4. This is provisional until phase 4.
+  - DocsSamples: `Pages/Toast/Index.cshtml` with an `_Intro` partial whose buttons raise every type, an action and a loading toast that updates to success. For this phase the partial contains its own `<sa-toaster>`; where the toaster lives in the docs layout is left to phase 5.
+  - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: the limit of 3 (two older toasts `data-limited`, inert, opacity 0), hover expanding the stack and pausing a 1.5 s timer until the pointer left, F6, Tab to the newest toast, Escape closing it with focus moving to the next toast and then back to the trigger, a short swipe snapping back and a right swipe closing, the assertive announcer text, loading updated to success (icon, type and description), a toast over a modal dialog closed by a real click with the dialog still open, the viewport returning afterwards, a seeded JSON toast rendering, cleanup on disconnect, top-center anchoring, reduced motion (`transition-property: opacity`), and 390 px width. Screenshots of nova (dark), lyra (0 px radius) and vega at 390 px match the prototype.
+  - Verified: `dotnet test --solution StellarAdmin.slnx --configuration Release --minimum-expected-tests 1` passed with 560 tests and 0 failures. The existing per-role test covers the four new roles. `npm run build`, `node util/theme-coverage/check.mjs`, `npm run test:themes` and `oxfmt --check` also passed.

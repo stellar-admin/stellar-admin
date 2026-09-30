@@ -100,6 +100,7 @@ internal static class DemoNavigation
                 new DemoItem("Dropdown Menu", "/DropdownMenu/Index"),
                 new DemoItem("Popover", "/Popover/Index"),
                 new DemoItem("Sheet", "/Sheet/Index"),
+                new DemoItem("Toast", "/Toast/Index"),
                 new DemoItem("Tooltip", "/Tooltip/Index"),
             ]
         ),

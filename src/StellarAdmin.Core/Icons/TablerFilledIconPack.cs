@@ -22,6 +22,8 @@ public class TablerFilledIconPack : IIconPack
             [SemanticIconRole.ChoiceSelected] = "check",
             [SemanticIconRole.Close] = "x",
             [SemanticIconRole.DropdownIndicator] = "chevron-down",
+            [SemanticIconRole.Error] = "alert-octagon",
+            [SemanticIconRole.Info] = "info-circle",
             [SemanticIconRole.Loading] = "inner-shadow-top",
             [SemanticIconRole.MenuItemSelected] = "check",
             [SemanticIconRole.OtpSeparator] = "point",
@@ -37,7 +39,9 @@ public class TablerFilledIconPack : IIconPack
             [SemanticIconRole.SortDescending] = "caret-down",
             [SemanticIconRole.SortUnsorted] = "caret-up-down",
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
+            [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "layout-sidebar",
+            [SemanticIconRole.Warning] = "alert-triangle",
         };
     }
 }

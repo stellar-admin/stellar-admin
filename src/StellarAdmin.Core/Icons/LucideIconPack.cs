@@ -23,6 +23,8 @@ public class LucideIconPack : IIconPack
             [SemanticIconRole.ChoiceSelected] = "check",
             [SemanticIconRole.Close] = "x",
             [SemanticIconRole.DropdownIndicator] = "chevron-down",
+            [SemanticIconRole.Error] = "octagon-x",
+            [SemanticIconRole.Info] = "info",
             [SemanticIconRole.Loading] = "loader-circle",
             [SemanticIconRole.MenuItemSelected] = "check",
             [SemanticIconRole.OtpSeparator] = "minus",
@@ -38,7 +40,9 @@ public class LucideIconPack : IIconPack
             [SemanticIconRole.SortDescending] = "arrow-down",
             [SemanticIconRole.SortUnsorted] = "chevrons-up-down",
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
+            [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "panel-left",
+            [SemanticIconRole.Warning] = "triangle-alert",
         };
     }
 }
