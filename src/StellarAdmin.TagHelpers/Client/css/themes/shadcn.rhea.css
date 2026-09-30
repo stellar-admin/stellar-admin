@@ -887,7 +887,7 @@
     @apply bg-muted rounded-2xl;
   }
   .sa-toast {
-    @apply rounded-2xl!;
+    @apply border bg-popover text-popover-foreground shadow-lg rounded-2xl!;
   }
   .sa-table-container {
     @apply relative w-full overflow-x-auto;

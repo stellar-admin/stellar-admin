@@ -66,6 +66,8 @@ Horizontal line tab lists have no full-width bottom border; only the active tab 
 
 Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result uses the muted fill with Ice's bright accent bar.
 
+Toast: the toast uses the Popover surface: a 1px `--border` edge, popover background and foreground, square corners and `--sa-ice-shadow-pop`, which resolves to no shadow. Like popovers, toasts rely on the hairline border rather than elevation. Title and description sizes, the icon colors, the focus ring and all stacking, swipe and motion rules stay in the shared CSS; the action and close buttons use the theme's outline and ghost buttons.
+
 ## Extension and verification
 
 Before extending Ice, inspect the component's actual `.sa-*` hooks, DOM, slots, state attributes and client behavior. Derive appearance from the recipes above, implement all supported sizes/variants/orientations, then update `util/theme-coverage/coverage.json` with real rule evidence or a structural-only rationale. Coverage detects inventory omissions, not visual fidelity.

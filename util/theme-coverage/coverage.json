@@ -9178,13 +9178,47 @@
       ],
       "example": "docs/DocsSamples/Pages/Toast/Index.cshtml",
       "themes": {
+        "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
         "concourse": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
         },
         "ledger": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-toast"
+          ]
         },
         "shadcn.luma": {
           "status": "reviewed",
@@ -9233,26 +9267,6 @@
           "rules": [
             "sa-toast"
           ]
-        },
-        "ice": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
-        },
-        "observatory": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
-        },
-        "meridian": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
-        },
-        "aurora": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
-        },
-        "parallax": {
-          "status": "shared-only",
-          "reason": "Provisional until phase 4 of docs/plans/oss/toast.md: the structural toast uses popover tokens and the shared button styles; the theme's own surface, radius and elevation treatment is not reviewed yet."
         }
       }
     },

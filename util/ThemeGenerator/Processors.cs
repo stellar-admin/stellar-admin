@@ -215,6 +215,22 @@ public static partial class Processors
             return output;
         }
 
+        /// <summary>
+        ///     Shadcn sets the toast's surface on the component itself and themes only its radius. We
+        ///     move the surface into the theme so custom themes can give the toast their own border and
+        ///     shadow, as they do for popovers.
+        /// </summary>
+        public Dictionary<string, string> AddToastSurfaceClasses()
+        {
+            var output = new Dictionary<string, string>(input);
+
+            // Indexing deliberately fails if upstream removes the token.
+            output["sa-toast"] =
+                $"border bg-popover text-popover-foreground shadow-lg {input["sa-toast"]}";
+
+            return output;
+        }
+
         public Dictionary<string, string> CleanDialogClasses()
         {
             var output = new Dictionary<string, string>(input);

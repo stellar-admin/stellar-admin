@@ -98,6 +98,7 @@ public partial class Program
                 .CreateRadioButtonStyles()
                 .CreateSegmentedControlStyles()
                 .CreateMenuSurfaceStyles()
+                .AddToastSurfaceClasses()
                 .CleanDialogClasses()
                 .CleanPopoverClasses()
                 .CleanSheetClasses()

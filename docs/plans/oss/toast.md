@@ -1,6 +1,6 @@
 # Toast
 
-Status: **in progress**. Phases 1 and 2 are committed; phase 3 is implemented and awaiting review. Last updated: 2026-09-30.
+Status: **in progress**. Phases 1 to 3 are committed; phase 4 is implemented and awaiting review. Last updated: 2026-09-30.
 
 Port shadcn's Toast into `StellarAdmin.TagHelpers`, with a server-side API that works for full page loads, redirects and AJAX responses. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -12,8 +12,8 @@ Read this file, then check the current code under the paths in [Source paths](#s
 | --- | --- | --- |
 | 1 | Server API: `IToastNotifier`, TempData storage, result filter, `SA-Toasts` header; HTTP integration tests | ☑ |
 | 2 | Visual prototype: `sa-toaster`, `sel-toaster`, structural CSS, one theme, static DocsSamples demo | ☑ |
-| 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ◐ implemented, awaiting review |
-| 4 | Theme coverage across all shipped themes and the custom-theme specifications | ☐ |
+| 3 | Client API (`window.stellarAdmin.toast`), full-page rendering from TempData, htmx demo in ComponentPlayground | ☑ |
+| 4 | Theme coverage across all shipped themes and the custom-theme specifications | ◐ implemented, awaiting review |
 | 5 | Demos, website docs, consumer skills reference, per-library AJAX guidance, tests, handover | ☐ |
 
 ## Research summary
@@ -169,7 +169,7 @@ To settle in the phase that needs them:
 3. **Registration.** Phase 1 made it always on through `AddTagHelpers()`, which also calls `AddHttpContextAccessor()`. The filter loads TempData only for non-navigation, non-redirect results; confirm at the phase 1 review.
 4. **Swipe-to-dismiss.** Settled at the phase 2 prototype review: keep it. It is about 60 lines: each position swipes towards its own edges, a 40 px threshold as in Base UI, and damped movement in other directions.
 5. **Theme stubs.** Settled in phase 2: the shipped `.sa-toast` rules match upstream's current `.cn-toast` (`rounded-2xl` in nova and vega, `rounded-none` in lyra), which is the whole themed half. Everything else in upstream's toast is structural, so ThemeGenerator does not need re-running.
-6. **Surface in custom themes.** (Phase 4) Upstream puts `bg-popover text-popover-foreground border shadow-lg` in the component's own classes, so phase 2 placed them in the structural `.sa-toast` rule, as Tooltip does with its colors. Structural declarations beat theme rules, so a custom theme can change the colors through its tokens but cannot give the toast its own border or shadow. Decide in phase 4 whether to move border and shadow into the theme files.
+6. **Surface in custom themes.** (Phase 4) Upstream puts `bg-popover text-popover-foreground border shadow-lg` in the component's own classes, so phase 2 placed them in the structural `.sa-toast` rule, as Tooltip does with its colors. Structural declarations beat theme rules, so a custom theme can change the colors through its tokens but cannot give the toast its own border or shadow. Settled in phase 4: the whole surface (border, background, text color and shadow) moved into the theme files. `ThemeGenerator` adds upstream's surface classes to each shadcn theme's `.sa-toast` rule, and each custom theme uses its Popover surface.
 
 ## Known limitations to document
 
@@ -234,6 +234,8 @@ Phase 1 paths are confirmed; later paths are expected locations.
 - `src/StellarAdmin.TagHelpers/Client/js/web-components/sel-toaster.ts`: the client component, registered in `Client/js/stellar-admin-ui.ts`. The client API is `Client/js/wrappers/toast.ts`, exposed as `window.stellarAdmin.toast`.
 - `src/StellarAdmin.TagHelpers/Client/css/components.css` (the `.sa-toast*` rules) and `Client/css/themes/`: styles.
 - `util/theme-coverage/coverage.json`: the `Toaster` entry.
+- `util/ThemeGenerator/Processors.cs`: `AddToastSurfaceClasses`, which adds the toast surface to the generated shadcn themes.
+- `docs/design/themes/*.md`: the Toast entry in each custom-theme specification.
 - `docs/DocsSamples/Pages/Toast/`: the demo page, listed under Overlays in `Pages/Shared/DemoNavigation.cs`.
 - `sandbox/ComponentPlayground/Pages/Demo/Toast.cshtml`: the server delivery demo (htmx 4, redirects, `fetch`), with `<sa-toaster />` in the playground layout.
 
@@ -274,3 +276,11 @@ Phase 1 paths are confirmed; later paths are expected locations.
   - Verified: five new HTTP tests in `ToasterRenderingTests` (a queued toast rendered into the page, not repeated on the next response, a Razor Pages redirect rendered on the target page, no script without toasts, HTML escaped inside the script).
   - Verified in headless Chromium 151 over CDP against ComponentPlayground on port 5206, 22 checks: the htmx post's success and error toasts plus the swapped fragment, the assertive announcer, the htmx redirect's toast and fragment, three `fetch` toasts newest first, the Undo link's href and its navigation rendering the restored toast from TempData, the seed script in the markup, a reload not repeating the toast, the plain form's redirect toast, client `success` with a description, `promise` from loading to success (auto-closing after the default 5 s) and to error, `fromResponse` with a string, `Headers`, `Response`, null, a missing header, invalid JSON and an `XMLHttpRequest`, and `add`/`update`/`close`.
   - Verified: `dotnet test` passed with 565 tests and 0 failures. `npm run build`, `check:themes` and `test:themes` passed. `oxfmt --check` passes for the changed TypeScript; it reports 17 files (the CSS files and `sel-message-scroller.ts`) that are unchanged and fail the same way on the committed tree.
+- 2026-09-30: Phase 3 reviewed and committed (665ac76).
+- 2026-09-30: Phase 4 implemented, not committed.
+  - Checked first: upstream's `.cn-toast` rule in all eight current `style-*.css` files sets only the radius, and our generated rules matched it. The surface classes (`border bg-popover text-popover-foreground shadow-lg`) are on upstream's component in `registry/bases/base/ui/toast.tsx`.
+  - Decision 6: the surface moved from the structural `.sa-toast` rule into the themes. A new `ThemeGenerator` processor, `AddToastSurfaceClasses`, adds upstream's surface classes to the front of each shadcn theme's `.sa-toast` rule; it indexes the token, so it fails if upstream removes it. The focus ring, stacking, swipe and motion rules stay structural, as do the title and description sizes and the icon colors.
+  - Regenerating the eight shadcn themes changed only their `.sa-toast` line, so upstream `main` has not drifted.
+  - The seven custom themes each have a `.sa-toast` rule copied from their Popover surface: a 1px `--border` edge, popover background and foreground, the popover radius and the popover shadow. Toasts are non-modal, so they take the popover elevation rather than the dialog's. Ice has square corners and no shadow, as its popovers do. Each specification has a Toast entry beside its Command palette entry, and the `Toaster` coverage entries for the custom themes are now `reviewed` against `sa-toast`.
+  - Verified in headless Chromium 151 over CDP against DocsSamples on port 5206: all 15 themes in light and dark mode (30 renders) with an expanded stack of three toasts. In each render the toast's border width, border color, background and text color matched the theme's `--border`, `--popover` and `--popover-foreground`. The shadcn themes kept upstream's radii and `shadow-lg`. The custom themes' radius and shadow matched their popovers, and Ice had none, by design. A contact sheet of the 30 renders was reviewed.
+  - Verified: `npm run build:css`, `check:themes` (58 components × 15 themes) and `test:themes` (9 of 9) passed.

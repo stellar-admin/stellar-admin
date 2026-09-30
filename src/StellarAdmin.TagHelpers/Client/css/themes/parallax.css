@@ -1142,6 +1142,13 @@
   .sa-popover-description {
     color: var(--muted-foreground);
   }
+  .sa-toast {
+    border: 1px solid var(--border);
+    border-radius: var(--sa-parallax-radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--sa-parallax-shadow-md);
+  }
   .sa-tooltip-content {
     padding: 5px 9px;
     border-radius: var(--sa-parallax-radius-sm);

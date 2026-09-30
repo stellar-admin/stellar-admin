@@ -875,7 +875,7 @@
     @apply border-primary ring-ring/50 size-4 rounded-full border bg-white shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden;
   }
   .sa-toast {
-    @apply rounded-2xl;
+    @apply border bg-popover text-popover-foreground shadow-lg rounded-2xl;
   }
   .sa-switch {
     @apply checked:bg-primary bg-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 dark:bg-input/80 shrink-0 rounded-full border border-transparent shadow-xs focus-visible:ring-3 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:border-transparent group-data-[size=default]/switch:h-[18.4px] group-data-[size=default]/switch:w-[32px] group-data-[size=sm]/switch:h-[14px] group-data-[size=sm]/switch:w-[24px] [&.input-validation-error]:ring-destructive/20 dark:[&.input-validation-error]:ring-destructive/40 [&.input-validation-error]:border-destructive dark:[&.input-validation-error]:border-destructive/50;

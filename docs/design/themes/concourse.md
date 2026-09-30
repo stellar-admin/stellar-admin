@@ -84,6 +84,8 @@ Line tabs inside page-header navigation leave 2px of extra space below the list 
 
 Command palette: the command menu composes the theme's menu surface, rows, group labels, separators and shortcuts. Its search field is a flat input group without a focus ring, because focus never leaves the field while the palette is in use. The highlighted result (`data-selected`, driven by `aria-activedescendant`) replaces hover and focus feedback, checked items use the trailing check indicator, and the list hides its scrollbar as the shadcn themes do. The highlighted result uses the same 7% foreground tint as menu rows, without a leading rule.
 
+Toast: the toast uses the Popover surface: a 1px `--border` edge, popover background and foreground, the theme radius and the `--sa-concourse-shadow-pop` elevation. Toasts are non-modal, so they take the popover elevation rather than the dialog's. Title and description sizes, the icon colors, the focus ring and all stacking, swipe and motion rules stay in the shared CSS; the action and close buttons use the theme's outline and ghost buttons.
+
 ## Implementation and verification
 
 Consumers link one `_content/StellarAdmin.TagHelpers/stellar-admin.concourse.css` stylesheet and optionally load Source Sans 3 and IBM Plex Mono in the layout. DocsSamples support `?theme=concourse&mode=light|dark`; DocsSamples also exposes Concourse in its appearance picker. Website demo exports include the bundle, fonts, and theme-switcher entry.
