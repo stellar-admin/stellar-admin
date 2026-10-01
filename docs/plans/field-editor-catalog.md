@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike is committed on the `field-editor-catalog` branch. Phase 1 is implemented and awaits review.
+Status: active, 2026-10-01. The spike and Phase 1 are committed on the `field-editor-catalog` branch. Phase 2 is implemented and awaits review.
 
 ## Goal
 
@@ -103,6 +103,16 @@ Each phase stops for review before the next starts.
 5. **Legacy templates and documentation.** Decide on each legacy template. Update the consumer skills reference, samples and any website documentation affected.
 
 Every phase runs the Dashboard HTTP integration tests, the EF Core HTTP integration tests and the Dashboard unit tests, and records the results here.
+
+## Phase 2, 2026-10-01
+
+Added `TextInputEditor`, `TextInputEditorHandler` and the `TextInputType` enum (Text, Email, Tel, Url, Password, Number) in `Resources/Editors`. The editor's settings are `Type`, `Placeholder`, `Prefix`, `Suffix`, `Min`, `Max` and `Step`. `Min`, `Max` and `Step` are `decimal?` and render with the invariant culture. An internal `ResolveAttributes(ModelMetadata)` method on the editor does the inference in C#. An explicit `Type` wins. Otherwise the `EmailAddress`, `PhoneNumber`, `Url` and `Password` data types map to their input types, numeric properties become `number`, and everything else is `text`. A number input gets the explicit `Step`, or `1` for integer types and `any` for `decimal`, `double` and `float`. The type is always emitted, because an empty `type` attribute on `sa-input` is copied as `type=""` by the framework input helper.
+
+`FieldEditorView<TEditor>` in `Areas/StellarAdmin` is a public `RazorPage<object?>` base for friendly editor templates. It exposes `Field`, `Editor`, `EditorData`, `IsReadOnly` and `Title`. A field without a selected editor gets a new `TEditor` carrying the field's class names. Any other editor type fails rendering with an `InvalidOperationException`.
+
+`Editors/TextInput.cshtml` renders `sa-input` without a prefix or suffix. With either, it composes `sa-field`, `sa-field-label`, `sa-input-group` with `sa-input-group-input` and the add-ons, `sa-field-description` and `sa-field-error`, because the input group has no field wrapper. In that layout the template sets `aria-describedby` to `<id>-description` and `<id>-error` itself, and `ClassNames.Control` styles the input group. All 18 text-like data-type templates from the mapping table are now one-line forwards. The spike marker, `SpikeTextInputEditor` and `EditorTemplateSpikeTests` are removed. `TextInputEditorTests` replaces them, with a `TextInputFieldsModel` fixture covering currency, string with description, email, `Guid`, nullable `long`, phone, `int`, `double` and URL properties.
+
+Verification: the solution builds in Release. Dashboard HTTP integration tests passed 212 of 212, EF Core HTTP integration tests passed 59 of 59 and Dashboard unit tests passed 37 of 37. CSharpier reports the changed C# files as formatted. No browser check was run, so the input group's appearance in a form is unverified.
 
 ## Phase 1, 2026-10-01
 

@@ -1,22 +1,46 @@
-@model object?
+@inherits FieldEditorView<TextInputEditor>
 
 @{
-    var field = ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
-    var metadata = ViewData.ModelMetadata;
-    var isReadOnly = field?.IsReadOnly == true || metadata.IsReadOnly;
-    var modelType = metadata.UnderlyingOrModelType;
-    var type = metadata.DataTypeName switch
-    {
-        "EmailAddress" => "email",
-        "PhoneNumber" => "tel",
-        "Url" => "url",
-        "Password" => "password",
-        _ when modelType == typeof(decimal) || modelType == typeof(double) || modelType == typeof(float) => "number",
-        _ when modelType.IsPrimitive && modelType != typeof(bool) && modelType != typeof(char) => "number",
-        _ => null,
-    };
-    var step = type != "number" ? null : modelType == typeof(decimal) || modelType == typeof(double) || modelType == typeof(float) ? "any" : "1";
+    var attributes = Editor.ResolveAttributes(ViewData.ModelMetadata);
+    var classes = EditorClassNamesMapper.ForInput(Editor);
 }
 
-<sa-input class-names="@EditorClassNamesMapper.ForInput(field?.Editor)" asp-for="@Model" type="@type" step="@step"
-          label="@field?.Title" readonly="@isReadOnly" data-spike-editor="text-input" />
+@if (Editor.Prefix is null && Editor.Suffix is null)
+{
+    <sa-input class-names="@classes" asp-for="@Model" type="@attributes.Type" step="@attributes.Step" min="@attributes.Min" max="@attributes.Max"
+              placeholder="@Editor.Placeholder" label="@Title" readonly="@IsReadOnly" />
+}
+else
+{
+    // The input group has no field wrapper of its own, so the field parts are composed here
+    var id = Html.IdForModel();
+    var descriptionId = string.IsNullOrEmpty(ViewData.ModelMetadata.Description) ? null : $"{id}-description";
+    var errorId = $"{id}-error";
+
+    <sa-field class="@classes.Root">
+        <sa-field-label class="@classes.Label" asp-for="@Model">@Title</sa-field-label>
+
+        <sa-input-group class="@classes.Control">
+            @if (Editor.Prefix is not null)
+            {
+                <sa-input-group-addon>
+                    <sa-input-group-text>@Editor.Prefix</sa-input-group-text>
+                </sa-input-group-addon>
+            }
+
+            <sa-input-group-input asp-for="@Model" type="@attributes.Type" step="@attributes.Step" min="@attributes.Min" max="@attributes.Max"
+                                  placeholder="@Editor.Placeholder" readonly="@IsReadOnly"
+                                  aria-describedby="@(descriptionId is null ? errorId : $"{descriptionId} {errorId}")" />
+
+            @if (Editor.Suffix is not null)
+            {
+                <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+                    <sa-input-group-text>@Editor.Suffix</sa-input-group-text>
+                </sa-input-group-addon>
+            }
+        </sa-input-group>
+
+        <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model" />
+        <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
+    </sa-field>
+}
