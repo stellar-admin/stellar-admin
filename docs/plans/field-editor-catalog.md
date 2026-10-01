@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike, Phase 1 and Phase 2 are committed on the `field-editor-catalog` branch. Phase 2b, the editor gallery, is implemented and awaits review.
+Status: active, 2026-10-01. The spike and Phases 1, 2 and 2b are committed on the `field-editor-catalog` branch. Phase 3, the choice editors, is implemented and awaits review.
 
 ## Goal
 
@@ -133,6 +133,20 @@ Browser checks run on port 5206 and the server is stopped afterwards. Port 5205 
 ### Pixel comparison, not yet decided
 
 `util/visual-regression/vrt.mjs` compares base and head screenshots, which would turn "the forwards still render the same" into a zero pixel diff for Phases 3 to 5. It cannot capture the gallery yet. It discovers pages from `docs/DocsSamples/Pages`, sets the theme with a `?theme=` query parameter, and DashboardPlayground sets its theme in `ConfigureTheme`. Using it needs an explicit page list option, and either one capture per theme or a theme switch the tool can drive. This is a separate decision after Phase 2b and is not part of it.
+
+## Phase 3, 2026-10-01
+
+Added `RadioGroupEditor` and `ToggleButtonsEditor` with handlers, and moved `SelectEditor` and `CheckboxGroupEditor` onto `Editors/Select` and `Editors/CheckboxGroup`. All four templates inherit `FieldEditorView` and honour the field `Title` and `Description`. `RadioGroupEditor` now derives from `ChoiceEditor`, is sealed, and has `Appearance` (`RadioGroupAppearance.Default` or `Cards`). It keeps `RadioGroupEditorClassNames`, so its template composes the fieldset, legend and radio fields by hand like the legacy enum radio templates, because `sa-radio-group` has no per-option class names. `ToggleButtonsEditor` renders `sa-segmented-control`, which handles model state, required, invalid and disabled, and selects one value. `sa-toggle-group` handles none of those, and multiple selection is already `CheckboxGroupEditor`'s job. Like the checkbox group, it accepts only `ClassNames.Control`.
+
+Choices resolve in C# through the internal `ChoiceEditor.ResolveChoices`. Items from `UseItems` win. Otherwise a non-flags enum supplies its members, in display order and with `[Display(Name, Description)]`, and a Boolean supplies Yes and No. A collection property takes them from its element type. Choices submit the enum member name. A nullable enum or Boolean adds an empty choice, whose text is the new `ChoiceEditor.EmptyChoiceText` (default "Not set"). `UseItems` lists never get an automatic empty choice, so the EF Core `IncludeEmptyOption` behaviour is unchanged. `ChoiceEditorHandler` no longer throws without items. A choice editor on a property that can supply none fails rendering with a message naming the editor and property. The select template passes `UseItems` items through unchanged, so groups and disabled items survive. The radio template checks the empty choice when the model is null and nothing was posted, because MVC never checks a radio for a null model. The checkbox group template leaves out `description` for choices without one, because Razor binds a null as an empty string and the item would render an empty paragraph.
+
+The `Enum` data-type template forwards to `Editors/Select`, or `Editors/TextInput` for flags enums. `Boolean` forwards to `Editors/Select` when nullable and keeps its checkbox until Phase 4. The legacy `SelectListEditor`, `CheckboxGroupEditor`, `EnumRadioGroup` and `EnumRadioChoiceCards` templates are no longer used by any handler and stay for the Phase 5 decision.
+
+The gallery gained Select (14 scenarios, covering the data-type forwards, field configuration and `SelectEditor` settings including grouped items), Radio group (11, both appearances), Checkbox group (8) and Toggle buttons (9) resources, sharing a `GalleryCabin` enum with display names and descriptions and a flags `GalleryExtras` enum. `ChoiceEditorTests` adds 11 integration tests on a `ChoiceFieldsModel` fixture. After review, the Checkbox group and Toggle buttons galleries gained the missing attribute and field description scenarios and the same three sections as Radio group: inferred choices, field configuration, and `UseItems` with class names. A rerun of both pages confirmed the sections and descriptions, a valid save, and Reject every field with 8 and 9 errors.
+
+Open point: the toggle buttons show no selection for a null nullable enum, because `sa-segmented-control` builds its radios with MVC's generator and the template cannot check the empty choice. Fixing it needs a change in the TagHelpers package. Disabled radios and checkboxes that are not selected are very faint, which is the existing component styling.
+
+Verification: the solution and DashboardPlayground build in Release. Dashboard HTTP integration tests passed 225 of 225, EF Core HTTP integration tests 59 of 59 and Dashboard unit tests 37 of 37. CSharpier reports the changed C# files as formatted. Headless Chromium at 1280 pixels in the Parallax theme, against a scratch copy of `app.db` on port 5206, captured each new gallery's edit page, its rejected save and a blank create. For every gallery, an unchanged save redirected to the index and Reject every field produced one error per scenario plus the summary. Blank creates with client validation skipped returned the real `[Required]` and `[MinLength(1)]` errors. Unchecking every required checkbox returned the `[MinLength(1)]` error. Rejected select and toggle button posts kept the changed value. After the radio fix, the edit page HTML showed the empty choice checked for a null value. The server was stopped. Other themes and narrow widths were not checked.
 
 ## Phase 2b, 2026-10-01
 

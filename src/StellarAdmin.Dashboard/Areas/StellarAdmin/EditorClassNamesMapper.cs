@@ -18,21 +18,10 @@ internal static class EditorClassNamesMapper
             );
         }
 
-        var classes = editor?.ClassNames;
-        if (
-            classes?.Content is not null
-            || classes?.Description is not null
-            || classes?.Error is not null
-            || classes?.Label is not null
-            || classes?.Root is not null
-        )
-        {
-            throw new InvalidOperationException(
-                "Checkbox group editors support only Control, which styles the choices container."
-            );
-        }
-
-        return classes?.Control;
+        return ControlOnly(
+            editor?.ClassNames,
+            "Checkbox group editors support only Control, which styles the choices container."
+        );
     }
 
     public static InputClassNames ForInput(FieldEditor? editor)
@@ -112,6 +101,28 @@ internal static class EditorClassNamesMapper
             Label = classes?.Label,
             Root = classes?.Root,
         };
+    }
+
+    public static string? ForToggleButtons(ToggleButtonsEditor editor) =>
+        ControlOnly(
+            editor.ClassNames,
+            "Toggle buttons editors support only Control, which styles the buttons container."
+        );
+
+    private static string? ControlOnly(EditorClassNames? classes, string message)
+    {
+        if (
+            classes?.Content is not null
+            || classes?.Description is not null
+            || classes?.Error is not null
+            || classes?.Label is not null
+            || classes?.Root is not null
+        )
+        {
+            throw new InvalidOperationException(message);
+        }
+
+        return classes?.Control;
     }
 
     private static void ValidateScalar(FieldEditor? editor)

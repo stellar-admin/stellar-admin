@@ -1,7 +1,7 @@
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
-///     Displays a collection field using application-supplied checkbox choices.
+///     Displays a collection field as a checkbox group.
 /// </summary>
 public sealed class CheckboxGroupEditorHandler(
     CheckboxGroupEditor editor,
@@ -9,5 +9,5 @@ public sealed class CheckboxGroupEditorHandler(
 ) : ChoiceEditorHandler<CheckboxGroupEditor>(editor, services)
 {
     /// <inheritdoc />
-    public override string TemplateName => "CheckboxGroupEditor";
+    public override string TemplateName => "Editors/CheckboxGroup";
 }

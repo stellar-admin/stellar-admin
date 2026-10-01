@@ -1,0 +1,21 @@
+@inherits FieldEditorView<CheckboxGroupEditor>
+
+@{
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+}
+
+<sa-checkbox-group class="@EditorClassNamesMapper.ForCheckboxGroup(Editor)" asp-for="@Model"
+                   label="@Title" description="@Description" disabled="@IsReadOnly">
+    @foreach (var choice in choices)
+    {
+        // A bound empty description still renders its paragraph, so the attribute is left out instead
+        if (string.IsNullOrEmpty(choice.Description))
+        {
+            <sa-checkbox-group-item value="@choice.Value" disabled="@choice.Disabled">@choice.Text</sa-checkbox-group-item>
+        }
+        else
+        {
+            <sa-checkbox-group-item value="@choice.Value" description="@choice.Description" disabled="@choice.Disabled">@choice.Text</sa-checkbox-group-item>
+        }
+    }
+</sa-checkbox-group>

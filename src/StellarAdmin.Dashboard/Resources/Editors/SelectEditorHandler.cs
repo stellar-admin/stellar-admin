@@ -1,11 +1,11 @@
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
-///     Displays a field using application-supplied select choices.
+///     Displays a field as a select.
 /// </summary>
 public sealed class SelectEditorHandler(SelectEditor editor, IServiceProvider services)
     : ChoiceEditorHandler<SelectEditor>(editor, services)
 {
     /// <inheritdoc />
-    public override string TemplateName => "SelectListEditor";
+    public override string TemplateName => "Editors/Select";
 }
