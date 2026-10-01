@@ -122,6 +122,22 @@ public class SliderMarksTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_MarksTheMinimumAndMaximumAsBounds()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SliderMarksTagHelper { Interval = 50 };
+
+        // Act
+        using var html = await RenderInSliderAsync(context, sut);
+
+        // Assert
+        var bounds = html.QuerySelectorAll("[data-slot=slider-mark]")
+            .Select(mark => $"{mark.GetAttribute("data-value")}:{mark.GetAttribute("data-bound")}");
+        await Assert.That(string.Join(" ", bounds)).IsEqualTo("0:min 50: 100:max");
+    }
+
+    [Test]
     [Arguments(SliderThumbAlignment.Center, "left: 25%;")]
     [Arguments(
         SliderThumbAlignment.Edge,

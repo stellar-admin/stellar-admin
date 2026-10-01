@@ -959,6 +959,9 @@
   }
   .sa-slider-mark-label {
     @apply absolute whitespace-nowrap in-data-[orientation=horizontal]:top-[calc(var(--sa-slider-thumb-size,1rem)/2+0.25rem)] in-data-[orientation=horizontal]:-translate-x-1/2 in-data-[orientation=vertical]:left-[calc(var(--sa-slider-thumb-size,1rem)/2+0.5rem)] in-data-[orientation=vertical]:-translate-y-1/2;
+    /* Labels at the bounds align to the track's ends; edge-aligned thumbs inset the end marks by half a thumb */
+    @apply in-data-[bound=min]:in-data-[orientation=horizontal]:translate-x-0 in-data-[bound=max]:in-data-[orientation=horizontal]:-translate-x-full in-data-[bound=min]:in-data-[orientation=vertical]:-translate-y-full in-data-[bound=max]:in-data-[orientation=vertical]:translate-y-0;
+    @apply in-data-[thumb-alignment=edge]:in-data-[bound=min]:in-data-[orientation=horizontal]:-ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=max]:in-data-[orientation=horizontal]:ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=min]:in-data-[orientation=vertical]:mt-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=max]:in-data-[orientation=vertical]:-mt-[calc(var(--sa-slider-thumb-size,1rem)/2)];
   }
   .sa-slider-mark-tick {
     @apply absolute -translate-x-1/2 -translate-y-1/2;
@@ -977,6 +980,13 @@
   }
   .sa-slider-value {
     @apply tabular-nums;
+  }
+  /* Inside running text the value reads as part of the sentence, so it takes the text's type */
+  :where(p, [data-slot="field-description"]) .sa-slider-value {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
   }
   .sa-spinner {
     @apply size-4 animate-spin;

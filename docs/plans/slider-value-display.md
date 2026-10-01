@@ -156,7 +156,7 @@ Recorded 2026-10-01 after review.
 4. `SliderEditor.ShowValue` defaults to `true` and can be turned off per editor.
 5. The explicit-field `aria-describedby` gap is handled in the Dashboard template; the field-level fix is a follow-up.
 6. `<sa-slider-value>` pairs with the slider in its field and takes `for` only outside one; no `asp-for`, and no generated id on the bound host.
-7. Visual defaults from the prototype: value beside the label, muted `text-sm` with `tabular-nums` and a spaced en dash, notch ticks with `in-range` state, and end labels centred under their marks. Each theme's coverage decision starts from these.
+7. Visual defaults from the prototype: value beside the label, muted `text-sm` with `tabular-nums` and a spaced en dash, notch ticks with `in-range` state, and end labels centred under their marks (later changed to align with the track's ends; see Phase 2 implementation). Each theme's coverage decision starts from these.
 
 ## Phase 2 implementation
 
@@ -171,10 +171,10 @@ Differences from the design, for review:
 - In the shortcut form the field label now gets an id and no `for`, and the thumbs reference it with `aria-labelledby` (the existing `LabelId` mechanism used by choice groups). An author's `aria-labelledby` on `<sa-slider>` moves to the thumbs, like `aria-describedby`.
 - The host always carries `data-value-locale` when the current culture has a name.
 
-Visual points found in the browser check, not yet changed:
+Visual points found in the browser check, then changed after review:
 
-- Centred end labels extend half their width beyond the track. At 390 pixels the Custom Marks example's "Excellent" crosses its card's padding and border.
-- The custom themes style the value like the progress value (mono, 12 pixels, muted). Beside a label it matches; inside a sentence (the description and Custom Marks examples) it reads smaller than the surrounding text.
+- Centred end labels extended half their width beyond the track; at 390 pixels the Custom Marks example's "Excellent" crossed its card's padding and border. Marks at the minimum and maximum now carry `data-bound="min|max"`, and their labels align to the track's ends (start-aligned at the minimum, end-aligned at the maximum, and above or below the end mark when vertical). Edge-aligned thumbs inset the end marks by half a thumb, so those labels shift by half a thumb to sit flush with the track. Labels between the ends stay centred.
+- The custom themes style the value like the progress value (mono, 12 pixels, muted), which read smaller than the surrounding text inside a sentence. A structural rule now makes a value inside a `p` or field description inherit the text's font family, size, line height and letter spacing in every theme; it keeps the theme's muted colour and `tabular-nums`. The value beside a label keeps the themed style.
 
 ## Prototype
 
@@ -191,5 +191,6 @@ Phase 2, recorded 2026-10-01:
 - `node util/theme-coverage/check.mjs`: 58 components × 15 themes reviewed. `npm run build` in the client compiled every bundle with the new rules.
 - `dotnet run --project util/SkillsGenerator` regenerated `slider.md` and the components index; `-- --check` reports no drift.
 - DocsSamples on port 5206 in headless Chromium, with no script errors: the Value example filled `$200 – $800` and `15 km` on hydration, named the range thumbs from `thumb-labels` and the distance thumb from the explicit field label. Four ArrowRight presses on the upper price thumb and one ArrowLeft on the lower gave `$150 – $1,000`, matching `aria-valuetext` and hidden inputs `150` and `1000`; End on the distance thumb gave `50 km`. Twelve ArrowRight presses on the Marks example's upper thumb moved the 1,000 mark into range. Marks were captured in shadcn Nova (light and dark), Observatory (light and dark), shadcn Luma, Aurora and Parallax, and the full page at 390 pixels in Parallax dark without horizontal overflow; thumb sizes measured 12, 15 and 24 pixels as themed. A slider converted to vertical in the page placed the 4 tick at the thumb's centre (164.58 pixels against 164.58).
-- Not checked: a real vertical slider with marks rendered by the server (no example uses one), right-to-left layout, and mark positions in the Dashboard (Phase 3).
+- Review follow-up, recorded 2026-10-02 (flush end labels and value typography in prose): `dotnet test tests/StellarAdmin.TagHelpers.Tests` 214 passed, adding a test for `data-bound` on the minimum and maximum marks; `npm run build` compiled every bundle; the coverage check reviewed 58 components × 15 themes. DocsSamples on port 5206 at 390 pixels: Custom Marks and Marks in Observatory show "Poor"/"$0"/"1"/"0 km" starting at the track's start and "Excellent"/"$1,000"/"8"/"100 km" ending at its end without horizontal overflow; the Value example in Aurora shows `15 km` in the description's sans text, and Custom Marks' sentence value matches its text size, while the header value keeps the mono style. shadcn Nova Value and Custom Marks were also captured.
+- Not checked: a real vertical slider with marks rendered by the server (no example uses one; this includes the vertical end-label alignment), right-to-left layout, and mark positions in the Dashboard (Phase 3).
 

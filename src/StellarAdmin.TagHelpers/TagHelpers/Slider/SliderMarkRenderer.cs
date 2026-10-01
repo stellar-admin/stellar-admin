@@ -19,6 +19,12 @@ internal static class SliderMarkRenderer
         yield return new("data-orientation", slider.Orientation.GetDataAttributeText());
         yield return new("data-value", value.ToString(CultureInfo.InvariantCulture));
         yield return new("data-state", slider.IsInRange(value) ? "in-range" : "out-of-range");
+        if (value == slider.Min || value == slider.Max)
+        {
+            // Labels at the bounds align to the track's ends rather than overhanging them
+            yield return new("data-bound", value == slider.Min ? "min" : "max");
+        }
+
         yield return new(
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
