@@ -8,9 +8,9 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 public sealed class EfCoreCheckboxGroupItemsBuilder<TEntity, TValue>
     where TEntity : class
 {
-    private readonly EfCoreSelectListItemsOptions<TEntity, TValue> _options;
+    private readonly EfCoreChoiceItemsOptions<TEntity, TValue> _options;
 
-    internal EfCoreCheckboxGroupItemsBuilder(EfCoreSelectListItemsOptions<TEntity, TValue> options)
+    internal EfCoreCheckboxGroupItemsBuilder(EfCoreChoiceItemsOptions<TEntity, TValue> options)
     {
         _options = options;
     }

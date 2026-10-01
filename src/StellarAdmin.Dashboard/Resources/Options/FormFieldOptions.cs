@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.Resources.Options;
 
@@ -11,7 +12,7 @@ public sealed class FormFieldOptions : FormItemOptions
     /// <summary>
     ///     The editor's configuration.
     /// </summary>
-    public EditorOptions Editor { get; internal set; } = new();
+    public FieldEditor Editor { get; internal set; } = new();
 
     /// <summary>
     ///     The expression selecting the property the field renders and binds.
@@ -39,7 +40,7 @@ public sealed class FormFieldOptions : FormItemOptions
     /// </summary>
     public string? Title { get; internal set; }
 
-    internal Type? EditorType { get; set; }
+    internal Type? HandlerType { get; set; }
 
     internal FormFieldOptions(
         LambdaExpression fieldExpression,

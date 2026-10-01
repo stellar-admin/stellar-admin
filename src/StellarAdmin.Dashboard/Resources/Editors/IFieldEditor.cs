@@ -1,22 +1,21 @@
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
-///     Prepares a form field for rendering with an editor template.
+///     Identifies the handler that prepares a field editor.
 /// </summary>
 public interface IFieldEditor
 {
     /// <summary>
-    ///     The MVC editor template name.
+    ///     The handler type.
     /// </summary>
-    string TemplateName { get; }
-
-    /// <summary>
-    ///     Loads data needed to render the field.
-    /// </summary>
-    Task<object?> PrepareAsync(CancellationToken cancellationToken);
+    Type HandlerType { get; }
 }
 
 /// <summary>
-///     Prepares a form field using the specified options.
+///     Associates a field editor with its handler.
 /// </summary>
-public interface IFieldEditor<TOptions> : IFieldEditor;
+public interface IFieldEditor<THandler> : IFieldEditor
+    where THandler : IFieldEditorHandler
+{
+    Type IFieldEditor.HandlerType => typeof(THandler);
+}

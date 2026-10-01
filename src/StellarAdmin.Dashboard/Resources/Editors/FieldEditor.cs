@@ -1,9 +1,9 @@
-namespace StellarAdmin.Dashboard.Resources.Options;
+namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
 ///     Configures the appearance of a form editor.
 /// </summary>
-public class EditorOptions
+public class FieldEditor
 {
     // Future editor-specific options can add behavior such as masks and choice sources.
 

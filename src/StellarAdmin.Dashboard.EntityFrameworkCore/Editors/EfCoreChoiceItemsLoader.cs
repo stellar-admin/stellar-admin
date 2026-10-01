@@ -3,15 +3,15 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 internal static class EfCoreChoiceItemsLoader
 {
     internal static void Configure<TContext, TEntity, TValue>(
-        ChoiceItemsEditorOptions options,
-        EfCoreSelectListItemsOptions<TEntity, TValue> itemOptions
+        ChoiceEditor editor,
+        EfCoreChoiceItemsOptions<TEntity, TValue> itemOptions
     )
         where TContext : DbContext
         where TEntity : class
@@ -20,7 +20,7 @@ internal static class EfCoreChoiceItemsLoader
         var orderQuery = itemOptions.OrderQuery;
         var emptyOptionText = itemOptions.EmptyOptionText;
 
-        options.UseItems(
+        editor.UseItems(
             async (services, cancellationToken) =>
             {
                 var db = services.GetRequiredService<TContext>();

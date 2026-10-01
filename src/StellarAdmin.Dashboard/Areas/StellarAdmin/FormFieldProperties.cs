@@ -1,4 +1,4 @@
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 
@@ -15,7 +15,7 @@ public sealed record FormFieldProperties
     /// <summary>
     ///     The editor's configuration.
     /// </summary>
-    public EditorOptions Editor { get; init; } = new();
+    public FieldEditor Editor { get; init; } = new();
 
     /// <summary>
     ///     Whether the field is read-only.

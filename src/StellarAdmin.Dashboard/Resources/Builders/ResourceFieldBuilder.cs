@@ -37,25 +37,25 @@ public sealed class ResourceFieldBuilder
     /// <summary>
     ///     Uses and configures an editor for this field.
     /// </summary>
-    public ResourceFieldBuilder UseEditor<TOptions>(Action<TOptions> configure)
-        where TOptions : EditorOptions, IFieldEditorOptions, new()
+    public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)
+        where TEditor : FieldEditor, IFieldEditor, new()
     {
         ArgumentNullException.ThrowIfNull(configure);
 
         _configuration.Add(options =>
         {
-            var editorOptions = new TOptions();
-            configure(editorOptions);
-            var editorType = editorOptions.EditorType;
-            if (!typeof(IFieldEditor<TOptions>).IsAssignableFrom(editorType))
+            var editor = new TEditor();
+            configure(editor);
+            var handlerType = editor.HandlerType;
+            if (!typeof(IFieldEditorHandler<TEditor>).IsAssignableFrom(handlerType))
             {
                 throw new InvalidOperationException(
-                    $"{editorType.Name} must implement IFieldEditor<{typeof(TOptions).Name}>."
+                    $"{handlerType.Name} must implement IFieldEditorHandler<{typeof(TEditor).Name}>."
                 );
             }
 
-            options.Editor = editorOptions;
-            options.EditorType = editorType;
+            options.Editor = editor;
+            options.HandlerType = handlerType;
         });
 
         return this;
@@ -64,8 +64,8 @@ public sealed class ResourceFieldBuilder
     /// <summary>
     ///     Uses an editor for this field.
     /// </summary>
-    public ResourceFieldBuilder UseEditor<TOptions>()
-        where TOptions : EditorOptions, IFieldEditorOptions, new() => UseEditor<TOptions>(_ => { });
+    public ResourceFieldBuilder UseEditor<TEditor>()
+        where TEditor : FieldEditor, IFieldEditor, new() => UseEditor<TEditor>(_ => { });
 
     internal FormFieldOptions Build()
     {

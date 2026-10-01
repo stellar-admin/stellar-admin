@@ -1,7 +1,7 @@
 using DashboardPlayground.Data;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.Users;
 
@@ -67,7 +67,7 @@ internal static class UserResourceRegistration
                                     model => model.DepartmentId,
                                     field =>
                                     {
-                                        field.UseEditor<SelectListEditorOptions>(options =>
+                                        field.UseEditor<SelectEditor>(options =>
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 Department,
@@ -87,11 +87,11 @@ internal static class UserResourceRegistration
                                 section.AddRow(row =>
                                 {
                                     row.Add(model => model.PreferredLanguage)
-                                        .UseEditor<SelectListEditorOptions>(options =>
+                                        .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.Languages())
                                         );
                                     row.Add(model => model.TimeZoneId)
-                                        .UseEditor<SelectListEditorOptions>(options =>
+                                        .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.TimeZones())
                                         );
                                 });
@@ -106,7 +106,7 @@ internal static class UserResourceRegistration
                                     model => model.RoleIds,
                                     field =>
                                     {
-                                        field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        field.UseEditor<CheckboxGroupEditor>(options =>
                                         {
                                             options.UseItems<
                                                 ApplicationDbContext,
@@ -159,7 +159,7 @@ internal static class UserResourceRegistration
                                     model => model.DepartmentId,
                                     field =>
                                     {
-                                        field.UseEditor<SelectListEditorOptions>(options =>
+                                        field.UseEditor<SelectEditor>(options =>
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 Department,
@@ -179,11 +179,11 @@ internal static class UserResourceRegistration
                                 section.AddRow(row =>
                                 {
                                     row.Add(model => model.PreferredLanguage)
-                                        .UseEditor<SelectListEditorOptions>(options =>
+                                        .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.Languages())
                                         );
                                     row.Add(model => model.TimeZoneId)
-                                        .UseEditor<SelectListEditorOptions>(options =>
+                                        .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.TimeZones())
                                         );
                                 });
@@ -198,7 +198,7 @@ internal static class UserResourceRegistration
                                     model => model.RoleIds,
                                     field =>
                                     {
-                                        field.UseEditor<CheckboxGroupEditorOptions>(options =>
+                                        field.UseEditor<CheckboxGroupEditor>(options =>
                                         {
                                             options.UseItems<
                                                 ApplicationDbContext,

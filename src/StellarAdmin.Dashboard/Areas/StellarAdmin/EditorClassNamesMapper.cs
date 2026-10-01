@@ -1,24 +1,24 @@
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 
 internal static class EditorClassNamesMapper
 {
-    public static string? ForCheckboxGroup(EditorOptions? options)
+    public static string? ForCheckboxGroup(FieldEditor? editor)
     {
         if (
-            options is not null
-            && options.GetType() != typeof(EditorOptions)
-            && options is not CheckboxGroupEditorOptions
+            editor is not null
+            && editor.GetType() != typeof(FieldEditor)
+            && editor is not CheckboxGroupEditor
         )
         {
             throw new InvalidOperationException(
-                $"{options.GetType().Name} is not supported by a checkbox group editor."
+                $"{editor.GetType().Name} is not supported by a checkbox group editor."
             );
         }
 
-        var classes = options?.ClassNames;
+        var classes = editor?.ClassNames;
         if (
             classes?.Content is not null
             || classes?.Description is not null
@@ -35,10 +35,10 @@ internal static class EditorClassNamesMapper
         return classes?.Control;
     }
 
-    public static InputClassNames ForInput(EditorOptions? options)
+    public static InputClassNames ForInput(FieldEditor? editor)
     {
-        ValidateScalar(options);
-        var classes = options?.ClassNames;
+        ValidateScalar(editor);
+        var classes = editor?.ClassNames;
 
         return new InputClassNames
         {
@@ -51,25 +51,25 @@ internal static class EditorClassNamesMapper
         };
     }
 
-    public static RadioEditorClassNames ForRadio(EditorOptions? options)
+    public static RadioGroupEditorClassNames ForRadio(FieldEditor? editor)
     {
         if (
-            options is not null
-            && options.GetType() != typeof(EditorOptions)
-            && options is not RadioEditorOptions
+            editor is not null
+            && editor.GetType() != typeof(FieldEditor)
+            && editor is not RadioGroupEditor
         )
         {
             throw new InvalidOperationException(
-                $"{options.GetType().Name} is not supported by a radio editor."
+                $"{editor.GetType().Name} is not supported by a radio editor."
             );
         }
 
-        var classes = options is RadioEditorOptions radio
+        var classes = editor is RadioGroupEditor radio
             ? radio.ClassNames
-            : new RadioEditorClassNames();
-        if (options is not null && options is not RadioEditorOptions)
+            : new RadioGroupEditorClassNames();
+        if (editor is not null && editor is not RadioGroupEditor)
         {
-            options.ClassNames.CopyTo(classes);
+            editor.ClassNames.CopyTo(classes);
         }
 
         if (classes.Content is not null || classes.Option.Error is not null)
@@ -82,10 +82,10 @@ internal static class EditorClassNamesMapper
         return classes;
     }
 
-    public static SelectClassNames ForSelect(EditorOptions? options)
+    public static SelectClassNames ForSelect(FieldEditor? editor)
     {
-        ValidateScalar(options);
-        var classes = options?.ClassNames;
+        ValidateScalar(editor);
+        var classes = editor?.ClassNames;
 
         return new SelectClassNames
         {
@@ -98,10 +98,10 @@ internal static class EditorClassNamesMapper
         };
     }
 
-    public static TextareaClassNames ForTextarea(EditorOptions? options)
+    public static TextareaClassNames ForTextarea(FieldEditor? editor)
     {
-        ValidateScalar(options);
-        var classes = options?.ClassNames;
+        ValidateScalar(editor);
+        var classes = editor?.ClassNames;
 
         return new TextareaClassNames
         {
@@ -114,16 +114,16 @@ internal static class EditorClassNamesMapper
         };
     }
 
-    private static void ValidateScalar(EditorOptions? options)
+    private static void ValidateScalar(FieldEditor? editor)
     {
         if (
-            options is not null
-            && options.GetType() != typeof(EditorOptions)
-            && options is not IFieldEditorOptions
+            editor is not null
+            && editor.GetType() != typeof(FieldEditor)
+            && editor is not IFieldEditor
         )
         {
             throw new InvalidOperationException(
-                $"{options.GetType().Name} requires a compatible editor template. Scalar editors, including flags-enum text fallbacks, accept EditorOptions."
+                $"{editor.GetType().Name} requires a compatible editor template. Scalar editors, including flags-enum text fallbacks, accept FieldEditor."
             );
         }
     }

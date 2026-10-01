@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Dashboard.Resources.Editors;
 
-namespace StellarAdmin.Dashboard.Resources.Options;
+namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
 ///     Configures choices shared by select and checkbox group editors.
 /// </summary>
-public abstract class ChoiceItemsEditorOptions : EditorOptions
+public abstract class ChoiceEditor : FieldEditor
 {
     internal Func<
         IServiceProvider,

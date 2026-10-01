@@ -1,15 +1,15 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 /// <summary>
-///     Configures EF Core choices for select list editors.
+///     Configures EF Core choices for select editors.
 /// </summary>
-public static class SelectListEditorOptionsExtensions
+public static class SelectEditorExtensions
 {
-    extension(SelectListEditorOptions options)
+    extension(SelectEditor editor)
     {
         /// <summary>
         ///     Loads select choices from an EF Core entity set using required value and text selectors.
@@ -17,19 +17,19 @@ public static class SelectListEditorOptionsExtensions
         public void UseItems<TContext, TEntity, TValue>(
             Expression<Func<TEntity, TValue>> value,
             Expression<Func<TEntity, string>> text,
-            Action<EfCoreSelectListItemsBuilder<TEntity, TValue>>? configure = null
+            Action<EfCoreSelectItemsBuilder<TEntity, TValue>>? configure = null
         )
             where TContext : DbContext
             where TEntity : class
         {
-            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(editor);
             ArgumentNullException.ThrowIfNull(value);
             ArgumentNullException.ThrowIfNull(text);
 
-            var itemOptions = new EfCoreSelectListItemsOptions<TEntity, TValue>(value, text);
-            var builder = new EfCoreSelectListItemsBuilder<TEntity, TValue>(itemOptions);
+            var itemOptions = new EfCoreChoiceItemsOptions<TEntity, TValue>(value, text);
+            var builder = new EfCoreSelectItemsBuilder<TEntity, TValue>(itemOptions);
             configure?.Invoke(builder);
-            EfCoreChoiceItemsLoader.Configure<TContext, TEntity, TValue>(options, itemOptions);
+            EfCoreChoiceItemsLoader.Configure<TContext, TEntity, TValue>(editor, itemOptions);
         }
     }
 }

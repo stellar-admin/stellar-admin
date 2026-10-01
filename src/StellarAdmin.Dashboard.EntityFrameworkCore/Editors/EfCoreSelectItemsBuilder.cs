@@ -5,12 +5,12 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 /// <summary>
 ///     Configures choices loaded from an EF Core entity set.
 /// </summary>
-public sealed class EfCoreSelectListItemsBuilder<TEntity, TValue>
+public sealed class EfCoreSelectItemsBuilder<TEntity, TValue>
     where TEntity : class
 {
-    private readonly EfCoreSelectListItemsOptions<TEntity, TValue> _options;
+    private readonly EfCoreChoiceItemsOptions<TEntity, TValue> _options;
 
-    internal EfCoreSelectListItemsBuilder(EfCoreSelectListItemsOptions<TEntity, TValue> options)
+    internal EfCoreSelectItemsBuilder(EfCoreChoiceItemsOptions<TEntity, TValue> options)
     {
         _options = options;
     }
@@ -18,7 +18,7 @@ public sealed class EfCoreSelectListItemsBuilder<TEntity, TValue>
     /// <summary>
     ///     Adds an empty choice with the specified label before the entity choices.
     /// </summary>
-    public EfCoreSelectListItemsBuilder<TEntity, TValue> IncludeEmptyOption(string text)
+    public EfCoreSelectItemsBuilder<TEntity, TValue> IncludeEmptyOption(string text)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
 
@@ -30,7 +30,7 @@ public sealed class EfCoreSelectListItemsBuilder<TEntity, TValue>
     /// <summary>
     ///     Orders the choices by an entity property.
     /// </summary>
-    public EfCoreSelectListItemsBuilder<TEntity, TValue> OrderBy<TSort>(
+    public EfCoreSelectItemsBuilder<TEntity, TValue> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
     {

@@ -87,8 +87,8 @@ public class EditorTemplateSpikeTests
                     create.UseFactory(() => new(10m));
                     create.Fields(fields =>
                     {
-                        fields.Add(model => model.ProductName).UseEditor<SpikeTextInputEditorOptions>();
-                        fields.Add(model => model.Password).UseEditor<SpikeTextInputEditorOptions>();
+                        fields.Add(model => model.ProductName).UseEditor<SpikeTextInputEditor>();
+                        fields.Add(model => model.Password).UseEditor<SpikeTextInputEditor>();
                     });
                 })
         );

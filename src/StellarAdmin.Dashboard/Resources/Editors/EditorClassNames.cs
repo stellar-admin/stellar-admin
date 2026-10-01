@@ -1,6 +1,6 @@
 using StellarAdmin.TagHelpers;
 
-namespace StellarAdmin.Dashboard.Resources.Options;
+namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
 ///     Additional CSS classes for the parts of a form editor.

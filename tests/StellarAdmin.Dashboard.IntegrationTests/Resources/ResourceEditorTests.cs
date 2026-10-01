@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
@@ -168,7 +168,7 @@ public class ResourceEditorTests
     }
 
     [Test]
-    public async Task SelectListEditor_UsesRegisteredProviderChoices()
+    public async Task SelectEditor_UsesRegisteredProviderChoices()
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(
@@ -180,12 +180,12 @@ public class ResourceEditorTests
                         fields.Clear();
                         fields
                             .Add(product => product.Name)
-                            .UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItems<FixedSelectListItemsProvider>()
+                            .UseEditor<SelectEditor>(options =>
+                                options.UseItems<FixedChoiceItemsProvider>()
                             );
                     })
                 ),
-            dashboard => dashboard.Services.AddScoped<FixedSelectListItemsProvider>()
+            dashboard => dashboard.Services.AddScoped<FixedChoiceItemsProvider>()
         );
         using var client = sut.GetTestClient();
 
@@ -203,7 +203,7 @@ public class ResourceEditorTests
     }
 
     [Test]
-    public async Task SelectListEditor_UsesSnapshotOfConfiguredChoices()
+    public async Task SelectEditor_UsesSnapshotOfConfiguredChoices()
     {
         // Arrange
         var choices = new List<SelectListItem> { new("Notebook", "notebook") };
@@ -216,9 +216,7 @@ public class ResourceEditorTests
                         fields.Clear();
                         fields
                             .Add(product => product.Name)
-                            .UseEditor<SelectListEditorOptions>(options =>
-                                options.UseItems(choices)
-                            );
+                            .UseEditor<SelectEditor>(options => options.UseItems(choices));
                         fields.Add(product => product.Price);
                     })
                 )
@@ -252,7 +250,7 @@ public class ResourceEditorTests
                     create.Fields(fields =>
                         fields
                             .Add(model => model.ProductName)
-                            .UseEditor<ProductNameEditorOptions>(options =>
+                            .UseEditor<ProductNameEditor>(options =>
                                 options.Placeholder = "Product name"
                             )
                     );
@@ -285,7 +283,7 @@ public class ResourceEditorTests
                     edit.Fields(fields =>
                         fields
                             .Add(model => model.RoleIds)
-                            .UseEditor<CheckboxGroupEditorOptions>(options =>
+                            .UseEditor<CheckboxGroupEditor>(options =>
                             {
                                 options.UseItems([
                                     new SelectListItem("Auditor", "auditor"),

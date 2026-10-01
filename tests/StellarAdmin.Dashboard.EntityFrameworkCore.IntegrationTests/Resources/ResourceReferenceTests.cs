@@ -22,17 +22,17 @@ public class ResourceReferenceTests
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync();
         await using var scope = sut.Services.CreateAsyncScope();
-        var options = new CheckboxGroupEditorOptions();
-        options.UseItems<CatalogDbContext, Category, int>(
+        var editor = new CheckboxGroupEditor();
+        editor.UseItems<CatalogDbContext, Category, int>(
             category => category.Id,
             category => category.Name,
             items => items.OrderBy(category => category.Name)
         );
-        var editor = new CheckboxGroupEditor(options, scope.ServiceProvider);
+        var handler = new CheckboxGroupEditorHandler(editor, scope.ServiceProvider);
 
         // Act
         var choices =
-            (IReadOnlyList<SelectListItem>)(await editor.PrepareAsync(CancellationToken.None))!;
+            (IReadOnlyList<SelectListItem>)(await handler.PrepareAsync(CancellationToken.None))!;
 
         // Assert
         await Assert
@@ -111,7 +111,7 @@ public class ResourceReferenceTests
                 create.Fields(fields =>
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<SelectListEditorOptions>(options =>
+                        .UseEditor<SelectEditor>(options =>
                             options.UseItems<CatalogDbContext, Category, int>(
                                 category => category.Id,
                                 category => category.Name
@@ -277,7 +277,7 @@ public class ResourceReferenceTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems);
+                    .UseEditor<SelectEditor>(ConfigureCategoryItems);
             })
         );
     }
@@ -291,7 +291,7 @@ public class ResourceReferenceTests
                 fields.Add(model => model.Name);
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems);
+                    .UseEditor<SelectEditor>(ConfigureCategoryItems);
             })
         );
 
@@ -303,12 +303,12 @@ public class ResourceReferenceTests
             edit.Fields(fields =>
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<SelectListEditorOptions>(ConfigureCategoryItems)
+                    .UseEditor<SelectEditor>(ConfigureCategoryItems)
             )
         );
     }
 
-    private static void ConfigureCategoryItems(SelectListEditorOptions options) =>
+    private static void ConfigureCategoryItems(SelectEditor options) =>
         options.UseItems<CatalogDbContext, Category, int>(
             category => category.Id,
             category => category.Name,

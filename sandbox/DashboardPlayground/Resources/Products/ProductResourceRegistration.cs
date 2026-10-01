@@ -1,7 +1,7 @@
 using DashboardPlayground.Data;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.Products;
 
@@ -27,7 +27,7 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<SelectListEditorOptions>(options =>
+                            field.UseEditor<SelectEditor>(options =>
                                 options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,
@@ -53,7 +53,7 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<SelectListEditorOptions>(options =>
+                            field.UseEditor<SelectEditor>(options =>
                                 options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,

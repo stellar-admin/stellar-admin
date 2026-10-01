@@ -1,6 +1,6 @@
 using StellarAdmin.TagHelpers;
 
-namespace StellarAdmin.Dashboard.Resources.Options;
+namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
 ///     Additional CSS classes for a radio editor and its choices.
@@ -9,7 +9,7 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 ///     Root styles the fieldset, Label its legend, and Control the choices container.
 ///     Use Option.Content for choice content and Error for group validation.
 /// </remarks>
-public class RadioEditorClassNames : EditorClassNames
+public class RadioGroupEditorClassNames : EditorClassNames
 {
     /// <summary>
     ///     Additional CSS classes applied to each choice.

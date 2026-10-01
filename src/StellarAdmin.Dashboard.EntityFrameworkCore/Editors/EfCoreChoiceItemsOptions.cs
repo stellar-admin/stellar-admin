@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
-internal sealed class EfCoreSelectListItemsOptions<TEntity, TValue>
+internal sealed class EfCoreChoiceItemsOptions<TEntity, TValue>
     where TEntity : class
 {
     internal string? EmptyOptionText { get; set; }
@@ -13,7 +13,7 @@ internal sealed class EfCoreSelectListItemsOptions<TEntity, TValue>
 
     internal Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? OrderQuery { get; set; }
 
-    internal EfCoreSelectListItemsOptions(
+    internal EfCoreChoiceItemsOptions(
         Expression<Func<TEntity, TValue>> valueExpression,
         Expression<Func<TEntity, string>> textExpression
     )

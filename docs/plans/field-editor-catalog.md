@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: planned, 2026-10-01. The spike is done and committed on the `field-editor-catalog` branch. Phase 1 has not started and needs Jerrie's go-ahead.
+Status: active, 2026-10-01. The spike is committed on the `field-editor-catalog` branch. Phase 1 is implemented and awaits review.
 
 ## Goal
 
@@ -44,7 +44,7 @@ public sealed class SelectEditorHandler(SelectEditor editor, IServiceProvider se
 
 Most editors load no request data. A `FieldEditorHandler<TEditor>` base class supplies a no-op `PrepareAsync`, so those handlers only declare their template name. Handlers must accept their editor in the constructor, because the controller passes it to `ActivatorUtilities.CreateInstance`.
 
-Settle these smaller names during Phase 1: `ISelectListItemsProvider` (tied to the old select name), `IChoiceItemsProvider`, `EditorClassNames` and `RadioEditorClassNames`.
+Smaller names settled in Phase 1: `ISelectListItemsProvider` is removed and `SelectEditor.UseItems<TProvider>()` accepts any `IChoiceItemsProvider`. `IChoiceItemsProvider` and `EditorClassNames` keep their names. `RadioEditorClassNames` becomes `RadioGroupEditorClassNames`. In the EF Core package, `SelectListEditorOptionsExtensions` becomes `SelectEditorExtensions`, `CheckboxGroupEditorOptionsExtensions` becomes `CheckboxGroupEditorExtensions` and `EfCoreSelectListItemsBuilder` becomes `EfCoreSelectItemsBuilder`. `IFieldEditor.HandlerType` replaces `IFieldEditorOptions.EditorType`.
 
 Convenience methods such as `fields.Add(...).UseSelect(...)` are wanted later as sugar over `UseEditor<T>`. They are not part of this plan.
 
@@ -103,6 +103,12 @@ Each phase stops for review before the next starts.
 5. **Legacy templates and documentation.** Decide on each legacy template. Update the consumer skills reference, samples and any website documentation affected.
 
 Every phase runs the Dashboard HTTP integration tests, the EF Core HTTP integration tests and the Dashboard unit tests, and records the results here.
+
+## Phase 1, 2026-10-01
+
+Applied the naming table with no behavior change. `FieldEditorHandler<TEditor>` exposes the editor as a protected `Editor` property, supplies a no-op `PrepareAsync`, and is the base of `ChoiceEditorHandler<TEditor>`. The select and checkbox group handlers still return the existing `SelectListEditor` and `CheckboxGroupEditor` template names, because the templates move in Phase 3. `RadioGroupEditor` is renamed but not yet selectable with `UseEditor`, because it has no handler or template until Phase 3. After review, the editor classes, `IFieldEditor`, `EditorClassNames` and `RadioGroupEditorClassNames` moved from `Resources/Options` into `Resources/Editors` and the `StellarAdmin.Dashboard.Resources.Editors` namespace, next to their handlers. `FormFieldOptions` stays in `Resources.Options`. Updated the tests, fixtures, DashboardPlayground registrations, the Dashboard skills setup reference and `docs/development.md`.
+
+Verification: the solution builds in Release. Dashboard HTTP integration tests passed 201 of 201, EF Core HTTP integration tests passed 59 of 59 and Dashboard unit tests passed 37 of 37. CSharpier reports the changed C# files as formatted.
 
 ## Spike, 2026-10-01
 

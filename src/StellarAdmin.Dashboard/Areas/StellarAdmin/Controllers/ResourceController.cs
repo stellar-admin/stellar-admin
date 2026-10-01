@@ -368,16 +368,16 @@ public class ResourceController<TResource>(
         var templates = new Dictionary<string, string>();
         foreach (var field in fields)
         {
-            if (field.EditorType is { } editorType)
+            if (field.HandlerType is { } handlerType)
             {
-                var editor = (IFieldEditor)
+                var handler = (IFieldEditorHandler)
                     ActivatorUtilities.CreateInstance(
                         HttpContext.RequestServices,
-                        editorType,
+                        handlerType,
                         field.Editor
                     );
-                data[field.FieldName] = await editor.PrepareAsync(cancellationToken);
-                templates[field.FieldName] = editor.TemplateName;
+                data[field.FieldName] = await handler.PrepareAsync(cancellationToken);
+                templates[field.FieldName] = handler.TemplateName;
             }
         }
 

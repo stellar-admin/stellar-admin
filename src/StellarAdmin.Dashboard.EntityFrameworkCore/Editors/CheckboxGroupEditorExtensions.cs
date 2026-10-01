@@ -1,15 +1,15 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 /// <summary>
 ///     Configures EF Core choices for checkbox group editors.
 /// </summary>
-public static class CheckboxGroupEditorOptionsExtensions
+public static class CheckboxGroupEditorExtensions
 {
-    extension(CheckboxGroupEditorOptions options)
+    extension(CheckboxGroupEditor editor)
     {
         /// <summary>
         ///     Loads checkbox choices from an EF Core entity set using required value and text selectors.
@@ -22,15 +22,15 @@ public static class CheckboxGroupEditorOptionsExtensions
             where TContext : DbContext
             where TEntity : class
         {
-            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(editor);
             ArgumentNullException.ThrowIfNull(value);
             ArgumentNullException.ThrowIfNull(text);
 
-            var itemOptions = new EfCoreSelectListItemsOptions<TEntity, TValue>(value, text);
+            var itemOptions = new EfCoreChoiceItemsOptions<TEntity, TValue>(value, text);
             var builder = new EfCoreCheckboxGroupItemsBuilder<TEntity, TValue>(itemOptions);
             configure?.Invoke(builder);
 
-            EfCoreChoiceItemsLoader.Configure<TContext, TEntity, TValue>(options, itemOptions);
+            EfCoreChoiceItemsLoader.Configure<TContext, TEntity, TValue>(editor, itemOptions);
         }
     }
 }
