@@ -53,6 +53,29 @@ public partial class SliderTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenValueFormatIsEmpty_OmitsValueText()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SliderTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            ValueFormat = string.Empty,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[role=slider]")?.HasAttribute("aria-valuetext"))
+            .IsFalse();
+        await Assert
+            .That(html.QuerySelector("sel-slider")?.HasAttribute("data-value-format"))
+            .IsFalse();
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenValueFormatHasNoPlaceholder_ThrowsArgumentException()
     {
         // Arrange

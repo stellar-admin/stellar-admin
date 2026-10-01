@@ -9,7 +9,7 @@
   @apply text-muted-foreground text-xs;
 }
 .sa-slider-mark-tick {
-  @apply bg-muted-foreground/35 h-2.5 w-0.5 rounded-full in-data-[orientation=vertical]:h-0.5 in-data-[orientation=vertical]:w-2.5 in-data-[state=in-range]:bg-primary-foreground/70;
+  @apply bg-muted-foreground/35 h-2.5 w-0.5 rounded-full [[data-orientation=vertical]>&]:h-0.5 [[data-orientation=vertical]>&]:w-2.5 [[data-state=in-range]>&]:bg-primary-foreground/70;
 }
 .sa-slider-mark-label {
   @apply text-muted-foreground text-xs tabular-nums;

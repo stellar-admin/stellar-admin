@@ -958,10 +958,11 @@
     @apply absolute size-0 data-horizontal:top-1/2 data-vertical:left-1/2;
   }
   .sa-slider-mark-label {
-    @apply absolute whitespace-nowrap in-data-[orientation=horizontal]:top-[calc(var(--sa-slider-thumb-size,1rem)/2+0.25rem)] in-data-[orientation=horizontal]:-translate-x-1/2 in-data-[orientation=vertical]:left-[calc(var(--sa-slider-thumb-size,1rem)/2+0.5rem)] in-data-[orientation=vertical]:-translate-y-1/2;
+    /* Keyed to the mark, its parent: a field around the slider also carries data-orientation */
+    @apply absolute whitespace-nowrap [[data-orientation=horizontal]>&]:top-[calc(var(--sa-slider-thumb-size,1rem)/2+0.25rem)] [[data-orientation=horizontal]>&]:-translate-x-1/2 [[data-orientation=vertical]>&]:left-[calc(var(--sa-slider-thumb-size,1rem)/2+0.5rem)] [[data-orientation=vertical]>&]:-translate-y-1/2;
     /* Labels at the bounds align to the track's ends; edge-aligned thumbs inset the end marks by half a thumb */
-    @apply in-data-[bound=min]:in-data-[orientation=horizontal]:translate-x-0 in-data-[bound=max]:in-data-[orientation=horizontal]:-translate-x-full in-data-[bound=min]:in-data-[orientation=vertical]:-translate-y-full in-data-[bound=max]:in-data-[orientation=vertical]:translate-y-0;
-    @apply in-data-[thumb-alignment=edge]:in-data-[bound=min]:in-data-[orientation=horizontal]:-ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=max]:in-data-[orientation=horizontal]:ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=min]:in-data-[orientation=vertical]:mt-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:in-data-[bound=max]:in-data-[orientation=vertical]:-mt-[calc(var(--sa-slider-thumb-size,1rem)/2)];
+    @apply [[data-orientation=horizontal][data-bound=min]>&]:translate-x-0 [[data-orientation=horizontal][data-bound=max]>&]:-translate-x-full [[data-orientation=vertical][data-bound=min]>&]:-translate-y-full [[data-orientation=vertical][data-bound=max]>&]:translate-y-0;
+    @apply in-data-[thumb-alignment=edge]:[[data-orientation=horizontal][data-bound=min]>&]:-ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:[[data-orientation=horizontal][data-bound=max]>&]:ms-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:[[data-orientation=vertical][data-bound=min]>&]:mt-[calc(var(--sa-slider-thumb-size,1rem)/2)] in-data-[thumb-alignment=edge]:[[data-orientation=vertical][data-bound=max]>&]:-mt-[calc(var(--sa-slider-thumb-size,1rem)/2)];
   }
   .sa-slider-mark-tick {
     @apply absolute -translate-x-1/2 -translate-y-1/2;

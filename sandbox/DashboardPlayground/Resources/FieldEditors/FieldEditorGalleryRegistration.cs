@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.TagHelpers;
 
 namespace DashboardPlayground.Resources.FieldEditors;
 
@@ -666,6 +667,51 @@ internal static class FieldEditorGalleryRegistration
                 section
                     .Add(model => model.StyledVolume)
                     .UseEditor<SliderEditor>(slider => slider.ClassNames.Control = "max-w-xs");
+            }
+        );
+        fields.AddSection(
+            "Value and marks",
+            section =>
+            {
+                section.Description =
+                    "The value shows beside the label and the bounds under the track by default. ValueFormat formats both.";
+                section
+                    .Add(model => model.DistanceFromCenter)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.Max = 50;
+                        slider.ValueFormat = "{0} km";
+                        slider.MarkInterval = 10;
+                    });
+                section
+                    .Add(model => model.Nights)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.MarkInterval = 1;
+                        slider.MarkLabels = SliderMarkLabels.All;
+                    });
+                section
+                    .Add(model => model.GuestRating)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.AddMark(1, "Poor");
+                        slider.AddMark(3, "Good");
+                        slider.AddMark(5, "Excellent");
+                    });
+                section
+                    .Add(model => model.PlainVolume)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.ShowValue = false;
+                        slider.MarkLabels = SliderMarkLabels.None;
+                    });
+                section
+                    .Add(model => model.StyledMarkVolume)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.ClassNames.Value = "font-semibold text-foreground";
+                        slider.ClassNames.MarkLabel = "text-primary";
+                    });
             }
         );
     }

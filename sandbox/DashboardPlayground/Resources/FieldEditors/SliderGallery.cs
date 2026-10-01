@@ -37,6 +37,23 @@ public sealed class SliderGallery
     [Display(Name = "int · ClassNames.Control")]
     public int StyledVolume { get; set; }
 
+    [Display(Name = "int · ValueFormat \"{0} km\" · MarkInterval 10")]
+    public int DistanceFromCenter { get; set; }
+
+    [Range(1, 8)]
+    [Display(Name = "int · [Range(1, 8)] · MarkInterval 1 · MarkLabels All")]
+    public int Nights { get; set; }
+
+    [Range(1, 5)]
+    [Display(Name = "int · [Range(1, 5)] · AddMark")]
+    public int GuestRating { get; set; }
+
+    [Display(Name = "int · ShowValue false · MarkLabels None")]
+    public int PlainVolume { get; set; }
+
+    [Display(Name = "int · ClassNames.Value and ClassNames.MarkLabel")]
+    public int StyledMarkVolume { get; set; }
+
     public static SliderGallery CreateSample() =>
         new()
         {
@@ -49,5 +66,10 @@ public sealed class SliderGallery
             ReadOnlyVolume = 50,
             Discount = 15,
             StyledVolume = 30,
+            DistanceFromCenter = 15,
+            Nights = 3,
+            GuestRating = 4,
+            PlainVolume = 50,
+            StyledMarkVolume = 70,
         };
 }

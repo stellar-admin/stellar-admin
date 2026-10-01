@@ -113,6 +113,9 @@ internal static class EditorClassNamesMapper
             Description = classes.Description,
             Error = classes.Error,
             Label = classes.Label,
+            Mark = classes.Mark,
+            MarkLabel = classes.MarkLabel,
+            Marks = classes.Marks,
             Root = classes.Root,
         };
     }

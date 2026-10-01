@@ -1,6 +1,6 @@
 # Slider value display and marks
 
-Status: **active**. Phase 1 (design) approved 2026-10-01. Phase 2 (tag helpers and client) implemented and verified; awaiting review. Last updated: 2026-10-01.
+Status: **active**. Phase 1 (design) approved 2026-10-01. Phase 2 (tag helpers and client) committed 2026-10-02. Phase 3 (Dashboard) reviewed and committed 2026-10-02. All phases are done; the field-level `aria-describedby` fix and the website docs remain follow-ups. Last updated: 2026-10-02.
 
 `sa-slider` shows no current value, so a slider cannot be read precisely. This was recorded as a follow-up when the [field editor catalog](archive/field-editor-catalog.md) closed. Review widened the scope: since the slider already diverges from shadcn here, it should also support marks (ticks) and minimum and maximum labels, and stay composable in the shadcn style. The tag helper changes come first; `SliderEditor` exposes them afterwards. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -8,7 +8,7 @@ Status: **active**. Phase 1 (design) approved 2026-10-01. Phase 2 (tag helpers a
 | --- | --- | --- |
 | 1 | Design: anatomy, public API, formatting, accessibility | approved |
 | 2 | Tag helper and client, TagHelpers tests, DocsSamples examples, theme coverage, regenerated skills reference, browser check across themes | implemented, awaiting review |
-| 3 | Dashboard: `SliderEditor` settings, template, gallery, Dashboard reference and tests | not started |
+| 3 | Dashboard: `SliderEditor` settings, template, gallery, Dashboard reference and tests | committed |
 
 ## Survey
 
@@ -142,9 +142,25 @@ These appear in other libraries but are not proposed now; each can be added late
 - Dependent `aria-valuemin` and `aria-valuemax` on range thumbs.
 - Inverted tracks, non-linear scales, origins other than the start.
 
-## Dashboard (Phase 3 outline)
+## Dashboard (Phase 3)
 
-`SliderEditor` gains `ShowValue` (`bool`, default `true`, configurable per editor), `ValueFormat` (`string?`), `MarkInterval` (`int?`) and `MarkLabels` (`SliderMarkLabels?`). The `Editors/Slider` template composes the explicit field on the user's behalf: `<sa-field>` with `<sa-field-label asp-for>` and `<sa-slider-value/>` in a header row, the slider, and the description and error parts. It gives the description and error ids and passes them to the slider as `aria-describedby`, so the thumbs keep the descriptions the existing HTTP tests check.
+Approved 2026-10-02 with one change from the outline: `MarkLabels` defaults to `Ends`, so the minimum and maximum show by default.
+
+| `SliderEditor` setting | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `ShowValue` | `bool` | `true` | The current value beside the label |
+| `ValueFormat` | `string?` | `null` | A `{0}` format for the value, the mark labels and `aria-valuetext`; not inferred from `[DisplayFormat]` |
+| `MarkInterval` | `int?` | `null` | Ticks every N values; `null` draws none |
+| `MarkLabels` | `SliderMarkLabels` | `Ends` | Which marks are labelled; without `MarkInterval` the labels render without ticks |
+| `AddMark(value, label)` | method | none | Authored marks, which replace the generated ones and always show ticks |
+| `ClassNames` | `SliderEditorClassNames` | — | Adds `Value`, `Marks`, `Mark` and `MarkLabel` |
+
+The `Editors/Slider` template composes the explicit field: a header row (`flex items-center justify-between gap-2`) with the label and `<sa-slider-value/>` when `ShowValue` is set, otherwise the label alone; the slider with its marks; then the error and description, as in the input group template. The label gets the id `{id}-label`, which the slider passes to its thumbs as `aria-labelledby`, and the thumbs get `{id}-description {id}-error` (or the error alone) as `aria-describedby`. A field-level fix for that wiring remains a follow-up.
+
+Found while implementing:
+
+- Razor binds `value-format="@null"` as an empty string, which the tag helper rejected. `sa-slider` now treats an empty `value-format` as unset.
+- The mark label and shadcn tick rules used `in-data-[orientation=…]`, which matches any ancestor. The Dashboard's `sa-field` carries `data-orientation="vertical"`, so horizontal labels took the vertical position and offset, and shadcn ticks would have turned sideways. Those rules now key to the mark, the direct parent (`[[data-orientation=…]>&]`, `[[data-state=in-range]>&]`), in `components.css`, each shadcn `*.custom.css` and the generated shadcn themes.
 
 ## Decisions
 
@@ -192,5 +208,6 @@ Phase 2, recorded 2026-10-01:
 - `dotnet run --project util/SkillsGenerator` regenerated `slider.md` and the components index; `-- --check` reports no drift.
 - DocsSamples on port 5206 in headless Chromium, with no script errors: the Value example filled `$200 – $800` and `15 km` on hydration, named the range thumbs from `thumb-labels` and the distance thumb from the explicit field label. Four ArrowRight presses on the upper price thumb and one ArrowLeft on the lower gave `$150 – $1,000`, matching `aria-valuetext` and hidden inputs `150` and `1000`; End on the distance thumb gave `50 km`. Twelve ArrowRight presses on the Marks example's upper thumb moved the 1,000 mark into range. Marks were captured in shadcn Nova (light and dark), Observatory (light and dark), shadcn Luma, Aurora and Parallax, and the full page at 390 pixels in Parallax dark without horizontal overflow; thumb sizes measured 12, 15 and 24 pixels as themed. A slider converted to vertical in the page placed the 4 tick at the thumb's centre (164.58 pixels against 164.58).
 - Review follow-up, recorded 2026-10-02 (flush end labels and value typography in prose): `dotnet test tests/StellarAdmin.TagHelpers.Tests` 214 passed, adding a test for `data-bound` on the minimum and maximum marks; `npm run build` compiled every bundle; the coverage check reviewed 58 components × 15 themes. DocsSamples on port 5206 at 390 pixels: Custom Marks and Marks in Observatory show "Poor"/"$0"/"1"/"0 km" starting at the track's start and "Excellent"/"$1,000"/"8"/"100 km" ending at its end without horizontal overflow; the Value example in Aurora shows `15 km` in the description's sans text, and Custom Marks' sentence value matches its text size, while the header value keeps the mono style. shadcn Nova Value and Custom Marks were also captured.
+- Phase 3, recorded 2026-10-02: `dotnet test tests/StellarAdmin.Dashboard.IntegrationTests` 251 passed, including new `SliderEditorTests` for the default value and end labels with the thumb labelled by the field label, `ShowValue = false`, `ValueFormat` on the value text and mark labels, interval ticks, `MarkLabels.None` rendering no marks, added marks replacing generation, `aria-describedby` with and without a description, `aria-invalid` and the error after an out-of-range submission, and the class names; the existing slider bounds and binding tests pass unchanged. `dotnet test tests/StellarAdmin.TagHelpers.Tests` 215 passed, adding the empty `value-format` test; `tests/StellarAdmin.TagHelpers.IntegrationTests` 19 passed. Coverage check 58 components × 15 themes; SkillsGenerator `--check` reports no drift; the Dashboard and DashboardPlayground client CSS builds include the header row utilities. DashboardPlayground on port 5206 (Parallax, 1280 and 390 pixels, no horizontal overflow): every slider in the gallery shows its value, the new "Value and marks" section renders `15 km` with `0 km`/`50 km` and ticks every 10, 1–8 labelled at every step, Poor/Good/Excellent, a plain slider without value or marks, and the styled value and mark labels; end labels measured flush with the track (592 and 1256 against a 592–1256 track), and swapping in shadcn Nova gave 2×10 ticks and flush labels. Three ArrowRight presses on the distance thumb gave `18 km` in the output and `aria-valuetext` and `18` in the hidden input; the thumb's label resolved to the field label and `aria-describedby` to the error id. `app.db` was unchanged. DocsSamples Marks and Custom Marks at 390 pixels in shadcn Nova and Observatory still place end labels flush and ticks upright after the selector change.
 - Not checked: a real vertical slider with marks rendered by the server (no example uses one; this includes the vertical end-label alignment), right-to-left layout, and mark positions in the Dashboard (Phase 3).
 

@@ -131,7 +131,9 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
         }
 
-        if (ValueFormat != null && !ValueFormat.Contains("{0}", StringComparison.Ordinal))
+        // Razor binds an empty attribute, including one set from null, as an empty string
+        var valueFormat = string.IsNullOrEmpty(ValueFormat) ? null : ValueFormat;
+        if (valueFormat != null && !valueFormat.Contains("{0}", StringComparison.Ordinal))
         {
             throw new ArgumentException(
                 "ValueFormat must contain a {0} placeholder for the value",
@@ -176,9 +178,9 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         {
             output.Attributes.SetAttribute("data-value-locale", culture.Name);
         }
-        if (ValueFormat != null)
+        if (valueFormat != null)
         {
-            output.Attributes.SetAttribute("data-value-format", ValueFormat);
+            output.Attributes.SetAttribute("data-value-format", valueFormat);
         }
         if (effectiveDisabled)
         {
@@ -220,7 +222,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 Values = values,
                 Orientation = effectiveOrientation,
                 ThumbAlignment = effectiveThumbAlignment,
-                ValueFormat = ValueFormat,
+                ValueFormat = valueFormat,
                 Culture = culture,
             }
         );
@@ -271,11 +273,11 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 effectiveMax.ToString(CultureInfo.InvariantCulture)
             );
             thumb.Attributes.Add("aria-valuenow", value.ToString(CultureInfo.InvariantCulture));
-            if (ValueFormat != null)
+            if (valueFormat != null)
             {
                 thumb.Attributes.Add(
                     "aria-valuetext",
-                    SliderContext.FormatValue(value, ValueFormat, culture)
+                    SliderContext.FormatValue(value, valueFormat, culture)
                 );
             }
             if (effectiveDisabled)

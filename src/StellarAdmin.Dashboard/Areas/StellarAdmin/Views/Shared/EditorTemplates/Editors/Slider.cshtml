@@ -2,7 +2,47 @@
 
 @{
     var attributes = Editor.ResolveAttributes(ViewData.ModelMetadata);
+    var classes = Editor.ClassNames;
+
+    // The value sits beside the label, so the field parts are composed here
+    var id = Html.IdForModel();
+    var labelId = $"{id}-label";
+    var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
+    var errorId = $"{id}-error";
+    var hasGeneratedMarks = Editor.MarkInterval is not null || Editor.MarkLabels != SliderMarkLabels.None;
 }
 
-<sa-slider class-names="@EditorClassNamesMapper.ForSlider(Editor)" asp-for="@Model" min="@attributes.Min" max="@attributes.Max" step="@attributes.Step"
-           label="@Title" description="@Description" disabled="@IsReadOnly" />
+<sa-field class="@classes.Root">
+    @if (Editor.ShowValue)
+    {
+        <div class="flex items-center justify-between gap-2">
+            <sa-field-label class="@classes.Label" id="@labelId" asp-for="@Model">@Title</sa-field-label>
+            <sa-slider-value class="@classes.Value" />
+        </div>
+    }
+    else
+    {
+        <sa-field-label class="@classes.Label" id="@labelId" asp-for="@Model">@Title</sa-field-label>
+    }
+
+    <sa-slider class-names="@EditorClassNamesMapper.ForSlider(Editor)" asp-for="@Model" min="@attributes.Min" max="@attributes.Max" step="@attributes.Step"
+               value-format="@Editor.ValueFormat" disabled="@IsReadOnly" aria-labelledby="@labelId"
+               aria-describedby="@(descriptionId is null ? errorId : $"{descriptionId} {errorId}")">
+        @if (Editor.Marks.Count > 0)
+        {
+            <sa-slider-marks>
+                @foreach (var mark in Editor.Marks)
+                {
+                    <sa-slider-mark value="@mark.Value">@mark.Label</sa-slider-mark>
+                }
+            </sa-slider-marks>
+        }
+        else if (hasGeneratedMarks)
+        {
+            <sa-slider-marks interval="@Editor.MarkInterval" labels="@Editor.MarkLabels" show-ticks="@(Editor.MarkInterval is not null)" />
+        }
+    </sa-slider>
+
+    <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
+    <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
+</sa-field>
