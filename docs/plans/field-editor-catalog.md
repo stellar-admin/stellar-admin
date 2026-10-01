@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike and Phases 1 to 4 are committed on the `field-editor-catalog` branch. Phase 5 is in progress: the legacy templates are deleted, and the documentation updates remain.
+Status: active, 2026-10-01. The spike and Phases 1 to 4 are committed on the `field-editor-catalog` branch. Phase 5 is in progress: the legacy template deletion is committed, and the consumer reference update awaits review.
 
 ## Goal
 
@@ -136,9 +136,11 @@ Browser checks run on port 5206 and the server is stopped afterwards. Port 5205 
 
 ## Phase 5, 2026-10-01
 
-Deleted the `EnumRadioGroup`, `EnumRadioChoiceCards`, `SelectListEditor` and `CheckboxGroupEditor` templates. No handler has selected them since Phase 3, and a search of the product and website repositories found no reference to them by name, through `[UIHint]` or by template path. `RadioGroupEditor`, `SelectEditor` and `CheckboxGroupEditor` replace them, and every `EditorClassNamesMapper` method is still used by an `Editors/` template. An app that named one of them with `[UIHint]` now gets the default editor for the property type. The consumer skills reference, samples and website documentation are not yet updated.
+Deleted the `EnumRadioGroup`, `EnumRadioChoiceCards`, `SelectListEditor` and `CheckboxGroupEditor` templates. No handler has selected them since Phase 3, and a search of the product and website repositories found no reference to them by name, through `[UIHint]` or by template path. `RadioGroupEditor`, `SelectEditor` and `CheckboxGroupEditor` replace them, and every `EditorClassNamesMapper` method is still used by an `Editors/` template. An app that named one of them with `[UIHint]` now gets the default editor for the property type.
 
 Verification: the solution and DashboardPlayground built, and the Dashboard HTTP (241) and EF Core HTTP (59) suites passed.
+
+Added a "Form field editors" section to the Dashboard consumer reference, `skills/stellar-admin-dashboard/references/setup.md`, before "EF Core resources". It covers the defaults that the data-type forwards give fields without `UseEditor`, an example, a table of each editor with its rendered component and settings, the inference rules, the choice sources, `ClassNames` and the template override path. The existing custom editor paragraph moved into that section. Each setting and inference rule was checked against the editor classes and templates. The samples need no change: DashboardPlayground already uses the new editor names, and its gallery covers every editor. The website repository mentions no field editor, so it needs no change. The Dashboard reference is reference-only, so the skill bundle validator skips it, and no checks were run for this documentation change.
 
 ## Phase 4, 2026-10-01
 

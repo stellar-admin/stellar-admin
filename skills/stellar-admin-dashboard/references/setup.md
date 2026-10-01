@@ -218,7 +218,47 @@ The explicit handler takes precedence over any data source edit implementation a
 
 Typed fields, layouts, resource label defaults, page overrides, model and handler validation, and antiforgery protection use the shared edit flow. Override the view with `Areas/StellarAdmin/Views/Customer/Edit.cshtml`, or let MVC fall back to `ResourceEdit`.
 
-For a custom form editor, create an editor class derived from `FieldEditor` (in `StellarAdmin.Dashboard.Resources.Editors`) that implements `IFieldEditor<MyEditorHandler>`. The editor holds the settings. Create a handler that implements `IFieldEditorHandler<MyEditor>`, or derives from `FieldEditorHandler<MyEditor>` when it loads no request data, and accept `MyEditor` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The handler's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`. Its `PrepareAsync` can load request data. The template reads the configured editor from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`. Fields without `UseEditor` continue using MVC metadata-based editor template selection.
+## Form field editors
+
+Fields without `UseEditor` use MVC metadata-based editor template selection. The Dashboard's data-type templates forward to the built-in editors below and apply the same inference, so most properties need no editor configuration. Strings, GUIDs and numbers render a text input, `[DataType(DataType.MultilineText)]` renders a text area, dates and times render the matching date or time input, a `bool` renders a checkbox, a `bool?` renders a Yes, No and Not set select, and a non-flags enum renders a select. Flags enums render a text input.
+
+Select a built-in editor and its settings with `UseEditor<TEditor>()` or `UseEditor<TEditor>(editor => { ... })`. The editors are in `StellarAdmin.Dashboard.Resources.Editors`:
+
+```csharp
+using StellarAdmin.Dashboard.Resources.Editors;
+
+edit.Fields(fields =>
+{
+    fields.Add(trip => trip.Price).UseEditor<TextInputEditor>(input => input.Prefix = "$");
+    fields.Add(trip => trip.Notes).UseEditor<TextareaEditor>(textarea => textarea.Rows = 4);
+    fields.Add(trip => trip.Cabin).UseEditor<RadioGroupEditor>(radio => radio.Appearance = RadioGroupAppearance.Cards);
+    fields.Add(trip => trip.Amenities).UseEditor<CheckboxGroupEditor>();
+    fields.Add(trip => trip.IsFeatured).UseEditor<ToggleEditor>();
+    fields.Add(trip => trip.Rating).UseEditor<SliderEditor>(slider => slider.Step = 5);
+});
+```
+
+| Editor | Renders | Settings |
+| --- | --- | --- |
+| `TextInputEditor` | `sa-input`, or `sa-input-group` with a prefix or suffix | `Type` (`TextInputType.Text`, `Email`, `Tel`, `Url`, `Password`, `Number`), `Placeholder`, `Prefix`, `Suffix`, `Min`, `Max`, `Step` |
+| `TextareaEditor` | `sa-textarea` | `Placeholder`, `Rows` |
+| `DateInputEditor` | `sa-input type="date"` | `Min`, `Max`, `Step` in days |
+| `DateTimeInputEditor` | `sa-input type="datetime-local"` | `Min`, `Max`, `Step` as a `TimeSpan` |
+| `TimeInputEditor` | `sa-input type="time"` | `Min`, `Max`, `Step` as a `TimeSpan` |
+| `CheckboxEditor` | A single checkbox for a `bool` | None |
+| `ToggleEditor` | `sa-switch` for a `bool` | None |
+| `SelectEditor` | `sa-select` | `UseItems(...)`, `EmptyChoiceText` |
+| `RadioGroupEditor` | `sa-radio-group` | `UseItems(...)`, `EmptyChoiceText`, `Appearance` (`RadioGroupAppearance.Default` or `Cards`) |
+| `CheckboxGroupEditor` | `sa-checkbox-group` for a collection property | `UseItems(...)` |
+| `ToggleButtonsEditor` | `sa-segmented-control` that selects one value | `UseItems(...)`, `EmptyChoiceText` |
+| `SliderEditor` | `sa-slider` for a whole number | `Min`, `Max`, `Step` |
+| `OneTimeCodeEditor` | `sa-input-otp`, one box per digit | `Length` |
+
+Settings left unset are inferred from the property, and explicit settings win. `TextInputEditor` picks its type from `[DataType]` (email address, phone number, URL or password) and renders a number input for numeric properties, with `step="1"` for whole numbers and `step="any"` for `decimal`, `double` and `float`. `SliderEditor` takes `Min` and `Max` from `[Range]`, then falls back to 0 and 100. `OneTimeCodeEditor` takes `Length` from the property's maximum length, then falls back to 6. A `DateTimeOffset` property renders a text input with the round-trip format, so its offset is kept.
+
+The choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor` and `ToggleButtonsEditor`) take their choices from `UseItems(...)` when it is called. Otherwise a non-flags enum property supplies its members, using `[Display(Name, Description)]` for the choice text and, in radio and checkbox groups, the choice descriptions, and a Boolean property supplies Yes and No. A collection property takes its choices from its element type. A nullable enum or Boolean adds an empty first choice whose text is `EmptyChoiceText`, "Not set" by default. Any other property type requires `UseItems(...)`. Every editor also has `ClassNames` for additional CSS classes on its parts. Override a built-in editor's markup at `Areas/StellarAdmin/Views/Shared/EditorTemplates/Editors/<Name>.cshtml`, for example `Editors/TextInput.cshtml`.
+
+For a custom form editor, create an editor class derived from `FieldEditor` (in `StellarAdmin.Dashboard.Resources.Editors`) that implements `IFieldEditor<MyEditorHandler>`. The editor holds the settings. Create a handler that implements `IFieldEditorHandler<MyEditor>`, or derives from `FieldEditorHandler<MyEditor>` when it loads no request data, and accept `MyEditor` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The handler's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`. Its `PrepareAsync` can load request data. The template reads the configured editor from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`.
 
 ## EF Core resources
 
