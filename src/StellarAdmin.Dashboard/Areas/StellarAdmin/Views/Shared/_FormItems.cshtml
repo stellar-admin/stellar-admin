@@ -11,6 +11,7 @@
         {
             [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
             {
+                Description = field.Description,
                 EditorData = editorData?.GetValueOrDefault(field.FieldName),
                 Editor = field.Editor,
                 IsReadOnly = field.IsReadOnly,

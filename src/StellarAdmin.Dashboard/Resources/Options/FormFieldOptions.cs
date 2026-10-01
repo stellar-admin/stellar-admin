@@ -10,6 +10,12 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public sealed class FormFieldOptions : FormItemOptions
 {
     /// <summary>
+    ///     The help text shown with the field, or <c>null</c> to derive it from the property's
+    ///     metadata.
+    /// </summary>
+    public string? Description { get; internal set; }
+
+    /// <summary>
     ///     The editor's configuration.
     /// </summary>
     public FieldEditor Editor { get; internal set; } = new();

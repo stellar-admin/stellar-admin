@@ -8,6 +8,11 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 public sealed record FormFieldProperties
 {
     /// <summary>
+    ///     The help text shown with the field, or null to use the property's description.
+    /// </summary>
+    public string? Description { get; init; }
+
+    /// <summary>
     ///     Data prepared for this editor on the current request.
     /// </summary>
     public object? EditorData { get; init; }

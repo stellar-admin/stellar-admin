@@ -11,6 +11,11 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     where TEditor : FieldEditor, new()
 {
     /// <summary>
+    ///     The field's help text, or null to use the property's description.
+    /// </summary>
+    public string? Description => Field?.Description;
+
+    /// <summary>
     ///     The field's editor configuration. A field without one gets default settings.
     /// </summary>
     public TEditor Editor => field ??= ResolveEditor();

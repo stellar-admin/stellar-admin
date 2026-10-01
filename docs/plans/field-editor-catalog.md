@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike and Phase 1 are committed on the `field-editor-catalog` branch. Phase 2 is implemented and awaits review.
+Status: active, 2026-10-01. The spike, Phase 1 and Phase 2 are committed on the `field-editor-catalog` branch. Phase 2b, the editor gallery, is implemented and awaits review.
 
 ## Goal
 
@@ -98,11 +98,51 @@ Each phase stops for review before the next starts.
 
 1. **Rename the editor API.** Apply the naming table to the existing types with no behavior change. Add `FieldEditorHandler<TEditor>`. Update tests, fixtures, the samples and the consumer skills reference that mention the old names.
 2. **Base view and `TextInputEditor`.** Add `FieldEditorView<TEditor>`, the C# metadata inference and `Editors/TextInput`. Forward every text-like data-type template to it. Replace the spike template, fixture and tests with real ones.
+2b. **Editor gallery.** Add the visual harness described in [Editor gallery](#editor-gallery) to DashboardPlayground, with the text input scenarios. Review the prefix and suffix input group in a browser.
 3. **Choice editors.** Add `SelectEditor`, `RadioGroupEditor` with both appearances, `CheckboxGroupEditor` and `ToggleButtonsEditor` under `Editors/`, with the shared enum item helper. Forward `Enum` and nullable `Boolean`.
 4. **Remaining editors.** Add `TextareaEditor`, `CheckboxEditor`, `ToggleEditor`, the date and time editors, `SliderEditor` and `OneTimeCodeEditor`. Forward the remaining data-type templates.
 5. **Legacy templates and documentation.** Decide on each legacy template. Update the consumer skills reference, samples and any website documentation affected.
 
-Every phase runs the Dashboard HTTP integration tests, the EF Core HTTP integration tests and the Dashboard unit tests, and records the results here.
+From Phase 3 on, each phase adds its editors' gallery resource and checks it in a browser. Every phase runs the Dashboard HTTP integration tests, the EF Core HTTP integration tests and the Dashboard unit tests, and records the results here.
+
+## Editor gallery
+
+The HTTP tests guard structure: names, ids, `aria-describedby`, validation attributes and inferred input types. They cannot show layout, spacing or theme styling, and the number of editor scenarios is too large to review by hand without a fixed set of pages. The gallery is that fixed set.
+
+### Scenario axes
+
+Dashboard editors are always model-bound, because every template renders with `asp-for`. Unbound tag helper use belongs to DocsSamples. The gallery varies four axes:
+
+- Property metadata: type, nullability, `[DataType]`, `[Display(Name, Description)]`, `[Required]` and `[Range]`. These decide which template MVC resolves and what the editor infers.
+- Editor selection: no `UseEditor`, so the data-type template forwards, or `UseEditor<T>` with explicit settings.
+- Field configuration: a `Title` override and read-only.
+- State: empty on the create page, with values on the edit page, and with errors after an invalid post.
+
+### Shape
+
+DashboardPlayground gets a "Field editors" sidebar group with one in-memory resource per friendly editor, starting with "Text input". Each resource's model has one property per scenario, and the property's display name describes it, for example `decimal? · [Range] · Prefix $`. Adding a scenario is one property and, when needed, one field registration. Read-only twins sit next to a few properties so both states are visible together.
+
+Each resource uses the real pipeline: resource registration, editor handler preparation, MVC template resolution, the data-type forwards and the configured theme. A page that calls `Html.Editor` with hand-built `FormFieldProperties` would bypass the parts most likely to break, so the gallery does not use one.
+
+- The create page shows empty values, placeholders and inferred types.
+- The edit page shows formatted existing values from the in-memory data source.
+- Saves go through real model validation, and a valid save succeeds without storing anything. A "Gallery options" section at the top of every gallery form has two bound checkboxes. "Reject every field" makes a valid save fail with an error on every field, to show each editor's error state at once. "Skip client validation" turns off the browser's constraint checks for the next submit, so invalid values such as a malformed email reach server validation. Gallery records are never changed.
+
+Browser checks run on port 5206 and the server is stopped afterwards. Port 5205 is Jerrie's. DashboardPlayground no longer calls `dashboard.RequireAuthorization()`, so the gallery opens without signing in. The Users and Roles resources keep their own authorization policies.
+
+### Pixel comparison, not yet decided
+
+`util/visual-regression/vrt.mjs` compares base and head screenshots, which would turn "the forwards still render the same" into a zero pixel diff for Phases 3 to 5. It cannot capture the gallery yet. It discovers pages from `docs/DocsSamples/Pages`, sets the theme with a `?theme=` query parameter, and DashboardPlayground sets its theme in `ConfigureTheme`. Using it needs an explicit page list option, and either one capture per theme or a theme switch the tool can drive. This is a separate decision after Phase 2b and is not part of it.
+
+## Phase 2b, 2026-10-01
+
+Added the gallery in `sandbox/DashboardPlayground/Resources/FieldEditors`. `FieldEditorGalleryDataSource<TRecord>` serves one sample record, from the record type's static `CreateSample()` declared by `IFieldEditorGalleryRecord<TSelf>`. Saves pass through real model validation and succeed without storing anything. The shared `FieldEditorGalleryRecord` base class adds `Id` and the two gallery options, which the registration places in a "Gallery options" section ahead of each gallery's scenarios. With `RejectEveryField` on, the data source rejects a valid save with a summary message and one error per scenario property. `wwwroot/js/field-editor-gallery.js`, linked with `AddScript`, sets the form's `noValidate` from `SkipClientValidation` when a submit button is clicked. `StyledCode` gained `[StringLength(6, MinimumLength = 6)]` so an input group can show a real error. `FieldEditorGalleryRegistration.AddFieldEditorGallery()` registers each gallery resource under the "Field editors" sidebar group with create and edit sharing one field configuration. `TextInputGallery` at `/stellaradmin/text-input` has 27 scenarios in three sections: data-type templates without `UseEditor`, field configuration (`Title` override and `[Editable(false)]`, including a read-only prefix), and `TextInputEditor` settings (placeholder, explicit type, min/max/step, prefix, suffix, both with description and validation, and `ClassNames.Control`). Removed `dashboard.RequireAuthorization()` from the playground.
+
+The browser review found one defect. The grouped layout rendered the description before the error, while `sa-input` uses `FieldLayout.Stacked`, which renders the error first. `Editors/TextInput.cshtml` now renders the error first. A read-only input inside an input group keeps the group's normal background, while a plain read-only input is shaded. This is input group styling and was left as is.
+
+Verification: the solution and DashboardPlayground build in Release. Dashboard HTTP integration tests passed 212 of 212, EF Core HTTP integration tests passed 59 of 59 and Dashboard unit tests passed 37 of 37. CSharpier reports the gallery files as formatted. Headless Chromium captured the create page, the edit page and the edit page after a rejected save at 1280 pixels wide in the Parallax theme, against a scratch copy of `app.db` on port 5206. The server was stopped afterwards. Other themes and narrow widths were not checked. After the gallery options were added, a second headless run checked five paths on the edit and create pages. The browser blocked an invalid email when client validation was on. With it skipped, the server returned the real `[EmailAddress]`, `[Phone]`, `[Range]` and `[StringLength]` messages, including inside the prefix input group, and the checkbox stayed checked. An unchanged save redirected to the index. Reject every field produced 27 field errors plus the summary. A blank create returned the `[Required]` and `[Range]` errors. The DashboardPlayground was started with `ASPNETCORE_ENVIRONMENT=Development` so library assets resolve from `bin`.
+
+Field description, added during the Phase 2b review: `ResourceFieldBuilder.Description` sets a field's help text next to `Title`, as a field setting rather than an editor setting, so it also applies without `UseEditor`. It flows through `FormFieldOptions.Description` and `FormFieldProperties.Description` to `FieldEditorView.Description`, which is null when the property's `[Display(Description)]` should be used. `TextInput.cshtml` passes it to `sa-input` and, in the prefix and suffix layout, to `sa-field-description` and the `aria-describedby` id. The older data-type templates (Boolean, Date, Enum, MultilineText and the rest) ignore it until they move onto `FieldEditorView` in Phases 4 and 5. Two gallery scenarios cover a field description and one that replaces an attribute description inside a prefix group. Two integration tests cover the plain and the prefix layouts. Dashboard HTTP integration tests passed 214 of 214, EF Core HTTP integration tests 59 of 59 and Dashboard unit tests 37 of 37. The rendered gallery edit page showed both field descriptions, no attribute description, and the description id in `aria-describedby`. That check read the HTML only and took no screenshot.
 
 ## Phase 2, 2026-10-01
 

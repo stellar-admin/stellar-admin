@@ -16,6 +16,15 @@ public sealed class ResourceFieldBuilder
     private readonly PropertyInfo[] _propertyPath;
 
     /// <summary>
+    ///     The help text shown with the field. Defaults to the property's
+    ///     <c>[Display(Description)]</c>.
+    /// </summary>
+    public string? Description
+    {
+        set => _configuration.Add(options => options.Description = value);
+    }
+
+    /// <summary>
     ///     The field label.
     /// </summary>
     public string? Title

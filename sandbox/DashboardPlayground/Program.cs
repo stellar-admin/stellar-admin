@@ -1,6 +1,7 @@
 using DashboardPlayground.Data;
 using DashboardPlayground.Resources.Customers;
 using DashboardPlayground.Resources.Departments;
+using DashboardPlayground.Resources.FieldEditors;
 using DashboardPlayground.Resources.Products;
 using DashboardPlayground.Resources.Roles;
 using DashboardPlayground.Resources.Users;
@@ -36,7 +37,6 @@ builder
     .Services.AddStellarAdmin()
     .AddDashboard(dashboard =>
     {
-        dashboard.RequireAuthorization();
         dashboard.AddStylesheet("~/css/dashboard.css");
 
         dashboard.ConfigureTheme(theme =>
@@ -56,6 +56,7 @@ builder
         dashboard.AddDepartmentResource();
         dashboard.AddCustomerResource();
         dashboard.AddProductResource();
+        dashboard.AddFieldEditorGallery();
     });
 
 var app = builder.Build();

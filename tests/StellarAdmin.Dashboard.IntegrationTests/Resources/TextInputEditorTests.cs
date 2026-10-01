@@ -104,6 +104,60 @@ public class TextInputEditorTests
     }
 
     [Test]
+    public async Task FieldDescription_OverridesAndAddsHelpText()
+    {
+        // Arrange
+        await using var sut = await CreateTextInputFieldsHost(fields =>
+        {
+            fields.Add(model => model.Code).Description = "Printed on the boarding pass.";
+            fields.Add(model => model.Email).Description = "We send the itinerary here.";
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var code = document
+            .RequiredElement("input[name='Entity.Code']")
+            .Closest("[data-slot='field']")!;
+        await Assert
+            .That(code.RequiredElement("[data-slot='field-description']").TextContent.Trim())
+            .IsEqualTo("Printed on the boarding pass.");
+        var email = document
+            .RequiredElement("input[name='Entity.Email']")
+            .Closest("[data-slot='field']")!;
+        await Assert
+            .That(email.RequiredElement("[data-slot='field-description']").TextContent.Trim())
+            .IsEqualTo("We send the itinerary here.");
+    }
+
+    [Test]
+    public async Task FieldDescription_WithPrefix_DescribesInput()
+    {
+        // Arrange
+        await using var sut = await CreateTextInputFieldsHost(fields =>
+            fields
+                .Add(model => model.Email)
+                .UseEditor<TextInputEditor>(input => input.Prefix = "@")
+                .Description = "We send the itinerary here."
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var input = document.RequiredElement("input[name='Entity.Email']");
+        await Assert
+            .That(input.GetAttribute("aria-describedby"))
+            .IsEqualTo("Entity_Email-description Entity_Email-error");
+        await Assert
+            .That(document.RequiredElement("#Entity_Email-description").TextContent.Trim())
+            .IsEqualTo("We send the itinerary here.");
+    }
+
+    [Test]
     public async Task UseEditor_PasswordProperty_InfersPasswordType()
     {
         // Arrange

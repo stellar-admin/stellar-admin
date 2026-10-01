@@ -8,13 +8,13 @@
 @if (Editor.Prefix is null && Editor.Suffix is null)
 {
     <sa-input class-names="@classes" asp-for="@Model" type="@attributes.Type" step="@attributes.Step" min="@attributes.Min" max="@attributes.Max"
-              placeholder="@Editor.Placeholder" label="@Title" readonly="@IsReadOnly" />
+              placeholder="@Editor.Placeholder" label="@Title" description="@Description" readonly="@IsReadOnly" />
 }
 else
 {
     // The input group has no field wrapper of its own, so the field parts are composed here
     var id = Html.IdForModel();
-    var descriptionId = string.IsNullOrEmpty(ViewData.ModelMetadata.Description) ? null : $"{id}-description";
+    var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
     var errorId = $"{id}-error";
 
     <sa-field class="@classes.Root">
@@ -40,7 +40,7 @@ else
             }
         </sa-input-group>
 
-        <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model" />
         <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
+        <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
     </sa-field>
 }
