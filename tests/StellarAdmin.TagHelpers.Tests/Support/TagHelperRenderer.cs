@@ -57,7 +57,11 @@ internal static class TagHelperRenderer
         return new HtmlParser().ParseDocument(Serialize(output));
     }
 
-    public static async Task<string> RenderChildAsync(TagHelper sut, TagHelperContext parent)
+    public static async Task<string> RenderChildAsync(
+        TagHelper sut,
+        TagHelperContext parent,
+        Func<TagHelperContext, Task<string>>? children = null
+    )
     {
         var context = new TagHelperContext(
             new TagHelperAttributeList(),
@@ -68,7 +72,10 @@ internal static class TagHelperRenderer
         var output = new TagHelperOutput(
             "sa-test",
             new TagHelperAttributeList { { "class", "existing-class" } },
-            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+            async (_, _) =>
+                new DefaultTagHelperContent().SetHtmlContent(
+                    children == null ? "" : await children(context)
+                )
         );
         await sut.ProcessAsync(context, output);
 

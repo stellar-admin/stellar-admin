@@ -10,7 +10,7 @@ namespace StellarAdmin.TagHelpers;
 ///     An input for selecting a numeric value, or a range of values, by dragging one or more
 ///     thumbs along a track.
 /// </summary>
-[HtmlTargetElement("sa-slider", TagStructure = TagStructure.WithoutEndTag)]
+[HtmlTargetElement("sa-slider")]
 public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
 {
     public SliderTagHelper(IHtmlGenerator htmlGenerator)
@@ -77,13 +77,30 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     public string? Value { get; set; }
 
     /// <summary>
+    ///     A template with a <c>{0}</c> placeholder that each displayed value is substituted into,
+    ///     such as <c>"${0}"</c> or <c>"{0} km"</c>. It applies to <c>&lt;sa-slider-value&gt;</c>,
+    ///     generated mark labels and the value announced for each thumb. Numbers are formatted in
+    ///     the current culture without decimals.
+    /// </summary>
+    [HtmlAttributeName("value-format")]
+    public string? ValueFormat { get; set; }
+
+    /// <summary>
+    ///     Comma-separated accessible names for the thumbs of a range slider, in order, such as
+    ///     <c>"Minimum price,Maximum price"</c>. Without them, every thumb is named by the field
+    ///     label.
+    /// </summary>
+    [HtmlAttributeName("thumb-labels")]
+    public string? ThumbLabels { get; set; }
+
+    /// <summary>
     ///     The <c>id</c> of the form the slider's posted value belongs to, for associating it with a
     ///     form it is not nested within.
     /// </summary>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
-    protected override Task<FieldLayout> RenderInput(
+    protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
         IDictionary<string, object?>? htmlAttributes
@@ -114,6 +131,20 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
         }
 
+        if (ValueFormat != null && !ValueFormat.Contains("{0}", StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "ValueFormat must contain a {0} placeholder for the value",
+                nameof(ValueFormat)
+            );
+        }
+
+        var culture = CultureInfo.CurrentCulture;
+        var thumbLabels = ThumbLabels?.Split(
+            ',',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+        );
+
         var orientationText = effectiveOrientation.GetDataAttributeText();
         var inputName = ResolveName();
         var userClass = output.GetUserSuppliedClass();
@@ -140,6 +171,15 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             "data-thumb-alignment",
             effectiveThumbAlignment.GetDataAttributeText()
         );
+        // The client formats values the same way the server formats the marks and thumbs
+        if (culture.Name.Length > 0)
+        {
+            output.Attributes.SetAttribute("data-value-locale", culture.Name);
+        }
+        if (ValueFormat != null)
+        {
+            output.Attributes.SetAttribute("data-value-format", ValueFormat);
+        }
         if (effectiveDisabled)
         {
             output.Attributes.SetAttribute("data-disabled", "true");
@@ -167,10 +207,29 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         track.InnerHtml.AppendHtml(range);
         output.Content.AppendHtml(track);
 
+        // Publish the resolved state before rendering children so marks can position themselves.
+        // The marks precede the thumbs, so the thumbs paint over them.
+        SetContext(
+            context,
+            new SliderContext
+            {
+                ClassNames = ClassNames,
+                Min = effectiveMin,
+                Max = effectiveMax,
+                Step = effectiveStep,
+                Values = values,
+                Orientation = effectiveOrientation,
+                ThumbAlignment = effectiveThumbAlignment,
+                ValueFormat = ValueFormat,
+                Culture = culture,
+            }
+        );
+        output.Content.AppendHtml(await output.GetChildContentAsync());
+
         // The thumbs are what a screen reader reaches, so they carry the field's descriptions and
         // invalid state rather than the host.
         var thumbAttributes = new TagHelperAttributeList();
-        foreach (var name in new[] { "aria-describedby", "aria-invalid" })
+        foreach (var name in new[] { "aria-describedby", "aria-invalid", "aria-labelledby" })
         {
             if (output.Attributes[name] is { } attribute)
             {
@@ -180,6 +239,17 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         }
 
         ApplyFieldAttributes(context, thumbAttributes, FieldLayout.Stacked);
+
+        // A label cannot target the host or a thumb, so a rendered field label is referenced by id
+        // instead. In an explicit field the client links the author's label on hydration.
+        if (WillRenderFieldLabel())
+        {
+            LabelId = $"sa-{GetUniqueId(context)}-label";
+            if (!thumbAttributes.ContainsName("aria-labelledby"))
+            {
+                thumbAttributes.SetAttribute("aria-labelledby", LabelId);
+            }
+        }
 
         // One thumb (+ a hidden input so it posts) per value.
         for (var index = 0; index < values.Count; index++)
@@ -201,6 +271,13 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 effectiveMax.ToString(CultureInfo.InvariantCulture)
             );
             thumb.Attributes.Add("aria-valuenow", value.ToString(CultureInfo.InvariantCulture));
+            if (ValueFormat != null)
+            {
+                thumb.Attributes.Add(
+                    "aria-valuetext",
+                    SliderContext.FormatValue(value, ValueFormat, culture)
+                );
+            }
             if (effectiveDisabled)
             {
                 // Mark the thumb for assistive tech, but don't stamp data-disabled here: the
@@ -214,6 +291,12 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             foreach (var attribute in thumbAttributes)
             {
                 thumb.Attributes.Add(attribute.Name, attribute.Value?.ToString());
+            }
+            if (thumbLabels != null && index < thumbLabels.Length)
+            {
+                // Its own name tells a range thumb apart from the others
+                thumb.Attributes.Remove("aria-labelledby");
+                thumb.Attributes.Add("aria-label", thumbLabels[index]);
             }
 
             thumb.Attributes.Add("class", JoinCssClasses("sa-slider-thumb", ClassNames?.Thumb));
@@ -242,7 +325,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
         }
 
-        return Task.FromResult(FieldLayout.Stacked);
+        return FieldLayout.Stacked;
     }
 
     /// <summary>

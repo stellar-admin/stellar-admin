@@ -1,0 +1,14 @@
+<div class="flex w-full max-w-md flex-col gap-4">
+    <!-- code begin -->
+    <sa-slider id="minimum-guest-rating" value="4" min="1" max="5">
+        <sa-slider-marks>
+            <sa-slider-mark value="1">Poor</sa-slider-mark>
+            <sa-slider-mark value="3">Good</sa-slider-mark>
+            <sa-slider-mark value="5">Excellent</sa-slider-mark>
+        </sa-slider-marks>
+    </sa-slider>
+    <p class="text-sm">
+        Showing stays rated <sa-slider-value for="minimum-guest-rating"/> stars or higher.
+    </p>
+    <!-- code end -->
+</div>

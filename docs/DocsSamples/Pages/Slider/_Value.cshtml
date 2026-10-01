@@ -1,0 +1,22 @@
+@model Index.ValueModel
+
+<div class="flex w-full max-w-md flex-col gap-8">
+    <!-- code begin -->
+    <sa-field>
+        <div class="flex items-center justify-between gap-2">
+            <sa-field-label asp-for="PricePerNight"/>
+            <sa-slider-value/>
+        </div>
+        <sa-slider asp-for="PricePerNight" max="1000" step="50" value-format="${0}"
+                   thumb-labels="Minimum price,Maximum price"/>
+        <sa-field-description asp-for="PricePerNight"/>
+    </sa-field>
+    <sa-field>
+        <sa-field-label asp-for="MaximumDistanceFromCenter"/>
+        <sa-slider asp-for="MaximumDistanceFromCenter" max="50" value-format="{0} km"/>
+        <sa-field-description>
+            Stays within <sa-slider-value/> of the city center.
+        </sa-field-description>
+    </sa-field>
+    <!-- code end -->
+</div>

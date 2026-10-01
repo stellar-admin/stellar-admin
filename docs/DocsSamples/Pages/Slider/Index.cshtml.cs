@@ -12,6 +12,8 @@ public class Index : PageModel
     public class IndexModel
     {
         public ModelBindingModel ModelBinding { get; set; } = new ModelBindingModel();
+
+        public ValueModel Value { get; set; } = new ValueModel();
     }
 
     public class ModelBindingModel
@@ -30,5 +32,14 @@ public class Index : PageModel
             Description = "Boundaries for the low, medium, and high guest-rating bands."
         )]
         public int[] GuestRatingBands { get; set; } = [25, 50, 75];
+    }
+
+    public class ValueModel
+    {
+        [Display(Name = "Price per night", Description = "Nightly rate before taxes and fees.")]
+        public int[] PricePerNight { get; set; } = [200, 800];
+
+        [Display(Name = "Distance from center")]
+        public int MaximumDistanceFromCenter { get; set; } = 15;
     }
 }

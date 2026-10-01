@@ -57,7 +57,7 @@
   "Sheet": ["Sheet/_Intro", "Sheet/_Sides"],
   "Sidebar": ["Sidebar/_Intro"],
   "Skeleton": ["Skeleton/_Form"],
-  "Slider": ["Slider/_Range", "Slider/_ModelBinding"],
+  "Slider": ["Slider/_Range", "Slider/_ModelBinding", "Slider/_Value", "Slider/_CustomMarks"],
   "Spinner": ["Spinner/_InButtons"],
   "Switch": ["Switch/_Intro", "Switch/_ModelBinding"],
   "Table": ["Table/_Intro", "Table/_Select"],

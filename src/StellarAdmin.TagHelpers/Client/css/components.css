@@ -951,6 +951,20 @@
   }
   .sa-slider {
     @apply relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:w-auto data-vertical:flex-col;
+    /* Mark labels hang outside the host, which stays as tight as the track; reserve their room */
+    @apply data-horizontal:has-data-[slot=slider-mark-label]:mb-[calc(var(--sa-slider-thumb-size,1rem)/2+1.25rem)] data-vertical:has-data-[slot=slider-mark-label]:me-[calc(var(--sa-slider-thumb-size,1rem)/2+3rem)];
+  }
+  .sa-slider-mark {
+    @apply absolute size-0 data-horizontal:top-1/2 data-vertical:left-1/2;
+  }
+  .sa-slider-mark-label {
+    @apply absolute whitespace-nowrap in-data-[orientation=horizontal]:top-[calc(var(--sa-slider-thumb-size,1rem)/2+0.25rem)] in-data-[orientation=horizontal]:-translate-x-1/2 in-data-[orientation=vertical]:left-[calc(var(--sa-slider-thumb-size,1rem)/2+0.5rem)] in-data-[orientation=vertical]:-translate-y-1/2;
+  }
+  .sa-slider-mark-tick {
+    @apply absolute -translate-x-1/2 -translate-y-1/2;
+  }
+  .sa-slider-marks {
+    @apply pointer-events-none absolute inset-0;
   }
   .sa-slider-range {
     @apply absolute select-none data-horizontal:h-full data-vertical:w-full;
@@ -960,6 +974,9 @@
   }
   .sa-slider-track {
     @apply relative grow overflow-hidden select-none;
+  }
+  .sa-slider-value {
+    @apply tabular-nums;
   }
   .sa-spinner {
     @apply size-4 animate-spin;

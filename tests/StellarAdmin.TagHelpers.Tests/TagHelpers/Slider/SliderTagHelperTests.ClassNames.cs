@@ -42,4 +42,42 @@ public partial class SliderTagHelperTests
             .That(html.QuerySelectorAll("span.sa-slider-thumb.slider-thumb").Length)
             .IsEqualTo(1);
     }
+
+    [Test]
+    public async Task ProcessAsync_WhenMarkClassNamesAreConfigured_AppliesClassesToMarks()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SliderTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            ClassNames = new SliderClassNames
+            {
+                Marks = "slider-marks",
+                Mark = "slider-mark",
+                MarkLabel = "slider-mark-label",
+            },
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            sut,
+            parent =>
+                TagHelperRenderer.RenderChildAsync(
+                    new SliderMarksTagHelper { Interval = 50, Labels = SliderMarkLabels.All },
+                    parent
+                )
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelectorAll("span.sa-slider-marks.slider-marks").Length)
+            .IsEqualTo(1);
+        await Assert
+            .That(html.QuerySelectorAll("span.sa-slider-mark.slider-mark").Length)
+            .IsEqualTo(3);
+        await Assert
+            .That(html.QuerySelectorAll("span.sa-slider-mark-label.slider-mark-label").Length)
+            .IsEqualTo(3);
+    }
 }

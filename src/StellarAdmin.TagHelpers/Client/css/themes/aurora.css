@@ -3357,3 +3357,30 @@
     color: var(--muted-foreground);
   }
 }
+
+/* Slider values and marks use the data face and muted ink; ticks lighten over the filled range. */
+@layer components.theme {
+  .sa-slider-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+  .sa-slider-mark-tick {
+    width: 2px;
+    height: 10px;
+    border-radius: 0;
+    background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+  }
+  .sa-slider-mark[data-orientation="vertical"] > .sa-slider-mark-tick {
+    width: 10px;
+    height: 2px;
+  }
+  .sa-slider-mark[data-state="in-range"] > .sa-slider-mark-tick {
+    background: color-mix(in oklch, var(--primary-foreground) 70%, transparent);
+  }
+  .sa-slider-mark-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted-foreground);
+  }
+}

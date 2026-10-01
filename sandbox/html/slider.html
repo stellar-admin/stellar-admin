@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slider prototype — value display and marks</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400;500&display=swap"
+    />
+
+    <!--
+      Real built library assets: true theme rendering and the real sel-slider web component,
+      so thumbs drag and respond to keys. Theme <link> is swappable from the control bar.
+    -->
+    <link
+      id="theme-css"
+      rel="stylesheet"
+      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css"
+    />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build: only for prototype-authored classes (the new parts, frames, captions). -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+        --font-mono: "Geist Mono", monospace;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @custom-variant dark (&:is(.dark *));
+      @layer base {
+        *, ::after, ::before, ::backdrop, ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-background text-foreground font-sans antialiased">
+    <main class="mx-auto flex max-w-5xl flex-col gap-12 px-4 py-10 pb-40 sm:px-8">
+      <header class="flex flex-col gap-2">
+        <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Prototype · sa-slider</p>
+        <h1 class="text-2xl font-semibold">Slider value display and marks</h1>
+        <p class="text-muted-foreground max-w-2xl text-sm">
+          Candidate visuals for <code>&lt;sa-slider-value&gt;</code>, <code>&lt;sa-slider-marks&gt;</code> and
+          <code>&lt;sa-slider-mark&gt;</code> from <code>docs/plans/slider-value-display.md</code>. Every slider is
+          live: drag, click the track or use the arrow keys. Track, range and thumbs come from the real theme bundle;
+          the header, value, marks and labels are prototype classes. Switch theme and mode bottom right.
+        </p>
+      </header>
+
+      <section id="candidate" class="flex flex-col gap-4"></section>
+      <section id="value-placement" class="flex flex-col gap-4"></section>
+      <section id="value-type" class="flex flex-col gap-4"></section>
+      <section id="ticks" class="flex flex-col gap-4"></section>
+      <section id="labels" class="flex flex-col gap-4"></section>
+      <section id="authored" class="flex flex-col gap-4"></section>
+      <section id="alignment" class="flex flex-col gap-4"></section>
+      <section id="vertical" class="flex flex-col gap-4"></section>
+      <section id="disabled" class="flex flex-col gap-4"></section>
+    </main>
+
+    <!-- Control bar -->
+    <div class="bg-card text-card-foreground fixed right-4 bottom-4 z-50 flex flex-wrap items-center gap-2 rounded-lg border p-2 text-xs shadow-lg">
+      <label class="flex items-center gap-1.5">
+        Theme
+        <select id="theme" class="bg-background rounded-md border px-1.5 py-1">
+          <option>shadcn.nova</option><option>shadcn.vega</option><option>shadcn.lyra</option>
+          <option>shadcn.maia</option><option>shadcn.mira</option><option>shadcn.luma</option>
+          <option>shadcn.rhea</option><option>shadcn.sera</option><option>observatory</option>
+          <option>ledger</option><option>parallax</option><option>aurora</option>
+          <option>concourse</option><option>meridian</option><option>ice</option>
+        </select>
+      </label>
+      <button id="mode" class="bg-background rounded-md border px-2 py-1">Dark</button>
+      <label class="flex items-center gap-1.5" title="Drops the measured thumb size, showing where edge-aligned marks sit before sel-slider hydrates">
+        <input id="prehydrate" type="checkbox" /> Pre-hydration marks
+      </label>
+    </div>
+
+    <script>
+      // ---------------------------------------------------------------------------------------
+      // Candidate classes, split by the future structural (components.css) / themed (theme file)
+      // boundary. Everything else on a slider is the existing tag helper output.
+      // ---------------------------------------------------------------------------------------
+      const C = {
+        // Field wrapper, exactly as FieldTagBuilder emits it today.
+        field: "sa-field group/field sa-field-orientation-vertical [&>*]:w-full [&>.sr-only]:w-auto",
+        label: "sa-label sa-field-label group/field-label peer/field-label",
+        description: "sa-field-description",
+
+        // Not a part: the author's own row around <sa-field-label> and <sa-slider-value>
+        header: "flex items-center justify-between gap-2",
+        headerValueOnly: "flex items-center justify-end gap-2",
+
+        // NEW sa-slider-value (<output>) — structural: tabular-nums / themed: text-sm text-muted-foreground
+        value: {
+          muted: "shrink-0 tabular-nums text-sm text-muted-foreground",
+          strong: "shrink-0 tabular-nums text-sm font-medium text-foreground",
+          mono: "shrink-0 tabular-nums font-mono text-xs text-muted-foreground",
+        },
+
+        // NEW sa-slider-marks — structural: absolute inset-0 pointer-events-none
+        marks: "pointer-events-none absolute inset-0",
+
+        // NEW sa-slider-mark — structural: zero-size anchor at the thumb centre for its value
+        markH: "group/mark absolute top-1/2 size-0",
+        markV: "group/mark absolute left-1/2 size-0",
+
+        // NEW tick — themed. Three candidate treatments.
+        tick: {
+          dot: {
+            h: "absolute size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-muted-foreground/45 group-data-[state=in-range]/mark:bg-primary-foreground/80",
+            v: "absolute size-1 -translate-x-1/2 translate-y-1/2 rounded-full bg-muted-foreground/45 group-data-[state=in-range]/mark:bg-primary-foreground/80",
+          },
+          line: {
+            h: "absolute top-2 h-1.5 w-px -translate-x-1/2 bg-muted-foreground/40 group-data-[state=in-range]/mark:bg-primary",
+            v: "absolute left-2 h-px w-1.5 translate-y-1/2 bg-muted-foreground/40 group-data-[state=in-range]/mark:bg-primary",
+          },
+          notch: {
+            h: "absolute h-2.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-muted-foreground/35 group-data-[state=in-range]/mark:bg-primary-foreground/70",
+            v: "absolute h-0.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-muted-foreground/35 group-data-[state=in-range]/mark:bg-primary-foreground/70",
+          },
+        },
+        tickStateless: "", // filled in per strip
+
+        // NEW sa-slider-mark-label — themed: text-xs text-muted-foreground
+        markLabelH: "absolute top-3.5 whitespace-nowrap tabular-nums text-xs text-muted-foreground",
+        markLabelHLine: "absolute top-4.5 whitespace-nowrap tabular-nums text-xs text-muted-foreground",
+        markLabelV: "absolute left-3.5 whitespace-nowrap tabular-nums text-xs text-muted-foreground",
+        markLabelVLine: "absolute left-4.5 whitespace-nowrap tabular-nums text-xs text-muted-foreground",
+
+        // Room for labels, as margin so the host box (and so the marks' coordinate space) stays tight
+        reserveH: "mb-6",
+        reserveV: "me-16",
+
+        // Deferred alternative: bubble over each thumb, reading aria-valuetext
+        bubble:
+          "before:pointer-events-none before:absolute before:bottom-full before:left-1/2 before:mb-2 before:-translate-x-1/2 before:whitespace-nowrap before:rounded-md before:bg-foreground before:px-1.5 before:py-0.5 before:text-xs before:tabular-nums before:text-background before:content-[attr(aria-valuetext)]",
+        bubbleAuto:
+          "before:opacity-0 before:transition-opacity hover:before:opacity-100 focus-visible:before:opacity-100 data-[dragging]:before:opacity-100",
+      };
+
+      // ---------------------------------------------------------------------------------------
+      // Builder: emits the same markup SliderTagHelper does today, plus the proposed parts.
+      // ---------------------------------------------------------------------------------------
+      const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+      const format = (n, f) => (f ?? "{0}").replace("{0}", number.format(n));
+      const joinValues = (values, f, sep = " – ") =>
+        values.length === 2
+          ? `${format(values[0], f)}${sep}${format(values[1], f)}`
+          : values.map((v) => format(v, f)).join(", ");
+      const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+      let uid = 0;
+
+      function slider(o) {
+        const id = `s${++uid}`;
+        const min = o.min ?? 0;
+        const max = o.max ?? 100;
+        const step = o.step ?? 1;
+        const values = o.values ?? [min];
+        const vertical = o.orientation === "vertical";
+        const orient = vertical ? "vertical" : "horizontal";
+        const align = o.align ?? "edge";
+        const pct = (v) => ((v - min) / (max - min)) * 100;
+        const low = values.length > 1 ? pct(Math.min(...values)) : 0;
+        const high = pct(Math.max(...values));
+        const marks = o.marks ? buildMarks(o, min, max, step) : null;
+        const hasMarkLabels = marks?.some((m) => m.label != null);
+        const valueMode = o.value ?? "none"; // none | header | trail | bubble | bubble-auto
+        const valueClass = C.value[o.valueStyle ?? "muted"] + (o.valueClass ? " " + o.valueClass : "");
+        const sep = o.separator ?? " – ";
+
+        const rangeStyle = vertical
+          ? `bottom: ${low}%; top: ${100 - high}%;`
+          : `left: ${low}%; right: ${100 - high}%;`;
+
+        const thumbStyle = (v) => {
+          const p = pct(v);
+          const shift = align === "edge" ? p : 50;
+          return vertical
+            ? `bottom: ${p}%; transform: translateY(${shift}%);`
+            : `left: ${p}%; transform: translateX(-${shift}%);`;
+        };
+
+        const bubble = valueMode === "bubble" ? C.bubble : valueMode === "bubble-auto" ? `${C.bubble} ${C.bubbleAuto}` : "";
+
+        const thumbs = values
+          .map(
+            (v, i) =>
+              `<span data-slot="slider-thumb" data-orientation="${orient}" role="slider" tabindex="${o.disabled ? -1 : 0}" ` +
+              `aria-orientation="${orient}" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${v}" ` +
+              `aria-valuetext="${esc(format(v, o.format))}" ` +
+              (o.thumbLabels ? `aria-label="${esc(o.thumbLabels[i])}" ` : o.label ? `aria-labelledby="${id}-label" ` : "") +
+              (o.disabled ? `aria-disabled="true" ` : "") +
+              `class="sa-slider-thumb ${bubble}" style="${thumbStyle(v)}"></span>` +
+              `<input type="hidden" data-slot="slider-input" name="${id}" value="${v}">`,
+          )
+          .join("");
+
+        const marksHtml = marks
+          ? `<span data-slot="slider-marks" aria-hidden="true" class="${C.marks}">` +
+            marks
+              .map((m) => {
+                const p = (m.value - min) / (max - min);
+                const inRange = values.length > 1
+                  ? m.value >= Math.min(...values) && m.value <= Math.max(...values)
+                  : m.value <= values[0];
+                const pos =
+                  align === "edge"
+                    ? `calc(${p} * (100% - var(--sa-slider-thumb-size, 0px)) + var(--sa-slider-thumb-size, 0px) / 2)`
+                    : `calc(${p} * 100%)`;
+                const tickKind = o.marks.tick ?? "notch";
+                const tick =
+                  o.marks.ticks === false
+                    ? ""
+                    : `<span data-slot="slider-mark-tick" class="${C.tick[tickKind][vertical ? "v" : "h"]}${o.marks.noState ? " !bg-muted-foreground/40" : ""}"></span>`;
+                let label = "";
+                if (m.label != null) {
+                  const base = vertical
+                    ? tickKind === "line" ? C.markLabelVLine : C.markLabelV
+                    : tickKind === "line" ? C.markLabelHLine : C.markLabelH;
+                  const labelTop = o.marks.ticks === false && !vertical ? " top-2.5" : "";
+                  // Ends flush with the track ends, or centred on the thumb centre
+                  let labelStyle = vertical ? "transform: translateY(50%);" : "transform: translateX(-50%);";
+                  if (!vertical && o.marks.endAlign === "flush" && (m.value === min || m.value === max)) {
+                    const offset = align === "edge" ? "var(--sa-slider-thumb-size, 0px) / 2" : "0px";
+                    labelStyle = m.value === min
+                      ? `left: calc(-1 * ${offset}); transform: none;`
+                      : `left: calc(${offset}); transform: translateX(-100%);`;
+                  }
+                  label = `<span data-slot="slider-mark-label" class="${base}${labelTop}" style="${labelStyle}">${esc(m.label)}</span>`;
+                }
+                return (
+                  `<span data-slot="slider-mark" data-orientation="${orient}" data-value="${m.value}" data-state="${inRange ? "in-range" : "out-of-range"}" ` +
+                  `class="${vertical ? C.markV : C.markH}" style="${vertical ? "bottom" : "left"}: ${pos};">${tick}${label}</span>`
+                );
+              })
+              .join("") +
+            `</span>`
+          : "";
+
+        const reserve = hasMarkLabels ? (vertical ? C.reserveV : C.reserveH) : "";
+
+        const host =
+          `<sel-slider id="${id}" data-slot="slider" data-orientation="${orient}" min="${min}" max="${max}" step="${step}" ` +
+          `data-min-distance="${o.minDistance ?? 0}" data-thumb-alignment="${align}" ` +
+          (o.format ? `data-value-format="${esc(o.format)}" data-value-locale="en-US" ` : "") +
+          (o.disabled ? `data-disabled="true" ` : "") +
+          `data-value-separator="${esc(sep)}" ` +
+          `class="sa-slider ${reserve} ${o.hostClass ?? ""}">` +
+          `<span data-slot="slider-track" data-orientation="${orient}" class="sa-slider-track">` +
+          `<span data-slot="slider-range" data-orientation="${orient}" class="sa-slider-range" style="${rangeStyle}"></span></span>` +
+          marksHtml +
+          thumbs +
+          `</sel-slider>`;
+
+        // <sa-slider-value for="…" [index="n"]> renders an empty <output>; sel-slider fills it on
+        // hydration and on every change, wherever the author placed it in the document.
+        const output = (cls = valueClass, index) =>
+          `<output data-slot="slider-value" for="${id}"${index != null ? ` data-index="${index}"` : ""} aria-live="off" class="${cls}"></output>`;
+
+        const labelHtml = o.label
+          ? `<label id="${id}-label" data-slot="field-label" for="${id}" class="${C.label}">${esc(o.label)}</label>`
+          : "";
+
+        let control = host;
+        let header = labelHtml;
+
+        const description = o.description
+          ? `<p data-slot="field-description" class="${C.description}">${esc(o.description)}</p>`
+          : "";
+
+        // Author-composed markup around the slider, value and label
+        if (o.compose) {
+          return o.compose({ id, host, label: labelHtml, value: output, description, field: (inner) => `<div data-slot="field" data-orientation="vertical" class="${C.field} ${o.fieldClass ?? ""}">${inner}</div>` });
+        }
+
+        if (valueMode === "header") {
+          // The author's own row: <div class="flex items-center justify-between gap-2">
+          header = `<div class="${o.label ? C.header : C.headerValueOnly}">${labelHtml}${output(valueClass)}</div>`;
+        } else if (valueMode === "trail") {
+          const width = Math.max(joinValues([max, max].slice(0, values.length), o.format, sep).length, 3);
+          control =
+            `<div class="flex items-center gap-3 ${vertical ? "flex-col-reverse" : ""}">` +
+            host.replace('class="sa-slider', 'class="sa-slider flex-1') +
+            output(`${valueClass} text-end`).replace("<output", `<output style="min-width: ${width}ch"`) +
+            `</div>`;
+        }
+
+        if (!header && !description) {
+          return control;
+        }
+
+        return (
+          `<div data-slot="field" data-orientation="vertical" class="${C.field} ${o.fieldClass ?? ""}">` +
+          header +
+          control +
+          description +
+          `</div>`
+        );
+      }
+
+      function buildMarks(o, min, max, step) {
+        if (o.marks.items) {
+          return o.marks.items.map((m) => (typeof m === "number" ? { value: m } : m));
+        }
+
+        const interval = o.marks.interval ?? step;
+        const list = [];
+        for (let v = min; v < max; v += interval) list.push(v);
+        list.push(max);
+
+        const labels = o.marks.labels ?? "none";
+        return list.map((v) => ({
+          value: v,
+          label: labels === "all" || (labels === "ends" && (v === min || v === max)) ? format(v, o.format) : null,
+        }));
+      }
+
+      // ---------------------------------------------------------------------------------------
+      // Page scaffolding
+      // ---------------------------------------------------------------------------------------
+      function section(id, title, intro, figures, cols = 2) {
+        const el = document.getElementById(id);
+        el.innerHTML =
+          `<div class="flex flex-col gap-1"><h2 class="text-lg font-semibold">${title}</h2>` +
+          (intro ? `<p class="text-muted-foreground max-w-3xl text-sm">${intro}</p>` : "") +
+          `</div>` +
+          `<div class="grid gap-4 ${cols === 2 ? "md:grid-cols-2" : cols === 3 ? "md:grid-cols-3" : ""}">${figures.join("")}</div>`;
+      }
+
+      function figure(label, caption, body, opts = {}) {
+        return (
+          `<figure class="bg-card text-card-foreground flex flex-col gap-4 rounded-xl border p-5 ${opts.recommended ? "ring-primary/40 ring-2" : ""}">` +
+          `<figcaption class="flex flex-col gap-1">` +
+          `<span class="flex items-center gap-2 text-sm font-medium">${label}${opts.recommended ? '<span class="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-[10px] font-medium uppercase">proposed</span>' : ""}</span>` +
+          (caption ? `<span class="text-muted-foreground text-xs">${caption}</span>` : "") +
+          `</figcaption>` +
+          (opts.razor ? `<pre class="bg-muted text-muted-foreground overflow-x-auto rounded-md p-3 font-mono text-[11px] leading-relaxed">${esc(opts.razor.trim())}</pre>` : "") +
+          `<div class="flex flex-col gap-8 ${opts.bodyClass ?? ""}">${body}</div>` +
+          `</figure>`
+        );
+      }
+
+      const price = { label: "Price per night", min: 0, max: 1000, step: 50, values: [200, 800], format: "${0}", minDistance: 50 };
+      const distance = { label: "Distance from center", min: 0, max: 50, values: [12], format: "{0} km" };
+      const rating = {
+        label: "Minimum guest rating", min: 1, max: 5, values: [4],
+        marks: { items: [{ value: 1, label: "Poor" }, { value: 2, label: "Fair" }, { value: 3, label: "Good" }, { value: 4, label: "Great" }, { value: 5, label: "Superb" }] },
+      };
+
+      // Live candidate ------------------------------------------------------------------------
+      const labelRow = (o, extra = {}) =>
+        slider({
+          ...o,
+          ...extra,
+          compose: ({ host, label, value, description, field }) =>
+            field(`<div class="${C.header}">${label}${value()}</div>${host}${description}`),
+        });
+
+      document.getElementById("candidate").innerHTML =
+        `<div class="flex flex-col gap-1"><h2 class="text-lg font-semibold">Live candidate</h2>` +
+        `<p class="text-muted-foreground text-sm">An author-composed Voyager Travel search filter: each value sits in a plain flex row beside its <code>&lt;sa-field-label&gt;</code>; notch ticks, end labels below.</p></div>` +
+        `<div class="grid items-start gap-6 lg:grid-cols-[minmax(0,28rem)_1fr]">` +
+        `<div class="bg-card text-card-foreground flex w-full flex-col gap-7 rounded-xl border p-6 shadow-sm">` +
+        `<div class="flex flex-col gap-1"><h3 class="font-semibold">Filter stays</h3><p class="text-muted-foreground text-sm">Lisbon · 12–16 May · 2 guests</p></div>` +
+        labelRow(price, { thumbLabels: ["Minimum price", "Maximum price"], marks: { interval: 250, labels: "ends" }, description: "Nightly rate before taxes." }) +
+        labelRow(distance) +
+        labelRow(rating) +
+        `</div>` +
+        `<pre class="bg-muted text-muted-foreground overflow-x-auto rounded-xl p-4 font-mono text-[11px] leading-relaxed">${esc(`<sa-field>
+    <div class="flex items-center justify-between gap-2">
+        <sa-field-label for="price">Price per night</sa-field-label>
+        <sa-slider-value for="price"/>
+    </div>
+    <sa-slider id="price" value="200,800" max="1000" step="50"
+               value-format="\${0}" thumb-labels="Minimum price,Maximum price">
+        <sa-slider-marks interval="250" labels="SliderMarkLabels.Ends"/>
+    </sa-slider>
+    <sa-field-description>Nightly rate before taxes.</sa-field-description>
+</sa-field>
+
+<sa-field>
+    <div class="flex items-center justify-between gap-2">
+        <sa-field-label for="distance">Distance from center</sa-field-label>
+        <sa-slider-value for="distance"/>
+    </div>
+    <sa-slider id="distance" value="12" max="50" value-format="{0} km"/>
+</sa-field>
+
+<sa-field>
+    <div class="flex items-center justify-between gap-2">
+        <sa-field-label for="rating">Minimum guest rating</sa-field-label>
+        <sa-slider-value for="rating"/>
+    </div>
+    <sa-slider id="rating" value="4" min="1" max="5">
+        <sa-slider-marks>
+            <sa-slider-mark value="1">Poor</sa-slider-mark>
+            <sa-slider-mark value="2">Fair</sa-slider-mark>
+            <sa-slider-mark value="3">Good</sa-slider-mark>
+            <sa-slider-mark value="4">Great</sa-slider-mark>
+            <sa-slider-mark value="5">Superb</sa-slider-mark>
+        </sa-slider-marks>
+    </sa-slider>
+</sa-field>`)}</pre>` +
+        `</div>`;
+
+      // Composing the value -------------------------------------------------------------------
+      section("value-placement", "1 · Composing the value", "<code>&lt;sa-slider-value for=\"id\"&gt;</code> is a standalone <code>&lt;output&gt;</code> linked to a slider by id, so it goes wherever the author puts it, inside or outside <code>&lt;sa-field&gt;</code>. <code>index</code> shows one thumb's value. These are compositions, not modes: nothing on the slider changes between them.", [
+        figure("A · Beside the label", "A plain flex row around the label and the value", labelRow(price) + labelRow(distance), { recommended: true, razor: `
+<sa-field>
+    <div class="flex items-center justify-between gap-2">
+        <sa-field-label for="price">Price per night</sa-field-label>
+        <sa-slider-value for="price"/>
+    </div>
+    <sa-slider id="price" value="200,800" max="1000" step="50" value-format="\${0}"/>
+</sa-field>` }),
+        figure("B · Inside the description", "shadcn's Field demo pattern, one value per thumb", slider({
+          ...price,
+          compose: ({ host, label, value, field }) =>
+            field(`${label}<p data-slot="field-description" class="${C.description}">Stays between ${value("tabular-nums font-medium text-foreground", 0)} and ${value("tabular-nums font-medium text-foreground", 1)} a night.</p>${host}`),
+        }), { razor: `
+<sa-field>
+    <sa-field-label for="price">Price per night</sa-field-label>
+    <sa-field-description>
+        Stays between <sa-slider-value for="price" index="0" class="font-medium text-foreground"/>
+        and <sa-slider-value for="price" index="1" class="font-medium text-foreground"/> a night.
+    </sa-field-description>
+    <sa-slider id="price" value="200,800" max="1000" step="50" value-format="\${0}"/>
+</sa-field>` }),
+        figure("C · Under each end", "Each thumb's value below the track, at the start and end", slider({
+          ...price,
+          compose: ({ host, label, value, field }) =>
+            field(`${label}${host}<div class="flex justify-between">${value(C.value.muted, 0)}${value(C.value.muted, 1)}</div>`),
+        }), { razor: `
+<sa-field>
+    <sa-field-label for="price">Price per night</sa-field-label>
+    <sa-slider id="price" value="200,800" max="1000" step="50" value-format="\${0}"/>
+    <div class="flex justify-between">
+        <sa-slider-value for="price" index="0"/>
+        <sa-slider-value for="price" index="1"/>
+    </div>
+</sa-field>` }),
+        figure("D · Trailing the track", "The author's row reserves the value's width", slider({
+          ...distance,
+          compose: ({ host, label, value, field }) =>
+            field(`${label}<div class="flex items-center gap-3">${host.replace('class="sa-slider', 'class="sa-slider flex-1')}${value(`${C.value.muted} w-14 text-end`)}</div>`),
+        }), { razor: `
+<sa-field>
+    <sa-field-label for="distance">Distance from center</sa-field-label>
+    <div class="flex items-center gap-3">
+        <sa-slider id="distance" value="12" max="50" value-format="{0} km" class="flex-1"/>
+        <sa-slider-value for="distance" class="w-14 text-end"/>
+    </div>
+</sa-field>` }),
+        figure("E · Outside a field", "A summary heading; the thumbs are named with aria-label", slider({
+          ...price, label: null, thumbLabels: ["Minimum budget", "Maximum budget"],
+          compose: ({ host, value }) =>
+            `<div class="flex flex-col gap-4"><div class="flex flex-col gap-0.5"><span class="text-muted-foreground text-xs font-medium uppercase">Nightly budget</span>${value("tabular-nums text-2xl font-semibold text-foreground")}</div>${host}</div>`,
+        }), { razor: `
+<div class="flex flex-col gap-4">
+    <div class="flex flex-col">
+        <span class="text-xs uppercase">Nightly budget</span>
+        <sa-slider-value for="budget" class="text-2xl font-semibold text-foreground"/>
+    </div>
+    <sa-slider id="budget" value="200,800" max="1000" step="50" value-format="\${0}"
+               thumb-labels="Minimum budget,Maximum budget"/>
+</div>` }),
+        figure("F · The label shortcut", "label / asp-for builds the field itself, so there is nowhere to place a value. Open question: leave it, or let the shortcut accept a value part.", slider({ ...price }), { razor: `
+<sa-slider asp-for="PricePerNight" max="1000" step="50" value-format="\${0}"/>` }),
+        figure("G · Bubble over each thumb (deferred)", "Top: always on. Bottom: on hover, focus and drag. Reads aria-valuetext.", slider({ ...price, value: "bubble", hostClass: "mt-7" }) + slider({ ...distance, value: "bubble-auto", hostClass: "mt-7" })),
+      ]);
+
+      // Value typography ----------------------------------------------------------------------
+      section("value-type", "2 · Value typography and range separator", "Per-theme decision in Phase 2; shown here for a default.", [
+        figure("Muted", "text-sm text-muted-foreground tabular-nums", slider({ ...price, value: "header", valueStyle: "muted" }), { recommended: true }),
+        figure("Foreground, medium", "text-sm font-medium text-foreground tabular-nums", slider({ ...price, value: "header", valueStyle: "strong" })),
+        figure("Mono", "font-mono text-xs text-muted-foreground", slider({ ...price, value: "header", valueStyle: "mono" })),
+        figure("Separator: “to”", "Spaced en dash elsewhere; this uses “ to ”", slider({ ...price, value: "header", separator: " to " })),
+      ]);
+
+      // Ticks ---------------------------------------------------------------------------------
+      const tickDemo = (tick) =>
+        slider({ ...distance, value: "header", marks: { interval: 10, tick } }) +
+        slider({ ...price, value: "header", marks: { interval: 100, tick } });
+      section("ticks", "3 · Tick treatment", "Generated with <code>interval</code>. Ticks inside the filled range take <code>data-state=\"in-range\"</code>. The thumb paints over the tick at its own value.", [
+        figure("Notch through the track", "h-2.5 w-0.5 rounded-full bg-muted-foreground/35; in range bg-primary-foreground/70", tickDemo("notch"), { recommended: true }),
+        figure("Dot on the track", "size-1 rounded-full bg-muted-foreground/45; in range bg-primary-foreground/80", tickDemo("dot")),
+        figure("Line below the track", "top-2 h-1.5 w-px bg-muted-foreground/40; in range bg-primary", tickDemo("line")),
+        figure("No in-range state", "Notch, one colour throughout", slider({ ...distance, value: "header", marks: { interval: 10, tick: "notch", noState: true } }) + slider({ ...price, value: "header", marks: { interval: 100, tick: "notch", noState: true } })),
+      ]);
+
+      // Labels --------------------------------------------------------------------------------
+      section("labels", "4 · Mark labels and minimum/maximum captions", "<code>labels</code> = None, Ends or All. <code>show-ticks=\"false\"</code> with Ends is the MUI min/max caption pattern. End labels can centre on the thumb or sit flush with the track ends.", [
+        figure("Ends, centred", "labels=Ends; text-xs text-muted-foreground, top-3.5; host mb-6", slider({ ...price, value: "header", marks: { interval: 250, labels: "ends" } }), { recommended: true }),
+        figure("Ends, flush with track ends", "First label left-aligned, last right-aligned", slider({ ...price, value: "header", marks: { interval: 250, labels: "ends", endAlign: "flush" } })),
+        figure("All", "labels=All", slider({ ...price, value: "header", marks: { interval: 250, labels: "all" } }) + slider({ ...distance, value: "header", marks: { interval: 10, labels: "all" } })),
+        figure("Min/max captions, no ticks", "show-ticks=false, labels=Ends, flush", slider({ ...price, value: "header", marks: { interval: 1000, labels: "ends", ticks: false, endAlign: "flush" } }) + slider({ ...distance, value: "header", marks: { interval: 50, labels: "ends", ticks: false, endAlign: "flush" } })),
+        figure("Line ticks with labels", "Labels pushed to top-4.5 below the line", slider({ ...price, value: "header", marks: { interval: 250, labels: "all", tick: "line" } })),
+        figure("Without a value part", "Marks alone, no header", slider({ ...price, marks: { interval: 250, labels: "all" } })),
+      ]);
+
+      // Authored marks ------------------------------------------------------------------------
+      section("authored", "5 · Authored marks", "<code>&lt;sa-slider-mark value=\"n\"&gt;content&lt;/sa-slider-mark&gt;</code>; marks without content are ticks only, and marks need not be evenly spaced.", [
+        figure("Named stops", "Every mark labelled", slider({ ...rating, value: "header" }), { recommended: true }),
+        figure("Uneven, partly labelled", "Ticks at 0, 10, 25, 50, 100; labels on 0, 50 and 100", slider({ label: "Discount", min: 0, max: 100, values: [25], format: "{0}%", value: "header", marks: { items: [{ value: 0, label: "0%" }, 10, 25, { value: 50, label: "50%" }, { value: 100, label: "100%" }] } })),
+        figure("Three thumbs with marks", "Values join with commas", slider({ label: "Guest rating bands", min: 0, max: 100, values: [25, 50, 75], minDistance: 5, value: "header", marks: { interval: 25, labels: "all" } })),
+        figure("Step 10, mark every step", "interval defaults to step", slider({ label: "Rooms", min: 0, max: 10, values: [3], value: "header", marks: { labels: "all" } })),
+      ]);
+
+      // Alignment -----------------------------------------------------------------------------
+      section("alignment", "6 · Marks against thumb alignment", "Edge alignment moves the thumb centre inward by up to half a thumb at the ends, so marks use <code>--sa-slider-thumb-size</code>. Tick “Pre-hydration marks” in the control bar to see the shift before the client measures the thumb.", [
+        figure("Edge (default)", "Mark at calc(p × (100% − thumb) + thumb / 2)", slider({ ...distance, value: "header", marks: { interval: 10, labels: "all" } }) + slider({ ...distance, values: [0], value: "header", marks: { interval: 10, labels: "all" } })),
+        figure("Center", "Mark at p × 100%; thumbs overhang the ends", slider({ ...distance, align: "center", value: "header", marks: { interval: 10, labels: "all" } }) + slider({ ...distance, align: "center", values: [50], value: "header", marks: { interval: 10, labels: "all" } })),
+      ]);
+
+      // Vertical ------------------------------------------------------------------------------
+      const v = (o) => `<div class="flex h-72 flex-col">${slider({ orientation: "vertical", fieldClass: "h-full w-auto [&>sel-slider]:flex-1 [&>sel-slider]:min-h-0", ...o })}</div>`;
+      section("vertical", "7 · Vertical", "The label row stays above the slider; mark labels sit to the right with the host reserving me-16. The field is as wide as its label row.", [
+        figure("Header + labelled marks", "", `<div class="flex items-start gap-10">` +
+          v({ label: "Volume", min: 0, max: 100, values: [60], format: "{0}%", value: "header", marks: { interval: 25, labels: "all" } }) +
+          v({ label: "Floors", min: 0, max: 20, values: [3, 12], value: "header", marks: { interval: 5, labels: "ends" } }) +
+          `</div>`, { recommended: true }),
+        figure("Value only, ticks only", "", `<div class="flex items-start gap-10">` +
+          v({ min: 0, max: 100, values: [60], format: "{0}%", value: "header", marks: { interval: 10 } }) +
+          v({ min: 0, max: 100, values: [40], value: "header", marks: { interval: 20, tick: "line" } }) +
+          v({ min: 1, max: 5, values: [4], value: "header", marks: { items: [{ value: 1, label: "Poor" }, { value: 3, label: "Good" }, { value: 5, label: "Superb" }] } }) +
+          `</div>`),
+      ]);
+
+      // Disabled ------------------------------------------------------------------------------
+      section("disabled", "8 · Disabled and read-only", "The host dims with opacity-50. The value sits outside the host, so it stays legible unless the theme dims it too.", [
+        figure("Value not dimmed", "Dashboard read-only fields render like this", slider({ ...price, value: "header", disabled: true, marks: { interval: 250, labels: "ends" } }), { recommended: true }),
+        figure("Value dimmed with the slider", "opacity-50 on the value as well", slider({ ...price, value: "header", disabled: true, valueClass: "opacity-50", marks: { interval: 250, labels: "ends" } })),
+      ]);
+
+      // ---------------------------------------------------------------------------------------
+      // Prototype stand-in for the proposed sel-slider additions: keep the value text,
+      // aria-valuetext and mark data-state in sync, and measure the thumb for edge alignment.
+      // ---------------------------------------------------------------------------------------
+      function sync(host) {
+        const thumbs = [...host.querySelectorAll('[data-slot="slider-thumb"]')];
+        const values = thumbs.map((t) => Number(t.getAttribute("aria-valuenow")));
+        const fmt = host.dataset.valueFormat;
+
+        thumbs.forEach((t, i) => t.setAttribute("aria-valuetext", format(values[i], fmt)));
+
+        document.querySelectorAll(`output[data-slot="slider-value"][for="${host.id}"]`).forEach((output) => {
+          const index = output.dataset.index;
+          output.textContent = index != null ? format(values[Number(index)], fmt) : joinValues(values, fmt, host.dataset.valueSeparator);
+        });
+
+        const low = values.length > 1 ? Math.min(...values) : -Infinity;
+        const high = Math.max(...values);
+        host.querySelectorAll('[data-slot="slider-mark"]').forEach((m) => {
+          const value = Number(m.dataset.value);
+          m.dataset.state = value >= low && value <= high ? "in-range" : "out-of-range";
+        });
+      }
+
+      function measure() {
+        const off = document.getElementById("prehydrate").checked;
+        document.querySelectorAll("sel-slider").forEach((host) => {
+          const thumb = host.querySelector('[data-slot="slider-thumb"]');
+          const size = host.dataset.orientation === "vertical" ? thumb.offsetHeight : thumb.offsetWidth;
+          if (off) host.style.removeProperty("--sa-slider-thumb-size");
+          else host.style.setProperty("--sa-slider-thumb-size", `${size}px`);
+        });
+      }
+
+      document.addEventListener("input", (e) => {
+        const host = e.target.closest?.("sel-slider");
+        if (host) sync(host);
+      });
+
+      // Controls ------------------------------------------------------------------------------
+      const themeLink = document.getElementById("theme-css");
+      document.getElementById("theme").addEventListener("change", (e) => {
+        themeLink.href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${e.target.value}.css`;
+      });
+      themeLink.addEventListener("load", () => requestAnimationFrame(measure));
+      document.getElementById("mode").addEventListener("click", (e) => {
+        const dark = document.documentElement.classList.toggle("dark");
+        e.target.textContent = dark ? "Light" : "Dark";
+      });
+      document.getElementById("prehydrate").addEventListener("change", measure);
+
+      const params = new URLSearchParams(location.search);
+      if (params.get("theme")) {
+        document.getElementById("theme").value = params.get("theme");
+        themeLink.href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${params.get("theme")}.css`;
+      }
+      if (params.get("mode") === "dark") document.getElementById("mode").click();
+
+      window.addEventListener("load", () => setTimeout(measure, 100));
+      // Stand-in for sel-slider filling its value outputs when it hydrates
+      customElements.whenDefined("sel-slider").then(() => document.querySelectorAll("sel-slider").forEach(sync));
+      window.addEventListener("resize", measure);
+    </script>
+  </body>
+</html>

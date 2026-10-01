@@ -48,7 +48,7 @@
 | [Sheet](components/sheet.md) | `<sa-sheet>`, `<sa-sheet-description>`, `<sa-sheet-footer>`, … | A panel that slides in from an edge of the screen, rendered over a native `<dialog>` element. |
 | [Sidebar](components/sidebar.md) | `<sa-sidebar>`, `<sa-sidebar-content>`, `<sa-sidebar-footer>`, … | The sidebar panel itself, hosting its header, content, and footer. |
 | [Skeleton](components/skeleton.md) | `<sa-skeleton>` | A placeholder that shows an animated pulsing shape while content is loading. |
-| [Slider](components/slider.md) | `<sa-slider>` | An input for selecting a numeric value, or a range of values, by dragging one or more thumbs along a track. |
+| [Slider](components/slider.md) | `<sa-slider>`, `<sa-slider-mark>`, `<sa-slider-marks>`, … | An input for selecting a numeric value, or a range of values, by dragging one or more thumbs along a track. |
 | [Spinner](components/spinner.md) | `<sa-spinner>` | An animated spinning icon that indicates a loading or busy state. |
 | [Switch](components/switch.md) | `<sa-switch>` | A toggle control that switches between on and off states. |
 | [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | A responsive data table, rendered as a `<table>` inside a scrollable container. |

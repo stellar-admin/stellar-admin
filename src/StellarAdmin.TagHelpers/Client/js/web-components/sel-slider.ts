@@ -14,7 +14,15 @@ import { customElement } from "lit/decorators.js";
  *
  * Supports both orientations (read from `data-orientation`), snaps to `step`, and enforces
  * `data-min-distance` between adjacent thumbs on a range slider.
+ *
+ * It also fills the `<output data-slot="slider-value">` elements that show its value (those
+ * without `for` in its field, and those whose `for` names its id), formats values with
+ * `data-value-format` and `data-value-locale` like the server, keeps each thumb's
+ * `aria-valuetext` and each mark's `data-state` current, and names unnamed thumbs after the
+ * field label.
  */
+let labelCount = 0;
+
 @customElement("sel-slider")
 export class Slider extends LitElement {
   override createRenderRoot() {
@@ -27,14 +35,19 @@ export class Slider extends LitElement {
   #minDistance = 0;
   #vertical = false;
   #edgeAligned = false;
+  #valueFormat: string | null = null;
+  #numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
   #track: HTMLElement | null = null;
   #range: HTMLElement | null = null;
   #thumbs: HTMLElement[] = [];
   #inputs: HTMLInputElement[] = [];
+  #marks: HTMLElement[] = [];
+  #outputs: HTMLOutputElement[] = [];
   #values: number[] = [];
 
   #dragIndex = -1;
+  #thumbSizeObserver: ResizeObserver | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -55,6 +68,20 @@ export class Slider extends LitElement {
     this.#values = this.#thumbs.map((thumb) =>
       this.#clampToRange(Number(thumb.getAttribute("aria-valuenow") ?? this.#min)),
     );
+    this.#marks = Array.from(this.querySelectorAll<HTMLElement>('[data-slot="slider-mark"]'));
+    this.#valueFormat = this.getAttribute("data-value-format");
+    try {
+      this.#numberFormat = new Intl.NumberFormat(
+        this.getAttribute("data-value-locale") ?? "en-US",
+        { maximumFractionDigits: 0 },
+      );
+    } catch {
+      // An unknown locale keeps the default, which matches the server's invariant culture
+    }
+    this.#outputs = this.#findOutputs();
+    this.#nameThumbs();
+    this.#observeThumbSize();
+    this.#renderValues();
 
     this.addEventListener("pointerdown", this.#onPointerDown);
     this.addEventListener("keydown", this.#onKeyDown);
@@ -64,6 +91,8 @@ export class Slider extends LitElement {
     super.disconnectedCallback();
     this.removeEventListener("pointerdown", this.#onPointerDown);
     this.removeEventListener("keydown", this.#onKeyDown);
+    this.#thumbSizeObserver?.disconnect();
+    this.#thumbSizeObserver = null;
     this.#endDrag();
   }
 
@@ -205,6 +234,7 @@ export class Slider extends LitElement {
     this.#values[index] = clamped;
     this.#renderThumb(index);
     this.#renderRange();
+    this.#renderValues();
     this.dispatchEvent(new Event("input", { bubbles: true }));
     this.dispatchEvent(new Event("change", { bubbles: true }));
   }
@@ -240,6 +270,93 @@ export class Slider extends LitElement {
       this.#range.style.left = `${low}%`;
       this.#range.style.right = `${100 - high}%`;
     }
+  }
+
+  /**
+   * The outputs showing this slider's value: those without `for` in its field, which pair with
+   * the field's slider, and those whose `for` names this slider's id anywhere in its root.
+   */
+  #findOutputs() {
+    const outputs = new Set<HTMLOutputElement>();
+    const field = this.closest('[data-slot="field"]');
+    field
+      ?.querySelectorAll<HTMLOutputElement>('output[data-slot="slider-value"]:not([for])')
+      .forEach((output) => outputs.add(output));
+    if (this.id) {
+      const root = this.getRootNode() as Document | ShadowRoot;
+      root
+        .querySelectorAll<HTMLOutputElement>(
+          `output[data-slot="slider-value"][for="${CSS.escape(this.id)}"]`,
+        )
+        .forEach((output) => outputs.add(output));
+    }
+    return Array.from(outputs);
+  }
+
+  /**
+   * In an explicit field the server cannot see the author's label from the slider, so thumbs
+   * without a name of their own are labelled by the field's label, or a label targeting the host.
+   */
+  #nameThumbs() {
+    const unnamed = this.#thumbs.filter(
+      (thumb) => !thumb.hasAttribute("aria-label") && !thumb.hasAttribute("aria-labelledby"),
+    );
+    if (unnamed.length === 0) return;
+
+    const root = this.getRootNode() as Document | ShadowRoot;
+    const label =
+      this.closest('[data-slot="field"]')?.querySelector<HTMLElement>('[data-slot="field-label"]') ??
+      (this.id ? root.querySelector<HTMLElement>(`label[for="${CSS.escape(this.id)}"]`) : null);
+    if (!label) return;
+
+    if (!label.id) label.id = `sel-slider-label-${++labelCount}`;
+    for (const thumb of unnamed) thumb.setAttribute("aria-labelledby", label.id);
+  }
+
+  /**
+   * Marks sit at the thumb centres, which edge alignment moves inward by half a thumb at the
+   * ends, so they need the thumb's size along the track. Observing the thumb measures it once
+   * styles apply, and again when a hidden slider is shown.
+   */
+  #observeThumbSize() {
+    const thumb = this.#thumbs[0];
+    if (this.#marks.length === 0 || !thumb) return;
+    this.#thumbSizeObserver = new ResizeObserver(() => {
+      const size = this.#vertical ? thumb.offsetHeight : thumb.offsetWidth;
+      if (size > 0) this.style.setProperty("--sa-slider-thumb-size", `${size}px`);
+    });
+    this.#thumbSizeObserver.observe(thumb);
+  }
+
+  #renderValues() {
+    this.#values.forEach((value, index) => {
+      if (this.#valueFormat !== null) {
+        this.#thumbs[index].setAttribute("aria-valuetext", this.#format(value));
+      }
+    });
+
+    for (const output of this.#outputs) {
+      const index = output.dataset.index;
+      if (index !== undefined) {
+        const value = this.#values[Number(index)];
+        output.textContent = value === undefined ? "" : this.#format(value);
+      } else {
+        const texts = this.#values.map((value) => this.#format(value));
+        output.textContent = texts.length === 2 ? `${texts[0]} – ${texts[1]}` : texts.join(", ");
+      }
+    }
+
+    const low = this.#values.length > 1 ? Math.min(...this.#values) : -Infinity;
+    const high = Math.max(...this.#values);
+    for (const mark of this.#marks) {
+      const value = Number(mark.dataset.value);
+      mark.dataset.state = value >= low && value <= high ? "in-range" : "out-of-range";
+    }
+  }
+
+  #format(value: number) {
+    const number = this.#numberFormat.format(value);
+    return this.#valueFormat === null ? number : this.#valueFormat.replace("{0}", number);
   }
 
   #percent(value: number) {

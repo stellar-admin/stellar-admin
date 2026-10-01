@@ -13,6 +13,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
+| [slider-value-display](slider-value-display.md) | active | Composable value display and marks for `sa-slider`, then `SliderEditor`; Phase 1 approved; Phase 2 implemented 2026-10-01 and awaiting review. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 

@@ -8193,13 +8193,21 @@
     },
     "Slider": {
       "tags": [
-        "sa-slider"
+        "sa-slider",
+        "sa-slider-mark",
+        "sa-slider-marks",
+        "sa-slider-value"
       ],
       "hooks": [
         "sa-slider",
+        "sa-slider-mark",
+        "sa-slider-mark-label",
+        "sa-slider-mark-tick",
+        "sa-slider-marks",
         "sa-slider-range",
         "sa-slider-thumb",
-        "sa-slider-track"
+        "sa-slider-track",
+        "sa-slider-value"
       ],
       "example": "docs/DocsSamples/Pages/Slider/Index.cshtml",
       "themes": {
@@ -8207,135 +8215,180 @@
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "ledger": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.luma": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.lyra": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.maia": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.mira": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.nova": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.rhea": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.sera": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "shadcn.vega": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "ice": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "observatory": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "meridian": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "aurora": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         },
         "parallax": {
           "status": "reviewed",
           "rules": [
             "sa-slider",
+            "sa-slider-mark-label",
+            "sa-slider-mark-tick",
             "sa-slider-range",
             "sa-slider-thumb",
-            "sa-slider-track"
+            "sa-slider-track",
+            "sa-slider-value"
           ]
         }
       }

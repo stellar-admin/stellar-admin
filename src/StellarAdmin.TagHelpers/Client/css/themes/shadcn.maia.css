@@ -1199,4 +1199,15 @@
   --font-sans: "Figtree", "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace;
 }
+
+/* Slider values and marks: muted, tabular numbers; ticks lighten over the filled range. */
+.sa-slider-value {
+  @apply text-muted-foreground text-sm;
+}
+.sa-slider-mark-tick {
+  @apply bg-muted-foreground/35 h-2.5 w-0.5 rounded-full in-data-[orientation=vertical]:h-0.5 in-data-[orientation=vertical]:w-2.5 in-data-[state=in-range]:bg-primary-foreground/70;
+}
+.sa-slider-mark-label {
+  @apply text-muted-foreground text-xs tabular-nums;
+}
 }

@@ -62,6 +62,7 @@ public class DocsStatic : PageModel
             "Select/_ModelBinding" => new Select.Index.BookingFormModel(),
             "Select/_Validation" => new Select.Index.BookingFormValidationModel(),
             "Slider/_ModelBinding" => new Slider.Index.ModelBindingModel(),
+            "Slider/_Value" => new Slider.Index.ValueModel(),
             "Switch/_ModelBinding" => new Switch.Index.ModelBindingModel(),
             "Textarea/_ModelBinding" => new Textarea.Index.ReviewModel(),
             "Textarea/_Validation" => new Textarea.Index.ReviewValidationModel(),
