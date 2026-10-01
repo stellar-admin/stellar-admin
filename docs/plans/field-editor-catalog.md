@@ -1,6 +1,6 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike and Phases 1, 2, 2b and 3 are committed on the `field-editor-catalog` branch. Phase 4, the remaining editors, is implemented and awaits review.
+Status: active, 2026-10-01. The spike and Phases 1 to 4 are committed on the `field-editor-catalog` branch. Phase 5 is in progress: the legacy templates are deleted, and the documentation updates remain.
 
 ## Goal
 
@@ -90,7 +90,7 @@ Out of scope until the base exists: file upload, rich text, Markdown, tags input
 | `Boolean` | `CheckboxEditor`, or `SelectEditor` with Yes, No and Not set when nullable |
 | `Enum` | `SelectEditor`, or `TextInputEditor` for flags enums |
 
-The current `EnumRadioGroup`, `EnumRadioChoiceCards`, `SelectListEditor` and `CheckboxGroupEditor` templates are decided one by one in Phase 5. They were probably test examples, so each may be removed or kept as a forward.
+The legacy `EnumRadioGroup`, `EnumRadioChoiceCards`, `SelectListEditor` and `CheckboxGroupEditor` templates were deleted in Phase 5.
 
 ## Phases
 
@@ -133,6 +133,12 @@ Browser checks run on port 5206 and the server is stopped afterwards. Port 5205 
 ### Pixel comparison, not yet decided
 
 `util/visual-regression/vrt.mjs` compares base and head screenshots, which would turn "the forwards still render the same" into a zero pixel diff for Phases 3 to 5. It cannot capture the gallery yet. It discovers pages from `docs/DocsSamples/Pages`, sets the theme with a `?theme=` query parameter, and DashboardPlayground sets its theme in `ConfigureTheme`. Using it needs an explicit page list option, and either one capture per theme or a theme switch the tool can drive. This is a separate decision after Phase 2b and is not part of it.
+
+## Phase 5, 2026-10-01
+
+Deleted the `EnumRadioGroup`, `EnumRadioChoiceCards`, `SelectListEditor` and `CheckboxGroupEditor` templates. No handler has selected them since Phase 3, and a search of the product and website repositories found no reference to them by name, through `[UIHint]` or by template path. `RadioGroupEditor`, `SelectEditor` and `CheckboxGroupEditor` replace them, and every `EditorClassNamesMapper` method is still used by an `Editors/` template. An app that named one of them with `[UIHint]` now gets the default editor for the property type. The consumer skills reference, samples and website documentation are not yet updated.
+
+Verification: the solution and DashboardPlayground built, and the Dashboard HTTP (241) and EF Core HTTP (59) suites passed.
 
 ## Phase 4, 2026-10-01
 
