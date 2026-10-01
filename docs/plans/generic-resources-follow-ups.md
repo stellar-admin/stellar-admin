@@ -90,6 +90,8 @@ Start in `src/StellarAdmin.Dashboard.EntityFrameworkCore/EfCoreReference.cs`, `E
 
 ### 6. Richer typed EditorOptions
 
+Superseded on 2026-10-01 by the [field editor catalog](archive/field-editor-catalog.md), which added typed editors with their own settings and choice sources.
+
 EditorOptions currently carries typed ClassNames; RadioEditorOptions adds per-option part classes. Jerrie also suggested future behavioral options such as string masks and explicit select/radio items. Masks and radio choices remain deferred, with a brief reminder already in code. Decide which editor-specific types are needed without turning the common options into a bag of unrelated settings. Editor options currently configure the selected editor; Template/MVC metadata select the editor itself.
 
 The 2026-09-27 select list editor implements explicit select choices through its own typed options; masks and radio choices remain deferred.

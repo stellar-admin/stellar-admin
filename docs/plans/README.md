@@ -12,7 +12,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
-| [field-editor-catalog](field-editor-catalog.md) | active | Built-in `UseEditor` field editors with friendly names, with MVC data-type templates forwarding to them. Spike done 2026-10-01. Phases 1 to 4 (API rename, `TextInputEditor`, DashboardPlayground editor gallery, choice editors, remaining editors and data-type forwards) committed. Phase 5 in progress: legacy templates deleted, consumer reference update awaiting review. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
@@ -32,6 +31,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [dashboard-authorization](archive/dashboard-authorization.md) | completed; `RequireAuthorization` on Dashboard and resource builders, an authorization-aware async sidebar, and the `MapStellarAdmin` convention builder, with HTTP integration tests. Per-action requirements are deferred. |
 | [demo-theme-selector](archive/demo-theme-selector.md) | completed |
 | [ef-test-migration](archive/ef-test-migration.md) | completed; all 325 solution tests pass through discovery on 2026-09-18 |
+| [field-editor-catalog](archive/field-editor-catalog.md) | completed; built-in `UseEditor` field editors with data-type templates forwarding to them, a DashboardPlayground editor gallery and a consumer reference section. A slider value display and gallery pixel comparison are follow-ups. |
 | [form-section](oss/archive/form-section.md) | completed |
 | [generic-resources-brainstorming](archive/generic-resources-brainstorming.md) | completed |
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |

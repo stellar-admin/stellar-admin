@@ -1,12 +1,12 @@
 # Field editor catalog
 
-Status: active, 2026-10-01. The spike and Phases 1 to 4 are committed on the `field-editor-catalog` branch. Phase 5 is in progress: the legacy template deletion is committed, and the consumer reference update awaits review.
+Status: completed on 2026-10-01 on the `field-editor-catalog` branch. The spike and Phases 1 to 4 were committed, Phase 4 as `beb1a18`. Phase 5 deleted the legacy templates in `149d5f1` and updated the consumer reference in `2671092`, and this closeout archives the plan. A slider value display and pixel comparison of the editor gallery remain follow-ups that need separately scoped work.
 
 ## Goal
 
 Ship a full set of built-in form field editors that `UseEditor<T>` can select, similar to the Filament form field catalog. Editors have friendly names such as `TextInputEditor`, `SelectEditor` and `RadioGroupEditor`, and each accepts editor-specific settings. The MVC editor templates named after data types (`String`, `Int32`, `Currency`, `Boolean`, …) stay, because metadata-based template resolution and per-type app overrides are important. Each piece of editor markup exists once. The data-type templates forward to a friendly editor instead of repeating its markup.
 
-This supersedes item 6, "Richer typed EditorOptions", in [generic-resources-follow-ups](generic-resources-follow-ups.md).
+This supersedes item 6, "Richer typed EditorOptions", in [generic-resources-follow-ups](../generic-resources-follow-ups.md).
 
 ## Starting point
 

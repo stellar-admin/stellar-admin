@@ -5,7 +5,7 @@ using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.FieldEditors;
 
-// Visual harness for the built-in field editors. See docs/plans/field-editor-catalog.md.
+// Visual harness for the built-in field editors. See docs/plans/archive/field-editor-catalog.md.
 internal static class FieldEditorGalleryRegistration
 {
     private const string Group = "Field editors";
