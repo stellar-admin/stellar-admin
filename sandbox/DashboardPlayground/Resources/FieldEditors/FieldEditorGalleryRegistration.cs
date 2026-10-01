@@ -38,6 +38,32 @@ internal static class FieldEditorGalleryRegistration
             50,
             ConfigureToggleButtonsFields
         );
+        dashboard.AddGalleryResource<TextareaGallery>(
+            "textarea",
+            "Textarea",
+            60,
+            ConfigureTextareaFields
+        );
+        dashboard.AddGalleryResource<CheckboxGallery>(
+            "checkbox",
+            "Checkbox",
+            70,
+            ConfigureCheckboxFields
+        );
+        dashboard.AddGalleryResource<ToggleGallery>("toggle", "Toggle", 75, ConfigureToggleFields);
+        dashboard.AddGalleryResource<DateTimeGallery>(
+            "date-time",
+            "Date and time",
+            80,
+            ConfigureDateTimeFields
+        );
+        dashboard.AddGalleryResource<SliderGallery>("slider", "Slider", 90, ConfigureSliderFields);
+        dashboard.AddGalleryResource<OneTimeCodeGallery>(
+            "one-time-code",
+            "One-time code",
+            100,
+            ConfigureOneTimeCodeFields
+        );
     }
 
     private static void AddGalleryResource<TRecord>(
@@ -382,6 +408,305 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<ToggleButtonsEditor>(toggle =>
                         toggle.ClassNames.Control = "border-dashed"
                     );
+            }
+        );
+    }
+
+    private static void ConfigureTextareaFields(ResourceFieldsBuilder<TextareaGallery> fields)
+    {
+        fields.AddSection(
+            "Data-type templates",
+            section =>
+            {
+                section.Description =
+                    "No UseEditor. The MultilineText template forwards to Editors/Textarea.";
+                section.Add(model => model.Notes);
+                section.Add(model => model.RequiredNotes);
+                section.Add(model => model.DescribedNotes);
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledNotes).Title = "Title override";
+                section.Add(model => model.FieldDescribedNotes).Description =
+                    "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyNotes);
+            }
+        );
+        fields.AddSection(
+            "TextareaEditor settings",
+            section =>
+            {
+                section.Description = "UseEditor<TextareaEditor> with explicit settings.";
+                section
+                    .Add(model => model.PlaceholderNotes)
+                    .UseEditor<TextareaEditor>(textarea =>
+                        textarea.Placeholder = "Anything the crew should know"
+                    );
+                section
+                    .Add(model => model.TallNotes)
+                    .UseEditor<TextareaEditor>(textarea => textarea.Rows = 8);
+                section
+                    .Add(model => model.StyledNotes)
+                    .UseEditor<TextareaEditor>(textarea =>
+                        textarea.ClassNames.Control = "border-dashed"
+                    );
+            }
+        );
+    }
+
+    private static void ConfigureCheckboxFields(ResourceFieldsBuilder<CheckboxGallery> fields)
+    {
+        fields.AddSection(
+            "Data-type template",
+            section =>
+            {
+                section.Description =
+                    "The Boolean template forwards to Editors/Checkbox. UseEditor<CheckboxEditor> renders the same.";
+                section.Add(model => model.Subscribed);
+                section.Add(model => model.DescribedSubscribed);
+                section.Add(model => model.ExplicitSubscribed).UseEditor<CheckboxEditor>();
+            }
+        );
+        fields.AddSection(
+            "Validation",
+            section =>
+            {
+                section.Description = "Clear these and save to see the server errors.";
+                section.Add(model => model.AcceptedTerms);
+                section.Add(model => model.PassportConfirmed);
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledSubscribed).Title = "Title override";
+                section.Add(model => model.FieldDescribedSubscribed).Description =
+                    "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyChecked);
+                section.Add(model => model.ReadOnlyUnchecked);
+            }
+        );
+        fields.AddSection(
+            "Class names",
+            section =>
+            {
+                section
+                    .Add(model => model.LabelStyled)
+                    .UseEditor<CheckboxEditor>(checkbox => checkbox.ClassNames.Label = "italic");
+                section
+                    .Add(model => model.RootStyled)
+                    .UseEditor<CheckboxEditor>(checkbox =>
+                        checkbox.ClassNames.Root = "rounded-lg border border-dashed p-3"
+                    );
+            }
+        );
+    }
+
+    private static void ConfigureToggleFields(ResourceFieldsBuilder<ToggleGallery> fields)
+    {
+        fields.AddSection(
+            "States",
+            section =>
+            {
+                section.Description = "UseEditor<ToggleEditor> on Boolean properties.";
+                section.Add(model => model.Notifications).UseEditor<ToggleEditor>();
+                section.Add(model => model.Newsletter).UseEditor<ToggleEditor>();
+                section.Add(model => model.DescribedNotifications).UseEditor<ToggleEditor>();
+            }
+        );
+        fields.AddSection(
+            "Validation",
+            section =>
+            {
+                section.Description = "Turn these off and save to see the server errors.";
+                section.Add(model => model.RequiredAlerts).UseEditor<ToggleEditor>();
+                section.Add(model => model.RequiredTracking).UseEditor<ToggleEditor>();
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledNotifications).UseEditor<ToggleEditor>().Title =
+                    "Title override";
+                section
+                    .Add(model => model.FieldDescribedNotifications)
+                    .UseEditor<ToggleEditor>()
+                    .Description = "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyOn).UseEditor<ToggleEditor>();
+                section.Add(model => model.ReadOnlyOff).UseEditor<ToggleEditor>();
+            }
+        );
+        fields.AddSection(
+            "Class names",
+            section =>
+            {
+                section
+                    .Add(model => model.LabelStyled)
+                    .UseEditor<ToggleEditor>(toggle => toggle.ClassNames.Label = "italic");
+                section
+                    .Add(model => model.RootStyled)
+                    .UseEditor<ToggleEditor>(toggle =>
+                        toggle.ClassNames.Root = "rounded-lg border border-dashed p-3"
+                    );
+            }
+        );
+    }
+
+    private static void ConfigureDateTimeFields(ResourceFieldsBuilder<DateTimeGallery> fields)
+    {
+        fields.AddSection(
+            "Data-type templates",
+            section =>
+            {
+                section.Description =
+                    "No UseEditor. The date and time templates forward to Editors/DateInput, Editors/DateTimeInput and Editors/TimeInput.";
+                section.Add(model => model.Departure);
+                section.Add(model => model.OptionalDeparture);
+                section.Add(model => model.RequiredDeparture);
+                section.Add(model => model.DepartureDate);
+                section.Add(model => model.Boarding);
+                section.Add(model => model.OptionalBoarding);
+                section.Add(model => model.Booked);
+                section.Add(model => model.Gate);
+                section.Add(model => model.GateTime);
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledDeparture).Title = "Title override";
+                section.Add(model => model.DescribedDeparture);
+                section.Add(model => model.FieldDescribedDeparture).Description =
+                    "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyDeparture);
+                section.Add(model => model.ReadOnlyBoarding);
+            }
+        );
+        fields.AddSection(
+            "Editor settings",
+            section =>
+            {
+                section.Description =
+                    "UseEditor<DateInputEditor>, UseEditor<DateTimeInputEditor> and UseEditor<TimeInputEditor> with explicit settings.";
+                section
+                    .Add(model => model.BoundedDeparture)
+                    .UseEditor<DateInputEditor>(date =>
+                    {
+                        date.Max = new DateOnly(2026, 12, 31);
+                        date.Min = new DateOnly(2026, 1, 1);
+                    });
+                section
+                    .Add(model => model.WeeklyDeparture)
+                    .UseEditor<DateInputEditor>(date => date.Step = 7);
+                section
+                    .Add(model => model.QuarterHourBoarding)
+                    .UseEditor<DateTimeInputEditor>(dateTime =>
+                        dateTime.Step = TimeSpan.FromMinutes(15)
+                    );
+                section
+                    .Add(model => model.OfficeHoursGate)
+                    .UseEditor<TimeInputEditor>(time =>
+                    {
+                        time.Max = new TimeOnly(18, 0);
+                        time.Min = new TimeOnly(8, 0);
+                        time.Step = TimeSpan.FromMinutes(30);
+                    });
+                section
+                    .Add(model => model.StyledDeparture)
+                    .UseEditor<DateInputEditor>(date => date.ClassNames.Control = "border-dashed");
+            }
+        );
+    }
+
+    private static void ConfigureSliderFields(ResourceFieldsBuilder<SliderGallery> fields)
+    {
+        fields.AddSection(
+            "Inferred bounds",
+            section =>
+            {
+                section.Description =
+                    "UseEditor<SliderEditor> without settings. Bounds come from [Range], or 0 to 100.";
+                section.Add(model => model.Volume).UseEditor<SliderEditor>();
+                section.Add(model => model.Passengers).UseEditor<SliderEditor>();
+                section.Add(model => model.Rating).UseEditor<SliderEditor>();
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledVolume).UseEditor<SliderEditor>().Title =
+                    "Title override";
+                section.Add(model => model.DescribedVolume).UseEditor<SliderEditor>();
+                section
+                    .Add(model => model.FieldDescribedVolume)
+                    .UseEditor<SliderEditor>()
+                    .Description = "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyVolume).UseEditor<SliderEditor>();
+            }
+        );
+        fields.AddSection(
+            "SliderEditor settings",
+            section =>
+            {
+                section
+                    .Add(model => model.Discount)
+                    .UseEditor<SliderEditor>(slider =>
+                    {
+                        slider.Max = 50;
+                        slider.Min = 0;
+                        slider.Step = 5;
+                    });
+                section
+                    .Add(model => model.StyledVolume)
+                    .UseEditor<SliderEditor>(slider => slider.ClassNames.Control = "max-w-xs");
+            }
+        );
+    }
+
+    private static void ConfigureOneTimeCodeFields(ResourceFieldsBuilder<OneTimeCodeGallery> fields)
+    {
+        fields.AddSection(
+            "Inferred length",
+            section =>
+            {
+                section.Description =
+                    "UseEditor<OneTimeCodeEditor> without settings. The length comes from [StringLength], or 6.";
+                section.Add(model => model.Code).UseEditor<OneTimeCodeEditor>();
+                section.Add(model => model.RequiredCode).UseEditor<OneTimeCodeEditor>();
+                section.Add(model => model.Pin).UseEditor<OneTimeCodeEditor>();
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledCode).UseEditor<OneTimeCodeEditor>().Title =
+                    "Title override";
+                section.Add(model => model.DescribedCode).UseEditor<OneTimeCodeEditor>();
+                section
+                    .Add(model => model.FieldDescribedCode)
+                    .UseEditor<OneTimeCodeEditor>()
+                    .Description = "Set with the field's Description.";
+                section.Add(model => model.ReadOnlyCode).UseEditor<OneTimeCodeEditor>();
+            }
+        );
+        fields.AddSection(
+            "OneTimeCodeEditor settings",
+            section =>
+            {
+                section
+                    .Add(model => model.LongCode)
+                    .UseEditor<OneTimeCodeEditor>(code => code.Length = 8);
+                section
+                    .Add(model => model.StyledCode)
+                    .UseEditor<OneTimeCodeEditor>(code => code.ClassNames.Control = "gap-3");
             }
         );
     }

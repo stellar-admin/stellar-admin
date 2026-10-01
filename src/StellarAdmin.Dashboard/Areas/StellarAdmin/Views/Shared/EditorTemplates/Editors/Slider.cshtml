@@ -1,0 +1,8 @@
+@inherits FieldEditorView<SliderEditor>
+
+@{
+    var attributes = Editor.ResolveAttributes(ViewData.ModelMetadata);
+}
+
+<sa-slider class-names="@EditorClassNamesMapper.ForSlider(Editor)" asp-for="@Model" min="@attributes.Min" max="@attributes.Max" step="@attributes.Step"
+           label="@Title" description="@Description" disabled="@IsReadOnly" />

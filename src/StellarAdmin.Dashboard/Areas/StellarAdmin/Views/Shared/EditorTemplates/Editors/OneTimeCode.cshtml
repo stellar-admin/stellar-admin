@@ -1,0 +1,4 @@
+@inherits FieldEditorView<OneTimeCodeEditor>
+
+<sa-input-otp class-names="@EditorClassNamesMapper.ForOneTimeCode(Editor)" asp-for="@Model" max-length="@Editor.ResolveLength(ViewData.ModelMetadata)"
+              label="@Title" description="@Description" disabled="@IsReadOnly"></sa-input-otp>

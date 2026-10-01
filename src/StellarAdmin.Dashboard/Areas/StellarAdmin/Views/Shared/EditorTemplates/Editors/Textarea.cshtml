@@ -1,0 +1,5 @@
+@inherits FieldEditorView<TextareaEditor>
+
+@* The text area grows with its content, which ignores rows, so a fixed row count turns that off *@
+<sa-textarea class-names="@EditorClassNamesMapper.ForTextarea(Editor)" asp-for="@Model" rows="@Editor.Rows" style="@(Editor.Rows is null ? null : "field-sizing: fixed")"
+             placeholder="@Editor.Placeholder" label="@Title" description="@Description" readonly="@IsReadOnly"></sa-textarea>

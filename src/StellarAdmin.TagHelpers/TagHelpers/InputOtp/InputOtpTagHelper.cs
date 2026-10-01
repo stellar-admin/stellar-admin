@@ -195,8 +195,13 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
         // Render the field last, inside an absolute overlay wrapper (matching guilhermerodz), so it
         // covers the slots and receives pointer events ahead of them. The wrapper itself is
         // pointer-events:none; the input re-enables pointer-events:all in its own inline style.
+        // The input is 40px wider than the container, so the wrapper clips it, or a container
+        // stretched to the field width would widen the page.
         var inputWrapper = new TagBuilder("div");
-        inputWrapper.Attributes.Add("style", "position:absolute;inset:0;pointer-events:none");
+        inputWrapper.Attributes.Add(
+            "style",
+            "position:absolute;inset:0;pointer-events:none;overflow:hidden"
+        );
         inputWrapper.InnerHtml.AppendHtml(inputOutput);
         output.Content.AppendHtml(inputWrapper);
 

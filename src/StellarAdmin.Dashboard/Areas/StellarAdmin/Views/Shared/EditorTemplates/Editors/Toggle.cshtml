@@ -1,0 +1,7 @@
+@inherits FieldEditorView<ToggleEditor>
+
+@{
+    BooleanProperty.Ensure(Editor, ViewData.ModelMetadata);
+}
+
+<sa-switch class-names="@EditorClassNamesMapper.ForSwitch(Editor)" asp-for="@Model" label="@Title" description="@Description" disabled="@IsReadOnly" />

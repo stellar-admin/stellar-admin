@@ -40,6 +40,21 @@ internal static class EditorClassNamesMapper
         };
     }
 
+    public static InputOtpClassNames ForOneTimeCode(OneTimeCodeEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new InputOtpClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
+    }
+
     public static RadioGroupEditorClassNames ForRadio(FieldEditor? editor)
     {
         if (
@@ -84,6 +99,36 @@ internal static class EditorClassNamesMapper
             Error = classes?.Error,
             Label = classes?.Label,
             Root = classes?.Root,
+        };
+    }
+
+    public static SliderClassNames ForSlider(SliderEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new SliderClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
+    }
+
+    public static SwitchClassNames ForSwitch(ToggleEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new SwitchClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
         };
     }
 

@@ -102,7 +102,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             throw new ArgumentOutOfRangeException(nameof(Min), "Min must be less than Max");
         }
 
-        var values = ResolveValues(effectiveMin);
+        var values = ResolveValues(effectiveMin, effectiveMax);
         foreach (var value in values)
         {
             if (value < effectiveMin || value > effectiveMax)
@@ -248,9 +248,10 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     /// <summary>
     ///     Resolves the current thumb values: from the bound model when <c>asp-for</c> is set
     ///     (scalar or collection), otherwise from the comma-separated <see cref="Value" />,
-    ///     otherwise a single thumb at <paramref name="min" />.
+    ///     otherwise a single thumb at <paramref name="min" />. Bound values are clamped to the
+    ///     bounds, because a model can hold any number, such as 0 before a range applies.
     /// </summary>
-    private IReadOnlyList<int> ResolveValues(int min)
+    private IReadOnlyList<int> ResolveValues(int min, int max)
     {
         if (For?.Model is { } model and not string)
         {
@@ -261,7 +262,13 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 {
                     if (item != null)
                     {
-                        fromModel.Add(Convert.ToInt32(item, CultureInfo.InvariantCulture));
+                        fromModel.Add(
+                            Math.Clamp(
+                                Convert.ToInt32(item, CultureInfo.InvariantCulture),
+                                min,
+                                max
+                            )
+                        );
                     }
                 }
 
@@ -272,7 +279,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
             else
             {
-                return [Convert.ToInt32(model, CultureInfo.InvariantCulture)];
+                return [Math.Clamp(Convert.ToInt32(model, CultureInfo.InvariantCulture), min, max)];
             }
         }
 
@@ -299,9 +306,12 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             return Name;
         }
 
-        if (!string.IsNullOrEmpty(For?.Name))
+        // An editor template binds asp-for="@Model", whose name is empty and lives in the prefix
+        if (For != null)
         {
-            return ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
+            var fullName = ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
+
+            return string.IsNullOrEmpty(fullName) ? null : fullName;
         }
 
         return null;
