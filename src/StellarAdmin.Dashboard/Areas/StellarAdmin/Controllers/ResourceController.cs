@@ -303,7 +303,7 @@ public class ResourceController<TResource>(
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Create),
@@ -329,7 +329,7 @@ public class ResourceController<TResource>(
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(edit.Fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(edit.Fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Edit),
@@ -361,6 +361,7 @@ public class ResourceController<TResource>(
         IReadOnlyDictionary<string, string> Templates
     )> PrepareEditorsAsync(
         IReadOnlyList<FormFieldOptions> fields,
+        object model,
         CancellationToken cancellationToken
     )
     {
@@ -376,7 +377,12 @@ public class ResourceController<TResource>(
                         handlerType,
                         field.Editor
                     );
-                data[field.FieldName] = await handler.PrepareAsync(cancellationToken);
+                var context = new FieldEditorContext(
+                    field.FieldName,
+                    model,
+                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                );
+                data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
                 templates[field.FieldName] = handler.TemplateName;
             }
         }

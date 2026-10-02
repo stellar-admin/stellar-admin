@@ -1,0 +1,59 @@
+@inherits FieldEditorView<LookupEditor>
+
+@{
+    var item = EditorData as LookupItem;
+    var classes = EditorClassNamesMapper.ForInput(Editor);
+    var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
+
+    // The visible input only displays the selection; the hidden input carries the posted value
+    var id = Html.IdForModel();
+    var displayId = $"{id}-display";
+    var sheetId = $"{id}-lookup";
+    var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
+    var errorId = $"{id}-error";
+    var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
+}
+
+<sa-field class="@classes.Root">
+    <sa-field-label class="@classes.Label" for="@displayId">@label</sa-field-label>
+
+    <input type="hidden" asp-for="@Model" data-lookup="value" />
+
+    <sa-input-group class="@classes.Control">
+        <sa-input-group-input id="@displayId" value="@item?.Text" placeholder="@Editor.EmptyText" readonly="readonly"
+                              data-lookup="display" aria-describedby="@describedBy" />
+
+        @if (!IsReadOnly)
+        {
+            <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+                <sa-input-group-button size="InputGroupButtonSize.IconExtraSmall" commandfor="@sheetId" command="show-modal"
+                                       data-lookup="open">
+                    <sa-icon name="search" />
+                    <span class="sr-only">Look up @label</span>
+                </sa-input-group-button>
+            </sa-input-group-addon>
+        }
+    </sa-input-group>
+
+    <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
+    <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
+</sa-field>
+
+@if (!IsReadOnly)
+{
+    <sa-sheet id="@sheetId" data-lookup="sheet">
+        <sa-sheet-header>
+            <sa-sheet-title>@(Editor.SheetTitle ?? label)</sa-sheet-title>
+        </sa-sheet-header>
+
+        <sa-input-group>
+            <sa-input-group-input type="search" placeholder="@Editor.SearchPlaceholder" aria-label="@(Editor.SearchPlaceholder ?? "Search")"
+                                  data-lookup="search" />
+            <sa-input-group-addon>
+                <sa-icon name="search" />
+            </sa-input-group-addon>
+        </sa-input-group>
+
+        <div data-lookup="results"></div>
+    </sa-sheet>
+}

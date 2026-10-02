@@ -8,7 +8,10 @@ public abstract class ChoiceEditorHandler<TEditor>(TEditor editor, IServiceProvi
     where TEditor : ChoiceEditor
 {
     /// <inheritdoc />
-    public override async Task<object?> PrepareAsync(CancellationToken cancellationToken) =>
+    public override async Task<object?> PrepareAsync(
+        FieldEditorContext context,
+        CancellationToken cancellationToken
+    ) =>
         Editor.ItemsLoader is { } itemsLoader
             ? await itemsLoader(services, cancellationToken)
             : null;

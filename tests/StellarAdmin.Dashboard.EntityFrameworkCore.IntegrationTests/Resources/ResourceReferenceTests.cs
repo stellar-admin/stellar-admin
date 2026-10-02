@@ -29,10 +29,12 @@ public class ResourceReferenceTests
             items => items.OrderBy(category => category.Name)
         );
         var handler = new CheckboxGroupEditorHandler(editor, scope.ServiceProvider);
+        var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
 
         // Act
         var choices =
-            (IReadOnlyList<SelectListItem>)(await handler.PrepareAsync(CancellationToken.None))!;
+            (IReadOnlyList<SelectListItem>)
+                (await handler.PrepareAsync(context, CancellationToken.None))!;
 
         // Assert
         await Assert
