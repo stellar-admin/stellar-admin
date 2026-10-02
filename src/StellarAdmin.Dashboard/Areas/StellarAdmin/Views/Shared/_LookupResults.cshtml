@@ -1,0 +1,30 @@
+@model LookupResultsViewModel
+
+@if (Model.Message is not null)
+{
+    <p class="text-muted-foreground py-6 text-center text-sm" data-lookup="message">@Model.Message</p>
+}
+
+@foreach (var item in Model.Items)
+{
+    @* The button stretches over the item, so the whole row selects it *@
+    <sa-item size="ItemSize.ExtraSmall" class="hover:bg-muted has-focus-visible:bg-muted relative">
+        <sa-item-content>
+            <sa-item-title>
+                <button type="button" class="text-left outline-none after:absolute after:inset-0" data-lookup-value="@item.Value">@item.Text</button>
+            </sa-item-title>
+            @if (!string.IsNullOrEmpty(item.Description))
+            {
+                <sa-item-description>@item.Description</sa-item-description>
+            }
+        </sa-item-content>
+    </sa-item>
+}
+
+@if (Model.MoreUrl is not null)
+{
+    <sa-button type="button" variant="ButtonVariant.Ghost" class="w-full" hx-get="@Model.MoreUrl" hx-swap="outerHTML"
+               data-lookup="more">
+        Load more
+    </sa-button>
+}

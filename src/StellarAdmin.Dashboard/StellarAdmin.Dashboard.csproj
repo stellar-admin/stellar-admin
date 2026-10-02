@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/js/**/*.js" />
     <ClientInput Include="Client/package.json" />
     <ClientInput Include="Client/scripts/**/*.mjs" />
   </ItemGroup>
@@ -47,6 +48,7 @@
 
       <ClientOutput Include="wwwroot/htmx.min.js" />
       <ClientOutput Include="wwwroot/stellar-admin-dashboard.css" />
+      <ClientOutput Include="wwwroot/stellar-admin-dashboard.js" />
     </ItemGroup>
   </Target>
 

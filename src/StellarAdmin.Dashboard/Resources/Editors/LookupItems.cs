@@ -10,6 +10,12 @@ internal abstract class LookupItems
         FieldEditorContext context,
         CancellationToken cancellationToken
     );
+
+    public abstract Task<LookupResults> SearchAsync(
+        IServiceProvider services,
+        LookupQuery query,
+        CancellationToken cancellationToken
+    );
 }
 
 internal sealed class LookupItems<TSource, TEntity, TValue>(
@@ -19,9 +25,6 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 ) : LookupItems
     where TSource : class, ILookupSource<TEntity, TValue>
 {
-    // Search results submit the selector's value
-    public Func<TEntity, TValue> Value { get; } = value;
-
     public override async Task<LookupItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
@@ -48,8 +51,34 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
         }
     }
 
+    public override async Task<LookupResults> SearchAsync(
+        IServiceProvider services,
+        LookupQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        var page = await services
+            .GetRequiredService<TSource>()
+            .SearchAsync(query, cancellationToken);
+
+        // Selected values are posted with the form, which binds them in the current culture
+        return new LookupResults(
+            page.Items.Select(entity => new LookupResult(
+                    Convert.ToString(value(entity), CultureInfo.CurrentCulture) ?? "",
+                    text(entity),
+                    description?.Invoke(entity)
+                ))
+                .ToArray(),
+            page.HasMore
+        );
+    }
+
     private static string Format(TValue current) =>
         Convert.ToString(current, CultureInfo.InvariantCulture) ?? "";
 }
 
 internal sealed record LookupItem(string Text, string? Description);
+
+internal sealed record LookupResult(string Value, string Text, string? Description);
+
+internal sealed record LookupResults(IReadOnlyList<LookupResult> Items, bool HasMore);

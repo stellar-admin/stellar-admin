@@ -4,14 +4,21 @@
     var item = EditorData as LookupItem;
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
+    var canLookUp = !IsReadOnly && Field?.FieldName is not null;
+    var allowClear = canLookUp && (Editor.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
 
     // The visible input only displays the selection; the hidden input carries the posted value
     var id = Html.IdForModel();
     var displayId = $"{id}-display";
+    var openId = $"{id}-open";
     var sheetId = $"{id}-lookup";
+    var resultsId = $"{id}-results";
     var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
     var errorId = $"{id}-error";
     var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
+    var lookupUrl = canLookUp
+        ? Url.Action("Lookup", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName })
+        : null;
 }
 
 <sa-field class="@classes.Root">
@@ -23,10 +30,18 @@
         <sa-input-group-input id="@displayId" value="@item?.Text" placeholder="@Editor.EmptyText" readonly="readonly"
                               data-lookup="display" aria-describedby="@describedBy" />
 
-        @if (!IsReadOnly)
+        @if (canLookUp)
         {
             <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
-                <sa-input-group-button size="InputGroupButtonSize.IconExtraSmall" commandfor="@sheetId" command="show-modal"
+                @if (allowClear)
+                {
+                    <sa-input-group-button id="@($"{id}-clear")" size="InputGroupButtonSize.IconExtraSmall" hidden="@(item is null)"
+                                           data-lookup="clear" data-lookup-for="@id">
+                        <sa-icon name="x" />
+                        <span class="sr-only">Clear @label</span>
+                    </sa-input-group-button>
+                }
+                <sa-input-group-button id="@openId" size="InputGroupButtonSize.IconExtraSmall" commandfor="@sheetId" command="show-modal"
                                        data-lookup="open">
                     <sa-icon name="search" />
                     <span class="sr-only">Look up @label</span>
@@ -39,21 +54,28 @@
     <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
 </sa-field>
 
-@if (!IsReadOnly)
+@if (canLookUp)
 {
-    <sa-sheet id="@sheetId" data-lookup="sheet">
+    <sa-sheet id="@sheetId" data-lookup="sheet" data-lookup-for="@id">
         <sa-sheet-header>
             <sa-sheet-title>@(Editor.SheetTitle ?? label)</sa-sheet-title>
         </sa-sheet-header>
 
-        <sa-input-group>
-            <sa-input-group-input type="search" placeholder="@Editor.SearchPlaceholder" aria-label="@(Editor.SearchPlaceholder ?? "Search")"
-                                  data-lookup="search" />
-            <sa-input-group-addon>
-                <sa-icon name="search" />
-            </sa-input-group-addon>
-        </sa-input-group>
+        @* The search input belongs to no form, so it is not posted and Enter does not submit the page *@
+        <div class="px-6">
+            <sa-input-group>
+                <sa-input-group-input type="search" name="term" form="@($"{sheetId}-search")" autocomplete="off"
+                                      placeholder="@Editor.SearchPlaceholder" aria-label="@(Editor.SearchPlaceholder ?? "Search")"
+                                      aria-controls="@resultsId" data-lookup="search"
+                                      hx-get="@lookupUrl" hx-target="@($"#{resultsId}")"
+                                      hx-trigger="@($"input changed delay:300ms, search, click from:#{openId}")" />
+                <sa-input-group-addon>
+                    <sa-icon name="search" />
+                </sa-input-group-addon>
+            </sa-input-group>
+        </div>
 
-        <div data-lookup="results"></div>
+        <div id="@resultsId" class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-6 pt-4" aria-live="polite"
+             data-lookup="results"></div>
     </sa-sheet>
 }

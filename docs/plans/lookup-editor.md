@@ -1,6 +1,6 @@
 # Lookup editor
 
-Status: **active**. Phases 1 and 2 implemented on branch `lookup-editor`, awaiting review. Last updated: 2026-10-02.
+Status: **active**. Phases 1 and 2 committed on branch `lookup-editor`; Phase 3 implemented, awaiting review. Last updated: 2026-10-02.
 
 `SelectEditor` suits short lists. `LookupEditor` handles long ones: a read-only display input in an input group with a lookup button that opens a sheet with free-text search and paged results. The form posts a hidden value; the display text (and description) is resolved when the form loads. Single select only. Results are a single column rendered with `sa-item`. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -8,7 +8,7 @@ Status: **active**. Phases 1 and 2 implemented on branch `lookup-editor`, awaiti
 | --- | --- | --- |
 | 1 | Editor handlers receive the field's current value | implemented, awaiting review |
 | 2 | `LookupEditor`, lookup source abstractions, handler and template without search | implemented, awaiting review |
-| 3 | Search endpoint, sheet results, selection and clearing | not started |
+| 3 | Search endpoint, sheet results, selection and clearing | implemented, awaiting review |
 | 4 | EF Core items, search projection and reference loading in the edit query | not started |
 | 5 | Playground, gallery example and consumer reference | not started |
 
@@ -97,6 +97,10 @@ The description selector is `items.DescribeWith(...)`, a leaf behavior verb. The
 
 A `ResourceController` lookup action (roughly `GET {resource}/lookup?field=&term=&skip=`) under the resource's authorization, returning a partial of `sa-item` rows and a load-more row. Debounced search and paging use the Dashboard's htmx; a small script applies a selection and clears it.
 
+Implemented: `GET {resource}/lookup?form=create|edit&field=&term=&skip=` on the conventional route, so the resource's authorization metadata applies. `form` selects the create or edit fields, since the two forms may configure the field differently; the template takes it from the current action and the field's property path from a new `FormFieldProperties.FieldName`. An unknown form or field, a field that is read-only or not a `LookupEditor` with items, or a negative `skip` returns 404. The term is trimmed; a term shorter than `MinimumSearchLength` returns "Type at least N characters to search." without querying the source, and an empty first page returns "No results found." (both hard-coded English for now). Result values are formatted in the current culture, matching form binding.
+
+The search input is named `term` but points its `form` attribute at no form, so it is neither posted with the page nor submits it on Enter. It requests the first page when the lookup button is clicked (`click from:#{id}-open`) and on debounced input. Each result is an `sa-item` with a stretched `button[data-lookup-value]` over the row (the item tag helper only renders `div` or `a`). Load more is a button that swaps itself for the next page. `wwwroot/stellar-admin-dashboard.js` (source `Client/js`, copied by the client build and registered after htmx) sets the hidden value and display text, closes the sheet, raises `change` on the hidden input, and toggles the clear button. The clear button sits before the lookup button, is shown when `AllowClear ?? !ModelMetadata.IsRequired`, and is `hidden` while nothing is selected. The current selection is not highlighted in the results.
+
 ### Phase 4: EF Core
 
 The `extension(LookupEditor)` `UseItems` with expression selectors, `EfCoreLookupSource` (search, ordering, `Take + 1` paging, projection), navigation inference and `ReferenceFrom`, and the include in `FindEntityByKeyAsync`.
@@ -107,10 +111,13 @@ Switch a playground field to `LookupEditor`, add the gallery example and regener
 
 ## Open decisions
 
-- Exact lookup route shape (Phase 3).
+- Labels for the lookup's fixed text ("No results found.", the minimum-length hint, "Load more") — hard-coded for now.
+- Phase 4: SQLite translates `string.Contains` to case-sensitive `instr`; the EF Core source should search case-insensitively (the playground source uses `EF.Functions.Like`).
 
 ## Verification
 
 Phase 1, 2026-10-02: Dashboard integration tests 254 passed (three new: the create page receives the factory value, the edit page the loaded value, and a rejected post the posted value; the custom editor fixture now echoes the context), EF Core integration tests 59 passed, Dashboard unit tests 37 passed. Touched C# files formatted with CSharpier. No browser check (no UI change).
 
 Phase 2, 2026-10-02: Dashboard integration tests 263 passed at first; after removing the description and clear button, `LookupEditorTests` has five tests (selected item text, empty text, unknown value, sheet title and search, missing `UseItems`), all passing. Touched C# files formatted with CSharpier. For review, the playground's product edit form now uses `LookupEditor` for Category through a temporary hand-written `CategoryLookupSource` (Phase 4 replaces it with EF Core items; create keeps `SelectEditor`). The edit page for product 1 returned 200 with the selected category's text, description and sheet; a headless Chromium screenshot of that page shows a single-row field with the search button at the end.
+
+Phase 3, 2026-10-02: Dashboard integration tests 274 passed; `LookupEditorTests` now has 20 (search input wiring, clear button for optional, empty, required and `AllowClear` fields, results with values, text and descriptions, term filtering, paging through the load-more URL, no results, the minimum-length hint, and 404 for unknown forms, fields and negative skip). The EF Core integration tests were not rerun. Touched C# files formatted with CSharpier and the script with oxfmt. In the playground (port 5206), headless Chromium over CDP on product 1's edit page: opening the sheet listed the ten categories with descriptions, typing "kit" narrowed to Kitchen & Dining, Enter in the search neither submitted nor closed anything, selecting set the hidden value to 5 and the display text and closed the sheet, and clear emptied both, hid the clear button and focused the lookup button. Screenshots showed the sheet list and the one-row field with clear and lookup buttons. The playground's temporary source was switched to `EF.Functions.Like` because SQLite `instr` made "kit" match nothing.

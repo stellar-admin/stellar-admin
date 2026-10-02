@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
+using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
@@ -278,6 +279,76 @@ public class ResourceController<TResource>(
         }
 
         return await IndexView(query, request, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Searches the items of a lookup field.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Lookup(
+        [FromQuery] string? form,
+        [FromQuery] string? field,
+        [FromQuery] string? term,
+        [FromQuery] int skip,
+        CancellationToken cancellationToken
+    )
+    {
+        var fields = form?.ToLowerInvariant() switch
+        {
+            "create" => _resourceOptions.Create?.Fields,
+            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
+            _ => null,
+        };
+        var options = fields?.FirstOrDefault(options => options.FieldName == field);
+        if (
+            !ModelState.IsValid
+            || skip < 0
+            || options
+                is not { IsReadOnly: false, Editor: LookupEditor { Items: { } items } editor }
+        )
+        {
+            return NotFound();
+        }
+
+        term = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
+        if ((term?.Length ?? 0) < editor.MinimumSearchLength)
+        {
+            return PartialView(
+                "_LookupResults",
+                new LookupResultsViewModel(
+                    [],
+                    null,
+                    $"Type at least {editor.MinimumSearchLength} characters to search."
+                )
+            );
+        }
+
+        var results = await items.SearchAsync(
+            HttpContext.RequestServices,
+            new LookupQuery(term, skip, editor.PageSize),
+            cancellationToken
+        );
+        var moreUrl = results.HasMore
+            ? Url.Action(
+                nameof(Lookup),
+                new
+                {
+                    id = (string?)null,
+                    form,
+                    field,
+                    term,
+                    skip = skip + results.Items.Count,
+                }
+            )
+            : null;
+
+        // Only the first page reports an empty result; a later page simply ends the list
+        var message = skip == 0 && results.Items.Count == 0 ? "No results found." : null;
+
+        return PartialView(
+            "_LookupResults",
+            new LookupResultsViewModel(results.Items, moreUrl, message)
+        );
     }
 
     private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)

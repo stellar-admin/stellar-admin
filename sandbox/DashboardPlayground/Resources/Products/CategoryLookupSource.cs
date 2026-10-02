@@ -18,7 +18,10 @@ internal sealed class CategoryLookupSource(ApplicationDbContext db) : ILookupSou
         var categories = db.Set<Category>().AsQueryable();
         if (!string.IsNullOrWhiteSpace(query.Term))
         {
-            categories = categories.Where(category => category.Name.Contains(query.Term));
+            // SQLite's LIKE ignores ASCII case, unlike the instr that Contains translates to
+            categories = categories.Where(category =>
+                EF.Functions.Like(category.Name, $"%{query.Term}%")
+            );
         }
 
         var items = await categories
