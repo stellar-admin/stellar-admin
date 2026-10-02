@@ -10,7 +10,6 @@ internal static class ProductResourceRegistration
 {
     internal static void AddProductResource(this StellarAdminDashboardBuilder dashboard)
     {
-        dashboard.Services.AddScoped<CategoryLookupSource>();
         dashboard.AddEfCoreResource<ApplicationDbContext, Product>(resource =>
         {
             resource.SidebarItem(item =>
@@ -60,11 +59,13 @@ internal static class ProductResourceRegistration
                                 options.SheetTitle = "Select category";
                                 options.SearchPlaceholder = "Search categories...";
                                 options.EmptyText = "Not specified";
-                                options.UseItems<CategoryLookupSource, Category, int>(
+                                options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,
                                     items =>
-                                        items.DescribeWith(category => $"Category #{category.Id}")
+                                        items.DescribeWith(category =>
+                                            "Category #" + category.Id.ToString()
+                                        )
                                 );
                             });
                         }

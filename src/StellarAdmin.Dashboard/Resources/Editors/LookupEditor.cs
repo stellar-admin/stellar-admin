@@ -51,7 +51,20 @@ public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler
     /// </summary>
     public string? SheetTitle { get; set; }
 
-    internal LookupItems? Items { get; private set; }
+    /// <summary>
+    ///     The configured items, or null until items are selected.
+    /// </summary>
+    public LookupItems? Items { get; private set; }
+
+    /// <summary>
+    ///     Supplies the items from an integration's implementation.
+    /// </summary>
+    public void UseItems(LookupItems items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        Items = items;
+    }
 
     /// <summary>
     ///     Selects a registered source that supplies the items for each request.

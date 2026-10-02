@@ -3,14 +3,23 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
-internal abstract class LookupItems
+/// <summary>
+///     Supplies the items of a lookup editor. Integrations derive from it to search their own data.
+/// </summary>
+public abstract class LookupItems
 {
+    /// <summary>
+    ///     Returns the selected item for the field's current value, or null when nothing is selected.
+    /// </summary>
     public abstract Task<LookupItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
     );
 
+    /// <summary>
+    ///     Returns a page of items matching the query.
+    /// </summary>
     public abstract Task<LookupResults> SearchAsync(
         IServiceProvider services,
         LookupQuery query,
@@ -76,9 +85,3 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
     private static string Format(TValue current) =>
         Convert.ToString(current, CultureInfo.InvariantCulture) ?? "";
 }
-
-internal sealed record LookupItem(string Text, string? Description);
-
-internal sealed record LookupResult(string Value, string Text, string? Description);
-
-internal sealed record LookupResults(IReadOnlyList<LookupResult> Items, bool HasMore);

@@ -74,13 +74,4 @@ internal static class EfCoreChoiceItemsLoader
     }
 
     private sealed record ChoiceItemProjection<TValue>(TValue Value, string Text);
-
-    private sealed class ReplaceParameterVisitor(
-        ParameterExpression source,
-        ParameterExpression target
-    ) : ExpressionVisitor
-    {
-        protected override Expression VisitParameter(ParameterExpression node) =>
-            node == source ? target : base.VisitParameter(node);
-    }
 }
