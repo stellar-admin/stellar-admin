@@ -251,12 +251,38 @@ edit.Fields(fields =>
 | `RadioGroupEditor` | `sa-radio-group` | `UseItems(...)`, `EmptyChoiceText`, `Appearance` (`RadioGroupAppearance.Default` or `Cards`) |
 | `CheckboxGroupEditor` | `sa-checkbox-group` for a collection property | `UseItems(...)` |
 | `ToggleButtonsEditor` | `sa-segmented-control` that selects one value | `UseItems(...)`, `EmptyChoiceText` |
+| `LookupEditor` | A read-only input showing the selection, with a button that opens a sheet to search a long list | `UseItems(...)`, `SheetTitle`, `SearchPlaceholder`, `EmptyText`, `AllowClear`, `MinimumSearchLength`, `PageSize` |
 | `SliderEditor` | `sa-slider` for a whole number, with its value beside the label and marks under the track | `Min`, `Max`, `Step`, `ShowValue`, `ValueFormat`, `MarkInterval`, `MarkLabels` (`SliderMarkLabels.None`, `Ends` or `All`), `AddMark(value, label)` |
 | `OneTimeCodeEditor` | `sa-input-otp`, one box per digit | `Length` |
 
 Settings left unset are inferred from the property, and explicit settings win. `TextInputEditor` picks its type from `[DataType]` (email address, phone number, URL or password) and renders a number input for numeric properties, with `step="1"` for whole numbers and `step="any"` for `decimal`, `double` and `float`. `SliderEditor` takes `Min` and `Max` from `[Range]`, then falls back to 0 and 100. By default it shows the current value beside the label and labels the minimum and maximum under the track; `ValueFormat` such as `"{0} km"` formats both, `MarkInterval` adds ticks, `MarkLabels = SliderMarkLabels.None` removes the end labels, and `AddMark` replaces the generated marks with your own. `OneTimeCodeEditor` takes `Length` from the property's maximum length, then falls back to 6. A `DateTimeOffset` property renders a text input with the round-trip format, so its offset is kept.
 
 The choice editors (`SelectEditor`, `RadioGroupEditor`, `CheckboxGroupEditor` and `ToggleButtonsEditor`) take their choices from `UseItems(...)` when it is called. Otherwise a non-flags enum property supplies its members, using `[Display(Name, Description)]` for the choice text and, in radio and checkbox groups, the choice descriptions, and a Boolean property supplies Yes and No. A collection property takes its choices from its element type. A nullable enum or Boolean adds an empty first choice whose text is `EmptyChoiceText`, "Not set" by default. Any other property type requires `UseItems(...)`. Every editor also has `ClassNames` for additional CSS classes on its parts. Override a built-in editor's markup at `Areas/StellarAdmin/Views/Shared/EditorTemplates/Editors/<Name>.cshtml`, for example `Editors/TextInput.cshtml`.
+
+`LookupEditor` selects one value from a list too long for a select. The form posts a hidden value, and the selected item's text is resolved when the form renders. The sheet searches as the user types and loads `PageSize` items at a time (20 by default); with `MinimumSearchLength` above 0, it asks for that many characters before searching. A clear button appears when `AllowClear` is true or, by default, when the field is optional. Supply the items from a source registered in DI that implements `ILookupSource<TEntity, TValue>`, with selectors for each item's value and text:
+
+```csharp
+builder.Services.AddScoped<AirportLookupSource>();
+
+fields.Add(trip => trip.DepartureAirport).UseEditor<LookupEditor>(lookup =>
+{
+    lookup.SheetTitle = "Select a departure airport";
+    lookup.UseItems<AirportLookupSource, Airport, string>(
+        airport => airport.Code,
+        airport => airport.City,
+        items => items.DescribeWith(airport => airport.Country));
+});
+
+public sealed class AirportLookupSource(AppDbContext db) : ILookupSource<Airport, string>
+{
+    public Task<Airport?> FindAsync(string value, CancellationToken cancellationToken) => ...;
+
+    // Return query.Take items after skipping query.Skip, filtered by query.Term (null when empty)
+    public Task<LookupPage<Airport>> SearchAsync(LookupQuery query, CancellationToken cancellationToken) => ...;
+}
+```
+
+`DescribeWith` adds secondary text below each search result. A value the source cannot find is displayed as the value itself.
 
 For a custom form editor, create an editor class derived from `FieldEditor` (in `StellarAdmin.Dashboard.Resources.Editors`) that implements `IFieldEditor<MyEditorHandler>`. The editor holds the settings. Create a handler that implements `IFieldEditorHandler<MyEditor>`, or derives from `FieldEditorHandler<MyEditor>` when it loads no request data, and accept `MyEditor` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The handler's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`. Its `PrepareAsync` can load request data. The template reads the configured editor from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`.
 
@@ -326,6 +352,21 @@ EF scopes accept an optional predicate on each entry. Omitting it leaves that sc
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 
 `UseEditor<SelectEditor>` selects the Razor select editor template for a form field. `UseItems(IEnumerable<SelectListItem>)` takes a snapshot of fixed choices when configured. `UseItems<TProvider>()` resolves a registered `IChoiceItemsProvider`, while `UseItems((services, cancellationToken) => ...)` accepts a request-aware asynchronous loader directly. The EF Core `UseItems<TContext, TEntity, TValue>` extension requires value and text expressions, resolves the registered DbContext for each form request, and projects those two values without loading full entities. The configure callback receives `EfCoreSelectItemsBuilder<TEntity, TValue>` and omits an empty choice unless `IncludeEmptyOption(text)` is called. These choices work with entity fields and custom create/edit models, including rejected submissions. An index column configured for `CategoryId` displays and sorts by the foreign-key value. The database enforces foreign-key constraints when saving, and database errors propagate through the EF data source.
+
+The EF Core package also adds `UseItems<TContext, TEntity, TValue>` to `LookupEditor`, which needs no lookup source:
+
+```csharp
+fields.Add(product => product.CategoryId).UseEditor<LookupEditor>(lookup =>
+    lookup.UseItems<AppDbContext, Category, int>(
+        category => category.Id,
+        category => category.Name,
+        items => items
+            .SearchOn(category => category.Name, category => category.Code)
+            .DescribeWith(category => category.Code)
+            .OrderBy(category => category.Name)));
+```
+
+Search matches any `SearchOn` expression (the text by default) ignoring case, orders by `OrderBy` (the text by default) and then the value, and projects the value, text and description in SQL. On an EF Core resource's edit page, the selected item comes from the reference navigation loaded with the entity in the same query. The navigation is inferred from a single-property foreign key on the field's property; set it with `ReferenceFrom<TModel>(model => model.Category)` otherwise. Create pages, custom edit models and fields without a navigation query the selected item by value.
 
 The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Select item queries honor EF query filters or a custom provider's own data access rules. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
 

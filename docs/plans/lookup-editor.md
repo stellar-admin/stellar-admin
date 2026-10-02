@@ -1,6 +1,6 @@
 # Lookup editor
 
-Status: **active**. Phases 1–3 committed on branch `lookup-editor`; Phase 4 implemented, awaiting review. Last updated: 2026-10-02.
+Status: **active**. Phases 1–4 committed on branch `lookup-editor`; Phase 5 implemented, awaiting review. Last updated: 2026-10-02.
 
 `SelectEditor` suits short lists. `LookupEditor` handles long ones: a read-only display input in an input group with a lookup button that opens a sheet with free-text search and paged results. The form posts a hidden value; the display text (and description) is resolved when the form loads. Single select only. Results are a single column rendered with `sa-item`. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -9,8 +9,8 @@ Status: **active**. Phases 1–3 committed on branch `lookup-editor`; Phase 4 im
 | 1 | Editor handlers receive the field's current value | committed |
 | 2 | `LookupEditor`, lookup source abstractions, handler and template without search | committed |
 | 3 | Search endpoint, sheet results, selection and clearing | committed |
-| 4 | EF Core items, search projection and reference loading in the edit query | implemented, awaiting review |
-| 5 | Playground, gallery example and consumer reference | not started |
+| 4 | EF Core items, search projection and reference loading in the edit query | committed |
+| 5 | Playground, gallery example and consumer reference | implemented, awaiting review |
 
 ## Proposed API
 
@@ -113,6 +113,8 @@ Implemented differently from the sketch above: the EF Core items are not an `ILo
 
 Switch a playground field to `LookupEditor`, add the gallery example and regenerate the consumer skills reference.
 
+Implemented: the product edit form's Category already used `LookupEditor` with EF Core items since Phase 4; product create keeps `SelectEditor`, so both remain visible. A "Lookup" gallery resource (`LookupGallery`, after Select) uses an in-memory `GalleryAirportLookupSource` registered by the gallery, searching city, code and country. Its scenarios cover optional, required and described items; title, descriptions, read-only and an unknown value; and `SheetTitle`, `SearchPlaceholder`, `EmptyText`, `AllowClear = false`, `MinimumSearchLength`, `PageSize` and `ClassNames.Control`. The consumer reference (`skills/stellar-admin-dashboard/references/setup.md`, hand-written) gains a `LookupEditor` row in the editor table, a paragraph with an `ILookupSource` example, and an EF Core paragraph covering `SearchOn`, `DescribeWith`, `OrderBy`, the navigation loaded with the entity and `ReferenceFrom`. The generated component references cover only FormPage and IndexPage, so there was nothing to regenerate.
+
 ## Open decisions
 
 - Labels for the lookup's fixed text ("No results found.", the minimum-length hint, "Load more") — hard-coded for now.
@@ -126,3 +128,5 @@ Phase 2, 2026-10-02: Dashboard integration tests 263 passed at first; after remo
 Phase 3, 2026-10-02: Dashboard integration tests 274 passed; `LookupEditorTests` now has 20 (search input wiring, clear button for optional, empty, required and `AllowClear` fields, results with values, text and descriptions, term filtering, paging through the load-more URL, no results, the minimum-length hint, and 404 for unknown forms, fields and negative skip). The EF Core integration tests were not rerun. Touched C# files formatted with CSharpier and the script with oxfmt. In the playground (port 5206), headless Chromium over CDP on product 1's edit page: opening the sheet listed the ten categories with descriptions, typing "kit" narrowed to Kitchen & Dining, Enter in the search neither submitted nor closed anything, selecting set the hidden value to 5 and the display text and closed the sheet, and clear emptied both, hid the clear button and focused the lookup button. Screenshots showed the sheet list and the one-row field with clear and lookup buttons. The playground's temporary source was switched to `EF.Functions.Like` because SQLite `instr` made "kit" match nothing.
 
 Phase 4, 2026-10-02: EF Core integration tests 66 passed, seven new in `ResourceLookupTests` (the edit page shows the selection from one joined query, with inference and with `ReferenceFrom`; a rejected edit with a changed selection and a rejected create show the posted selection; search ignores case; pages order by text with load more; `SearchOn`, `DescribeWith` and `OrderBy` replace the defaults). Dashboard integration tests 274 passed, Dashboard unit tests 37 passed. Touched C# files formatted with CSharpier. In the playground (port 5206) with EF Core items, the same headless Chromium check as Phase 3 passed (list of ten with descriptions, "kit" narrows to Kitchen & Dining, Enter does not submit, select sets value 5, clear empties), and the lookup action matched "KIT". No screenshots reviewed; the markup is unchanged from Phase 3.
+
+Phase 5, 2026-10-02: the playground builds. On port 5206 the gallery's edit page returned 200 with each selection's text (the unknown value shows "XXX", `EmptyText` shows as the placeholder) and create showed every field empty; the lookup action paged five items with load more, returned the minimum-length hint for "s" and matched "tok" to both Tokyo airports with descriptions. Headless Chromium over CDP on the `PageSize 5` field: opening listed five, load more made ten, "tok" narrowed to two, Enter did not submit, selecting set HND and "Tokyo Haneda" and closed the sheet, and clear emptied both. A screenshot of the open sheet showed text, descriptions and load more. No tests were run (no library change).
