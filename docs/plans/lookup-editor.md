@@ -14,7 +14,7 @@ Status: **active**. Phases 1â€“5 committed on branch `lookup-editor`; Phases 6â€
 | 6 | Configuration structure and item media data, no visual change | committed |
 | 7 | Editor appearance: Card and Input layouts, media, empty and read-only states, `EnableCreate` | committed |
 | 8 | Sheet appearance: listbox results, media, selection check, keyboard, loading and error states | committed |
-| 9 | Playground, gallery and consumer reference for the redesign | implemented, awaiting review |
+| 9 | Playground, gallery and consumer reference for the redesign | committed |
 
 ## Proposed API
 
@@ -214,7 +214,7 @@ field.UseEditor<LookupEditor>(lookup =>
 ### Sheet appearance
 
 - **Results:** an `sa-command` with `data-filter="none"` in its native styling. Each result is an `sa-command-item` with media (when `sheet.ShowMedia`), title and description. With a description the media matches the Card size (size-7 code chip, default avatar); without one it shrinks to the Input size. The command handles the keys (arrows, Home/End, Ctrl+N/P, Enter) while focus stays in the search input. The first row starts active, the pointer moves the active row, and the selected row shows the item's check.
-- **Paging:** a "Load more" command item after the results, `PageSize` items per page. After loading, the active row returns to the first result and the list scrolls to the top. This is to be reviewed.
+- **Paging:** a "Load more" command item after the results, `PageSize` items per page. After loading, the first new result takes over as the active row and the list keeps its scroll position: when a change removes the active item, `sa-command` activates the first item added in the same change, and only scrolls if that item is out of view.
 - **No match highlighting:** the server decides what matched, so results are not marked up.
 - **Non-result states:** the minimum-length hint is a muted line with a search icon. "No results" and a failed search (with Try again) use `sa-empty` blocks. Opening the sheet shows skeleton rows shaped like the media and description, while typing keeps the current results until the new ones arrive.
 
@@ -258,3 +258,5 @@ Phase 9, 2026-10-03: the playground builds with no warnings, and the touched C# 
 - **Product 1's edit page:** the category card shows the "St" initials avatar for Stationery.
 
 No console errors. Observed but not changed: single-word titles get two-letter initials with a lowercase second letter ("Am", "Is") while multi-word titles get capitals ("HK", "LA"). Also, empty Card-layout fields have taller Choose buttons than Input-layout fields.
+
+Load more fix, 2026-10-03: `sel-command.ts` changed as described under Paging. The TagHelpers script builds and the TypeScript check passes. No JavaScript tests exist for the component, and no .NET tests were run. In the playground (port 5207, Development), headless Chromium over CDP on the gallery's code field, 20 rows per page: End then Enter on Load more made 31 rows with NBO (row 21) active and visible, and the list stayed scrolled (scrollTop 121 before, 137 after). Clicking Load more with the mouse gave the same result. Typing a search still made the first result active, and there were no console errors.
