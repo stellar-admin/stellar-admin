@@ -54,6 +54,39 @@ public sealed class LookupGallery
     [Display(Name = "string? · ClassNames.Control")]
     public string? StyledAirport { get; set; }
 
+    // Media and layout
+
+    [Display(Name = "string? · UseCode with UseDescription")]
+    public string? CodeAirport { get; set; }
+
+    [Display(Name = "string? · UseCode")]
+    public string? CodeInputAirport { get; set; }
+
+    [Display(Name = "string? · UseAvatar with UseDescription")]
+    public string? AvatarAirport { get; set; }
+
+    [Display(Name = "string? · UseAvatar")]
+    public string? AvatarInputAirport { get; set; }
+
+    [Display(Name = "string? · UseDescription · editor Layout Input")]
+    public string? InputLayoutAirport { get; set; }
+
+    [Display(Name = "string? · UseCode · editor Layout Card")]
+    public string? CardLayoutAirport { get; set; }
+
+    [Display(Name = "string? · UseCode · editor ShowMedia false")]
+    public string? EditorMediaHiddenAirport { get; set; }
+
+    [Display(Name = "string? · UseCode · sheet ShowMedia false")]
+    public string? SheetMediaHiddenAirport { get; set; }
+
+    [Display(Name = "string? · UseCode · EnableCreate")]
+    public string? CreatableAirport { get; set; }
+
+    [Editable(false)]
+    [Display(Name = "string? · UseCode · [Editable(false)]")]
+    public string? ReadOnlyCodeAirport { get; set; }
+
     public static LookupGallery CreateSample() =>
         new()
         {
@@ -70,5 +103,15 @@ public sealed class LookupGallery
             SearchedAirport = "SIN",
             PagedAirport = "DXB",
             StyledAirport = "GRU",
+            CodeAirport = "AMS",
+            CodeInputAirport = "BCN",
+            AvatarAirport = "HKG",
+            AvatarInputAirport = "IST",
+            InputLayoutAirport = "KEF",
+            CardLayoutAirport = "LHR",
+            EditorMediaHiddenAirport = "MEX",
+            SheetMediaHiddenAirport = "NBO",
+            CreatableAirport = null,
+            ReadOnlyCodeAirport = "ZRH",
         };
 }

@@ -61,14 +61,16 @@ internal static class ProductResourceRegistration
                                     sheet.Title = "Select category";
                                     sheet.SearchPlaceholder = "Search categories...";
                                 });
-                                options.Editor(editor => editor.EmptyText = "Not specified");
                                 options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,
                                     items =>
-                                        items.UseDescription(category =>
-                                            "Category #" + category.Id.ToString()
-                                        )
+                                        items
+                                            .UseDescription(category =>
+                                                "Category #" + category.Id.ToString()
+                                            )
+                                            // Categories have no image, so the avatar shows the name's initials
+                                            .UseAvatar(category => null)
                                 );
                             });
                         }

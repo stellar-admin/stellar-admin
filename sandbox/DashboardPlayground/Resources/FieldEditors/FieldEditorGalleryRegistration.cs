@@ -353,16 +353,103 @@ internal static class FieldEditorGalleryRegistration
                     });
             }
         );
+        fields.AddSection(
+            "Media and layout",
+            section =>
+            {
+                section.Description =
+                    "UseCode and UseAvatar display media beside each item. The layout is a card when the items have a description, otherwise a button.";
+                section
+                    .Add(model => model.CodeAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                    );
+                section
+                    .Add(model => model.CodeInputAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, media: LookupMediaType.Code)
+                    );
+                section
+                    .Add(model => model.AvatarAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Avatar)
+                    );
+                section
+                    .Add(model => model.AvatarInputAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, media: LookupMediaType.Avatar)
+                    );
+                section
+                    .Add(model => model.InputLayoutAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Input);
+                        UseAirports(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.CardLayoutAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Card);
+                        UseAirports(lookup, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.EditorMediaHiddenAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.ShowMedia = false);
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.SheetMediaHiddenAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet => sheet.ShowMedia = false);
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.CreatableAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.EnableCreate();
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.ReadOnlyCodeAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                    );
+            }
+        );
 
-        static void UseAirports(LookupEditor lookup, bool describe = false) =>
+        // The gallery has no airport images, so avatars show the title's initials
+        static void UseAirports(
+            LookupEditor lookup,
+            bool describe = false,
+            LookupMediaType? media = null
+        ) =>
             lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
                 airport => airport.Code,
                 airport => airport.City,
                 items =>
                 {
-                    if (describe)
+                    // A code chip already shows the code
+                    if (describe && media == LookupMediaType.Code)
+                    {
+                        items.UseDescription(airport => airport.Country);
+                    }
+                    else if (describe)
                     {
                         items.UseDescription(airport => $"{airport.Code} · {airport.Country}");
+                    }
+
+                    if (media == LookupMediaType.Code)
+                    {
+                        items.UseCode(airport => airport.Code);
+                    }
+                    else if (media == LookupMediaType.Avatar)
+                    {
+                        items.UseAvatar(_ => null);
                     }
                 }
             );

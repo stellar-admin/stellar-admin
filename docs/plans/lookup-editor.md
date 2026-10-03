@@ -11,10 +11,10 @@ Status: **active**. Phases 1–5 committed on branch `lookup-editor`; Phases 6�
 | 3 | Search endpoint, sheet results, selection and clearing | committed |
 | 4 | EF Core items, search projection and reference loading in the edit query | committed |
 | 5 | Playground, gallery example and consumer reference | committed |
-| 6 | Configuration structure and item media data, no visual change | implemented |
-| 7 | Editor appearance: Card and Input layouts, media, empty and read-only states, `EnableCreate` | implemented, awaiting review |
-| 8 | Sheet appearance: listbox results, media, selection check, keyboard, loading and error states | planned |
-| 9 | Playground, gallery and consumer reference for the redesign | planned |
+| 6 | Configuration structure and item media data, no visual change | committed |
+| 7 | Editor appearance: Card and Input layouts, media, empty and read-only states, `EnableCreate` | committed |
+| 8 | Sheet appearance: listbox results, media, selection check, keyboard, loading and error states | committed |
+| 9 | Playground, gallery and consumer reference for the redesign | implemented, awaiting review |
 
 ## Proposed API
 
@@ -137,6 +137,8 @@ Implemented: the sheet holds an `sa-command` with `filter="CommandFilter.None"`.
 
 Gallery scenarios for media, layouts, `ShowMedia` and `EnableCreate`, the playground's product category, and the consumer reference. The prototypes stay in `sandbox/html`.
 
+Implemented: the gallery gains a "Media and layout" section. It has code and avatar items with and without a description, an explicit Input layout over described items, an explicit Card layout without a description, `editor.ShowMedia` and `sheet.ShowMedia` set to false, `EnableCreate` on an empty field, and a read-only field with a code. The gallery has no airport images, so its avatars show initials. With a code, the description is the country alone. The playground's product category drops `EmptyText = "Not specified"`, so an empty field reads "Choose Category", and adds `UseAvatar(category => null)` for initials, since `Category` has no image or code column. The consumer reference's `LookupEditor` row and paragraphs cover `Layout`, both `ShowMedia` settings, `EnableCreate`, `UseCode`, `UseAvatar` and the sheet's keyboard and selection mark, and its EF Core example adds `UseCode`. The gallery's empty fields still use the scenario labels in "Choose {field}".
+
 ## Display redesign
 
 Settled 2026-10-03 after visual exploration in `sandbox/html/lookup-compact.html` (editor) and `sandbox/html/lookup-sheet.html` (sheet results), implemented in Phases 6–9.
@@ -248,3 +250,11 @@ Phase 8, 2026-10-03: Dashboard integration tests 289 passed. `LookupEditorTests`
 - **Gallery `MinimumSearchLength 2` field:** showed the hint, and "to" listed three results.
 
 The screenshots of the open sheet and the error state look right. No console errors. The playground has no media scenarios until Phase 9, so media in the sheet was checked only through the HTTP tests.
+
+Phase 9, 2026-10-03: the playground builds with no warnings, and the touched C# files were formatted with CSharpier. No library code changed, so the tests were not rerun. In the playground (port 5207, Development), headless Chromium over CDP:
+- **Gallery edit page, "Media and layout":** screenshots show each scenario as configured: code and avatar cards, code and avatar buttons, Reykjavík as a button without its description, London as a card without a description, Mexico City without its code, Nairobi with its code, Choose plus New on the empty `EnableCreate` field, and Zurich muted with its code.
+- **Sheets:** the code and avatar sheets show their media in every row, with the current value checked. The `sheet.ShowMedia = false` sheet has 20 rows and no media. ArrowDown and Enter in the code sheet changed Amsterdam to Athens and swapped the card's code, title and description.
+- **Gallery create page:** every field shows its Choose button, and the read-only one shows None.
+- **Product 1's edit page:** the category card shows the "St" initials avatar for Stationery.
+
+No console errors. Observed but not changed: single-word titles get two-letter initials with a lowercase second letter ("Am", "Is") while multi-word titles get capitals ("HK", "LA"). Also, empty Card-layout fields have taller Choose buttons than Input-layout fields.
