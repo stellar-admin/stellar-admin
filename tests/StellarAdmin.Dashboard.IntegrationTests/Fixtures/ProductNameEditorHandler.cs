@@ -10,6 +10,11 @@ public sealed class ProductNameEditorHandler(
 {
     public string TemplateName => nameof(ProductNameEditor);
 
-    public Task<object?> PrepareAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<object?>($"{editor.Placeholder}:{environment.EnvironmentName}");
+    public Task<object?> PrepareAsync(
+        FieldEditorContext context,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult<object?>(
+            $"{editor.Placeholder}:{environment.EnvironmentName}:{context.FieldName}={context.Value}"
+        );
 }

@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lookup editor prototype — selection card sizes and layouts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans antialiased">
+    <main class="mx-auto max-w-7xl space-y-16 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <h1 class="text-2xl font-semibold tracking-tight">Lookup editor — selection card</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Visual-only exploration of concept D. Nothing opens a sheet; Change, clear and the empty buttons are inert. The top section compares
+          sizes and layouts in isolation; the form section drops the chosen variant into a realistic edit form next to standard controls.
+        </p>
+      </header>
+
+      <section class="space-y-6">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold">In a form</h2>
+            <p class="text-muted-foreground text-sm">Departure follows the state toggle; arrival stays selected so both are visible together.</p>
+          </div>
+        </div>
+        <div id="form-controls" class="flex flex-col gap-2 text-xs"></div>
+        <div id="form-host"></div>
+      </section>
+
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-lg font-semibold">Variants</h2>
+          <p class="text-muted-foreground text-sm">Each row has a standard text input as the first cell for a height reference.</p>
+        </div>
+        <div id="variants" class="space-y-10"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { airports, icon, controlBar } from "./lookup-shared.js";
+
+      const ams = airports.find((a) => a.code === "AMS");
+      const hnd = airports.find((a) => a.code === "HND");
+      const longName = { code: "JNB", city: "Johannesburg O. R. Tambo International", country: "South Africa" };
+
+      const button = (variant, size, body, attrs = "", cls = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;
+
+      const tile = (code, cls = "size-9 text-xs") =>
+        `<div class="bg-muted text-foreground flex shrink-0 items-center justify-center rounded-md font-mono font-medium ${cls}">${code}</div>`;
+
+      const invalidRing = "border-destructive ring-destructive/20 dark:ring-destructive/40 ring-[3px]";
+
+      // ---- Empty treatments (global toggle). h = height class matching the variant's selected state ----
+      const empties = {
+        dashed: {
+          name: "Dashed call-to-action",
+          render: (s, h) => `
+            <button type="button" class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors ${h} ${s.invalid ? "border-destructive text-destructive" : ""}">
+              ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${s.label.toLowerCase()}</span></button>`,
+        },
+        input: {
+          name: "Input-like placeholder",
+          render: (s, h) => `
+            <button type="button" aria-invalid="${!!s.invalid}"
+                    class="sa-input text-muted-foreground flex items-center justify-between gap-2 text-left ${h} ${s.invalid ? invalidRing : ""}">
+              <span class="truncate">Select ${s.label.toLowerCase()}…</span>${icon.search("size-4 shrink-0 opacity-60")}</button>`,
+        },
+        dashedLeft: {
+          name: "Dashed, left-aligned with tile",
+          render: (s, h) => `
+            <button type="button" class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex w-full items-center gap-2.5 rounded-md border border-dashed px-2 text-sm transition-colors ${h} ${s.invalid ? "border-destructive text-destructive" : ""}">
+              <span class="flex size-6 shrink-0 items-center justify-center rounded-sm border border-dashed">${icon.plus("size-3.5")}</span>
+              <span class="truncate">Choose ${s.label.toLowerCase()}</span></button>`,
+        },
+        link: {
+          name: "Text link",
+          render: (s, h) => `
+            <div class="flex items-center ${h}">
+              <button type="button" class="${s.invalid ? "text-destructive" : "text-primary"} inline-flex items-center gap-1.5 text-sm font-medium hover:underline">
+                ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${s.label.toLowerCase()}</span></button>
+            </div>`,
+        },
+      };
+
+      // ---- Variants. s = { item, label, readonly, invalid }. Each returns the selected-state markup and an empty height ----
+      const variants = [
+        {
+          key: "standard",
+          name: "1 · Standard (concept D)",
+          note: "sa-item outline, size sm, 36px code tile, two lines, Change button + clear. About 3.75rem tall.",
+          emptyH: "h-[3.75rem]",
+          render: (s) => `
+            <div class="sa-item group/item sa-item-variant-${s.readonly ? "muted" : "outline"} sa-item-size-sm flex-nowrap ${s.invalid ? invalidRing : ""}">
+              <div class="sa-item-media">${tile(s.item.code)}</div>
+              <div class="sa-item-content min-w-0">
+                <div class="sa-item-title w-full"><span class="truncate">${s.item.city}</span></div>
+                <p class="sa-item-description truncate">${s.item.country}</p>
+              </div>
+              ${s.readonly ? "" : `<div class="sa-item-actions">${button("outline", "sm", "Change")}${button("ghost", "icon-sm", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+        {
+          key: "tight",
+          name: "2 · Tight two-line",
+          note: "sa-item size xs, 28px tile, ghost xs Change. Keeps two lines but only ~3rem tall.",
+          emptyH: "h-12",
+          render: (s) => `
+            <div class="sa-item group/item sa-item-variant-${s.readonly ? "muted" : "outline"} sa-item-size-xs flex-nowrap ${s.invalid ? invalidRing : ""}">
+              <div class="sa-item-media">${tile(s.item.code, "size-7 text-[0.65rem]")}</div>
+              <div class="sa-item-content min-w-0 gap-0">
+                <div class="sa-item-title w-full text-sm"><span class="truncate">${s.item.city}</span></div>
+                <p class="sa-item-description truncate text-xs">${s.item.country}</p>
+              </div>
+              ${s.readonly ? "" : `<div class="sa-item-actions gap-0.5">${button("ghost", "xs", "Change")}${button("ghost", "icon-xs", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+        {
+          key: "inline",
+          name: "3 · Input height, one line",
+          note: "Same 2.25rem height as an input. Code chip, name, muted description inline; Change + clear as xs ghosts.",
+          emptyH: "h-9",
+          render: (s) => `
+            <div class="sa-input flex items-center gap-2 pr-1 pl-1.5 ${s.readonly ? "bg-muted/50" : ""} ${s.invalid ? invalidRing : ""}">
+              <span class="bg-muted shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[0.7rem] font-medium">${s.item.code}</span>
+              <span class="min-w-0 truncate">${s.item.city}</span>
+              <span class="text-muted-foreground hidden min-w-0 truncate @[22rem]:inline">${s.item.country}</span>
+              ${s.readonly ? "" : `<span class="ml-auto flex shrink-0 items-center">${button("ghost", "xs", "Change")}${button("ghost", "icon-xs", icon.x(), 'aria-label="Clear"')}</span>`}
+            </div>`,
+        },
+        {
+          key: "split",
+          name: "4 · Split, code as addon",
+          note: "Input-group-like: the code is a full-height muted block on the left, two lines of text, icon actions. ~2.75rem.",
+          emptyH: "h-11",
+          render: (s) => `
+            <div class="flex h-11 items-stretch overflow-hidden rounded-md border shadow-xs ${s.readonly ? "bg-muted/50" : "bg-transparent"} ${s.invalid ? invalidRing : ""}">
+              <div class="bg-muted flex w-14 shrink-0 items-center justify-center border-r font-mono text-xs font-medium">${s.item.code}</div>
+              <div class="flex min-w-0 flex-1 flex-col justify-center px-3 leading-tight">
+                <span class="truncate text-sm font-medium">${s.item.city}</span>
+                <span class="text-muted-foreground truncate text-xs">${s.item.country}</span>
+              </div>
+              ${s.readonly ? "" : `<div class="flex shrink-0 items-center gap-0.5 pr-1.5">${button("ghost", "icon-sm", icon.pencil(), 'aria-label="Change"')}${button("ghost", "icon-sm", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+        {
+          key: "trigger",
+          name: "5 · Whole card is the trigger",
+          note: "No Change button: the card itself opens the sheet (hover state, chevron). Clear stays as a separate hit target.",
+          emptyH: "h-12",
+          render: (s) => `
+            <div class="${s.readonly ? "bg-muted/50" : "hover:bg-muted/40 cursor-pointer"} flex h-12 items-center gap-2.5 rounded-md border px-2 shadow-xs transition-colors ${s.invalid ? invalidRing : ""}">
+              ${tile(s.item.code, "size-8 text-[0.7rem]")}
+              <div class="flex min-w-0 flex-1 flex-col leading-tight">
+                <span class="truncate text-sm font-medium">${s.item.city}</span>
+                <span class="text-muted-foreground truncate text-xs">${s.item.country}</span>
+              </div>
+              ${s.readonly ? "" : `${button("ghost", "icon-xs", icon.x(), 'aria-label="Clear"')}<span class="text-muted-foreground pr-1">${icon.chevrons("size-4")}</span>`}
+            </div>`,
+        },
+        {
+          key: "filled",
+          name: "6 · Muted fill, no border",
+          note: "A soft filled block, reads as a value rather than a control. Icon actions appear on hover/focus.",
+          emptyH: "h-12",
+          render: (s) => `
+            <div class="group/card bg-muted/60 flex h-12 items-center gap-2.5 rounded-md px-2 ${s.invalid ? invalidRing + " border" : ""}">
+              ${tile(s.item.code, "size-8 text-[0.7rem] bg-background")}
+              <div class="flex min-w-0 flex-1 flex-col leading-tight">
+                <span class="truncate text-sm font-medium">${s.item.city}</span>
+                <span class="text-muted-foreground truncate text-xs">${s.item.country}</span>
+              </div>
+              ${s.readonly ? "" : `<div class="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover/card:opacity-100 group-focus-within/card:opacity-100">${button("ghost", "icon-sm", icon.pencil(), 'aria-label="Change"')}${button("ghost", "icon-sm", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+        {
+          key: "accent",
+          name: "7 · Accent stripe",
+          note: "Outline card with a primary left edge marking a set value; text Change link. ~3rem.",
+          emptyH: "h-12",
+          render: (s) => `
+            <div class="flex h-12 items-center gap-3 rounded-md border border-l-[3px] ${s.readonly ? "border-l-muted-foreground/40 bg-muted/50" : "border-l-primary"} pr-2 pl-3 shadow-xs ${s.invalid ? invalidRing : ""}">
+              <div class="flex min-w-0 flex-1 flex-col leading-tight">
+                <span class="truncate text-sm font-medium">${s.item.city} <span class="text-muted-foreground font-mono text-xs font-normal">${s.item.code}</span></span>
+                <span class="text-muted-foreground truncate text-xs">${s.item.country}</span>
+              </div>
+              ${s.readonly ? "" : `<div class="flex shrink-0 items-center gap-2 text-sm"><button type="button" class="text-primary font-medium hover:underline">Change</button>${button("ghost", "icon-xs", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+        {
+          key: "rich",
+          name: "8 · Rich (default size)",
+          note: "sa-item default size for when the reference is the point of the form: bigger tile, code badge, full Change button.",
+          emptyH: "h-[4.5rem]",
+          render: (s) => `
+            <div class="sa-item group/item sa-item-variant-${s.readonly ? "muted" : "outline"} sa-item-size-default flex-nowrap ${s.invalid ? invalidRing : ""}">
+              <div class="sa-item-media">${tile(icon.plane("size-5"), "size-10 text-muted-foreground")}</div>
+              <div class="sa-item-content min-w-0">
+                <div class="sa-item-title w-full"><span class="truncate">${s.item.city}</span><span class="sa-badge sa-badge-variant-secondary shrink-0 font-mono">${s.item.code}</span></div>
+                <p class="sa-item-description truncate">${s.item.country}</p>
+              </div>
+              ${s.readonly ? "" : `<div class="sa-item-actions">${button("outline", "sm", "Change")}${button("ghost", "icon-sm", icon.x(), 'aria-label="Clear"')}</div>`}
+            </div>`,
+        },
+      ];
+
+      // ---- Page state ----
+      const state = { variant: "tight", empty: "dashed", layout: "single", depState: "selected", width: "lg" };
+
+      const control = (v, s) => (s.item ? v.render(s) : empties[state.empty].render(s, v.emptyH));
+
+      const fieldWrap = (label, controlHtml, { description, error, horizontal } = {}) => {
+        const msgs = `${description ? `<p class="sa-field-description">${description}</p>` : ""}${error ? `<div role="alert" class="sa-field-error">${error}</div>` : ""}`;
+        if (horizontal) {
+          return `
+            <div class="sa-field group/field grid grid-cols-[9rem_minmax(0,1fr)] items-start gap-x-4 gap-y-1.5" ${error ? 'data-invalid="true"' : ""}>
+              <label class="sa-label sa-field-label pt-2">${label}</label>
+              <div class="flex min-w-0 flex-col gap-1.5">${controlHtml}${msgs}</div>
+            </div>`;
+        }
+        return `
+          <div data-slot="field" data-orientation="vertical" ${error ? 'data-invalid="true"' : ""}
+               class="sa-field group/field sa-field-orientation-vertical min-w-0 [&>*]:w-full [&>.sr-only]:w-auto">
+            <label class="sa-label sa-field-label">${label}</label>
+            ${controlHtml}${msgs}
+          </div>`;
+      };
+
+      const input = (value, type = "text") => `<input type="${type}" value="${value}" class="sa-input" />`;
+      const select = (options, selected) => `
+        <div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper group/native-select">
+          <select class="sa-native-select">${options.map((o) => `<option ${o === selected ? "selected" : ""}>${o}</option>`).join("")}</select>
+          <svg xmlns="http://www.w3.org/2000/svg" class="sa-native-select-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>`;
+
+      function renderForm() {
+        const v = variants.find((x) => x.key === state.variant);
+        const horizontal = state.layout === "horizontal";
+        const ds = state.depState;
+        const dep = {
+          label: "Departure airport",
+          item: ds === "empty" || ds === "invalid" ? null : ds === "long" ? longName : ams,
+          readonly: ds === "readonly",
+          invalid: ds === "invalid",
+        };
+        const arr = { label: "Arrival airport", item: hnd, readonly: ds === "readonly" };
+
+        const f = {
+          flight: fieldWrap("Flight number", input("VY 1024"), { horizontal }),
+          airline: fieldWrap("Airline", select(["Voyager Air", "Voyager Express", "Partner carrier"], "Voyager Air"), { horizontal }),
+          dep: fieldWrap("Departure airport", control(v, dep), {
+            horizontal,
+            description: "Where the flight leaves from.",
+            error: dep.invalid ? "The Departure airport field is required." : null,
+          }),
+          arr: fieldWrap("Arrival airport", control(v, arr), { horizontal }),
+          time: fieldWrap("Departure time", input("2026-11-14T09:35", "datetime-local"), { horizontal }),
+          status: fieldWrap("Status", select(["Scheduled", "Boarding", "Departed", "Cancelled"], "Scheduled"), { horizontal }),
+          seats: fieldWrap("Seats", input("186", "number"), { horizontal }),
+          notes: fieldWrap("Notes", `<textarea class="sa-textarea" rows="3">Crew change at departure.</textarea>`, { horizontal }),
+        };
+
+        const width = { sm: "max-w-sm", md: "max-w-xl", lg: "max-w-3xl", xl: "max-w-5xl" }[state.width];
+        let body;
+        if (state.layout === "two") {
+          body = `<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+            ${f.flight}${f.airline}${f.dep}${f.arr}${f.time}${f.status}<div class="sm:col-span-2">${f.notes}</div></div>`;
+        } else if (state.layout === "three") {
+          body = `<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-3">
+            ${f.flight}${f.airline}${f.seats}${f.dep}${f.arr}${f.status}<div class="sm:col-span-3">${f.notes}</div></div>`;
+        } else {
+          body = `<div class="flex flex-col gap-6">${f.flight}${f.airline}${f.dep}${f.arr}${f.time}${f.status}${f.notes}</div>`;
+        }
+
+        document.getElementById("form-host").innerHTML = `
+          <div class="${width} bg-card text-card-foreground @container rounded-xl border shadow-sm">
+            <div class="border-b px-6 py-4">
+              <h3 class="font-semibold">Edit flight</h3>
+              <p class="text-muted-foreground text-sm">VY 1024 · Voyager Air</p>
+            </div>
+            <div class="p-6">${body}</div>
+            <div class="flex justify-end gap-2 border-t px-6 py-4">${button("outline", "default", "Cancel")}${button("default", "default", "Save")}</div>
+          </div>`;
+      }
+
+      // ---- Form toolbar ----
+      const seg = (label, key, options) => `
+        <div class="flex flex-wrap items-center gap-1">
+          <span class="text-muted-foreground w-24 shrink-0">${label}</span>
+          ${options
+            .map(
+              ([val, text]) =>
+                `<button type="button" data-set="${key}" data-val="${val}" class="rounded-md border px-2 py-1 hover:bg-muted data-[active]:border-primary data-[active]:bg-primary data-[active]:text-primary-foreground">${text}</button>`,
+            )
+            .join("")}
+        </div>`;
+
+      const toolbar = document.getElementById("form-controls");
+      toolbar.innerHTML = [
+        seg("Variant", "variant", variants.map((v) => [v.key, v.name])),
+        seg("Layout", "layout", [["single", "Single column"], ["two", "Two columns"], ["three", "Three columns"], ["horizontal", "Labels left"]]),
+        seg("Form width", "width", [["sm", "Narrow (24rem)"], ["md", "Medium (36rem)"], ["lg", "Wide (48rem)"], ["xl", "Extra wide (64rem)"]]),
+        seg("Departure", "depState", [["selected", "Selected"], ["long", "Long name"], ["empty", "Empty"], ["invalid", "Invalid"], ["readonly", "Read-only"]]),
+        seg("Empty style", "empty", Object.entries(empties).map(([k, e]) => [k, e.name])),
+      ].join("");
+
+      const markActive = () =>
+        toolbar.querySelectorAll("[data-set]").forEach((b) => b.toggleAttribute("data-active", state[b.dataset.set] === b.dataset.val));
+
+      toolbar.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-set]");
+        if (!b) return;
+        state[b.dataset.set] = b.dataset.val;
+        markActive();
+        renderForm();
+        if (b.dataset.set === "empty") renderVariants();
+      });
+
+      // ---- Variant gallery ----
+      const states = [
+        { title: "Selected", item: ams },
+        { title: "Long name", item: longName },
+        { title: "Empty", item: null },
+        { title: "Invalid", item: null, invalid: true },
+        { title: "Read-only", item: ams, readonly: true },
+      ];
+
+      function renderVariants() {
+        document.getElementById("variants").innerHTML = variants
+          .map(
+            (v) => `
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-baseline gap-x-3">
+                <h3 class="font-medium">${v.name}</h3>
+                <p class="text-muted-foreground text-sm">${v.note}</p>
+              </div>
+              <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="space-y-1.5"><div class="text-muted-foreground text-xs">Reference input</div>${input("VY 1024")}</div>
+                ${states
+                  .map(
+                    (st) => `
+                  <div class="@container min-w-0 space-y-1.5">
+                    <div class="text-muted-foreground text-xs">${st.title}</div>
+                    ${control(v, { label: "Departure airport", ...st })}
+                  </div>`,
+                  )
+                  .join("")}
+              </div>
+            </div>`,
+          )
+          .join("");
+      }
+
+      markActive();
+      renderForm();
+      renderVariants();
+      controlBar();
+    </script>
+  </body>
+</html>

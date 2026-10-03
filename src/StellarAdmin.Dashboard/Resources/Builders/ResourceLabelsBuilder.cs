@@ -183,5 +183,184 @@ public sealed class ResourceLabelsBuilder
         }
     }
 
+    /// <summary>
+    ///     The callback that generates the lookup's change button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupChangeLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupChangeLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the empty lookup's choose button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupChooseLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupChooseLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's clear button label for screen readers.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupClearLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupClearLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the empty lookup's create button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupCreateLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupCreateLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's failed search description.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupErrorDescription
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.LookupErrorDescription = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's failed search title.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupErrorTitle
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupErrorTitle = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's load more label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupLoadMoreLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.LookupLoadMoreLabel = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's message for a search shorter than the minimum length.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupMinimumSearchLengthMessage
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.LookupMinimumSearchLengthMessage = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the read-only lookup's text when nothing is selected.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoneText
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupNoneText = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's no-results description for a search term.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoResultsDescription
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.LookupNoResultsDescription = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's no-results title.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoResultsTitle
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.LookupNoResultsTitle = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's retry button label after a failed search.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupRetryLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupRetryLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the lookup's search input label for screen readers when it has no placeholder.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupSearchLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.LookupSearchLabel = value);
+        }
+    }
+
     internal ResourceLabelsBuilder(IServiceCollection services) => _services = services;
 }

@@ -33,6 +33,7 @@ public static class StellarAdminBuilderExtensions
             );
             dashboard.AddApplicationPart(typeof(StellarAdminBuilderExtensions).Assembly);
             dashboard.AddScript("~/_content/StellarAdmin.Dashboard/htmx.min.js");
+            dashboard.AddScript("~/_content/StellarAdmin.Dashboard/stellar-admin-dashboard.js");
             dashboard.AddStylesheet(
                 "~/_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css"
             );

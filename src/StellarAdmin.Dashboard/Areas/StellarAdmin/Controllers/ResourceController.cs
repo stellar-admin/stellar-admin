@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
+using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
@@ -280,6 +281,90 @@ public class ResourceController<TResource>(
         return await IndexView(query, request, cancellationToken);
     }
 
+    /// <summary>
+    ///     Searches the items of a lookup field.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Lookup(
+        [FromQuery] string? form,
+        [FromQuery] string? field,
+        [FromQuery] string? term,
+        [FromQuery] int skip,
+        [FromQuery] string? selected,
+        CancellationToken cancellationToken
+    )
+    {
+        var fields = form?.ToLowerInvariant() switch
+        {
+            "create" => _resourceOptions.Create?.Fields,
+            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
+            _ => null,
+        };
+        var options = fields?.FirstOrDefault(options => options.FieldName == field);
+        if (
+            !ModelState.IsValid
+            || skip < 0
+            || options
+                is not { IsReadOnly: false, Editor: LookupEditor { Items: { } items } editor }
+        )
+        {
+            return NotFound();
+        }
+
+        term = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
+        var property = options.PropertyPath[^1];
+        var labels = new LookupLabelContext(
+            options.Title
+                ?? MetadataProvider
+                    .GetMetadataForProperty(property.DeclaringType!, property.Name)
+                    .GetDisplayName(),
+            editor.SheetOptions.MinimumSearchLength,
+            term
+        );
+        if ((term?.Length ?? 0) < editor.SheetOptions.MinimumSearchLength)
+        {
+            return PartialView(
+                "_LookupResults",
+                new LookupResultsViewModel(editor, [], null, selected, term, true, false, labels)
+            );
+        }
+
+        var results = await items.SearchAsync(
+            HttpContext.RequestServices,
+            new LookupQuery(term, skip, editor.SheetOptions.PageSize),
+            cancellationToken
+        );
+        var moreUrl = results.HasMore
+            ? Url.Action(
+                nameof(Lookup),
+                new
+                {
+                    id = (string?)null,
+                    form,
+                    field,
+                    term,
+                    skip = skip + results.Items.Count,
+                    selected,
+                }
+            )
+            : null;
+
+        // Only the first page reports an empty result; a later page simply ends the list
+        return PartialView(
+            "_LookupResults",
+            new LookupResultsViewModel(
+                editor,
+                results.Items,
+                moreUrl,
+                selected,
+                term,
+                false,
+                skip == 0 && results.Items.Count == 0,
+                labels
+            )
+        );
+    }
+
     private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
     {
         foreach (var error in result.Errors)
@@ -303,7 +388,7 @@ public class ResourceController<TResource>(
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Create),
@@ -329,7 +414,7 @@ public class ResourceController<TResource>(
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(edit.Fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(edit.Fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Edit),
@@ -361,6 +446,7 @@ public class ResourceController<TResource>(
         IReadOnlyDictionary<string, string> Templates
     )> PrepareEditorsAsync(
         IReadOnlyList<FormFieldOptions> fields,
+        object model,
         CancellationToken cancellationToken
     )
     {
@@ -376,7 +462,12 @@ public class ResourceController<TResource>(
                         handlerType,
                         field.Editor
                     );
-                data[field.FieldName] = await handler.PrepareAsync(cancellationToken);
+                var context = new FieldEditorContext(
+                    field.FieldName,
+                    model,
+                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                );
+                data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
                 templates[field.FieldName] = handler.TemplateName;
             }
         }

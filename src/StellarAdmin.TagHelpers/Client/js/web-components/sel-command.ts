@@ -31,7 +31,7 @@ export class Command extends LitElement {
 
   #dialog: HTMLDialogElement | null = null;
   #itemCount = 0;
-  #observer = new MutationObserver(() => this.#refresh(true));
+  #observer = new MutationObserver((records) => this.#refresh(true, records));
   // Children of each container reordered by sorting, in their original order.
   #originalOrder = new Map<Element, Element[]>();
   #selected: HTMLElement | null = null;
@@ -104,9 +104,11 @@ export class Command extends LitElement {
 
   /**
    * Assigns missing item IDs and re-filters. After a change to the list made outside this
-   * component (`fromMutation`), the active item is kept when it is still selectable.
+   * component (`fromMutation`), the active item is kept when it is still selectable, and when it was
+   * removed, the first item added in the same change takes over, such as the next page swapped in
+   * for a "load more" item.
    */
-  #refresh(fromMutation = false) {
+  #refresh(fromMutation = false, records: MutationRecord[] = []) {
     if (fromMutation) {
       this.#forgetStaleOrder();
     }
@@ -121,10 +123,21 @@ export class Command extends LitElement {
         item.id = id;
       }
     }
-    this.#filter(fromMutation);
+    this.#filter(fromMutation, this.#addedInPlaceOfSelected(records));
   }
 
-  #filter(keepSelection = false) {
+  /** The nodes added by the mutations when they removed the active item. */
+  #addedInPlaceOfSelected(records: MutationRecord[]) {
+    const selected = this.#selected;
+    const removed =
+      selected &&
+      records.some((record) =>
+        Array.from(record.removedNodes).some((node) => node.contains(selected)),
+      );
+    return removed ? records.flatMap((record) => Array.from(record.addedNodes)) : [];
+  }
+
+  #filter(keepSelection = false, replacements: Node[] = []) {
     const search = this.#clientFiltering ? (this.#input?.value ?? "").trim() : "";
     const items = this.#items();
 
@@ -161,7 +174,8 @@ export class Command extends LitElement {
 
     const selectable = this.#selectableItems();
     const keep = keepSelection && this.#selected && selectable.includes(this.#selected);
-    this.#select(keep ? this.#selected : (selectable[0] ?? null), !keep);
+    const replacement = selectable.find((item) => replacements.some((node) => node.contains(item)));
+    this.#select(keep ? this.#selected : (replacement ?? selectable[0] ?? null), !keep);
 
     // Discard the records of this component's own reordering so it does not trigger a refresh.
     this.#observer.takeRecords();

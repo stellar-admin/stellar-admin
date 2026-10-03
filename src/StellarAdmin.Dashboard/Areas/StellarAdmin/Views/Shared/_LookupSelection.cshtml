@@ -1,0 +1,46 @@
+@model LookupSelectionViewModel
+
+@{
+    var item = Model.Item;
+    var card = Model.Layout == LookupEditorLayout.Card;
+
+    var media = Model.ShowMedia && item is not null ? LookupMediaViewModel.Create(item.Media, item.Title, card) : null;
+}
+
+@* The editable layouts mark their parts with data-lookup, so selecting a result can swap in that result's parts *@
+@if (card)
+{
+    <sa-item-media data-lookup="media" hidden="@(media is null)">
+        @if (media is not null)
+        {
+            <partial name="_LookupMedia" model="media" />
+        }
+    </sa-item-media>
+    <sa-item-content data-lookup="text" class="min-w-0 gap-0">
+        <sa-item-title class="w-full text-sm"><span class="truncate" data-lookup="title">@item?.Title</span></sa-item-title>
+        @if (!string.IsNullOrEmpty(item?.Description))
+        {
+            <sa-item-description class="truncate text-xs">@item.Description</sa-item-description>
+        }
+    </sa-item-content>
+}
+else if (Model.IsReadOnly)
+{
+    @if (media is not null)
+    {
+        <partial name="_LookupMedia" model="media" />
+    }
+    <span class="min-w-0 truncate">@item?.Title</span>
+}
+else
+{
+    <span class="flex shrink-0 items-center" data-lookup="media" hidden="@(media is null)">
+        @if (media is not null)
+        {
+            <partial name="_LookupMedia" model="media" />
+        }
+    </span>
+    <span class="flex min-w-0 items-center" data-lookup="text">
+        <span class="truncate" data-lookup="title">@item?.Title</span>
+    </span>
+}

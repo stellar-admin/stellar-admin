@@ -1,0 +1,63 @@
+@model LookupResultsViewModel
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var editor = Model.Editor;
+    var hasDescription = editor.Items!.HasDescription;
+    var labels = LabelOptions.Value;
+}
+
+@if (Model.IsTermTooShort)
+{
+    <p class="text-muted-foreground flex items-center justify-center gap-1.5 py-6 text-sm" data-lookup="message">
+        <sa-icon name="search" class="size-4" />
+        @labels.LookupMinimumSearchLengthMessage(Model.Labels)
+    </p>
+}
+else if (Model.IsEmpty)
+{
+    <sa-empty class="border-0 p-4" data-lookup="message">
+        <sa-empty-header>
+            <sa-empty-media variant="EmptyMediaVariant.Icon">
+                <sa-icon name="search-x" />
+            </sa-empty-media>
+            <sa-empty-title>@labels.LookupNoResultsTitle(Model.Labels)</sa-empty-title>
+            @if (Model.Term is not null)
+            {
+                <sa-empty-description>@labels.LookupNoResultsDescription(Model.Labels)</sa-empty-description>
+            }
+        </sa-empty-header>
+    </sa-empty>
+}
+
+@foreach (var item in Model.Items)
+{
+    var media = editor.SheetOptions.ShowMedia ? LookupMediaViewModel.Create(item.Media, item.Title, hasDescription) : null;
+
+    <sa-command-item value="@item.Value" checked="@(item.Value == Model.Selected)" data-lookup="item">
+        @if (media is not null)
+        {
+            <partial name="_LookupMedia" model="media" />
+        }
+        <div class="flex min-w-0 flex-col">
+            <span class="truncate" data-lookup="item-title">@item.Title</span>
+            @if (!string.IsNullOrEmpty(item.Description))
+            {
+                <span class="text-muted-foreground truncate text-xs" data-lookup="item-description">@item.Description</span>
+            }
+        </div>
+        @* The editor's display of this item, swapped in when it is selected *@
+        <template data-lookup="selection">
+            <partial name="_LookupSelection"
+                     model="new LookupSelectionViewModel(new LookupItem(item.Title, item.Description, item.Media), editor.Layout, editor.FieldOptions.ShowMedia, false)" />
+        </template>
+    </sa-command-item>
+}
+
+@if (Model.MoreUrl is not null)
+{
+    @* Enter clicks the active item, so the keyboard loads more the same way as the pointer *@
+    <sa-command-item class="text-muted-foreground justify-center" hx-get="@Model.MoreUrl" hx-swap="outerHTML" data-lookup="more">
+        @labels.LookupLoadMoreLabel(Model.Labels)
+    </sa-command-item>
+}

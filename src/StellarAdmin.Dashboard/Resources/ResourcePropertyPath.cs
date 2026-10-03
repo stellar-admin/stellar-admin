@@ -26,4 +26,20 @@ internal static class ResourcePropertyPath
 
     public static string GetName(IEnumerable<PropertyInfo> properties) =>
         string.Join('.', properties.Select(property => property.Name));
+
+    public static object? GetValue(object model, IEnumerable<PropertyInfo> properties)
+    {
+        object? value = model;
+        foreach (var property in properties)
+        {
+            if (value is null)
+            {
+                return null;
+            }
+
+            value = property.GetValue(value);
+        }
+
+        return value;
+    }
 }

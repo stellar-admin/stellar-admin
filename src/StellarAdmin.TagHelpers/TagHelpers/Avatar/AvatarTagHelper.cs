@@ -90,16 +90,12 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
             );
 
+            // The first letters of the first two words, or the first two letters of a single word
             return splitName switch
             {
-                [{ Length: > 0 } first, .., { Length: > 0 } last] =>
-                    $"{char.ToUpper(first.AsSpan(0, 1)[0])}{char.ToUpper(last.AsSpan(0, 1)[0])}",
-                _ => name switch
-                {
-                    [var first, var second, ..] => $"{char.ToUpper(first)}{char.ToLower(second)}",
-                    [var first] => $"{char.ToUpper(first)}",
-                    _ => null,
-                },
+                [var first, var second, ..] => $"{first[0]}{second[0]}".ToUpperInvariant(),
+                [var word] => word[..Math.Min(2, word.Length)].ToUpperInvariant(),
+                _ => null,
             };
         }
     }

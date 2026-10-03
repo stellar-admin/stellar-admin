@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lookup editor prototype — field control candidates</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-6xl space-y-12 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · LookupEditor</p>
+        <h1 class="text-2xl font-semibold">Field control candidates</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Each row is one candidate for the control on the form, in four states. Every non-read-only control is live:
+          open it, pick an airport in the sheet, clear it. The sheet list is the current one — the list candidates are
+          in <a class="underline" href="lookup-list.html">lookup-list.html</a>. Candidates are rendered from the
+          <code>concepts</code> array at the bottom of this file; edit classes there.
+        </p>
+      </header>
+
+      <div id="concepts" class="space-y-12"></div>
+    </main>
+
+    <!-- Real emitted sheet markup (shortened ids); results rendered with the current _LookupResults item markup -->
+    <sel-dialog
+      ><dialog id="lookup-sheet" data-slot="sheet-content" data-side="right" class="sa-sheet-content">
+        <button type="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="lookup-sheet" command="close" data-slot="button">
+          <svg class="size-4" xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linejoin="round" viewBox="0 0 24 24" width="24" stroke-linecap="round" stroke="currentColor" fill="none" height="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span>
+        </button>
+        <div class="sa-sheet-body">
+          <div data-slot="sheet-header" class="sa-sheet-header">
+            <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">Departure airport</h2>
+          </div>
+          <div class="px-6">
+            <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+              <input type="search" autocomplete="off" aria-label="Search" id="sheet-search" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+              <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" stroke-linejoin="round" viewBox="0 0 24 24" width="24" stroke-linecap="round" stroke="currentColor" fill="none" height="24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+              </div>
+            </div>
+          </div>
+          <div id="sheet-results" class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-6 pt-4"></div>
+        </div></dialog
+    ></sel-dialog>
+
+    <script type="module">
+      import { airports, search, icon, controlBar } from "./lookup-shared.js";
+
+      const label = "Departure airport";
+      const placeholder = "Select an airport";
+      const sample = airports.find((a) => a.code === "AMS");
+
+      const states = [
+        { key: "empty", title: "Empty", item: null },
+        { key: "selected", title: "Selected", item: sample },
+        { key: "readonly", title: "Read-only", item: sample, readonly: true },
+        { key: "invalid", title: "Invalid (required, empty)", item: null, invalid: true },
+      ];
+
+      // Current input-group button markup
+      const igButton = (attrs, body) =>
+        `<button type="button" ${attrs} data-size="icon-xs" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-input-group-button sa-input-group-button-size-icon-xs" data-slot="button">${body}</button>`;
+      const button = (variant, size, attrs, body, cls = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;
+
+      // Each concept renders the control only; the field wrapper (label, description, error) is shared.
+      // s = { id, item, readonly, invalid }. data-open opens the sheet for s.id, data-clear clears it.
+      const concepts = [
+        {
+          name: "A · Current",
+          note: "What ships today: read-only input group, ghost clear and search icon buttons at the end.",
+          control: (s) => `
+            <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+              <input readonly value="${s.item?.city ?? ""}" placeholder="${placeholder}" aria-invalid="${!!s.invalid}"
+                     data-slot="input-group-control" class="sa-input sa-input-group-input" />
+              ${s.readonly ? "" : `
+              <div role="group" data-slot="input-group-addon" data-align="inline-end" class="sa-input-group-addon sa-input-group-addon-align-inline-end">
+                ${s.item ? igButton(`data-clear="${s.id}"`, `${icon.x()}<span class="sr-only">Clear</span>`) : ""}
+                ${igButton(`data-open="${s.id}"`, `${icon.search()}<span class="sr-only">Look up</span>`)}
+              </div>`}
+            </div>`,
+        },
+        {
+          name: "B · Select trigger",
+          note: "The whole control is one button styled with the native select classes, so it reads as “pick one”. Description inline, muted; clear floats before the chevron.",
+          control: (s) => `
+            <div class="relative">
+              <button type="button" ${s.readonly ? "disabled" : `data-open="${s.id}"`} aria-invalid="${!!s.invalid}"
+                      class="sa-native-select flex items-center gap-2 pr-9 text-left">
+                ${s.item
+                  ? `<span class="truncate">${s.item.city}</span><span class="text-muted-foreground truncate text-xs">${s.item.code} · ${s.item.country}</span>`
+                  : `<span class="text-muted-foreground">${placeholder}…</span>`}
+              </button>
+              ${s.readonly ? "" : `<span class="text-muted-foreground pointer-events-none absolute top-1/2 right-3 -translate-y-1/2">${icon.chevrons("size-4 opacity-60")}</span>`}
+              ${s.item && !s.readonly
+                ? `<button type="button" data-clear="${s.id}" class="text-muted-foreground hover:text-foreground hover:bg-muted absolute top-1/2 right-8 -translate-y-1/2 rounded-sm p-0.5">${icon.x("size-3.5")}<span class="sr-only">Clear</span></button>`
+                : ""}
+            </div>`,
+        },
+        {
+          name: "C · Button group",
+          note: "Read-only input attached to a labelled “Browse” button (button group). Explicit about the action; clear is its own segment.",
+          control: (s) => `
+            <div role="group" data-slot="button-group" data-orientation="horizontal" class="sa-button-group sa-button-group-orientation-horizontal w-full">
+              <input readonly value="${s.item?.city ?? ""}" placeholder="${placeholder}" aria-invalid="${!!s.invalid}"
+                     data-slot="input" class="sa-input flex-1" />
+              ${s.readonly ? "" : `
+                ${s.item ? button("outline", "icon", `data-clear="${s.id}" aria-label="Clear"`, icon.x()) : ""}
+                ${button("outline", "default", `data-open="${s.id}"`, `${icon.search()}Browse`)}`}
+            </div>`,
+        },
+        {
+          name: "D · Selection card",
+          note: "Selected value shown as an outline item: code tile, name, description, Change + clear actions. Empty is a dashed call-to-action. Taller, but the selection is unmistakable.",
+          control: (s) => {
+            if (!s.item) {
+              return `<button type="button" data-open="${s.id}" aria-invalid="${!!s.invalid}"
+                        class="text-muted-foreground hover:bg-muted/50 hover:text-foreground aria-[invalid=true]:border-destructive aria-[invalid=true]:text-destructive flex w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 py-3 text-sm transition-colors">
+                        ${icon.plus("size-4")} Choose ${label.toLowerCase()}</button>`;
+            }
+            return `
+              <div data-slot="item" data-variant="${s.readonly ? "muted" : "outline"}" data-size="sm"
+                   class="sa-item group/item sa-item-variant-${s.readonly ? "muted" : "outline"} sa-item-size-sm flex-nowrap">
+                <div data-slot="item-media" class="sa-item-media">
+                  <div class="bg-muted flex size-9 items-center justify-center rounded-md font-mono text-xs font-medium">${s.item.code}</div>
+                </div>
+                <div data-slot="item-content" class="sa-item-content">
+                  <div data-slot="item-title" class="sa-item-title">${s.item.city}</div>
+                  <p data-slot="item-description" class="sa-item-description">${s.item.country}</p>
+                </div>
+                ${s.readonly ? "" : `
+                <div data-slot="item-actions" class="sa-item-actions">
+                  ${button("outline", "sm", `data-open="${s.id}"`, "Change")}
+                  ${button("ghost", "icon-sm", `data-clear="${s.id}" aria-label="Clear"`, icon.x())}
+                </div>`}
+              </div>`;
+          },
+        },
+        {
+          name: "E · Chip in field",
+          note: "Input-shaped box holding the selection as a badge with its code and an inline remove; whole box opens the sheet. Scales naturally to a future multi-select.",
+          control: (s) => `
+            <div ${s.readonly ? "" : `data-open="${s.id}" tabindex="0" role="button"`} aria-invalid="${!!s.invalid}"
+                 class="sa-input flex items-center gap-1.5 pr-1 ${s.readonly ? "opacity-80" : "cursor-pointer"}">
+              ${s.item
+                ? `<span data-slot="badge" class="sa-badge sa-badge-variant-secondary gap-1.5">
+                     <span class="font-mono text-[0.7rem] opacity-60">${s.item.code}</span>${s.item.city}
+                     ${s.readonly ? "" : `<button type="button" data-clear="${s.id}" class="-mr-1 rounded-sm opacity-50 hover:opacity-100">${icon.x("size-3")}<span class="sr-only">Clear</span></button>`}
+                   </span>`
+                : `<span class="text-muted-foreground text-sm">${placeholder}</span>`}
+              ${s.readonly ? "" : `<span class="text-muted-foreground ml-auto px-1.5">${icon.search("size-4")}</span>`}
+            </div>`,
+        },
+        {
+          name: "F · Rich input",
+          note: "Input group carrying more of the item: code badge as leading addon, country as trailing text, a chevron instead of a magnifier. Same footprint as a text input.",
+          control: (s) => `
+            <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+              <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                ${s.item
+                  ? `<span class="bg-muted text-foreground rounded px-1.5 py-0.5 font-mono text-[0.7rem] font-medium">${s.item.code}</span>`
+                  : icon.plane()}
+              </div>
+              <input readonly value="${s.item?.city ?? ""}" placeholder="${placeholder}" aria-invalid="${!!s.invalid}"
+                     ${s.readonly ? "" : `data-open="${s.id}"`} data-slot="input-group-control"
+                     class="sa-input sa-input-group-input ${s.readonly ? "" : "cursor-pointer"}" />
+              <div role="group" data-slot="input-group-addon" data-align="inline-end" class="sa-input-group-addon sa-input-group-addon-align-inline-end">
+                ${s.item ? `<span class="sa-input-group-text text-xs">${s.item.country}</span>` : ""}
+                ${s.readonly ? "" : `
+                  ${s.item ? igButton(`data-clear="${s.id}"`, `${icon.x()}<span class="sr-only">Clear</span>`) : ""}
+                  ${igButton(`data-open="${s.id}"`, `${icon.chevrons()}<span class="sr-only">Look up</span>`)}`}
+              </div>
+            </div>`,
+        },
+        {
+          name: "G · Type to search",
+          note: "Behavioural idea: the input is editable; typing opens the sheet with the term already searched. The selection's code sits at the end.",
+          control: (s) => `
+            <div role="group" data-slot="input-group" class="sa-input-group group/input-group h-auto">
+              <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon.search()}</div>
+              <input ${s.readonly ? "readonly" : `data-type-open="${s.id}"`} value="${s.item?.city ?? ""}" placeholder="Type to search airports…"
+                     aria-invalid="${!!s.invalid}" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+              ${s.item ? `
+              <div role="group" data-slot="input-group-addon" data-align="inline-end" class="sa-input-group-addon sa-input-group-addon-align-inline-end">
+                <span class="sa-input-group-text font-mono text-xs">${s.item.code}</span>
+                ${s.readonly ? "" : igButton(`data-clear="${s.id}"`, `${icon.x()}<span class="sr-only">Clear</span>`)}
+              </div>` : ""}
+            </div>`,
+        },
+      ];
+
+      // Live state per concept/state cell
+      const values = {};
+      concepts.forEach((_, c) => states.forEach((st) => (values[`${c}-${st.key}`] = st.item)));
+
+      const field = (c, st) => {
+        const id = `${c}-${st.key}`;
+        const item = values[id];
+        const invalid = st.invalid && !item;
+        return `
+          <div data-slot="field" data-orientation="vertical" ${invalid ? 'data-invalid="true"' : ""}
+               class="sa-field group/field sa-field-orientation-vertical [&>*]:w-full [&>.sr-only]:w-auto">
+            <label data-slot="field-label" class="sa-label sa-field-label group/field-label peer/field-label">${label}</label>
+            ${concepts[c].control({ id, item, readonly: st.readonly, invalid })}
+            ${invalid ? `<div data-slot="field-error" role="alert" class="sa-field-error">The ${label} field is required.</div>` : ""}
+          </div>`;
+      };
+
+      const renderCell = (c, st) =>
+        (document.querySelector(`[data-cell="${c}-${st.key}"]`).innerHTML = field(c, st));
+
+      document.getElementById("concepts").innerHTML = concepts
+        .map(
+          (concept, c) => `
+          <section class="space-y-4">
+            <div>
+              <h2 class="text-lg font-semibold">${concept.name}</h2>
+              <p class="text-muted-foreground max-w-3xl text-sm">${concept.note}</p>
+            </div>
+            <div class="grid gap-x-6 gap-y-4 rounded-xl border p-5 sm:grid-cols-2 lg:grid-cols-4">
+              ${states
+                .map(
+                  (st) => `<div class="space-y-2">
+                    <p class="text-muted-foreground text-[0.7rem] tracking-wide uppercase">${st.title}</p>
+                    <div data-cell="${c}-${st.key}"></div>
+                  </div>`,
+                )
+                .join("")}
+            </div>
+          </section>`,
+        )
+        .join("");
+      concepts.forEach((_, c) => states.forEach((st) => renderCell(c, st)));
+
+      // Sheet wiring
+      const sheet = document.getElementById("lookup-sheet");
+      const sheetSearch = document.getElementById("sheet-search");
+      const results = document.getElementById("sheet-results");
+      let target = null;
+
+      const renderResults = () => {
+        results.innerHTML = search(sheetSearch.value)
+          .map(
+            (a) => `
+            <div class="sa-item group/item sa-item-size-xs sa-item-variant-default hover:bg-muted has-focus-visible:bg-muted relative" data-slot="item" data-variant="default" data-size="xs">
+              <div data-slot="item-content" class="sa-item-content">
+                <div data-slot="item-title" class="sa-item-title">
+                  <button type="button" class="text-left outline-none after:absolute after:inset-0" data-pick="${a.code}">${a.city}</button>
+                </div>
+                <div data-slot="item-description" class="sa-item-description">${a.code} · ${a.country}</div>
+              </div>
+            </div>`,
+          )
+          .join("");
+      };
+      sheetSearch.addEventListener("input", renderResults);
+
+      const open = (id, term = "") => {
+        target = id;
+        sheetSearch.value = term;
+        renderResults();
+        if (!sheet.open) sheet.showModal();
+        sheetSearch.focus();
+        sheetSearch.setSelectionRange(term.length, term.length);
+      };
+      const cellOf = (id) => {
+        const [c, key] = id.split("-");
+        return [Number(c), states.find((st) => st.key === key)];
+      };
+
+      document.addEventListener("click", (e) => {
+        const clear = e.target.closest("[data-clear]");
+        if (clear) {
+          e.stopPropagation();
+          values[clear.dataset.clear] = null;
+          renderCell(...cellOf(clear.dataset.clear));
+          return;
+        }
+        const pick = e.target.closest("[data-pick]");
+        if (pick && target) {
+          values[target] = airports.find((a) => a.code === pick.dataset.pick);
+          renderCell(...cellOf(target));
+          sheet.close();
+          return;
+        }
+        const opener = e.target.closest("[data-open]");
+        if (opener) open(opener.dataset.open);
+      });
+      document.addEventListener("keydown", (e) => {
+        const opener = e.target.closest?.("[data-open][role=button]");
+        if (opener && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          open(opener.dataset.open);
+        }
+      });
+      document.addEventListener("input", (e) => {
+        const typed = e.target.closest?.("[data-type-open]");
+        if (typed) {
+          const term = typed.value;
+          typed.value = values[typed.dataset.typeOpen]?.city ?? "";
+          open(typed.dataset.typeOpen, term);
+        }
+      });
+
+      controlBar();
+    </script>
+  </body>
+</html>

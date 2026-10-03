@@ -15,6 +15,8 @@ public abstract class FieldEditorHandler<TEditor>(TEditor editor) : IFieldEditor
     public abstract string TemplateName { get; }
 
     /// <inheritdoc />
-    public virtual Task<object?> PrepareAsync(CancellationToken cancellationToken) =>
-        Task.FromResult<object?>(null);
+    public virtual Task<object?> PrepareAsync(
+        FieldEditorContext context,
+        CancellationToken cancellationToken
+    ) => Task.FromResult<object?>(null);
 }

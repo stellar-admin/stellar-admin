@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
@@ -52,7 +53,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     }
 
     public Task<TEntity?> FindAsync(string id, CancellationToken cancellationToken) =>
-        FindEntityByKeyAsync(id, cancellationToken, noTracking: true);
+        FindEntityByKeyAsync(id, cancellationToken, noTracking: true, includeLookups: true);
 
     public async Task<ResourceListResult<TEntity>> ListAsync(
         ResourceListRequest request,
@@ -181,13 +182,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     private Task<TEntity?> FindEntityByKeyAsync(
         string id,
         CancellationToken cancellationToken,
-        bool noTracking = false
+        bool noTracking = false,
+        bool includeLookups = false
     )
     {
-        var property = db
-            .Model.FindEntityType(typeof(TEntity))!
-            .FindPrimaryKey()!
-            .Properties.Single();
+        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
+        var property = entityType.FindPrimaryKey()!.Properties.Single();
         if (!TryParseResourceId(id, property.ClrType, out var key))
         {
             return Task.FromResult<TEntity?>(null);
@@ -205,6 +205,23 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         if (noTracking)
         {
             query = query.AsNoTracking();
+        }
+
+        // Lookup editors display the selected item from the reference loaded with the entity
+        if (includeLookups && _resourceOptions.Edit is { } edit)
+        {
+            var navigations = edit
+                .Fields.Select(field =>
+                    field.Editor is LookupEditor { Items: IEfCoreLookupReference reference }
+                        ? reference.FindNavigation(entityType, field.FieldName)?.Name
+                        : null
+                )
+                .OfType<string>()
+                .Distinct(StringComparer.Ordinal);
+            foreach (var navigation in navigations)
+            {
+                query = query.Include(navigation);
+            }
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
