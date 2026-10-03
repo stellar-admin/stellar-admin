@@ -115,6 +115,89 @@ Switch a playground field to `LookupEditor`, add the gallery example and regener
 
 Implemented: the product edit form's Category already used `LookupEditor` with EF Core items since Phase 4; product create keeps `SelectEditor`, so both remain visible. A "Lookup" gallery resource (`LookupGallery`, after Select) uses an in-memory `GalleryAirportLookupSource` registered by the gallery, searching city, code and country. Its scenarios cover optional, required and described items; title, descriptions, read-only and an unknown value; and `SheetTitle`, `SearchPlaceholder`, `EmptyText`, `AllowClear = false`, `MinimumSearchLength`, `PageSize` and `ClassNames.Control`. The consumer reference (`skills/stellar-admin-dashboard/references/setup.md`, hand-written) gains a `LookupEditor` row in the editor table, a paragraph with an `ILookupSource` example, and an EF Core paragraph covering `SearchOn`, `DescribeWith`, `OrderBy`, the navigation loaded with the entity and `ReferenceFrom`. The generated component references cover only FormPage and IndexPage, so there was nothing to regenerate.
 
+## Display redesign
+
+Settled 2026-10-03 after visual exploration in `sandbox/html/lookup-compact.html` (editor) and `sandbox/html/lookup-sheet.html` (sheet results), both untracked prototypes. Not yet implemented and not split into phases.
+
+### Configuration structure
+
+`LookupEditor` settings split into four areas: the items (where they come from and what each contains), the editor in the form, the sheet (search and results), and top-level features. Item content is data shared by the editor and the sheet.
+
+```csharp
+field.UseEditor<LookupEditor>(lookup =>
+{
+    // Items: source and item content
+    lookup.UseItems<ApplicationDbContext, Airport, string>(
+        a => a.Code,                            // value
+        a => a.Name,                            // title
+        items =>
+        {
+            items.UseDescription(a => a.Country);
+            items.UseCode(a => a.Code);         // or items.UseAvatar(a => a.LogoUrl)
+            items.SearchOn(a => a.Name, a => a.Code);
+            items.OrderBy(a => a.Name);
+        });
+
+    // Editor: the field in the form
+    lookup.Editor(editor =>
+    {
+        editor.Layout = LookupEditorLayout.Card;    // Input | Card
+        editor.ShowMedia = true;
+        editor.EmptyText = "Choose airport";
+        editor.AllowClear = true;
+    });
+
+    // Sheet: search and results
+    lookup.Sheet(sheet =>
+    {
+        sheet.Title = "Departure airport";
+        sheet.ShowMedia = true;
+        sheet.SearchPlaceholder = "Search airports";
+        sheet.PageSize = 20;
+        sheet.MinimumSearchLength = 0;
+    });
+
+    // Top-level features
+    lookup.EnableCreate();
+});
+```
+
+- Value and title stay required positional arguments of `UseItems`; the `text` parameter is renamed `title`. Optional content goes in the items lambda, which is also the only place the entity type is known (`LookupEditor` is not generic).
+- Item content uses `Use*`, matching `UseItems`, `UseKey` and `UseFactory`: `UseDescription` (replacing `DescribeWith` in both the core and EF Core builders), `UseCode` and `UseAvatar`. `UseCode` and `UseAvatar` set the item's media; the last call wins and neither means no media. An avatar without an image falls back to the title's initials.
+- `Editor(...)` and `Sheet(...)` are bare-noun drill-downs into structure that always exists. `SheetTitle` (as `Title`), `SearchPlaceholder`, `PageSize` and `MinimumSearchLength` move from `LookupEditor` to the sheet; `EmptyText` and `AllowClear` move to the editor. Nothing has shipped, so the old properties are replaced, not kept.
+- Media is shown per surface: `editor.ShowMedia` and `sheet.ShowMedia` (both default `true`) hide the configured media in the form or the results. There is no `ShowDescription`: calling `UseDescription` turns the description on, the sheet always shows it, and in the editor the layout decides (Card shows it, Input does not).
+- `LookupEditorLayout` is a dedicated enum. `null` means `Card` when a description is configured, otherwise `Input`.
+- `EnableCreate()` adds a "New" button beside "Choose {field}" when the field is empty. Initially the button does nothing; opening the referenced resource's create form in a sheet and selecting the new item is refined once the new design lands. There is no create button in the sheet for now.
+
+### Editor appearance
+
+| Element | Configured by |
+| --- | --- |
+| Label | The field's label, not a lookup setting |
+| Media (code chip or avatar) | `items.UseCode` or `items.UseAvatar`, shown when `editor.ShowMedia` |
+| Title | `UseItems` second argument |
+| Description (card only) | `items.UseDescription` |
+| Change button | Always shown when editable; localized text |
+| Clear button | `editor.AllowClear`, null meaning only when the field is optional |
+| Stored value (hidden) | `UseItems` first argument |
+
+- **Card:** an extra-small `sa-item` with media, title and description, and Change and clear buttons.
+- **Input:** an `sa-input-group` shell with media, title, and Change and clear buttons.
+- **Empty, editable:** two dashed buttons sized to their content, "Choose {field}" (`EmptyText`) and, with `EnableCreate`, "New". Invalid fields use the destructive border and text.
+- **Read-only, selected:** the layout's muted surface (`sa-item-variant-muted`, or a read-only `sa-input`) without buttons.
+- **Read-only, empty:** the same muted surface showing "None" in muted text.
+
+### Sheet appearance
+
+- **Results:** a listbox of tight extra-small `sa-item` rows with media (when `sheet.ShowMedia`), title and description. With a description the media matches the Card size (size-7 code chip, default avatar); without one it shrinks to the Input size. Hover and the keyboard-active row use the accent colour; the selected row has a trailing check.
+- **Paging:** a ghost "Load more" button after the results, `PageSize` items per page.
+- **No match highlighting:** the server decides what matched, so results are not marked up.
+- **Non-result states:** the minimum-length hint, "no results" and a failed search use `sa-empty` blocks; loading shows skeleton rows shaped like the media and description.
+
+### Deferred
+
+- What `EnableCreate`'s button does: how it finds the referenced resource (from the entity type or `ReferenceFrom`), whether that resource's create action must be allowed, and how the create sheet returns the new item's value and title to the editor.
+
 ## Open decisions
 
 - Labels for the lookup's fixed text ("No results found.", the minimum-length hint, "Load more") — hard-coded for now.

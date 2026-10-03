@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lookup editor prototype — compact selection card</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+  </head>
+
+    <body class="bg-background text-foreground font-sans antialiased">
+    <main class="mx-auto max-w-7xl space-y-16 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <h1 class="text-2xl font-semibold tracking-tight">Lookup editor — compact selection</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          The two candidate directions (a consumer-selectable setting): <strong>Two-line</strong> (sa-item xs) and <strong>One-line</strong>
+          (input-group shell, same height and background as a text input). Each with a code, no media, or an avatar. Visual only; buttons are inert.
+        </p>
+      </header>
+
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-lg font-semibold">In a form</h2>
+          <p class="text-muted-foreground text-sm">Departure follows the state toggle; arrival stays selected.</p>
+        </div>
+        <div id="form-controls" class="flex flex-col gap-2 text-xs"></div>
+        <div id="form-host"></div>
+      </section>
+
+
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-lg font-semibold">Variants</h2>
+          <p class="text-muted-foreground text-sm">The first cell in each row is a standard text input for height and background reference.</p>
+        </div>
+        <div id="variants" class="space-y-10"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { airports, icon, controlBar } from "./lookup-shared.js";
+
+      // City photos from DocsSamples; items without one fall back to initials
+      const photos = {
+        LIS: "../../docs/DocsSamples/wwwroot/cities/lisbon.jpg",
+        CPT: "../../docs/DocsSamples/wwwroot/cities/cape-town.jpg",
+      };
+      const find = (code) => airports.find((a) => a.code === code);
+      const ams = find("AMS");
+      const hnd = find("HND");
+      const lis = find("LIS");
+      const cpt = find("CPT");
+      const longName = { code: "JNB", city: "Johannesburg O. R. Tambo International", country: "South Africa" };
+
+      const button = (variant, size, body, attrs = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size}" data-slot="button">${body}</button>`;
+      const igButton = (body, attrs = "") =>
+        `<button type="button" ${attrs} data-size="icon-xs" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-input-group-button sa-input-group-button-size-icon-xs" data-slot="button">${body}</button>`;
+      const igTextButton = (body, attrs = "") =>
+        `<button type="button" ${attrs} data-size="xs" class="sa-button group/button sa-button-variant-ghost sa-button-size-default sa-input-group-button sa-input-group-button-size-xs" data-slot="button">${body}</button>`;
+
+      const initials = (city) => {
+        const words = city.split(/\s+/);
+        return (words.length > 1 ? words[0][0] + words[1][0] : city.slice(0, 2)).toUpperCase();
+      };
+      const avatar = (item, size = "sm") => `
+        <span data-slot="avatar" data-size="${size}" class="sa-avatar group/avatar">
+          ${photos[item.code]
+            ? `<img data-slot="avatar-image" class="sa-avatar-image" src="${photos[item.code]}" alt="${item.city}" />`
+            : `<span data-slot="avatar-fallback" class="sa-avatar-fallback">${initials(item.city)}</span>`}
+        </span>`;
+
+      const invalidRing = "border-destructive ring-destructive/20 ring-[3px]";
+      const lc = (s) => s.label.toLowerCase();
+
+      // ---------------------------------------------------------------- Two-line (sa-item xs)
+      const twoLineMedia = {
+        code: (item) => `<div class="sa-item-media"><div class="bg-muted text-foreground flex size-7 shrink-0 items-center justify-center rounded-md font-mono text-[0.65rem] font-medium">${item.code}</div></div>`,
+        none: () => "",
+        avatar: (item) => `<div class="sa-item-media">${avatar(item, "default")}</div>`,
+      };
+
+      const twoLine = {
+        key: "two",
+        name: "Two-line",
+        selected: (s, media) => `
+          <div class="sa-item group/item sa-item-variant-${s.readonly ? "muted" : "outline"} sa-item-size-xs flex-nowrap ${s.invalid ? invalidRing : ""}">
+            ${twoLineMedia[media](s.item)}
+            <div class="sa-item-content min-w-0 gap-0">
+              <div class="sa-item-title w-full text-sm"><span class="truncate">${s.item.city}</span></div>
+              <p class="sa-item-description truncate text-xs">${s.item.country}</p>
+            </div>
+            ${s.readonly ? "" : `<div class="sa-item-actions gap-0.5">${button("ghost", "xs", "Change")}${button("ghost", "icon-xs", icon.x(), 'aria-label="Clear"')}</div>`}
+          </div>`,
+        empty: {
+          dashed: (s) => `
+            <button type="button" class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex h-12 w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors ${s.invalid ? "border-destructive text-destructive" : ""}">
+              ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span></button>`,
+          placeholder: (s) => `
+            <button type="button" class="text-muted-foreground hover:bg-muted/40 flex h-12 w-full items-center gap-2.5 rounded-md border px-3 text-left text-sm shadow-xs transition-colors ${s.invalid ? invalidRing : ""}">
+              <span class="min-w-0 flex-1 truncate">Select ${lc(s)}…</span>${icon.search("size-4 shrink-0 opacity-60")}</button>`,
+        },
+      };
+
+      // ---------------------------------------------------------------- One-line (input-group shell)
+      // The input-group gives the theme's input height, border and editable background; a plain div with
+      // sa-input would match the themes' :read-only rule and render muted. The hidden control carries
+      // aria-invalid so every theme's invalid selector fires. Read-only uses a real sa-input div so it
+      // matches the theme's read-only inputs.
+      const oneLineMedia = {
+        code: (item) => `<span class="bg-muted text-foreground rounded-sm px-1.5 py-0.5 font-mono text-[0.7rem] font-medium">${item.code}</span>`,
+        none: () => "",
+        avatar: (item) => avatar(item, "sm"),
+      };
+      const hiddenControl = (s) => `<input type="hidden" data-slot="input-group-control" aria-invalid="${!!s.invalid}" />`;
+      const startAddon = (body) =>
+        body ? `<div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${body}</div>` : "";
+      const endAddon = (body) =>
+        `<div role="group" data-slot="input-group-addon" data-align="inline-end" class="sa-input-group-addon sa-input-group-addon-align-inline-end">${body}</div>`;
+      const text = (item, media) => `
+        <div class="flex min-w-0 flex-1 items-center gap-2 text-sm ${media === "none" ? "pl-3" : "pl-0.5"}">
+          <span class="min-w-0 truncate">${item.city}</span>
+          <span class="text-muted-foreground hidden min-w-0 truncate @[20rem]:inline">${item.country}</span>
+        </div>`;
+
+      const oneLine = {
+        key: "one",
+        name: "One-line",
+        selected: (s, media) => {
+          if (s.readonly) {
+            return `
+              <div class="sa-input @container flex items-center gap-2 ${media === "none" ? "" : "pl-1.5"}">
+                ${oneLineMedia[media](s.item)}
+                <span class="min-w-0 truncate">${s.item.city}</span>
+                <span class="hidden min-w-0 truncate opacity-70 @[20rem]:inline">${s.item.country}</span>
+              </div>`;
+          }
+          return `
+            <div role="group" data-slot="input-group" class="sa-input-group group/input-group @container">
+              ${hiddenControl(s)}
+              ${startAddon(oneLineMedia[media](s.item))}
+              ${text(s.item, media)}
+              ${endAddon(`${igTextButton("Change")}${igButton(`${icon.x()}<span class="sr-only">Clear</span>`)}`)}
+            </div>`;
+        },
+        empty: {
+          dashed: (s) => `
+            <div role="group" data-slot="input-group" tabindex="0"
+                 class="sa-input-group group/input-group text-muted-foreground hover:text-foreground cursor-pointer justify-center gap-2 border-dashed text-sm ${s.invalid ? "border-destructive text-destructive" : ""}">
+              ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>
+            </div>`,
+          placeholder: (s) => `
+            <div role="group" data-slot="input-group" tabindex="0" class="sa-input-group group/input-group cursor-pointer">
+              ${hiddenControl(s)}
+              <span class="text-muted-foreground min-w-0 flex-1 truncate pl-3 text-sm">Select ${lc(s)}…</span>
+              ${endAddon(`<span class="text-muted-foreground px-1">${icon.search("size-4")}</span>`)}
+            </div>`,
+        },
+      };
+
+
+      // ---------------------------------------------------------------- Empty with "create new"
+      // Shared by both variants; h is the height override (two-line uses h-12, one-line keeps the input height)
+      const chevronDown = (c = "size-3.5") =>
+        `<svg xmlns="http://www.w3.org/2000/svg" class="${c}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+      const shell = (s, h, body, extra = "") =>
+        `<div role="group" data-slot="input-group" tabindex="0" class="sa-input-group group/input-group cursor-pointer ${h} ${extra}">${hiddenControl(s)}${body}</div>`;
+      const ph = (s, withIcon = false) =>
+        `<span class="text-muted-foreground flex min-w-0 flex-1 items-center gap-2 pl-3 text-sm">${withIcon ? icon.search("size-4 shrink-0 opacity-60") : ""}<span class="truncate">Select ${lc(s)}…</span></span>`;
+      const divider = `<span class="bg-border h-5 w-px shrink-0"></span>`;
+      const menuItem = (ic, label, extra = "") =>
+        `<div role="menuitem" data-slot="dropdown-menu-item" class="sa-dropdown-menu-item ${extra}">${ic}<span>${label}</span></div>`;
+      const menuSep = `<div role="separator" data-slot="dropdown-menu-separator" class="sa-dropdown-menu-separator"></div>`;
+      const menu = (items) =>
+        `<div data-slot="dropdown-menu-content" class="bg-popover text-popover-foreground absolute top-full right-0 z-10 mt-1 w-60 rounded-md border p-1 shadow-md">${items}</div>`;
+
+      // All options keep the dashed call-to-action look; segments inherit the dashed border colour (so invalid recolours them too)
+      const dash = (s, h, body, extra = "") =>
+        `<div role="group" data-slot="input-group" class="sa-input-group group/input-group items-stretch overflow-hidden border-dashed p-0 text-sm text-muted-foreground ${h} ${s.invalid ? "border-destructive text-destructive" : ""} ${extra}">${body}</div>`;
+      const part = (body, extra = "") =>
+        `<button type="button" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 items-center justify-center gap-2 px-3 transition-colors ${extra}">${body}</button>`;
+      const choose = (s) => `${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>`;
+      const divide = "border-inherit border-l border-dashed";
+
+      // Two dashed buttons; widths: "fill" (choose grows), "equal" (both grow), "content" (both size to their label)
+      const pair = (s, h, width, newLabel = "New") => {
+        const cls = { fill: ["min-w-0 flex-1", "w-auto shrink-0"], equal: ["min-w-0 flex-1", "min-w-0 flex-1"], content: ["w-auto min-w-0", "w-auto shrink-0"] }[width];
+        return `
+          <div class="flex gap-2">
+            ${dash(s, h, part(choose(s), "flex-1"), cls[0])}
+            ${dash(s, h, part(`${icon.plus("size-4 shrink-0")}<span class="truncate">${newLabel}</span>`, "flex-1"), cls[1])}
+          </div>`;
+      };
+
+      // Settled empty style: two content-sized dashed buttons
+      const createStyles = {
+        pairContent: { name: "Content-sized", render: (s, h) => pair(s, h, "content") },
+      };
+
+      for (const [key, cs] of Object.entries(createStyles)) {
+        twoLine.empty[key] = (s) => cs.render(s, "h-12");
+        oneLine.empty[key] = (s) => cs.render(s, "");
+      }
+
+
+
+
+
+      const variants = [twoLine, oneLine];
+      const medias = [
+        ["code", "Code"],
+        ["none", "No media"],
+        ["avatar", "Avatar"],
+      ];
+
+      const state = { variant: "two", media: "code", empty: "pairContent", layout: "two", depState: "empty", width: "lg" };
+
+      // Read-only with no value: the variant's read-only surface with muted "None", no actions
+      const readonlyEmpty = {
+        two: () => `<div class="sa-item group/item sa-item-variant-muted sa-item-size-xs h-12"><span class="text-muted-foreground text-sm">None</span></div>`,
+        one: () => `<div class="sa-input flex items-center"><span class="text-muted-foreground">None</span></div>`,
+      };
+      const control = (v, s, media) =>
+        s.item ? v.selected(s, media) : s.readonly ? readonlyEmpty[v.key]() : v.empty[state.empty](s);
+
+      // ---------------------------------------------------------------- Form
+      const fieldWrap = (label, controlHtml, { description, error, horizontal } = {}) => {
+        const msgs = `${description ? `<p class="sa-field-description">${description}</p>` : ""}${error ? `<div role="alert" class="sa-field-error">${error}</div>` : ""}`;
+        if (horizontal) {
+          return `
+            <div class="sa-field group/field grid grid-cols-[9rem_minmax(0,1fr)] items-start gap-x-4 gap-y-1.5" ${error ? 'data-invalid="true"' : ""}>
+              <label class="sa-label sa-field-label pt-2">${label}</label>
+              <div class="flex min-w-0 flex-col gap-1.5">${controlHtml}${msgs}</div>
+            </div>`;
+        }
+        return `
+          <div data-slot="field" data-orientation="vertical" ${error ? 'data-invalid="true"' : ""}
+               class="sa-field group/field sa-field-orientation-vertical min-w-0 [&>*]:w-full [&>.sr-only]:w-auto">
+            <label class="sa-label sa-field-label">${label}</label>
+            ${controlHtml}${msgs}
+          </div>`;
+      };
+
+      const input = (value, type = "text") => `<input type="${type}" value="${value}" class="sa-input" />`;
+      const select = (options, selected) => `
+        <div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper group/native-select">
+          <select class="sa-native-select">${options.map((o) => `<option ${o === selected ? "selected" : ""}>${o}</option>`).join("")}</select>
+          <svg xmlns="http://www.w3.org/2000/svg" class="sa-native-select-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>`;
+
+      function renderForm() {
+        const v = variants.find((x) => x.key === state.variant);
+        const horizontal = state.layout === "horizontal";
+        const ds = state.depState;
+        // Avatar mode uses the airports that have photos so the image case is visible in the form
+        const depItem = ds === "long" ? longName : state.media === "avatar" ? lis : ams;
+        const dep = {
+          label: "Departure airport",
+          item: ds === "empty" || ds === "invalid" || ds === "readonlyEmpty" ? null : depItem,
+          readonly: ds === "readonly" || ds === "readonlyEmpty",
+          invalid: ds === "invalid",
+        };
+        const arr = { label: "Arrival airport", item: state.media === "avatar" ? cpt : hnd, readonly: ds === "readonly" || ds === "readonlyEmpty" };
+
+        const f = {
+          flight: fieldWrap("Flight number", input("VY 1024"), { horizontal }),
+          airline: fieldWrap("Airline", select(["Voyager Air", "Voyager Express", "Partner carrier"], "Voyager Air"), { horizontal }),
+          dep: fieldWrap("Departure airport", control(v, dep, state.media), {
+            horizontal,
+            description: "Where the flight leaves from.",
+            error: dep.invalid ? "The Departure airport field is required." : null,
+          }),
+          arr: fieldWrap("Arrival airport", control(v, arr, state.media), { horizontal }),
+          time: fieldWrap("Departure time", input("2026-11-14T09:35", "datetime-local"), { horizontal }),
+          status: fieldWrap("Status", select(["Scheduled", "Boarding", "Departed", "Cancelled"], "Scheduled"), { horizontal }),
+          seats: fieldWrap("Seats", input("186", "number"), { horizontal }),
+          notes: fieldWrap("Notes", `<textarea class="sa-textarea" rows="3">Crew change at departure.</textarea>`, { horizontal }),
+        };
+
+        const width = { sm: "max-w-sm", md: "max-w-xl", lg: "max-w-3xl", xl: "max-w-5xl" }[state.width];
+        let body;
+        if (state.layout === "two") {
+          body = `<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+            ${f.flight}${f.airline}${f.dep}${f.arr}${f.time}${f.status}<div class="sm:col-span-2">${f.notes}</div></div>`;
+        } else if (state.layout === "three") {
+          body = `<div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-3">
+            ${f.flight}${f.airline}${f.seats}${f.dep}${f.arr}${f.status}<div class="sm:col-span-3">${f.notes}</div></div>`;
+        } else {
+          body = `<div class="flex flex-col gap-6">${f.flight}${f.airline}${f.dep}${f.arr}${f.time}${f.status}${f.notes}</div>`;
+        }
+
+        document.getElementById("form-host").innerHTML = `
+          <div class="${width} bg-card text-card-foreground rounded-xl border shadow-sm">
+            <div class="border-b px-6 py-4">
+              <h3 class="font-semibold">Edit flight</h3>
+              <p class="text-muted-foreground text-sm">VY 1024 · Voyager Air</p>
+            </div>
+            <div class="p-6">${body}</div>
+            <div class="flex justify-end gap-2 border-t px-6 py-4">${button("outline", "default", "Cancel")}${button("default", "default", "Save")}</div>
+          </div>`;
+      }
+
+      const seg = (label, key, options) => `
+        <div class="flex flex-wrap items-center gap-1">
+          <span class="text-muted-foreground w-24 shrink-0">${label}</span>
+          ${options
+            .map(
+              ([val, txt]) =>
+                `<button type="button" data-set="${key}" data-val="${val}" class="rounded-md border px-2 py-1 hover:bg-muted data-[active]:border-primary data-[active]:bg-primary data-[active]:text-primary-foreground">${txt}</button>`,
+            )
+            .join("")}
+        </div>`;
+
+      const toolbar = document.getElementById("form-controls");
+      toolbar.innerHTML = [
+        seg("Variant", "variant", variants.map((v) => [v.key, v.name])),
+        seg("Media", "media", medias),
+        seg("Layout", "layout", [["single", "Single column"], ["two", "Two columns"], ["three", "Three columns"], ["horizontal", "Labels left"]]),
+        seg("Form width", "width", [["sm", "Narrow (24rem)"], ["md", "Medium (36rem)"], ["lg", "Wide (48rem)"], ["xl", "Extra wide (64rem)"]]),
+        seg("Departure", "depState", [["selected", "Selected"], ["long", "Long name"], ["empty", "Empty"], ["invalid", "Invalid"], ["readonly", "Read-only"], ["readonlyEmpty", "Read-only, empty"]]),
+      ].join("");
+
+      const markActive = () =>
+        toolbar.querySelectorAll("[data-set]").forEach((b) => b.toggleAttribute("data-active", state[b.dataset.set] === b.dataset.val));
+
+      toolbar.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-set]");
+        if (!b) return;
+        state[b.dataset.set] = b.dataset.val;
+        markActive();
+        renderForm();
+      });
+
+      // ---------------------------------------------------------------- Gallery
+      const statesFor = (media) => [
+        { title: "Selected", item: media === "avatar" ? lis : ams },
+        ...(media === "avatar" ? [{ title: "Initials fallback", item: ams }] : []),
+        { title: "Long name", item: longName },
+        { title: "Empty", item: null },
+        { title: "Invalid", item: null, invalid: true },
+        { title: "Read-only", item: media === "avatar" ? lis : ams, readonly: true },
+        { title: "Read-only, empty", item: null, readonly: true },
+      ];
+
+      function renderVariants() {
+        document.getElementById("variants").innerHTML = variants
+          .flatMap((v) =>
+            medias.map(
+              ([media, mediaName]) => `
+              <div class="space-y-3">
+                <h3 class="font-medium">${v.name} · ${mediaName}</h3>
+                <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div class="space-y-1.5"><div class="text-muted-foreground text-xs">Reference input</div>${input("VY 1024")}</div>
+                  ${statesFor(media)
+                    .map(
+                      (st) => `
+                    <div class="min-w-0 space-y-1.5">
+                      <div class="text-muted-foreground text-xs">${st.title}</div>
+                      ${control(v, { label: "Departure airport", ...st }, media)}
+                    </div>`,
+                    )
+                    .join("")}
+                </div>
+              </div>`,
+            ),
+          )
+          .join("");
+      }
+
+      markActive();
+      renderForm();
+      renderVariants();
+      controlBar();
+    </script>
+  </body>
+</html>

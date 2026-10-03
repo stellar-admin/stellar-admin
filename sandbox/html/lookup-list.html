@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en" data-highlight="bold">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lookup list prototype — sheet result list candidates</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+      /* Search match treatments, switched from the control bar */
+      mark[data-match] {
+        background: transparent;
+        color: inherit;
+      }
+      [data-highlight="bold"] mark[data-match] {
+        @apply text-foreground font-semibold;
+      }
+      [data-highlight="underline"] mark[data-match] {
+        @apply decoration-primary underline decoration-2 underline-offset-2;
+      }
+      [data-highlight="tint"] mark[data-match] {
+        @apply bg-primary/15 text-foreground rounded-sm;
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-12 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · LookupEditor</p>
+        <h1 class="text-2xl font-semibold">Sheet result list candidates</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Each panel mocks the sheet body at its real width. All are live: search, click to select, ↑/↓ and Enter from
+          the search box, and each uses a different “load more” treatment (8 per page). Match highlighting style is in
+          the control bar. Candidates are the <code>concepts</code> array at the bottom of this file. The field control
+          candidates are in <a class="underline" href="lookup-editor.html">lookup-editor.html</a>.
+        </p>
+      </header>
+
+      <div id="panels" class="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3"></div>
+
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">Non-result states</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            Current treatment (plain centred text) next to alternatives, for the minimum-length hint, no results, loading and a failed request.
+          </p>
+        </div>
+        <div id="states" class="grid gap-6 md:grid-cols-2 xl:grid-cols-4"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { search, highlight, icon, controlBar } from "./lookup-shared.js";
+
+      const pageSize = 8;
+      const sheetTitle = "Departure airport";
+      const hl = highlight;
+
+      const button = (variant, size, attrs, body, cls = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;
+      const itemOpen = (variant, size, cls, attrs = "") =>
+        `<div data-slot="item" data-variant="${variant}" data-size="${size}" ${attrs} class="sa-item group/item sa-item-variant-${variant} sa-item-size-${size} ${cls}">`;
+      // The stretched button keeps the whole row clickable, as in the current markup
+      const stretched = (a, body, cls = "") =>
+        `<button type="button" class="text-left outline-none after:absolute after:inset-0 ${cls}" data-pick="${a.code}">${body}</button>`;
+      const rowState = (a, ctx) =>
+        `${a.code === ctx.selected ? "data-selected" : ""} ${a.code === ctx.activeCode ? "data-active" : ""}`;
+
+      // Load-more treatments
+      const more = {
+        ghost: (ctx) => (ctx.hasMore ? button("ghost", "default", "data-more", "Load more", "w-full") : ""),
+        count: (ctx) =>
+          ctx.hasMore
+            ? `<div class="text-muted-foreground flex items-center justify-between px-2 pt-2 text-xs">
+                 <span>Showing ${ctx.shown} of ${ctx.total}</span>${button("link", "sm", "data-more", "Load more", "h-auto px-0")}</div>`
+            : `<p class="text-muted-foreground px-2 pt-2 text-xs">All ${ctx.total} shown</p>`,
+        auto: (ctx) =>
+          ctx.hasMore
+            ? `<div data-auto-more class="text-muted-foreground flex items-center justify-center gap-2 py-3 text-xs">${icon.loader("size-4 animate-spin")} Loading more…</div>`
+            : "",
+        outline: (ctx) =>
+          ctx.hasMore
+            ? button("outline", "sm", "data-more", `Show ${Math.min(pageSize, ctx.total - ctx.shown)} more`, "mx-auto mt-2")
+            : "",
+      };
+
+      const concepts = [
+        {
+          name: "1 · Current",
+          note: "What ships today: extra-small items, muted hover, description below, ghost Load more.",
+          results: (items, ctx) =>
+            items
+              .map(
+                (a) => `${itemOpen("default", "xs", "hover:bg-muted has-focus-visible:bg-muted data-[active]:bg-muted relative", rowState(a, ctx))}
+                  <div data-slot="item-content" class="sa-item-content">
+                    <div data-slot="item-title" class="sa-item-title">${stretched(a, hl(a.city, ctx.term))}</div>
+                    <div data-slot="item-description" class="sa-item-description">${hl(`${a.code} · ${a.country}`, ctx.term)}</div>
+                  </div></div>`,
+              )
+              .join("") + more.ghost(ctx),
+        },
+        {
+          name: "2 · Trailing code + check",
+          note: "Title and description stacked, the key (code) right-aligned in mono, selected row tinted with a check. Count + link footer.",
+          results: (items, ctx) =>
+            items
+              .map(
+                (a) => `${itemOpen("default", "xs", "hover:bg-muted data-[active]:bg-muted data-[selected]:bg-accent data-[selected]:text-accent-foreground relative", rowState(a, ctx))}
+                  <div data-slot="item-content" class="sa-item-content">
+                    <div data-slot="item-title" class="sa-item-title">${stretched(a, hl(a.city, ctx.term))}</div>
+                    <div data-slot="item-description" class="sa-item-description">${hl(a.country, ctx.term)}</div>
+                  </div>
+                  <div data-slot="item-actions" class="sa-item-actions text-muted-foreground font-mono text-xs">
+                    ${hl(a.code, ctx.term)}
+                    <span class="w-4">${a.code === ctx.selected ? icon.check("text-primary size-4") : ""}</span>
+                  </div></div>`,
+              )
+              .join("") + more.count(ctx),
+        },
+        {
+          name: "3 · Media tile + pinned selection",
+          note: "Small items with a code tile as media, separators between rows, and the current selection pinned in its own group above the results. Auto-loads on scroll.",
+          gap: "gap-0",
+          results: (items, ctx) => {
+            const row = (a) => `${itemOpen("default", "sm", "hover:bg-muted/60 data-[active]:bg-muted/60 relative rounded-none", rowState(a, ctx))}
+                <div data-slot="item-media" class="sa-item-media">
+                  <div class="bg-muted group-data-[selected]/item:bg-primary group-data-[selected]/item:text-primary-foreground flex size-9 items-center justify-center rounded-md font-mono text-[0.7rem] font-medium">${a.code}</div>
+                </div>
+                <div data-slot="item-content" class="sa-item-content">
+                  <div data-slot="item-title" class="sa-item-title">${stretched(a, hl(a.city, ctx.term))}</div>
+                  <div data-slot="item-description" class="sa-item-description">${hl(a.country, ctx.term)}</div>
+                </div></div>`;
+            const sep = `<div data-slot="item-separator" role="separator" class="sa-separator sa-separator-horizontal sa-item-separator my-0"></div>`;
+            const group = (title, html) =>
+              `<p class="text-muted-foreground px-2 pt-3 pb-1 text-[0.7rem] font-medium tracking-wide uppercase">${title}</p>${html}`;
+            const current = ctx.selectedItem && !ctx.term ? group("Current", row(ctx.selectedItem)) : "";
+            return current + group(ctx.term ? "Results" : "All airports", items.map(row).join(sep)) + more.auto(ctx);
+          },
+        },
+        {
+          name: "4 · Command palette",
+          note: "Dense rows, sticky first-letter group headers, keyboard-first: active row is the primary cue, Enter selects. Footer bar with key hints and count. Auto-loads.",
+          gap: "gap-0",
+          footer: (ctx) => `
+            <div class="text-muted-foreground flex items-center gap-3 border-t px-4 py-2 text-xs">
+              <span class="flex items-center gap-1"><kbd data-slot="kbd" class="sa-kbd">↑</kbd><kbd data-slot="kbd" class="sa-kbd">↓</kbd> move</span>
+              <span class="flex items-center gap-1"><kbd data-slot="kbd" class="sa-kbd">↵</kbd> select</span>
+              <span class="flex items-center gap-1"><kbd data-slot="kbd" class="sa-kbd">Esc</kbd> close</span>
+              <span class="ml-auto">${ctx.shown}/${ctx.total}</span>
+            </div>`,
+          results: (items, ctx) => {
+            let letter = "";
+            return (
+              items
+                .map((a) => {
+                  const head =
+                    a.city[0] !== letter
+                      ? `<p class="bg-background text-muted-foreground sticky top-0 z-10 px-2 pt-2 pb-1 text-[0.7rem] font-medium">${(letter = a.city[0])}</p>`
+                      : "";
+                  return `${head}<div ${rowState(a, ctx)} class="hover:bg-muted data-[active]:bg-accent data-[active]:text-accent-foreground relative flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm">
+                      ${stretched(a, hl(a.city, ctx.term), "min-w-0 truncate")}
+                      <span class="text-muted-foreground truncate text-xs">${hl(a.country, ctx.term)}</span>
+                      <span class="text-muted-foreground ml-auto font-mono text-xs">${hl(a.code, ctx.term)}</span>
+                      ${a.code === ctx.selected ? icon.check("size-4 shrink-0") : `<span class="w-4 shrink-0"></span>`}
+                    </div>`;
+                })
+                .join("") + more.auto(ctx)
+            );
+          },
+        },
+        {
+          name: "5 · Outline cards",
+          note: "Each result is an outline item with breathing room; the selection gets a primary border and ring. Good for few, richer items; heavier for long lists.",
+          gap: "gap-2",
+          results: (items, ctx) =>
+            items
+              .map(
+                (a) => `${itemOpen("outline", "sm", "hover:bg-muted/50 data-[active]:bg-muted/50 data-[selected]:border-primary data-[selected]:ring-primary/30 data-[selected]:ring-2 relative", rowState(a, ctx))}
+                  <div data-slot="item-media" class="sa-item-media text-muted-foreground">${icon.plane("size-4")}</div>
+                  <div data-slot="item-content" class="sa-item-content">
+                    <div data-slot="item-title" class="sa-item-title">${stretched(a, hl(a.city, ctx.term))}</div>
+                    <div data-slot="item-description" class="sa-item-description">${hl(`${a.country} · ${a.code}`, ctx.term)}</div>
+                  </div></div>`,
+              )
+              .join("") + more.outline(ctx),
+        },
+        {
+          name: "6 · Radio list",
+          note: "Single-choice affordance: a radio dot per row, one line per item (name — description), code at the end. Reads like a form control rather than a menu.",
+          gap: "gap-0.5",
+          results: (items, ctx) =>
+            items
+              .map(
+                (a) => `<div ${rowState(a, ctx)} class="group hover:bg-muted data-[active]:bg-muted relative flex items-center gap-3 rounded-md px-2 py-2 text-sm">
+                    <span class="border-input group-data-[selected]:border-primary flex size-4 shrink-0 items-center justify-center rounded-full border">
+                      <span class="bg-primary hidden size-2 rounded-full group-data-[selected]:block"></span>
+                    </span>
+                    <span class="min-w-0 truncate">${stretched(a, hl(a.city, ctx.term))}<span class="text-muted-foreground"> — ${hl(a.country, ctx.term)}</span></span>
+                    <span class="text-muted-foreground ml-auto font-mono text-xs">${hl(a.code, ctx.term)}</span>
+                  </div>`,
+              )
+              .join("") + more.ghost(ctx),
+        },
+        {
+          name: "7 · Table",
+          note: "Column view for data-heavy lookups (several descriptive fields). Sticky header, compact rows, Load more as a final row.",
+          gap: "gap-0",
+          bodyCls: "px-0",
+          results: (items, ctx) => `
+            <table class="w-full text-sm">
+              <thead class="bg-background text-muted-foreground sticky top-0 text-left text-xs">
+                <tr class="border-b"><th class="px-6 py-2 font-medium">Code</th><th class="py-2 font-medium">City</th><th class="py-2 pr-6 font-medium">Country</th></tr>
+              </thead>
+              <tbody>
+                ${items
+                  .map(
+                    (a) => `<tr ${rowState(a, ctx)} class="hover:bg-muted/60 data-[active]:bg-muted/60 data-[selected]:bg-accent relative border-b">
+                      <td class="px-6 py-2 font-mono text-xs">${hl(a.code, ctx.term)}</td>
+                      <td class="py-2">${stretched(a, hl(a.city, ctx.term))}</td>
+                      <td class="text-muted-foreground py-2 pr-6">${hl(a.country, ctx.term)}</td></tr>`,
+                  )
+                  .join("")}
+                ${ctx.hasMore ? `<tr><td colspan="3" class="px-6 py-1">${button("ghost", "sm", "data-more", "Load more", "w-full")}</td></tr>` : ""}
+              </tbody>
+            </table>`,
+        },
+      ];
+
+      // Panel mocks the sheet body: title, search, scrolling results, optional footer
+      const panels = concepts.map((concept, i) => ({ concept, term: "", shown: pageSize, selected: "AMS", active: -1, i }));
+
+      document.getElementById("panels").innerHTML = panels
+        .map(
+          ({ concept, i }) => `
+          <section class="space-y-3">
+            <div>
+              <h2 class="font-semibold">${concept.name}</h2>
+              <p class="text-muted-foreground text-sm">${concept.note}</p>
+            </div>
+            <div data-panel="${i}" class="bg-background flex h-[560px] w-full max-w-[24rem] flex-col overflow-hidden rounded-xl border shadow-sm">
+              <div data-slot="sheet-header" class="sa-sheet-header">
+                <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${sheetTitle}</h2>
+              </div>
+              <div class="px-6">
+                <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+                  <input type="search" autocomplete="off" placeholder="Search airports" data-search="${i}" data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                  <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon.search()}</div>
+                </div>
+              </div>
+              <div data-results="${i}" class="flex min-h-0 flex-1 flex-col ${concept.gap ?? "gap-1"} overflow-y-auto p-6 pt-4 ${concept.bodyCls ?? ""}"></div>
+              <div data-footer="${i}"></div>
+            </div>
+          </section>`,
+        )
+        .join("");
+
+      const ctxOf = (p) => {
+        const all = search(p.term);
+        const items = all.slice(0, p.shown);
+        return {
+          items,
+          term: p.term,
+          selected: p.selected,
+          selectedItem: search("").find((a) => a.code === p.selected),
+          activeCode: items[p.active]?.code,
+          shown: items.length,
+          total: all.length,
+          hasMore: all.length > p.shown,
+        };
+      };
+
+      const empty = (term) => `
+        <div data-slot="empty" class="sa-empty border-0 p-6">
+          <div data-slot="empty-header" class="sa-empty-header">
+            <div data-slot="empty-media" data-variant="icon" class="sa-empty-media sa-empty-media-icon">${icon.searchX()}</div>
+            <div data-slot="empty-title" class="sa-empty-title">No airports found</div>
+            <div data-slot="empty-description" class="sa-empty-description">Nothing matches “${term}”.</div>
+          </div>
+        </div>`;
+
+      const render = (p) => {
+        const el = document.querySelector(`[data-results="${p.i}"]`);
+        const scroll = el.scrollTop;
+        const ctx = ctxOf(p);
+        el.innerHTML = ctx.total ? p.concept.results(ctx.items, ctx) : empty(p.term);
+        el.scrollTop = scroll;
+        document.querySelector(`[data-footer="${p.i}"]`).innerHTML = p.concept.footer?.(ctx) ?? "";
+        el.querySelector("[data-active]")?.scrollIntoView({ block: "nearest" });
+        observeAutoMore(p, el);
+      };
+
+      const observers = new Map();
+      const observeAutoMore = (p, el) => {
+        observers.get(p.i)?.disconnect();
+        const sentinel = el.querySelector("[data-auto-more]");
+        if (!sentinel) return;
+        const io = new IntersectionObserver(
+          ([entry]) => {
+            if (!entry.isIntersecting) return;
+            io.disconnect();
+            setTimeout(() => {
+              p.shown += pageSize;
+              render(p);
+            }, 600);
+          },
+          { root: el },
+        );
+        io.observe(sentinel);
+        observers.set(p.i, io);
+      };
+
+      panels.forEach(render);
+
+      const panelOf = (el) => panels[Number(el.closest("[data-panel]").dataset.panel)];
+
+      document.addEventListener("input", (e) => {
+        if (!e.target.matches("[data-search]")) return;
+        const p = panelOf(e.target);
+        p.term = e.target.value;
+        p.shown = pageSize;
+        p.active = -1;
+        document.querySelector(`[data-results="${p.i}"]`).scrollTop = 0;
+        render(p);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (!e.target.matches("[data-search]")) return;
+        const p = panelOf(e.target);
+        const { items } = ctxOf(p);
+        if (e.key === "ArrowDown") p.active = Math.min(p.active + 1, items.length - 1);
+        else if (e.key === "ArrowUp") p.active = Math.max(p.active - 1, 0);
+        else if (e.key === "Enter" && items[p.active]) p.selected = items[p.active].code;
+        else return;
+        e.preventDefault();
+        render(p);
+      });
+      document.addEventListener("click", (e) => {
+        const panel = e.target.closest("[data-panel]");
+        if (!panel) return;
+        const p = panelOf(panel);
+        const pick = e.target.closest("[data-pick]");
+        if (pick) p.selected = pick.dataset.pick;
+        else if (e.target.closest("[data-more]")) p.shown += pageSize;
+        else return;
+        render(p);
+      });
+
+      // Non-result states: current next to alternatives
+      const frame = (title, body) => `
+        <div class="space-y-2">
+          <p class="text-muted-foreground text-[0.7rem] tracking-wide uppercase">${title}</p>
+          <div class="bg-background flex h-44 flex-col justify-center rounded-xl border p-6">${body}</div>
+        </div>`;
+      const currentText = (t) => `<p class="text-muted-foreground py-6 text-center text-sm">${t}</p>`;
+      const skeletonRow = `<div class="flex flex-col gap-1.5 py-1.5"><div class="bg-muted h-3.5 w-2/5 animate-pulse rounded"></div><div class="bg-muted h-3 w-3/5 animate-pulse rounded"></div></div>`;
+      const emptyBlock = (ic, title, desc, extra = "") => `
+        <div data-slot="empty" class="sa-empty border-0 p-0">
+          <div data-slot="empty-header" class="sa-empty-header">
+            <div data-slot="empty-media" data-variant="icon" class="sa-empty-media sa-empty-media-icon">${ic}</div>
+            <div data-slot="empty-title" class="sa-empty-title">${title}</div>
+            <div data-slot="empty-description" class="sa-empty-description">${desc}</div>
+          </div>${extra}
+        </div>`;
+
+      document.getElementById("states").innerHTML = [
+        frame("Hint · current", currentText("Type at least 2 characters to search.")),
+        frame("Hint · inline under search", `<p class="text-muted-foreground -mt-24 flex items-center gap-1.5 text-xs">${icon.search("size-3.5")} Keep typing — 2 characters minimum</p>`),
+        frame("No results · current", currentText("No results found.")),
+        frame("No results · empty block", emptyBlock(icon.searchX(), "No airports found", "Nothing matches “xyz”. Try a city, code or country.")),
+        frame("Loading · spinner", `<div class="text-muted-foreground flex items-center justify-center gap-2 text-sm">${icon.loader("size-4 animate-spin")} Searching…</div>`),
+        frame("Loading · skeleton rows", `<div class="-my-2">${skeletonRow.repeat(3)}</div>`),
+        frame("Error · current-style text", currentText("Search failed. Try again.")),
+        frame("Error · empty block + retry", emptyBlock(icon.x(), "Search failed", "The server didn’t respond.", `<div data-slot="empty-content" class="sa-empty-content">${button("outline", "sm", "", "Try again")}</div>`)),
+      ].join("");
+
+      // Control bar: themes, dark, and the match highlight treatment
+      const bar = controlBar(
+        `<span class="text-muted-foreground ml-2">match:</span>` +
+          ["bold", "underline", "tint", "none"]
+            .map(
+              (h) =>
+                `<button type="button" data-set-highlight="${h}" class="rounded-md px-2 py-1 hover:bg-muted data-[active]:bg-primary data-[active]:text-primary-foreground" ${h === "bold" ? "data-active" : ""}>${h}</button>`,
+            )
+            .join(""),
+      );
+      bar.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-set-highlight]");
+        if (!btn) return;
+        document.documentElement.dataset.highlight = btn.dataset.setHighlight;
+        bar.querySelectorAll("[data-set-highlight]").forEach((b) => b.toggleAttribute("data-active", b === btn));
+      });
+    </script>
+  </body>
+</html>
