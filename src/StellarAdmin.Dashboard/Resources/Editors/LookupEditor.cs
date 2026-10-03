@@ -6,55 +6,44 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler>
 {
     /// <summary>
-    ///     Whether the selection can be cleared, or null to allow it when the field is optional.
-    /// </summary>
-    public bool? AllowClear { get; set; }
-
-    /// <summary>
-    ///     Hint text displayed while nothing is selected.
-    /// </summary>
-    public string? EmptyText { get; set; }
-
-    /// <summary>
-    ///     The number of characters entered before searching, or 0 to list items when the sheet opens.
-    /// </summary>
-    public int MinimumSearchLength
-    {
-        get;
-        set
-        {
-            ArgumentOutOfRangeException.ThrowIfNegative(value);
-            field = value;
-        }
-    }
-
-    /// <summary>
-    ///     The number of items loaded at a time.
-    /// </summary>
-    public int PageSize
-    {
-        get;
-        set
-        {
-            ArgumentOutOfRangeException.ThrowIfLessThan(value, 1);
-            field = value;
-        }
-    } = 20;
-
-    /// <summary>
-    ///     Hint text displayed in the search input.
-    /// </summary>
-    public string? SearchPlaceholder { get; set; }
-
-    /// <summary>
-    ///     The sheet title, or null to use the field label.
-    /// </summary>
-    public string? SheetTitle { get; set; }
-
-    /// <summary>
     ///     The configured items, or null until items are selected.
     /// </summary>
     public LookupItems? Items { get; private set; }
+
+    internal bool CreateEnabled { get; private set; }
+
+    internal LookupFieldOptions FieldOptions { get; } = new();
+
+    internal LookupEditorLayout Layout =>
+        FieldOptions.Layout
+        ?? (Items?.HasDescription == true ? LookupEditorLayout.Card : LookupEditorLayout.Input);
+
+    internal LookupSheetOptions SheetOptions { get; } = new();
+
+    /// <summary>
+    ///     Configures how the field is displayed in the form.
+    /// </summary>
+    public void Editor(Action<LookupFieldOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(FieldOptions);
+    }
+
+    /// <summary>
+    ///     Shows a button for creating a new item while nothing is selected.
+    /// </summary>
+    public void EnableCreate() => CreateEnabled = true;
+
+    /// <summary>
+    ///     Configures the sheet in which items are searched.
+    /// </summary>
+    public void Sheet(Action<LookupSheetOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(SheetOptions);
+    }
 
     /// <summary>
     ///     Supplies the items from an integration's implementation.
@@ -71,27 +60,32 @@ public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler
     /// </summary>
     public void UseItems<TSource, TEntity, TValue>(
         Func<TEntity, TValue> value,
-        Func<TEntity, string> text
+        Func<TEntity, string> title
     )
         where TSource : class, ILookupSource<TEntity, TValue> =>
-        UseItems<TSource, TEntity, TValue>(value, text, _ => { });
+        UseItems<TSource, TEntity, TValue>(value, title, _ => { });
 
     /// <summary>
-    ///     Selects a registered source that supplies the items for each request, and configures how they are displayed.
+    ///     Selects a registered source that supplies the items for each request, and configures what each item contains.
     /// </summary>
     public void UseItems<TSource, TEntity, TValue>(
         Func<TEntity, TValue> value,
-        Func<TEntity, string> text,
+        Func<TEntity, string> title,
         Action<LookupItemsBuilder<TEntity>> configure
     )
         where TSource : class, ILookupSource<TEntity, TValue>
     {
         ArgumentNullException.ThrowIfNull(value);
-        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(title);
         ArgumentNullException.ThrowIfNull(configure);
 
         var items = new LookupItemsBuilder<TEntity>();
         configure(items);
-        Items = new LookupItems<TSource, TEntity, TValue>(value, text, items.Description);
+        Items = new LookupItems<TSource, TEntity, TValue>(
+            value,
+            title,
+            items.Description,
+            items.Media
+        );
     }
 }

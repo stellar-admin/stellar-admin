@@ -1,6 +1,6 @@
 # Lookup editor
 
-Status: **active**. Phases 1–4 committed on branch `lookup-editor`; Phase 5 implemented, awaiting review. Last updated: 2026-10-02.
+Status: **active**. Phases 1–5 committed on branch `lookup-editor`; Phases 6–9 implement the [display redesign](#display-redesign). Last updated: 2026-10-03.
 
 `SelectEditor` suits short lists. `LookupEditor` handles long ones: a read-only display input in an input group with a lookup button that opens a sheet with free-text search and paged results. The form posts a hidden value; the display text (and description) is resolved when the form loads. Single select only. Results are a single column rendered with `sa-item`. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -10,7 +10,11 @@ Status: **active**. Phases 1–4 committed on branch `lookup-editor`; Phase 5 im
 | 2 | `LookupEditor`, lookup source abstractions, handler and template without search | committed |
 | 3 | Search endpoint, sheet results, selection and clearing | committed |
 | 4 | EF Core items, search projection and reference loading in the edit query | committed |
-| 5 | Playground, gallery example and consumer reference | implemented, awaiting review |
+| 5 | Playground, gallery example and consumer reference | committed |
+| 6 | Configuration structure and item media data, no visual change | implemented |
+| 7 | Editor appearance: Card and Input layouts, media, empty and read-only states, `EnableCreate` | implemented, awaiting review |
+| 8 | Sheet appearance: listbox results, media, selection check, keyboard, loading and error states | planned |
+| 9 | Playground, gallery and consumer reference for the redesign | planned |
 
 ## Proposed API
 
@@ -115,9 +119,25 @@ Switch a playground field to `LookupEditor`, add the gallery example and regener
 
 Implemented: the product edit form's Category already used `LookupEditor` with EF Core items since Phase 4; product create keeps `SelectEditor`, so both remain visible. A "Lookup" gallery resource (`LookupGallery`, after Select) uses an in-memory `GalleryAirportLookupSource` registered by the gallery, searching city, code and country. Its scenarios cover optional, required and described items; title, descriptions, read-only and an unknown value; and `SheetTitle`, `SearchPlaceholder`, `EmptyText`, `AllowClear = false`, `MinimumSearchLength`, `PageSize` and `ClassNames.Control`. The consumer reference (`skills/stellar-admin-dashboard/references/setup.md`, hand-written) gains a `LookupEditor` row in the editor table, a paragraph with an `ILookupSource` example, and an EF Core paragraph covering `SearchOn`, `DescribeWith`, `OrderBy`, the navigation loaded with the entity and `ReferenceFrom`. The generated component references cover only FormPage and IndexPage, so there was nothing to regenerate.
 
+### Phase 6: configuration structure
+
+The API from [Configuration structure](#configuration-structure) without changing what renders. `LookupEditor` loses its scalar settings and gains `Editor(Action<LookupFieldOptions>)` (`EmptyText`, `AllowClear`) and `Sheet(Action<LookupSheetOptions>)` (`Title`, `SearchPlaceholder`, `PageSize`, `MinimumSearchLength`). `UseItems`' `text` parameter becomes `title`. Both items builders replace `DescribeWith` with `UseDescription` and gain `UseCode` and `UseAvatar`. `LookupItem` and `LookupResult` rename `Text` to `Title` and carry a `LookupMedia` (a `LookupMediaType` of `Code` or `Avatar`, and the code text or image URL), projected in SQL by EF Core. Tests, the playground, the gallery and the consumer reference follow the renames; the gallery's labels are updated but its scenarios are not extended until Phase 9.
+
+### Phase 7: editor appearance
+
+`editor.Layout` (`LookupEditorLayout`), `editor.ShowMedia` and `lookup.EnableCreate()`, and the Card, Input, empty and read-only states from [Editor appearance](#editor-appearance), with the script updating the media, title and description on selection. The layout default needs to know whether a description is configured, so `LookupItems` gains an abstract `HasDescription`. The selected item's media and text come from a shared `_LookupSelection` partial: the editor renders it for the current value, each search result carries it in a `<template>`, and selecting a result swaps its parts into the editor. Both open buttons (Change and Choose) fire a `lookup-open` event on the search input, replacing the `click from:` trigger that only allowed one button.
+
+### Phase 8: sheet appearance
+
+`sheet.ShowMedia` and the results from [Sheet appearance](#sheet-appearance): listbox rows with media and a trailing check on the selected value, arrow-key navigation from the search input, the ghost Load more button, skeleton rows while loading, and the minimum-length, no-results and error states.
+
+### Phase 9: playground and references
+
+Gallery scenarios for media, layouts, `ShowMedia` and `EnableCreate`, the playground's product category, and the consumer reference. The prototypes stay in `sandbox/html`.
+
 ## Display redesign
 
-Settled 2026-10-03 after visual exploration in `sandbox/html/lookup-compact.html` (editor) and `sandbox/html/lookup-sheet.html` (sheet results), both untracked prototypes. Not yet implemented and not split into phases.
+Settled 2026-10-03 after visual exploration in `sandbox/html/lookup-compact.html` (editor) and `sandbox/html/lookup-sheet.html` (sheet results), implemented in Phases 6–9.
 
 ### Configuration structure
 
@@ -182,8 +202,8 @@ field.UseEditor<LookupEditor>(lookup =>
 | Stored value (hidden) | `UseItems` first argument |
 
 - **Card:** an extra-small `sa-item` with media, title and description, and Change and clear buttons.
-- **Input:** an `sa-input-group` shell with media, title, and Change and clear buttons.
-- **Empty, editable:** two dashed buttons sized to their content, "Choose {field}" (`EmptyText`) and, with `EnableCreate`, "New". Invalid fields use the destructive border and text.
+- **Input:** an `sa-button-group`: the selection (media, title and a chevron) is an outline button that opens the sheet, followed by an outline clear button. Each segment has its own focus ring; the input group it replaced lit the whole shell whenever either button had focus.
+- **Empty, editable:** two dashed buttons sized to their content, "Choose {field}" (`EmptyText`) with a search icon and, with `EnableCreate`, "New". Invalid fields use the destructive border and text.
 - **Read-only, selected:** the layout's muted surface (`sa-item-variant-muted`, or a read-only `sa-input`) without buttons.
 - **Read-only, empty:** the same muted surface showing "None" in muted text.
 
@@ -213,3 +233,9 @@ Phase 3, 2026-10-02: Dashboard integration tests 274 passed; `LookupEditorTests`
 Phase 4, 2026-10-02: EF Core integration tests 66 passed, seven new in `ResourceLookupTests` (the edit page shows the selection from one joined query, with inference and with `ReferenceFrom`; a rejected edit with a changed selection and a rejected create show the posted selection; search ignores case; pages order by text with load more; `SearchOn`, `DescribeWith` and `OrderBy` replace the defaults). Dashboard integration tests 274 passed, Dashboard unit tests 37 passed. Touched C# files formatted with CSharpier. In the playground (port 5206) with EF Core items, the same headless Chromium check as Phase 3 passed (list of ten with descriptions, "kit" narrows to Kitchen & Dining, Enter does not submit, select sets value 5, clear empties), and the lookup action matched "KIT". No screenshots reviewed; the markup is unchanged from Phase 3.
 
 Phase 5, 2026-10-02: the playground builds. On port 5206 the gallery's edit page returned 200 with each selection's text (the unknown value shows "XXX", `EmptyText` shows as the placeholder) and create showed every field empty; the lookup action paged five items with load more, returned the minimum-length hint for "s" and matched "tok" to both Tokyo airports with descriptions. Headless Chromium over CDP on the `PageSize 5` field: opening listed five, load more made ten, "tok" narrowed to two, Enter did not submit, selecting set HND and "Tokyo Haneda" and closed the sheet, and clear emptied both. A screenshot of the open sheet showed text, descriptions and load more. No tests were run (no library change).
+
+Phase 6, 2026-10-03: Dashboard integration tests 274 passed, EF Core integration tests 66 passed, Dashboard unit tests 37 passed, with the existing lookup tests moved to `Editor(...)`, `Sheet(...)` and `UseDescription`; the playground builds. Touched C# files formatted with CSharpier. Media (`UseCode`, `UseAvatar`) reaches `LookupItem` and `LookupResult` but nothing renders it yet, so it has no tests; HTTP tests follow when Phases 7 and 8 render it. No browser check (markup unchanged apart from the renamed properties).
+
+Phase 7, 2026-10-03: Dashboard integration tests 285 passed. `LookupEditorTests` covers the selected Card with title and description, empty state with Choose text ("Choose categoryId" from the label, or `EmptyText`), `EnableCreate`'s New button, the layout default for items with and without a description, explicit `Input` hiding the description, `UseCode`, `UseAvatar` with an image and with initials, `ShowMedia = false`, read-only selected and empty ("None"), the invalid empty buttons after a rejected post, and results carrying each item's display in a template. EF Core integration tests 66 passed (the display-text helper now reads the selection's title), Dashboard unit tests 37 passed, the playground builds. Touched C# files formatted with CSharpier, the script with oxfmt. In the playground (port 5206, Development) over CDP on product 1's edit page: Change opened the sheet with ten results, selecting Kitchen & Dining set value 5, swapped the card's title and description, closed the sheet and focused Change; clear showed the Choose button and focused it; Choose then selected another category. On the gallery's edit page an Input-layout field swapped to Mexico City on selection. Screenshots of the card (selected and empty) and the gallery's edit and create pages matched the prototype, with the parallax theme drawing a divider before the input group's Change button. The playground's product category and the gallery still use Phase 5 labels, so empty fields read "Choose string? · UseItems" or "Not specified". Phase 9 updates them.
+
+Phase 7 revision, 2026-10-03: the Input layout became a button group (selection button and clear) after review found the input group's focus confusing; the prototype's "Button group · selection button" variant was chosen. Choose uses a search icon. Dashboard integration tests 285 passed, EF Core integration tests 66 passed. In the playground (port 5207, Development) over CDP on the gallery's edit page: tabbing ringed the selection button and then the clear button separately, selecting Mexico City swapped the title inside the button and kept focus on it, clear showed the Choose button with the search icon, and after a rejected save the selection button drew the destructive ring. No gallery field uses media in the Input layout, so the media padding was checked by injecting a code chip into the page.

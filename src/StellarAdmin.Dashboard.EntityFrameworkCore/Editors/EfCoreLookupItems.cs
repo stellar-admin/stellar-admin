@@ -24,19 +24,23 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
     )!;
 
     private readonly Func<TEntity, string?>? _description;
+    private readonly Func<TEntity, string?>? _media;
     private readonly EfCoreLookupItemsOptions<TEntity, TValue> _options;
     private readonly Expression<Func<TEntity, LookupProjection>> _projection;
-    private readonly Func<TEntity, string> _text;
+    private readonly Func<TEntity, string> _title;
     private readonly Func<TEntity, TValue> _value;
 
     public EfCoreLookupItems(EfCoreLookupItemsOptions<TEntity, TValue> options)
     {
         _options = options;
         _value = options.ValueExpression.Compile();
-        _text = options.TextExpression.Compile();
+        _title = options.TitleExpression.Compile();
         _description = options.DescriptionExpression?.Compile();
+        _media = options.MediaExpression?.Compile();
         _projection = CreateProjection(options);
     }
+
+    public override bool HasDescription => _description is not null;
 
     public override async Task<LookupItem?> FindAsync(
         IServiceProvider services,
@@ -60,7 +64,11 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
                     && EqualityComparer<TValue>.Default.Equals(_value(reference), current)
                 )
                 {
-                    return new LookupItem(_text(reference), _description?.Invoke(reference));
+                    return new LookupItem(
+                        _title(reference),
+                        _description?.Invoke(reference),
+                        CreateMedia(_media?.Invoke(reference))
+                    );
                 }
 
                 var row = await db.Set<TEntity>()
@@ -73,9 +81,10 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
                 return row is null
                     ? new LookupItem(
                         Convert.ToString(current, CultureInfo.InvariantCulture) ?? "",
+                        null,
                         null
                     )
-                    : new LookupItem(row.Text ?? "", row.Description);
+                    : new LookupItem(row.Title ?? "", row.Description, CreateMedia(row.Media));
             default:
                 throw new InvalidOperationException(
                     $"LookupEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
@@ -124,7 +133,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         }
 
         var ordered =
-            _options.OrderQuery?.Invoke(entities) ?? entities.OrderBy(_options.TextExpression);
+            _options.OrderQuery?.Invoke(entities) ?? entities.OrderBy(_options.TitleExpression);
         var rows = await ordered
             .ThenBy(_options.ValueExpression)
             .Skip(query.Skip)
@@ -137,8 +146,9 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             rows.Take(query.Take)
                 .Select(row => new LookupResult(
                     Convert.ToString(row.Value, CultureInfo.CurrentCulture) ?? "",
-                    row.Text ?? "",
-                    row.Description
+                    row.Title ?? "",
+                    row.Description,
+                    CreateMedia(row.Media)
                 ))
                 .ToArray(),
             rows.Count > query.Take
@@ -154,16 +164,16 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             typeof(TValue),
             typeof(string),
             typeof(string),
+            typeof(string),
         ])!;
 
         return Expression.Lambda<Func<TEntity, LookupProjection>>(
             Expression.New(
                 constructor,
                 Rebind(options.ValueExpression, entity),
-                Rebind(options.TextExpression, entity),
-                options.DescriptionExpression is { } description
-                    ? Rebind(description, entity)
-                    : Expression.Constant(null, typeof(string))
+                Rebind(options.TitleExpression, entity),
+                RebindOrNull(options.DescriptionExpression, entity),
+                RebindOrNull(options.MediaExpression, entity)
             ),
             entity
         );
@@ -171,6 +181,14 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
 
     private static Expression Rebind(LambdaExpression selector, ParameterExpression entity) =>
         new ReplaceParameterVisitor(selector.Parameters[0], entity).Visit(selector.Body)!;
+
+    private static Expression RebindOrNull(
+        LambdaExpression? selector,
+        ParameterExpression entity
+    ) => selector is null ? Expression.Constant(null, typeof(string)) : Rebind(selector, entity);
+
+    private LookupMedia? CreateMedia(string? value) =>
+        _media is null ? null : new LookupMedia(_options.MediaType, value);
 
     private Expression<Func<TEntity, bool>> Matches(string term)
     {
@@ -181,7 +199,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         LambdaExpression[] selectors =
             _options.SearchExpressions.Count > 0
                 ? [.. _options.SearchExpressions]
-                : [_options.TextExpression];
+                : [_options.TitleExpression];
         var body = selectors
             .Select(selector =>
                 (Expression)
@@ -207,5 +225,10 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         );
     }
 
-    private sealed record LookupProjection(TValue Value, string? Text, string? Description);
+    private sealed record LookupProjection(
+        TValue Value,
+        string? Title,
+        string? Description,
+        string? Media
+    );
 }

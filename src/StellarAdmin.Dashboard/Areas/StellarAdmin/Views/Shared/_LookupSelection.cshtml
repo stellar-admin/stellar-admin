@@ -1,0 +1,68 @@
+@model LookupSelectionViewModel
+
+@{
+    var item = Model.Item;
+    var card = Model.Layout == LookupEditorLayout.Card;
+
+    // A code needs text to display; an avatar without an image falls back to the title's initials
+    var media = Model.ShowMedia && item?.Media is { } itemMedia
+                                && (itemMedia.Type == LookupMediaType.Avatar || !string.IsNullOrEmpty(itemMedia.Value))
+        ? itemMedia
+        : null;
+
+    async Task RenderMedia()
+    {
+        var size = card ? AvatarSize.Default : AvatarSize.Small;
+        if (media?.Type == LookupMediaType.Code)
+        {
+            <span class="@(card ? "flex size-7 shrink-0 items-center justify-center rounded-md text-[0.65rem]" : "rounded-sm px-1.5 py-0.5 text-[0.7rem]") bg-muted text-foreground font-mono font-medium">@media.Value</span>
+        }
+        else if (string.IsNullOrEmpty(media?.Value))
+        {
+            @* A string attribute binds an empty string rather than null, so the image is only passed when there is one *@
+            <sa-avatar name="@item!.Title" size="size" />
+        }
+        else
+        {
+            <sa-avatar name="@item!.Title" src="@media.Value" size="size" />
+        }
+    }
+}
+
+@* The editable layouts mark their parts with data-lookup, so selecting a result can swap in that result's parts *@
+@if (card)
+{
+    <sa-item-media data-lookup="media" hidden="@(media is null)">
+        @if (media is not null)
+        {
+            await RenderMedia();
+        }
+    </sa-item-media>
+    <sa-item-content data-lookup="text" class="min-w-0 gap-0">
+        <sa-item-title class="w-full text-sm"><span class="truncate" data-lookup="title">@item?.Title</span></sa-item-title>
+        @if (!string.IsNullOrEmpty(item?.Description))
+        {
+            <sa-item-description class="truncate text-xs">@item.Description</sa-item-description>
+        }
+    </sa-item-content>
+}
+else if (Model.IsReadOnly)
+{
+    @if (media is not null)
+    {
+        await RenderMedia();
+    }
+    <span class="min-w-0 truncate">@item?.Title</span>
+}
+else
+{
+    <span class="flex shrink-0 items-center" data-lookup="media" hidden="@(media is null)">
+        @if (media is not null)
+        {
+            await RenderMedia();
+        }
+    </span>
+    <span class="flex min-w-0 items-center" data-lookup="text">
+        <span class="truncate" data-lookup="title">@item?.Title</span>
+    </span>
+}

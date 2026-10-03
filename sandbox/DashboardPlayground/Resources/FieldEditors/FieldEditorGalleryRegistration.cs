@@ -315,30 +315,33 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.LabelledAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
-                        lookup.SheetTitle = "Select a departure airport";
-                        lookup.SearchPlaceholder = "City, code or country";
-                        lookup.EmptyText = "Any airport";
+                        lookup.Sheet(sheet =>
+                        {
+                            sheet.Title = "Select a departure airport";
+                            sheet.SearchPlaceholder = "City, code or country";
+                        });
+                        lookup.Editor(editor => editor.EmptyText = "Any airport");
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.UnclearableAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
-                        lookup.AllowClear = false;
+                        lookup.Editor(editor => editor.AllowClear = false);
                         UseAirports(lookup);
                     });
                 section
                     .Add(model => model.SearchedAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
-                        lookup.MinimumSearchLength = 2;
+                        lookup.Sheet(sheet => sheet.MinimumSearchLength = 2);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.PagedAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
-                        lookup.PageSize = 5;
+                        lookup.Sheet(sheet => sheet.PageSize = 5);
                         UseAirports(lookup, describe: true);
                     });
                 section
@@ -359,7 +362,7 @@ internal static class FieldEditorGalleryRegistration
                 {
                     if (describe)
                     {
-                        items.DescribeWith(airport => $"{airport.Code} · {airport.Country}");
+                        items.UseDescription(airport => $"{airport.Code} · {airport.Country}");
                     }
                 }
             );

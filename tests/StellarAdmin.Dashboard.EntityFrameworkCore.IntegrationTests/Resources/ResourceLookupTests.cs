@@ -168,7 +168,7 @@ public class ResourceLookupTests
                 items =>
                     items
                         .SearchOn(category => "Code " + category.Id.ToString())
-                        .DescribeWith(category => "Code " + category.Id.ToString())
+                        .UseDescription(category => "Code " + category.Id.ToString())
                         .OrderBy(category => category.Id)
             )
         );
@@ -214,7 +214,7 @@ public class ResourceLookupTests
                     .Add(product => product.CategoryId)
                     .UseEditor<LookupEditor>(options =>
                     {
-                        options.PageSize = pageSize;
+                        options.Sheet(sheet => sheet.PageSize = pageSize);
                         ConfigureItems(options, configure);
                     });
             })
@@ -231,7 +231,7 @@ public class ResourceLookupTests
         );
 
     private static string? DisplayText(IDocument document) =>
-        document.QuerySelector("[data-lookup='display']")?.GetAttribute("value");
+        document.QuerySelector("[id$='-selected'] [data-lookup='title']")?.TextContent;
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
     {

@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 @inherits FieldEditorView<LookupEditor>
 
 @{
@@ -5,12 +6,19 @@
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
     var canLookUp = !IsReadOnly && Field?.FieldName is not null;
-    var allowClear = canLookUp && (Editor.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
+    var allowClear = canLookUp && (Editor.FieldOptions.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
+    var card = Editor.Layout == LookupEditorLayout.Card;
+    var invalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
+    var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp);
 
-    // The visible input only displays the selection; the hidden input carries the posted value
+    // Labels are usually sentence case, so "Choose" continues the sentence unless the label starts with an acronym
+    var chooseText = Editor.FieldOptions.EmptyText
+                     ?? (label is [var first, var second, ..] && char.IsUpper(first) && !char.IsUpper(second)
+                         ? $"Choose {char.ToLower(first, System.Globalization.CultureInfo.CurrentCulture)}{label[1..]}"
+                         : $"Choose {label}");
+
+    // The selection and the empty buttons are both rendered, and the script shows one; the hidden input carries the posted value
     var id = Html.IdForModel();
-    var displayId = $"{id}-display";
-    var openId = $"{id}-open";
     var sheetId = $"{id}-lookup";
     var resultsId = $"{id}-results";
     var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
@@ -19,36 +27,115 @@
     var lookupUrl = canLookUp
         ? Url.Action("Lookup", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName })
         : null;
+    var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(card ? "h-12" : "")} {(invalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
+    var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
 }
 
 <sa-field class="@classes.Root">
-    <sa-field-label class="@classes.Label" for="@displayId">@label</sa-field-label>
+    <sa-field-label class="@classes.Label" id="@($"{id}-label")">@label</sa-field-label>
 
     <input type="hidden" asp-for="@Model" data-lookup="value" />
 
-    <sa-input-group class="@classes.Control">
-        <sa-input-group-input id="@displayId" value="@item?.Text" placeholder="@Editor.EmptyText" readonly="readonly"
-                              data-lookup="display" aria-describedby="@describedBy" />
-
-        @if (canLookUp)
+    @if (!canLookUp)
+    {
+        @if (item is null)
         {
-            <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+            @if (card)
+            {
+                <sa-item variant="ItemVariant.Muted" size="ItemSize.ExtraSmall" class="@($"h-12 {classes.Control}")" aria-describedby="@describedBy">
+                    <span class="text-muted-foreground text-sm">None</span>
+                </sa-item>
+            }
+            else
+            {
+                <div class="@($"sa-input flex items-center {classes.Control}")" aria-describedby="@describedBy">
+                    <span class="text-muted-foreground">None</span>
+                </div>
+            }
+        }
+        else if (card)
+        {
+            <sa-item variant="ItemVariant.Muted" size="ItemSize.ExtraSmall" class="@($"flex-nowrap {classes.Control}")" aria-describedby="@describedBy">
+                <partial name="_LookupSelection" model="selection" />
+            </sa-item>
+        }
+        else
+        {
+            <div class="@($"sa-input flex items-center gap-2 {(selection.ShowMedia && item.Media is not null ? "pl-1.5" : "")} {classes.Control}")"
+                 aria-describedby="@describedBy">
+                <partial name="_LookupSelection" model="selection" />
+            </div>
+        }
+    }
+    else
+    {
+        var invalidRing = invalid ? "border-destructive ring-destructive/20 ring-[3px]" : "";
+
+        @if (card)
+        {
+            <sa-item id="@($"{id}-selected")" variant="ItemVariant.Outline" size="ItemSize.ExtraSmall" hidden="@(item is null)"
+                     class="@($"flex-nowrap {invalidRing} {classes.Control}")" role="group" aria-labelledby="@($"{id}-label")"
+                     aria-describedby="@describedBy">
+                <partial name="_LookupSelection" model="selection" />
+                <sa-item-actions class="gap-0.5">
+                    <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
+                               commandfor="@sheetId" command="show-modal" data-lookup="open" data-lookup-for="@id">
+                        Change<span class="sr-only"> @label</span>
+                    </sa-button>
+                    @if (allowClear)
+                    {
+                        <sa-button type="button" variant="ButtonVariant.Ghost" size="ButtonSize.IconExtraSmall" data-lookup="clear"
+                                   data-lookup-for="@id">
+                            <sa-icon name="x" />
+                            <span class="sr-only">Clear @label</span>
+                        </sa-button>
+                    }
+                </sa-item-actions>
+            </sa-item>
+        }
+        else
+        {
+            @* The selection is the button that opens the sheet, so each segment of the group has its own focus ring *@
+            <sa-button-group id="@($"{id}-selected")" hidden="@(item is null)" class="@($"w-full {classes.Control}")"
+                             aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
+                           class="@($"min-w-0 flex-1 justify-start font-normal has-[>[data-lookup=media]:not([hidden])]:pl-1.5 {invalidRing}")"
+                           aria-invalid="@(invalid ? "true" : null)" commandfor="@sheetId" command="show-modal" data-lookup="open"
+                           data-lookup-for="@id">
+                    <span class="sr-only">Change @label, </span>
+                    <partial name="_LookupSelection" model="selection" />
+                    <sa-icon name="chevrons-up-down" class="text-muted-foreground ml-auto size-4 shrink-0" />
+                </sa-button>
                 @if (allowClear)
                 {
-                    <sa-input-group-button id="@($"{id}-clear")" size="InputGroupButtonSize.IconExtraSmall" hidden="@(item is null)"
-                                           data-lookup="clear" data-lookup-for="@id">
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Icon" data-lookup="clear" data-lookup-for="@id">
                         <sa-icon name="x" />
                         <span class="sr-only">Clear @label</span>
-                    </sa-input-group-button>
+                    </sa-button>
                 }
-                <sa-input-group-button id="@openId" size="InputGroupButtonSize.IconExtraSmall" commandfor="@sheetId" command="show-modal"
-                                       data-lookup="open">
-                    <sa-icon name="search" />
-                    <span class="sr-only">Look up @label</span>
-                </sa-input-group-button>
-            </sa-input-group-addon>
+            </sa-button-group>
         }
-    </sa-input-group>
+
+        <div id="@($"{id}-empty")" class="flex gap-2" hidden="@(item is not null)">
+            <sa-input-group class="@emptyClass">
+                <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
+                        commandfor="@sheetId" command="show-modal" aria-describedby="@describedBy" data-lookup="open"
+                        data-lookup-for="@id">
+                    <sa-icon name="search" class="size-4 shrink-0" />
+                    <span class="truncate">@chooseText</span>
+                </button>
+            </sa-input-group>
+            @if (Editor.CreateEnabled)
+            {
+                <sa-input-group class="@($"{emptyClass} shrink-0")">
+                    <button type="button" class="@emptyButtonClass" data-slot="input-group-control" data-lookup="create">
+                        <sa-icon name="plus" class="size-4 shrink-0" />
+                        <span class="truncate">New</span>
+                    </button>
+                </sa-input-group>
+            }
+        </div>
+    }
 
     <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
     <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
@@ -58,17 +145,17 @@
 {
     <sa-sheet id="@sheetId" data-lookup="sheet" data-lookup-for="@id">
         <sa-sheet-header>
-            <sa-sheet-title>@(Editor.SheetTitle ?? label)</sa-sheet-title>
+            <sa-sheet-title>@(Editor.SheetOptions.Title ?? label)</sa-sheet-title>
         </sa-sheet-header>
 
         @* The search input belongs to no form, so it is not posted and Enter does not submit the page *@
         <div class="px-6">
             <sa-input-group>
                 <sa-input-group-input type="search" name="term" form="@($"{sheetId}-search")" autocomplete="off"
-                                      placeholder="@Editor.SearchPlaceholder" aria-label="@(Editor.SearchPlaceholder ?? "Search")"
+                                      placeholder="@Editor.SheetOptions.SearchPlaceholder" aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? "Search")"
                                       aria-controls="@resultsId" data-lookup="search"
                                       hx-get="@lookupUrl" hx-target="@($"#{resultsId}")"
-                                      hx-trigger="@($"input changed delay:300ms, search, click from:#{openId}")" />
+                                      hx-trigger="input changed delay:300ms, search, lookup-open" />
                 <sa-input-group-addon>
                     <sa-icon name="search" />
                 </sa-input-group-addon>

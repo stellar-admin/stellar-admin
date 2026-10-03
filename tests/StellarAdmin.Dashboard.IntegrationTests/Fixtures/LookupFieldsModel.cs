@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
 
@@ -40,6 +41,9 @@ public sealed class CategoryLookupSource : ILookupSource<Category, int>
 public sealed class LookupFieldsModel
 {
     public int? CategoryId { get; set; }
+
+    [Editable(false)]
+    public int? FixedCategoryId { get; set; }
 
     public int PrimaryCategoryId { get; set; }
 }

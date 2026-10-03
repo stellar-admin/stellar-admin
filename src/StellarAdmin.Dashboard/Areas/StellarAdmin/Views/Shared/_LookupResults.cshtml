@@ -11,7 +11,14 @@
     <sa-item size="ItemSize.ExtraSmall" class="hover:bg-muted has-focus-visible:bg-muted relative">
         <sa-item-content>
             <sa-item-title>
-                <button type="button" class="text-left outline-none after:absolute after:inset-0" data-lookup-value="@item.Value">@item.Text</button>
+                <button type="button" class="text-left outline-none after:absolute after:inset-0" data-lookup-value="@item.Value">
+                    @item.Title
+                    @* The editor's display of this item, swapped in when it is selected *@
+                    <template data-lookup="selection">
+                        <partial name="_LookupSelection"
+                                 model="new LookupSelectionViewModel(new LookupItem(item.Title, item.Description, item.Media), Model.Layout, Model.ShowMedia, false)" />
+                    </template>
+                </button>
             </sa-item-title>
             @if (!string.IsNullOrEmpty(item.Description))
             {

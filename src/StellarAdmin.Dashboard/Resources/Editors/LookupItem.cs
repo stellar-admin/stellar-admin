@@ -3,6 +3,7 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 /// <summary>
 ///     The selected item of a lookup editor.
 /// </summary>
-/// <param name="Text">The text displayed in the field.</param>
+/// <param name="Title">The item's title.</param>
 /// <param name="Description">The secondary text, or null.</param>
-public sealed record LookupItem(string Text, string? Description);
+/// <param name="Media">The media displayed beside the title, or null.</param>
+public sealed record LookupItem(string Title, string? Description, LookupMedia? Media);

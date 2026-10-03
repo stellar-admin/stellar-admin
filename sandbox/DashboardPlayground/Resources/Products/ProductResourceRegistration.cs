@@ -56,14 +56,17 @@ internal static class ProductResourceRegistration
                             field.Title = "Category";
                             field.UseEditor<LookupEditor>(options =>
                             {
-                                options.SheetTitle = "Select category";
-                                options.SearchPlaceholder = "Search categories...";
-                                options.EmptyText = "Not specified";
+                                options.Sheet(sheet =>
+                                {
+                                    sheet.Title = "Select category";
+                                    sheet.SearchPlaceholder = "Search categories...";
+                                });
+                                options.Editor(editor => editor.EmptyText = "Not specified");
                                 options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,
                                     items =>
-                                        items.DescribeWith(category =>
+                                        items.UseDescription(category =>
                                             "Category #" + category.Id.ToString()
                                         )
                                 );

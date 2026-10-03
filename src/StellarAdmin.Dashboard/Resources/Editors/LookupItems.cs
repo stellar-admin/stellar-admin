@@ -9,6 +9,11 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public abstract class LookupItems
 {
     /// <summary>
+    ///     Whether the items have a description.
+    /// </summary>
+    public abstract bool HasDescription { get; }
+
+    /// <summary>
     ///     Returns the selected item for the field's current value, or null when nothing is selected.
     /// </summary>
     public abstract Task<LookupItem?> FindAsync(
@@ -29,11 +34,14 @@ public abstract class LookupItems
 
 internal sealed class LookupItems<TSource, TEntity, TValue>(
     Func<TEntity, TValue> value,
-    Func<TEntity, string> text,
-    Func<TEntity, string?>? description
+    Func<TEntity, string> title,
+    Func<TEntity, string?>? description,
+    Func<TEntity, LookupMedia>? media
 ) : LookupItems
     where TSource : class, ILookupSource<TEntity, TValue>
 {
+    public override bool HasDescription => description is not null;
+
     public override async Task<LookupItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
@@ -51,8 +59,12 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 
                 // A value the source no longer has is still displayed, so the selection stays visible
                 return entity is null
-                    ? new LookupItem(Format(current), null)
-                    : new LookupItem(text(entity), description?.Invoke(entity));
+                    ? new LookupItem(Format(current), null, null)
+                    : new LookupItem(
+                        title(entity),
+                        description?.Invoke(entity),
+                        media?.Invoke(entity)
+                    );
             default:
                 throw new InvalidOperationException(
                     $"LookupEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
@@ -74,8 +86,9 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
         return new LookupResults(
             page.Items.Select(entity => new LookupResult(
                     Convert.ToString(value(entity), CultureInfo.CurrentCulture) ?? "",
-                    text(entity),
-                    description?.Invoke(entity)
+                    title(entity),
+                    description?.Invoke(entity),
+                    media?.Invoke(entity)
                 ))
                 .ToArray(),
             page.HasMore

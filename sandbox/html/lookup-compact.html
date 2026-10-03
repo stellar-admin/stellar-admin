@@ -64,7 +64,7 @@
         <h1 class="text-2xl font-semibold tracking-tight">Lookup editor — compact selection</h1>
         <p class="text-muted-foreground max-w-3xl text-sm">
           The two candidate directions (a consumer-selectable setting): <strong>Two-line</strong> (sa-item xs) and <strong>One-line</strong>
-          (input-group shell, same height and background as a text input). Each with a code, no media, or an avatar. Visual only; buttons are inert.
+          (input-group shell, same height and background as a text input). Two button-group alternatives to the one-line input group give each action its own focus ring: <strong>text + Change</strong> and <strong>selection button</strong> (the selection opens the sheet). Each with a code, no media, or an avatar. Visual only; buttons are inert.
         </p>
       </header>
 
@@ -145,7 +145,7 @@
         empty: {
           dashed: (s) => `
             <button type="button" class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex h-12 w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors ${s.invalid ? "border-destructive text-destructive" : ""}">
-              ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span></button>`,
+              ${icon.search("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span></button>`,
           placeholder: (s) => `
             <button type="button" class="text-muted-foreground hover:bg-muted/40 flex h-12 w-full items-center gap-2.5 rounded-md border px-3 text-left text-sm shadow-xs transition-colors ${s.invalid ? invalidRing : ""}">
               <span class="min-w-0 flex-1 truncate">Select ${lc(s)}…</span>${icon.search("size-4 shrink-0 opacity-60")}</button>`,
@@ -197,7 +197,7 @@
           dashed: (s) => `
             <div role="group" data-slot="input-group" tabindex="0"
                  class="sa-input-group group/input-group text-muted-foreground hover:text-foreground cursor-pointer justify-center gap-2 border-dashed text-sm ${s.invalid ? "border-destructive text-destructive" : ""}">
-              ${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>
+              ${icon.search("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>
             </div>`,
           placeholder: (s) => `
             <div role="group" data-slot="input-group" tabindex="0" class="sa-input-group group/input-group cursor-pointer">
@@ -229,7 +229,7 @@
         `<div role="group" data-slot="input-group" class="sa-input-group group/input-group items-stretch overflow-hidden border-dashed p-0 text-sm text-muted-foreground ${h} ${s.invalid ? "border-destructive text-destructive" : ""} ${extra}">${body}</div>`;
       const part = (body, extra = "") =>
         `<button type="button" class="hover:bg-muted/50 hover:text-foreground flex min-w-0 items-center justify-center gap-2 px-3 transition-colors ${extra}">${body}</button>`;
-      const choose = (s) => `${icon.plus("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>`;
+      const choose = (s) => `${icon.search("size-4 shrink-0")}<span class="truncate">Choose ${lc(s)}</span>`;
       const divide = "border-inherit border-l border-dashed";
 
       // Two dashed buttons; widths: "fill" (choose grows), "equal" (both grow), "content" (both size to their label)
@@ -256,7 +256,52 @@
 
 
 
-      const variants = [twoLine, oneLine];
+      // ---------------------------------------------------------------- One-line (button group)
+      // Each segment is its own control with its own focus ring, unlike the input group, which rings the
+      // whole shell when anything inside it has focus. Read-only and empty reuse the input-group variant.
+      const groupText = (item, media, extra = "") => `
+        ${oneLineMedia[media](item)}
+        <span class="min-w-0 truncate">${item.city}</span>
+        <span class="text-muted-foreground hidden min-w-0 truncate @[20rem]:inline">${item.country}</span>${extra}`;
+      const buttonGroup = (body) =>
+        `<div role="group" data-slot="button-group" data-orientation="horizontal" class="sa-button-group sa-button-group-orientation-horizontal @container w-full">${body}</div>`;
+      const pad = (media) => (media === "none" ? "" : "pl-1.5");
+      const groupButton = (size, body, cls = "", attrs = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-outline sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;
+
+      // A: the selection as group text, then Change and clear buttons
+      const groupA = {
+        key: "groupA",
+        name: "Button group · text + Change",
+        selected: (s, media) =>
+          s.readonly
+            ? oneLine.selected(s, media)
+            : buttonGroup(`
+              <div data-slot="button-group-text" class="sa-button-group-text bg-card min-w-0 flex-1 font-normal ${pad(media)}">${groupText(s.item, media)}</div>
+              ${groupButton("default", `Change<span class="sr-only"> ${lc(s)}</span>`)}
+              ${groupButton("icon", `${icon.x()}<span class="sr-only">Clear ${lc(s)}</span>`)}`),
+        empty: oneLine.empty,
+      };
+
+      // B: the selection is the button that opens the sheet, then clear
+      const groupB = {
+        key: "groupB",
+        name: "Button group · selection button",
+        selected: (s, media) =>
+          s.readonly
+            ? oneLine.selected(s, media)
+            : buttonGroup(`
+              ${groupButton(
+                "default",
+                groupText(s.item, media, `<span class="text-muted-foreground ml-auto shrink-0 pl-1">${icon.chevrons("size-4")}</span>`),
+                `min-w-0 flex-1 justify-start font-normal ${pad(media)}`,
+                `aria-label="Change ${lc(s)}, ${s.item.city}"`,
+              )}
+              ${groupButton("icon", `${icon.x()}<span class="sr-only">Clear ${lc(s)}</span>`)}`),
+        empty: oneLine.empty,
+      };
+
+      const variants = [twoLine, oneLine, groupA, groupB];
       const medias = [
         ["code", "Code"],
         ["none", "No media"],
@@ -270,6 +315,7 @@
         two: () => `<div class="sa-item group/item sa-item-variant-muted sa-item-size-xs h-12"><span class="text-muted-foreground text-sm">None</span></div>`,
         one: () => `<div class="sa-input flex items-center"><span class="text-muted-foreground">None</span></div>`,
       };
+      readonlyEmpty.groupA = readonlyEmpty.groupB = readonlyEmpty.one;
       const control = (v, s, media) =>
         s.item ? v.selected(s, media) : s.readonly ? readonlyEmpty[v.key]() : v.empty[state.empty](s);
 

@@ -16,7 +16,7 @@ public sealed class LookupGallery
     [Display(Name = "string · [Required] · UseItems")]
     public string? RequiredAirport { get; set; }
 
-    [Display(Name = "string? · UseItems with DescribeWith")]
+    [Display(Name = "string? · UseItems with UseDescription")]
     public string? DescribedItemsAirport { get; set; }
 
     // Field configuration
@@ -39,16 +39,16 @@ public sealed class LookupGallery
 
     // UseEditor<LookupEditor> settings
 
-    [Display(Name = "string? · SheetTitle · SearchPlaceholder · EmptyText")]
+    [Display(Name = "string? · sheet Title · SearchPlaceholder · editor EmptyText")]
     public string? LabelledAirport { get; set; }
 
-    [Display(Name = "string? · AllowClear false")]
+    [Display(Name = "string? · editor AllowClear false")]
     public string? UnclearableAirport { get; set; }
 
-    [Display(Name = "string? · MinimumSearchLength 2")]
+    [Display(Name = "string? · sheet MinimumSearchLength 2")]
     public string? SearchedAirport { get; set; }
 
-    [Display(Name = "string? · PageSize 5")]
+    [Display(Name = "string? · sheet PageSize 5")]
     public string? PagedAirport { get; set; }
 
     [Display(Name = "string? · ClassNames.Control")]

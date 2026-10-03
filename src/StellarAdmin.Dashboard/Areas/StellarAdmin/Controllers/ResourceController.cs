@@ -311,21 +311,23 @@ public class ResourceController<TResource>(
         }
 
         term = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
-        if ((term?.Length ?? 0) < editor.MinimumSearchLength)
+        if ((term?.Length ?? 0) < editor.SheetOptions.MinimumSearchLength)
         {
             return PartialView(
                 "_LookupResults",
                 new LookupResultsViewModel(
                     [],
                     null,
-                    $"Type at least {editor.MinimumSearchLength} characters to search."
+                    $"Type at least {editor.SheetOptions.MinimumSearchLength} characters to search.",
+                    editor.Layout,
+                    editor.FieldOptions.ShowMedia
                 )
             );
         }
 
         var results = await items.SearchAsync(
             HttpContext.RequestServices,
-            new LookupQuery(term, skip, editor.PageSize),
+            new LookupQuery(term, skip, editor.SheetOptions.PageSize),
             cancellationToken
         );
         var moreUrl = results.HasMore
@@ -347,7 +349,13 @@ public class ResourceController<TResource>(
 
         return PartialView(
             "_LookupResults",
-            new LookupResultsViewModel(results.Items, moreUrl, message)
+            new LookupResultsViewModel(
+                results.Items,
+                moreUrl,
+                message,
+                editor.Layout,
+                editor.FieldOptions.ShowMedia
+            )
         );
     }
 

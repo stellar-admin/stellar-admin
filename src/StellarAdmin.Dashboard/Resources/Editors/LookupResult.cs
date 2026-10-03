@@ -4,6 +4,12 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 ///     An item listed in a lookup editor's search results.
 /// </summary>
 /// <param name="Value">The value posted when the item is selected, formatted in the current culture.</param>
-/// <param name="Text">The item's text.</param>
-/// <param name="Description">The secondary text displayed below the item's text, or null.</param>
-public sealed record LookupResult(string Value, string Text, string? Description);
+/// <param name="Title">The item's title.</param>
+/// <param name="Description">The secondary text displayed below the item's title, or null.</param>
+/// <param name="Media">The media displayed beside the title, or null.</param>
+public sealed record LookupResult(
+    string Value,
+    string Title,
+    string? Description,
+    LookupMedia? Media
+);
