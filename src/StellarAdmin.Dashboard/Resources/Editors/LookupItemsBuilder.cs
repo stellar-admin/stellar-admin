@@ -9,6 +9,8 @@ public sealed class LookupItemsBuilder<TEntity>
 
     internal Func<TEntity, LookupMedia>? Media { get; private set; }
 
+    internal LookupMediaType? MediaType { get; private set; }
+
     /// <summary>
     ///     Displays an avatar beside each item's title, with the title's initials when the image URL is null.
     ///     Replaces a code.
@@ -18,6 +20,7 @@ public sealed class LookupItemsBuilder<TEntity>
         ArgumentNullException.ThrowIfNull(imageUrl);
 
         Media = entity => new LookupMedia(LookupMediaType.Avatar, imageUrl(entity));
+        MediaType = LookupMediaType.Avatar;
     }
 
     /// <summary>
@@ -28,6 +31,7 @@ public sealed class LookupItemsBuilder<TEntity>
         ArgumentNullException.ThrowIfNull(code);
 
         Media = entity => new LookupMedia(LookupMediaType.Code, code(entity));
+        MediaType = LookupMediaType.Code;
     }
 
     /// <summary>

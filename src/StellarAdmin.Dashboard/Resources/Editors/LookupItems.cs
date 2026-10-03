@@ -14,6 +14,11 @@ public abstract class LookupItems
     public abstract bool HasDescription { get; }
 
     /// <summary>
+    ///     The kind of media the items display, or null when they have none.
+    /// </summary>
+    public abstract LookupMediaType? MediaType { get; }
+
+    /// <summary>
     ///     Returns the selected item for the field's current value, or null when nothing is selected.
     /// </summary>
     public abstract Task<LookupItem?> FindAsync(
@@ -36,11 +41,14 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
     Func<TEntity, TValue> value,
     Func<TEntity, string> title,
     Func<TEntity, string?>? description,
-    Func<TEntity, LookupMedia>? media
+    Func<TEntity, LookupMedia>? media,
+    LookupMediaType? mediaType
 ) : LookupItems
     where TSource : class, ILookupSource<TEntity, TValue>
 {
     public override bool HasDescription => description is not null;
+
+    public override LookupMediaType? MediaType => mediaType;
 
     public override async Task<LookupItem?> FindAsync(
         IServiceProvider services,

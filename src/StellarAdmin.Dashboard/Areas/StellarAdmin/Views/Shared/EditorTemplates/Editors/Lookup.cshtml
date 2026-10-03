@@ -28,6 +28,19 @@
         ? Url.Action("Lookup", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName })
         : null;
     var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(card ? "h-12" : "")} {(invalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
+    var sheetTitle = Editor.SheetOptions.Title ?? label;
+
+    // The loading rows take the shape of the results' media: the Card size with a description, otherwise the Input size
+    var skeletonMediaClass = Editor.SheetOptions.ShowMedia
+        ? (Editor.Items?.MediaType, Editor.Items?.HasDescription == true) switch
+        {
+            (LookupMediaType.Code, true) => "size-7 rounded-md",
+            (LookupMediaType.Code, false) => "h-5 w-8 rounded-sm",
+            (LookupMediaType.Avatar, true) => "size-8 rounded-full",
+            (LookupMediaType.Avatar, false) => "size-6 rounded-full",
+            _ => null,
+        }
+        : null;
     var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
 }
 
@@ -145,24 +158,52 @@
 {
     <sa-sheet id="@sheetId" data-lookup="sheet" data-lookup-for="@id">
         <sa-sheet-header>
-            <sa-sheet-title>@(Editor.SheetOptions.Title ?? label)</sa-sheet-title>
+            <sa-sheet-title>@sheetTitle</sa-sheet-title>
         </sa-sheet-header>
 
         @* The search input belongs to no form, so it is not posted and Enter does not submit the page *@
-        <div class="px-6">
-            <sa-input-group>
-                <sa-input-group-input type="search" name="term" form="@($"{sheetId}-search")" autocomplete="off"
-                                      placeholder="@Editor.SheetOptions.SearchPlaceholder" aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? "Search")"
-                                      aria-controls="@resultsId" data-lookup="search"
-                                      hx-get="@lookupUrl" hx-target="@($"#{resultsId}")"
-                                      hx-trigger="input changed delay:300ms, search, lookup-open" />
-                <sa-input-group-addon>
-                    <sa-icon name="search" />
-                </sa-input-group-addon>
-            </sa-input-group>
-        </div>
+        <sa-command id="@($"{id}-command")" filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
+            <sa-command-input name="term" autofocus="" form="@($"{sheetId}-search")" placeholder="@Editor.SheetOptions.SearchPlaceholder"
+                              aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? "Search")" data-lookup="search"
+                              hx-get="@lookupUrl" hx-target="@($"#{resultsId}")" hx-trigger="input changed delay:300ms, lookup-open" />
+            <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@sheetTitle">
+                <div id="@resultsId" data-lookup="results"></div>
+            </sa-command-list>
+        </sa-command>
 
-        <div id="@resultsId" class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-6 pt-4" aria-live="polite"
-             data-lookup="results"></div>
+        @* Shown by the script while a search loads, shaped like the results *@
+        <template data-lookup="loading">
+            @for (var row = 0; row < 4; row++)
+            {
+                <div class="sa-command-item pointer-events-none" aria-hidden="true">
+                    @if (skeletonMediaClass is not null)
+                    {
+                        <sa-skeleton class="@($"shrink-0 {skeletonMediaClass}")" />
+                    }
+                    <div class="flex flex-1 flex-col gap-1.5">
+                        <sa-skeleton class="h-3.5 w-2/5" />
+                        @if (Editor.Items!.HasDescription)
+                        {
+                            <sa-skeleton class="h-3 w-3/5" />
+                        }
+                    </div>
+                </div>
+            }
+        </template>
+
+        <template data-lookup="error">
+            <sa-empty class="border-0 p-4" data-lookup="message">
+                <sa-empty-header>
+                    <sa-empty-media variant="EmptyMediaVariant.Icon">
+                        <sa-icon name="circle-alert" />
+                    </sa-empty-media>
+                    <sa-empty-title>Search failed</sa-empty-title>
+                    <sa-empty-description>The results could not be loaded.</sa-empty-description>
+                </sa-empty-header>
+                <sa-empty-content>
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-lookup="retry">Try again</sa-button>
+                </sa-empty-content>
+            </sa-empty>
+        </template>
     </sa-sheet>
 }

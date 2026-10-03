@@ -85,7 +85,8 @@ public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler
             value,
             title,
             items.Description,
-            items.Media
+            items.Media,
+            items.MediaType
         );
     }
 }

@@ -72,6 +72,23 @@
         </p>
       </header>
 
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">sa-command · native styling</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            The real <code>sel-command</code> component from stellar-admin.js with <code>data-filter="none"</code>, markup captured from the tag helpers. Only
+            layout classes are added (the command fills the sheet, the list loses its 300px cap). The list is re-rendered on input as an htmx swap would, and
+            Load more is a command item replaced by the next page plus a new Load more. ↑/↓, Home/End, Ctrl+N/P and Enter come from the component; the
+            check is <code>checked</code> (<code>data-checked</code>); the active row is the component's <code>data-selected</code>.
+          </p>
+        </div>
+        <div id="native" class="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3"></div>
+      </section>
+
+      <div>
+        <h2 class="text-lg font-semibold">Hand-built listbox</h2>
+        <p class="text-muted-foreground max-w-3xl text-sm">The earlier rows: <code>sa-item</code>s with a hand-written keydown handler.</p>
+      </div>
       <div id="panels" class="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3"></div>
 
       <section class="space-y-4">
@@ -214,6 +231,84 @@
         else if (e.target.closest("[data-more]")) p.shown += pageSize;
         else return;
         render(p);
+      });
+
+      // ---------------------------------------------------------------- Native sa-command panels
+      const check = `<svg class="sa-command-item-indicator" viewBox="0 0 24 24" stroke-linejoin="round" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M20 6 9 17l-5-5"></path></svg>`;
+      const nativeMedia = (a, cfg) =>
+        cfg.media === "none" ? "" : cfg.media === "code" ? chip(a, cfg.desc) : avatar(a, cfg.desc ? "default" : "sm");
+      const nativeItem = (a, cfg, selected) => `
+        <div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="${a.code}" ${a.code === selected ? 'data-checked="true"' : ""}
+             class="sa-command-item group/command-item">
+          ${nativeMedia(a, cfg)}
+          <div class="flex min-w-0 flex-col">
+            <span class="truncate">${a.city}</span>
+            ${cfg.desc ? `<span class="text-muted-foreground truncate text-xs">${a.country}</span>` : ""}
+          </div>
+          ${check}
+        </div>`;
+      const nativeMore = `
+        <div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="" data-more class="sa-command-item group/command-item text-muted-foreground justify-center">
+          Load more
+        </div>`;
+      const nativePage = (n, from) => {
+        const all = search(n.term);
+        const page = all.slice(from, from + pageSize).map((a) => nativeItem(a, n.cfg, n.selected)).join("");
+        return page + (all.length > from + pageSize ? nativeMore : "");
+      };
+
+      const nativeSheet = (cfg, i) => `
+        <section class="space-y-3">
+          <h2 class="font-semibold">${cfg.name}</h2>
+          <div class="bg-background relative flex h-[560px] w-full max-w-[24rem] flex-col overflow-hidden rounded-xl border shadow-sm">
+            <div data-slot="sheet-header" class="sa-sheet-header pr-12">
+              <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">Departure airport</h2>
+            </div>
+            <span class="text-muted-foreground absolute top-4 right-4 opacity-70">${icon.x("size-4")}</span>
+            <sel-command id="native-${i}" data-native="${i}" class="sa-command min-h-0 flex-1 px-6 pb-6" data-slot="command" data-filter="none">
+              <label class="sr-only" id="native-${i}-label">Departure airport</label>
+              <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+                <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+                  <input placeholder="Search airports" type="text" id="native-${i}-input" aria-controls="native-${i}-list" aria-labelledby="native-${i}-label"
+                         role="combobox" aria-autocomplete="list" aria-expanded="true" autocomplete="off" autocorrect="off" spellcheck="false"
+                         data-slot="command-input" class="sa-command-input" />
+                  <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icon.search("sa-command-input-icon")}</div>
+                </div>
+              </div>
+              <div id="native-${i}-list" role="listbox" aria-label="Suggestions" tabindex="-1" data-slot="command-list" class="sa-command-list mt-3 max-h-none flex-1">
+                <div role="presentation" hidden data-slot="command-empty" class="sa-command-empty">No airports found.</div>
+                <div data-items></div>
+              </div>
+            </sel-command>
+          </div>
+        </section>`;
+
+      const natives = combos.map((cfg, i) => ({ cfg, i, term: "", selected: "CPT" }));
+      document.getElementById("native").innerHTML = combos.map(nativeSheet).join("");
+      const itemsOf = (n) => document.querySelector(`[data-native="${n.i}"] [data-items]`);
+      natives.forEach((n) => (itemsOf(n).innerHTML = nativePage(n, 0)));
+
+      // Stands in for the htmx search swap
+      document.addEventListener("input", (e) => {
+        const host = e.target.closest("[data-native]");
+        if (!host || !e.target.matches('[data-slot="command-input"]')) return;
+        const n = natives[Number(host.dataset.native)];
+        n.term = e.target.value;
+        itemsOf(n).innerHTML = nativePage(n, 0);
+      });
+      document.addEventListener("itemselect", (e) => {
+        const host = e.target.closest("[data-native]");
+        if (!host) return;
+        const n = natives[Number(host.dataset.native)];
+        if (e.target.matches("[data-more]")) {
+          // Stands in for an htmx outerHTML swap of the Load more item with the next page
+          const shown = itemsOf(n).querySelectorAll("[data-value]:not([data-more])").length;
+          e.target.outerHTML = nativePage(n, shown);
+          return;
+        }
+        n.selected = e.detail.value;
+        host.querySelectorAll("[data-checked]").forEach((el) => el.removeAttribute("data-checked"));
+        e.target.setAttribute("data-checked", "true");
       });
 
       // ---------------------------------------------------------------- Non-result states

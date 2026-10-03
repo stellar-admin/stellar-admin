@@ -37,6 +37,14 @@ public sealed class LookupSheetOptions
     public string? SearchPlaceholder { get; set; }
 
     /// <summary>
+    ///     Whether each result's media is displayed.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see langword="true" />.
+    /// </remarks>
+    public bool ShowMedia { get; set; } = true;
+
+    /// <summary>
     ///     The sheet title, or null to use the field label.
     /// </summary>
     public string? Title { get; set; }

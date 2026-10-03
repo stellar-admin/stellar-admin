@@ -290,6 +290,7 @@ public class ResourceController<TResource>(
         [FromQuery] string? field,
         [FromQuery] string? term,
         [FromQuery] int skip,
+        [FromQuery] string? selected,
         CancellationToken cancellationToken
     )
     {
@@ -315,13 +316,7 @@ public class ResourceController<TResource>(
         {
             return PartialView(
                 "_LookupResults",
-                new LookupResultsViewModel(
-                    [],
-                    null,
-                    $"Type at least {editor.SheetOptions.MinimumSearchLength} characters to search.",
-                    editor.Layout,
-                    editor.FieldOptions.ShowMedia
-                )
+                new LookupResultsViewModel(editor, [], null, selected, term, true, false)
             );
         }
 
@@ -340,21 +335,22 @@ public class ResourceController<TResource>(
                     field,
                     term,
                     skip = skip + results.Items.Count,
+                    selected,
                 }
             )
             : null;
 
         // Only the first page reports an empty result; a later page simply ends the list
-        var message = skip == 0 && results.Items.Count == 0 ? "No results found." : null;
-
         return PartialView(
             "_LookupResults",
             new LookupResultsViewModel(
+                editor,
                 results.Items,
                 moreUrl,
-                message,
-                editor.Layout,
-                editor.FieldOptions.ShowMedia
+                selected,
+                term,
+                false,
+                skip == 0 && results.Items.Count == 0
             )
         );
     }

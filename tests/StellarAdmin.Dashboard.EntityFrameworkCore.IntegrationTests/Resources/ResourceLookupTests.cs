@@ -194,7 +194,7 @@ public class ResourceLookupTests
                 string.Join(
                     ',',
                     document
-                        .QuerySelectorAll("[data-slot='item-description']")
+                        .QuerySelectorAll("[data-lookup='item-description']")
                         .Select(element => element.TextContent.Trim())
                 )
             )
@@ -254,13 +254,13 @@ public class ResourceLookupTests
 
     private static string[] ResultTexts(IDocument document) =>
         document
-            .QuerySelectorAll("[data-lookup-value]")
+            .QuerySelectorAll("[data-lookup='item-title']")
             .Select(element => element.TextContent.Trim())
             .ToArray();
 
     private static string[] ResultValues(IDocument document) =>
         document
-            .QuerySelectorAll("[data-lookup-value]")
-            .Select(element => element.GetAttribute("data-lookup-value") ?? "")
+            .QuerySelectorAll("[data-lookup='item']")
+            .Select(element => element.GetAttribute("data-value") ?? "")
             .ToArray();
 }

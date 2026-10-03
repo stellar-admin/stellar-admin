@@ -500,7 +500,7 @@ public class LookupEditorTests
             .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId");
         await Assert
             .That(search.GetAttribute("hx-trigger"))
-            .IsEqualTo("input changed delay:300ms, search, lookup-open");
+            .IsEqualTo("input changed delay:300ms, lookup-open");
         await Assert.That(search.GetAttribute("hx-target")).IsEqualTo("#Entity_CategoryId-results");
         await Assert
             .That(
@@ -594,19 +594,20 @@ public class LookupEditorTests
         );
 
         // Assert
-        var options = document.QuerySelectorAll("[data-lookup-value]");
+        var options = document.QuerySelectorAll("[data-lookup='item']");
         await Assert
-            .That(options.Select(option => option.GetAttribute("data-lookup-value")))
+            .That(options.Select(option => option.GetAttribute("data-value")))
             .IsEquivalentTo(["1", "2"]);
         await Assert
-            .That(options.Select(option => option.GetAttribute("type")))
-            .IsEquivalentTo(["button", "button"]);
+            .That(options.Select(option => option.GetAttribute("role")))
+            .IsEquivalentTo(["option", "option"]);
         await Assert
-            .That(document.TextContents("[data-lookup-value]"))
+            .That(document.TextContents("[data-lookup='item-title']"))
             .IsEquivalentTo(["Cameras", "Notebooks"]);
         await Assert
-            .That(document.TextContents("[data-slot='item-description']"))
+            .That(document.TextContents("[data-lookup='item-description']"))
             .IsEquivalentTo(["CAM", "NTB"]);
+        await Assert.That(document.QuerySelector("[data-checked]")).IsNull();
         await Assert.That(document.QuerySelector("[data-lookup='more']")).IsNull();
         await Assert.That(document.QuerySelector("[data-lookup='message']")).IsNull();
     }
@@ -637,13 +638,111 @@ public class LookupEditorTests
 
         // Assert
         var selection = (IHtmlTemplateElement)
-            document.RequiredElement("[data-lookup-value='2'] template[data-lookup='selection']");
+            document.RequiredElement("[data-value='2'] template[data-lookup='selection']");
         await Assert
             .That(selection.Content.QuerySelector("[data-lookup='media']")!.TextContent.Trim())
             .IsEqualTo("NTB");
         await Assert
             .That(selection.Content.QuerySelector("[data-lookup='text']")!.TextContent.Trim())
             .IsEqualTo("Notebooks");
+    }
+
+    [Test]
+    public async Task Lookup_ChecksSelectedValue()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=create&field=CategoryId&selected=2"
+        );
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-lookup='item']")
+                    .Select(item => item.GetAttribute("data-checked"))
+            )
+            .IsEquivalentTo([null, "true"]);
+    }
+
+    [Test]
+    [Arguments(true)]
+    [Arguments(false)]
+    public async Task Lookup_ShowsMediaUnlessSheetHidesIt(bool showMedia)
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items => items.UseCode(category => category.Code)
+                        );
+                        lookup.Sheet(sheet => sheet.ShowMedia = showMedia);
+                    }),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=create&field=CategoryId"
+        );
+
+        // Assert
+        var item = document.RequiredElement("[data-value='2']");
+        await Assert
+            .That(item.Children.Any(child => child.TextContent.Trim() == "NTB"))
+            .IsEqualTo(showMedia);
+    }
+
+    [Test]
+    public async Task Sheet_LoadingRowsTakeTheShapeOfTheResults()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items =>
+                            {
+                                items.UseDescription(category => category.Name);
+                                items.UseCode(category => category.Code);
+                            }
+                        )
+                    ),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var loading = (IHtmlTemplateElement)
+            document.RequiredElement("template[data-lookup='loading']");
+        await Assert.That(loading.Content.QuerySelectorAll(".sa-command-item").Length).IsEqualTo(4);
+        await Assert
+            .That(loading.Content.QuerySelectorAll("[data-slot='skeleton'].size-7").Length)
+            .IsEqualTo(4);
+        await Assert
+            .That(loading.Content.QuerySelectorAll("[data-slot='skeleton'].h-3").Length)
+            .IsEqualTo(4);
     }
 
     [Test]
@@ -663,7 +762,7 @@ public class LookupEditorTests
 
         // Assert
         await Assert
-            .That(document.TextContents("[data-lookup-value]"))
+            .That(document.TextContents("[data-lookup='item-title']"))
             .IsEquivalentTo(["Notebooks"]);
     }
 
@@ -686,19 +785,28 @@ public class LookupEditorTests
 
         // Act
         var first = await client.GetDocumentAsync(
-            "/stellaradmin/products/lookup?form=create&field=CategoryId"
+            "/stellaradmin/products/lookup?form=create&field=CategoryId&selected=2"
         );
         var more = first.RequiredElement("[data-lookup='more']");
         var second = await client.GetDocumentAsync(more.GetAttribute("hx-get")!);
 
         // Assert
-        await Assert.That(first.TextContents("[data-lookup-value]")).IsEquivalentTo(["Cameras"]);
-        await Assert.That(more.GetAttribute("type")).IsEqualTo("button");
+        await Assert
+            .That(first.TextContents("[data-lookup='item-title']"))
+            .IsEquivalentTo(["Cameras"]);
+        await Assert.That(more.GetAttribute("role")).IsEqualTo("option");
         await Assert.That(more.GetAttribute("hx-swap")).IsEqualTo("outerHTML");
         await Assert
             .That(more.GetAttribute("hx-get"))
-            .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId&skip=1");
-        await Assert.That(second.TextContents("[data-lookup-value]")).IsEquivalentTo(["Notebooks"]);
+            .IsEqualTo(
+                "/stellaradmin/products/lookup?form=create&field=CategoryId&skip=1&selected=2"
+            );
+        await Assert
+            .That(second.TextContents("[data-lookup='item-title']"))
+            .IsEquivalentTo(["Notebooks"]);
+        await Assert
+            .That(second.RequiredElement("[data-lookup='item']").GetAttribute("data-checked"))
+            .IsEqualTo("true");
         await Assert.That(second.QuerySelector("[data-lookup='more']")).IsNull();
         await Assert.That(second.QuerySelector("[data-lookup='message']")).IsNull();
     }
@@ -719,10 +827,14 @@ public class LookupEditorTests
         );
 
         // Assert
-        await Assert.That(document.QuerySelector("[data-lookup-value]")).IsNull();
+        await Assert.That(document.QuerySelector("[data-lookup='item']")).IsNull();
+        var message = document.RequiredElement("[data-lookup='message']");
         await Assert
-            .That(document.RequiredElement("[data-lookup='message']").TextContent)
-            .IsEqualTo("No results found.");
+            .That(message.RequiredElement("[data-slot='empty-title']").TextContent)
+            .IsEqualTo("No results found");
+        await Assert
+            .That(message.RequiredElement("[data-slot='empty-description']").TextContent)
+            .IsEqualTo("Nothing matches “tents”.");
     }
 
     [Test]
@@ -748,9 +860,9 @@ public class LookupEditorTests
         );
 
         // Assert
-        await Assert.That(document.QuerySelector("[data-lookup-value]")).IsNull();
+        await Assert.That(document.QuerySelector("[data-lookup='item']")).IsNull();
         await Assert
-            .That(document.RequiredElement("[data-lookup='message']").TextContent)
+            .That(document.RequiredElement("[data-lookup='message']").TextContent.Trim())
             .IsEqualTo("Type at least 2 characters to search.");
     }
 
