@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace StellarAdmin.Dashboard.Resources.Options;
 
 /// <summary>
@@ -81,4 +83,85 @@ public sealed class ResourceLabelOptions
     /// </summary>
     public Func<ResourceLabelContext, string> IndexTitle { get; set; } =
         resource => resource.PluralLabel;
+
+    /// <summary>
+    ///     The callback that generates the lookup's change button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupChangeLabel { get; set; } = context => "Change";
+
+    /// <summary>
+    ///     The callback that generates the empty lookup's choose button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupChooseLabel { get; set; } =
+        context => $"Choose {SentenceCase(context.FieldLabel)}";
+
+    /// <summary>
+    ///     The callback that generates the lookup's clear button label for screen readers.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupClearLabel { get; set; } =
+        context => $"Clear {context.FieldLabel}";
+
+    /// <summary>
+    ///     The callback that generates the empty lookup's create button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupCreateLabel { get; set; } = context => "New";
+
+    /// <summary>
+    ///     The callback that generates the lookup's failed search description.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupErrorDescription { get; set; } =
+        context => "The results could not be loaded.";
+
+    /// <summary>
+    ///     The callback that generates the lookup's failed search title.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupErrorTitle { get; set; } =
+        context => "Search failed";
+
+    /// <summary>
+    ///     The callback that generates the lookup's load more label.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupLoadMoreLabel { get; set; } =
+        context => "Load more";
+
+    /// <summary>
+    ///     The callback that generates the lookup's message for a search shorter than the minimum length.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupMinimumSearchLengthMessage { get; set; } =
+        context => $"Type at least {context.MinimumSearchLength} characters to search.";
+
+    /// <summary>
+    ///     The callback that generates the read-only lookup's text when nothing is selected.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoneText { get; set; } = context => "None";
+
+    /// <summary>
+    ///     The callback that generates the lookup's no-results description for a search term.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoResultsDescription { get; set; } =
+        context => $"Nothing matches “{context.Term}”.";
+
+    /// <summary>
+    ///     The callback that generates the lookup's no-results title.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupNoResultsTitle { get; set; } =
+        context => "No results found";
+
+    /// <summary>
+    ///     The callback that generates the lookup's retry button label after a failed search.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupRetryLabel { get; set; } = context => "Try again";
+
+    /// <summary>
+    ///     The callback that generates the lookup's search input label for screen readers when it has no placeholder.
+    /// </summary>
+    public Func<LookupLabelContext, string> LookupSearchLabel { get; set; } = context => "Search";
+
+    // Labels are usually sentence case, so they continue a sentence unless they start with an acronym
+    private static string SentenceCase(string label)
+    {
+        return label is [var first, var second, ..] && char.IsUpper(first) && !char.IsUpper(second)
+            ? $"{char.ToLower(first, CultureInfo.CurrentCulture)}{label[1..]}"
+            : label;
+    }
 }

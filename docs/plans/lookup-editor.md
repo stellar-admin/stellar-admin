@@ -224,7 +224,7 @@ field.UseEditor<LookupEditor>(lookup =>
 
 ## Open decisions
 
-- Labels for the lookup's fixed text ("No results found.", the minimum-length hint, "Load more") — hard-coded for now.
+- None. The lookup's fixed text now comes from `ResourceLabelOptions` (see Review fixes under Verification), and its wording is reviewed with the PR.
 
 ## Verification
 
@@ -260,3 +260,8 @@ Phase 9, 2026-10-03: the playground builds with no warnings, and the touched C# 
 No console errors. Observed but not changed: single-word titles get two-letter initials with a lowercase second letter ("Am", "Is") while multi-word titles get capitals ("HK", "LA"). Also, empty Card-layout fields have taller Choose buttons than Input-layout fields.
 
 Load more fix, 2026-10-03: `sel-command.ts` changed as described under Paging. The TagHelpers script builds and the TypeScript check passes. No JavaScript tests exist for the component, and no .NET tests were run. In the playground (port 5207, Development), headless Chromium over CDP on the gallery's code field, 20 rows per page: End then Enter on Load more made 31 rows with NBO (row 21) active and visible, and the list stayed scrolled (scrollTop 121 before, 137 after). Clicking Load more with the mouse gave the same result. Typing a search still made the first result active, and there were no console errors.
+
+Review fixes, 2026-10-03:
+- **Avatar initials:** `AvatarTagHelper` follows Mantine. A single word gives its first two letters and several words give the first letters of the first two, all uppercase ("Amsterdam" → "AM", "Hong Kong" → "HK"). This affects every `sa-avatar` with a `name`. New `AvatarTagHelperTests` cover both rules, extra spaces, a one-letter name and explicit `initials`.
+- **Lookup text:** `ResourceLabelOptions` and `ResourceLabelsBuilder` gain thirteen `Lookup…` callbacks taking a new public `LookupLabelContext` (`FieldLabel`, `MinimumSearchLength`, `Term`): change, choose, clear, create, error title and description, load more, minimum-length message, none, no-results title and description, retry and search label. The defaults are the previous wording, and `EmptyText`, `Title` and `SearchPlaceholder` still win per field. The editor template and `_LookupResults` inject the options, and the lookup action resolves the field label for the results. The consumer reference documents the callbacks.
+- **Verification:** TagHelpers unit tests 221 passed, Dashboard integration tests 291 passed (two new tests override editor and no-results text through `ConfigureResourceLabels`, and the avatar initials expectation changed from "Ca" to "CA"), Dashboard unit tests 37 passed, EF Core integration tests 66 passed. Touched C# files were formatted with CSharpier. No browser check was run.

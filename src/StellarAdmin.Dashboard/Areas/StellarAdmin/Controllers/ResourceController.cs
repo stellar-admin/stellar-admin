@@ -312,11 +312,20 @@ public class ResourceController<TResource>(
         }
 
         term = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
+        var property = options.PropertyPath[^1];
+        var labels = new LookupLabelContext(
+            options.Title
+                ?? MetadataProvider
+                    .GetMetadataForProperty(property.DeclaringType!, property.Name)
+                    .GetDisplayName(),
+            editor.SheetOptions.MinimumSearchLength,
+            term
+        );
         if ((term?.Length ?? 0) < editor.SheetOptions.MinimumSearchLength)
         {
             return PartialView(
                 "_LookupResults",
-                new LookupResultsViewModel(editor, [], null, selected, term, true, false)
+                new LookupResultsViewModel(editor, [], null, selected, term, true, false, labels)
             );
         }
 
@@ -350,7 +359,8 @@ public class ResourceController<TResource>(
                 selected,
                 term,
                 false,
-                skip == 0 && results.Items.Count == 0
+                skip == 0 && results.Items.Count == 0,
+                labels
             )
         );
     }

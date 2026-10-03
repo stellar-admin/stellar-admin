@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.ModelBinding
+@using StellarAdmin.Dashboard.Resources
 @inherits FieldEditorView<LookupEditor>
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 
 @{
     var item = EditorData as LookupItem;
@@ -10,12 +12,11 @@
     var card = Editor.Layout == LookupEditorLayout.Card;
     var invalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
     var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp);
-
-    // Labels are usually sentence case, so "Choose" continues the sentence unless the label starts with an acronym
-    var chooseText = Editor.FieldOptions.EmptyText
-                     ?? (label is [var first, var second, ..] && char.IsUpper(first) && !char.IsUpper(second)
-                         ? $"Choose {char.ToLower(first, System.Globalization.CultureInfo.CurrentCulture)}{label[1..]}"
-                         : $"Choose {label}");
+    var labels = LabelOptions.Value;
+    var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
+    var chooseText = Editor.FieldOptions.EmptyText ?? labels.LookupChooseLabel(labelContext);
+    var clearText = labels.LookupClearLabel(labelContext);
+    var noneText = labels.LookupNoneText(labelContext);
 
     // The selection and the empty buttons are both rendered, and the script shows one; the hidden input carries the posted value
     var id = Html.IdForModel();
@@ -56,13 +57,13 @@
             @if (card)
             {
                 <sa-item variant="ItemVariant.Muted" size="ItemSize.ExtraSmall" class="@($"h-12 {classes.Control}")" aria-describedby="@describedBy">
-                    <span class="text-muted-foreground text-sm">None</span>
+                    <span class="text-muted-foreground text-sm">@noneText</span>
                 </sa-item>
             }
             else
             {
                 <div class="@($"sa-input flex items-center {classes.Control}")" aria-describedby="@describedBy">
-                    <span class="text-muted-foreground">None</span>
+                    <span class="text-muted-foreground">@noneText</span>
                 </div>
             }
         }
@@ -93,14 +94,14 @@
                 <sa-item-actions class="gap-0.5">
                     <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
                                commandfor="@sheetId" command="show-modal" data-lookup="open" data-lookup-for="@id">
-                        Change<span class="sr-only"> @label</span>
+                        @labels.LookupChangeLabel(labelContext)<span class="sr-only"> @label</span>
                     </sa-button>
                     @if (allowClear)
                     {
                         <sa-button type="button" variant="ButtonVariant.Ghost" size="ButtonSize.IconExtraSmall" data-lookup="clear"
                                    data-lookup-for="@id">
                             <sa-icon name="x" />
-                            <span class="sr-only">Clear @label</span>
+                            <span class="sr-only">@clearText</span>
                         </sa-button>
                     }
                 </sa-item-actions>
@@ -115,7 +116,7 @@
                            class="@($"min-w-0 flex-1 justify-start font-normal has-[>[data-lookup=media]:not([hidden])]:pl-1.5 {invalidRing}")"
                            aria-invalid="@(invalid ? "true" : null)" commandfor="@sheetId" command="show-modal" data-lookup="open"
                            data-lookup-for="@id">
-                    <span class="sr-only">Change @label, </span>
+                    <span class="sr-only">@labels.LookupChangeLabel(labelContext) @label, </span>
                     <partial name="_LookupSelection" model="selection" />
                     <sa-icon name="chevrons-up-down" class="text-muted-foreground ml-auto size-4 shrink-0" />
                 </sa-button>
@@ -123,7 +124,7 @@
                 {
                     <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Icon" data-lookup="clear" data-lookup-for="@id">
                         <sa-icon name="x" />
-                        <span class="sr-only">Clear @label</span>
+                        <span class="sr-only">@clearText</span>
                     </sa-button>
                 }
             </sa-button-group>
@@ -143,7 +144,7 @@
                 <sa-input-group class="@($"{emptyClass} shrink-0")">
                     <button type="button" class="@emptyButtonClass" data-slot="input-group-control" data-lookup="create">
                         <sa-icon name="plus" class="size-4 shrink-0" />
-                        <span class="truncate">New</span>
+                        <span class="truncate">@labels.LookupCreateLabel(labelContext)</span>
                     </button>
                 </sa-input-group>
             }
@@ -164,7 +165,7 @@
         @* The search input belongs to no form, so it is not posted and Enter does not submit the page *@
         <sa-command id="@($"{id}-command")" filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
             <sa-command-input name="term" autofocus="" form="@($"{sheetId}-search")" placeholder="@Editor.SheetOptions.SearchPlaceholder"
-                              aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? "Search")" data-lookup="search"
+                              aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? labels.LookupSearchLabel(labelContext))" data-lookup="search"
                               hx-get="@lookupUrl" hx-target="@($"#{resultsId}")" hx-trigger="input changed delay:300ms, lookup-open" />
             <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@sheetTitle">
                 <div id="@resultsId" data-lookup="results"></div>
@@ -197,11 +198,11 @@
                     <sa-empty-media variant="EmptyMediaVariant.Icon">
                         <sa-icon name="circle-alert" />
                     </sa-empty-media>
-                    <sa-empty-title>Search failed</sa-empty-title>
-                    <sa-empty-description>The results could not be loaded.</sa-empty-description>
+                    <sa-empty-title>@labels.LookupErrorTitle(labelContext)</sa-empty-title>
+                    <sa-empty-description>@labels.LookupErrorDescription(labelContext)</sa-empty-description>
                 </sa-empty-header>
                 <sa-empty-content>
-                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-lookup="retry">Try again</sa-button>
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-lookup="retry">@labels.LookupRetryLabel(labelContext)</sa-button>
                 </sa-empty-content>
             </sa-empty>
         </template>

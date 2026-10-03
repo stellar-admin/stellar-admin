@@ -1,15 +1,17 @@
 @model LookupResultsViewModel
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 
 @{
     var editor = Model.Editor;
     var hasDescription = editor.Items!.HasDescription;
+    var labels = LabelOptions.Value;
 }
 
 @if (Model.IsTermTooShort)
 {
     <p class="text-muted-foreground flex items-center justify-center gap-1.5 py-6 text-sm" data-lookup="message">
         <sa-icon name="search" class="size-4" />
-        Type at least @editor.SheetOptions.MinimumSearchLength characters to search.
+        @labels.LookupMinimumSearchLengthMessage(Model.Labels)
     </p>
 }
 else if (Model.IsEmpty)
@@ -19,10 +21,10 @@ else if (Model.IsEmpty)
             <sa-empty-media variant="EmptyMediaVariant.Icon">
                 <sa-icon name="search-x" />
             </sa-empty-media>
-            <sa-empty-title>No results found</sa-empty-title>
+            <sa-empty-title>@labels.LookupNoResultsTitle(Model.Labels)</sa-empty-title>
             @if (Model.Term is not null)
             {
-                <sa-empty-description>Nothing matches “@Model.Term”.</sa-empty-description>
+                <sa-empty-description>@labels.LookupNoResultsDescription(Model.Labels)</sa-empty-description>
             }
         </sa-empty-header>
     </sa-empty>
@@ -56,6 +58,6 @@ else if (Model.IsEmpty)
 {
     @* Enter clicks the active item, so the keyboard loads more the same way as the pointer *@
     <sa-command-item class="text-muted-foreground justify-center" hx-get="@Model.MoreUrl" hx-swap="outerHTML" data-lookup="more">
-        Load more
+        @labels.LookupLoadMoreLabel(Model.Labels)
     </sa-command-item>
 }

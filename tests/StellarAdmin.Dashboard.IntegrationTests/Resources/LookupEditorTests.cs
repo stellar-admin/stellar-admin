@@ -109,6 +109,41 @@ public class LookupEditorTests
     }
 
     [Test]
+    public async Task ConfiguredLabels_ReplaceEditorText()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.EnableCreate();
+                        UseCategories(lookup);
+                    }),
+            new(),
+            dashboard =>
+                dashboard.ConfigureResourceLabels(labels =>
+                {
+                    labels.LookupChooseLabel = context => $"Find a {context.FieldLabel}";
+                    labels.LookupCreateLabel = context => $"Add {context.FieldLabel}";
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("#Entity_CategoryId-choose").TextContent.Trim())
+            .IsEqualTo("Find a CategoryId");
+        await Assert
+            .That(document.RequiredElement("[data-lookup='create']").TextContent.Trim())
+            .IsEqualTo("Add CategoryId");
+    }
+
+    [Test]
     public async Task EnableCreate_ShowsNewButtonWhileEmpty()
     {
         // Arrange
@@ -285,7 +320,7 @@ public class LookupEditorTests
                     )
                     .TextContent
             )
-            .IsEqualTo("Ca");
+            .IsEqualTo("CA");
     }
 
     [Test]
@@ -838,6 +873,32 @@ public class LookupEditorTests
     }
 
     [Test]
+    public async Task Lookup_ConfiguredLabels_ReplaceNoResultsText()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            new(),
+            dashboard =>
+                dashboard.ConfigureResourceLabels(labels =>
+                    labels.LookupNoResultsDescription = context =>
+                        $"No {context.FieldLabel} matches {context.Term}"
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=create&field=CategoryId&term=tents"
+        );
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("[data-slot='empty-description']").TextContent)
+            .IsEqualTo("No CategoryId matches tents");
+    }
+
+    [Test]
     public async Task Lookup_TermShorterThanMinimum_AsksForMoreCharacters()
     {
         // Arrange
@@ -901,7 +962,8 @@ public class LookupEditorTests
 
     private static Task<WebApplication> CreateLookupFieldsHost(
         Action<ResourceFieldsBuilder<LookupFieldsModel>> configureFields,
-        LookupFieldsModel model
+        LookupFieldsModel model,
+        Action<StellarAdminDashboardBuilder>? configureDashboard = null
     ) =>
         DashboardTestHost.CreateAsync(
             new([]),
@@ -911,6 +973,7 @@ public class LookupEditorTests
                     create.UseFactory(() => model);
                     create.Fields(configureFields);
                 }),
-            configureServices: services => services.AddScoped<CategoryLookupSource>()
+            configureDashboard,
+            services => services.AddScoped<CategoryLookupSource>()
         );
 }
