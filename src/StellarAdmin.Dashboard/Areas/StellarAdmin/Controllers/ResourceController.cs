@@ -286,24 +286,20 @@ public class ResourceController<TResource>(
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Lookup(
-        [FromQuery] string? form,
-        [FromQuery] string? field,
-        [FromQuery] string? term,
-        [FromQuery] int skip,
-        [FromQuery] string? selected,
+        [FromQuery] ResourceLookupQuery query,
         CancellationToken cancellationToken
     )
     {
-        var fields = form?.ToLowerInvariant() switch
+        var fields = query.Form?.ToLowerInvariant() switch
         {
             "create" => _resourceOptions.Create?.Fields,
             "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
             _ => null,
         };
-        var options = fields?.FirstOrDefault(options => options.FieldName == field);
+        var options = fields?.FirstOrDefault(options => options.FieldName == query.Field);
         if (
             !ModelState.IsValid
-            || skip < 0
+            || query.Skip < 0
             || options
                 is not { IsReadOnly: false, Editor: LookupEditor { Items: { } items } editor }
         )
@@ -311,7 +307,7 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        term = string.IsNullOrWhiteSpace(term) ? null : term.Trim();
+        var term = string.IsNullOrWhiteSpace(query.Term) ? null : query.Term.Trim();
         var property = options.PropertyPath[^1];
         var labels = new LookupLabelContext(
             options.Title
@@ -325,13 +321,22 @@ public class ResourceController<TResource>(
         {
             return PartialView(
                 "_LookupResults",
-                new LookupResultsViewModel(editor, [], null, selected, term, true, false, labels)
+                new LookupResultsViewModel(
+                    editor,
+                    [],
+                    null,
+                    query.Selected,
+                    term,
+                    true,
+                    false,
+                    labels
+                )
             );
         }
 
         var results = await items.SearchAsync(
             HttpContext.RequestServices,
-            new LookupQuery(term, skip, editor.SheetOptions.PageSize),
+            new LookupQuery(term, query.Skip, editor.SheetOptions.PageSize),
             cancellationToken
         );
         var moreUrl = results.HasMore
@@ -340,11 +345,11 @@ public class ResourceController<TResource>(
                 new
                 {
                     id = (string?)null,
-                    form,
-                    field,
+                    form = query.Form,
+                    field = query.Field,
                     term,
-                    skip = skip + results.Items.Count,
-                    selected,
+                    skip = query.Skip + results.Items.Count,
+                    selected = query.Selected,
                 }
             )
             : null;
@@ -356,10 +361,10 @@ public class ResourceController<TResource>(
                 editor,
                 results.Items,
                 moreUrl,
-                selected,
+                query.Selected,
                 term,
                 false,
-                skip == 0 && results.Items.Count == 0,
+                query.Skip == 0 && results.Items.Count == 0,
                 labels
             )
         );
