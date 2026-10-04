@@ -109,9 +109,12 @@ public class ResourceEditTests
                 {
                     dashboard.ConfigureResourceLabels(labels =>
                     {
-                        labels.EditTitle = resource => $"Change {resource.SingularLabel}";
-                        labels.EditSubmitLabel = resource => "Save changes";
-                        labels.IndexEditLabel = resource => "Change";
+                        labels.Edit(edit =>
+                        {
+                            edit.Title = resource => $"Change {resource.SingularLabel}";
+                            edit.SubmitLabel = resource => "Save changes";
+                        });
+                        labels.Index(index => index.EditLabel = resource => "Change");
                     });
                 }
             }

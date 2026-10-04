@@ -124,10 +124,12 @@ public class LookupEditorTests
             new(),
             dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
-                {
-                    labels.LookupChooseLabel = context => $"Find a {context.FieldLabel}";
-                    labels.LookupCreateLabel = context => $"Add {context.FieldLabel}";
-                })
+                    labels.Lookup(lookup =>
+                    {
+                        lookup.ChooseLabel = context => $"Find a {context.FieldLabel}";
+                        lookup.CreateLabel = context => $"Add {context.FieldLabel}";
+                    })
+                )
         );
         using var client = sut.GetTestClient();
 
@@ -881,8 +883,10 @@ public class LookupEditorTests
             new(),
             dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
-                    labels.LookupNoResultsDescription = context =>
-                        $"No {context.FieldLabel} matches {context.Term}"
+                    labels.Lookup(lookup =>
+                        lookup.NoResultsDescription = context =>
+                            $"No {context.FieldLabel} matches {context.Term}"
+                    )
                 )
         );
         using var client = sut.GetTestClient();

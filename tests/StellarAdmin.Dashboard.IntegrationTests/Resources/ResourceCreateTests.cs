@@ -240,10 +240,12 @@ public class ResourceCreateTests
             resource => ConfigureLayout(resource),
             configureDashboard: dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
-                {
-                    labels.CreateTitle = resource => $"Add {resource.SingularLabel}";
-                    labels.CreateSubmitLabel = resource => "Save";
-                })
+                    labels.Create(create =>
+                    {
+                        create.Title = resource => $"Add {resource.SingularLabel}";
+                        create.SubmitLabel = resource => "Save";
+                    })
+                )
         );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client);

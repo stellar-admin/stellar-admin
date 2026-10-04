@@ -11,7 +11,7 @@
 {
     <p class="text-muted-foreground flex items-center justify-center gap-1.5 py-6 text-sm" data-lookup="message">
         <sa-icon name="search" class="size-4" />
-        @labels.LookupMinimumSearchLengthMessage(Model.Labels)
+        @labels.Lookup.MinimumSearchLengthMessage(Model.Labels)
     </p>
 }
 else if (Model.IsEmpty)
@@ -21,10 +21,10 @@ else if (Model.IsEmpty)
             <sa-empty-media variant="EmptyMediaVariant.Icon">
                 <sa-icon name="search-x" />
             </sa-empty-media>
-            <sa-empty-title>@labels.LookupNoResultsTitle(Model.Labels)</sa-empty-title>
+            <sa-empty-title>@labels.Lookup.NoResultsTitle(Model.Labels)</sa-empty-title>
             @if (Model.Term is not null)
             {
-                <sa-empty-description>@labels.LookupNoResultsDescription(Model.Labels)</sa-empty-description>
+                <sa-empty-description>@labels.Lookup.NoResultsDescription(Model.Labels)</sa-empty-description>
             }
         </sa-empty-header>
     </sa-empty>
@@ -58,6 +58,6 @@ else if (Model.IsEmpty)
 {
     @* Enter clicks the active item, so the keyboard loads more the same way as the pointer *@
     <sa-command-item class="text-muted-foreground justify-center" hx-get="@Model.MoreUrl" hx-swap="outerHTML" data-lookup="more">
-        @labels.LookupLoadMoreLabel(Model.Labels)
+        @labels.Lookup.LoadMoreLabel(Model.Labels)
     </sa-command-item>
 }

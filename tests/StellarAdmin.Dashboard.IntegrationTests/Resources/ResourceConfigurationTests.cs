@@ -86,10 +86,16 @@ public class ResourceConfigurationTests
             dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
                 {
-                    labels.IndexTitle = resource => $"Browse {resource.PluralLabel}";
-                    labels.IndexCreateLabel = resource => $"New {resource.SingularLabel}";
-                    labels.CreateTitle = resource => $"Add {resource.SingularLabel}";
-                    labels.CreateSubmitLabel = resource => "Save";
+                    labels.Index(index =>
+                    {
+                        index.Title = resource => $"Browse {resource.PluralLabel}";
+                        index.CreateLabel = resource => $"New {resource.SingularLabel}";
+                    });
+                    labels.Create(create =>
+                    {
+                        create.Title = resource => $"Add {resource.SingularLabel}";
+                        create.SubmitLabel = resource => "Save";
+                    });
                 })
         );
         using var client = sut.GetTestClient();

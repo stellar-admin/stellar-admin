@@ -84,7 +84,9 @@ public class ResourceSearchTests
                 if (global)
                 {
                     dashboard.ConfigureResourceLabels(labels =>
-                        labels.IndexSearchPlaceholder = resource => $"Find {resource.PluralLabel}"
+                        labels.Index(index =>
+                            index.SearchPlaceholder = resource => $"Find {resource.PluralLabel}"
+                        )
                     );
                 }
             }

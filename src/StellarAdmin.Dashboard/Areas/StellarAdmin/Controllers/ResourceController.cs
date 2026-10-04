@@ -405,8 +405,8 @@ public class ResourceController<TResource>(
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = create.SectionLayout,
-                Title = create.Title ?? _labelOptions.CreateTitle(labels),
-                SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
+                Title = create.Title ?? _labelOptions.Create.Title(labels),
+                SubmitLabel = create.SubmitLabel ?? _labelOptions.Create.SubmitLabel(labels),
             }
         );
     }
@@ -427,10 +427,10 @@ public class ResourceController<TResource>(
             {
                 Delete = _resourceOptions.Delete is { } delete
                     ? new(
-                        delete.Title ?? _labelOptions.DeleteTitle(labels),
-                        delete.Message ?? _labelOptions.DeleteMessage(labels),
-                        delete.ConfirmLabel ?? _labelOptions.DeleteConfirmLabel(labels),
-                        delete.CancelLabel ?? _labelOptions.DeleteCancelLabel(labels),
+                        delete.Title ?? _labelOptions.Delete.Title(labels),
+                        delete.Message ?? _labelOptions.Delete.Message(labels),
+                        delete.ConfirmLabel ?? _labelOptions.Delete.ConfirmLabel(labels),
+                        delete.CancelLabel ?? _labelOptions.Delete.CancelLabel(labels),
                         id
                     )
                     : null,
@@ -440,8 +440,8 @@ public class ResourceController<TResource>(
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = edit.SectionLayout,
-                Title = edit.Title ?? _labelOptions.EditTitle(labels),
-                SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
+                Title = edit.Title ?? _labelOptions.Edit.Title(labels),
+                SubmitLabel = edit.SubmitLabel ?? _labelOptions.Edit.SubmitLabel(labels),
             }
         );
     }
@@ -554,22 +554,22 @@ public class ResourceController<TResource>(
                     _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
-                    _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
+                    _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
                 Delete =
                     _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
                         ? null
                         : new(
-                            _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
-                            _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
+                            _resourceOptions.Delete.Title ?? _labelOptions.Delete.Title(labels),
+                            _resourceOptions.Delete.Message ?? _labelOptions.Delete.Message(labels),
                             _resourceOptions.Delete.ConfirmLabel
-                                ?? _labelOptions.DeleteConfirmLabel(labels),
+                                ?? _labelOptions.Delete.ConfirmLabel(labels),
                             _resourceOptions.Delete.CancelLabel
-                                ?? _labelOptions.DeleteCancelLabel(labels)
+                                ?? _labelOptions.Delete.CancelLabel(labels)
                         ),
                 DeleteLabel =
-                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
+                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.Index.DeleteLabel(labels),
                 EditLabel =
-                    _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
+                    _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
                 KeySelector = _resourceOptions.KeySelector,
                 Items = result.Items,
                 Paging = pagingModel,
@@ -587,7 +587,7 @@ public class ResourceController<TResource>(
                 Search = _resourceOptions.Index.Search is { } search
                     ? new(
                         request.Search,
-                        search.Placeholder ?? _labelOptions.IndexSearchPlaceholder(labels)
+                        search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
                     )
                     : null,
                 Sort = request.Sort is { } sort
@@ -598,7 +598,7 @@ public class ResourceController<TResource>(
                             : DataGridSortDirection.Ascending
                     )
                     : null,
-                Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
+                Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
             }
         );
     }
