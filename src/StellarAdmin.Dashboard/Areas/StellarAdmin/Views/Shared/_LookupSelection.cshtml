@@ -2,13 +2,13 @@
 
 @{
     var item = Model.Item;
-    var card = Model.Layout == LookupEditorLayout.Card;
+    var isCard = Model.Layout == LookupEditorLayout.Card;
 
-    var media = Model.ShowMedia && item is not null ? LookupMediaViewModel.Create(item.Media, item.Title, card) : null;
+    var media = Model.ShowMedia && item is not null ? LookupMediaViewModel.Create(item.Media, item.Title, isCard) : null;
 }
 
 @* The editable layouts mark their parts with data-lookup, so selecting a result can swap in that result's parts *@
-@if (card)
+@if (isCard)
 {
     <sa-item-media data-lookup="media" hidden="@(media is null)">
         @if (media is not null)

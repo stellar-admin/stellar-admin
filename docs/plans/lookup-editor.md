@@ -268,3 +268,4 @@ Review fixes, 2026-10-03:
 
 PR review changes, 2026-10-05:
 - **Lookup query:** the lookup action binds its query string to a new public `ResourceLookupQuery` (`Form`, `Field`, `Term`, `Skip`, `Selected`), like `Index` binds `ResourceIndexQuery`. The query string and the Load more URL are unchanged. Dashboard integration tests 291 passed.
+- **Boolean names:** the lookup editor template and `_LookupSelection` rename `card` and `invalid` to `isCard` and `isInvalid`. Dashboard integration tests 291 passed.
