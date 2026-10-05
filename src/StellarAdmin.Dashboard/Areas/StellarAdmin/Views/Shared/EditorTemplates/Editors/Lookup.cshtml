@@ -20,31 +20,13 @@
 
     // The selection and the empty buttons are both rendered, and the script shows one; the hidden input carries the posted value
     var id = Html.IdForModel();
-    var sheetId = $"{id}-lookup";
-    var resultsId = $"{id}-results";
     var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
     var errorId = $"{id}-error";
     var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
-    var lookupUrl = canLookUp
-        ? Url.Action("Lookup", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName })
-        : null;
     var sheetUrl = canLookUp
         ? Url.Action("LookupSheet", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName, @for = id })
         : null;
     var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(isCard ? "h-12" : "")} {(isInvalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
-    var sheetTitle = Editor.SheetOptions.Title ?? label;
-
-    // The loading rows take the shape of the results' media: the Card size with a description, otherwise the Input size
-    var skeletonMediaClass = Editor.SheetOptions.ShowMedia
-        ? (Editor.Items?.MediaType, Editor.Items?.HasDescription == true) switch
-        {
-            (LookupMediaType.Code, true) => "size-7 rounded-md",
-            (LookupMediaType.Code, false) => "h-5 w-8 rounded-sm",
-            (LookupMediaType.Avatar, true) => "size-8 rounded-full",
-            (LookupMediaType.Avatar, false) => "size-6 rounded-full",
-            _ => null,
-        }
-        : null;
     var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
 }
 
@@ -96,7 +78,7 @@
                 <partial name="_LookupSelection" model="selection" />
                 <sa-item-actions class="gap-0.5">
                     <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
-                               commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open" data-lookup-for="@id">
+                               commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open">
                         @labels.Lookup.ChangeLabel(labelContext)<span class="sr-only"> @label</span>
                     </sa-button>
                     @if (allowClear)
@@ -117,8 +99,7 @@
                              aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                 <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
                            class="@($"min-w-0 flex-1 justify-start font-normal has-[>[data-lookup=media]:not([hidden])]:pl-1.5 {invalidRing}")"
-                           aria-invalid="@(isInvalid ? "true" : null)" commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open"
-                           data-lookup-for="@id">
+                           aria-invalid="@(isInvalid ? "true" : null)" commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open">
                     <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
                     <partial name="_LookupSelection" model="selection" />
                     <sa-icon name="chevrons-up-down" class="text-muted-foreground ml-auto size-4 shrink-0" />
@@ -136,8 +117,7 @@
         <div id="@($"{id}-empty")" class="flex gap-2" hidden="@(item is not null)">
             <sa-input-group class="@emptyClass">
                 <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                        commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" aria-describedby="@describedBy" data-lookup="open"
-                        data-lookup-for="@id">
+                        commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" aria-describedby="@describedBy" data-lookup="open">
                     <sa-icon name="search" class="size-4 shrink-0" />
                     <span class="truncate">@chooseText</span>
                 </button>
@@ -157,57 +137,3 @@
     <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
     <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
 </sa-field>
-
-@if (canLookUp)
-{
-    <sa-sheet id="@sheetId" data-lookup="sheet" data-lookup-for="@id">
-        <sa-sheet-header>
-            <sa-sheet-title>@sheetTitle</sa-sheet-title>
-        </sa-sheet-header>
-
-        @* The search input belongs to no form, so it is not posted and Enter does not submit the page *@
-        <sa-command id="@($"{id}-command")" filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
-            <sa-command-input name="term" autofocus="" form="@($"{sheetId}-search")" placeholder="@Editor.SheetOptions.SearchPlaceholder"
-                              aria-label="@(Editor.SheetOptions.SearchPlaceholder ?? labels.Lookup.SearchLabel(labelContext))" data-lookup="search"
-                              hx-get="@lookupUrl" hx-target="@($"#{resultsId}")" hx-trigger="input changed delay:300ms, lookup-open" />
-            <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@sheetTitle">
-                <div id="@resultsId" data-lookup="results"></div>
-            </sa-command-list>
-        </sa-command>
-
-        @* Shown by the script while a search loads, shaped like the results *@
-        <template data-lookup="loading">
-            @for (var row = 0; row < 4; row++)
-            {
-                <div class="sa-command-item pointer-events-none" aria-hidden="true">
-                    @if (skeletonMediaClass is not null)
-                    {
-                        <sa-skeleton class="@($"shrink-0 {skeletonMediaClass}")" />
-                    }
-                    <div class="flex flex-1 flex-col gap-1.5">
-                        <sa-skeleton class="h-3.5 w-2/5" />
-                        @if (Editor.Items!.HasDescription)
-                        {
-                            <sa-skeleton class="h-3 w-3/5" />
-                        }
-                    </div>
-                </div>
-            }
-        </template>
-
-        <template data-lookup="error">
-            <sa-empty class="border-0 p-4" data-lookup="message">
-                <sa-empty-header>
-                    <sa-empty-media variant="EmptyMediaVariant.Icon">
-                        <sa-icon name="circle-alert" />
-                    </sa-empty-media>
-                    <sa-empty-title>@labels.Lookup.ErrorTitle(labelContext)</sa-empty-title>
-                    <sa-empty-description>@labels.Lookup.ErrorDescription(labelContext)</sa-empty-description>
-                </sa-empty-header>
-                <sa-empty-content>
-                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-lookup="retry">@labels.Lookup.RetryLabel(labelContext)</sa-button>
-                </sa-empty-content>
-            </sa-empty>
-        </template>
-    </sa-sheet>
-}

@@ -1,56 +1,7 @@
-// Lookup editors: the server renders search results with htmx into an sa-command, which handles the
-// keyboard; selecting or clearing an item only updates the field's hidden value and shows either the
-// selection or the empty buttons.
-document.addEventListener("itemselect", (event) => {
-  const item = event.target;
-  const sheet = item.closest("[data-lookup='sheet']");
-  if (!sheet || item.matches("[data-lookup='more']")) {
-    return;
-  }
-
-  const id = sheet.dataset.lookupFor;
-  setLookupValue(id, event.detail.value, item.querySelector("template[data-lookup='selection']"));
-  sheet.close();
-  document.getElementById(`${id}-change`).focus();
-});
-
-document.addEventListener("click", (event) => {
-  if (!(event.target instanceof Element)) {
-    return;
-  }
-
-  const open = event.target.closest("[data-lookup='open']");
-  if (open) {
-    // Each open reloads the results for the current search
-    const sheet = document.getElementById(`${open.dataset.lookupFor}-lookup`);
-    sheet.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookup-open"));
-    return;
-  }
-
-  const retry = event.target.closest("[data-lookup='retry']");
-  if (retry) {
-    const sheet = retry.closest("[data-lookup='sheet']");
-    sheet.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookup-open"));
-    return;
-  }
-
-  const clear = event.target.closest("[data-lookup='clear']");
-  if (clear) {
-    setLookupValue(clear.dataset.lookupFor, "", null);
-    document.getElementById(`${clear.dataset.lookupFor}-choose`).focus();
-  }
-});
-
-// Each request sends the current value, so the server marks the selected result
-document.addEventListener("htmx:config:request", (event) => {
-  const sheet = event.target.closest("[data-lookup='sheet']");
-  if (sheet) {
-    event.detail.ctx.request.body.set(
-      "selected",
-      document.getElementById(sheet.dataset.lookupFor).value,
-    );
-  }
-});
+// Lookup editors: the search panel loads into the shared sheet, and the server renders search results
+// with htmx into its sa-command, which handles the keyboard; selecting or clearing an item only updates
+// the field's hidden value and shows either the selection or the empty buttons. htmx dispatches its
+// events on the document for elements already removed from the page, so handlers check for an element.
 
 // Selecting a result in the shared sheet closes it, then passes the selection to the editor named by the panel
 document.addEventListener("itemselect", (event) => {
@@ -78,9 +29,9 @@ document.addEventListener("lookup-select", (event) => {
   document.getElementById(`${id}-change`).focus();
 });
 
-// The shared sheet's search panel sends the current value of the editor it belongs to
+// The shared sheet's search panel sends the current value of the editor it belongs to, so the server marks the selected result
 document.addEventListener("htmx:config:request", (event) => {
-  const panel = event.target.closest("[data-lookup='panel']");
+  const panel = event.target instanceof Element && event.target.closest("[data-lookup='panel']");
   if (panel) {
     event.detail.ctx.request.body.set(
       "selected",
@@ -184,18 +135,25 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  const retry = event.target.closest("[data-lookup='search-retry']");
+  const retry = event.target.closest("[data-lookup='retry']");
   if (retry) {
     retry
       .closest("[data-lookup='panel']")
       .querySelector("[data-lookup='search']")
       .dispatchEvent(new Event("lookup-retry"));
+    return;
+  }
+
+  const clear = event.target.closest("[data-lookup='clear']");
+  if (clear) {
+    setLookupValue(clear.dataset.lookupFor, "", null);
+    document.getElementById(`${clear.dataset.lookupFor}-choose`).focus();
   }
 });
 
 // Retrying a failed search shows the loading rows again; typing keeps the current results until the new ones arrive
 document.addEventListener("htmx:before:request", (event) => {
-  const panel = event.target.closest("[data-lookup='panel']");
+  const panel = event.target instanceof Element && event.target.closest("[data-lookup='panel']");
   if (panel && event.detail.ctx.sourceEvent?.type === "lookup-retry") {
     panel
       .querySelector("[data-lookup='results']")
@@ -209,46 +167,6 @@ function showSheetTemplate(id) {
   document
     .getElementById("dashboard-sheet-content")
     .replaceChildren(document.getElementById(id).content.cloneNode(true));
-}
-
-// Opening the sheet shows loading rows; typing keeps the current results until the new ones arrive
-document.addEventListener("htmx:before:request", (event) => {
-  const sheet = event.target.closest("[data-lookup='sheet']");
-  if (sheet && event.detail.ctx.sourceEvent?.type === "lookup-open") {
-    showLookupTemplate(sheet, "loading");
-  }
-});
-
-// htmx swaps error responses too, so a failed request swaps nothing and shows the error instead
-document.addEventListener("htmx:response:error", (event) => showLookupError(event));
-document.addEventListener("htmx:error", (event) => showLookupError(event));
-
-function showLookupError(event) {
-  const element = event.target;
-  // htmx dispatches on the document for elements removed from the page, such as cancelled shared sheet requests
-  const sheet = element instanceof Element && element.closest("[data-lookup='sheet']");
-  if (!sheet) {
-    return;
-  }
-
-  event.detail.ctx.swap = "none";
-
-  // A failed Load more ends the list with the error; a failed search replaces the results
-  if (element.matches("[data-lookup='more']")) {
-    element.replaceWith(
-      sheet.querySelector("template[data-lookup='error']").content.cloneNode(true),
-    );
-  } else {
-    showLookupTemplate(sheet, "error");
-  }
-}
-
-function showLookupTemplate(sheet, name) {
-  sheet
-    .querySelector("[data-lookup='results']")
-    .replaceChildren(
-      sheet.querySelector(`template[data-lookup='${name}']`).content.cloneNode(true),
-    );
 }
 
 function setLookupValue(id, value, template) {

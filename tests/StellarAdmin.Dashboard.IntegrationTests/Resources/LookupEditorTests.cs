@@ -378,7 +378,6 @@ public class LookupEditorTests
             .That(field.RequiredElement("[data-slot='item-title']").TextContent.Trim())
             .IsEqualTo("Notebooks");
         await Assert.That(field.QuerySelector("button")).IsNull();
-        await Assert.That(document.QuerySelector("[data-lookup='sheet']")).IsNull();
     }
 
     [Test]
@@ -456,22 +455,11 @@ public class LookupEditorTests
     }
 
     [Test]
-    public async Task LookupButton_OpensSheetWithTitleAndSearch()
+    public async Task LookupButtons_OpenSharedSheet()
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields =>
-                fields
-                    .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
-                    {
-                        lookup.Sheet(sheet =>
-                        {
-                            sheet.Title = "Select category";
-                            sheet.SearchPlaceholder = "Search categories";
-                        });
-                        UseCategories(lookup);
-                    }),
+            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -480,20 +468,21 @@ public class LookupEditorTests
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
-        var open = document.RequiredElement("[data-lookup='open']");
-        var sheet = document.RequiredElement("dialog[data-lookup='sheet']");
-        await Assert.That(open.GetAttribute("type")).IsEqualTo("button");
-        await Assert.That(open.GetAttribute("command")).IsEqualTo("show-modal");
-        await Assert.That(open.GetAttribute("commandfor")).IsEqualTo("dashboard-sheet");
+        var openers = document.QuerySelectorAll("[data-lookup='open']");
+        await Assert.That(openers.Length).IsEqualTo(2);
+        foreach (var open in openers)
+        {
+            await Assert.That(open.GetAttribute("type")).IsEqualTo("button");
+            await Assert.That(open.GetAttribute("command")).IsEqualTo("show-modal");
+            await Assert.That(open.GetAttribute("commandfor")).IsEqualTo("dashboard-sheet");
+            await Assert
+                .That(open.GetAttribute("hx-get"))
+                .IsEqualTo(
+                    "/stellaradmin/products/lookupsheet?form=create&field=CategoryId&for=Entity_CategoryId"
+                );
+        }
+
         await Assert.That(document.GetElementById("dashboard-sheet")?.TagName).IsEqualTo("DIALOG");
-        await Assert
-            .That(sheet.RequiredElement("[data-slot='sheet-title']").TextContent)
-            .IsEqualTo("Select category");
-        var search = sheet.RequiredElement("[data-lookup='search']");
-        await Assert.That(search.GetAttribute("placeholder")).IsEqualTo("Search categories");
-        await Assert
-            .That(sheet.RequiredElement("[data-lookup='results']").ChildElementCount)
-            .IsEqualTo(0);
     }
 
     [Test]
@@ -514,45 +503,6 @@ public class LookupEditorTests
         await Assert
             .That(await response.Content.ReadAsStringAsync())
             .Contains("LookupEditor on CategoryId requires UseItems.");
-    }
-
-    [Test]
-    public async Task SearchInput_RequestsFieldLookupWhenSheetOpensOrTermChanges()
-    {
-        // Arrange
-        await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
-            new()
-        );
-        using var client = sut.GetTestClient();
-
-        // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
-
-        // Assert
-        var search = document.RequiredElement("[data-lookup='search']");
-        await Assert.That(search.GetAttribute("name")).IsEqualTo("term");
-        await Assert.That(search.GetAttribute("form")).IsEqualTo("Entity_CategoryId-lookup-search");
-        await Assert
-            .That(search.GetAttribute("hx-get"))
-            .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId");
-        await Assert
-            .That(search.GetAttribute("hx-trigger"))
-            .IsEqualTo("input changed delay:300ms, lookup-open");
-        await Assert.That(search.GetAttribute("hx-target")).IsEqualTo("#Entity_CategoryId-results");
-        await Assert
-            .That(
-                document
-                    .QuerySelectorAll("[data-lookup='open']")
-                    .Select(open => open.GetAttribute("data-lookup-for"))
-            )
-            .IsEquivalentTo(["Entity_CategoryId", "Entity_CategoryId"]);
-        await Assert
-            .That(document.RequiredElement("[data-lookup='results']").Id)
-            .IsEqualTo("Entity_CategoryId-results");
-        await Assert
-            .That(document.RequiredElement("[data-lookup='sheet']").GetAttribute("data-lookup-for"))
-            .IsEqualTo("Entity_CategoryId");
     }
 
     [Test]
@@ -746,7 +696,7 @@ public class LookupEditorTests
     }
 
     [Test]
-    public async Task Sheet_LoadingRowsTakeTheShapeOfTheResults()
+    public async Task LookupSheet_LoadingRowsTakeTheShapeOfTheResults()
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
@@ -769,7 +719,9 @@ public class LookupEditorTests
         using var client = sut.GetTestClient();
 
         // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookupsheet?form=create&field=CategoryId&for=Entity_CategoryId"
+        );
 
         // Assert
         var loading = (IHtmlTemplateElement)
@@ -995,6 +947,7 @@ public class LookupEditorTests
             .IsEqualTo("Select category");
         var search = root.RequiredElement("[data-lookup='search']");
         await Assert.That(search.GetAttribute("placeholder")).IsEqualTo("Search categories");
+        await Assert.That(search.GetAttribute("name")).IsEqualTo("term");
         await Assert
             .That(search.GetAttribute("hx-get"))
             .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId");
