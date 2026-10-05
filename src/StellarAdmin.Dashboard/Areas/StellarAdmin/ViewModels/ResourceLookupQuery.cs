@@ -11,6 +11,11 @@ public sealed class ResourceLookupQuery
     public string? Field { get; set; }
 
     /// <summary>
+    ///     The HTML id of the lookup field's editor, which the shared sheet's content belongs to.
+    /// </summary>
+    public string? For { get; set; }
+
+    /// <summary>
     ///     The form that contains the field: create or edit.
     /// </summary>
     public string? Form { get; set; }

@@ -29,4 +29,9 @@ public sealed class ResourceLabelOptions
     ///     Default lookup editor text.
     /// </summary>
     public LookupLabelOptions Lookup { get; } = new();
+
+    /// <summary>
+    ///     Default text for the sheet that pages load content into.
+    /// </summary>
+    public ResourceSheetLabelOptions Sheet { get; } = new();
 }

@@ -290,30 +290,18 @@ public class ResourceController<TResource>(
         CancellationToken cancellationToken
     )
     {
-        var fields = query.Form?.ToLowerInvariant() switch
-        {
-            "create" => _resourceOptions.Create?.Fields,
-            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
-            _ => null,
-        };
-        var options = fields?.FirstOrDefault(options => options.FieldName == query.Field);
         if (
             !ModelState.IsValid
             || query.Skip < 0
-            || options
-                is not { IsReadOnly: false, Editor: LookupEditor { Items: { } items } editor }
+            || FindLookupField(query) is not ({ } options, { Items: { } items } editor)
         )
         {
             return NotFound();
         }
 
         var term = string.IsNullOrWhiteSpace(query.Term) ? null : query.Term.Trim();
-        var property = options.PropertyPath[^1];
         var labels = new LookupLabelContext(
-            options.Title
-                ?? MetadataProvider
-                    .GetMetadataForProperty(property.DeclaringType!, property.Name)
-                    .GetDisplayName(),
+            GetFieldLabel(options),
             editor.SheetOptions.MinimumSearchLength,
             term
         );
@@ -366,6 +354,44 @@ public class ResourceController<TResource>(
                 false,
                 query.Skip == 0 && results.Items.Count == 0,
                 labels
+            )
+        );
+    }
+
+    /// <summary>
+    ///     Renders the search panel of a lookup field for the shared sheet.
+    /// </summary>
+    [HttpGet]
+    public IActionResult LookupSheet([FromQuery] ResourceLookupQuery query)
+    {
+        if (
+            !ModelState.IsValid
+            || string.IsNullOrEmpty(query.For)
+            || FindLookupField(query) is not ({ } options, { Items: not null } editor)
+        )
+        {
+            return NotFound();
+        }
+
+        var label = GetFieldLabel(options);
+        var resultsUrl = Url.Action(
+            nameof(Lookup),
+            new
+            {
+                id = (string?)null,
+                form = query.Form,
+                field = query.Field,
+            }
+        )!;
+
+        return PartialView(
+            "_LookupSheet",
+            new LookupSheetViewModel(
+                editor,
+                query.For,
+                editor.SheetOptions.Title ?? label,
+                resultsUrl,
+                new LookupLabelContext(label, editor.SheetOptions.MinimumSearchLength, null)
             )
         );
     }
@@ -444,6 +470,32 @@ public class ResourceController<TResource>(
                 SubmitLabel = edit.SubmitLabel ?? _labelOptions.Edit.SubmitLabel(labels),
             }
         );
+    }
+
+    private (FormFieldOptions, LookupEditor)? FindLookupField(ResourceLookupQuery query)
+    {
+        var fields = query.Form?.ToLowerInvariant() switch
+        {
+            "create" => _resourceOptions.Create?.Fields,
+            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
+            _ => null,
+        };
+
+        return
+            fields?.FirstOrDefault(options => options.FieldName == query.Field)
+                is { IsReadOnly: false, Editor: LookupEditor editor } options
+            ? (options, editor)
+            : null;
+    }
+
+    private string GetFieldLabel(FormFieldOptions options)
+    {
+        var property = options.PropertyPath[^1];
+
+        return options.Title
+            ?? MetadataProvider
+                .GetMetadataForProperty(property.DeclaringType!, property.Name)
+                .GetDisplayName();
     }
 
     private async Task<(

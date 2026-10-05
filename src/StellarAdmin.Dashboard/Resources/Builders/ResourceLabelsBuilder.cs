@@ -70,4 +70,16 @@ public sealed class ResourceLabelsBuilder
 
         return this;
     }
+
+    /// <summary>
+    ///     Configures default text for the sheet that pages load content into.
+    /// </summary>
+    public ResourceLabelsBuilder Sheet(Action<ResourceSheetLabelsBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
 }
