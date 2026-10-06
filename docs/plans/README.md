@@ -14,7 +14,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
-| [lookup-editor](lookup-editor.md) | active | Searchable `LookupEditor` for long reference lists, in phases; Phases 1–9, including the display redesign, committed by 2026-10-03, plus the Load more active-row fix and review fixes (avatar initials, lookup text in `ResourceLabelOptions`); creating items from the lookup remains. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 
 ## Retired implementation and research records
@@ -46,6 +45,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [identity-user-forms-approaches](archive/identity-user-forms-approaches.md) | superseded |
 | [identity-view-override-hatches](archive/identity-view-override-hatches.md) | reference |
 | [ledger-theme](archive/ledger-theme.md) | completed |
+| [lookup-editor](archive/lookup-editor.md) | completed; searchable `LookupEditor` with the display redesign, a shared dashboard sheet that loads its content from the server, and plain custom elements in the dashboard script. Creating items from the lookup is left for a separate plan. |
 | [menu-color-appearance-accent](oss/archive/menu-color-appearance-accent.md) | completed |
 | [meridian-theme](archive/meridian-theme.md) | completed |
 | [observatory-default-theme](archive/observatory-default-theme.md) | completed |

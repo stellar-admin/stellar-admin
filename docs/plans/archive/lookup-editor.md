@@ -1,6 +1,6 @@
 # Lookup editor
 
-Status: **active**. Phases 1–5 committed on branch `lookup-editor`; Phases 6–9 implement the [display redesign](#display-redesign). Last updated: 2026-10-06.
+Status: **completed**. Phases 1–9, the shared sheet and the script structure were merged to master in PR #2; the follow-ups are on branch `lookup-follow-ups`. Phases 6–9 implement the [display redesign](#display-redesign). Creating items from the lookup (what `EnableCreate`'s button does, see [Deferred](#deferred)) moves to a separate plan. Last updated: 2026-10-06.
 
 `SelectEditor` suits short lists. `LookupEditor` handles long ones: a read-only display input in an input group with a lookup button that opens a sheet with free-text search and paged results. The form posts a hidden value; the display text (and description) is resolved when the form loads. Single select only. Results are a single column rendered with `sa-item`. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
