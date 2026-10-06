@@ -6,47 +6,77 @@
 // opener's request can be in flight; closing the sheet cancels it and shows the loading state again, so a
 // late response never fills the sheet for the next opener. A failed load shows the sheet's error, and Retry
 // repeats the opener's request.
-const sheet = document.getElementById("dashboard-sheet");
-if (sheet) {
-  let opener = null;
+class DashboardSheet extends HTMLElement {
+  #opener = null;
 
-  sheet.addEventListener("command", (event) => {
-    if (event.command === "show-modal") {
-      opener = event.source;
-    }
-  });
+  constructor() {
+    super();
 
-  sheet.addEventListener("close", () => {
-    if (opener) {
-      htmx.trigger(opener, "htmx:abort");
-    }
+    // The dialog's command and close events don't bubble, so they are caught on the way down
+    this.addEventListener(
+      "command",
+      (event) => {
+        if (event.command === "show-modal") {
+          this.#opener = event.source;
+        }
+      },
+      { capture: true },
+    );
 
-    showSheetTemplate("dashboard-sheet-loading");
-  });
+    this.addEventListener(
+      "close",
+      () => {
+        if (this.#opener) {
+          htmx.trigger(this.#opener, "htmx:abort");
+        }
 
-  // The opener is outside the sheet, so its request's errors only reach the document
-  for (const name of ["htmx:response:error", "htmx:error"]) {
-    document.addEventListener(name, (event) => {
-      const ctx = event.detail.ctx;
-      if (ctx.sourceElement !== opener || event.detail.error?.name === "AbortError") {
-        return;
+        this.#show("loading");
+      },
+      { capture: true },
+    );
+
+    this.addEventListener("click", (event) => {
+      if (event.target.closest("[data-sheet='retry']")) {
+        this.#show("loading");
+        htmx.ajax("GET", this.#opener.getAttribute("hx-get"), {
+          source: this.#opener,
+          target: "#dashboard-sheet-content",
+        });
       }
-
-      ctx.swap = "none";
-      showSheetTemplate("dashboard-sheet-error");
     });
   }
 
-  sheet.addEventListener("click", (event) => {
-    if (event.target.closest("[data-sheet='retry']")) {
-      showSheetTemplate("dashboard-sheet-loading");
-      htmx.ajax("GET", opener.getAttribute("hx-get"), {
-        source: opener,
-        target: "#dashboard-sheet-content",
-      });
+  // The opener is outside the sheet, so its request's errors only reach the document
+  connectedCallback() {
+    for (const name of ["htmx:response:error", "htmx:error"]) {
+      document.addEventListener(name, this.#onError);
     }
-  });
+  }
+
+  disconnectedCallback() {
+    for (const name of ["htmx:response:error", "htmx:error"]) {
+      document.removeEventListener(name, this.#onError);
+    }
+  }
+
+  #onError = (event) => {
+    const ctx = event.detail.ctx;
+    if (ctx.sourceElement !== this.#opener || event.detail.error?.name === "AbortError") {
+      return;
+    }
+
+    ctx.swap = "none";
+    this.#show("error");
+  };
+
+  #show(name) {
+    this.querySelector("#dashboard-sheet-content").replaceChildren(
+      this.querySelector(`template[data-sheet='${name}']`).content.cloneNode(true),
+    );
+  }
 }
+
+customElements.define("dashboard-sheet", DashboardSheet);
 
 // A lookup's search panel in the shared sheet; for names the hidden input of the editor that results belong to.
 // It only handles events from its own elements, so htmx events dispatched on the document for elements already
@@ -119,12 +149,6 @@ class DashboardLookupPanel extends HTMLElement {
 }
 
 customElements.define("dashboard-lookup-panel", DashboardLookupPanel);
-
-function showSheetTemplate(id) {
-  document
-    .getElementById("dashboard-sheet-content")
-    .replaceChildren(document.getElementById(id).content.cloneNode(true));
-}
 
 // A lookup editor: the panel sends a selection to its hidden input as lookup-select, and Clear empties it. It
 // shows either the selection or the empty buttons, and moves focus to the button that is still shown.

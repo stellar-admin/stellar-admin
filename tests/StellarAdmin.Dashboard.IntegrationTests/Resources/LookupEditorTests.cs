@@ -1007,7 +1007,7 @@ public class LookupEditorTests
         // Assert
         var error = (
             (IHtmlTemplateElement)
-                document.RequiredElement("#dashboard-sheet template#dashboard-sheet-error")
+                document.RequiredElement("#dashboard-sheet template[data-sheet='error']")
         ).Content;
         await Assert
             .That(error.QuerySelector("[data-slot='empty-title']")?.TextContent)
