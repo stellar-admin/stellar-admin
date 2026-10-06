@@ -14,7 +14,8 @@ internal static class EfCoreTestHost
 {
     public static async Task<WebApplication> CreateAsync(
         Action<EfCoreResourceBuilder<CatalogDbContext, Product>>? configure = null,
-        ConcurrentQueue<string>? commands = null
+        ConcurrentQueue<string>? commands = null,
+        Action<StellarAdminDashboardBuilder>? configureDashboard = null
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -44,6 +45,7 @@ internal static class EfCoreTestHost
         builder
             .Services.AddStellarAdmin()
             .AddDashboard(dashboard =>
+            {
                 dashboard.AddEfCoreResource<CatalogDbContext, Product>(resource =>
                 {
                     resource.Index(index =>
@@ -55,8 +57,9 @@ internal static class EfCoreTestHost
                         })
                     );
                     configure?.Invoke(resource);
-                })
-            );
+                });
+                configureDashboard?.Invoke(dashboard);
+            });
 
         var app = builder.Build();
         using (var scope = app.Services.CreateScope())

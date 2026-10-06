@@ -42,6 +42,8 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
 
     public override bool HasDescription => _description is not null;
 
+    public override Type ItemType => typeof(TEntity);
+
     public override LookupMediaType? MediaType => _media is null ? null : _options.MediaType;
 
     public override async Task<LookupItem?> FindAsync(

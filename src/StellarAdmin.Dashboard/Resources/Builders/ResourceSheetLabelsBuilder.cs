@@ -51,5 +51,20 @@ public sealed class ResourceSheetLabelsBuilder
         }
     }
 
+    /// <summary>
+    ///     The description shown when a form in the sheet could not be saved.
+    /// </summary>
+    public string SaveErrorDescription
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Sheet.SaveErrorDescription = value
+            );
+        }
+    }
+
     internal ResourceSheetLabelsBuilder(IServiceCollection services) => _services = services;
 }

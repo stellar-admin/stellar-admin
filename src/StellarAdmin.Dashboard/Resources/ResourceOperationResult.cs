@@ -20,10 +20,20 @@ public sealed class ResourceOperationResult
     /// </summary>
     public bool IsSuccess => !IsNotFound && Errors.Count == 0;
 
-    private ResourceOperationResult(bool isNotFound, IReadOnlyList<ResourceValidationError> errors)
+    /// <summary>
+    ///     The key of the created resource, or null when the operation did not return one.
+    /// </summary>
+    public string? Key { get; }
+
+    private ResourceOperationResult(
+        bool isNotFound,
+        IReadOnlyList<ResourceValidationError> errors,
+        string? key = null
+    )
     {
         IsNotFound = isNotFound;
         Errors = errors;
+        Key = key;
     }
 
     /// <summary>
@@ -35,6 +45,19 @@ public sealed class ResourceOperationResult
     ///     Returns a successful result.
     /// </summary>
     public static ResourceOperationResult Success() => new(false, []);
+
+    /// <summary>
+    ///     Returns a successful result with the key of the created resource.
+    /// </summary>
+    /// <remarks>
+    ///     A create handler whose model is not the resource returns the key, so a lookup can select the new resource.
+    /// </remarks>
+    public static ResourceOperationResult Success(string key)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        return new(false, [], key);
+    }
 
     /// <summary>
     ///     Returns a failed result with the supplied validation errors.

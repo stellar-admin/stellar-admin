@@ -22,8 +22,10 @@ internal static class FieldEditorGalleryRegistration
             ConfigureTextInputFields
         );
         dashboard.AddGalleryResource<SelectGallery>("select", "Select", 20, ConfigureSelectFields);
+        dashboard.Services.AddSingleton<GalleryAirportStore>();
         dashboard.Services.AddSingleton<GalleryAirportLookupSource>();
         dashboard.AddGalleryResource<LookupGallery>("lookup", "Lookup", 25, ConfigureLookupFields);
+        dashboard.AddAirportResource();
         dashboard.AddGalleryResource<RadioGroupGallery>(
             "radio-group",
             "Radio group",
@@ -67,6 +69,42 @@ internal static class FieldEditorGalleryRegistration
             "One-time code",
             100,
             ConfigureOneTimeCodeFields
+        );
+    }
+
+    // The lookup gallery's EnableCreate field creates airports with this resource's create form
+    private static void AddAirportResource(this StellarAdminDashboardBuilder dashboard)
+    {
+        dashboard.AddResource<GalleryAirport>(
+            "airports",
+            resource =>
+            {
+                resource.PluralLabel = "Airports";
+                resource.SingularLabel = "Airport";
+                resource.SidebarItem(item =>
+                {
+                    item.Group = Group;
+                    item.Order = 26;
+                });
+                resource.UseDataSource<GalleryAirportDataSource>();
+                resource.Index(index =>
+                    index.Columns(columns =>
+                    {
+                        columns.Add(airport => airport.Code);
+                        columns.Add(airport => airport.City);
+                        columns.Add(airport => airport.Country);
+                    })
+                );
+                resource.AllowCreate<CreateGalleryAirportModel, CreateGalleryAirportHandler>(
+                    create =>
+                        create.Fields(fields =>
+                        {
+                            fields.Add(model => model.Code);
+                            fields.Add(model => model.City);
+                            fields.Add(model => model.Country);
+                        })
+                );
+            }
         );
     }
 

@@ -42,4 +42,25 @@ public class DashboardSheetTests
             .That(error.QuerySelector("[data-sheet='retry']")?.TextContent)
             .IsEqualTo("Reload");
     }
+
+    [Test]
+    public async Task Layout_RendersSharedAndNestedSheets()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(new([]));
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        foreach (var id in new[] { "dashboard-sheet", "dashboard-nested-sheet" })
+        {
+            var sheet = document.RequiredElement($"dashboard-remote-sheet > sel-dialog > #{id}");
+            await Assert
+                .That(sheet.RequiredElement("[data-sheet='content']").Id)
+                .IsEqualTo($"{id}-content");
+            await Assert.That(sheet.QuerySelector("template[data-sheet='error']")).IsNotNull();
+        }
+    }
 }

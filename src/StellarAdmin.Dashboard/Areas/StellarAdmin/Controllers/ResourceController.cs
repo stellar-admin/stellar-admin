@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -53,39 +56,77 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        var resource = _resourceOptions.Create.CreateModel();
-        var fields = _resourceOptions
-            .Create.Fields.Select(field => field.FieldName)
-            .ToHashSet(StringComparer.Ordinal);
-
-        var valid = await TryBindConfiguredFieldsAsync(
-            resource,
-            _resourceOptions.Create.ModelType,
-            fields
+        var (resource, result) = await SubmitCreateAsync(
+            ResourceFormPageViewModel.BindingPrefix,
+            cancellationToken
         );
-        if (!valid)
-        {
-            return await CreateView(resource, cancellationToken);
-        }
-
-        var result = _resourceOptions.CreateHandler is { } handler
-            ? await handler(HttpContext.RequestServices, resource, cancellationToken)
-            : await ((IResourceCreateHandler<TResource>)dataSource).CreateAsync(
-                (TResource)resource,
-                cancellationToken
-            );
-        if (result.IsNotFound)
+        if (result is { IsNotFound: true })
         {
             return NotFound();
         }
 
-        if (!result.IsSuccess)
+        if (result is not { IsSuccess: true })
         {
-            AddValidationErrors(result, fields);
             return await CreateView(resource, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>
+    ///     Displays the create form in the shared sheet, for a lookup field that creates its item.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> CreateSheet(
+        [FromQuery(Name = "for")] string? lookup,
+        CancellationToken cancellationToken
+    )
+    {
+        return _resourceOptions.Create is { } create && !string.IsNullOrEmpty(lookup)
+            ? await CreateSheetView(create.CreateModel(), lookup, cancellationToken)
+            : NotFound();
+    }
+
+    /// <summary>
+    ///     Creates a resource from the create form in the shared sheet, and returns its key to the lookup field.
+    /// </summary>
+    [HttpPost]
+    [ActionName(nameof(CreateSheet))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateSheetPost(
+        [FromQuery(Name = "for")] string? lookup,
+        CancellationToken cancellationToken
+    )
+    {
+        if (_resourceOptions.Create is null || string.IsNullOrEmpty(lookup))
+        {
+            return NotFound();
+        }
+
+        var (resource, result) = await SubmitCreateAsync(
+            CreateSheetViewModel.BindingPrefix,
+            cancellationToken
+        );
+        if (result is { IsNotFound: true })
+        {
+            return NotFound();
+        }
+
+        if (result is not { IsSuccess: true })
+        {
+            return await CreateSheetView(resource, lookup, cancellationToken);
+        }
+
+        // A create model other than the resource has no key selector, so its handler returns the key
+        var key =
+            result.Key
+            ?? (
+                resource is TResource created && _resourceOptions.KeySelector is { } selector
+                    ? selector(created)
+                    : null
+            );
+
+        return PartialView("_LookupCreated", new LookupCreatedViewModel(lookup, key));
     }
 
     /// <summary>
@@ -136,7 +177,7 @@ public class ResourceController<TResource>(
                 return RedirectToAction(nameof(Edit), new { id });
             }
 
-            AddValidationErrors(result, []);
+            AddValidationErrors(result, [], ResourceFormPageViewModel.BindingPrefix);
             return await IndexView(query, request, cancellationToken, redirectOutOfRange: false);
         }
 
@@ -231,7 +272,8 @@ public class ResourceController<TResource>(
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Edit.ModelType,
-            fields
+            fields,
+            ResourceFormPageViewModel.BindingPrefix
         );
         if (!valid)
         {
@@ -252,7 +294,7 @@ public class ResourceController<TResource>(
 
         if (!result.IsSuccess)
         {
-            AddValidationErrors(result, fields);
+            AddValidationErrors(result, fields, ResourceFormPageViewModel.BindingPrefix);
             return await EditView(resource, id, cancellationToken);
         }
 
@@ -359,6 +401,51 @@ public class ResourceController<TResource>(
     }
 
     /// <summary>
+    ///     Renders a lookup field's display of the item with the specified value, for an item created from the field.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> LookupSelection(
+        [FromQuery] ResourceLookupQuery query,
+        [FromQuery] string? value,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            !ModelState.IsValid
+            || string.IsNullOrEmpty(value)
+            || FindLookupField(query) is not ({ } options, { Items: { } items } editor)
+            || !TryConvertKey(options, value, out var current)
+        )
+        {
+            return NotFound();
+        }
+
+        // The new item is shown without the form's model, so a model that has never been bound stands in for it
+        var model = query.Form!.Equals("create", StringComparison.OrdinalIgnoreCase)
+            ? _resourceOptions.Create!.CreateModel()
+            : RuntimeHelpers.GetUninitializedObject(_resourceOptions.Edit!.ModelType);
+        var item = await items.FindAsync(
+            HttpContext.RequestServices,
+            new FieldEditorContext(options.FieldName, model, current),
+            cancellationToken
+        );
+
+        // Selected values are posted with the form, which binds them in the current culture
+        return PartialView(
+            "_LookupSelectionTemplate",
+            new LookupSelectionTemplateViewModel(
+                Convert.ToString(current, CultureInfo.CurrentCulture) ?? "",
+                new LookupSelectionViewModel(
+                    item,
+                    editor.Layout,
+                    editor.FieldOptions.ShowMedia,
+                    false
+                )
+            )
+        );
+    }
+
+    /// <summary>
     ///     Renders the search panel of a lookup field for the shared sheet.
     /// </summary>
     [HttpGet]
@@ -396,16 +483,35 @@ public class ResourceController<TResource>(
         );
     }
 
-    private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
+    // Keys are formatted in the invariant culture, and converted to the field's type for the lookup's items
+    private static bool TryConvertKey(FormFieldOptions options, string key, out object? value)
+    {
+        var property = options.PropertyPath[^1];
+        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+        try
+        {
+            value = TypeDescriptor.GetConverter(type).ConvertFromInvariantString(key);
+            return true;
+        }
+        catch (Exception exception)
+            when (exception is ArgumentException or FormatException or NotSupportedException)
+        {
+            value = null;
+            return false;
+        }
+    }
+
+    private void AddValidationErrors(
+        ResourceOperationResult result,
+        HashSet<string> fields,
+        string prefix
+    )
     {
         foreach (var error in result.Errors)
         {
             var key =
                 error.FieldName is not null && fields.Contains(error.FieldName)
-                    ? ModelNames.CreatePropertyModelName(
-                        ResourceFormPageViewModel.BindingPrefix,
-                        error.FieldName
-                    )
+                    ? ModelNames.CreatePropertyModelName(prefix, error.FieldName)
                     : string.Empty;
             ModelState.AddModelError(key, error.Message);
         }
@@ -414,26 +520,46 @@ public class ResourceController<TResource>(
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
-    private async Task<ViewResult> CreateView(object resource, CancellationToken cancellationToken)
+    private async Task<ResourceFormPageViewModel> CreateFormModelAsync(
+        object resource,
+        CancellationToken cancellationToken
+    )
     {
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
         var editors = await PrepareEditorsAsync(fields, resource, cancellationToken);
 
+        return new ResourceFormPageViewModel
+        {
+            Entity = resource,
+            Fields = fields,
+            Items = create.Items.ToArray(),
+            EditorData = editors.Data,
+            EditorTemplates = editors.Templates,
+            SectionLayout = create.SectionLayout,
+            Title = create.Title ?? _labelOptions.Create.Title(labels),
+            SubmitLabel = create.SubmitLabel ?? _labelOptions.Create.SubmitLabel(labels),
+        };
+    }
+
+    private async Task<PartialViewResult> CreateSheetView(
+        object resource,
+        string lookup,
+        CancellationToken cancellationToken
+    )
+    {
+        var form = await CreateFormModelAsync(resource, cancellationToken);
+        var postUrl = Url.Action(nameof(CreateSheet), new { id = (string?)null, @for = lookup })!;
+
+        return PartialView("_CreateSheet", new CreateSheetViewModel(form, lookup, postUrl));
+    }
+
+    private async Task<ViewResult> CreateView(object resource, CancellationToken cancellationToken)
+    {
         return ResourceView(
             nameof(Create),
-            new ResourceFormPageViewModel
-            {
-                Entity = resource,
-                Fields = fields,
-                Items = create.Items.ToArray(),
-                EditorData = editors.Data,
-                EditorTemplates = editors.Templates,
-                SectionLayout = create.SectionLayout,
-                Title = create.Title ?? _labelOptions.Create.Title(labels),
-                SubmitLabel = create.SubmitLabel ?? _labelOptions.Create.SubmitLabel(labels),
-            }
+            await CreateFormModelAsync(resource, cancellationToken)
         );
     }
 
@@ -664,6 +790,37 @@ public class ResourceController<TResource>(
         return View(viewName, model);
     }
 
+    // Binds and saves the create form; the result is null when binding failed
+    private async Task<(object Resource, ResourceOperationResult? Result)> SubmitCreateAsync(
+        string prefix,
+        CancellationToken cancellationToken
+    )
+    {
+        var create = _resourceOptions.Create!;
+        var resource = create.CreateModel();
+        var fields = create
+            .Fields.Select(field => field.FieldName)
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (!await TryBindConfiguredFieldsAsync(resource, create.ModelType, fields, prefix))
+        {
+            return (resource, null);
+        }
+
+        var result = _resourceOptions.CreateHandler is { } handler
+            ? await handler(HttpContext.RequestServices, resource, cancellationToken)
+            : await ((IResourceCreateHandler<TResource>)dataSource).CreateAsync(
+                (TResource)resource,
+                cancellationToken
+            );
+        if (!result.IsSuccess && !result.IsNotFound)
+        {
+            AddValidationErrors(result, fields, prefix);
+        }
+
+        return (resource, result);
+    }
+
     private bool TryCreateListRequest(ResourceIndexQuery query, out ResourceListRequest request)
     {
         request = new();
@@ -727,7 +884,8 @@ public class ResourceController<TResource>(
     private async Task<bool> TryBindConfiguredFieldsAsync(
         object model,
         Type modelType,
-        HashSet<string> fields
+        HashSet<string> fields,
+        string prefix
     )
     {
         var propertyNames = fields
@@ -737,25 +895,27 @@ public class ResourceController<TResource>(
         return await TryUpdateModelAsync(
             model,
             modelType,
-            ResourceFormPageViewModel.BindingPrefix,
+            prefix,
             new ConfiguredFieldValueProvider(
                 await CompositeValueProvider.CreateAsync(ControllerContext),
-                fields
+                fields,
+                prefix
             ),
             metadata => propertyNames.Contains(metadata.PropertyName ?? "")
         );
     }
 
-    private sealed class ConfiguredFieldValueProvider(IValueProvider source, HashSet<string> fields)
-        : IValueProvider
+    private sealed class ConfiguredFieldValueProvider(
+        IValueProvider source,
+        HashSet<string> fields,
+        string bindingPrefix
+    ) : IValueProvider
     {
         private readonly HashSet<string> _keys = fields
-            .Select(field =>
-                ModelNames.CreatePropertyModelName(ResourceFormPageViewModel.BindingPrefix, field)
-            )
+            .Select(field => ModelNames.CreatePropertyModelName(bindingPrefix, field))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        private readonly HashSet<string> _prefixes = CreatePrefixes(fields);
+        private readonly HashSet<string> _prefixes = CreatePrefixes(fields, bindingPrefix);
 
         public bool ContainsPrefix(string prefix) =>
             _prefixes.Contains(prefix) && source.ContainsPrefix(prefix);
@@ -763,15 +923,12 @@ public class ResourceController<TResource>(
         public ValueProviderResult GetValue(string key) =>
             _keys.Contains(key) ? source.GetValue(key) : ValueProviderResult.None;
 
-        private static HashSet<string> CreatePrefixes(HashSet<string> fields)
+        private static HashSet<string> CreatePrefixes(HashSet<string> fields, string bindingPrefix)
         {
-            var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ResourceFormPageViewModel.BindingPrefix,
-            };
+            var prefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { bindingPrefix };
             foreach (var field in fields)
             {
-                var prefix = ResourceFormPageViewModel.BindingPrefix;
+                var prefix = bindingPrefix;
                 foreach (var segment in field.Split('.'))
                 {
                     prefix = ModelNames.CreatePropertyModelName(prefix, segment);

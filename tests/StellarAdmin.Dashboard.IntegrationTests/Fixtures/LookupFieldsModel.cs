@@ -4,26 +4,49 @@ using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 
-public sealed record Category(int Id, string Name, string Code);
-
-public sealed class CategoryLookupSource : ILookupSource<Category, int>
+public sealed class Category
 {
-    private static readonly Category[] Categories =
-    [
-        new(1, "Cameras", "CAM"),
-        new(2, "Notebooks", "NTB"),
-    ];
+    [Required]
+    public string Code { get; set; } = "";
 
+    public int Id { get; set; }
+
+    [Required]
+    public string Name { get; set; } = "";
+}
+
+// The categories a lookup searches and the category resource creates, shared for the lifetime of a test host
+public sealed class CategoryStore
+{
+    public List<Category> Categories { get; } =
+    [
+        new()
+        {
+            Id = 1,
+            Name = "Cameras",
+            Code = "CAM",
+        },
+        new()
+        {
+            Id = 2,
+            Name = "Notebooks",
+            Code = "NTB",
+        },
+    ];
+}
+
+public sealed class CategoryLookupSource(CategoryStore store) : ILookupSource<Category, int>
+{
     public Task<Category?> FindAsync(int value, CancellationToken cancellationToken) =>
-        Task.FromResult(Categories.FirstOrDefault(category => category.Id == value));
+        Task.FromResult(store.Categories.FirstOrDefault(category => category.Id == value));
 
     public Task<LookupPage<Category>> SearchAsync(
         LookupQuery query,
         CancellationToken cancellationToken
     )
     {
-        var matches = Categories
-            .Where(category =>
+        var matches = store
+            .Categories.Where(category =>
                 query.Term is null
                 || category.Name.Contains(query.Term, StringComparison.OrdinalIgnoreCase)
             )
@@ -35,6 +58,68 @@ public sealed class CategoryLookupSource : ILookupSource<Category, int>
                 matches.Length > query.Skip + query.Take
             )
         );
+    }
+}
+
+// Creates categories with the resource as the create model, so the resource's key selector returns the new key
+public sealed class CategoryDataSource(CategoryStore store)
+    : IResourceDataSource<Category>,
+        IResourceCreateHandler<Category>
+{
+    public Task<ResourceOperationResult> CreateAsync(
+        Category model,
+        CancellationToken cancellationToken
+    )
+    {
+        if (store.Categories.Any(category => category.Code == model.Code))
+        {
+            return Task.FromResult(
+                ResourceOperationResult.ValidationFailed(
+                    nameof(Category.Code),
+                    "The code is already used."
+                )
+            );
+        }
+
+        model.Id = store.Categories.Max(category => category.Id) + 1;
+        store.Categories.Add(model);
+
+        return Task.FromResult(ResourceOperationResult.Success());
+    }
+
+    public Task<ResourceListResult<Category>> ListAsync(
+        ResourceListRequest request,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult(
+            new ResourceListResult<Category>(store.Categories.ToArray(), store.Categories.Count)
+        );
+}
+
+public sealed class CreateCategoryModel
+{
+    [Required]
+    public string Name { get; set; } = "";
+}
+
+// Creates categories from a model other than the resource, so it returns the new key itself
+public sealed class CreateCategoryHandler(CategoryStore store)
+    : IResourceCreateHandler<CreateCategoryModel>
+{
+    public Task<ResourceOperationResult> CreateAsync(
+        CreateCategoryModel model,
+        CancellationToken cancellationToken
+    )
+    {
+        var category = new Category
+        {
+            Id = store.Categories.Max(category => category.Id) + 1,
+            Name = model.Name,
+            Code = model.Name[..3].ToUpperInvariant(),
+        };
+        store.Categories.Add(category);
+
+        return Task.FromResult(ResourceOperationResult.Success(category.Id.ToString()));
     }
 }
 

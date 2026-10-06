@@ -15,6 +15,7 @@ public static class StellarAdminBuilderExtensions
         public StellarAdminDashboardBuilder AddDashboard()
         {
             builder.Services.AddMvc();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.Configure<RouteOptions>(options =>
                 options.ConstraintMap[LowercaseParameterTransformer.Name] =
                     typeof(LowercaseParameterTransformer)
