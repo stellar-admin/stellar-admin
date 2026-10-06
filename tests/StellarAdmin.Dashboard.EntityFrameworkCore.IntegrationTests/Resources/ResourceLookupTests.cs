@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Fixtures;
@@ -199,6 +200,58 @@ public class ResourceLookupTests
                 )
             )
             .IsEqualTo("Code 1,Code 2,Code 3");
+    }
+
+    [Test]
+    public async Task CreateFromLookup_SelectsCreatedEntity()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(
+            resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                        fields
+                            .Add(product => product.CategoryId)
+                            .UseEditor<LookupEditor>(options =>
+                            {
+                                ConfigureItems(options, _ => { });
+                                options.EnableCreate();
+                            })
+                    )
+                ),
+            configureDashboard: dashboard =>
+                dashboard.AddEfCoreResource<CatalogDbContext, Category>(resource =>
+                    resource.AllowCreate(create =>
+                        create.Fields(fields => fields.Add(category => category.Name))
+                    )
+                )
+        );
+        using var client = sut.GetTestClient();
+        var page = await ReadDocument(await client.GetAsync("/stellaradmin/products/edit/1"));
+        var createUrl = page.QuerySelector("[data-lookup='create']")!.GetAttribute("hx-get")!;
+        var selectionUrl = page.QuerySelector("dashboard-lookup-editor")!
+            .GetAttribute("selection-url")!;
+        var values = await PrepareForm(client, createUrl);
+        values["Sheet.Name"] = "Garden";
+
+        // Act
+        using var created = await client.PostAsync(createUrl, new FormUrlEncodedContent(values));
+        var key = (await ReadDocument(created))
+            .QuerySelector("dashboard-lookup-created")
+            ?.GetAttribute("value");
+        var selection = await ReadDocument(await client.GetAsync($"{selectionUrl}&value={key}"));
+
+        // Assert
+        await Assert
+            .That(createUrl)
+            .IsEqualTo("/stellaradmin/categories/createsheet?for=Entity_CategoryId");
+        await Assert.That(key).IsEqualTo("4");
+        var template = (IHtmlTemplateElement)
+            selection.QuerySelector("template[data-lookup='selection']")!;
+        await Assert.That(template.GetAttribute("data-value")).IsEqualTo("4");
+        await Assert
+            .That(template.Content.QuerySelector("[data-lookup='title']")?.TextContent)
+            .IsEqualTo("Garden");
     }
 
     private static void ConfigureLookupEdit(

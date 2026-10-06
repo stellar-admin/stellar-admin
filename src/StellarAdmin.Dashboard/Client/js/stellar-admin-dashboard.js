@@ -1,11 +1,13 @@
 // Lookup editors: the lookup picker loads into the shared sheet, and the server renders search results
 // with htmx into its sa-command, which handles the keyboard; selecting or clearing an item only updates
-// the field's hidden value and shows either the selection or the empty buttons.
+// the field's hidden value and shows either the selection or the empty buttons. New loads the referenced
+// resource's create form into the shared sheet, and a created item is selected like a search result.
 
-// The shared sheet: the button that opened it loads its content with htmx. The sheet is modal, so only that
-// opener's request can be in flight; closing the sheet cancels it and shows the loading state again, so a
-// late response never fills the sheet for the next opener. A failed load shows the sheet's error, and Retry
-// repeats the opener's request.
+// A shared sheet: the button that opened it loads its content with htmx. The sheet is modal, so only that
+// opener's request, or a request from the content, can be in flight; closing the sheet cancels them and shows
+// the loading state again, so a late response never fills the sheet for the next opener. A failed load shows
+// the sheet's error, and Retry repeats the opener's request. The layout has two: a create form in the first
+// opens its lookups in the second.
 class DashboardRemoteSheet extends HTMLElement {
   #opener = null;
 
@@ -26,8 +28,13 @@ class DashboardRemoteSheet extends HTMLElement {
     this.addEventListener(
       "close",
       () => {
-        if (this.#opener) {
-          htmx.trigger(this.#opener, "htmx:abort");
+        for (const element of [
+          this.#opener,
+          ...this.#content.querySelectorAll("[data-htmx-powered]"),
+        ]) {
+          if (element) {
+            htmx.trigger(element, "htmx:abort");
+          }
         }
 
         this.#show("loading");
@@ -40,7 +47,7 @@ class DashboardRemoteSheet extends HTMLElement {
         this.#show("loading");
         htmx.ajax("GET", this.#opener.getAttribute("hx-get"), {
           source: this.#opener,
-          target: "#dashboard-sheet-content",
+          target: `#${this.#content.id}`,
         });
       }
     });
@@ -69,8 +76,12 @@ class DashboardRemoteSheet extends HTMLElement {
     this.#show("error");
   };
 
+  get #content() {
+    return this.querySelector("[data-sheet='content']");
+  }
+
   #show(name) {
-    this.querySelector("#dashboard-sheet-content").replaceChildren(
+    this.#content.replaceChildren(
       this.querySelector(`template[data-sheet='${name}']`).content.cloneNode(true),
     );
   }
@@ -150,6 +161,63 @@ class DashboardLookupPicker extends HTMLElement {
 
 customElements.define("dashboard-lookup-picker", DashboardLookupPicker);
 
+// A resource's create form in the shared sheet, for a lookup editor's New button. It posts with htmx into the
+// sheet, so a rejected form comes back with its errors and a created item comes back as dashboard-lookup-created.
+// A post that fails shows the form's error and keeps what was typed.
+class DashboardCreateSheet extends HTMLElement {
+  constructor() {
+    super();
+
+    this.addEventListener("htmx:config:request", () => {
+      this.querySelector("[data-create-sheet='error']").hidden = true;
+    });
+
+    for (const name of ["htmx:response:error", "htmx:error"]) {
+      this.addEventListener(name, (event) => {
+        if (event.detail.error?.name === "AbortError") {
+          return;
+        }
+
+        event.detail.ctx.swap = "none";
+        this.querySelector("[data-create-sheet='error']").hidden = false;
+      });
+    }
+  }
+
+  // The first field with an error has focus, or else the first field. After a swap, htmx puts focus back on the
+  // element with the previously focused id, so this waits until it has.
+  connectedCallback() {
+    queueMicrotask(() => {
+      const field =
+        this.querySelector("[aria-invalid='true'], .input-validation-error") ??
+        this.querySelector(
+          "input:not([type='hidden']), select, textarea, [data-lookup='open']:not([hidden] *)",
+        );
+      field?.focus();
+    });
+  }
+}
+
+customElements.define("dashboard-create-sheet", DashboardCreateSheet);
+
+// Replaces the create form once the item is created: it closes the sheet and passes the new item's key to the
+// editor whose hidden input it names. Without a key, the sheet only closes.
+class DashboardLookupCreated extends HTMLElement {
+  connectedCallback() {
+    const editor = document
+      .getElementById(this.getAttribute("for"))
+      ?.closest("dashboard-lookup-editor");
+    const key = this.getAttribute("value");
+
+    this.closest("dialog")?.close();
+    if (editor && key) {
+      editor.selectCreated(key);
+    }
+  }
+}
+
+customElements.define("dashboard-lookup-created", DashboardLookupCreated);
+
 // A lookup editor: the picker sends a selection to its hidden input as lookup-select, and Clear empties it. It
 // shows either the selection or the empty buttons, and moves focus to the button that is still shown.
 class DashboardLookupEditor extends HTMLElement {
@@ -167,6 +235,47 @@ class DashboardLookupEditor extends HTMLElement {
         this.querySelector("[data-lookup='empty'] [data-lookup='open']").focus();
       }
     });
+  }
+
+  // The server renders the created item's display from the field's settings, and the value the form posts for it.
+  // If that fails, the key stands in for the title, as it does for a value the items no longer have.
+  async selectCreated(key) {
+    const url = new URL(this.getAttribute("selection-url"), document.baseURI);
+    url.searchParams.set("value", key);
+
+    let selection = null;
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const parsed = document.createElement("template");
+        parsed.innerHTML = await response.text();
+        selection = parsed.content.querySelector("template[data-lookup='selection']");
+      }
+    } catch {
+      // The fallback below shows the key
+    }
+
+    this.dispatchEvent(
+      new CustomEvent("lookup-select", {
+        detail: {
+          value: selection?.dataset.value ?? key,
+          selection: selection ?? this.#keySelection(key),
+        },
+      }),
+    );
+  }
+
+  #keySelection(key) {
+    const selected = this.querySelector("[data-lookup='selected']");
+    const media = selected.querySelector("[data-lookup='media']").cloneNode(false);
+    const text = selected.querySelector("[data-lookup='text']").cloneNode(true);
+    media.hidden = true;
+    text.querySelector("[data-slot='item-description']")?.remove();
+    text.querySelector("[data-lookup='title']").textContent = key;
+
+    const template = document.createElement("template");
+    template.content.append(media, text);
+    return template;
   }
 
   #setValue(value, template) {

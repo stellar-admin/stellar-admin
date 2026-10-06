@@ -1,0 +1,52 @@
+@model CreateSheetViewModel
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var form = Model.Form;
+    var sheetLabels = LabelOptions.Value.Sheet;
+
+    // The fields bind with the sheet's prefix, and their lookups open the nested sheet. Sections stack, since the
+    // sheet is too narrow to split them.
+    var fieldsViewData = new ViewDataDictionary(ViewData)
+    {
+        [ViewDataKeys.FormFields] = form.Fields,
+        [ViewDataKeys.FormItems] = form.Items,
+        [ViewDataKeys.FormSectionLayout] = FormSectionLayout.Stacked,
+        [ViewDataKeys.EditorData] = form.EditorData,
+        [ViewDataKeys.EditorTemplates] = form.EditorTemplates,
+        [ViewDataKeys.InCreateSheet] = true,
+    };
+    fieldsViewData.TemplateInfo.HtmlFieldPrefix = CreateSheetViewModel.BindingPrefix;
+}
+
+@* A resource's create form loaded into the shared sheet; for names the lookup editor that selects the new item *@
+<dashboard-create-sheet class="contents" for="@Model.For">
+    <sa-sheet-header>
+        <sa-sheet-title>@form.Title</sa-sheet-title>
+    </sa-sheet-header>
+
+    @* Without settling, htmx doesn't copy the old fields' attributes onto the new ones, which would reset the value of
+       the invalid field that the component focuses *@
+    <form method="post" action="@Model.PostUrl" asp-antiforgery="true" hx-post="@Model.PostUrl" hx-target="#dashboard-sheet-content"
+          hx-swap="innerHTML settle:0" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
+            <sa-field-group>
+                @Html.ValidationSummary(excludePropertyErrors: true)
+
+                @* Shown by the component when the form could not be posted *@
+                <sa-alert variant="AlertVariant.Destructive" data-create-sheet="error" hidden>
+                    <sa-icon name="circle-alert" />
+                    <sa-alert-title>@sheetLabels.ErrorTitle</sa-alert-title>
+                    <sa-alert-description>@sheetLabels.SaveErrorDescription</sa-alert-description>
+                </sa-alert>
+
+                <partial name="_FormFields" model="form.Entity" view-data="fieldsViewData" />
+            </sa-field-group>
+        </div>
+
+        <sa-sheet-footer>
+            <sa-button type="submit" data-create-sheet="submit">@form.SubmitLabel</sa-button>
+            <sa-button type="button" variant="ButtonVariant.Outline" commandfor="dashboard-sheet" command="close">Cancel</sa-button>
+        </sa-sheet-footer>
+    </form>
+</dashboard-create-sheet>

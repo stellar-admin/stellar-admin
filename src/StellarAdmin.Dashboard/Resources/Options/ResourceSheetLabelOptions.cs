@@ -19,4 +19,9 @@ public sealed class ResourceSheetLabelOptions
     ///     The label of the button that loads the sheet's content again.
     /// </summary>
     public string RetryLabel { get; set; } = "Try again";
+
+    /// <summary>
+    ///     The description shown when a form in the sheet could not be saved.
+    /// </summary>
+    public string SaveErrorDescription { get; set; } = "Your changes could not be saved.";
 }

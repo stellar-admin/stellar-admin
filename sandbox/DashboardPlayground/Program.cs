@@ -1,4 +1,5 @@
 using DashboardPlayground.Data;
+using DashboardPlayground.Resources.Categories;
 using DashboardPlayground.Resources.Customers;
 using DashboardPlayground.Resources.Departments;
 using DashboardPlayground.Resources.FieldEditors;
@@ -59,6 +60,7 @@ builder
         dashboard.AddDepartmentResource();
         dashboard.AddCustomerResource();
         dashboard.AddProductResource();
+        dashboard.AddCategoryResource();
         dashboard.AddFieldEditorGallery();
     });
 

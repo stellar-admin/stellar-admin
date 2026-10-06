@@ -1,0 +1,33 @@
+@model string
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var sheetLabels = LabelOptions.Value.Sheet;
+}
+
+@* A sheet whose content buttons load with htmx; it shows the loading state again when it closes *@
+<dashboard-remote-sheet class="contents">
+    <sa-sheet id="@Model">
+        <div id="@($"{Model}-content")" class="contents" data-sheet="content">
+            <partial name="_SheetLoading" />
+        </div>
+        <template data-sheet="loading">
+            <partial name="_SheetLoading" />
+        </template>
+        @* Shown by the component when the content fails to load; Retry repeats the request that failed *@
+        <template data-sheet="error">
+            <sa-empty class="border-0">
+                <sa-empty-header>
+                    <sa-empty-media variant="EmptyMediaVariant.Icon">
+                        <sa-icon name="circle-alert" />
+                    </sa-empty-media>
+                    <sa-empty-title>@sheetLabels.ErrorTitle</sa-empty-title>
+                    <sa-empty-description>@sheetLabels.ErrorDescription</sa-empty-description>
+                </sa-empty-header>
+                <sa-empty-content>
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-sheet="retry">@sheetLabels.RetryLabel</sa-button>
+                </sa-empty-content>
+            </sa-empty>
+        </template>
+    </sa-sheet>
+</dashboard-remote-sheet>

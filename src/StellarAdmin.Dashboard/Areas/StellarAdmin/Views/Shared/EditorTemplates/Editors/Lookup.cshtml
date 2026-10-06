@@ -4,7 +4,8 @@
 @inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 
 @{
-    var item = EditorData as LookupItem;
+    var data = (LookupEditorData?)EditorData;
+    var item = data?.Item;
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
     var canLookUp = !IsReadOnly && Field?.FieldName is not null;
@@ -23,8 +24,18 @@
     var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
     var errorId = $"{id}-error";
     var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
+    // A create form in the shared sheet opens its lookups in the nested sheet, and doesn't create from them
+    var inCreateSheet = ViewData[ViewDataKeys.InCreateSheet] is true;
+    var sheetId = inCreateSheet ? "dashboard-nested-sheet" : "dashboard-sheet";
+    var form = inCreateSheet ? "create" : ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
     var sheetUrl = canLookUp
-        ? Url.Action("LookupSheet", new { id = (string?)null, form = ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant(), field = Field!.FieldName, @for = id })
+        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id })
+        : null;
+    var createUrl = canLookUp && !inCreateSheet && data?.CreateController is { } createController
+        ? Url.Action("CreateSheet", createController, new { id = (string?)null, @for = id })
+        : null;
+    var selectionUrl = createUrl is not null
+        ? Url.Action("LookupSelection", new { id = (string?)null, form, field = Field!.FieldName })
         : null;
     var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(isCard ? "h-12" : "")} {(isInvalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
     var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
@@ -34,7 +45,7 @@
     <sa-field-label class="@classes.Label" id="@($"{id}-label")">@label</sa-field-label>
 
     @* Shows a selection made in the shared sheet, and clears the value *@
-    <dashboard-lookup-editor class="contents">
+    <dashboard-lookup-editor class="contents" selection-url="@selectionUrl">
         <input type="hidden" asp-for="@Model" data-lookup="value" />
 
         @if (!canLookUp)
@@ -80,7 +91,7 @@
                     <partial name="_LookupSelection" model="selection" />
                     <sa-item-actions class="gap-0.5">
                         <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
-                                   commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open">
+                                   commandfor="@sheetId" command="show-modal" hx-get="@sheetUrl" hx-target="@($"#{sheetId}-content")" data-lookup="open">
                             @labels.Lookup.ChangeLabel(labelContext)<span class="sr-only"> @label</span>
                         </sa-button>
                         @if (allowClear)
@@ -100,7 +111,7 @@
                                  aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                     <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
                                class="@($"min-w-0 flex-1 justify-start font-normal has-[>[data-lookup=media]:not([hidden])]:pl-1.5 {invalidRing}")"
-                               aria-invalid="@(isInvalid ? "true" : null)" commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" data-lookup="open">
+                               aria-invalid="@(isInvalid ? "true" : null)" commandfor="@sheetId" command="show-modal" hx-get="@sheetUrl" hx-target="@($"#{sheetId}-content")" data-lookup="open">
                         <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
                         <partial name="_LookupSelection" model="selection" />
                         <sa-icon name="chevrons-up-down" class="text-muted-foreground ml-auto size-4 shrink-0" />
@@ -118,15 +129,16 @@
             <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(item is not null)">
                 <sa-input-group class="@emptyClass">
                     <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
-                            commandfor="dashboard-sheet" command="show-modal" hx-get="@sheetUrl" hx-target="#dashboard-sheet-content" aria-describedby="@describedBy" data-lookup="open">
+                            commandfor="@sheetId" command="show-modal" hx-get="@sheetUrl" hx-target="@($"#{sheetId}-content")" aria-describedby="@describedBy" data-lookup="open">
                         <sa-icon name="search" class="size-4 shrink-0" />
                         <span class="truncate">@chooseText</span>
                     </button>
                 </sa-input-group>
-                @if (Editor.CreateEnabled)
+                @if (createUrl is not null)
                 {
                     <sa-input-group class="@($"{emptyClass} shrink-0")">
-                        <button type="button" class="@emptyButtonClass" data-slot="input-group-control" data-lookup="create">
+                        <button type="button" id="@($"{id}-create")" class="@emptyButtonClass" data-slot="input-group-control"
+                                commandfor="dashboard-sheet" command="show-modal" hx-get="@createUrl" hx-target="#dashboard-sheet-content" data-lookup="create">
                             <sa-icon name="plus" class="size-4 shrink-0" />
                             <span class="truncate">@labels.Lookup.CreateLabel(labelContext)</span>
                         </button>

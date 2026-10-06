@@ -14,6 +14,11 @@ public abstract class LookupItems
     public abstract bool HasDescription { get; }
 
     /// <summary>
+    ///     The type of the items, or null when it is unknown. It selects the resource that creates new items.
+    /// </summary>
+    public virtual Type? ItemType => null;
+
+    /// <summary>
     ///     The kind of media the items display, or null when they have none.
     /// </summary>
     public abstract LookupMediaType? MediaType { get; }
@@ -47,6 +52,8 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
     where TSource : class, ILookupSource<TEntity, TValue>
 {
     public override bool HasDescription => description is not null;
+
+    public override Type ItemType => typeof(TEntity);
 
     public override LookupMediaType? MediaType => mediaType;
 

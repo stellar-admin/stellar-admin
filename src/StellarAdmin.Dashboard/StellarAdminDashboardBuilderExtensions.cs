@@ -116,6 +116,7 @@ public static partial class StellarAdminDashboardBuilderExtensions
             {
                 builder.Services.AddSingleton(
                     new ResourceRegistration(
+                        typeof(TResource),
                         typeof(ResourceController<TResource>),
                         slug,
                         services =>
@@ -137,7 +138,12 @@ public static partial class StellarAdminDashboardBuilderExtensions
                                 .GetRequiredService<
                                     IOptions<ResourceAuthorizationOptions<TResource>>
                                 >()
-                                .Value.Metadata
+                                .Value.Metadata,
+                        services =>
+                            services
+                                .GetRequiredService<IOptions<ResourceOptions<TResource>>>()
+                                .Value.Create
+                                is not null
                     )
                 );
             }

@@ -1,0 +1,6 @@
+@model LookupSelectionTemplateViewModel
+
+@* An item's display for the lookup editor, with the value the form posts for it *@
+<template data-lookup="selection" data-value="@Model.Value">
+    <partial name="_LookupSelection" model="Model.Selection" />
+</template>

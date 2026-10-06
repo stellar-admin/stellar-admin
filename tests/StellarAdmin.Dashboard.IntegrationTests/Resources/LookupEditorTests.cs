@@ -123,13 +123,15 @@ public class LookupEditorTests
                     }),
             new(),
             dashboard =>
-                dashboard.ConfigureResourceLabels(labels =>
-                    labels.Lookup(lookup =>
-                    {
-                        lookup.ChooseLabel = context => $"Find a {context.FieldLabel}";
-                        lookup.CreateLabel = context => $"Add {context.FieldLabel}";
-                    })
-                )
+                dashboard
+                    .AddCategoryResource()
+                    .ConfigureResourceLabels(labels =>
+                        labels.Lookup(lookup =>
+                        {
+                            lookup.ChooseLabel = context => $"Find a {context.FieldLabel}";
+                            lookup.CreateLabel = context => $"Add {context.FieldLabel}";
+                        })
+                    )
         );
         using var client = sut.GetTestClient();
 
@@ -158,7 +160,8 @@ public class LookupEditorTests
                         lookup.EnableCreate();
                         UseCategories(lookup);
                     }),
-            new()
+            new(),
+            dashboard => dashboard.AddCategoryResource()
         );
         using var client = sut.GetTestClient();
 
@@ -1003,6 +1006,6 @@ public class LookupEditorTests
                     create.Fields(configureFields);
                 }),
             configureDashboard,
-            services => services.AddScoped<CategoryLookupSource>()
+            services => services.AddSingleton<CategoryStore>().AddScoped<CategoryLookupSource>()
         );
 }

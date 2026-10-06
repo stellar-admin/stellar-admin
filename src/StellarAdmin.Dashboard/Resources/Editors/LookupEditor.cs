@@ -12,6 +12,8 @@ public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler
 
     internal bool CreateEnabled { get; private set; }
 
+    internal Type? CreateResourceType { get; private set; }
+
     internal LookupFieldOptions FieldOptions { get; } = new();
 
     internal LookupEditorLayout Layout =>
@@ -31,9 +33,20 @@ public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler
     }
 
     /// <summary>
-    ///     Shows a button for creating a new item while nothing is selected.
+    ///     Shows a button for creating a new item while nothing is selected. The item is created with the create form
+    ///     of the resource registered for the items' type.
     /// </summary>
     public void EnableCreate() => CreateEnabled = true;
+
+    /// <summary>
+    ///     Shows a button for creating a new item while nothing is selected. The item is created with the create form
+    ///     of the specified resource.
+    /// </summary>
+    public void EnableCreate<TResource>()
+    {
+        CreateEnabled = true;
+        CreateResourceType = typeof(TResource);
+    }
 
     /// <summary>
     ///     Configures the sheet in which items are searched.
