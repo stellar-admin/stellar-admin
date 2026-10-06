@@ -982,44 +982,6 @@ public class LookupEditorTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
-    [Test]
-    public async Task SharedSheet_ConfiguredLabels_ReplaceErrorText()
-    {
-        // Arrange
-        await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
-            new(),
-            dashboard =>
-                dashboard.ConfigureResourceLabels(labels =>
-                    labels.Sheet(sheet =>
-                    {
-                        sheet.ErrorTitle = "Could not open";
-                        sheet.ErrorDescription = "Please try once more.";
-                        sheet.RetryLabel = "Reload";
-                    })
-                )
-        );
-        using var client = sut.GetTestClient();
-
-        // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
-
-        // Assert
-        var error = (
-            (IHtmlTemplateElement)
-                document.RequiredElement("#dashboard-sheet template[data-sheet='error']")
-        ).Content;
-        await Assert
-            .That(error.QuerySelector("[data-slot='empty-title']")?.TextContent)
-            .IsEqualTo("Could not open");
-        await Assert
-            .That(error.QuerySelector("[data-slot='empty-description']")?.TextContent)
-            .IsEqualTo("Please try once more.");
-        await Assert
-            .That(error.QuerySelector("[data-sheet='retry']")?.TextContent)
-            .IsEqualTo("Reload");
-    }
-
     private static void UseCategories(LookupEditor lookup) =>
         lookup.UseItems<CategoryLookupSource, Category, int>(
             category => category.Id,

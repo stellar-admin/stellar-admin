@@ -63,11 +63,19 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         }
         else
         {
-            var textToRender = GetInitials() ?? "&nbsp;";
+            var initials = GetInitials();
             var fallbackTagBuilder = new TagBuilder("span");
             fallbackTagBuilder.Attributes.Add("data-slot", "avatar-fallback");
             fallbackTagBuilder.Attributes.Add("class", JoinCssClasses("sa-avatar-fallback"));
-            fallbackTagBuilder.InnerHtml.AppendHtml(textToRender);
+            if (initials is null)
+            {
+                fallbackTagBuilder.InnerHtml.AppendHtml("&nbsp;");
+            }
+            else
+            {
+                fallbackTagBuilder.InnerHtml.Append(initials);
+            }
+
             output.Content.AppendHtml(fallbackTagBuilder);
         }
 
@@ -85,10 +93,13 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
 
         string? DetermineInitialsFromName(string name)
         {
+            // Words that don't start with a letter or digit, such as "&", are skipped
             var splitName = name.Split(
-                ' ',
-                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-            );
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+                )
+                .Where(word => char.IsLetterOrDigit(word[0]))
+                .ToArray();
 
             // The first letters of the first two words, or the first two letters of a single word
             return splitName switch

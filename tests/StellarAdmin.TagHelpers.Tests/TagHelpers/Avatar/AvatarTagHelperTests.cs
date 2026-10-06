@@ -10,6 +10,8 @@ public class AvatarTagHelperTests
     [Arguments("los angeles international", "LA")]
     [Arguments("  Jane   Doe ", "JD")]
     [Arguments("X", "X")]
+    [Arguments("Bath & Personal Care", "BP")]
+    [Arguments("& Co", "CO")]
     public async Task ProcessAsync_WithNameAndNoSource_RendersInitials(string name, string expected)
     {
         // Arrange
@@ -37,5 +39,25 @@ public class AvatarTagHelperTests
         await Assert
             .That(html.QuerySelector("[data-slot=avatar-fallback]")?.TextContent)
             .IsEqualTo("hk");
+    }
+
+    [Test]
+    [Arguments("A<b", null)]
+    [Arguments(null, "<b>")]
+    public async Task ProcessAsync_WithMarkupInNameOrInitials_EncodesIt(
+        string? name,
+        string? initials
+    )
+    {
+        // Arrange
+        var sut = new AvatarTagHelper { Name = name, Initials = initials };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var fallback = html.QuerySelector("[data-slot=avatar-fallback]")!;
+        await Assert.That(fallback.Children.Length).IsEqualTo(0);
+        await Assert.That(fallback.TextContent).IsEqualTo(initials ?? "A<");
     }
 }
