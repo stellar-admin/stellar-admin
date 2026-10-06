@@ -521,7 +521,7 @@ public class LookupEditorTests
         // Assert
         var clear = document.RequiredElement("#Entity_CategoryId-selected [data-lookup='clear']");
         await Assert.That(clear.GetAttribute("type")).IsEqualTo("button");
-        await Assert.That(clear.GetAttribute("data-lookup-for")).IsEqualTo("Entity_CategoryId");
+        await Assert.That(clear.Closest("dashboard-lookup")).IsNotNull();
     }
 
     [Test]
@@ -938,9 +938,9 @@ public class LookupEditorTests
 
         // Assert
         await Assert.That(open.GetAttribute("hx-target")).IsEqualTo("#dashboard-sheet-content");
-        var root = panel.RequiredElement("[data-lookup='panel']");
+        var root = panel.RequiredElement("dashboard-lookup-panel");
         await Assert
-            .That(root.GetAttribute("data-lookup-for"))
+            .That(root.GetAttribute("for"))
             .IsEqualTo(page.RequiredElement("[data-lookup='value']").Id);
         await Assert
             .That(root.RequiredElement("[data-slot='sheet-title']").TextContent)

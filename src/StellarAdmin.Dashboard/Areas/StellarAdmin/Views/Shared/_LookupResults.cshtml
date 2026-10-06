@@ -57,7 +57,7 @@ else if (Model.IsEmpty)
 @if (Model.MoreUrl is not null)
 {
     @* Enter clicks the active item, so the keyboard loads more the same way as the pointer *@
-    <sa-command-item class="text-muted-foreground justify-center" hx-get="@Model.MoreUrl" hx-swap="outerHTML" data-lookup="more">
+    <sa-command-item class="text-muted-foreground justify-center" hx-get="@Model.MoreUrl" hx-swap="outerHTML" hx-sync="this:drop" data-lookup="more">
         @labels.Lookup.LoadMoreLabel(Model.Labels)
     </sa-command-item>
 }

@@ -39,8 +39,8 @@
     }
 }
 
-@* The search panel loaded into the shared sheet; data-lookup-for names the editor that results belong to *@
-<div class="contents" data-lookup="panel" data-lookup-for="@Model.For">
+@* The search panel loaded into the shared sheet; for names the editor that results belong to *@
+<dashboard-lookup-panel class="contents" for="@Model.For">
     <sa-sheet-header>
         <sa-sheet-title>@Model.Title</sa-sheet-title>
     </sa-sheet-header>
@@ -61,7 +61,7 @@
         @{ await LoadingRows(); }
     </template>
 
-    @* Shown by the script when a search or Load more fails *@
+    @* Shown by the panel when a search or Load more fails *@
     <template data-lookup="error">
         <sa-empty class="border-0 p-4" data-lookup="message">
             <sa-empty-header>
@@ -76,4 +76,4 @@
             </sa-empty-content>
         </sa-empty>
     </template>
-</div>
+</dashboard-lookup-panel>

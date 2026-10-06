@@ -1,6 +1,6 @@
 # Lookup editor
 
-Status: **active**. Phases 1–5 committed on branch `lookup-editor`; Phases 6–9 implement the [display redesign](#display-redesign). Last updated: 2026-10-03.
+Status: **active**. Phases 1–5 committed on branch `lookup-editor`; Phases 6–9 implement the [display redesign](#display-redesign). Last updated: 2026-10-06.
 
 `SelectEditor` suits short lists. `LookupEditor` handles long ones: a read-only display input in an input group with a lookup button that opens a sheet with free-text search and paged results. The form posts a hidden value; the display text (and description) is resolved when the form loads. Single select only. Results are a single column rendered with `sa-item`. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
@@ -270,3 +270,17 @@ PR review changes, 2026-10-05:
 - **Lookup query:** the lookup action binds its query string to a new public `ResourceLookupQuery` (`Form`, `Field`, `Term`, `Skip`, `Selected`), like `Index` binds `ResourceIndexQuery`. The query string and the Load more URL are unchanged. Dashboard integration tests 291 passed.
 - **Boolean names:** the lookup editor template and `_LookupSelection` rename `card` and `invalid` to `isCard` and `isInvalid`. Dashboard integration tests 291 passed.
 - **Nested labels:** `ResourceLabelOptions` and `ResourceLabelsBuilder` group their 26 callbacks by category: `labels.Index(...)`, `labels.Create(...)`, `labels.Edit(...)`, `labels.Delete(...)` and `labels.Lookup(...)` configure new `ResourceIndexLabelsBuilder`, `ResourceCreateLabelsBuilder`, `ResourceEditLabelsBuilder`, `ResourceDeleteLabelsBuilder` and `LookupLabelsBuilder`, and the options expose matching `Index`, `Create`, `Edit`, `Delete` and `Lookup` objects. The category prefix is dropped from each name (`IndexTitle` becomes `Index.Title`, `LookupChooseLabel` becomes `Lookup.ChooseLabel`). Defaults are unchanged. This is a breaking change, accepted because nothing is released. The controller, lookup views, playground, integration tests and consumer reference use the new shape. Dashboard integration tests 291 passed, Dashboard unit tests 37 passed, the playground builds, CSharpier formatted the touched C# files, and SkillsGenerator reports no drift.
+
+Script structure, 2026-10-06:
+- **htmx:** the Dashboard's `htmx.org` goes from `4.0.0-beta6` to `4.0.0`, and the ComponentPlayground's copy of `htmx.min.js` is replaced with the 4.0.0 file.
+- **Shared sheet:** one block tracks the button that opened the sheet, from the dialog's `show-modal` command. Closing the sheet aborts that button's request and shows the loading state again. A failed load shows the sheet's error, and Retry repeats the opener's request with `htmx.ajax`. The sheet is modal, so only one opener's request can be in flight, and the stale-response tracking is gone.
+- **`<dashboard-lookup-panel for="…">`:** replaces the `data-lookup="panel"` div in `_LookupSheet`. It closes the sheet and sends `lookup-select` to the editor when a result is chosen, sends `selected` with its searches, shows its error for a failed search or Load more, and runs Retry. Its listeners are on the element itself, so htmx events dispatched on the document for removed elements never reach it, and removing it aborts its requests. Load more uses `hx-sync="this:drop"`, so a double-click sends one request.
+- **`<dashboard-lookup>`:** wraps the editor's controls inside `sa-field`. It shows a selection, clears the value and moves focus, finding its parts through `data-lookup` (`value`, `selected`, `empty`, `open`, `clear`) instead of element IDs. The clear buttons drop `data-lookup-for`. The element IDs stay.
+- **Verification:**
+  - **htmx 4.0.0 on the old script:** Dashboard integration tests 295 passed, and the browser script passed.
+  - **After the refactor:** Dashboard integration tests 295 passed, with two assertions updated for `dashboard-lookup-panel` and `dashboard-lookup`. EF Core integration tests 66 passed. The script was formatted with oxfmt.
+  - **Browser:** in the playground (port 5207, Development), headless Chromium over CDP on the gallery's create page:
+    - The 19-step lookup script passed: open, select, focus, reopen, search error and Retry, close reset, clear, Load more and its failure, sheet error and Retry, double-clicked Load more. Closing during a slow load did not let the late response fill the sheet, and the next opener loaded its own panel.
+    - A double-clicked Load more sent one request, and closing during a search cancelled it.
+    - Select, plus clear where allowed, worked with the expected focus on all 21 editable lookups in both layouts.
+  - **Console:** htmx 4 logs an `AbortError` for each cancelled request (beta6 did the same). There were no other console errors.
