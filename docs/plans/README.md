@@ -12,7 +12,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
-| [lookup-create](lookup-create.md) | implemented | `LookupEditor.EnableCreate()` opens the referenced resource's create form in the shared sheet and selects the created item; awaiting review on branch `lookup-create`. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
@@ -46,7 +45,8 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [identity-user-forms-approaches](archive/identity-user-forms-approaches.md) | superseded |
 | [identity-view-override-hatches](archive/identity-view-override-hatches.md) | reference |
 | [ledger-theme](archive/ledger-theme.md) | completed |
-| [lookup-editor](archive/lookup-editor.md) | completed; searchable `LookupEditor` with the display redesign, a shared dashboard sheet that loads its content from the server, and plain custom elements in the dashboard script. Creating items from the lookup is left for a separate plan. |
+| [lookup-create](archive/lookup-create.md) | completed; `LookupEditor.EnableCreate()` opens the referenced resource's create form in the shared sheet and selects the created item. Follow-ups (theme-level sheet body padding, nested sheet stacking, key-less handler message, New in the search sheet) are unscheduled. |
+| [lookup-editor](archive/lookup-editor.md) | completed; searchable `LookupEditor` with the display redesign, a shared dashboard sheet that loads its content from the server, and plain custom elements in the dashboard script. Creating items from the lookup followed in [lookup-create](archive/lookup-create.md). |
 | [menu-color-appearance-accent](oss/archive/menu-color-appearance-accent.md) | completed |
 | [meridian-theme](archive/meridian-theme.md) | completed |
 | [observatory-default-theme](archive/observatory-default-theme.md) | completed |

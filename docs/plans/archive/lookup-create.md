@@ -1,8 +1,8 @@
 # Creating items from a lookup
 
-Status: **implemented, awaiting review** on branch `lookup-create` (uncommitted). Last updated: 2026-10-06.
+Status: **completed**. Merged to master in PR #3 on 2026-10-07. The follow-ups below are not scheduled. Last updated: 2026-10-07.
 
-`LookupEditor.EnableCreate()` rendered a "New" button beside "Choose {field}" while the field was empty, but the button did nothing. It now opens the referenced resource's create form in the shared dashboard sheet, and a successful save selects the new item in the editor. This picks up the [Deferred](archive/lookup-editor.md#deferred) item of the lookup editor plan. Jerrie asked for the work to be done end to end on a branch and reviewed at the end, so the phases below were implemented without checkpoints; the open decisions from the proposal were settled as judgment calls, listed under [Decisions](#decisions).
+`LookupEditor.EnableCreate()` rendered a "New" button beside "Choose {field}" while the field was empty, but the button did nothing. It now opens the referenced resource's create form in the shared dashboard sheet, and a successful save selects the new item in the editor. This picks up the [Deferred](lookup-editor.md#deferred) item of the lookup editor plan. Jerrie asked for the work to be done end to end on a branch and reviewed at the end, so the phases below were implemented without checkpoints; the open decisions from the proposal were settled as judgment calls, listed under [Decisions](#decisions).
 
 ## Flow
 
