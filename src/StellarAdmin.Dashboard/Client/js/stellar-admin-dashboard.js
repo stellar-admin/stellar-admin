@@ -1,4 +1,4 @@
-// Lookup editors: the search panel loads into the shared sheet, and the server renders search results
+// Lookup editors: the lookup picker loads into the shared sheet, and the server renders search results
 // with htmx into its sa-command, which handles the keyboard; selecting or clearing an item only updates
 // the field's hidden value and shows either the selection or the empty buttons.
 
@@ -6,7 +6,7 @@
 // opener's request can be in flight; closing the sheet cancels it and shows the loading state again, so a
 // late response never fills the sheet for the next opener. A failed load shows the sheet's error, and Retry
 // repeats the opener's request.
-class DashboardSheet extends HTMLElement {
+class DashboardRemoteSheet extends HTMLElement {
   #opener = null;
 
   constructor() {
@@ -76,12 +76,12 @@ class DashboardSheet extends HTMLElement {
   }
 }
 
-customElements.define("dashboard-sheet", DashboardSheet);
+customElements.define("dashboard-remote-sheet", DashboardRemoteSheet);
 
-// A lookup's search panel in the shared sheet; for names the hidden input of the editor that results belong to.
-// It only handles events from its own elements, so htmx events dispatched on the document for elements already
-// removed from the page never reach it, and removing it cancels its requests.
-class DashboardLookupPanel extends HTMLElement {
+// A lookup's picker in the shared sheet: a search and the results to choose from; for names the hidden input of
+// the editor that results belong to. It only handles events from its own elements, so htmx events dispatched on
+// the document for elements already removed from the page never reach it, and removing it cancels its requests.
+class DashboardLookupPicker extends HTMLElement {
   constructor() {
     super();
 
@@ -148,11 +148,11 @@ class DashboardLookupPanel extends HTMLElement {
   }
 }
 
-customElements.define("dashboard-lookup-panel", DashboardLookupPanel);
+customElements.define("dashboard-lookup-picker", DashboardLookupPicker);
 
-// A lookup editor: the panel sends a selection to its hidden input as lookup-select, and Clear empties it. It
+// A lookup editor: the picker sends a selection to its hidden input as lookup-select, and Clear empties it. It
 // shows either the selection or the empty buttons, and moves focus to the button that is still shown.
-class DashboardLookup extends HTMLElement {
+class DashboardLookupEditor extends HTMLElement {
   constructor() {
     super();
 
@@ -188,4 +188,4 @@ class DashboardLookup extends HTMLElement {
   }
 }
 
-customElements.define("dashboard-lookup", DashboardLookup);
+customElements.define("dashboard-lookup-editor", DashboardLookupEditor);

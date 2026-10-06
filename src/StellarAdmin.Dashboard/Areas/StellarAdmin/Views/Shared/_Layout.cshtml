@@ -45,7 +45,7 @@
 </sa-sidebar-wrapper>
 
 @* One sheet for the whole page, outside any form; buttons load content into it with htmx, and it shows the loading state again when it closes *@
-<dashboard-sheet class="contents">
+<dashboard-remote-sheet class="contents">
     <sa-sheet id="dashboard-sheet">
         <div id="dashboard-sheet-content" class="contents">
             <partial name="_SheetLoading" />
@@ -69,6 +69,6 @@
             </sa-empty>
         </template>
     </sa-sheet>
-</dashboard-sheet>
+</dashboard-remote-sheet>
 </body>
 </html>

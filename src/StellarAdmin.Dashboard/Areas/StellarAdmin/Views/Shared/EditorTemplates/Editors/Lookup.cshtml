@@ -34,7 +34,7 @@
     <sa-field-label class="@classes.Label" id="@($"{id}-label")">@label</sa-field-label>
 
     @* Shows a selection made in the shared sheet, and clears the value *@
-    <dashboard-lookup class="contents">
+    <dashboard-lookup-editor class="contents">
         <input type="hidden" asp-for="@Model" data-lookup="value" />
 
         @if (!canLookUp)
@@ -134,7 +134,7 @@
                 }
             </div>
         }
-    </dashboard-lookup>
+    </dashboard-lookup-editor>
 
     <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
     <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>

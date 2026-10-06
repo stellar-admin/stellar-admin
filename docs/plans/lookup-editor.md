@@ -286,3 +286,8 @@ Script structure, 2026-10-06:
   - **Console:** htmx 4 logs an `AbortError` for each cancelled request (beta6 did the same). There were no other console errors.
 - **`<dashboard-sheet>`, 2026-10-06:** the shared sheet block becomes an element that wraps `sa-sheet` in the layout, so the script has no top-level code. The dialog's `command` and `close` events don't bubble, so it listens for them in the capture phase. Its document listener for the opener's errors is added when it connects and removed when it disconnects. The loading and error templates use `data-sheet="loading"` and `data-sheet="error"` instead of IDs; the `dashboard-sheet` and `dashboard-sheet-content` IDs stay for the openers.
   - **Verification:** Dashboard integration tests 295 passed, with the error template test's selector updated. EF Core integration tests 66 passed. The same browser checks passed: the 19-step script, the double-clicked Load more and cancel-on-close probe, and all 21 editable lookups (SearchedAirport after typing a search). The console showed only htmx's `AbortError` logs.
+- **Element names, 2026-10-06:** the three elements are renamed to say what they do:
+  - `<dashboard-sheet>` becomes `<dashboard-remote-sheet>`, since it loads its content from the server.
+  - `<dashboard-lookup-panel>` becomes `<dashboard-lookup-picker>`, since it searches and chooses a result rather than only laying out the panel.
+  - `<dashboard-lookup>` becomes `<dashboard-lookup-editor>`, matching `LookupEditor`.
+  - The `dashboard-sheet`, `dashboard-sheet-content` and `dashboard-sheet-results` IDs, the `data-lookup` and `data-sheet` hooks, and the `_LookupSheet` partial and `LookupSheet` action keep their names.
