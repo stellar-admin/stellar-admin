@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Editors;
@@ -21,6 +22,8 @@ internal static class FieldEditorGalleryRegistration
             ConfigureTextInputFields
         );
         dashboard.AddGalleryResource<SelectGallery>("select", "Select", 20, ConfigureSelectFields);
+        dashboard.Services.AddSingleton<GalleryAirportLookupSource>();
+        dashboard.AddGalleryResource<LookupGallery>("lookup", "Lookup", 25, ConfigureLookupFields);
         dashboard.AddGalleryResource<RadioGroupGallery>(
             "radio-group",
             "Radio group",
@@ -260,6 +263,196 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<SelectEditor>(select => select.ClassNames.Control = "border-dashed");
             }
         );
+    }
+
+    private static void ConfigureLookupFields(ResourceFieldsBuilder<LookupGallery> fields)
+    {
+        fields.AddSection(
+            "Items",
+            section =>
+            {
+                section.Description =
+                    "UseEditor<LookupEditor> with UseItems from a registered ILookupSource. Optional fields can be cleared.";
+                section
+                    .Add(model => model.Airport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                section
+                    .Add(model => model.RequiredAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                section
+                    .Add(model => model.DescribedItemsAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup, describe: true));
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section
+                    .Add(model => model.TitledAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup))
+                    .Title = "Title override";
+                section
+                    .Add(model => model.DescribedAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                section
+                    .Add(model => model.FieldDescribedAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup))
+                    .Description = "Set with the field's Description.";
+                section
+                    .Add(model => model.ReadOnlyAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                section
+                    .Add(model => model.UnknownAirport)
+                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+            }
+        );
+        fields.AddSection(
+            "LookupEditor settings",
+            section =>
+            {
+                section
+                    .Add(model => model.LabelledAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet =>
+                        {
+                            sheet.Title = "Select a departure airport";
+                            sheet.SearchPlaceholder = "City, code or country";
+                        });
+                        lookup.Editor(editor => editor.EmptyText = "Any airport");
+                        UseAirports(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.UnclearableAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.AllowClear = false);
+                        UseAirports(lookup);
+                    });
+                section
+                    .Add(model => model.SearchedAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet => sheet.MinimumSearchLength = 2);
+                        UseAirports(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.PagedAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet => sheet.PageSize = 5);
+                        UseAirports(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.StyledAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.ClassNames.Control = "max-w-xs";
+                        UseAirports(lookup);
+                    });
+            }
+        );
+        fields.AddSection(
+            "Media and layout",
+            section =>
+            {
+                section.Description =
+                    "UseCode and UseAvatar display media beside each item. The layout is a card when the items have a description, otherwise a button.";
+                section
+                    .Add(model => model.CodeAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                    );
+                section
+                    .Add(model => model.CodeInputAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, media: LookupMediaType.Code)
+                    );
+                section
+                    .Add(model => model.AvatarAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Avatar)
+                    );
+                section
+                    .Add(model => model.AvatarInputAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, media: LookupMediaType.Avatar)
+                    );
+                section
+                    .Add(model => model.InputLayoutAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Input);
+                        UseAirports(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.CardLayoutAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Card);
+                        UseAirports(lookup, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.EditorMediaHiddenAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.ShowMedia = false);
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.SheetMediaHiddenAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet => sheet.ShowMedia = false);
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.CreatableAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.EnableCreate();
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                    });
+                section
+                    .Add(model => model.ReadOnlyCodeAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                    );
+            }
+        );
+
+        // The gallery has no airport images, so avatars show the title's initials
+        static void UseAirports(
+            LookupEditor lookup,
+            bool describe = false,
+            LookupMediaType? media = null
+        ) =>
+            lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
+                airport => airport.Code,
+                airport => airport.City,
+                items =>
+                {
+                    // A code chip already shows the code
+                    if (describe && media == LookupMediaType.Code)
+                    {
+                        items.UseDescription(airport => airport.Country);
+                    }
+                    else if (describe)
+                    {
+                        items.UseDescription(airport => $"{airport.Code} · {airport.Country}");
+                    }
+
+                    if (media == LookupMediaType.Code)
+                    {
+                        items.UseCode(airport => airport.Code);
+                    }
+                    else if (media == LookupMediaType.Avatar)
+                    {
+                        items.UseAvatar(_ => null);
+                    }
+                }
+            );
     }
 
     private static void ConfigureRadioGroupFields(ResourceFieldsBuilder<RadioGroupGallery> fields)

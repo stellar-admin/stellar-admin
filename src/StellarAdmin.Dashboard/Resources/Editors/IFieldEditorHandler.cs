@@ -13,7 +13,7 @@ public interface IFieldEditorHandler
     /// <summary>
     ///     Loads data needed to render the field.
     /// </summary>
-    Task<object?> PrepareAsync(CancellationToken cancellationToken);
+    Task<object?> PrepareAsync(FieldEditorContext context, CancellationToken cancellationToken);
 }
 
 /// <summary>

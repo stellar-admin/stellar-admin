@@ -23,6 +23,11 @@ public sealed record FormFieldProperties
     public FieldEditor Editor { get; init; } = new();
 
     /// <summary>
+    ///     The field's property path, or null when the editor is not rendered for a configured field.
+    /// </summary>
+    public string? FieldName { get; init; }
+
+    /// <summary>
     ///     Whether the field is read-only.
     /// </summary>
     public bool IsReadOnly { get; init; }

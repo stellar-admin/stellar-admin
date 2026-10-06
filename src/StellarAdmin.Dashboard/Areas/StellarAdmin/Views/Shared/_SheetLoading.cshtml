@@ -1,0 +1,19 @@
+@* The shared sheet's loading state, shown until content is loaded into it *@
+<sa-sheet-header>
+    <sa-sheet-title>
+        <sa-skeleton class="h-5 w-2/5" />
+    </sa-sheet-title>
+</sa-sheet-header>
+<div class="flex flex-col gap-3 px-6 pb-6" aria-hidden="true">
+    <sa-skeleton class="h-9 w-full" />
+    @for (var row = 0; row < 4; row++)
+    {
+        <div class="flex items-center gap-3 py-1.5">
+            <sa-skeleton class="size-8 shrink-0 rounded-md" />
+            <div class="flex flex-1 flex-col gap-1.5">
+                <sa-skeleton class="h-3.5 w-2/5" />
+                <sa-skeleton class="h-3 w-3/5" />
+            </div>
+        </div>
+    }
+</div>

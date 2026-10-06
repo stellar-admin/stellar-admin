@@ -1,4 +1,5 @@
 using DashboardPlayground.Data;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
 using StellarAdmin.Dashboard.Resources.Editors;
@@ -53,17 +54,25 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<SelectEditor>(options =>
+                            field.UseEditor<LookupEditor>(options =>
+                            {
+                                options.Sheet(sheet =>
+                                {
+                                    sheet.Title = "Select category";
+                                    sheet.SearchPlaceholder = "Search categories...";
+                                });
                                 options.UseItems<ApplicationDbContext, Category, int>(
                                     category => category.Id,
                                     category => category.Name,
                                     items =>
-                                    {
-                                        items.OrderBy(category => category.Name);
-                                        items.IncludeEmptyOption("Not specified");
-                                    }
-                                )
-                            );
+                                        items
+                                            .UseDescription(category =>
+                                                "Category #" + category.Id.ToString()
+                                            )
+                                            // Categories have no image, so the avatar shows the name's initials
+                                            .UseAvatar(category => null)
+                                );
+                            });
                         }
                     );
                 })

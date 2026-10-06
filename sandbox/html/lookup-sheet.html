@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lookup sheet prototype</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-10 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · LookupEditor</p>
+        <h1 class="text-2xl font-semibold">Sheet result list</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Settled: the listbox. Tight rows with the item's media (code chip, avatar or none), title and optional description; the active row in accent, the
+          selection marked by a trailing check, and a Load more button. No match highlighting (the server decides what matched) and no create button for now.
+          Each panel is one media × description combination and is live: search, click to select, ↑/↓ and Enter from the search box. Pages of 10; Cape Town is
+          selected to start. Control states are in <a class="underline" href="lookup-compact.html">lookup-compact.html</a>.
+        </p>
+      </header>
+
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">sa-command · native styling</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            The real <code>sel-command</code> component from stellar-admin.js with <code>data-filter="none"</code>, markup captured from the tag helpers. Only
+            layout classes are added (the command fills the sheet, the list loses its 300px cap). The list is re-rendered on input as an htmx swap would, and
+            Load more is a command item replaced by the next page plus a new Load more. ↑/↓, Home/End, Ctrl+N/P and Enter come from the component; the
+            check is <code>checked</code> (<code>data-checked</code>); the active row is the component's <code>data-selected</code>.
+          </p>
+        </div>
+        <div id="native" class="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3"></div>
+      </section>
+
+      <div>
+        <h2 class="text-lg font-semibold">Hand-built listbox</h2>
+        <p class="text-muted-foreground max-w-3xl text-sm">The earlier rows: <code>sa-item</code>s with a hand-written keydown handler.</p>
+      </div>
+      <div id="panels" class="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3"></div>
+
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">Non-result states</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">Shown for code + description; the loading skeleton takes the shape of the media and description.</p>
+        </div>
+        <div id="states" class="grid gap-6 md:grid-cols-2 xl:grid-cols-4"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { airports, search, icon, controlBar } from "./lookup-shared.js";
+
+      const pageSize = 10;
+      const photos = {
+        LIS: "../../docs/DocsSamples/wwwroot/cities/lisbon.jpg",
+        CPT: "../../docs/DocsSamples/wwwroot/cities/cape-town.jpg",
+      };
+
+      const button = (variant, size, body, attrs = "", cls = "") =>
+        `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;
+
+      // ---------------------------------------------------------------- Item parts (same as the control)
+      const initials = (city) => {
+        const w = city.split(/\s+/);
+        return (w.length > 1 ? w[0][0] + w[1][0] : city.slice(0, 2)).toUpperCase();
+      };
+      const avatar = (a, size) => `
+        <span data-slot="avatar" data-size="${size}" class="sa-avatar group/avatar">
+          ${photos[a.code]
+            ? `<img data-slot="avatar-image" class="sa-avatar-image" src="${photos[a.code]}" alt="" />`
+            : `<span data-slot="avatar-fallback" class="sa-avatar-fallback">${initials(a.city)}</span>`}
+        </span>`;
+      // With a description the media matches the Card (size-7 chip, default avatar); without, it shrinks to the one-line size
+      const chip = (a, desc) =>
+        `<span class="bg-muted text-foreground flex shrink-0 items-center justify-center rounded-md font-mono font-medium ${desc ? "size-7 text-[0.65rem]" : "h-5 px-1.5 text-[0.65rem]"}">${a.code}</span>`;
+      const media = (a, cfg) =>
+        cfg.media === "none"
+          ? ""
+          : `<div data-slot="item-media" class="sa-item-media">${cfg.media === "code" ? chip(a, cfg.desc) : avatar(a, cfg.desc ? "default" : "sm")}</div>`;
+
+      // The stretched button keeps the whole row clickable
+      const row = (a, ctx, cfg) => `
+        <div data-slot="item" ${a.code === ctx.selected ? "data-selected" : ""} ${a.code === ctx.activeCode ? "data-active" : ""}
+             class="sa-item group/item sa-item-variant-default sa-item-size-xs relative flex-nowrap rounded-sm py-1.5 hover:bg-accent hover:text-accent-foreground data-[active]:bg-accent data-[active]:text-accent-foreground">
+          ${media(a, cfg)}
+          <div data-slot="item-content" class="sa-item-content min-w-0 gap-0">
+            <div data-slot="item-title" class="sa-item-title w-full">
+              <button type="button" class="min-w-0 truncate text-left outline-none after:absolute after:inset-0" data-pick="${a.code}">${a.city}</button>
+            </div>
+            ${cfg.desc ? `<p data-slot="item-description" class="sa-item-description truncate text-xs">${a.country}</p>` : ""}
+          </div>
+          <div class="sa-item-actions w-4 shrink-0">${a.code === ctx.selected ? icon.check("size-4") : ""}</div>
+        </div>`;
+      const loadMore = (ctx) => (ctx.hasMore ? button("ghost", "sm", "Load more", "data-more", "mt-1 w-full") : "");
+
+      // ---------------------------------------------------------------- Panels: media × description
+      const combos = [];
+      for (const desc of [true, false])
+        for (const [m, name] of [["code", "Code"], ["avatar", "Avatar"], ["none", "No media"]])
+          combos.push({ media: m, desc, name: `${name} · ${desc ? "with description" : "title only"}` });
+
+      const sheet = (cfg, i) => `
+        <section class="space-y-3">
+          <h2 class="font-semibold">${cfg.name}</h2>
+          <div data-panel="${i}" class="bg-background relative flex h-[560px] w-full max-w-[24rem] flex-col overflow-hidden rounded-xl border shadow-sm">
+            <div data-slot="sheet-header" class="sa-sheet-header pr-12">
+              <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">Departure airport</h2>
+            </div>
+            <span class="text-muted-foreground absolute top-4 right-4 opacity-70">${icon.x("size-4")}</span>
+            <div class="px-6">
+              <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+                <input type="search" autocomplete="off" placeholder="Search airports" data-search data-slot="input-group-control" class="sa-input sa-input-group-input" />
+                <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon.search()}</div>
+              </div>
+            </div>
+            <div data-results class="flex min-h-0 flex-1 flex-col overflow-y-auto p-6 pt-3"></div>
+          </div>
+        </section>`;
+
+      const panels = combos.map((cfg, i) => ({ cfg, i, term: "", shown: pageSize, selected: "CPT", active: -1 }));
+      document.getElementById("panels").innerHTML = combos.map(sheet).join("");
+
+      const ctxOf = (p) => {
+        const all = search(p.term);
+        const items = all.slice(0, p.shown);
+        return { items, selected: p.selected, activeCode: items[p.active]?.code, total: all.length, hasMore: all.length > p.shown };
+      };
+
+      const emptyBlock = (ic, title, desc, extra = "") => `
+        <div data-slot="empty" class="sa-empty border-0 p-4">
+          <div data-slot="empty-header" class="sa-empty-header">
+            <div data-slot="empty-media" data-variant="icon" class="sa-empty-media sa-empty-media-icon">${ic}</div>
+            <div data-slot="empty-title" class="sa-empty-title">${title}</div>
+            <div data-slot="empty-description" class="sa-empty-description">${desc}</div>
+          </div>${extra}
+        </div>`;
+      const noResults = (term) => emptyBlock(icon.searchX(), "No airports found", `Nothing matches “${term}”.`);
+
+      const resultsOf = (p) => document.querySelector(`[data-panel="${p.i}"] [data-results]`);
+      const render = (p) => {
+        const el = resultsOf(p);
+        const scroll = el.scrollTop;
+        const ctx = ctxOf(p);
+        el.innerHTML = ctx.total ? ctx.items.map((a) => row(a, ctx, p.cfg)).join("") + loadMore(ctx) : noResults(p.term);
+        el.scrollTop = scroll;
+        el.querySelector("[data-active]")?.scrollIntoView({ block: "nearest" });
+      };
+      panels.forEach(render);
+
+      const panelOf = (el) => panels[Number(el.closest("[data-panel]").dataset.panel)];
+
+      document.addEventListener("input", (e) => {
+        if (!e.target.matches("[data-search]")) return;
+        const p = panelOf(e.target);
+        p.term = e.target.value;
+        p.shown = pageSize;
+        p.active = -1;
+        resultsOf(p).scrollTop = 0;
+        render(p);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (!e.target.matches("[data-search]")) return;
+        const p = panelOf(e.target);
+        const { items } = ctxOf(p);
+        if (e.key === "ArrowDown") p.active = Math.min(p.active + 1, items.length - 1);
+        else if (e.key === "ArrowUp") p.active = Math.max(p.active - 1, 0);
+        else if (e.key === "Enter" && items[p.active]) p.selected = items[p.active].code;
+        else return;
+        e.preventDefault();
+        render(p);
+      });
+      document.addEventListener("click", (e) => {
+        const panel = e.target.closest("[data-panel]");
+        if (!panel) return;
+        const p = panelOf(panel);
+        const picked = e.target.closest("[data-pick]");
+        if (picked) p.selected = picked.dataset.pick;
+        else if (e.target.closest("[data-more]")) p.shown += pageSize;
+        else return;
+        render(p);
+      });
+
+      // ---------------------------------------------------------------- Native sa-command panels
+      const check = `<svg class="sa-command-item-indicator" viewBox="0 0 24 24" stroke-linejoin="round" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M20 6 9 17l-5-5"></path></svg>`;
+      const nativeMedia = (a, cfg) =>
+        cfg.media === "none" ? "" : cfg.media === "code" ? chip(a, cfg.desc) : avatar(a, cfg.desc ? "default" : "sm");
+      const nativeItem = (a, cfg, selected) => `
+        <div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="${a.code}" ${a.code === selected ? 'data-checked="true"' : ""}
+             class="sa-command-item group/command-item">
+          ${nativeMedia(a, cfg)}
+          <div class="flex min-w-0 flex-col">
+            <span class="truncate">${a.city}</span>
+            ${cfg.desc ? `<span class="text-muted-foreground truncate text-xs">${a.country}</span>` : ""}
+          </div>
+          ${check}
+        </div>`;
+      const nativeMore = `
+        <div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="" data-more class="sa-command-item group/command-item text-muted-foreground justify-center">
+          Load more
+        </div>`;
+      const nativePage = (n, from) => {
+        const all = search(n.term);
+        const page = all.slice(from, from + pageSize).map((a) => nativeItem(a, n.cfg, n.selected)).join("");
+        return page + (all.length > from + pageSize ? nativeMore : "");
+      };
+
+      const nativeSheet = (cfg, i) => `
+        <section class="space-y-3">
+          <h2 class="font-semibold">${cfg.name}</h2>
+          <div class="bg-background relative flex h-[560px] w-full max-w-[24rem] flex-col overflow-hidden rounded-xl border shadow-sm">
+            <div data-slot="sheet-header" class="sa-sheet-header pr-12">
+              <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">Departure airport</h2>
+            </div>
+            <span class="text-muted-foreground absolute top-4 right-4 opacity-70">${icon.x("size-4")}</span>
+            <sel-command id="native-${i}" data-native="${i}" class="sa-command min-h-0 flex-1 px-6 pb-6" data-slot="command" data-filter="none">
+              <label class="sr-only" id="native-${i}-label">Departure airport</label>
+              <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+                <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+                  <input placeholder="Search airports" type="text" id="native-${i}-input" aria-controls="native-${i}-list" aria-labelledby="native-${i}-label"
+                         role="combobox" aria-autocomplete="list" aria-expanded="true" autocomplete="off" autocorrect="off" spellcheck="false"
+                         data-slot="command-input" class="sa-command-input" />
+                  <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icon.search("sa-command-input-icon")}</div>
+                </div>
+              </div>
+              <div id="native-${i}-list" role="listbox" aria-label="Suggestions" tabindex="-1" data-slot="command-list" class="sa-command-list mt-3 max-h-none flex-1">
+                <div role="presentation" hidden data-slot="command-empty" class="sa-command-empty">No airports found.</div>
+                <div data-items></div>
+              </div>
+            </sel-command>
+          </div>
+        </section>`;
+
+      const natives = combos.map((cfg, i) => ({ cfg, i, term: "", selected: "CPT" }));
+      document.getElementById("native").innerHTML = combos.map(nativeSheet).join("");
+      const itemsOf = (n) => document.querySelector(`[data-native="${n.i}"] [data-items]`);
+      natives.forEach((n) => (itemsOf(n).innerHTML = nativePage(n, 0)));
+
+      // Stands in for the htmx search swap
+      document.addEventListener("input", (e) => {
+        const host = e.target.closest("[data-native]");
+        if (!host || !e.target.matches('[data-slot="command-input"]')) return;
+        const n = natives[Number(host.dataset.native)];
+        n.term = e.target.value;
+        itemsOf(n).innerHTML = nativePage(n, 0);
+      });
+      document.addEventListener("itemselect", (e) => {
+        const host = e.target.closest("[data-native]");
+        if (!host) return;
+        const n = natives[Number(host.dataset.native)];
+        if (e.target.matches("[data-more]")) {
+          // Stands in for an htmx outerHTML swap of the Load more item with the next page
+          const shown = itemsOf(n).querySelectorAll("[data-value]:not([data-more])").length;
+          e.target.outerHTML = nativePage(n, shown);
+          return;
+        }
+        n.selected = e.detail.value;
+        host.querySelectorAll("[data-checked]").forEach((el) => el.removeAttribute("data-checked"));
+        e.target.setAttribute("data-checked", "true");
+      });
+
+      // ---------------------------------------------------------------- Non-result states
+      const frame = (title, body) => `
+        <div class="space-y-2">
+          <p class="text-muted-foreground text-[0.7rem] tracking-wide uppercase">${title}</p>
+          <div class="bg-background flex h-52 flex-col justify-center rounded-xl border px-6">${body}</div>
+        </div>`;
+      const skeletonRow = `<div class="flex items-center gap-2.5 px-2 py-1.5"><div class="bg-muted size-7 shrink-0 animate-pulse rounded-md"></div><div class="flex flex-1 flex-col gap-1.5"><div class="bg-muted h-3.5 w-2/5 animate-pulse rounded"></div><div class="bg-muted h-3 w-3/5 animate-pulse rounded"></div></div></div>`;
+      document.getElementById("states").innerHTML = [
+        frame("Minimum length", `<p class="text-muted-foreground flex items-center justify-center gap-1.5 text-sm">${icon.search("size-4")} Type 2 or more characters to search.</p>`),
+        frame("No results", noResults("xyz")),
+        frame("Loading", `<div>${skeletonRow.repeat(4)}</div>`),
+        frame("Error", emptyBlock(icon.x(), "Search failed", "The server didn’t respond.", `<div data-slot="empty-content" class="sa-empty-content">${button("outline", "sm", "Try again")}</div>`)),
+      ].join("");
+
+      controlBar();
+    </script>
+  </body>
+</html>

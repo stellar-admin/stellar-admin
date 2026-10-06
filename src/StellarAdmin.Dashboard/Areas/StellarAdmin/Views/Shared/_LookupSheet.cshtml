@@ -1,0 +1,79 @@
+@model LookupSheetViewModel
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var editor = Model.Editor;
+    var labels = LabelOptions.Value;
+
+    // The loading rows take the shape of the results' media: the Card size with a description, otherwise the Input size
+    var skeletonMediaClass = editor.SheetOptions.ShowMedia
+        ? (editor.Items!.MediaType, editor.Items.HasDescription) switch
+        {
+            (LookupMediaType.Code, true) => "size-7 rounded-md",
+            (LookupMediaType.Code, false) => "h-5 w-8 rounded-sm",
+            (LookupMediaType.Avatar, true) => "size-8 rounded-full",
+            (LookupMediaType.Avatar, false) => "size-6 rounded-full",
+            _ => null,
+        }
+        : null;
+
+    // Shown in the results until they arrive, and again when a failed search is retried
+    async Task LoadingRows()
+    {
+        for (var row = 0; row < 4; row++)
+        {
+            <div class="sa-command-item pointer-events-none" aria-hidden="true">
+                @if (skeletonMediaClass is not null)
+                {
+                    <sa-skeleton class="@($"shrink-0 {skeletonMediaClass}")" />
+                }
+                <div class="flex flex-1 flex-col gap-1.5">
+                    <sa-skeleton class="h-3.5 w-2/5" />
+                    @if (editor.Items!.HasDescription)
+                    {
+                        <sa-skeleton class="h-3 w-3/5" />
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+
+@* The lookup picker loaded into the shared sheet; for names the editor that results belong to *@
+<dashboard-lookup-picker class="contents" for="@Model.For">
+    <sa-sheet-header>
+        <sa-sheet-title>@Model.Title</sa-sheet-title>
+    </sa-sheet-header>
+
+    <sa-command filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
+        <sa-command-input name="term" autofocus="" placeholder="@editor.SheetOptions.SearchPlaceholder"
+                          aria-label="@(editor.SheetOptions.SearchPlaceholder ?? labels.Lookup.SearchLabel(Model.Labels))" data-lookup="search"
+                          hx-get="@Model.ResultsUrl" hx-target="#dashboard-sheet-results" hx-trigger="load, input changed delay:300ms, lookup-retry" />
+        <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@Model.Title">
+            @* The loading rows show until the first results arrive *@
+            <div id="dashboard-sheet-results" data-lookup="results">
+                @{ await LoadingRows(); }
+            </div>
+        </sa-command-list>
+    </sa-command>
+
+    <template data-lookup="loading">
+        @{ await LoadingRows(); }
+    </template>
+
+    @* Shown by the picker when a search or Load more fails *@
+    <template data-lookup="error">
+        <sa-empty class="border-0 p-4" data-lookup="message">
+            <sa-empty-header>
+                <sa-empty-media variant="EmptyMediaVariant.Icon">
+                    <sa-icon name="circle-alert" />
+                </sa-empty-media>
+                <sa-empty-title>@labels.Lookup.ErrorTitle(Model.Labels)</sa-empty-title>
+                <sa-empty-description>@labels.Lookup.ErrorDescription(Model.Labels)</sa-empty-description>
+            </sa-empty-header>
+            <sa-empty-content>
+                <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-lookup="retry">@labels.Lookup.RetryLabel(Model.Labels)</sa-button>
+            </sa-empty-content>
+        </sa-empty>
+    </template>
+</dashboard-lookup-picker>

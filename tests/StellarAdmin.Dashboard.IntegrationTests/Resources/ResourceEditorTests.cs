@@ -267,8 +267,102 @@ public class ResourceEditorTests
         await Assert.That(input.GetAttribute("placeholder")).IsEqualTo("Product name");
         await Assert
             .That(input.GetAttribute("data-editor-context"))
-            .IsEqualTo("Product name:Development");
+            .IsEqualTo("Product name:Development:ProductName=");
     }
+
+    [Test]
+    public async Task CustomEditor_CreatePage_ReceivesFactoryValue()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource.AllowCreate(create =>
+                {
+                    create.UseFactory(() => new() { Name = "Draft" });
+                    create.Fields(fields =>
+                    {
+                        fields.Clear();
+                        fields.Add(product => product.Name).UseEditor<ProductNameEditor>();
+                    });
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("input[name='Entity.Name']")
+                    .GetAttribute("data-editor-context")
+            )
+            .IsEqualTo(":Development:Name=Draft");
+    }
+
+    [Test]
+    public async Task CustomEditor_EditPage_ReceivesLoadedValue()
+    {
+        // Arrange
+        await using var sut = await CreateProductNameEditHost();
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("input[name='Entity.Name']")
+                    .GetAttribute("data-editor-context")
+            )
+            .IsEqualTo(":Development:Name=Notebook");
+    }
+
+    [Test]
+    public async Task CustomEditor_RejectedSubmission_ReceivesPostedValue()
+    {
+        // Arrange
+        await using var sut = await CreateProductNameEditHost();
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/edit/7");
+        values["Entity.Name"] = "Changed";
+        values["Entity.Price"] = "not a number";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/products/edit/7", content);
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(
+                document
+                    .RequiredElement("input[name='Entity.Name']")
+                    .GetAttribute("data-editor-context")
+            )
+            .IsEqualTo(":Development:Name=Changed");
+    }
+
+    private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateProductNameEditHost() =>
+        DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                    {
+                        fields.Add(product => product.Name).UseEditor<ProductNameEditor>();
+                        fields.Add(product => product.Price);
+                    })
+                );
+            }
+        );
 
     private static Task<Microsoft.AspNetCore.Builder.WebApplication> CreateRoleSelectionHost(
         RoleSelectionState state,

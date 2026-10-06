@@ -1,7 +1,9 @@
 @inject StellarAdminDashboardOptions ProOptions
 @inject Microsoft.Extensions.Options.IOptions<DashboardThemeOptions> ThemeOptions
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 @{
     var theme = DashboardThemeCatalog.Get(ThemeOptions.Value.Name);
+    var sheetLabels = LabelOptions.Value.Sheet;
 }
 <!doctype html>
 <html lang="en">
@@ -41,5 +43,32 @@
         @RenderBody()
     </sa-sidebar-inset>
 </sa-sidebar-wrapper>
+
+@* One sheet for the whole page, outside any form; buttons load content into it with htmx, and it shows the loading state again when it closes *@
+<dashboard-remote-sheet class="contents">
+    <sa-sheet id="dashboard-sheet">
+        <div id="dashboard-sheet-content" class="contents">
+            <partial name="_SheetLoading" />
+        </div>
+        <template data-sheet="loading">
+            <partial name="_SheetLoading" />
+        </template>
+        @* Shown by the component when the content fails to load; Retry repeats the request that failed *@
+        <template data-sheet="error">
+            <sa-empty class="border-0">
+                <sa-empty-header>
+                    <sa-empty-media variant="EmptyMediaVariant.Icon">
+                        <sa-icon name="circle-alert" />
+                    </sa-empty-media>
+                    <sa-empty-title>@sheetLabels.ErrorTitle</sa-empty-title>
+                    <sa-empty-description>@sheetLabels.ErrorDescription</sa-empty-description>
+                </sa-empty-header>
+                <sa-empty-content>
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-sheet="retry">@sheetLabels.RetryLabel</sa-button>
+                </sa-empty-content>
+            </sa-empty>
+        </template>
+    </sa-sheet>
+</dashboard-remote-sheet>
 </body>
 </html>

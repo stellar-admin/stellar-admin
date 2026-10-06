@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
+using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
@@ -280,6 +281,121 @@ public class ResourceController<TResource>(
         return await IndexView(query, request, cancellationToken);
     }
 
+    /// <summary>
+    ///     Searches the items of a lookup field.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Lookup(
+        [FromQuery] ResourceLookupQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            !ModelState.IsValid
+            || query.Skip < 0
+            || FindLookupField(query) is not ({ } options, { Items: { } items } editor)
+        )
+        {
+            return NotFound();
+        }
+
+        var term = string.IsNullOrWhiteSpace(query.Term) ? null : query.Term.Trim();
+        var labels = new LookupLabelContext(
+            GetFieldLabel(options),
+            editor.SheetOptions.MinimumSearchLength,
+            term
+        );
+        if ((term?.Length ?? 0) < editor.SheetOptions.MinimumSearchLength)
+        {
+            return PartialView(
+                "_LookupResults",
+                new LookupResultsViewModel(
+                    editor,
+                    [],
+                    null,
+                    query.Selected,
+                    term,
+                    true,
+                    false,
+                    labels
+                )
+            );
+        }
+
+        var results = await items.SearchAsync(
+            HttpContext.RequestServices,
+            new LookupQuery(term, query.Skip, editor.SheetOptions.PageSize),
+            cancellationToken
+        );
+        var moreUrl = results.HasMore
+            ? Url.Action(
+                nameof(Lookup),
+                new
+                {
+                    id = (string?)null,
+                    form = query.Form,
+                    field = query.Field,
+                    term,
+                    skip = query.Skip + results.Items.Count,
+                    selected = query.Selected,
+                }
+            )
+            : null;
+
+        // Only the first page reports an empty result; a later page simply ends the list
+        return PartialView(
+            "_LookupResults",
+            new LookupResultsViewModel(
+                editor,
+                results.Items,
+                moreUrl,
+                query.Selected,
+                term,
+                false,
+                query.Skip == 0 && results.Items.Count == 0,
+                labels
+            )
+        );
+    }
+
+    /// <summary>
+    ///     Renders the search panel of a lookup field for the shared sheet.
+    /// </summary>
+    [HttpGet]
+    public IActionResult LookupSheet([FromQuery] ResourceLookupQuery query)
+    {
+        if (
+            !ModelState.IsValid
+            || string.IsNullOrEmpty(query.For)
+            || FindLookupField(query) is not ({ } options, { Items: not null } editor)
+        )
+        {
+            return NotFound();
+        }
+
+        var label = GetFieldLabel(options);
+        var resultsUrl = Url.Action(
+            nameof(Lookup),
+            new
+            {
+                id = (string?)null,
+                form = query.Form,
+                field = query.Field,
+            }
+        )!;
+
+        return PartialView(
+            "_LookupSheet",
+            new LookupSheetViewModel(
+                editor,
+                query.For,
+                editor.SheetOptions.Title ?? label,
+                resultsUrl,
+                new LookupLabelContext(label, editor.SheetOptions.MinimumSearchLength, null)
+            )
+        );
+    }
+
     private void AddValidationErrors(ResourceOperationResult result, HashSet<string> fields)
     {
         foreach (var error in result.Errors)
@@ -303,7 +419,7 @@ public class ResourceController<TResource>(
         var create = _resourceOptions.Create!;
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Create),
@@ -315,8 +431,8 @@ public class ResourceController<TResource>(
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = create.SectionLayout,
-                Title = create.Title ?? _labelOptions.CreateTitle(labels),
-                SubmitLabel = create.SubmitLabel ?? _labelOptions.CreateSubmitLabel(labels),
+                Title = create.Title ?? _labelOptions.Create.Title(labels),
+                SubmitLabel = create.SubmitLabel ?? _labelOptions.Create.SubmitLabel(labels),
             }
         );
     }
@@ -329,7 +445,7 @@ public class ResourceController<TResource>(
     {
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
-        var editors = await PrepareEditorsAsync(edit.Fields, cancellationToken);
+        var editors = await PrepareEditorsAsync(edit.Fields, resource, cancellationToken);
 
         return ResourceView(
             nameof(Edit),
@@ -337,10 +453,10 @@ public class ResourceController<TResource>(
             {
                 Delete = _resourceOptions.Delete is { } delete
                     ? new(
-                        delete.Title ?? _labelOptions.DeleteTitle(labels),
-                        delete.Message ?? _labelOptions.DeleteMessage(labels),
-                        delete.ConfirmLabel ?? _labelOptions.DeleteConfirmLabel(labels),
-                        delete.CancelLabel ?? _labelOptions.DeleteCancelLabel(labels),
+                        delete.Title ?? _labelOptions.Delete.Title(labels),
+                        delete.Message ?? _labelOptions.Delete.Message(labels),
+                        delete.ConfirmLabel ?? _labelOptions.Delete.ConfirmLabel(labels),
+                        delete.CancelLabel ?? _labelOptions.Delete.CancelLabel(labels),
                         id
                     )
                     : null,
@@ -350,10 +466,36 @@ public class ResourceController<TResource>(
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = edit.SectionLayout,
-                Title = edit.Title ?? _labelOptions.EditTitle(labels),
-                SubmitLabel = edit.SubmitLabel ?? _labelOptions.EditSubmitLabel(labels),
+                Title = edit.Title ?? _labelOptions.Edit.Title(labels),
+                SubmitLabel = edit.SubmitLabel ?? _labelOptions.Edit.SubmitLabel(labels),
             }
         );
+    }
+
+    private (FormFieldOptions, LookupEditor)? FindLookupField(ResourceLookupQuery query)
+    {
+        var fields = query.Form?.ToLowerInvariant() switch
+        {
+            "create" => _resourceOptions.Create?.Fields,
+            "edit" when _resourceOptions.KeySelector is not null => _resourceOptions.Edit?.Fields,
+            _ => null,
+        };
+
+        return
+            fields?.FirstOrDefault(options => options.FieldName == query.Field)
+                is { IsReadOnly: false, Editor: LookupEditor editor } options
+            ? (options, editor)
+            : null;
+    }
+
+    private string GetFieldLabel(FormFieldOptions options)
+    {
+        var property = options.PropertyPath[^1];
+
+        return options.Title
+            ?? MetadataProvider
+                .GetMetadataForProperty(property.DeclaringType!, property.Name)
+                .GetDisplayName();
     }
 
     private async Task<(
@@ -361,6 +503,7 @@ public class ResourceController<TResource>(
         IReadOnlyDictionary<string, string> Templates
     )> PrepareEditorsAsync(
         IReadOnlyList<FormFieldOptions> fields,
+        object model,
         CancellationToken cancellationToken
     )
     {
@@ -376,7 +519,12 @@ public class ResourceController<TResource>(
                         handlerType,
                         field.Editor
                     );
-                data[field.FieldName] = await handler.PrepareAsync(cancellationToken);
+                var context = new FieldEditorContext(
+                    field.FieldName,
+                    model,
+                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                );
+                data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
                 templates[field.FieldName] = handler.TemplateName;
             }
         }
@@ -458,22 +606,22 @@ public class ResourceController<TResource>(
                     _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
-                    _resourceOptions.Index.CreateLabel ?? _labelOptions.IndexCreateLabel(labels),
+                    _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
                 Delete =
                     _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
                         ? null
                         : new(
-                            _resourceOptions.Delete.Title ?? _labelOptions.DeleteTitle(labels),
-                            _resourceOptions.Delete.Message ?? _labelOptions.DeleteMessage(labels),
+                            _resourceOptions.Delete.Title ?? _labelOptions.Delete.Title(labels),
+                            _resourceOptions.Delete.Message ?? _labelOptions.Delete.Message(labels),
                             _resourceOptions.Delete.ConfirmLabel
-                                ?? _labelOptions.DeleteConfirmLabel(labels),
+                                ?? _labelOptions.Delete.ConfirmLabel(labels),
                             _resourceOptions.Delete.CancelLabel
-                                ?? _labelOptions.DeleteCancelLabel(labels)
+                                ?? _labelOptions.Delete.CancelLabel(labels)
                         ),
                 DeleteLabel =
-                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.IndexDeleteLabel(labels),
+                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.Index.DeleteLabel(labels),
                 EditLabel =
-                    _resourceOptions.Index.EditLabel ?? _labelOptions.IndexEditLabel(labels),
+                    _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
                 KeySelector = _resourceOptions.KeySelector,
                 Items = result.Items,
                 Paging = pagingModel,
@@ -491,7 +639,7 @@ public class ResourceController<TResource>(
                 Search = _resourceOptions.Index.Search is { } search
                     ? new(
                         request.Search,
-                        search.Placeholder ?? _labelOptions.IndexSearchPlaceholder(labels)
+                        search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
                     )
                     : null,
                 Sort = request.Sort is { } sort
@@ -502,7 +650,7 @@ public class ResourceController<TResource>(
                             : DataGridSortDirection.Ascending
                     )
                     : null,
-                Title = _resourceOptions.Index.Title ?? _labelOptions.IndexTitle(labels),
+                Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
             }
         );
     }

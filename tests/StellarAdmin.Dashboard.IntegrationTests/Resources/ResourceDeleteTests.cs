@@ -302,12 +302,15 @@ public class ResourceDeleteTests
                 {
                     dashboard.ConfigureResourceLabels(labels =>
                     {
-                        labels.DeleteTitle = resource => $"Remove {resource.SingularLabel}";
-                        labels.DeleteMessage = resource =>
-                            $"Remove this {resource.SingularLabel} permanently?";
-                        labels.DeleteConfirmLabel = resource => "Remove";
-                        labels.DeleteCancelLabel = resource => "Keep";
-                        labels.IndexDeleteLabel = resource => "Remove item";
+                        labels.Delete(delete =>
+                        {
+                            delete.Title = resource => $"Remove {resource.SingularLabel}";
+                            delete.Message = resource =>
+                                $"Remove this {resource.SingularLabel} permanently?";
+                            delete.ConfirmLabel = resource => "Remove";
+                            delete.CancelLabel = resource => "Keep";
+                        });
+                        labels.Index(index => index.DeleteLabel = resource => "Remove item");
                     });
                 }
             }

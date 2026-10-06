@@ -47,8 +47,11 @@ builder
 
         dashboard.ConfigureResourceLabels(labels =>
         {
-            labels.CreateTitle = resource => $"Add new {resource.SingularLabel}";
-            labels.CreateSubmitLabel = resource => $"Add {resource.SingularLabel}";
+            labels.Create(create =>
+            {
+                create.Title = resource => $"Add new {resource.SingularLabel}";
+                create.SubmitLabel = resource => $"Add {resource.SingularLabel}";
+            });
         });
 
         dashboard.AddUserResource();

@@ -1,0 +1,20 @@
+@model LookupMediaViewModel
+
+@{
+    var media = Model.Media;
+    var size = Model.IsLarge ? AvatarSize.Default : AvatarSize.Small;
+}
+
+@if (media.Type == LookupMediaType.Code)
+{
+    <span class="@(Model.IsLarge ? "flex size-7 shrink-0 items-center justify-center rounded-md text-[0.65rem]" : "rounded-sm px-1.5 py-0.5 text-[0.7rem]") bg-muted text-foreground font-mono font-medium">@media.Value</span>
+}
+else if (string.IsNullOrEmpty(media.Value))
+{
+    @* A string attribute binds an empty string rather than null, so the image is only passed when there is one *@
+    <sa-avatar name="@Model.Title" size="size" />
+}
+else
+{
+    <sa-avatar name="@Model.Title" src="@media.Value" size="size" />
+}
