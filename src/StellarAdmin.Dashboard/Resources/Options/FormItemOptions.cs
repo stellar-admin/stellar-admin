@@ -5,5 +5,7 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 /// </summary>
 public abstract class FormItemOptions
 {
+    internal FormColumnSpanDefinitions ColumnSpan { get; set; }
+
     private protected FormItemOptions() { }
 }

@@ -44,6 +44,43 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
+    ///     Sets the number of columns the field spans.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1.
+    /// </remarks>
+    public ResourceFieldBuilder ColumnSpan(int span)
+    {
+        var columnSpan = ColumnSpanBuilder.FromSpan(span);
+        _configuration.Add(options => options.ColumnSpan = columnSpan);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the number of columns the field spans at each breakpoint.
+    /// </summary>
+    public ResourceFieldBuilder ColumnSpan(Action<ColumnSpanBuilder> configure)
+    {
+        var columnSpan = ColumnSpanBuilder.Build(configure);
+        _configuration.Add(options => options.ColumnSpan = columnSpan);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Spans all columns.
+    /// </summary>
+    public ResourceFieldBuilder ColumnSpanFull()
+    {
+        _configuration.Add(options =>
+            options.ColumnSpan = new(Default: FormColumnSpanDefinitions.Full)
+        );
+
+        return this;
+    }
+
+    /// <summary>
     ///     Uses and configures an editor for this field.
     /// </summary>
     public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)

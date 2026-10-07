@@ -8,10 +8,9 @@ namespace StellarAdmin.Dashboard.Resources.Builders;
 /// </summary>
 public class ResourceFieldsBuilder<TResource>
 {
-    private readonly Action<Action<IList<FormItemOptions>>> _configure;
+    private readonly Action<Action<IFormScope>> _configure;
 
-    internal ResourceFieldsBuilder(Action<Action<IList<FormItemOptions>>> configure) =>
-        _configure = configure;
+    internal ResourceFieldsBuilder(Action<Action<IFormScope>> configure) => _configure = configure;
 
     /// <summary>
     ///     Adds a field.
@@ -38,7 +37,7 @@ public class ResourceFieldsBuilder<TResource>
             ResourcePropertyPath.GetName(properties),
             properties
         );
-        _configure(items => items.Add(fieldBuilder.Build()));
+        _configure(scope => scope.Items.Add(fieldBuilder.Build()));
 
         return fieldBuilder;
     }
@@ -61,14 +60,17 @@ public class ResourceFieldsBuilder<TResource>
     /// <summary>
     ///     Adds a group of related fields.
     /// </summary>
-    public ResourceFieldsBuilder<TResource> AddGroup() =>
-        AddContainer(() => new FormGroupOptions());
+    public ResourceGroupBuilder<TResource> AddGroup() =>
+        AddContainer(
+            configure => new ResourceGroupBuilder<TResource>(configure),
+            group => group.Build()
+        );
 
     /// <summary>
     ///     Adds and configures a group of related fields.
     /// </summary>
     public ResourceFieldsBuilder<TResource> AddGroup(
-        Action<ResourceFieldsBuilder<TResource>> configure
+        Action<ResourceGroupBuilder<TResource>> configure
     )
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -81,7 +83,11 @@ public class ResourceFieldsBuilder<TResource>
     /// <summary>
     ///     Adds a row whose fields and groups form equally sized columns.
     /// </summary>
-    public ResourceFieldsBuilder<TResource> AddRow() => AddContainer(() => new FormRowOptions());
+    public ResourceFieldsBuilder<TResource> AddRow() =>
+        AddContainer(
+            configure => new ResourceFieldsBuilder<TResource>(configure),
+            _ => new FormRowOptions()
+        );
 
     /// <summary>
     ///     Adds and configures a row.
@@ -104,20 +110,10 @@ public class ResourceFieldsBuilder<TResource>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
-        var configuration = new List<Action<IList<FormItemOptions>>>();
-        var section = new ResourceSectionBuilder<TResource>(title, configuration.Add);
-        _configure(items =>
-        {
-            var options = section.Build();
-            foreach (var configure in configuration)
-            {
-                configure(options.MutableItems);
-            }
-
-            items.Add(options);
-        });
-
-        return section;
+        return AddContainer(
+            configure => new ResourceSectionBuilder<TResource>(title, configure),
+            section => section.Build()
+        );
     }
 
     /// <summary>
@@ -140,25 +136,54 @@ public class ResourceFieldsBuilder<TResource>
     /// </summary>
     public ResourceFieldsBuilder<TResource> Clear()
     {
-        _configure(items => items.Clear());
+        _configure(scope => scope.Items.Clear());
 
         return this;
     }
 
-    private ResourceFieldsBuilder<TResource> AddContainer(Func<FormContainerOptions> factory)
+    /// <summary>
+    ///     Sets the number of columns, starting at the medium breakpoint.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1. Below the medium breakpoint, the fields use one column.
+    /// </remarks>
+    public ResourceFieldsBuilder<TResource> Columns(int count)
     {
-        var configuration = new List<Action<IList<FormItemOptions>>>();
-        _configure(items =>
+        var columns = FormGridColumnDefinitions.FromCount(count);
+        _configure(scope => scope.Columns = columns);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the number of columns at each breakpoint.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> Columns(Action<GridColumnsBuilder> configure)
+    {
+        var columns = GridColumnsBuilder.Build(configure);
+        _configure(scope => scope.Columns = columns);
+
+        return this;
+    }
+
+    private TBuilder AddContainer<TBuilder>(
+        Func<Action<Action<IFormScope>>, TBuilder> createBuilder,
+        Func<TBuilder, FormContainerOptions> build
+    )
+    {
+        var configuration = new List<Action<IFormScope>>();
+        var builder = createBuilder(configuration.Add);
+        _configure(scope =>
         {
-            var container = factory();
+            var container = build(builder);
             foreach (var configure in configuration)
             {
-                configure(container.MutableItems);
+                configure(container);
             }
 
-            items.Add(container);
+            scope.Items.Add(container);
         });
 
-        return new(configuration.Add);
+        return builder;
     }
 }

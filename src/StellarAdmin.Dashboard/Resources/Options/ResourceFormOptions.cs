@@ -5,7 +5,7 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 /// <summary>
 ///     Configures a resource form.
 /// </summary>
-public class ResourceFormOptions
+public class ResourceFormOptions : IFormScope
 {
     /// <summary>
     ///     All fields in display order, including fields inside layout containers.
@@ -34,6 +34,14 @@ public class ResourceFormOptions
     ///     The page title.
     /// </summary>
     public string? Title { get; set; }
+
+    internal FormGridColumnDefinitions Columns { get; set; }
+
+    FormGridColumnDefinitions IFormScope.Columns
+    {
+        get => Columns;
+        set => Columns = value;
+    }
 
     private static IEnumerable<FormFieldOptions> EnumerateFields(IEnumerable<FormItemOptions> items)
     {

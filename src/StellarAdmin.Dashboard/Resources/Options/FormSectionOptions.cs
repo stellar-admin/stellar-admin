@@ -1,3 +1,5 @@
+using StellarAdmin.TagHelpers;
+
 namespace StellarAdmin.Dashboard.Resources.Options;
 
 /// <summary>
@@ -9,6 +11,14 @@ public sealed class FormSectionOptions : FormContainerOptions
     ///     Supporting text displayed below the section title.
     /// </summary>
     public string? Description { get; internal set; }
+
+    /// <summary>
+    ///     The layout of the section.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the form's section layout.
+    /// </remarks>
+    public FormSectionLayout? Layout { get; internal set; }
 
     /// <summary>
     ///     The section title.

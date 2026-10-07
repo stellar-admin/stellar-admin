@@ -44,7 +44,7 @@ public sealed class ResourceCreateBuilder<TModel>
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new(action => _configure(options => action(options.Items))));
+        configure(new(action => _configure(options => action(options))));
 
         return this;
     }
