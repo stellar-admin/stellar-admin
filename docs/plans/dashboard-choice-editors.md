@@ -1,10 +1,12 @@
 # Dashboard choice editors
 
-Status: active, phases 1 to 3 implemented 2026-10-07; phase 3 awaiting review.
+Status: active, phases 1 to 3 implemented 2026-10-07; phases 4 to 7 (choice items, empty choice, media) planned 2026-10-07, not started.
 
 ## Goal
 
 Pick up the inline wins from the multiselect exploration (`sandbox/html/multiselect-inline.html`, committed in `e2f9f8f`) as native Dashboard editor features. The sheet and popover lookup patterns from the same exploration are out of scope and will be revisited separately.
+
+Then make the choice editors consistent about their items. Today the public item type is MVC's `SelectListItem` while the templates use the internal `EditorChoice`, Select alone passes supplied items through unchanged, and the two types carry different fields, so descriptions, groups, the empty choice and EF Core support depend on which source and editor are combined.
 
 ## Decisions
 
@@ -13,13 +15,52 @@ Pick up the inline wins from the multiselect exploration (`sandbox/html/multisel
 - A new `ToggleGroupEditor` renders `sa-toggle-group` with an `Appearance` of `Chips` (default; rounded pills with a check mark when on), `Joined` or `Buttons`. The toggle group type follows the bound property: a collection property selects multiple values, any other property selects one. Chips and buttons wrap; joined groups don't, so they suit a few short choices.
 - `sa-toggle-group` itself was fixed rather than worked around in the Dashboard (Jerrie's call): a multiple group now renders the checkbox group's empty-selection marker when at least one item is enabled, so turning every toggle off clears the collection; selection is normalized to the bound type with `ChoiceGroupValue`, so Boolean values match, and posted values in ModelState win over the model; and a group bound with an empty `For.Name` inside an editor template takes the template's field name, as the checkbox group does. The Dashboard template selects the empty choice for a null nullable value, as the radio group editor does.
 
+### Choice items
+
+Analysis of the current flow, from each source through the item types to each template and tag helper, is in the [Choice Item Flow](https://claude.ai/artifact/2yVYex5sPVVKKCSjv5hnaB) diagram.
+
+- `EditorChoice` becomes the public `ChoiceItem`, a `sealed record ChoiceItem(string Value, string Text)` with optional init properties `Description`, `Disabled`, `Group` and `Media`. `Selected` is dropped; the bound value always decides.
+- `UseItems`, `IChoiceItemsProvider` and the loader delegate take and return `ChoiceItem`. `UseItems(IEnumerable<SelectListItem>)` stays as the only adapter, mapping `Value ?? Text`, `Text`, `Disabled` and the group's name and disabled state.
+- Groups are first-class but the list stays flat: `ChoiceItem.Group` is a `ChoiceGroup?`, a `sealed record ChoiceGroup(string Text)` with optional `Description` and `Disabled`. A tree was rejected because every consumer would walk two cases and lookup paging can split a group across pages. Record equality means items with equal groups share one group, unlike MVC's reference-compared `SelectListGroup`. Groups appear in the order of their first item.
+- Only Select supports groups for now, rendering each as an `optgroup` (disabled when the group is). The radio and checkbox groups (sub-headings), toggle groups (labelled rows) and lookups (result headings) can add support later.
+- Every source goes the same route. Select loses its pass-through and maps choices to options once. Enum `[Display(GroupName)]` becomes a `ChoiceGroup`, and the EF Core builder gets a group selector.
+- One EF Core `UseItems<TContext, TEntity, TValue>` extension on `ChoiceEditor`, with one builder, replaces the separate Select and Checkbox group extensions and their builders, so the radio group, segmented control and toggle group get it too. The builder has `OrderBy`, `UseDescription` and `UseGroup`, and gains the media methods in phase 7.
+- Each editor renders the fields it can and ignores the rest without error. Select renders text, disabled and groups; the radio and checkbox groups render descriptions; the other editors ignore groups.
+- Enum choices take what the metadata gives. An attribute for enum member icons may come later.
+
+### Empty choice
+
+- The empty choice belongs to the editor, not the item source. `ChoiceEditor` gets `EmptyChoice EmptyChoice` (`Auto` by default, `Include` or `Omit`) next to the existing `EmptyChoiceText`.
+- `Auto`: collection properties never get one. Optional single values (anything MVC doesn't treat as required, such as `int?`, `Cabin?`, `bool?` or `string?` without `[Required]`) get one, and posting `""` binds null. Required single values get none in the radio group, segmented control and toggle group. Select adds it for a required value only while the value is null, as a placeholder, so the browser doesn't silently submit the first item.
+- `IncludeEmptyOption` is removed from the EF Core builder; `EmptyChoiceText` covers every source and editor. A source that already has a `""` item doesn't get a second one.
+- One shared helper selects the empty choice for a null value in every template, replacing the radio and toggle group copies. From reading the code, the segmented control currently selects no segment for a null nullable enum; this fixes it.
+- The empty choice is plain text, with no description or media.
+- Visible change: a `[Required]` nullable enum in a radio group no longer shows "Not set".
+
+### Media
+
+- `ItemMedia` is shared by choices and lookups and replaces `LookupMedia` and `LookupMediaType`: a closed record hierarchy (private constructor, sealed nested records) with `Icon(string Name)`, `Avatar(string? Url)`, `Image(string Url)` and `Code(string Value)`. C# 15 union types and closed hierarchies were considered; the repo is on C# 14, and the `closed` modifier can replace the private constructor after a move to .NET 11.
+- `Icon` renders `<sa-icon>` in the text colour. `Avatar` renders `<sa-avatar>` with initials from the item's text when the URL is null. `Image` renders a square `<img>` with rounded corners and `object-fit: cover` at the avatar's size, with an empty `alt` because the text sits beside it. `Code` renders the monospace badge lookups use today.
+- Media is small before the text inline, and larger in cards and lookup lists. Select ignores it. Toggle chips show the check mark in place of the media while on, or after it; the prototype decides.
+- `ChoiceItem` also replaces `LookupResult` and `LookupItem`, renaming the lookups' `Title` to `Text`; `FindAsync` returns the current item with its value. Lookups ignore `Disabled` and `Group` for now. The lookup sources (`LookupItems`, `ILookupSource`) and the `LookupResults` page stay separate, because lookups search and page while choice editors load every item at once.
+- The EF Core choice builder gets `UseIcon`, `UseAvatar`, `UseImage` and `UseCode`; the lookup builder gains `UseIcon` and `UseImage`.
+
 ## Phases
 
 1. Rename `ToggleButtonsEditor` to `SegmentedControlEditor`. Implemented 2026-10-07.
 2. `CheckboxGroupEditor` appearance, columns and flow; replace the Roles custom classes in the playground with `Columns(2)`. Implemented 2026-10-07.
 3. `ToggleGroupEditor` with its three appearances and single or multiple selection by property type. Implemented 2026-10-07.
+4. `ChoiceItem` and `ChoiceGroup` as the public item types: the `SelectListItem` adapter, Select through the shared route with groups, enum group names, and the single EF Core extension on `ChoiceEditor`. Not started.
+5. Editor-owned empty choice with `EmptyChoice`, removing `IncludeEmptyOption`, and the shared null-selection helper. Not started.
+6. Media prototype in `sandbox/html`: each media case in every choice editor and appearance, with sizes for the segmented control and joined toggles and the chip check mark placement. Stops for visual approval. Not started.
+7. `ItemMedia` replacing the lookup media types and `ChoiceItem` replacing `LookupResult` and `LookupItem`, with media rendered in the choice editors as approved and the builder methods. Not started.
 
-Each phase covers tests, playground gallery entries and the Dashboard consumer reference, and stops for review.
+Each implementation phase covers tests, playground gallery entries and the Dashboard consumer reference, and stops for review.
+
+## Open items
+
+- Unverified: the EF Core choice loader formats values with `InvariantCulture`, while `ChoiceGroupValue` and the lookup use `CurrentCulture`, so a decimal or date key may not show as selected under a culture like de-DE. Check in phase 4.
+- An attribute for enum member icons is deferred.
 
 ## Verification
 
