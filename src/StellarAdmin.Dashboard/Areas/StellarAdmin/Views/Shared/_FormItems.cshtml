@@ -2,39 +2,51 @@
 @{
     var editorData = ViewData[ViewDataKeys.EditorData] as IReadOnlyDictionary<string, object?>;
     var editorTemplates = ViewData[ViewDataKeys.EditorTemplates] as IReadOnlyDictionary<string, string>;
+    var columns = (ViewData[ViewDataKeys.FormColumns] as FormGridColumnDefinitions? ?? default).Resolve();
+    var multipleColumns = columns is not { Default: 1, Small: 1, Medium: 1, Large: 1 };
 }
-@foreach (var item in Items)
-{
-    if (item is FormFieldOptions field)
-    {
-        @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
+@* The wrapper is the container the grid's breakpoints query; the content is the grid itself *@
+<div class="sa-form-grid" data-slot="form-grid">
+    <div class="sa-form-grid-content" data-slot="form-grid-content" data-columns="@(multipleColumns ? "multiple" : "single")"
+         style="@FormGridStyle.Columns(columns)">
+        @foreach (var item in Items)
         {
-            [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
+            var spanStyle = FormGridStyle.Span(item.ColumnSpan.Resolve(columns));
+            if (item is FormFieldOptions field)
             {
-                Description = field.Description,
-                EditorData = editorData?.GetValueOrDefault(field.FieldName),
-                Editor = field.Editor,
-                FieldName = field.FieldName,
-                IsReadOnly = field.IsReadOnly,
-                Title = field.Title,
-            },
-        })
-    }
-    else if (item is FormContainerOptions container)
-    {
-        var partial = container switch
-        {
-            FormSectionOptions => "_FormSection",
-            FormGroupOptions => "_FormGroup",
-            FormRowOptions => "_FormRow",
-            _ => throw new InvalidOperationException("Unknown form container."),
-        };
-        var containerViewData = new ViewDataDictionary(ViewData)
-        {
-            [ViewDataKeys.FormContainer] = container,
-            [ViewDataKeys.FormItems] = container.Items,
-        };
+                <div class="sa-form-grid-cell" data-slot="form-grid-cell" style="@spanStyle">
+                    @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
+                    {
+                        [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
+                        {
+                            Description = field.Description,
+                            EditorData = editorData?.GetValueOrDefault(field.FieldName),
+                            Editor = field.Editor,
+                            FieldName = field.FieldName,
+                            IsReadOnly = field.IsReadOnly,
+                            Title = field.Title,
+                        },
+                    })
+                </div>
+            }
+            else if (item is FormContainerOptions container)
+            {
+                var partial = container switch
+                {
+                    FormSectionOptions => "_FormSection",
+                    FormGroupOptions => "_FormGroup",
+                    _ => throw new InvalidOperationException("Unknown form container."),
+                };
+                var containerViewData = new ViewDataDictionary(ViewData)
+                {
+                    [ViewDataKeys.FormContainer] = container,
+                    [ViewDataKeys.FormItems] = container.Items,
+                    [ViewDataKeys.FormColumns] = container.Columns,
+                    [ViewDataKeys.FormSpanStyle] = spanStyle,
+                };
 
-        <partial name="@partial" model="@Model" view-data="@containerViewData" />
-    }
-}
+                <partial name="@partial" model="@Model" view-data="@containerViewData" />
+            }
+        }
+    </div>
+</div>

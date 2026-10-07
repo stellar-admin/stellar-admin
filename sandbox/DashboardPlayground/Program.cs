@@ -3,6 +3,7 @@ using DashboardPlayground.Resources.Categories;
 using DashboardPlayground.Resources.Customers;
 using DashboardPlayground.Resources.Departments;
 using DashboardPlayground.Resources.FieldEditors;
+using DashboardPlayground.Resources.FormLayouts;
 using DashboardPlayground.Resources.Products;
 using DashboardPlayground.Resources.Roles;
 using DashboardPlayground.Resources.Users;
@@ -63,6 +64,7 @@ builder
         dashboard.AddProductResource();
         dashboard.AddCategoryResource();
         dashboard.AddFieldEditorGallery();
+        dashboard.AddFormLayoutGallery();
 
         dashboard.AddSidebarLink(
             "Sales report",

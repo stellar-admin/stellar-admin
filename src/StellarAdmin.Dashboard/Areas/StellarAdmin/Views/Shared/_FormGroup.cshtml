@@ -1,5 +1,5 @@
 @inherits FormFieldsBaseView<object>
 
-<sa-field-group>
+<sa-field-group style="@(ViewData[ViewDataKeys.FormSpanStyle] as string)">
     <partial name="_FormItems" model="@Model" />
 </sa-field-group>

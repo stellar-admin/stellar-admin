@@ -41,6 +41,12 @@ public static class ViewDataKeys
     /// </summary>
     public const string EditorTemplates = "StellarAdminEditorTemplates";
 
+    // The column definitions of the form scope whose items are rendered
+    internal const string FormColumns = "StellarAdminFormColumns";
+
+    // The inline span variables of the container being rendered, resolved against its parent grid
+    internal const string FormSpanStyle = "StellarAdminFormSpanStyle";
+
     // Set while a create form renders in the shared sheet, so its lookups open the nested sheet
     internal const string InCreateSheet = "StellarAdminInCreateSheet";
 }

@@ -93,7 +93,7 @@ public class ResourceCreateTests
         // Assert
         await Assert.That(document.QuerySelectorAll("input[name^='Entity.']").Length).IsEqualTo(0);
         await Assert.That(document.QuerySelector("[data-slot='form-section']")).IsNull();
-        await Assert.That(document.QuerySelector("[data-slot='form-row']")).IsNull();
+        await Assert.That(document.QuerySelector("[data-slot='form-grid-cell']")).IsNull();
     }
 
     [Test]
@@ -264,7 +264,7 @@ public class ResourceCreateTests
             .That(
                 document
                     .RequiredElement("[data-slot='form-section']")
-                    .QuerySelectorAll("[data-slot='form-row']")
+                    .QuerySelectorAll("[data-slot='form-grid-content'][data-columns='multiple']")
                     .Length
             )
             .IsEqualTo(1);
@@ -287,6 +287,106 @@ public class ResourceCreateTests
                     .TextContent.Trim()
             )
             .IsNotNullOrEmpty();
+    }
+
+    [Test]
+    public async Task GridLayout_WritesResolvedColumnsAndSpans()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource
+                    .AllowCreate()
+                    .Fields(fields =>
+                    {
+                        fields.Clear();
+                        fields.Columns(columns => columns.Small(2).Large(3));
+                        fields.Add(product => product.Name).ColumnSpanFull();
+                        fields.Add(product => product.Price).ColumnSpan(2);
+                        fields.AddGroup(group =>
+                        {
+                            group.ColumnSpan(span => span.Medium(2));
+                            group.Add(product => product.Id);
+                        });
+                    })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var grid = document.RequiredElement("[data-slot='form-grid-content']");
+        await Assert
+            .That(grid.GetAttribute("style"))
+            .IsEqualTo("--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3");
+        await Assert.That(grid.GetAttribute("data-columns")).IsEqualTo("multiple");
+        var items = grid.Children;
+        await Assert.That(items.Length).IsEqualTo(3);
+        await Assert
+            .That(items[0].GetAttribute("style"))
+            .IsEqualTo("--sa-span-sm:2;--sa-span-md:2;--sa-span-lg:3");
+        await Assert.That(items[0].QuerySelector("input[name='Entity.Name']")).IsNotNull();
+        await Assert
+            .That(items[1].GetAttribute("style"))
+            .IsEqualTo("--sa-span-sm:2;--sa-span-md:2;--sa-span-lg:2");
+        await Assert.That(items[2].GetAttribute("data-slot")).IsEqualTo("field-group");
+        await Assert
+            .That(items[2].GetAttribute("style"))
+            .IsEqualTo("--sa-span-md:2;--sa-span-lg:2");
+        var groupGrid = items[2].RequiredElement("[data-slot='form-grid-content']");
+        await Assert.That(groupGrid.HasAttribute("style")).IsFalse();
+        await Assert.That(groupGrid.GetAttribute("data-columns")).IsEqualTo("single");
+        await Assert
+            .That(groupGrid.RequiredElement("[data-slot='form-grid-cell']").HasAttribute("style"))
+            .IsFalse();
+    }
+
+    [Test]
+    public async Task SectionLayout_OverridesFormSectionLayout()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource
+                    .AllowCreate()
+                    .Fields(fields =>
+                    {
+                        fields.Clear();
+                        fields.AddSection(
+                            "Details",
+                            section =>
+                            {
+                                section.Layout = FormSectionLayout.Card;
+                                section.Add(product => product.Name);
+                            }
+                        );
+                        fields.AddSection(
+                            "Pricing",
+                            section => section.Add(product => product.Price)
+                        );
+                    }),
+            dashboard =>
+                dashboard
+                    .Services.AddStellarAdmin()
+                    .ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Split)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='form-section']")
+                    .Select(section => section.GetAttribute("data-layout"))
+                    .ToArray()
+            )
+            .IsEquivalentTo(["card", "split"], CollectionOrdering.Matching);
     }
 
     [Test]
@@ -355,12 +455,15 @@ public class ResourceCreateTests
             )
             .IsEqualTo("Catalog <information>");
         await Assert.That(section.QuerySelector("details")).IsNull();
-        var row = section.RequiredElement("[data-slot='form-row-content']");
+        var grid = section.RequiredElement(
+            "[data-slot='form-grid-content'][data-columns='multiple']"
+        );
+        await Assert.That(grid.GetAttribute("style")).IsEqualTo("--sa-cols-md:2;--sa-cols-lg:2");
         await Assert
-            .That(row.QuerySelectorAll(":scope > [data-slot='field-group']").Length)
+            .That(grid.QuerySelectorAll(":scope > [data-slot='field-group']").Length)
             .IsEqualTo(2);
         await Assert
-            .That(row.RequiredElement("label[for='Entity_Name']").TextContent.Trim())
+            .That(grid.RequiredElement("label[for='Entity_Name']").TextContent.Trim())
             .IsEqualTo("Item name");
         await Assert
             .That(
@@ -419,14 +522,15 @@ public class ResourceCreateTests
                 fields.Clear();
                 var section = fields.AddSection("Product <details>");
                 section.Description = "Catalog <information>";
-                var row = section.AddRow();
-                row.AddGroup(group =>
+                var columns = section.AddGroup();
+                columns.Columns(2);
+                columns.AddGroup(group =>
                 {
                     group.Add(product => product.Id);
                     group.Clear();
                     group.Add(product => product.Name).Title = "Item name";
                 });
-                row.AddGroup().Add(product => product.Price);
+                columns.AddGroup().Add(product => product.Price);
             });
 
     private static Task<WebApplication> CreateInventoryHost(

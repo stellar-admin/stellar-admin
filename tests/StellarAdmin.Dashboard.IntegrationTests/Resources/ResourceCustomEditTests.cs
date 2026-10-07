@@ -253,7 +253,8 @@ public class ResourceCustomEditTests
             edit.Fields(fields =>
                 fields.AddSection(
                     "Details",
-                    section => section.AddRow(row => row.Add(model => model.ProductName))
+                    section =>
+                        section.AddGroup(group => group.Columns(2).Add(model => model.ProductName))
                 )
             )
         );

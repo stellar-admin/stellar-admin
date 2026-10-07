@@ -51,8 +51,8 @@ public class ResourceBuilderTests
                 fields.AddSection(
                     "Details",
                     section =>
-                        section.AddRow(row =>
-                            row.AddGroup(group => group.Add(product => product.Name))
+                        section.AddGroup(outer =>
+                            outer.AddGroup(group => group.Add(product => product.Name))
                         )
                 )
             )

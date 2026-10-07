@@ -157,7 +157,7 @@ public class ResourceEditTests
         await Assert
             .That(
                 document
-                    .RequiredElement("[data-slot='form-row']")
+                    .RequiredElement("[data-slot='form-grid-content'][data-columns='multiple']")
                     .QuerySelectorAll("input[name^='Entity.']")
                     .Length
             )
@@ -356,10 +356,11 @@ public class ResourceEditTests
             fields.AddSection(
                 "Product details",
                 section =>
-                    section.AddRow(row =>
+                    section.AddGroup(group =>
                     {
-                        row.Add(product => product.Name);
-                        row.Add(product => product.Price);
+                        group.Columns(2);
+                        group.Add(product => product.Name);
+                        group.Add(product => product.Price);
                     })
             )
         );

@@ -26,12 +26,12 @@ public class ResourceFormPageViewModel
     public object Entity { get; internal init; } = null!;
 
     /// <summary>
-    ///     All form fields as a flat list, including fields inside sections, groups, and rows, in display order.
+    ///     All form fields as a flat list, including fields inside sections and groups, in display order.
     /// </summary>
     public IReadOnlyList<FormFieldOptions> Fields { get; internal init; } = [];
 
     /// <summary>
-    ///     The form's top-level fields and containers, preserving nested sections, groups, and rows for rendering.
+    ///     The form's top-level fields and containers, preserving nested sections and groups for rendering.
     /// </summary>
     public IReadOnlyList<FormItemOptions> Items { get; internal init; } = [];
 
@@ -63,4 +63,6 @@ public class ResourceFormPageViewModel
 
     /// <summary>The page title.</summary>
     public string Title { get; internal init; } = "";
+
+    internal FormGridColumnDefinitions Columns { get; init; }
 }

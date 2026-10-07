@@ -6,11 +6,12 @@
     var sheetLabels = LabelOptions.Value.Sheet;
 
     // The fields bind with the sheet's prefix, and their lookups open the nested sheet. Sections stack, since the
-    // sheet is too narrow to split them.
+    // sheet is too narrow to split them; the section partial also overrides a section's own layout.
     var fieldsViewData = new ViewDataDictionary(ViewData)
     {
         [ViewDataKeys.FormFields] = form.Fields,
         [ViewDataKeys.FormItems] = form.Items,
+        [ViewDataKeys.FormColumns] = form.Columns,
         [ViewDataKeys.FormSectionLayout] = FormSectionLayout.Stacked,
         [ViewDataKeys.EditorData] = form.EditorData,
         [ViewDataKeys.EditorTemplates] = form.EditorTemplates,

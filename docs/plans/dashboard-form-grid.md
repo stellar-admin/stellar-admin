@@ -1,6 +1,6 @@
 # Dashboard form grid
 
-Status: in progress, 2026-10-07. Phase 1 done; phases 2 and 3 not started.
+Status: implemented, 2026-10-07. All three phases done; awaiting review.
 
 ## Goal
 
@@ -64,8 +64,10 @@ edit.Fields(fields =>
 - `FormRowOptions` and `_FormRow.cshtml` are removed. `FormContainerOptions` gains the resolved columns per tier; `FormItemOptions` gains the requested span per tier.
 - The server resolves inheritance and clamping and writes inline CSS variables on each grid and cell: `--sa-cols`, `--sa-cols-sm/md/lg`, `--sa-span`, `--sa-span-sm/md/lg`.
 - The CSS lives in the Dashboard's `Client/css/client.css` under `@container form-grid`. Span variables are registered with `@property { inherits: false }` so they do not leak into nested grids.
-- `_FormItems.cshtml`, `_FormSection.cshtml` and `_FormGroup.cshtml` render the grid wrapper and cell variables.
-- Keep `<sa-field-group>` inside each section and group. It provides the `@container/field-group` that horizontal fields use for their breakpoint, so the grid wrapper must not replace it. Phase 2 checks a horizontal field inside a multi-column grid.
+- `_FormItems.cshtml` renders the grid for every scope: a `form-grid` wrapper, which is the container the breakpoints query, around the `form-grid-content` grid. It carries `data-columns="single"` or `"multiple"`. Each field sits in a `form-grid-cell`; a section or group is a grid item itself and carries its span variables. Tiers at 1 are left out of the inline style, since the variables are registered with an initial value of 1.
+- The grid's gap is inherited from its parent: the form's or group's `<sa-field-group>`, or the section content, so spacing matches the old layout. Sections no longer get their own `<sa-field-group>`.
+- Each field cell is a `field-group` container, so a responsive field switches orientation at its cell's width rather than the whole form's. Horizontal fields are fixed and unaffected.
+- Adjacent sections keep the TagHelpers separator rule; in a multi-column grid, the Dashboard CSS removes it so sections side by side are separated only by the gap.
 
 ## Phases
 
@@ -82,3 +84,13 @@ Phase 1 (2026-10-07):
 - Added `GridColumnsBuilder`, `ColumnSpanBuilder`, `ResourceGroupBuilder<TModel>`, `Columns` on the fields scope, span methods on fields, sections and groups, and `section.Layout` (`FormSectionOptions.Layout`). Column counts and spans are stored internally on the options (`FormGridColumnDefinitions`, `FormColumnSpanDefinitions`) and resolved by `FormGridColumnDefinitions.Resolve()` and `FormColumnSpanDefinitions.Resolve(parent)`; they are not public on the options yet. The unit test project has `InternalsVisibleTo`.
 - TUnit tests: resolution (inheritance, plain count, full span, clamping) in `tests/StellarAdmin.Dashboard.Tests/Resources/Options/`, and out-of-range rejection through the builders in `ResourceFieldsBuilderTests`.
 - `dotnet build StellarAdmin.slnx` succeeded; `dotnet test --solution StellarAdmin.slnx --no-build` passed 782 of 782. Nothing renders the grid yet; that is phase 2.
+
+Phases 2 and 3 (2026-10-07, done together at Jerrie's request):
+
+- Rendering as described above, with `FormGridStyle` writing the variables and `ViewDataKeys.FormColumns` and `FormSpanStyle` (internal) passing columns and spans to the partials. The CSS is in `Client/css/client.css`. `_FormSection.cshtml` applies the layout precedence; the create sheet passes `InCreateSheet` rather than relying on the forced form layout.
+- Removed `AddRow`, `FormRowOptions` and `_FormRow.cshtml`. Migrated the builder unit test, the create, edit, custom create and custom edit integration tests, and the playground `Users` and `Customers` forms to `AddGroup(group => group.Columns(2))`.
+- New integration tests: `ResourceCreateTests.GridLayout_WritesResolvedColumnsAndSpans` (per-tier counts, full span clamped to the grid, a span of 2, a group's per-tier span, no style on default items), `SectionLayout_OverridesFormSectionLayout`, and `LookupCreateTests.CreateSheet_SectionWithLayout_StacksSection`.
+- `dotnet build StellarAdmin.slnx` succeeded; `dotnet test --solution StellarAdmin.slnx --no-build` passed 785 of 785.
+- Browser check with headless Chromium against the playground on port 5206, at 420, 800 and 1400px wide: The Customers create groups have 1 column below 40rem of grid width and 2 at 1400px, as the rows did. The Toggle editor sections keep horizontal fields and 20px gaps, and the create sheet opened from Products create renders its grid in one column. Not checked: the Users forms, which need a sign-in.
+- Phase 3: the `stellar-admin-dashboard` setup reference has a Form layout section. The development guide does not describe form layout, so it is unchanged.
+- Playground "Form layouts" gallery (`sandbox/DashboardPlayground/Resources/FormLayouts/`), added at Jerrie's request in place of a grid sample on the Products edit form: Columns, Spans, Sections and groups, Section layouts (with a Destinations lookup whose Split, two-column create form opens in the sheet) and Mixed editors (with the field editor gallery's Reject every field option). The pages reuse the field editor gallery's data source, so they serve one record and never save. Checked in headless Chromium at 420, 800 and 1400px: every column count, span, cap and nested group resolves as configured, and rejected saves show errors in every column. The sheet stacks the Split section in one column, since it is narrower than Small. Finding: a plain `Columns(n)` on a group narrower than 40rem, such as one spanning 2 of 4 columns, never reaches Medium and stays at one column; the gallery uses `Small(2)` there and says so.

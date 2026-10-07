@@ -258,12 +258,13 @@ public class ResourceCustomCreateTests
                 fields.AddSection(
                     "Registration",
                     section =>
-                        section.AddRow(row =>
+                        section.AddGroup(group =>
                         {
-                            row.Add(model => model.ProductName);
-                            row.Add(model => model.Price);
-                            row.Add(model => model.Password);
-                            row.Add(model => model.PasswordConfirmation);
+                            group.Columns(2);
+                            group.Add(model => model.ProductName);
+                            group.Add(model => model.Price);
+                            group.Add(model => model.Password);
+                            group.Add(model => model.PasswordConfirmation);
                         })
                 )
             );

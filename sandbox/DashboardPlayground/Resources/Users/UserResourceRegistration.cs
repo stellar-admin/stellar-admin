@@ -58,10 +58,11 @@ internal static class UserResourceRegistration
                             "Profile",
                             section =>
                             {
-                                section.AddRow(row =>
+                                section.AddGroup(group =>
                                 {
-                                    row.Add(model => model.FirstName);
-                                    row.Add(model => model.LastName);
+                                    group.Columns(2);
+                                    group.Add(model => model.FirstName);
+                                    group.Add(model => model.LastName);
                                 });
                                 section.Add(
                                     model => model.DepartmentId,
@@ -84,13 +85,16 @@ internal static class UserResourceRegistration
                                         );
                                     }
                                 );
-                                section.AddRow(row =>
+                                section.AddGroup(group =>
                                 {
-                                    row.Add(model => model.PreferredLanguage)
+                                    group.Columns(2);
+                                    group
+                                        .Add(model => model.PreferredLanguage)
                                         .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.Languages())
                                         );
-                                    row.Add(model => model.TimeZoneId)
+                                    group
+                                        .Add(model => model.TimeZoneId)
                                         .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.TimeZones())
                                         );
@@ -127,10 +131,11 @@ internal static class UserResourceRegistration
                         fields.AddSection(
                             "Password",
                             section =>
-                                section.AddRow(row =>
+                                section.AddGroup(group =>
                                 {
-                                    row.Add(model => model.Password);
-                                    row.Add(model => model.PasswordConfirmation);
+                                    group.Columns(2);
+                                    group.Add(model => model.Password);
+                                    group.Add(model => model.PasswordConfirmation);
                                 })
                         );
                     })
@@ -150,10 +155,11 @@ internal static class UserResourceRegistration
                             "Profile",
                             section =>
                             {
-                                section.AddRow(row =>
+                                section.AddGroup(group =>
                                 {
-                                    row.Add(model => model.FirstName);
-                                    row.Add(model => model.LastName);
+                                    group.Columns(2);
+                                    group.Add(model => model.FirstName);
+                                    group.Add(model => model.LastName);
                                 });
                                 section.Add(
                                     model => model.DepartmentId,
@@ -176,13 +182,16 @@ internal static class UserResourceRegistration
                                         );
                                     }
                                 );
-                                section.AddRow(row =>
+                                section.AddGroup(group =>
                                 {
-                                    row.Add(model => model.PreferredLanguage)
+                                    group.Columns(2);
+                                    group
+                                        .Add(model => model.PreferredLanguage)
                                         .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.Languages())
                                         );
-                                    row.Add(model => model.TimeZoneId)
+                                    group
+                                        .Add(model => model.TimeZoneId)
                                         .UseEditor<SelectEditor>(options =>
                                             options.UseItems(UserLookups.TimeZones())
                                         );

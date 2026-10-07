@@ -7,6 +7,7 @@ using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.TagHelpers;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
@@ -194,6 +195,41 @@ public class LookupCreateTests
         await Assert
             .That(form.RequiredElement("[data-create-sheet='error']").HasAttribute("hidden"))
             .IsTrue();
+    }
+
+    [Test]
+    public async Task CreateSheet_SectionWithLayout_StacksSection()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields => fields.Add(model => model.CategoryId),
+            configureCategories: resource =>
+                resource.AllowCreate(create =>
+                    create.Fields(fields =>
+                    {
+                        fields.Clear();
+                        fields.AddSection(
+                            "Details",
+                            section =>
+                            {
+                                section.Layout = FormSectionLayout.Split;
+                                section.Add(category => category.Name);
+                            }
+                        );
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(CreateSheetUrl);
+
+        // Assert
+        await Assert
+            .That(
+                document.RequiredElement("[data-slot='form-section']").GetAttribute("data-layout")
+            )
+            .IsEqualTo("stacked");
     }
 
     [Test]

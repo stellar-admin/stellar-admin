@@ -10,7 +10,7 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
 {
     /// <summary>
-    ///     All form fields as a flat list, including fields inside sections, groups, and rows, in display order.
+    ///     All form fields as a flat list, including fields inside sections and groups, in display order.
     /// </summary>
     public IReadOnlyList<FormFieldOptions> Fields =>
         ViewData[ViewDataKeys.FormFields] as IReadOnlyList<FormFieldOptions> ?? [];

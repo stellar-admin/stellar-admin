@@ -192,13 +192,49 @@ Tabs use HTMX navigation. Selecting a scope resets the page and retains search a
 
 ## Create forms
 
-Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection`, `AddGroup`, and `AddRow` for nested layouts. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
+Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
 
 The form model should be a mutable reference type. By default, the controller uses its public parameterless constructor. Use `create.UseFactory(() => new Product(...))` for explicit initialization or models without a parameterless constructor. Field selectors must name direct properties with public getters and setters. The controller constructs a resource for both GET and POST and binds only configured properties, using input names such as `Entity.Name`. ASP.NET Core model validation applies, including data annotations. Invalid submissions redisplay entered values and errors without calling the data source. POST requires an antiforgery token. A successful `CreateAsync` redirects to the index. The data source assigns generated values such as IDs. Write operations return `ResourceOperationResult.Success()`, `NotFound()`, or `ValidationFailed(...)`; a create handler whose model isn't the resource can return `Success(key)` so a lookup can select what it created. Field error names are unprefixed model property names. Use null for summary errors. Errors for fields outside the form also appear in the summary. Rejected writes must not persist changes. Unexpected failures should throw.
 
 The Product playground registers `ProductDataSource` as a singleton with synchronized in-memory storage so created products survive subsequent requests. Restarting the application resets its data. Production sources can retain the default scoped lifetime and persist through their own dependencies.
 
 Override the create view with `Areas/StellarAdmin/Views/Product/Create.cshtml`. The controller uses the same normal MVC lookup as Index, falling back to `ResourceCreate`. The default uses `ResourceFormPageViewModel` and `<sa-form-page model="Model" />`, which renders the existing form editors and antiforgery token.
+
+## Form layout
+
+Create and edit forms lay out their fields on a grid. The form, each section and each group set their own column count, and each field, section and group sets how many of its parent's columns it spans. A section shows a title and uses the section layout. A group has no title or border; use it to give part of a form its own columns or to stack several fields in one cell.
+
+```csharp
+edit.Fields(fields =>
+{
+    fields.Columns(columns => columns.Large(3));
+
+    fields.AddSection("Product", section =>
+    {
+        section.Layout = FormSectionLayout.Card;
+        section.ColumnSpan(span => span.Large(2));
+        section.Columns(columns => columns.Small(2));
+        section.Add(product => product.Name).ColumnSpanFull();
+        section.Add(product => product.Sku);
+        section.Add(product => product.CategoryId);
+    });
+
+    fields.AddSection("Pricing", section =>
+        section.AddGroup(group =>
+        {
+            group.Columns(2);
+            group.Add(product => product.Price);
+            group.Add(product => product.Cost);
+        })
+    );
+});
+```
+
+- Breakpoints are `Default`, `Small` (30rem), `Medium` (40rem) and `Large` (56rem). They measure the width of the grid itself, not the viewport, so a narrow section or the create sheet keeps fewer columns.
+- `Columns(n)` keeps one column below `Medium` and uses `n` from `Medium`. `Columns(columns => columns.Small(2).Large(3))` sets each breakpoint; an unset breakpoint uses the next smaller one. Columns default to 1, and counts run from 1 to 12.
+- `ColumnSpan(n)` spans `n` columns at every breakpoint, and `ColumnSpan(span => span.Medium(2))` sets each breakpoint. `ColumnSpanFull()` spans the whole grid, and `DefaultFull()`, `SmallFull()`, `MediumFull()` and `LargeFull()` do so at one breakpoint. A span larger than the grid is reduced to its column count. Spans default to 1.
+- Items fill the grid in order. The grid doesn't reorder items to fill gaps, so tab order follows the configuration.
+- `section.Layout` overrides the form's `SectionLayout` for one section. The create sheet always stacks sections.
 
 ## Custom create models
 

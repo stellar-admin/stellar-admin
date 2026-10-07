@@ -81,29 +81,6 @@ public class ResourceFieldsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Adds a row whose fields and groups form equally sized columns.
-    /// </summary>
-    public ResourceFieldsBuilder<TResource> AddRow() =>
-        AddContainer(
-            configure => new ResourceFieldsBuilder<TResource>(configure),
-            _ => new FormRowOptions()
-        );
-
-    /// <summary>
-    ///     Adds and configures a row.
-    /// </summary>
-    public ResourceFieldsBuilder<TResource> AddRow(
-        Action<ResourceFieldsBuilder<TResource>> configure
-    )
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        configure(AddRow());
-
-        return this;
-    }
-
-    /// <summary>
     ///     Adds a titled section.
     /// </summary>
     public ResourceSectionBuilder<TResource> AddSection(string title)

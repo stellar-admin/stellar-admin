@@ -2,9 +2,14 @@
 
 @{
     var sectionOptions = (FormSectionOptions)ViewData[ViewDataKeys.FormContainer]!;
-    var layout = ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
+
+    // The create sheet is too narrow to split sections, so it stacks them whatever their layout
+    var layout = ViewData[ViewDataKeys.InCreateSheet] is true
+        ? FormSectionLayout.Stacked
+        : sectionOptions.Layout ?? ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
 }
 
-<sa-form-section title="@sectionOptions.Title" description="@sectionOptions.Description" layout="@layout">
+<sa-form-section title="@sectionOptions.Title" description="@sectionOptions.Description" layout="@layout"
+                 style="@(ViewData[ViewDataKeys.FormSpanStyle] as string)">
     <partial name="_FormItems" model="@Model" />
 </sa-form-section>

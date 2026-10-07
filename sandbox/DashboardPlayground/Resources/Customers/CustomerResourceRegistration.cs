@@ -29,19 +29,21 @@ internal static class CustomerResourceRegistration
                     fields.AddSection(
                         "Customer details",
                         section =>
-                            section.AddRow(row =>
+                            section.AddGroup(group =>
                             {
-                                row.Add(model => model.Name);
-                                row.Add(model => model.Email);
+                                group.Columns(2);
+                                group.Add(model => model.Name);
+                                group.Add(model => model.Email);
                             })
                     );
                     fields.AddSection(
                         "Password",
                         section =>
-                            section.AddRow(row =>
+                            section.AddGroup(group =>
                             {
-                                row.Add(model => model.Password);
-                                row.Add(model => model.PasswordConfirmation);
+                                group.Columns(2);
+                                group.Add(model => model.Password);
+                                group.Add(model => model.PasswordConfirmation);
                             })
                     );
                 })

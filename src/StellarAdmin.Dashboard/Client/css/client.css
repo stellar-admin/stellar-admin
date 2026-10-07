@@ -17,6 +17,56 @@
 
 @source "../../Areas/StellarAdmin/Views";
 
+/* Form grid: the views write each scope's column counts and each item's span per tier as inline variables, leaving
+   out tiers at 1. The variables don't inherit, so a nested grid or item never picks up its parent's values. */
+@property --sa-cols {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-cols-sm {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-cols-md {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-cols-lg {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-span {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-span-sm {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-span-md {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-span-lg {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
 @layer components {
     .sa-resource-index-grid .sa-data-grid-footer {
         flex-wrap: wrap;
@@ -50,5 +100,66 @@
         justify-content: flex-end;
         gap: var(--sa-gap-sm);
         margin-inline-start: auto;
+    }
+
+    .sa-form-grid {
+        width: 100%;
+        min-width: 0;
+        gap: inherit;
+        container: form-grid / inline-size;
+    }
+
+    .sa-form-grid-content {
+        display: grid;
+        grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
+        align-items: start;
+        gap: inherit;
+    }
+
+    .sa-form-grid-content > * {
+        grid-column: span var(--sa-span);
+        min-width: 0;
+    }
+
+    /* Horizontal fields switch orientation at the field-group container width, so each field's cell is one */
+    .sa-form-grid-cell {
+        container: field-group / inline-size;
+    }
+
+    /* Sections side by side are separated by the grid gap, not a rule */
+    .sa-form-grid-content[data-columns="multiple"] > .sa-form-section + .sa-form-section {
+        margin-top: 0;
+        border-top-width: 0;
+        padding-top: 0;
+    }
+
+    @container form-grid (min-width: 30rem) {
+        .sa-form-grid-content {
+            grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
+        }
+
+        .sa-form-grid-content > * {
+            grid-column: span var(--sa-span-sm);
+        }
+    }
+
+    @container form-grid (min-width: 40rem) {
+        .sa-form-grid-content {
+            grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
+        }
+
+        .sa-form-grid-content > * {
+            grid-column: span var(--sa-span-md);
+        }
+    }
+
+    @container form-grid (min-width: 56rem) {
+        .sa-form-grid-content {
+            grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
+        }
+
+        .sa-form-grid-content > * {
+            grid-column: span var(--sa-span-lg);
+        }
     }
 }
