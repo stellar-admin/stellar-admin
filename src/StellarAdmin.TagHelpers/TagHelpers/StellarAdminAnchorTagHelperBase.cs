@@ -175,7 +175,7 @@ public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
 
         if (isPageLink)
         {
-            return ViewContext.RouteData.Values["area"]?.ToString() == Area
+            return MatchesArea()
                 && ViewContext.RouteData.Values["page"]?.ToString() == Page
                 && ViewContext.RouteData.Values["handler"]?.ToString() == PageHandler
                 && MatchesRouteValues();
@@ -183,13 +183,24 @@ public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
 
         if (isActionLink)
         {
-            return ViewContext.RouteData.Values["area"]?.ToString() == Area
+            return MatchesArea()
                 && ViewContext.RouteData.Values["controller"]?.ToString() == Controller
                 && ViewContext.RouteData.Values["action"]?.ToString() == Action
                 && MatchesRouteValues();
         }
 
         return false;
+    }
+
+    /// <summary>
+    ///     Compares the link's <c>asp-area</c> with the current request. An empty <c>asp-area</c>
+    ///     links outside any area, so it matches a request that has no area.
+    /// </summary>
+    private bool MatchesArea()
+    {
+        var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+
+        return Area == "" ? string.IsNullOrEmpty(currentArea) : currentArea == Area;
     }
 
     /// <summary>

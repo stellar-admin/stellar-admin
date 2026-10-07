@@ -31,9 +31,32 @@
     </sa-sidebar-header>
 
     <sa-sidebar-content>
-        @foreach (var sidebarItem in Model)
+        @for (var index = 0; index < Model.Count;)
         {
-            await RenderSidebarItem(sidebarItem);
+            if (Model[index] is SidebarGroupItem groupItem)
+            {
+                await RenderSidebarGroupItem(groupItem);
+                index++;
+                continue;
+            }
+
+            // Top-level links render as a group without a heading, so they sit in a sidebar menu.
+            var linkItems = new List<SidebarItem>();
+            while (index < Model.Count && Model[index] is not SidebarGroupItem)
+            {
+                linkItems.Add(Model[index++]);
+            }
+
+            <sa-sidebar-group>
+                <sa-sidebar-group-content>
+                    <sa-sidebar-menu>
+                        @foreach (var linkItem in linkItems)
+                        {
+                            await RenderSidebarItem(linkItem);
+                        }
+                    </sa-sidebar-menu>
+                </sa-sidebar-group-content>
+            </sa-sidebar-group>
         }
     </sa-sidebar-content>
 
@@ -104,6 +127,7 @@
             case SidebarGroupItem groupItem: await RenderSidebarGroupItem(groupItem); break;
             case SidebarLinkItem linkItem: await RenderSidebarLinkItem(linkItem); break;
             case SidebarActionLinkItem actionLinkItem: await RenderSidebarActionLinkItem(actionLinkItem); break;
+            case SidebarPageLinkItem pageLinkItem: await RenderSidebarPageLinkItem(pageLinkItem); break;
         }
     }
 
@@ -125,7 +149,7 @@
     async Task RenderSidebarLinkItem(SidebarLinkItem linkItem)
     {
         <sa-sidebar-menu-item>
-            <sa-sidebar-menu-link href="@linkItem.Href">
+            <sa-sidebar-menu-link href="@Url.Content(linkItem.Href)" target="@Target(linkItem)" rel="@Rel(linkItem)">
                 <span>@linkItem.Label</span>
             </sa-sidebar-menu-link>
         </sa-sidebar-menu-item>
@@ -135,9 +159,24 @@
     {
         <sa-sidebar-menu-item>
             <sa-sidebar-menu-link asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
-                                   asp-area="@actionLinkItem.Area">
+                                   asp-area="@actionLinkItem.Area" target="@Target(actionLinkItem)"
+                                   rel="@Rel(actionLinkItem)">
                 <span>@actionLinkItem.Label</span>
             </sa-sidebar-menu-link>
         </sa-sidebar-menu-item>
     }
+
+    async Task RenderSidebarPageLinkItem(SidebarPageLinkItem pageLinkItem)
+    {
+        <sa-sidebar-menu-item>
+            <sa-sidebar-menu-link asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
+                                   target="@Target(pageLinkItem)" rel="@Rel(pageLinkItem)">
+                <span>@pageLinkItem.Label</span>
+            </sa-sidebar-menu-link>
+        </sa-sidebar-menu-item>
+    }
+
+    string? Target(SidebarLinkItemBase linkItem) => linkItem.OpenInNewTab ? "_blank" : null;
+
+    string? Rel(SidebarLinkItemBase linkItem) => linkItem.OpenInNewTab ? "noopener noreferrer" : null;
 }

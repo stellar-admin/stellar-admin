@@ -1,4 +1,5 @@
 using AngleSharp.Dom;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,8 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Sidebar;
 
 public class SidebarLinkTests
 {
+    private const string CommandItems = "#--command-palette [data-slot='command-item']";
+
     private const string SidebarLinks =
         "[data-slot='sidebar-group'] [data-slot='sidebar-menu-button']";
 
@@ -137,6 +140,43 @@ public class SidebarLinkTests
     }
 
     [Test]
+    public async Task OpenInNewTab_RendersTargetAndRel()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            configureDashboard: dashboard =>
+            {
+                dashboard.AddSidebarLink(
+                    "Status",
+                    SidebarLinkTarget.Url("https://status.example.com"),
+                    link => link.OpenInNewTab = true
+                );
+                dashboard.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"));
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        foreach (var selector in new[] { SidebarLinks, CommandItems })
+        {
+            var links = CustomLinks(document, selector);
+            await Assert
+                .That(links.Select(link => link.GetAttribute("target")).ToArray())
+                .IsEquivalentTo(new string?[] { "_blank", null }, CollectionOrdering.Matching);
+            await Assert
+                .That(links.Select(link => link.GetAttribute("rel")).ToArray())
+                .IsEquivalentTo(
+                    new string?[] { "noopener noreferrer", null },
+                    CollectionOrdering.Matching
+                );
+        }
+    }
+
+    [Test]
     [Arguments(new string[0], new[] { "Products" })]
     [Arguments(new[] { "Finance" }, new[] { "Products", "Invoices" })]
     public async Task RequiredAuthorization_ShowsLinkOnlyToAuthorizedUsers(
@@ -172,6 +212,73 @@ public class SidebarLinkTests
     }
 
     [Test]
+    public async Task Targets_RenderHrefsInSidebarAndCommandPalette()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            configureDashboard: dashboard =>
+            {
+                dashboard.AddSidebarLink("Reports", SidebarLinkTarget.Page("/Reports"));
+                dashboard.AddSidebarLink("Invoices", SidebarLinkTarget.Action("Index", "Invoices"));
+                dashboard.AddSidebarLink(
+                    "Status",
+                    SidebarLinkTarget.Url("https://status.example.com")
+                );
+                dashboard.AddSidebarLink("Help", SidebarLinkTarget.Url("~/help"));
+            },
+            configureApp: app =>
+            {
+                app.MapRazorPages();
+                app.MapDefaultControllerRoute();
+            }
+        );
+        using var client = sut.GetTestClient();
+        string?[] expectedHrefs = ["/Reports", "/Invoices", "https://status.example.com", "/help"];
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        foreach (var selector in new[] { SidebarLinks, CommandItems })
+        {
+            await Assert
+                .That(
+                    CustomLinks(document, selector)
+                        .Select(link => link.GetAttribute("href"))
+                        .ToArray()
+                )
+                .IsEquivalentTo(expectedHrefs, CollectionOrdering.Matching);
+        }
+    }
+
+    [Test]
+    public async Task UngroupedLinks_RenderInSidebarMenuWithoutHeading()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([]),
+            configureDashboard: dashboard =>
+                dashboard.AddSidebarLink("Reports", SidebarLinkTarget.Url("/reports"))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+        var groups = document.QuerySelectorAll("[data-slot='sidebar-group']").ToArray();
+
+        // Assert
+        await Assert.That(groups.Length).IsEqualTo(2);
+        await Assert.That(groups[1].QuerySelector("[data-slot='sidebar-group-label']")).IsNull();
+        await Assert
+            .That(
+                groups[1]
+                    .TextContents("[data-slot='sidebar-menu'] [data-slot='sidebar-menu-button']")
+            )
+            .IsEquivalentTo(["Reports"], CollectionOrdering.Matching);
+    }
+
+    [Test]
     public async Task UngroupedLinks_SortByOrderInCommandPalette()
     {
         // Arrange
@@ -200,6 +307,14 @@ public class SidebarLinkTests
         await Assert
             .That(ungroupedItems)
             .IsEquivalentTo(["Overview", "Reports"], CollectionOrdering.Matching);
+    }
+
+    private static IElement[] CustomLinks(IParentNode document, string selector)
+    {
+        return document
+            .QuerySelectorAll(selector)
+            .Where(link => link.TextContent.Trim() != "Products")
+            .ToArray();
     }
 
     private sealed class FixedSidebarItemsProvider(params SidebarItem[] items)

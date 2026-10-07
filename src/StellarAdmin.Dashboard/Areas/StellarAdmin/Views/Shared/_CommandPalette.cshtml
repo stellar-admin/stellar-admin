@@ -4,11 +4,11 @@
     var ungroupedItems = Model.OfType<SidebarLinkItemBase>().ToList();
 }
 
-<sa-command-dialog id="--command-palette" title="Search resources" description="Search for a resource to open.">
+<sa-command-dialog id="--command-palette" title="Search" description="Search for a page to open.">
     <sa-command>
         <sa-command-input placeholder="Search..."/>
         <sa-command-list>
-            <sa-command-empty>No resources found.</sa-command-empty>
+            <sa-command-empty>No results found.</sa-command-empty>
             @if (ungroupedItems.Count > 0)
             {
                 <sa-command-group>
@@ -63,15 +63,28 @@
         {
             case SidebarActionLinkItem actionLinkItem:
                 <sa-command-link-item asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
-                                      asp-area="@actionLinkItem.Area" keywords="@groupLabel">
+                                      asp-area="@actionLinkItem.Area" keywords="@groupLabel"
+                                      target="@Target(actionLinkItem)" rel="@Rel(actionLinkItem)">
                     @actionLinkItem.Label
                 </sa-command-link-item>
                 break;
             case SidebarLinkItem linkItem:
-                <sa-command-link-item href="@linkItem.Href" keywords="@groupLabel">
+                <sa-command-link-item href="@Url.Content(linkItem.Href)" keywords="@groupLabel"
+                                      target="@Target(linkItem)" rel="@Rel(linkItem)">
                     @linkItem.Label
+                </sa-command-link-item>
+                break;
+            case SidebarPageLinkItem pageLinkItem:
+                <sa-command-link-item asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
+                                      keywords="@groupLabel" target="@Target(pageLinkItem)"
+                                      rel="@Rel(pageLinkItem)">
+                    @pageLinkItem.Label
                 </sa-command-link-item>
                 break;
         }
     }
+
+    string? Target(SidebarLinkItemBase linkItem) => linkItem.OpenInNewTab ? "_blank" : null;
+
+    string? Rel(SidebarLinkItemBase linkItem) => linkItem.OpenInNewTab ? "noopener noreferrer" : null;
 }

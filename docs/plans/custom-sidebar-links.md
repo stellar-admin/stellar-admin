@@ -1,6 +1,6 @@
 # Custom sidebar links
 
-Status: active, 2026-10-07. Phase 1 implemented and awaiting review.
+Status: active, 2026-10-07. All three phases implemented; phase 3 awaiting review.
 
 ## Goal
 
@@ -84,18 +84,26 @@ Phase 1 verification, 2026-10-07: the Dashboard project and the three Dashboard 
 4. HTTP integration tests in `tests/StellarAdmin.Dashboard.IntegrationTests` (next to `Resources/ResourceSidebarTests.cs`, in a new `Sidebar` folder): rendered hrefs for page, action, absolute, and `~/` links in both the sidebar and the palette; group merging with a resource; new-tab attributes; authorization hiding; and `data-active` when a link is rendered on the page it points to.
 5. A headless Chromium check that searching the palette finds a custom link and that Enter navigates to it (and opens a new tab for an external link).
 
+Phase 2 implementation, 2026-10-07: as above, except that `data-active` is tested in `tests/StellarAdmin.TagHelpers.Tests/TagHelpers/Sidebar/SidebarMenuLinkTagHelperTests.cs` rather than over HTTP. The sidebar only renders on Dashboard pages, so a host link is never on the page it points to while the sidebar is visible; the fix matters once host pages can use the Dashboard shell (open decision 1). The Dashboard integration test host gained a `configureApp` hook, an `InvoicesController`, and a `Pages/Reports.cshtml` page so tests can map host routes. In the palette, ungrouped links still render first, in one headingless group, wherever they sit in the sidebar.
+
+Phase 2 verification, 2026-10-07: through the direct TUnit executables, the TagHelpers unit suite passed 230 tests (the new active-area case failed with the fix reverted), TagHelpers integration 19, Dashboard unit 53, Dashboard HTTP integration 327 (3 new: rendered hrefs for page, action, absolute and `~/` targets in the sidebar and palette; new-tab attributes; ungrouped links in a headingless sidebar menu), and EF Core HTTP integration 67. Headless Chromium over CDP against DashboardPlayground on port 5207, with two links added to `Program.cs` for the check and reverted afterwards: Ctrl+K opened the palette, "privacy" found only the action link and Enter navigated to `/Home/Privacy`, "status" found the external link and Enter opened it in a new tab while the Dashboard tab stayed put, and the sidebar showed the ungrouped links in an unlabeled group. CSharpier formatted the touched C# files. No full solution run was performed.
+
 ### Phase 3: sample and guidance
 
 1. DashboardPlayground: add a Razor Page (`Pages/Reports.cshtml`), point a link at the existing `HomeController.Privacy` action, and add an external link opened in a new tab, with one of them placed in the Commerce group.
 2. Update the consumer reference in `skills/stellar-admin-dashboard/references/setup.md`, next to the existing `ISidebarItemsProvider` note, and the Dashboard section of `docs/development.md`. Check whether the website documents the Dashboard sidebar and, if it does, raise that as a separate website task.
 3. Record the checks actually run here.
 
+Phase 3 implementation, 2026-10-07: DashboardPlayground adds `Pages/Reports.cshtml` (with a `Pages/_ViewStart.cshtml` using the host layout) as "Sales report" in the Commerce group at `Order = 30`, "Privacy policy" to `HomeController.Privacy`, and "ASP.NET Core docs" to learn.microsoft.com opened in a new tab. `skills/stellar-admin-dashboard/references/setup.md` gained a "Custom sidebar links" section, and the Dashboard section of `docs/development.md` describes the provider, the merger, and the sample. The website does not document the Dashboard sidebar, so no website task is needed.
+
+Phase 3 verification, 2026-10-07: DashboardPlayground built and ran on port 5207; the sidebar showed "Sales report" (`/Reports`) after the Commerce resources, and "Privacy policy" (`/Home/Privacy`) and "ASP.NET Core docs" (`target="_blank"`) at the top level after the groups; `/Reports` returned 200 with the host layout. `util/SkillsGenerator -- --check` reported no drift. The website checkout was searched read-only and was clean. No tests were rerun, since phase 3 changed only the sample and documentation.
+
 ## Open decisions
 
 1. Do host pages render inside the Dashboard shell? A link to a host Razor Page or action leaves the shell and shows the host's own layout. If custom pages should look like part of the Dashboard (sidebar, header, theme), that needs a supported way for host views to use the Dashboard layout. This plan does not cover it; I recommend a separate plan.
-2. Target as a parameter (`SidebarLinkTarget.Page(...)`, recommended) or three named methods (`AddSidebarPageLink`, `AddSidebarActionLink`, `AddSidebarUrlLink`). The parameter keeps one builder and one method; named methods are more discoverable in IntelliSense.
+2. ~~Target as a parameter or named methods~~ Decided 2026-10-07: keep the parameter. Named methods could be added later as wrappers. Original question: target as a parameter (`SidebarLinkTarget.Page(...)`, recommended) or three named methods (`AddSidebarPageLink`, `AddSidebarActionLink`, `AddSidebarUrlLink`). The parameter keeps one builder and one method; named methods are more discoverable in IntelliSense.
 3. Should `Keywords` be settable on a link, so a "Reports" link is also found by searching "analytics"? It is cheap, since the palette already supports `keywords`; it is left out until requested.
-4. The palette copy change in phase 2 step 2 alters existing visible text.
+4. ~~The palette copy change in phase 2 step 2 alters existing visible text.~~ Approved 2026-10-07.
 
 ## Follow-ups (not scheduled)
 

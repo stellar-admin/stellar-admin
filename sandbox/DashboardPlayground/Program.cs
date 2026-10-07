@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StellarAdmin;
 using StellarAdmin.Dashboard;
+using StellarAdmin.Dashboard.Sidebar;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,22 @@ builder
         dashboard.AddProductResource();
         dashboard.AddCategoryResource();
         dashboard.AddFieldEditorGallery();
+
+        dashboard.AddSidebarLink(
+            "Sales report",
+            SidebarLinkTarget.Page("/Reports"),
+            link =>
+            {
+                link.Group = "Commerce";
+                link.Order = 30;
+            }
+        );
+        dashboard.AddSidebarLink("Privacy policy", SidebarLinkTarget.Action("Privacy", "Home"));
+        dashboard.AddSidebarLink(
+            "ASP.NET Core docs",
+            SidebarLinkTarget.Url("https://learn.microsoft.com/aspnet/core/"),
+            link => link.OpenInNewTab = true
+        );
     });
 
 var app = builder.Build();

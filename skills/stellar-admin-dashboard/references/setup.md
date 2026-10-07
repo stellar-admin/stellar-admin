@@ -100,6 +100,38 @@ Requirements are applied as endpoint metadata when `app.MapStellarAdmin()` maps 
 
 The sidebar hides a resource's link when the current user does not satisfy that resource's requirements. Hiding a link with `resource.SidebarItem(item => item.Visible = false)` never protects the route. Custom `ISidebarItemsProvider` implementations return their items from `Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)`, which can inspect the current user. Scopes and data sources remain responsible for record-level access rules.
 
+## Custom sidebar links
+
+Add links to the application's own Razor Pages, MVC actions or any URL with `AddSidebarLink`:
+
+```csharp
+using StellarAdmin.Dashboard.Sidebar;
+
+builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+{
+    dashboard.AddSidebarLink("Overview", SidebarLinkTarget.Page("/Overview"));
+
+    dashboard.AddSidebarLink("Invoices", SidebarLinkTarget.Action("Index", "Invoices"), link =>
+    {
+        link.Group = "Commerce";
+        link.Order = 30;
+        link.RequireAuthorization("Finance");
+    });
+
+    dashboard.AddSidebarLink("Status page", SidebarLinkTarget.Url("https://status.voyager.travel"), link =>
+    {
+        link.Group = "Help";
+        link.OpenInNewTab = true;
+    });
+});
+```
+
+`SidebarLinkTarget.Page(page, area)` and `SidebarLinkTarget.Action(action, controller, area)` link outside any area unless an area is given, so they reach the host application's pages rather than the Dashboard's. `SidebarLinkTarget.Url(url)` accepts absolute URLs and app-relative `~/` paths. Each link also appears in the command palette, which searches link labels and group names.
+
+A link without a `Group` appears at the top level, without a heading. Links join a resource group with the same label, so the Invoices link above sits in the Commerce group with Commerce resources. Groups with the same label from any `ISidebarItemsProvider` merge into one, positioned where the label first appears. Links in a group sort by `Order`, which defaults to 0. With equal `Order` values, resource links and custom links do not interleave in call order: all resource links come before all custom links when the first `AddResource` call precedes the first `AddSidebarLink` call, and after them otherwise. Set `Order` to place a link among resources. `OpenInNewTab` opens the link in a new browser tab.
+
+`RequireAuthorization` accepts the same overloads as the Dashboard builder and hides the link from users who do not satisfy it. It does not protect the destination: host pages and actions are outside the Dashboard's routes, so protect them with the application's own authorization. Linked host pages render with the application's layout, not the Dashboard's.
+
 ## Index sorting
 
 Opt columns into sorting and optionally choose a default:

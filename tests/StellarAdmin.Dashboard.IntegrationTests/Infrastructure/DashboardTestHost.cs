@@ -14,7 +14,8 @@ internal static class DashboardTestHost
         Action<ResourceBuilder<Product>>? configure = null,
         Action<StellarAdminDashboardBuilder>? configureDashboard = null,
         Action<IServiceCollection>? configureServices = null,
-        Action<ControllerActionEndpointConventionBuilder>? configureRoute = null
+        Action<ControllerActionEndpointConventionBuilder>? configureRoute = null,
+        Action<WebApplication>? configureApp = null
     )
     {
         var builder = WebApplication.CreateBuilder(
@@ -63,6 +64,7 @@ internal static class DashboardTestHost
         var app = builder.Build();
         var route = app.MapStellarAdmin();
         configureRoute?.Invoke(route);
+        configureApp?.Invoke(app);
         await app.StartAsync();
 
         return app;
