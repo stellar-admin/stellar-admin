@@ -14,6 +14,10 @@ public class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItem
             sidebarItems.AddRange(await provider.GetItemsAsync(HttpContext));
         }
 
-        return View(SidebarItemsMerger.Merge(sidebarItems));
+        // A full path, so the sidebar renders from host pages that use the Dashboard layout.
+        return View(
+            "/Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml",
+            SidebarItemsMerger.Merge(sidebarItems)
+        );
     }
 }

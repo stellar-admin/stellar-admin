@@ -9,10 +9,10 @@
 <dashboard-remote-sheet class="contents">
     <sa-sheet id="@Model">
         <div id="@($"{Model}-content")" class="contents" data-sheet="content">
-            <partial name="_SheetLoading" />
+            <partial name="/Areas/StellarAdmin/Views/Shared/_SheetLoading.cshtml" />
         </div>
         <template data-sheet="loading">
-            <partial name="_SheetLoading" />
+            <partial name="/Areas/StellarAdmin/Views/Shared/_SheetLoading.cshtml" />
         </template>
         @* Shown by the component when the content fails to load; Retry repeats the request that failed *@
         <template data-sheet="error">

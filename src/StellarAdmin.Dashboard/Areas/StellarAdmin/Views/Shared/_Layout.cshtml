@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>StellarAdmin</title>
+    <title>@(ViewData["Title"] is string title ? $"{title} - StellarAdmin" : "StellarAdmin")</title>
     <meta name="description" content="StellarAdmin">
     @await RenderSectionAsync("Styles", required: false)
     @if (ThemeOptions.Value.IncludeSuggestedFonts)
@@ -44,7 +44,7 @@
 
 @* One sheet for the whole page, outside any form; buttons load content into it with htmx. A create form in it opens its
    lookups in the nested sheet, which stacks over it *@
-<partial name="_RemoteSheet" model="@("dashboard-sheet")" />
-<partial name="_RemoteSheet" model="@("dashboard-nested-sheet")" />
+<partial name="/Areas/StellarAdmin/Views/Shared/_RemoteSheet.cshtml" model="@("dashboard-sheet")" />
+<partial name="/Areas/StellarAdmin/Views/Shared/_RemoteSheet.cshtml" model="@("dashboard-nested-sheet")" />
 </body>
 </html>

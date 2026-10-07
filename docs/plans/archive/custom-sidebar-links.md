@@ -1,6 +1,6 @@
 # Custom sidebar links
 
-Status: active, 2026-10-07. All three phases implemented; phase 3 awaiting review.
+Status: completed, 2026-10-07. All four phases are implemented and committed. Follow-ups below, and an integration test for a same-path override of the Dashboard layout partials, are unscheduled.
 
 ## Goal
 
@@ -20,7 +20,7 @@ Relevant facts:
 
 ## Proposed public API
 
-The target is essential data, so it is a parameter; everything else is optional settings, per the [options builder conventions](../conventions/options-builders.md). `Add*` at the root of the Dashboard builder registers the link; no call means no link.
+The target is essential data, so it is a parameter; everything else is optional settings, per the [options builder conventions](../../conventions/options-builders.md). `Add*` at the root of the Dashboard builder registers the link; no call means no link.
 
 ```csharp
 dashboard.AddSidebarLink("Reports", SidebarLinkTarget.Page("/Reports/Index"));
@@ -98,9 +98,20 @@ Phase 3 implementation, 2026-10-07: DashboardPlayground adds `Pages/Reports.csht
 
 Phase 3 verification, 2026-10-07: DashboardPlayground built and ran on port 5207; the sidebar showed "Sales report" (`/Reports`) after the Commerce resources, and "Privacy policy" (`/Home/Privacy`) and "ASP.NET Core docs" (`target="_blank"`) at the top level after the groups; `/Reports` returned 200 with the host layout. `util/SkillsGenerator -- --check` reported no drift. The website checkout was searched read-only and was clean. No tests were rerun, since phase 3 changed only the sample and documentation.
 
+### Phase 4: host pages in the Dashboard layout
+
+Added 2026-10-07 after decision 1. A host page opts into the Dashboard shell by setting its layout; it keeps its own URL and authorization, and needs no new registration API beyond `AddSidebarLink`.
+
+1. The layout, the sidebar view component, and `_RemoteSheet` reference their views and partials (`Components/Sidebar/Default`, `_CommandPalette`, `_RemoteSheet`, `_SheetLoading`) by full path, since short names only resolve inside the StellarAdmin area.
+2. Public `StellarAdminLayouts.Dashboard` holds the layout path.
+3. The layout's `<title>` uses `ViewData["Title"]` as `{title} - StellarAdmin`, falling back to `StellarAdmin`. This also applies to resource pages, which already set it. The header text stays "StellarAdmin" on every page.
+4. DashboardPlayground's `Pages/_ViewStart.cshtml` uses the Dashboard layout, a new `Pages/_ViewImports.cshtml` adds the TagHelpers, and `Pages/Reports.cshtml` uses `sa-page-container` and `sa-page-header`.
+
+Phase 4 verification, 2026-10-07: new `tests/StellarAdmin.Dashboard.IntegrationTests/Layout/HostPageLayoutTests.cs` (with `Pages/SalesReport.cshtml`) requests a host Razor Page using the layout and checks the title, body, command palette, both sheets, and the active sidebar link; before the `_SheetLoading` path fix it failed with a 500. Dashboard integration 328, Dashboard unit 53 and EF Core integration 67 tests passed. DashboardPlayground ran in Development on port 5207; Chromium screenshots of `/Reports` and `/stellaradmin/products` showed the same shell, with "Sales report" active.
+
 ## Open decisions
 
-1. Do host pages render inside the Dashboard shell? A link to a host Razor Page or action leaves the shell and shows the host's own layout. If custom pages should look like part of the Dashboard (sidebar, header, theme), that needs a supported way for host views to use the Dashboard layout. This plan does not cover it; I recommend a separate plan.
+1. ~~Do host pages render inside the Dashboard shell?~~ Decided 2026-10-07: yes, by setting `Layout = StellarAdminLayouts.Dashboard`; host pages keep their own URLs and authorization (phase 4). Original question: A link to a host Razor Page or action leaves the shell and shows the host's own layout. If custom pages should look like part of the Dashboard (sidebar, header, theme), that needs a supported way for host views to use the Dashboard layout. This plan does not cover it; I recommend a separate plan.
 2. ~~Target as a parameter or named methods~~ Decided 2026-10-07: keep the parameter. Named methods could be added later as wrappers. Original question: target as a parameter (`SidebarLinkTarget.Page(...)`, recommended) or three named methods (`AddSidebarPageLink`, `AddSidebarActionLink`, `AddSidebarUrlLink`). The parameter keeps one builder and one method; named methods are more discoverable in IntelliSense.
 3. Should `Keywords` be settable on a link, so a "Reports" link is also found by searching "analytics"? It is cheap, since the palette already supports `keywords`; it is left out until requested.
 4. ~~The palette copy change in phase 2 step 2 alters existing visible text.~~ Approved 2026-10-07.
@@ -110,3 +121,4 @@ Phase 3 verification, 2026-10-07: DashboardPlayground built and ran on port 5207
 - Icons on sidebar links, for both resources and custom links.
 - Route values on page and action targets.
 - Nested (collapsible) sub-menus.
+- An integration test proving an app view at the same path (for example `Areas/StellarAdmin/Views/Shared/_CommandPalette.cshtml`) overrides the Dashboard's partial on Dashboard and host pages. Full view paths drop per-controller and view-location-expander overrides of the layout partials; same-path overrides still apply.

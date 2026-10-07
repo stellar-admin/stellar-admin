@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "Sales report";
 }
-<h1>@ViewData["Title"]</h1>
+<sa-page-container>
+    <sa-page-header>
+        <sa-page-header-title>@ViewData["Title"]</sa-page-header-title>
+    </sa-page-header>
 
-<p>A host Razor Page linked from the Dashboard sidebar with <code>AddSidebarLink</code>.</p>
+    <p>A host Razor Page in the Dashboard layout, linked from the sidebar with <code>AddSidebarLink</code>.</p>
+</sa-page-container>

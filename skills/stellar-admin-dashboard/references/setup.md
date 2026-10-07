@@ -130,7 +130,9 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 
 A link without a `Group` appears at the top level, without a heading. Links join a resource group with the same label, so the Invoices link above sits in the Commerce group with Commerce resources. Groups with the same label from any `ISidebarItemsProvider` merge into one, positioned where the label first appears. Links in a group sort by `Order`, which defaults to 0. With equal `Order` values, resource links and custom links do not interleave in call order: all resource links come before all custom links when the first `AddResource` call precedes the first `AddSidebarLink` call, and after them otherwise. Set `Order` to place a link among resources. `OpenInNewTab` opens the link in a new browser tab.
 
-`RequireAuthorization` accepts the same overloads as the Dashboard builder and hides the link from users who do not satisfy it. It does not protect the destination: host pages and actions are outside the Dashboard's routes, so protect them with the application's own authorization. Linked host pages render with the application's layout, not the Dashboard's.
+`RequireAuthorization` accepts the same overloads as the Dashboard builder and hides the link from users who do not satisfy it. It does not protect the destination: host pages and actions are outside the Dashboard's routes, so protect them with the application's own authorization. Linked host pages render with the application's layout unless they opt into the Dashboard's.
+
+To render a host Razor Page or MVC view inside the Dashboard shell, with its sidebar, header, theme, command palette and sheets, set `Layout = StellarAdminLayouts.Dashboard;` (namespace `StellarAdmin.Dashboard`) in the page or in a `_ViewStart.cshtml` beside it. The page keeps its own URL and authorization. `ViewData["Title"]` sets the browser title as `{title} - StellarAdmin`. Add `@addTagHelper *, StellarAdmin.TagHelpers` to the page's `_ViewImports.cshtml` to use components such as `sa-page-container` and `sa-page-header` so the body matches Dashboard pages. A sidebar link to the page is marked active while it is open.
 
 ## Index sorting
 
