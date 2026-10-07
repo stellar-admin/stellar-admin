@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tom Select multiselect prototype</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; nova to start because the generated shadcn themes already carry the combobox rules. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tom Select 2.6.2, all plugins; its stylesheet is deliberately NOT loaded -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+      /* ==================================================================================
+         What would become .sa-* rules in components.css.
+
+         Tom Select's own stylesheet is not loaded. Its elements get our classes through the
+         class options (controlClass, itemClass, dropdownClass, optionClass …) and the sa_theme
+         plugin below, so the THEMED half comes from rules the theme bundles already ship:
+           .sa-combobox-chips / -chip / -chip-remove / -content / -list / -item / -label
+         (generated from upstream shadcn into every shadcn.* theme, unused until now)
+           .sa-input-group  (every theme, including the hand-authored ones)
+
+         This block is the STRUCTURAL half plus a token-only fallback for the hand-authored
+         themes (parallax, ledger, aurora …) that have no sa-combobox-* rules yet. It lives in
+         @layer base so any theme rule wins over it; the few !important declarations are the
+         structural ones a theme rule must not undo (a wrapping control can't have a fixed h-8).
+         ================================================================================== */
+      @layer base {
+        /* The original <select>, kept in the DOM so the form still posts it */
+        .ts-hidden-accessible {
+          @apply absolute! w-px! overflow-hidden! border-0! p-0! whitespace-nowrap!;
+          clip-path: inset(50%) !important;
+        }
+        .ts-wrapper {
+          @apply relative w-full;
+        }
+
+        /* ---- Control (.sa-input-group + .sa-combobox-chips) */
+        .ts-control {
+          @apply flex w-full cursor-text flex-wrap items-center gap-1 text-sm;
+          height: auto !important;
+          @apply border-input min-h-8 rounded-lg border bg-transparent bg-clip-padding px-2.5 py-1 transition-colors dark:bg-input/30;
+        }
+        .ts-wrapper.has-items .ts-control {
+          @apply pl-1;
+        }
+        .ts-wrapper.focus .ts-control {
+          @apply border-ring ring-ring/50 ring-3;
+        }
+        .ts-wrapper.disabled .ts-control {
+          @apply cursor-not-allowed opacity-50;
+        }
+        .ts-control > input {
+          @apply min-w-16 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground;
+        }
+        .ts-wrapper.input-hidden .ts-control > input {
+          @apply absolute -left-[10000px] opacity-0;
+        }
+        /* Room for the clear button / caret on the inline end */
+        .ts-wrapper.plugin-clear_button .ts-control,
+        .ts-wrapper.ts-has-caret .ts-control {
+          @apply pr-8;
+        }
+        .ts-wrapper.plugin-clear_button.ts-has-caret .ts-control {
+          @apply pr-14;
+        }
+
+        /* ---- Chips (.sa-combobox-chip) */
+        .ts-control > .item {
+          @apply bg-muted text-foreground flex h-[calc(--spacing(5.25))] w-fit cursor-default items-center justify-center gap-1 rounded-sm px-1.5 text-xs font-medium whitespace-nowrap;
+        }
+        .ts-control > .item:has(.sa-combobox-chip-remove) {
+          @apply pr-0;
+        }
+        /* Backspace / ← → walk the chips; the walked one is .active */
+        .ts-control > .item.active {
+          @apply ring-ring ring-2;
+        }
+        .ts-control .sa-combobox-chip-remove {
+          @apply -ml-1 size-5! opacity-50 hover:opacity-100;
+        }
+        .ts-chip-avatar {
+          @apply bg-background text-foreground -ml-1 flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-full text-[0.5rem] font-semibold;
+        }
+
+        /* Single mode: the selection reads like an input value, not a chip */
+        .ts-wrapper.single .ts-control > .item {
+          @apply h-auto min-w-0 flex-1 justify-start gap-2 rounded-none bg-transparent px-0 text-sm font-normal;
+        }
+        .ts-wrapper.single.has-items .ts-control {
+          @apply pl-2;
+        }
+        .ts-wrapper.single.input-active .ts-control > .item {
+          @apply hidden;
+        }
+
+        .ts-clear,
+        .ts-caret {
+          @apply text-muted-foreground absolute top-1/2 -translate-y-1/2;
+        }
+        .ts-clear {
+          @apply right-1 opacity-0;
+        }
+        .ts-wrapper.ts-has-caret .ts-clear {
+          @apply right-7;
+        }
+        .ts-wrapper.has-items:hover .ts-clear,
+        .ts-wrapper.has-items.focus .ts-clear {
+          @apply opacity-100;
+        }
+        .ts-caret {
+          @apply pointer-events-none right-2.5 size-4;
+        }
+
+        /* Summaries for the collapsed renderings */
+        .ts-more {
+          @apply text-muted-foreground px-1 text-xs font-medium whitespace-nowrap;
+        }
+        .ts-summary {
+          @apply px-1.5 text-sm whitespace-nowrap;
+        }
+
+        /* ---- Dropdown (.sa-combobox-content + .sa-combobox-list) */
+        .ts-dropdown {
+          @apply absolute top-full left-0 z-50 mt-1 w-full;
+          @apply bg-popover text-popover-foreground ring-foreground/10 overflow-hidden rounded-lg shadow-md ring-1;
+          --available-height: 18rem;
+        }
+        .ts-dropdown-content {
+          @apply max-h-72 scroll-py-1 overflow-y-auto p-1;
+        }
+        .ts-dropdown-content:empty {
+          @apply p-0;
+        }
+        .ts-dropdown .option,
+        .ts-dropdown .create {
+          @apply relative flex w-full cursor-default items-center gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none;
+          @apply data-highlighted:bg-accent data-highlighted:text-accent-foreground;
+        }
+        .ts-dropdown [data-disabled] {
+          @apply pointer-events-none opacity-50;
+        }
+        .ts-dropdown .highlight {
+          @apply text-foreground rounded-[2px] bg-transparent font-semibold underline decoration-1 underline-offset-2;
+        }
+        .ts-indicator {
+          @apply pointer-events-none invisible absolute right-2 flex size-4 items-center justify-center;
+        }
+        .ts-dropdown [data-checked] > .ts-indicator {
+          @apply visible;
+        }
+        .ts-dropdown .optgroup-header {
+          @apply text-muted-foreground px-2 py-1.5 text-xs;
+        }
+        .ts-dropdown .no-results,
+        .ts-dropdown .ts-loading,
+        .ts-dropdown .ts-hint {
+          @apply text-muted-foreground flex w-full items-center justify-center gap-2 py-2 text-center text-sm;
+        }
+        .ts-dropdown .create strong {
+          @apply font-medium;
+        }
+
+        /* Search inside the dropdown (dropdown_input plugin) */
+        .ts-dropdown .dropdown-input-wrap {
+          @apply border-input/30 bg-input/30 text-muted-foreground m-1 mb-0 flex h-8 items-center gap-2 rounded-lg border px-2;
+        }
+        .ts-dropdown .dropdown-input {
+          @apply text-foreground flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground;
+        }
+        .ts-control > .items-placeholder {
+          @apply text-muted-foreground min-w-16 flex-1 cursor-pointer border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground;
+        }
+        .ts-wrapper.plugin-dropdown_input .ts-control {
+          @apply cursor-pointer;
+        }
+        .ts-wrapper.plugin-dropdown_input.has-items .items-placeholder,
+        .ts-wrapper.plugin-dropdown_input.dropdown-active .items-placeholder {
+          @apply hidden;
+        }
+        /* checkbox_options: the plugin's input gets wrapped into the sa-checkbox markup */
+        .ts-dropdown .option > .sa-input-control-wrapper {
+          @apply pointer-events-none;
+        }
+        .ts-wrapper.plugin-checkbox_options .ts-dropdown .option {
+          @apply pr-2;
+        }
+
+        /* Grouped columns (optgroup_columns plugin) */
+        .ts-wrapper.ts-columns .ts-dropdown {
+          @apply w-[min(44rem,calc(100vw-3rem))];
+        }
+        .ts-dropdown.plugin-optgroup_columns .ts-dropdown-content {
+          @apply flex max-h-80 gap-1;
+        }
+        .ts-dropdown.plugin-optgroup_columns .optgroup {
+          @apply min-w-0 flex-1 basis-0 border-r last:border-r-0;
+        }
+      }
+
+      /* Prototype chrome only */
+      .demo-out {
+        @apply text-muted-foreground mt-3 block font-mono text-[0.7rem] break-all;
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1400px] space-y-12 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Multiselect · Tom Select 2.6.2</p>
+        <h1 class="text-2xl font-semibold">Tom Select, dressed as a StellarAdmin control</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Every field below is a plain server-rendered <code>&lt;select&gt;</code> (most of them <code>multiple</code>) enhanced by Tom Select. Tom Select's
+          stylesheet is not loaded: the control, chips, dropdown and options carry the <code>sa-combobox-*</code> classes the generated shadcn themes already
+          ship, plus a small structural block (the <code>&lt;style&gt;</code> in the head) that would become <code>.sa-*</code> rules. Swap themes and dark mode
+          from the bar at the bottom right — the hand-authored themes fall back to the token-only rules. Each field shows what the form would post.
+        </p>
+      </header>
+
+      <div id="demos" class="grid gap-x-10 gap-y-14 lg:grid-cols-2"></div>
+
+      <section id="notes" class="max-w-3xl space-y-4 text-sm">
+        <h2 class="text-lg font-semibold">Integration notes</h2>
+        <div class="space-y-3 [&_code]:text-[0.8rem] [&_h3]:mt-5 [&_h3]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_ul]:space-y-1">
+          <h3>Wrapping</h3>
+          <p>
+            The editor template keeps rendering a real <code>&lt;select multiple name="…"&gt;</code> with the selected options (value + title, media and
+            description as <code>data-*</code>), so model binding, validation attributes and no-JS posting stay exactly as they are. A small Lit element (for
+            example <code>&lt;dashboard-multi-lookup&gt;</code>, or a library-level <code>sel-combobox</code>) wraps it, calls
+            <code>new TomSelect(select, settings)</code> in <code>connectedCallback</code> and <code>destroy()</code> in <code>disconnectedCallback</code> — so
+            htmx swaps and the create sheet re-initialise cleanly. Settings come from <code>data-*</code> attributes the tag helper writes (min length, max
+            items, create, URL).
+          </p>
+          <p>
+            Remote search points <code>load</code> at the existing lookup results endpoint. That endpoint renders HTML today (<code>_LookupResults</code>:
+            <code>sa-command-item</code>s with a <code>&lt;template data-lookup="selection"&gt;</code>); the clean option is a JSON variant of the same query
+            (<code>value, title, description, media</code>) feeding Tom Select's string templates. Paging maps onto the <code>virtual_scroll</code> plugin
+            (<code>firstUrl</code> / <code>setNextUrl</code>), which is "load the next page on scroll" rather than DOM virtualisation. Server results should not be
+            re-scored client-side: pass <code>score: () =&gt; () =&gt; 1</code>, as demo 2 does.
+          </p>
+
+          <h3>Styling</h3>
+          <ul>
+            <li>Skip <code>tom-select.css</code> entirely. Use the class options (<code>controlClass</code>, <code>itemClass</code>, <code>dropdownClass</code>, <code>dropdownContentClass</code>, <code>optionClass</code>) plus the plugins' <code>html</code> options to emit our classes and <code>data-slot</code>s.</li>
+            <li>The active option needs a <code>data-highlighted</code> and selected options a <code>data-checked</code> — Tom Select only toggles <code>.active</code> / <code>.selected</code>. The 30-line <code>sa_theme</code> plugin on this page does that sync; it would ship in the wrapper.</li>
+            <li>The shadcn themes already contain <code>.sa-combobox-chips / -chip / -chip-remove / -content / -list / -item / -label</code> (generated, never used). The hand-authored themes need those rules added; until then the token-only fallback here is what they render.</li>
+            <li>Structural rules (wrapping control, hidden select, dropdown positioning, single-mode value) go in <code>components.css</code>; the theme-coverage manifest needs the new hooks.</li>
+          </ul>
+
+          <h3>Size and licence</h3>
+          <ul>
+            <li><code>tom-select.complete.min.js</code> (every plugin): 51.8 kB minified, <strong>17.5 kB gzipped</strong>.</li>
+            <li><code>tom-select.base.min.js</code> (no plugins): 41.8 kB minified, <strong>14.8 kB gzipped</strong>. Importing <code>tom-select/base</code> plus the 3–4 plugins we use into <code>stellar-admin.js</code> through rolldown lands around 16 kB gzipped. Dependencies: <code>@orchidjs/sifter</code> and <code>@orchidjs/unicode-variants</code> (bundled).</li>
+            <li>The unused stylesheet would have been another 2 kB gzipped.</li>
+            <li>Apache-2.0 — compatible with our MIT package, but it needs its NOTICE/licence text carried in the bundle's third-party notices.</li>
+          </ul>
+
+          <h3>Accessibility</h3>
+          <ul>
+            <li>The search input is <code>role="combobox"</code> with <code>aria-expanded</code>, <code>aria-controls</code> and <code>aria-activedescendant</code>; the dropdown is a <code>role="listbox"</code> of <code>role="option"</code>s with <code>aria-selected</code>. Our label's <code>for</code> is moved to the generated input automatically.</li>
+            <li>Chips are not exposed as a list and the remove buttons are <code>tabindex="-1"</code>: keyboard removal is ←/→ to walk chips and Backspace/Delete. Works, but undiscoverable for screen-reader users — worth a live-region "removed X" announcement.</li>
+            <li>With <code>dropdown_input</code> the focusable control is a generic <code>div</code>; needs a screen-reader pass before choosing that variant.</li>
+          </ul>
+
+          <h3>Gaps</h3>
+          <ul>
+            <li>The dropdown is <code>position: absolute</code> inside the wrapper: no top layer, no CSS anchor positioning, no flipping above the field near the viewport bottom. Inside a sheet or dialog with <code>overflow: auto</code> it gets clipped; <code>dropdownParent: 'body'</code> moves it out but then it is positioned once by JS on open and does not follow scrolling. A wrapper could instead move the dropdown into a <code>[popover]</code> with <code>anchored-bottom-span-right try-flip-all</code> — doable, but we'd be fighting the library.</li>
+            <li>No DOM virtualisation; thousands of local options are slow. Remote search avoids the problem.</li>
+            <li><code>drag_drop</code> (reordering chips) requires jQuery UI — not an option.</li>
+            <li>No mobile/full-screen mode; on phones the dropdown is a small absolutely-positioned box.</li>
+            <li>Templates are HTML strings with an <code>escape</code> helper — our media/description markup gets duplicated from the Razor partials into JS (or rendered server-side into <code>data-*</code>).</li>
+            <li>Maintenance: steady releases (2.6.2, July 2026), ~420k weekly downloads, small core team.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { airports, airport, guides, guide, tags, airportsByRegion, fakeFetch, icons, codeChip, avatar, initials, field, panel, controlBar, backendNote, effort } from "./multiselect-shared.js";
+
+      // ---------------------------------------------------------------- sa_theme plugin: our classes, slots and data-* states
+      const chipRemove = `<button type="button" tabindex="-1" aria-label="Remove" data-slot="combobox-chip-remove" data-size="icon-xs"
+          class="sa-combobox-chip-remove sa-button group/button sa-button-variant-ghost sa-button-size-icon-xs">${icons.x("size-3")}</button>`;
+      const toDom = (html) => {
+        if (html instanceof Element) return html;
+        const t = document.createElement("template");
+        t.innerHTML = html.trim();
+        return t.content.firstElementChild;
+      };
+
+      TomSelect.define("sa_theme", function (opts = {}) {
+        const self = this;
+        const { indicator = true, toggle = false, caret = false, searchIcon = true } = opts;
+
+        self.hook("after", "setupTemplates", () => {
+          const r = self.settings.render;
+          const option = r.option;
+          r.option = (data, escape) => {
+            const el = toDom(option.call(self, data, escape));
+            el.dataset.slot = "combobox-item";
+            // checkbox_options prepends a bare <input>; give it the <sa-input type="checkbox"> markup
+            const cb = el.querySelector(":scope > input.sa-checkbox");
+            if (cb) {
+              const wrap = toDom(`<span class="sa-input-control-wrapper"></span>`);
+              cb.replaceWith(wrap);
+              wrap.append(cb, toDom(`<span class="sa-checkbox-indicator">${icons.check("sa-checkbox-indicator-icon")}</span>`));
+              cb.tabIndex = -1;
+            } else if (indicator) {
+              el.insertAdjacentHTML("beforeend", `<span class="ts-indicator sa-combobox-item-indicator">${icons.check()}</span>`);
+            }
+            if (self.items.includes(String(data[self.settings.valueField]))) el.dataset.checked = "true";
+            return el;
+          };
+          const item = r.item;
+          r.item = (data, escape) => {
+            const el = toDom(item.call(self, data, escape));
+            if (self.settings.mode === "multi") el.dataset.slot = "combobox-chip";
+            return el;
+          };
+        });
+
+        // Tom Select toggles .active; the theme rules key off data-highlighted
+        const setActive = self.setActiveOption;
+        self.setActiveOption = function (option, scroll) {
+          self.dropdown_content.querySelectorAll("[data-highlighted]").forEach((el) => el.removeAttribute("data-highlighted"));
+          setActive.call(self, option, scroll);
+          self.activeOption?.setAttribute("data-highlighted", "");
+        };
+        const clearActive = self.clearActiveOption;
+        self.clearActiveOption = function () {
+          self.activeOption?.removeAttribute("data-highlighted");
+          clearActive.call(self);
+        };
+
+        // Selected options carry data-checked (the trailing check)
+        const mark = (value, on) => {
+          const el = self.getOption(value);
+          if (el) on ? (el.dataset.checked = "true") : el.removeAttribute("data-checked");
+        };
+        self.on("item_add", (v) => {
+          if (self.settings.mode === "single") self.dropdown_content.querySelectorAll("[data-checked]").forEach((el) => el.removeAttribute("data-checked"));
+          mark(v, true);
+        });
+        self.on("item_remove", (v) => mark(v, false));
+
+        // Clicking a selected option removes it (the checkbox_options behaviour, without the checkbox)
+        if (toggle) {
+          self.settings.hideSelected = false;
+          const select = self.onOptionSelect;
+          self.hook("instead", "onOptionSelect", (evt, option) => {
+            if (option?.dataset.value && self.items.includes(option.dataset.value)) {
+              evt?.preventDefault();
+              self.removeItem(option.dataset.value);
+              self.refreshOptions(false);
+              self.focus();
+              return;
+            }
+            return select.call(self, evt, option);
+          });
+        }
+
+        // Single mode hides the value while searching; keep it visible as the search placeholder
+        if (self.settings.mode === "single") {
+          const show = () =>
+            setTimeout(() => {
+              const v = self.items[0];
+              self.control_input.placeholder = v ? (self.options[v]?.[self.settings.labelField] ?? "") : (self.settings.placeholder ?? "");
+            });
+          self.on("dropdown_open", show);
+          self.on("focus", show);
+        }
+
+        self.on("initialize", () => {
+          self.control_input.dataset.slot = "input-group-control";
+          if (caret) {
+            self.wrapper.classList.add("ts-has-caret");
+            self.control.insertAdjacentHTML("beforeend", `<span class="ts-caret">${icons.chevrons("size-4")}</span>`);
+          }
+          const wrap = self.dropdown.querySelector(".dropdown-input-wrap");
+          if (wrap && searchIcon) wrap.insertAdjacentHTML("afterbegin", icons.search("size-4 shrink-0 opacity-50"));
+        });
+      });
+
+      // Settings every demo shares: our classes on Tom Select's elements, our empty / loading / create rows
+      const base = (extra = {}) => ({
+        controlClass: "ts-control sa-combobox-chips",
+        itemClass: "item sa-combobox-chip",
+        dropdownClass: "ts-dropdown sa-combobox-content",
+        dropdownContentClass: "ts-dropdown-content sa-combobox-list",
+        optionClass: "option sa-combobox-item",
+        maxOptions: 200,
+        ...extra,
+        render: {
+          no_results: () => `<div class="no-results">No results found.</div>`,
+          loading: () => `<div class="ts-loading">${icons.loader("size-4 animate-spin")} Searching…</div>`,
+          optgroup_header: (d, escape) => `<div class="optgroup-header sa-combobox-label">${escape(d.label)}</div>`,
+          option_create: (d, escape) => `<div class="create">${icons.plus("size-4")} Add <strong>“${escape(d.input)}”</strong></div>`,
+          ...(extra.render ?? {}),
+        },
+      });
+      const plugins = (list, theme = {}) => ({
+        ...Object.fromEntries(list.map((p) => (Array.isArray(p) ? p : [p, {}]))),
+        remove_button: list.includes("remove_button") ? { html: () => chipRemove } : undefined,
+        clear_button: list.includes("clear_button")
+          ? { html: () => `<button type="button" tabindex="-1" title="Clear all" class="ts-clear sa-button sa-button-variant-ghost sa-button-size-icon-xs" data-size="icon-xs">${icons.x("size-3.5")}</button>` }
+          : undefined,
+        sa_theme: theme,
+      });
+      const clean = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
+
+      // ---------------------------------------------------------------- Item parts
+      const optionParts = (media, title, desc) =>
+        `<div>${media}<div class="flex min-w-0 flex-col"><span class="truncate">${title}</span>${desc ? `<span class="text-muted-foreground truncate text-xs">${desc}</span>` : ""}</div></div>`;
+      const airportOption = (a, escape) => optionParts(codeChip(a.code, true), escape(a.city), escape(a.country));
+      const airportChip = (a, escape) => `<div><span class="font-mono text-[0.65rem] opacity-60">${a.code}</span>${escape(a.city)}</div>`;
+      const chipAvatar = (name) => `<span class="ts-chip-avatar">${initials(name)}</span>`;
+
+      const airportOptionsHtml = (selected = []) =>
+        airports.map((a) => `<option value="${a.code}" ${selected.includes(a.code) ? "selected" : ""}>${a.city}</option>`).join("");
+
+      // ---------------------------------------------------------------- Demos
+      const form = (id, inner) => `<form data-demo="${id}" onsubmit="return false">${inner}<output class="demo-out" data-out></output></form>`;
+
+      const demos = [
+        {
+          id: "basic",
+          build: {"level": "vendor", "uses": ["Unused <code>sa-combobox-*</code> rules in the shadcn themes", "Scalar or id collection binding"], "needs": ["Tom Select in the bundle (~17.5 kB gzipped) and the <code>sa_theme</code> plugin for state attributes", "Combobox CSS for parallax, ledger and aurora", "An editor template that renders the native select"]},
+          title: "1 · Enhanced &lt;select multiple&gt;",
+          blurb:
+            "The baseline: the dashboard renders a native multi-select with every option, Tom Select turns it into chips + type-to-filter. Remove buttons, a clear-all on hover, ←/→ to walk chips, Backspace removes. The readout is <code>FormData.getAll()</code> — the hidden select is what posts.",
+          body: form(
+            "basic",
+            field(
+              "Departure airports",
+              `<select id="ts-basic" name="Departures" multiple placeholder="Add airports…">${airportOptionsHtml(["CPT", "LIS", "AMS"])}</select>`,
+              "Airports this tour can depart from.",
+            ),
+          ),
+          pros: ["Zero server changes: the existing &lt;select&gt; posts as-is", "Familiar tags-input interaction, fast with ~30 local options"],
+          cons: ["Every option is rendered into the page — fine for enums, wrong for large lookups", "Selected options disappear from the list (no overview of what's picked)"],
+          init: () =>
+            new TomSelect("#ts-basic", clean(base({ plugins: clean(plugins(["remove_button", "clear_button"])) }))),
+        },
+        {
+          id: "remote",
+          build: {"level": "vendor", "uses": ["The Lookup's server search (as a query)"], "needs": ["A JSON endpoint: today's results endpoint returns HTML for htmx", "Option and chip templates in JS, duplicating <code>_LookupSelection</code>"]},
+          title: "2 · Remote search with media",
+          blurb:
+            "Options come from the server as you type (<code>load</code> → fakeFetch, 350 ms), from 2 characters. Code chip + description in the list, a compact chip in the control. Only the selected options are server-rendered into the select.",
+          body: form(
+            "remote",
+            field(
+              "Destinations",
+              `<select id="ts-remote" name="Destinations" multiple placeholder="Search airports…"><option value="CPT" selected>Cape Town</option><option value="HND" selected>Tokyo Haneda</option></select>`,
+              "Type a city, country or IATA code.",
+            ),
+          ),
+          pros: ["Scales to any table size; maps onto the existing lookup query", "Media/description templates match the single lookup's rows"],
+          cons: ["Needs a JSON shape from the lookup endpoint (today it returns HTML)", "Paging is scroll-to-load (virtual_scroll), not our Load more row"],
+          init: () =>
+            new TomSelect(
+              "#ts-remote",
+              clean(
+                base({
+                  valueField: "code",
+                  labelField: "city",
+                  searchField: ["city", "code", "country"],
+                  options: ["CPT", "HND"].map(airport),
+                  plugins: clean(plugins(["remove_button"])),
+                  loadThrottle: 250,
+                  // The server already decided what matches; don't re-filter its results
+                  score: () => () => 1,
+                  shouldLoad: (q) => q.length >= 2,
+                  load: (q, cb) => fakeFetch(airports, q, { fields: ["city", "code", "country"], pageSize: 8 }).then((r) => cb(r.items)),
+                  render: {
+                    option: (a, escape) => airportOption(a, escape),
+                    item: (a, escape) => airportChip(a, escape),
+                    not_loading: (d) => (d.input.length < 2 ? `<div class="ts-hint">${icons.search("size-4")} Type 2 or more characters to search.</div>` : undefined),
+                    no_results: (d) => `<div class="no-results">No airports match “${d.input}”.</div>`,
+                  },
+                }),
+              ),
+            ),
+        },
+        {
+          id: "people",
+          build: {"level": "vendor", "uses": ["<code>sa-avatar</code> markup"], "needs": ["Avatar render functions in JS (same duplication as #2)"]},
+          title: "3 · People picker with avatars",
+          blurb: "Guides on a tour: avatar + name + home base in the list; a mini avatar inside the chip. Search covers name and description.",
+          body: form(
+            "people",
+            field(
+              "Tour guides",
+              `<select id="ts-people" name="Guides" multiple placeholder="Add guides…">${guides
+                .map((g) => `<option value="${g.id}" ${["hiro", "mei"].includes(g.id) ? "selected" : ""}>${g.name}</option>`)
+                .join("")}</select>`,
+            ),
+          ),
+          pros: ["Chips stay recognisable at a glance with initials/photos", "Same template approach works for any resource with media"],
+          cons: ["Avatar in a 21px chip is tight — photos become a smudge", "Description is search-only once selected"],
+          init: () =>
+            new TomSelect(
+              "#ts-people",
+              clean(
+                base({
+                  valueField: "id",
+                  labelField: "name",
+                  searchField: ["name", "desc"],
+                  options: guides,
+                  plugins: clean(plugins(["remove_button"])),
+                  render: {
+                    option: (g, escape) => optionParts(avatar(g.name, "default"), escape(g.name), escape(g.desc)),
+                    item: (g, escape) => `<div>${chipAvatar(g.name)}${escape(g.name)}</div>`,
+                  },
+                }),
+              ),
+            ),
+        },
+        {
+          id: "listbox",
+          build: {"level": "vendor", "uses": ["Built-in dropdown_input and checkbox_options plugins"], "needs": ["Styling for the in-dropdown search and the checkbox rows"]},
+          title: "4 · Popover listbox: search in the dropdown",
+          blurb:
+            "<code>dropdown_input</code> moves the search box into the dropdown, so the control is just chips and the list keeps selected rows. Left: <code>checkbox_options</code> with our checkbox markup. Right: the shadcn Combobox way — a trailing check, click again to remove.",
+          body: form(
+            "listbox",
+            `<div class="grid gap-6 sm:grid-cols-2">
+              ${field("Hubs (checkboxes)", `<select id="ts-check" name="Hubs" multiple placeholder="Choose hubs…">${airportOptionsHtml(["DXB", "SIN"])}</select>`)}
+              ${field("Hubs (trailing check)", `<select id="ts-toggle" name="Hubs2" multiple placeholder="Choose hubs…">${airportOptionsHtml(["LHR", "JFK", "SIN"])}</select>`)}
+            </div>`,
+          ),
+          pros: ["You can see and undo what's selected without leaving the list", "Control never jumps around while typing; reads like a select"],
+          cons: ["Two focus targets (control, search) — screen-reader story needs testing", "Checkboxes + chips duplicate the same state"],
+          init: () => {
+            const opts = (ps, theme) =>
+              clean(
+                base({
+                  plugins: clean(plugins(ps, theme)),
+                  render: { option: (d, escape) => { const a = airport(d.value); return optionParts(codeChip(a.code), escape(a.city), ""); } },
+                }),
+              );
+            new TomSelect("#ts-check", opts(["dropdown_input", "remove_button", ["checkbox_options", { className: "sa-checkbox" }]], { caret: true }));
+            new TomSelect("#ts-toggle", opts(["dropdown_input", "remove_button"], { toggle: true, caret: true }));
+          },
+        },
+        {
+          id: "create",
+          build: {"level": "vendor", "uses": ["Built-in create and maxItems"], "needs": ["Server handling for new values (create on save) and tag storage"]},
+          title: "5 · Creatable tags and a limit",
+          blurb:
+            "Left: free-form tags over an existing vocabulary — type a new one and press Enter. Right: <code>maxItems: 3</code>; when full the input closes and the hint says why.",
+          body: form(
+            "create",
+            `<div class="grid gap-6 sm:grid-cols-2">
+              ${field("Tags", `<select id="ts-tags" name="Tags" multiple placeholder="Add tags…">${tags.map((t) => `<option ${["culture", "food & wine"].includes(t) ? "selected" : ""}>${t}</option>`).join("")}</select>`, "Pick or create.")}
+              ${field("Highlights (max 3)", `<select id="ts-max" name="Highlights" multiple placeholder="Up to 3…">${tags.map((t) => `<option ${["safari", "wildlife"].includes(t) ? "selected" : ""}>${t}</option>`).join("")}</select>`, `<span data-max-hint>2 of 3 chosen.</span>`)}
+            </div>`,
+          ),
+          pros: ["Built-in create + createFilter; one option, no extra UI", "maxItems blocks input instead of failing validation later"],
+          cons: ["Creating related <em>entities</em> (not strings) needs our create sheet instead", "Limit feedback is ours to build (the hint)"],
+          init: () => {
+            new TomSelect("#ts-tags", clean(base({ create: true, createFilter: (v) => v.trim().length > 1, persist: false, plugins: clean(plugins(["remove_button"])) })));
+            const max = new TomSelect("#ts-max", clean(base({ maxItems: 3, plugins: clean(plugins(["remove_button"])) })));
+            const hint = document.querySelector("[data-max-hint]");
+            max.on("change", () => (hint.textContent = max.items.length >= 3 ? "Maximum of 3 reached — remove one to change." : `${max.items.length} of 3 chosen.`));
+          },
+        },
+        {
+          id: "compact",
+          build: {"level": "vendor", "needs": ["The +N / summary display is our own plugin, which we'd maintain"]},
+          title: "6 · Compact control for many selections",
+          blurb:
+            "When the field isn't focused, the control collapses. Left: the first 3 chips then “+N more”. Right: a single summary. Focus (click) expands to all chips for editing.",
+          body: form(
+            "compact",
+            `<div class="grid gap-6 sm:grid-cols-2">
+              ${field("Served airports", `<select id="ts-more" name="Served" multiple placeholder="Add airports…">${airportOptionsHtml(["AMS", "BCN", "CPT", "DXB", "LIS", "LHR", "SIN", "SYD"])}</select>`)}
+              ${field("Blackout airports", `<select id="ts-summary" name="Blackout" multiple placeholder="None">${airportOptionsHtml(["ATH", "FCO", "IST", "MAD", "ZRH"])}</select>`)}
+            </div>`,
+          ),
+          pros: ["Form rows keep a stable height in dense grids", "The summary works well in filter bars and table toolbars"],
+          cons: ["Hidden selections are easy to forget — needs a tooltip or the dropdown to show them", "Our own render logic on top of Tom Select's DOM"],
+          init: () => {
+            const collapse = (ts, max, noun) => {
+              const more = document.createElement("span");
+              ts.control.insertBefore(more, ts.control_input);
+              const update = () => {
+                const items = [...ts.control.querySelectorAll(":scope > .item")];
+                const open = ts.isFocused;
+                items.forEach((el, i) => (el.style.display = !open && (noun ? true : i >= max) ? "none" : ""));
+                const hidden = noun ? items.length : items.length - max;
+                more.className = noun ? "ts-summary" : "ts-more";
+                more.textContent = noun ? `${items.length} ${noun}` : `+${hidden} more`;
+                more.style.display = !open && hidden > 0 ? "" : "none";
+                ts.control_input.style.display = !open && items.length ? "none" : "";
+              };
+              ["focus", "blur", "change", "item_add", "item_remove"].forEach((e) => ts.on(e, () => queueMicrotask(update)));
+              update();
+            };
+            const opts = clean(base({ plugins: clean(plugins(["remove_button"], { toggle: true })), render: { option: (d, escape) => optionParts(codeChip(d.value), escape(d.text), "") } }));
+            collapse(new TomSelect("#ts-more", opts), 3);
+            collapse(new TomSelect("#ts-summary", { ...opts, plugins: clean(plugins(["remove_button"], { toggle: true, caret: true })) }), 0, "airports selected");
+          },
+        },
+        {
+          id: "grouped",
+          build: {"level": "vendor", "uses": ["Built-in optgroups and optgroup_columns"], "needs": ["Styles for group headers and columns"]},
+          title: "7 · Grouped options",
+          blurb:
+            "<code>&lt;optgroup&gt;</code>s by region become <code>sa-combobox-label</code> headings. Below: <code>optgroup_columns</code> lays the groups side by side in a wide dropdown (←/→ moves between columns).",
+          body: form(
+            "grouped",
+            `<div class="max-w-xl space-y-6">
+              ${field("Regional hubs", `<select id="ts-groups" name="Regional" multiple placeholder="Add airports…">${groupedOptions(["NBO", "SIN"])}</select>`)}
+              ${field("Regional hubs (columns)", `<select id="ts-columns" name="RegionalCols" multiple placeholder="Add airports…">${groupedOptions(["GRU", "KEF"])}</select>`)}
+            </div>`,
+          ),
+          pros: ["Comes free from the server-rendered optgroups", "Columns give an overview of a mid-sized set in one view"],
+          cons: ["No 'select whole group' — would need a custom optgroup header", "Columns need room; useless in a narrow sheet"],
+          init: () => {
+            const opts = (extra = []) =>
+              clean(base({ plugins: clean(plugins(["remove_button", ...extra])), lockOptgroupOrder: true, render: { option: (d, escape) => optionParts(codeChip(d.value), escape(d.text), "") } }));
+            new TomSelect("#ts-groups", opts());
+            new TomSelect("#ts-columns", { ...opts(["optgroup_columns"]), wrapperClass: "ts-wrapper ts-columns" });
+          },
+        },
+        {
+          id: "single",
+          build: {"level": "vendor", "uses": ["The shipped sheet Lookup already does single select"], "needs": ["A decision: a second single-select editor, or replace the sheet Lookup"]},
+          title: "8 · Single-select parity",
+          blurb:
+            "The same component in single mode, for comparison with today's lookup control + sheet: the value reads like an input, a caret signals a choice, typing searches in place.",
+          body: form(
+            "single",
+            `<div class="grid gap-6 sm:grid-cols-2">
+              ${field("Home airport", `<select id="ts-single" name="Home" placeholder="Select an airport…"><option value=""></option>${airportOptionsHtml(["CPT"])}</select>`)}
+              ${field("Lead guide", `<select id="ts-single-guide" name="Lead" placeholder="Select a guide…"><option value=""></option>${guides.map((g) => `<option value="${g.id}" ${g.id === "amara" ? "selected" : ""}>${g.name}</option>`).join("")}</select>`)}
+            </div>`,
+          ),
+          pros: ["One component for single and multi keeps the editor family consistent", "Inline search is faster than opening a sheet for short lists"],
+          cons: ["Loses the sheet's room for rich rows, create and Load more", "Two lookup styles to maintain if the sheet stays"],
+          init: () => {
+            new TomSelect(
+              "#ts-single",
+              clean(
+                base({
+                  itemClass: "item",
+                  plugins: clean(plugins(["clear_button"], { caret: true })),
+                  render: {
+                    option: (d, escape) => { const a = airport(d.value); return optionParts(codeChip(a.code, true), escape(a.city), escape(a.country)); },
+                    item: (d, escape) => `<div>${codeChip(d.value)}<span class="truncate">${escape(d.text)}</span></div>`,
+                  },
+                }),
+              ),
+            );
+            new TomSelect(
+              "#ts-single-guide",
+              clean(
+                base({
+                  itemClass: "item",
+                  valueField: "id",
+                  labelField: "name",
+                  searchField: ["name", "desc"],
+                  options: guides,
+                  plugins: clean(plugins([], { caret: true })),
+                  render: {
+                    option: (g, escape) => optionParts(avatar(g.name, "default"), escape(g.name), escape(g.desc)),
+                    item: (g, escape) => `<div>${avatar(g.name, "sm")}<span class="truncate">${escape(g.name)}</span></div>`,
+                  },
+                }),
+              ),
+            );
+          },
+        },
+      ];
+
+      function groupedOptions(selected) {
+        return airportsByRegion
+          .map(
+            ({ region, airports }) =>
+              `<optgroup label="${region}">${airports.map((a) => `<option value="${a.code}" ${selected.includes(a.code) ? "selected" : ""}>${a.city}</option>`).join("")}</optgroup>`,
+          )
+          .join("");
+      }
+
+      document.getElementById("demos").innerHTML = demos.map((d) => panel({ ...d, wide: d.id === "grouped" })).join("");
+      demos.forEach((d) => d.init());
+
+      // The posted-values readout under every demo
+      const showPosted = (f) => {
+        const fd = new FormData(f);
+        const names = [...new Set([...fd.keys()])];
+        f.querySelector("[data-out]").textContent = "posts → " + (names.map((n) => `${n}=[${fd.getAll(n).join(", ")}]`).join("  ") || "(nothing)");
+      };
+      document.querySelectorAll("form[data-demo]").forEach((f) => {
+        showPosted(f);
+        f.addEventListener("change", () => showPosted(f));
+      });
+
+      document.querySelector("main > header").insertAdjacentHTML("beforeend", backendNote());
+      controlBar();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiselect exploration</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+    </style>
+  </head>
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-5xl space-y-8 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Multiselect exploration</p>
+        <h1 class="text-2xl font-semibold">Multiselect editors for the Dashboard</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Four pages, from "adopt a library" to "extend what we have". Every demo posts real form values (shown under it), uses the real theme bundles
+          (theme + dark switch bottom-right), and Voyager Travel data. Functional enough to feel; not production-complete.
+        </p>
+      </header>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <a href="multiselect-sheet.html" class="hover:bg-muted/50 space-y-1 rounded-xl border p-5 transition-colors">
+          <h2 class="font-semibold">Sheet lookup, multiple items</h2>
+          <p class="text-muted-foreground text-sm">The existing LookupEditor sheet extended. Four field displays (item list, chips, summary button, table) × five sheet behaviours (staged + tray, immediate, All/Selected tabs, two panes, add-only), with a live form and a real sheet dialog.</p>
+        </a>
+        <a href="multiselect-tom-select.html" class="hover:bg-muted/50 space-y-1 rounded-xl border p-5 transition-colors">
+          <h2 class="font-semibold">Tom Select</h2>
+          <p class="text-muted-foreground text-sm">Tom Select 2.6.2 without its CSS, themed with our tokens: chips, remote search, avatars, checkbox listbox, creatable tags, max items, collapsed summaries, optgroups, single-select parity, and integration notes with measured size.</p>
+        </a>
+        <a href="multiselect-popover.html" class="hover:bg-muted/50 space-y-1 rounded-xl border p-5 transition-colors">
+          <h2 class="font-semibold">Popover &amp; combobox patterns</h2>
+          <p class="text-muted-foreground text-sm">Hand-built on sel-command and native popovers: faceted filter, chips-in-input, selection below, summary + hovercard, grouped tri-state, token paste, All/Selected tabs, mobile drawer.</p>
+        </a>
+        <a href="multiselect-inline.html" class="hover:bg-muted/50 space-y-1 rounded-xl border p-5 transition-colors">
+          <h2 class="font-semibold">Inline patterns &amp; read-only displays</h2>
+          <p class="text-muted-foreground text-sm">No overlay: toggle chips, checkbox list and searchable checklist, choice cards, transfer list, related-items table (join data), grid cells and detail views, and matrix selection.</p>
+        </a>
+      </div>
+    </main>
+    <script type="module">
+      import { controlBar } from "./multiselect-shared.js";
+      controlBar();
+    </script>
+  </body>
+</html>

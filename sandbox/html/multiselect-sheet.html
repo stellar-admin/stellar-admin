@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiselect sheet lookup</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-14 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Multiselect · LookupEditor</p>
+        <h1 class="text-2xl font-semibold">Sheet lookup, multiple items</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          The existing sheet lookup (<code>sel-command</code> in the shared dashboard sheet, server-paged results, Load more) extended to pick several items.
+          Two independent questions: <strong>how the field shows the selection</strong> in the form, and <strong>how the sheet manages it</strong>. The live
+          form below lets you combine any field display with any sheet behaviour; the sections after it lay every variant out side by side.
+          Other pages: <a class="underline" href="multiselect.html">index</a>.
+        </p>
+      </header>
+
+      <!-- ---------------------------------------------------------------- Live flow -->
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">Live: in a form</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            A real <code>sa-sheet</code> dialog opens from the field (standing in for the htmx <code>LookupSheet</code> load). Enter or click toggles the
+            active row; ↑/↓ from the search box. The readout shows what the form would post (repeated <code>name=value</code> pairs).
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm" id="switches"></div>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
+          <form id="live-form" class="bg-card text-card-foreground space-y-6 rounded-xl border p-6 shadow-sm" onsubmit="return false">
+            <div>
+              <h3 class="font-semibold">Edit tour package</h3>
+              <p class="text-muted-foreground text-sm">Iberian Coast Explorer</p>
+            </div>
+            <div data-slot="field" data-orientation="vertical" class="sa-field group/field">
+              <label data-slot="field-label" class="sa-label sa-field-label" for="live-name">Name</label>
+              <input id="live-name" data-slot="input" class="sa-input" value="Iberian Coast Explorer" />
+            </div>
+            <div id="live-destinations"></div>
+            <div id="live-guides"></div>
+          </form>
+          <div class="space-y-2">
+            <p class="text-muted-foreground text-xs tracking-wide uppercase">Posted values</p>
+            <pre id="posted" class="bg-muted text-muted-foreground overflow-x-auto rounded-lg p-4 font-mono text-xs"></pre>
+          </div>
+        </div>
+        <div id="core-effort"></div>
+      </section>
+
+      <!-- ---------------------------------------------------------------- Field displays -->
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">Field displays</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            Each display at empty, a few, many (12) and read-only. Remove buttons work; Add opens the sheet (staged behaviour).
+          </p>
+        </div>
+        <div id="displays" class="space-y-10"></div>
+      </section>
+
+      <!-- ---------------------------------------------------------------- Sheet behaviours -->
+      <section class="space-y-4">
+        <div>
+          <h2 class="text-lg font-semibold">Sheet behaviours</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            The sheet as it would appear, laid out inline. Each one is live and writes to the small field under it.
+          </p>
+        </div>
+        <div id="sheets" class="flex flex-wrap items-start gap-x-8 gap-y-12"></div>
+      </section>
+    </main>
+
+    <!-- The dashboard's shared sheet: markup as sa-sheet emits it; the body is filled when a field opens it -->
+    <sel-dialog>
+      <dialog id="ms-sheet" data-slot="sheet-content" data-side="right" class="sa-sheet-content">
+        <button type="button" commandfor="ms-sheet" command="close" data-slot="button" class="sa-sheet-close sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">
+          <svg class="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="sr-only">Close</span>
+        </button>
+        <div class="sa-sheet-body" id="ms-sheet-body"></div>
+      </dialog>
+    </sel-dialog>
+
+    <script type="module">
+      import { airports, guides, fakeFetch, icons, avatar, airportAvatar, codeChip, button, badge, checkbox, controlBar, backendNote, effort } from "./multiselect-shared.js";
+
+      // ---------------------------------------------------------------- Sources
+      const sources = {
+        airports: {
+          noun: "airports", one: "airport", label: "Destinations",
+          items: airports, fields: ["city", "code", "country"],
+          key: (a) => a.code, title: (a) => a.city, desc: (a) => a.country,
+          media: (a, large) => codeChip(a.code, large),
+          short: (a) => a.code,
+        },
+        guides: {
+          noun: "guides", one: "guide", label: "Guides",
+          items: guides, fields: ["name", "desc"],
+          key: (g) => g.id, title: (g) => g.name, desc: (g) => g.desc,
+          media: (g, large) => avatar(g.name, large ? "default" : "sm"),
+          short: (g) => g.name.split(" ")[0],
+        },
+      };
+      const find = (src, v) => src.items.find((x) => src.key(x) === v);
+
+      // ---------------------------------------------------------------- Field model
+      // A field owns the committed selection; displays render it; sheets edit a draft of it
+      const fields = new Map();
+      let fieldSeq = 0;
+      function makeField({ source, selected = [], display = "list", readonly = false, sheet = "staged", marker = "check", name, mount }) {
+        const f = { id: `f${++fieldSeq}`, source: sources[source], selected: [...selected], display, readonly, sheet, marker, name, mount, expanded: false };
+        fields.set(f.id, f);
+        return f;
+      }
+      const refreshField = (f) => {
+        f.mount.innerHTML = renderField(f);
+        if (f.onChange) f.onChange(f);
+      };
+
+      // ---------------------------------------------------------------- Field displays
+      const removeBtn = (f, v, label) =>
+        button("ghost", "icon-xs", `${icons.x()}<span class="sr-only">Remove ${label}</span>`, `data-remove="${v}" data-field="${f.id}"`);
+      const openBtnAttrs = (f) => `data-ms-open="${f.id}" commandfor="ms-sheet" command="show-modal"`;
+      const hidden = (f) => f.selected.map((v) => `<input type="hidden" name="${f.name ?? f.id}" value="${v}" />`).join("");
+      const label = (f) => `<label data-slot="field-label" class="sa-label sa-field-label">${f.source.label}</label>`;
+      const emptyDashed = (f, h = "") => `
+        <button type="button" ${openBtnAttrs(f)} class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex ${h || "h-9"} w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors">
+          ${icons.search("size-4 shrink-0")}<span class="truncate">Choose ${f.source.noun}</span>
+        </button>`;
+      const none = `<div class="sa-input flex items-center"><span class="text-muted-foreground">None</span></div>`;
+
+      const displays = {
+        // Stacked sa-item rows: media, title, description, remove — then a dashed Add
+        list: (f) => {
+          const s = f.source;
+          if (!f.selected.length) return f.readonly ? none : emptyDashed(f, "h-12");
+          const limit = 5;
+          const shown = f.expanded ? f.selected : f.selected.slice(0, limit);
+          const rows = shown.map((v) => {
+            const x = find(s, v);
+            return `
+              <div data-slot="item" class="sa-item group/item sa-item-variant-${f.readonly ? "muted" : "outline"} sa-item-size-xs flex-nowrap">
+                <div data-slot="item-media" class="sa-item-media">${s.media(x, true)}</div>
+                <div data-slot="item-content" class="sa-item-content min-w-0 gap-0">
+                  <div data-slot="item-title" class="sa-item-title w-full text-sm"><span class="truncate">${s.title(x)}</span></div>
+                  <p data-slot="item-description" class="sa-item-description truncate text-xs">${s.desc(x)}</p>
+                </div>
+                ${f.readonly ? "" : `<div data-slot="item-actions" class="sa-item-actions">${removeBtn(f, v, s.title(x))}</div>`}
+              </div>`;
+          });
+          const more = f.selected.length > limit
+            ? `<button type="button" data-expand="${f.id}" class="text-muted-foreground hover:text-foreground self-start text-xs underline-offset-4 hover:underline">${f.expanded ? "Show fewer" : `Show ${f.selected.length - limit} more`}</button>`
+            : "";
+          const add = f.readonly ? "" : `
+            <button type="button" ${openBtnAttrs(f)} class="text-muted-foreground hover:bg-muted/50 hover:text-foreground flex h-9 w-full items-center justify-center gap-2 rounded-md border border-dashed px-3 text-sm transition-colors">
+              ${icons.plus("size-4 shrink-0")}<span>Add ${s.noun}</span>
+            </button>`;
+          return `<div class="flex flex-col gap-1.5">${rows.join("")}${more}${add}</div>`;
+        },
+
+        // Wrapping chips inside an input-group-shaped box; the box itself opens the sheet
+        chips: (f) => {
+          const s = f.source;
+          const chip = (v) => {
+            const x = find(s, v);
+            return `
+              <span data-slot="badge" class="sa-badge sa-badge-variant-secondary h-6 gap-1 pr-0.5 pl-1 ${s === sources.airports ? "" : "pl-0.5"}">
+                ${s === sources.airports ? `<span class="font-mono text-[0.65rem] opacity-70">${x.code}</span>` : avatar(x.name, "sm").replace('data-size="sm"', 'data-size="sm" style="--avatar-size:1.125rem" ')}
+                <span>${s.title(x)}</span>
+                ${f.readonly ? "<span class='w-1'></span>" : `<button type="button" data-remove="${v}" data-field="${f.id}" class="hover:bg-foreground/10 rounded-sm p-0.5"><span class="sr-only">Remove ${s.title(x)}</span>${icons.x("size-3")}</button>`}
+              </span>`;
+          };
+          if (f.readonly) {
+            return f.selected.length ? `<div class="flex flex-wrap gap-1">${f.selected.map(chip).join("")}</div>` : none;
+          }
+          return `
+            <div role="group" data-slot="input-group" data-open-area="${f.id}"
+                 class="sa-input-group group/input-group h-auto min-h-9 cursor-pointer flex-wrap items-center gap-1 p-1">
+              ${f.selected.map(chip).join("")}
+              ${f.selected.length
+                ? `<button type="button" ${openBtnAttrs(f)} class="text-muted-foreground hover:text-foreground hover:bg-muted flex h-6 items-center gap-1 rounded-md px-1.5 text-xs">${icons.plus("size-3.5")}Add</button>`
+                : `<button type="button" ${openBtnAttrs(f)} class="text-muted-foreground flex h-7 flex-1 items-center justify-between px-2 text-sm">Choose ${s.noun}…${icons.chevrons("size-4 opacity-60")}</button>`}
+            </div>`;
+        },
+
+        // One button: preview of the first few + count; everything is managed in the sheet
+        summary: (f) => {
+          const s = f.source;
+          const items = f.selected.map((v) => find(s, v));
+          const text = items.length <= 2 ? items.map(s.title).join(", ") : `${items.slice(0, 2).map(s.title).join(", ")} and ${items.length - 2} more`;
+          if (f.readonly) return items.length ? `<div class="sa-input flex items-center"><span class="truncate" title="${items.map(s.title).join(", ")}">${text}</span></div>` : none;
+          if (!items.length) return emptyDashed(f);
+          const preview = s === sources.airports
+            ? `<span class="flex shrink-0 gap-1">${items.slice(0, 3).map((x) => codeChip(x.code)).join("")}</span>`
+            : `<span class="flex shrink-0 -space-x-1.5 *:ring-background *:ring-2">${items.slice(0, 3).map((x) => avatar(x.name, "sm")).join("")}</span>`;
+          return `
+            <div role="group" data-slot="button-group" class="sa-button-group flex w-full">
+              <button type="button" ${openBtnAttrs(f)} data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default min-w-0 flex-1 justify-start gap-2 pl-1.5 font-normal">
+                ${preview}
+                <span class="min-w-0 truncate">${text}</span>
+                <span class="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">${items.length}</span>
+                ${icons.chevrons("text-muted-foreground size-4 shrink-0")}
+              </button>
+              <button type="button" data-clear="${f.id}" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-icon">${icons.x()}<span class="sr-only">Clear</span></button>
+            </div>`;
+        },
+
+        // A compact table: for many selections or when rows need more columns
+        table: (f) => {
+          const s = f.source;
+          if (!f.selected.length) return f.readonly ? none : emptyDashed(f, "h-12");
+          const rows = f.selected.map((v) => {
+            const x = find(s, v);
+            return `
+              <tr data-slot="table-row" class="sa-table-row">
+                <td data-slot="table-cell" class="sa-table-cell py-1.5"><div class="flex items-center gap-2">${s.media(x, false)}<span class="truncate">${s.title(x)}</span></div></td>
+                <td data-slot="table-cell" class="sa-table-cell text-muted-foreground max-w-40 truncate py-1.5">${s.desc(x)}</td>
+                ${f.readonly ? "" : `<td data-slot="table-cell" class="sa-table-cell w-8 py-1 text-right">${removeBtn(f, v, s.title(x))}</td>`}
+              </tr>`;
+          });
+          return `
+            <div class="overflow-hidden rounded-md border">
+              <div class="max-h-64 overflow-y-auto">
+                <table data-slot="table" class="sa-table text-sm">
+                  <thead data-slot="table-header" class="sa-table-header bg-muted/50 sticky top-0 z-10 backdrop-blur">
+                    <tr data-slot="table-row" class="sa-table-row">
+                      <th data-slot="table-head" class="sa-table-head h-8">${s.one[0].toUpperCase() + s.one.slice(1)}</th>
+                      <th data-slot="table-head" class="sa-table-head h-8">${s === sources.airports ? "Country" : "Based in"}</th>
+                      ${f.readonly ? "" : `<th data-slot="table-head" class="sa-table-head h-8"></th>`}
+                    </tr>
+                  </thead>
+                  <tbody data-slot="table-body" class="sa-table-body">${rows.join("")}</tbody>
+                </table>
+              </div>
+              ${f.readonly ? "" : `
+              <div class="bg-muted/30 flex items-center justify-between border-t px-2 py-1.5">
+                <span class="text-muted-foreground pl-1 text-xs whitespace-nowrap">${f.selected.length} ${f.selected.length === 1 ? s.one : s.noun}</span>
+                ${button("ghost", "xs", `${icons.plus()}Add ${s.noun}`, openBtnAttrs(f))}
+              </div>`}
+            </div>`;
+        },
+      };
+
+      function renderField(f) {
+        return `
+          <div data-slot="field" data-orientation="vertical" class="sa-field group/field min-w-0" data-field-root="${f.id}">
+            ${label(f)}
+            ${hidden(f)}
+            ${displays[f.display](f)}
+          </div>`;
+      }
+
+      // ---------------------------------------------------------------- Sheet behaviours
+      const sheetKinds = {
+        staged: { name: "Staged + tray", blurb: "Changes are a draft until Done; the chosen items sit in a tray under the search. Cancel/Esc discards." },
+        immediate: { name: "Immediate", blurb: "Each toggle writes straight to the field; the sheet is just a picker. No footer decision, only Close." },
+        tabs: { name: "All / Selected tabs", blurb: "A Selected tab reviews a long selection without scrolling the results. Staged." },
+        split: { name: "Two panes", blurb: "A wide sheet: results left, the ordered selection right (drag handles for order). Staged." },
+        add: { name: "Add only", blurb: "For related lists: the sheet only adds. Already-added rows are disabled; removal happens in the field." },
+      };
+      const pageSize = 8;
+
+      // A sheet instance edits one field; draft === field.selected for the write-through kinds
+      function makeSheet(f, kind, marker) {
+        const writeThrough = kind === "immediate" || kind === "add";
+        return { f, kind, marker: kind === "add" ? "add" : marker, src: f.source, draft: writeThrough ? f.selected : [...f.selected], writeThrough, term: "", shown: pageSize, tab: "all", reqId: 0 };
+      }
+
+      const checkIndicator = `<svg class="sa-command-item-indicator" viewBox="0 0 24 24" stroke-linejoin="round" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" width="24" height="24"><path d="M20 6 9 17l-5-5"></path></svg>`;
+
+      function rowHtml(sh, x) {
+        const s = sh.src;
+        const v = s.key(x);
+        const on = sh.draft.includes(v);
+        const lead = sh.marker === "checkbox" ? `<span class="pointer-events-none flex">${checkbox(on, 'tabindex="-1" aria-hidden="true" data-box')}</span>` : "";
+        const trail =
+          sh.marker === "check" ? checkIndicator
+          : sh.marker === "add" ? (on ? badge("secondary", "Added", "ml-auto") : `<span class="text-muted-foreground ml-auto flex items-center gap-1 text-xs opacity-0 group-data-[selected=true]/command-item:opacity-100">${icons.plus("size-3.5")}Add</span>`)
+          : "";
+        return `
+          <div role="option" aria-selected="${on}" tabindex="-1" data-slot="command-item" data-value="${v}" ${on ? 'data-checked="true"' : ""}
+               ${sh.marker === "add" && on ? 'data-disabled="true" aria-disabled="true"' : ""} class="sa-command-item group/command-item">
+            ${lead}
+            ${s.media(x, true)}
+            <div class="flex min-w-0 flex-1 flex-col">
+              <span class="truncate">${s.title(x)}</span>
+              <span class="text-muted-foreground truncate text-xs">${s.desc(x)}</span>
+            </div>
+            ${trail}
+          </div>`;
+      }
+      const moreHtml = `<div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="" data-more class="sa-command-item group/command-item text-muted-foreground justify-center">Load more</div>`;
+      const skeleton = `<div class="sa-command-item pointer-events-none" aria-hidden="true"><div class="bg-muted size-7 shrink-0 animate-pulse rounded-md"></div><div class="flex flex-1 flex-col gap-1.5"><div class="bg-muted h-3.5 w-2/5 animate-pulse rounded"></div><div class="bg-muted h-3 w-3/5 animate-pulse rounded"></div></div></div>`;
+
+      const tabsHtml = (sh) => `
+        <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs px-6">
+          <div data-slot="tabs-list" data-variant="default" role="tablist" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default w-full">
+            <button type="button" role="tab" data-slot="tabs-trigger" data-tab="all" ${sh.tab === "all" ? "data-active" : ""} class="sa-tabs-trigger">All</button>
+            <button type="button" role="tab" data-slot="tabs-trigger" data-tab="selected" ${sh.tab === "selected" ? "data-active" : ""} class="sa-tabs-trigger">Selected <span data-count class="tabular-nums">${sh.draft.length}</span></button>
+          </div>
+        </div>`;
+
+      const searchHtml = (sh, uid) => `
+        <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+          <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+            <input placeholder="Search ${sh.src.noun}" type="text" id="${uid}-input" aria-controls="${uid}-list" role="combobox" aria-autocomplete="list" aria-expanded="true"
+                   autocomplete="off" spellcheck="false" data-slot="command-input" class="sa-command-input" data-search autofocus />
+            <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icons.search("sa-command-input-icon")}</div>
+          </div>
+        </div>`;
+
+      const footerHtml = (sh) => {
+        const n = sh.draft.length;
+        if (sh.kind === "immediate" || sh.kind === "add") {
+          return `
+            <div data-slot="sheet-footer" class="sa-sheet-footer flex-row items-center justify-between border-t">
+              <span class="text-muted-foreground text-xs" data-note>${sh.kind === "add" ? "Rows are added as you pick them." : "Changes apply as you pick."}</span>
+              ${button("outline", "sm", "Close", 'data-close')}
+            </div>`;
+        }
+        return `
+          <div data-slot="sheet-footer" class="sa-sheet-footer flex-row items-center justify-between border-t">
+            <span class="text-muted-foreground flex items-center gap-2 text-xs"><span data-count-text>${n} selected</span>${button("link", "xs", "Clear", 'data-clear-draft class="h-auto px-0"')}</span>
+            <span class="flex gap-2">${button("outline", "sm", "Cancel", "data-close")}${button("default", "sm", "Done", "data-done")}</span>
+          </div>`;
+      };
+
+      // The tray under the search (staged) and the right pane (split) both list the draft
+      const trayHtml = (sh) => {
+        if (!sh.draft.length) return `<p class="text-muted-foreground text-xs">Nothing selected yet.</p>`;
+        return sh.draft.map((v) => {
+          const x = find(sh.src, v);
+          return `<span data-slot="badge" class="sa-badge sa-badge-variant-outline h-6 gap-1 pr-0.5">${sh.src.short(x)}<button type="button" data-untoggle="${v}" class="hover:bg-foreground/10 rounded-sm p-0.5"><span class="sr-only">Remove ${sh.src.title(x)}</span>${icons.x("size-3")}</button></span>`;
+        }).join("");
+      };
+      const paneHtml = (sh) => {
+        if (!sh.draft.length) return `<div class="text-muted-foreground flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-sm">${icons.listChecks("size-6 opacity-50")}Pick ${sh.src.noun} on the left; they appear here in order.</div>`;
+        return sh.draft.map((v, i) => {
+          const x = find(sh.src, v);
+          return `
+            <div class="hover:bg-muted/50 group/row flex items-center gap-2 rounded-md px-1.5 py-1">
+              <span class="text-muted-foreground cursor-grab opacity-40 group-hover/row:opacity-100">${icons.grip("size-4")}</span>
+              <span class="text-muted-foreground w-4 text-right text-xs tabular-nums">${i + 1}</span>
+              ${sh.src.media(x, false)}
+              <span class="min-w-0 flex-1 truncate text-sm">${sh.src.title(x)}</span>
+              ${button("ghost", "icon-xs", `${icons.x()}<span class="sr-only">Remove</span>`, `data-untoggle="${v}"`)}
+            </div>`;
+        }).join("");
+      };
+
+      let uidSeq = 0;
+      function sheetHtml(sh) {
+        const uid = `cmd${++uidSeq}`;
+        sh.uid = uid;
+        const s = sh.src;
+        const title = sh.kind === "add" ? `Add ${s.noun}` : `Choose ${s.noun}`;
+        const command = `
+          <sel-command id="${uid}" class="sa-command min-h-0 flex-1 bg-transparent px-6 ${sh.kind === "split" ? "pb-6" : "pb-3"}" data-slot="command" data-filter="none">
+            ${searchHtml(sh, uid)}
+            ${sh.kind === "staged" ? `<div data-tray class="mt-3 flex max-h-[4.5rem] flex-wrap gap-1 overflow-y-auto">${trayHtml(sh)}</div>` : ""}
+            <div id="${uid}-list" role="listbox" aria-multiselectable="true" aria-label="${s.noun}" tabindex="-1" data-slot="command-list" class="sa-command-list mt-3 max-h-none flex-1">
+              <div data-items>${skeleton.repeat(4)}</div>
+            </div>
+          </sel-command>`;
+        if (sh.kind === "split") {
+          return `
+            <div data-sheet class="flex h-full min-h-0 flex-col">
+              <div data-slot="sheet-header" class="sa-sheet-header pr-12"><h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${title}</h2></div>
+              <div class="grid min-h-0 flex-1 grid-cols-2">
+                <div class="flex min-h-0 flex-col">${command}</div>
+                <div class="flex min-h-0 flex-col border-l">
+                  <div class="flex items-center justify-between px-4 pb-2">
+                    <p class="text-sm font-medium">Selected <span data-count class="text-muted-foreground tabular-nums">${sh.draft.length}</span></p>
+                    ${button("ghost", "xs", "Clear all", "data-clear-draft")}
+                  </div>
+                  <div data-pane class="min-h-0 flex-1 overflow-y-auto px-3 pb-4">${paneHtml(sh)}</div>
+                </div>
+              </div>
+              ${footerHtml(sh)}
+            </div>`;
+        }
+        return `
+          <div data-sheet class="flex h-full min-h-0 flex-col">
+            <div data-slot="sheet-header" class="sa-sheet-header pr-12">
+              <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${title}</h2>
+              ${sh.kind === "add" ? `<p data-slot="sheet-description" class="sa-sheet-description">${s.label} already on the tour are marked Added.</p>` : ""}
+            </div>
+            ${sh.kind === "tabs" ? `<div class="pb-3">${tabsHtml(sh)}</div>` : ""}
+            ${command}
+            ${footerHtml(sh)}
+          </div>`;
+      }
+
+      // Stand-in for the htmx results swap: the server pages the search; the Selected tab is local
+      async function loadResults(sh, root, append = false) {
+        const items = root.querySelector("[data-items]");
+        if (sh.kind === "tabs" && sh.tab === "selected") {
+          const t = sh.term.trim().toLowerCase();
+          const list = sh.draft.map((v) => find(sh.src, v)).filter((x) => !t || sh.src.fields.some((k) => String(x[k]).toLowerCase().includes(t)));
+          items.innerHTML = list.length
+            ? list.map((x) => rowHtml(sh, x)).join("")
+            : `<p class="text-muted-foreground py-6 text-center text-sm">No selected ${sh.src.noun}${t ? " match" : " yet"}.</p>`;
+          return;
+        }
+        const id = ++sh.reqId;
+        if (!append) items.innerHTML = skeleton.repeat(4);
+        const page = append ? Math.floor(sh.shown / pageSize) - 1 : 0;
+        const res = await fakeFetch(sh.src.items, sh.term, { fields: sh.src.fields, page, pageSize, delay: 250 });
+        if (id !== sh.reqId) return;
+        const html = res.items.map((x) => rowHtml(sh, x)).join("") + (res.hasMore ? moreHtml : "");
+        if (append) root.querySelector("[data-more]")?.remove(), items.insertAdjacentHTML("beforeend", html);
+        else items.innerHTML = res.total ? html : `<p class="text-muted-foreground flex flex-col items-center gap-2 py-8 text-sm">${icons.searchX("size-5")}No ${sh.src.noun} match “${sh.term}”.</p>`;
+      }
+
+      // Update everything that shows the draft, without re-rendering the list (keeps the active row)
+      function syncDraft(sh, root) {
+        root.querySelectorAll("[data-items] [data-value]:not([data-more])").forEach((el) => {
+          const on = sh.draft.includes(el.dataset.value);
+          el.toggleAttribute("data-checked", on);
+          if (on) el.setAttribute("data-checked", "true");
+          el.setAttribute("aria-selected", on);
+          const box = el.querySelector("[data-box]");
+          if (box) box.checked = on;
+          if (sh.marker === "add" && on && !el.dataset.disabled) el.outerHTML = rowHtml(sh, find(sh.src, el.dataset.value));
+        });
+        root.querySelectorAll("[data-count]").forEach((el) => (el.textContent = sh.draft.length));
+        root.querySelectorAll("[data-count-text]").forEach((el) => (el.textContent = `${sh.draft.length} selected`));
+        const tray = root.querySelector("[data-tray]");
+        if (tray) tray.innerHTML = trayHtml(sh);
+        const pane = root.querySelector("[data-pane]");
+        if (pane) pane.innerHTML = paneHtml(sh);
+        if (sh.writeThrough) refreshField(sh.f);
+      }
+
+      function toggle(sh, root, v) {
+        if (!v) return;
+        const i = sh.draft.indexOf(v);
+        if (sh.marker === "add") {
+          if (i >= 0) return;
+          sh.draft.push(v);
+          const note = root.querySelector("[data-note]");
+          if (note) note.innerHTML = `<span class="text-foreground">Added ${sh.src.title(find(sh.src, v))}</span>`;
+        } else if (i >= 0) sh.draft.splice(i, 1);
+        else sh.draft.push(v);
+        syncDraft(sh, root);
+      }
+
+      function mountSheet(root, sh, { onClose } = {}) {
+        root.innerHTML = sheetHtml(sh);
+        root._sheet = sh;
+        sh.onClose = onClose;
+        loadResults(sh, root);
+      }
+
+      // ---------------------------------------------------------------- Events (delegated; each sheet root carries its instance)
+      const sheetRootOf = (el) => el.closest("[data-sheet-root]");
+      document.addEventListener("input", (e) => {
+        if (!e.target.matches("[data-search]")) return;
+        const root = sheetRootOf(e.target);
+        const sh = root._sheet;
+        sh.term = e.target.value;
+        sh.shown = pageSize;
+        clearTimeout(sh.timer);
+        sh.timer = setTimeout(() => loadResults(sh, root), 150);
+      });
+      document.addEventListener("itemselect", (e) => {
+        const root = sheetRootOf(e.target);
+        if (!root) return;
+        const sh = root._sheet;
+        if (e.target.matches("[data-more]")) {
+          sh.shown += pageSize;
+          e.target.innerHTML = `${icons.loader("size-4 animate-spin")}`;
+          loadResults(sh, root, true);
+          return;
+        }
+        toggle(sh, root, e.detail.value);
+      });
+      document.addEventListener("click", (e) => {
+        const t = e.target;
+        const root = sheetRootOf(t);
+        if (root) {
+          const sh = root._sheet;
+          const un = t.closest("[data-untoggle]");
+          if (un) return toggle(sh, root, un.dataset.untoggle);
+          const tab = t.closest("[data-tab]");
+          if (tab) {
+            sh.tab = tab.dataset.tab;
+            root.querySelectorAll("[data-tab]").forEach((b) => b.toggleAttribute("data-active", b === tab));
+            return loadResults(sh, root);
+          }
+          if (t.closest("[data-clear-draft]")) {
+            sh.draft.splice(0, sh.draft.length);
+            syncDraft(sh, root);
+            if (sh.tab === "selected") loadResults(sh, root);
+            return;
+          }
+          if (t.closest("[data-done]")) {
+            sh.f.selected = [...sh.draft];
+            refreshField(sh.f);
+            return sh.onClose?.(true);
+          }
+          if (t.closest("[data-close]")) return sh.onClose?.(false);
+        }
+
+        const rm = t.closest("[data-remove]");
+        if (rm) {
+          const f = fields.get(rm.dataset.field);
+          f.selected = f.selected.filter((v) => v !== rm.dataset.remove);
+          return refreshField(f);
+        }
+        const clr = t.closest("[data-clear]");
+        if (clr) {
+          const f = fields.get(clr.dataset.clear);
+          f.selected = [];
+          return refreshField(f);
+        }
+        const exp = t.closest("[data-expand]");
+        if (exp) {
+          const f = fields.get(exp.dataset.expand);
+          f.expanded = !f.expanded;
+          return refreshField(f);
+        }
+        // Clicking empty space in the chips box opens the sheet too
+        const area = t.closest("[data-open-area]");
+        if (area && !t.closest("button")) area.querySelector("[data-ms-open]")?.click();
+        const open = t.closest("[data-ms-open]");
+        if (open) openDialogFor(fields.get(open.dataset.msOpen));
+      });
+
+      // ---------------------------------------------------------------- The real dialog
+      const dialog = document.getElementById("ms-sheet");
+      const dialogBody = document.getElementById("ms-sheet-body");
+      dialogBody.setAttribute("data-sheet-root", "");
+      dialogBody.classList.add("flex", "min-h-0", "flex-1", "flex-col");
+      function openDialogFor(f) {
+        const sh = makeSheet(f, f.sheet, f.marker);
+        dialog.style.maxWidth = sh.kind === "split" ? "52rem" : "";
+        dialog.style.width = sh.kind === "split" ? "100%" : "";
+        mountSheet(dialogBody, sh, { onClose: () => dialog.close() });
+        // Native command="show-modal" opens it; focus the search once it is open
+        requestAnimationFrame(() => dialogBody.querySelector("[data-search]")?.focus());
+      }
+
+      // ---------------------------------------------------------------- Live form
+      const state = { display: "list", sheet: "staged", marker: "check" };
+      const posted = document.getElementById("posted");
+      const showPosted = () => {
+        const fd = new FormData(document.getElementById("live-form"));
+        posted.textContent = ["destinations", "guides"].map((n) => `${n} = [${fd.getAll(n).map((v) => `"${v}"`).join(", ")}]`).join("\n");
+      };
+      const liveDest = makeField({ source: "airports", selected: ["LIS", "MAD", "BCN"], name: "destinations", mount: document.getElementById("live-destinations") });
+      const liveGuides = makeField({ source: "guides", selected: ["bruno", "gabriela"], name: "guides", mount: document.getElementById("live-guides") });
+      for (const f of [liveDest, liveGuides]) {
+        f.onChange = showPosted;
+        refreshField(f);
+      }
+
+      const seg = (key, title, options) => `
+        <div class="flex items-center gap-2">
+          <span class="text-muted-foreground text-xs">${title}</span>
+          <div data-slot="tabs" class="sa-tabs group/tabs"><div data-slot="tabs-list" data-variant="default" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default">
+            ${options.map(([v, l]) => `<button type="button" data-slot="tabs-trigger" data-set="${key}" data-value="${v}" ${state[key] === v ? "data-active" : ""} class="sa-tabs-trigger">${l}</button>`).join("")}
+          </div></div>
+        </div>`;
+      const switches = document.getElementById("switches");
+      switches.innerHTML =
+        seg("display", "Field", [["list", "Item list"], ["chips", "Chips"], ["summary", "Summary"], ["table", "Table"]]) +
+        seg("sheet", "Sheet", Object.entries(sheetKinds).map(([k, v]) => [k, v.name])) +
+        seg("marker", "Row marker", [["check", "Trailing check"], ["checkbox", "Leading checkbox"]]);
+      switches.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-set]");
+        if (!b) return;
+        state[b.dataset.set] = b.dataset.value;
+        switches.querySelectorAll(`[data-set="${b.dataset.set}"]`).forEach((x) => x.toggleAttribute("data-active", x === b));
+        for (const f of [liveDest, liveGuides]) {
+          f.display = state.display;
+          f.sheet = state.sheet;
+          f.marker = state.marker;
+          refreshField(f);
+        }
+      });
+
+      // ---------------------------------------------------------------- Display gallery
+      const many = ["LIS", "MAD", "BCN", "CDG", "FCO", "ATH", "IST", "AMS", "ZRH", "LHR", "KEF", "CAI"];
+      const displayBuild = {"list": {"level": 2, "uses": ["<code>sa-item</code> Outline / ExtraSmall with <code>_LookupSelection</code>: the Card layout today", "<code>sa-button</code> for remove and the dashed Add (the empty state today)"], "needs": ["Rendering N rows with remove each", "“Show N more” collapse past 5"]}, "chips": {"level": 2, "uses": ["<code>sa-badge</code>; <code>sa-combobox-chip</code> rules in the shadcn themes", "Code chip and avatar parts", "<code>sa-input</code> box styling"], "needs": ["Chip box markup with remove buttons", "Chip CSS for parallax, ledger and aurora"]}, "summary": {"level": 2, "uses": ["The Input layout's <code>sa-button-group</code> and outline button, unchanged", "<code>sa-badge</code> for the count"], "needs": ["Summary text (“A, B and 1 more”) and its label options"], "note": "The smallest change to today's editor."}, "table": {"level": 2, "uses": ["<code>sa-table</code>, <code>sa-button</code>"], "needs": ["Table rendering with its own scroll and a footer Add", "Grows into the related-items repeater on the inline page if the link gets extra fields"]}};
+      const sheetBuild = {"staged": {"level": 2, "uses": ["<code>sa-sheet-footer</code> and buttons", "<code>sa-badge</code> chips for the tray"], "needs": ["A draft separate from the field; Done commits, Cancel / Esc discards", "The tray under the search"]}, "immediate": {"level": 1, "uses": ["Everything in the core"], "needs": ["Write each toggle straight to the field; only a Close button"], "note": "The cheapest behaviour: little beyond the core."}, "tabs": {"level": 2, "uses": ["<code>sa-tabs</code>"], "needs": ["A Selected tab rendered from the draft, keeping display data for items outside the current results"]}, "split": {"level": 3, "uses": ["The sheet, widened with an inline style", "<code>sa-item</code> rows"], "needs": ["A wide two-pane layout", "Drag reordering (no drag primitive ships) and posting the order"]}, "add": {"level": 2, "uses": ["<code>sel-command</code> disabled rows (<code>data-disabled</code>)"], "needs": ["The server marks already-added ids as disabled", "Append-only semantics; removal stays in the field"], "note": "Pairs with the related-items table on the inline page."}};
+      const displayInfo = {
+        list: ["Item list", "Stacked items with media and description, a dashed Add below. Long lists collapse after 5. Best for up to ~10 rich items."],
+        chips: ["Chips", "Chips wrap inside an input-shaped box; clicking the box or Add opens the sheet. Compact; scales to ~20 before it gets noisy."],
+        summary: ["Summary button", "The field is one button: a preview of the first few plus a count. Everything is managed in the sheet. Constant height at any count."],
+        table: ["Table", "A small table with its own scroll and a footer Add. For large selections or when the relation will grow extra columns."],
+      };
+      const gallery = document.getElementById("displays");
+      for (const [key, [title, blurb]] of Object.entries(displayInfo)) {
+        const sec = document.createElement("div");
+        sec.className = "space-y-3";
+        sec.innerHTML = `
+          <div><h3 class="font-semibold">${title}</h3><p class="text-muted-foreground max-w-3xl text-sm">${blurb}</p></div>
+          <div class="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-5">
+            ${["Empty", "Three", "Twelve", "Guides", "Read-only"].map((s) => `<div class="space-y-2"><p class="text-muted-foreground text-[0.7rem] tracking-wide uppercase">${s}</p><div data-cell="${s}"></div></div>`).join("")}
+          </div>
+          ${effort(displayBuild[key])}`;
+        gallery.append(sec);
+        const cell = (s) => sec.querySelector(`[data-cell="${s}"]`);
+        [
+          makeField({ source: "airports", display: key, mount: cell("Empty") }),
+          makeField({ source: "airports", display: key, selected: ["LIS", "CPT", "HND"], mount: cell("Three") }),
+          makeField({ source: "airports", display: key, selected: many, mount: cell("Twelve") }),
+          makeField({ source: "guides", display: key, selected: ["amara", "hiro", "mei", "pablo"], mount: cell("Guides") }),
+          makeField({ source: "airports", display: key, selected: ["LIS", "CPT", "HND", "SYD"], readonly: true, mount: cell("Read-only") }),
+        ].forEach(refreshField);
+      }
+
+      // ---------------------------------------------------------------- Inline sheets
+      const sheetsEl = document.getElementById("sheets");
+      for (const [kind, info] of Object.entries(sheetKinds)) {
+        const wrap = document.createElement("section");
+        wrap.className = `space-y-3 ${kind === "split" ? "w-full max-w-[52rem]" : "w-full max-w-[24rem]"}`;
+        wrap.innerHTML = `
+          <div><h3 class="font-semibold">${info.name}</h3><p class="text-muted-foreground text-sm">${info.blurb}</p></div>
+          <div class="bg-background relative flex h-[600px] flex-col overflow-hidden rounded-xl border shadow-lg">
+            <span class="text-muted-foreground absolute top-4 right-4 opacity-70">${icons.x("size-4")}</span>
+            <div data-sheet-root class="flex min-h-0 flex-1 flex-col pt-0"></div>
+          </div>
+          <div data-mini></div>
+          ${effort(sheetBuild[kind])}`;
+        sheetsEl.append(wrap);
+        const f = makeField({ source: "airports", display: kind === "split" ? "table" : "chips", selected: ["ATH", "BCN"], mount: wrap.querySelector("[data-mini]") });
+        refreshField(f);
+        const root = wrap.querySelector("[data-sheet-root]");
+        const sh = makeSheet(f, kind, "check");
+        mountSheet(root, sh, { onClose: () => mountSheet(root, makeSheet(f, kind, "check"), sh) });
+        // Re-open with a fresh draft after Done/Cancel so the inline frame stays usable
+        const reopen = () => {
+          const next = makeSheet(f, kind, "check");
+          mountSheet(root, next, { onClose: reopen });
+        };
+        root._sheet.onClose = reopen;
+      }
+
+      document.getElementById("core-effort").innerHTML = effort({"level": 3, "data": "entity", "uses": ["The shared dashboard sheet loaded over htmx (LookupSheet), with search, server paging, Load more, skeleton and error states", "<code>sel-command</code> keyboard handling, and the <code>dashboard-lookup-editor</code> / <code>dashboard-lookup-picker</code> components", "Item parts (<code>_LookupSelection</code>: code, avatar, media, description) and the LookupEditor's layout, media and label options", "Create from the lookup (nested sheet)"], "needs": ["Multi mode in the picker: rows toggle instead of select-and-close, the sheet stays open", "Checked state that survives new searches and pages: results must render already-selected ids as checked", "The editor holding N values (repeated hidden inputs) and the selection endpoint returning many", "Field display and sheet behaviour on top (boxes below show what each adds)"], "note": "Every option on this page shares this core; the boxes below show only what each display or behaviour adds."});
+      document.querySelector("main > header").insertAdjacentHTML("beforeend", backendNote());
+      controlBar();
+    </script>
+  </body>
+</html>

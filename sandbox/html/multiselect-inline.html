@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inline multiselect patterns</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; nova to start. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1400px] space-y-12 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Multiselect exploration</p>
+        <h1 class="text-2xl font-semibold">Inline multiselect patterns</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Patterns that live directly in the form: no popover, no sheet. They work best when the options fit on screen, when each choice needs extra
+          data, or when the selection is really a two-dimensional set. Every demo is a real <code>&lt;form&gt;</code>; the box under it shows what the
+          form would post. The last section covers read-only displays for index grids and detail views, which every multiselect editor needs regardless
+          of how values are picked.
+        </p>
+        <nav class="flex flex-wrap gap-2 pt-2 text-sm" id="toc"></nav>
+      </header>
+
+      <div id="panels" class="grid grid-cols-1 gap-x-10 gap-y-14 lg:grid-cols-2 [&>*]:min-w-0"></div>
+    </main>
+
+    <script type="module">
+      import { airports, guides, amenities, airportsByRegion, icons, avatar, codeChip, button, badge, checkbox, field, panel, controlBar, backendNote, effort } from "./multiselect-shared.js";
+
+      // ---------------------------------------------------------------- Helpers local to this page
+      const suits = (...sizes) =>
+        `<span class="mt-1 flex flex-wrap items-center gap-1.5"><span class="text-foreground text-xs font-medium">Suits</span>${sizes.map((s) => badge("outline", s)).join("")}</span>`;
+      const blurb = (text, ...sizes) => `${text}${suits(...sizes)}`;
+      // The form wrapper every demo sits in, with a readout of what it posts
+      const demo = (id, body) => `
+        <form data-demo="${id}" class="space-y-6" onsubmit="return false">
+          ${body}
+          <div class="bg-muted/50 rounded-md border border-dashed px-3 py-2">
+            <p class="text-muted-foreground mb-1 text-[0.65rem] font-medium tracking-wide uppercase">Posts</p>
+            <pre data-post class="text-muted-foreground max-h-32 overflow-y-auto font-mono text-xs whitespace-pre-wrap"></pre>
+          </div>
+        </form>`;
+      const updatePost = (form) => {
+        const lines = [...new FormData(form)].filter(([n]) => !n.startsWith("_")).map(([n, v]) => `${n}=${v}`);
+        form.querySelector("[data-post]").textContent = lines.length ? lines.join("\n") : "(nothing)";
+      };
+      const inputGroupSearch = (placeholder, attrs = "") => `
+        <div role="group" data-slot="input-group" class="sa-input-group group/input-group">
+          <input type="search" autocomplete="off" placeholder="${placeholder}" ${attrs} data-slot="input-group-control" class="sa-input sa-input-group-input" />
+          <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icons.search()}</div>
+        </div>`;
+      const toggle = (name, value, label, checked, cls = "", extra = "") => `
+        <label data-slot="toggle" data-variant="outline" data-size="sm" class="sa-toggle group/toggle sa-toggle-variant-outline sa-toggle-size-sm ${cls}">
+          <input type="checkbox" name="${name}" value="${value}" ${checked ? "checked" : ""} data-slot="toggle-input" class="peer sr-only" />${extra}${label}
+        </label>`;
+      const toggleGroupItem = (name, value, label, checked) => `
+        <label data-slot="toggle-group-item" data-variant="outline" data-size="sm" data-spacing="0" class="sa-toggle group/toggle sa-toggle-variant-outline sa-toggle-size-sm sa-toggle-group-item">
+          <input type="checkbox" name="${name}" value="${value}" ${checked ? "checked" : ""} data-slot="toggle-group-item-input" class="peer sr-only" />${label}
+        </label>`;
+      const toggleGroup = (items, label) =>
+        `<div role="group" aria-label="${label}" data-slot="toggle-group" data-variant="outline" data-size="sm" data-spacing="0" data-orientation="horizontal" class="sa-toggle-group group/toggle-group">${items}</div>`;
+      // ChoiceGroup item markup (CheckboxGroup default variant)
+      const choiceItem = (name, id, value, label, checked) => `
+        <div data-slot="field" data-orientation="horizontal" class="sa-field group/field sa-field-orientation-horizontal">
+          ${checkbox(checked, `name="${name}" id="${id}" value="${value}"`)}
+          <label data-slot="field-label" for="${id}" class="sa-field-label group/field-label peer/field-label">${label}</label>
+        </div>`;
+      // ChoiceGroup ChoiceCard item markup, with the guide's avatar added before the content
+      const choiceCard = (name, g, checked) => `
+        <label data-slot="field-label" for="card-${g.id}" class="sa-field-label group/field-label peer/field-label">
+          <div data-slot="field" data-orientation="horizontal" class="sa-field group/field sa-field-orientation-horizontal items-center">
+            ${avatar(g.name, "default")}
+            <div data-slot="field-content" class="sa-field-content group/field-content min-w-0">
+              <div data-slot="field-label" class="sa-field-title">${g.name}</div>
+              <p data-slot="field-description" class="sa-field-description truncate">${g.desc}</p>
+            </div>
+            ${checkbox(checked, `name="${name}" id="card-${g.id}" value="${g.id}"`)}
+          </div>
+        </label>`;
+      const table = (head, body, cls = "") => `
+        <div data-slot="table-container" class="sa-table-container">
+          <table data-slot="table" class="sa-table ${cls}">
+            <thead data-slot="table-header" class="sa-table-header"><tr data-slot="table-row" class="sa-table-row">${head.map((h) => `<th data-slot="table-head" class="sa-table-head ${h.cls ?? ""}">${h.label ?? h}</th>`).join("")}</tr></thead>
+            <tbody data-slot="table-body" class="sa-table-body">${body}</tbody>
+          </table>
+        </div>`;
+      const td = (body, cls = "") => `<td data-slot="table-cell" class="sa-table-cell ${cls}">${body}</td>`;
+      const nativeSelect = (name, options, selected) => `
+        <div data-slot="native-select-wrapper" data-size="sm" class="sa-native-select-wrapper group/native-select">
+          <select name="${name}" data-slot="native-select" data-size="sm" class="sa-native-select">${options.map((o) => `<option ${o === selected ? "selected" : ""}>${o}</option>`).join("")}</select>
+          ${icons.chevronDown("sa-native-select-icon")}
+        </div>`;
+      const avatarGroup = (people, max, size = "sm") => {
+        const shown = people.slice(0, max);
+        const rest = people.length - shown.length;
+        return `<div data-slot="avatar-group" class="sa-avatar-group group/avatar-group" title="${people.map((p) => p.name).join(", ")}">
+          ${shown.map((p) => avatar(p.name, size)).join("")}
+          ${rest > 0 ? `<div data-slot="avatar-group-count" class="sa-avatar-group-count">+${rest}</div>` : ""}
+        </div>`;
+      };
+
+      // ---------------------------------------------------------------- 1. Toggle chips
+      const check = icons.check("hidden size-3.5 group-has-[:checked]/toggle:block");
+      const p1 = panel({
+        id: "toggles",
+        build: {"level": 1, "data": "choices", "uses": ["<code>sa-toggle-group</code> type=Multiple (checkbox-backed, posts a collection)", "<code>sa-toggle</code> for the pills", "Scalar-collection binding used by the CheckboxGroup editor"], "needs": ["A Dashboard editor (or option) that renders a multiple toggle group; ToggleButtons is single-value (segmented control) today", "Pill styling through classes"]},
+        title: "1 · Toggle chips",
+        blurb: blurb(
+          "Every option is visible and one click toggles it. Pill toggles are <code>sa-toggle</code> labels around a hidden checkbox, so they post with no JavaScript. The joined <code>sa-toggle-group</code> (multiple type) suits short, ordered sets such as weekdays or meals.",
+          "~3–15 fixed options",
+        ),
+        body: demo(
+          "toggles",
+          field(
+            "Amenities",
+            `<div class="flex flex-wrap gap-2">${amenities.map((a, i) => toggle("Amenities", a.id, a.name, [0, 1, 3].includes(i), "rounded-full", check)).join("")}</div>`,
+            "Pill toggles with a check that appears when on.",
+          ) +
+            field(
+              "Departure days",
+              toggleGroup(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d, i) => toggleGroupItem("Days", d, d, [0, 2, 4].includes(i))).join(""), "Departure days"),
+              "Joined toggle group, multiple type.",
+            ) +
+            field(
+              "Meals",
+              `<div class="flex flex-wrap gap-2">${["Breakfast", "Lunch", "Dinner"].map((m, i) => toggle("Meals", m.toLowerCase(), m, i === 0, "")).join("")}</div>`,
+              "Plain square toggles, for comparison.",
+            ),
+        ),
+        pros: ["One click per change; the whole set is visible", "Posts natively via checkboxes", "Uses existing Toggle and ToggleGroup components"],
+        cons: ["Doesn't scale past ~15 options or long labels", "Can't search, and has no room for descriptions"],
+      });
+
+      // ---------------------------------------------------------------- 2. Checkbox list + searchable checklist
+      const checklistRow = (a) => `
+        <label data-row="${a.code}" class="hover:bg-muted/60 flex cursor-pointer items-center gap-3 px-3 py-2 text-sm has-[:checked]:bg-accent/40">
+          ${checkbox(false, `name="Destinations" value="${a.code}"`)}
+          ${codeChip(a.code)}
+          <span class="min-w-0 flex-1 truncate">${a.city}</span>
+          <span class="text-muted-foreground truncate text-xs">${a.country}</span>
+        </label>`;
+      const p2 = panel({
+        id: "checklist",
+        build: {"level": 2, "data": "both", "uses": ["CheckboxGroup editor and <code>sa-checkbox-group</code>: the column version is just grid classes on it today", "<code>sa-input</code>, <code>sa-checkbox</code>, <code>sa-badge</code>"], "needs": ["Script for search, select all/none on the filtered rows, selected-only filter and count", "Remote version: reuse the Lookup's paged search endpoint"], "note": "Columns: exists today. Searchable: small."},
+        title: "2 · Checkbox list and searchable checklist",
+        blurb: blurb(
+          "The existing <code>CheckboxGroup</code> laid out in columns covers small sets. For larger sets, a bordered, scrollable checklist adds search, select all/none (applied to the filtered rows), a selected-only filter and a running count. Search filters on the client here; a remote version would page like the sheet lookup does.",
+          "~5–15 → columns",
+          "~30–150 → searchable",
+        ),
+        body: demo(
+          "checklist",
+          field(
+            "Amenities",
+            `<div data-slot="checkbox-group" role="group" class="sa-field-group group/field-group grid gap-3 sm:grid-cols-2 xl:grid-cols-3">${amenities.map((a, i) => choiceItem("Amenities", `am-${a.id}`, a.id, a.name, [1, 4].includes(i))).join("")}</div>`,
+            "CheckboxGroup default variant, in a 3-column grid.",
+          ) +
+            field(
+              "Destinations",
+              `<div data-checklist class="overflow-hidden rounded-lg border">
+                <div class="flex items-center gap-2 border-b p-2">
+                  <div class="flex-1">${inputGroupSearch("Filter airports", "data-filter")}</div>
+                  ${toggle("_selectedOnly", "1", "Selected only", false, "shrink-0", "")}
+                </div>
+                <div class="text-muted-foreground flex items-center justify-between border-b px-3 py-1.5 text-xs">
+                  <span data-count></span>
+                  <span class="flex gap-1">${button("ghost", "xs", "Select all", "data-all")}${button("ghost", "xs", "Clear", "data-none")}</span>
+                </div>
+                <div data-list class="max-h-64 divide-y overflow-y-auto">${airports.map(checklistRow).join("")}</div>
+                <p data-empty hidden class="text-muted-foreground px-3 py-6 text-center text-sm">No airports match.</p>
+              </div>`,
+              "Select all and Clear act on the rows the filter shows.",
+            ),
+        ),
+        pros: ["Plain checkboxes: accessible and familiar", "You can scan the selection in place", "Select-all on a filter is quick for bulk picks"],
+        cons: ["Takes a fixed block of vertical space", "Client filtering needs all options rendered; remote sets need paging", "Selected items scroll out of view (the selected-only filter helps)"],
+      });
+
+      // ---------------------------------------------------------------- 3. Choice cards
+      const p3 = panel({
+        id: "cards",
+        build: {"level": 2, "data": "choices", "uses": ["<code>sa-checkbox-group</code> variant ChoiceCard", "<code>sa-avatar</code>", "CheckboxGroup editor and binding"], "needs": ["Expose the ChoiceCard variant on the CheckboxGroup editor (it isn't today)", "Media per choice: choices have text, description and disabled only", "“Show all” expansion"], "note": "Without the avatar it's very nearly level 1."},
+        title: "3 · Choice cards",
+        blurb: blurb(
+          "The existing <code>CheckboxGroup</code> <code>ChoiceCard</code> variant with an avatar added. It's a rich, scannable choice when each option needs a picture and a line of context. With more options than fit, it shows the first page and a Show all link.",
+          "~3–20 options with media",
+        ),
+        wide: true,
+        body: demo(
+          "cards",
+          field(
+            "Guides",
+            `<div data-slot="checkbox-group" role="group" data-cards class="sa-field-group group/field-group grid gap-3 sm:grid-cols-2 xl:grid-cols-4">${guides.map((g, i) => `<div ${i >= 8 ? "data-more hidden" : ""}>${choiceCard("Guides", g, [0, 3, 7].includes(i))}</div>`).join("")}</div>
+             <div class="flex items-center justify-between">
+               <span class="text-muted-foreground text-xs" data-count></span>
+               ${button("link", "sm", "Show all 16", "data-show-all", "px-0")}
+             </div>`,
+          ),
+        ),
+        pros: ["Most visual; avatars help recognition", "Uses the ChoiceCard variant that ships today", "Cards reflow in the form grid"],
+        cons: ["Takes a lot of space per option", "No search; past ~20 options it becomes a gallery, not a field"],
+      });
+
+      // ---------------------------------------------------------------- 4. Transfer list
+      const transferOption = (g) => `
+        <div role="option" aria-selected="false" data-id="${g.id}" tabindex="-1"
+             class="hover:bg-muted/60 flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm select-none aria-selected:bg-accent aria-selected:text-accent-foreground">
+          ${avatar(g.name, "sm")}
+          <span class="min-w-0 flex-1 truncate">${g.name}</span>
+        </div>`;
+      const transferPane = (side, title) => `
+        <div data-pane="${side}" class="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border">
+          <div class="flex items-center justify-between border-b px-3 py-2 text-sm font-medium">${title}<span data-count class="text-muted-foreground text-xs font-normal"></span></div>
+          <div class="border-b p-2">${inputGroupSearch("Filter", "data-filter")}</div>
+          <div role="listbox" aria-multiselectable="true" data-list class="h-60 overflow-y-auto p-1"></div>
+        </div>`;
+      const iconBtn = (body, attrs) => button("outline", "icon-sm", body, attrs);
+      const p4 = panel({
+        id: "transfer",
+        build: {"level": 4, "data": "entity", "uses": ["<code>sa-button</code>, <code>sa-input</code>, <code>sa-badge</code> and list styling"], "needs": ["A listbox primitive: multi-highlight with Ctrl/⌘ and Shift, double-click, keyboard, listbox a11y — nothing like it ships", "Move buttons, reordering, posting order", "Server paging in both panes for big lists"]},
+        title: "4 · Transfer list (dual listbox)",
+        blurb: blurb(
+          "Available and Selected sit side by side. Click to highlight (Ctrl/⌘ for several), then move with the arrow buttons, or double-click to move one. The Selected pane keeps its order and can be reordered with ↑/↓, so it also works as an ordered multiselect, for example an itinerary.",
+          "~20–200 options",
+          "ordered selections",
+        ),
+        wide: true,
+        body: demo(
+          "transfer",
+          field(
+            "Guides",
+            `<div data-transfer class="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
+              ${transferPane("available", "Available")}
+              <div class="flex justify-center gap-1.5 md:flex-col">
+                ${iconBtn(icons.chevronRight("size-4 rotate-90 md:rotate-0"), 'data-move="add" title="Add highlighted"')}
+                ${iconBtn(icons.chevronsRight("size-4 rotate-90 md:rotate-0"), 'data-move="add-all" title="Add all shown"')}
+                ${iconBtn(icons.chevronLeft("size-4 rotate-90 md:rotate-0"), 'data-move="remove" title="Remove highlighted"')}
+                ${iconBtn(icons.chevronsLeft("size-4 rotate-90 md:rotate-0"), 'data-move="remove-all" title="Remove all shown"')}
+              </div>
+              ${transferPane("selected", "Selected")}
+              <div class="flex justify-center gap-1.5 md:flex-col">
+                ${iconBtn(icons.chevronRight("size-4 -rotate-90"), 'data-order="up" title="Move up"')}
+                ${iconBtn(icons.chevronRight("size-4 rotate-90"), 'data-order="down" title="Move down"')}
+              </div>
+              <div data-hidden hidden></div>
+            </div>`,
+            "Order matters: the first guide is the tour lead.",
+          ),
+        ),
+        pros: ["Both the options and the selection are always visible", "Supports ordering naturally", "Bulk moves work well for admin data entry"],
+        cons: ["Wide: needs a full-width form row and stacks on mobile", "Two-step interaction (highlight, then move) feels dated", "Remote search per pane is more work"],
+      });
+
+      // ---------------------------------------------------------------- 5. Related-items table
+      const roles = ["Lead", "Support", "Trainee"];
+      const relatedRow = (g, role) => `
+        <tr data-slot="table-row" class="sa-table-row" draggable="true" data-id="${g.id}">
+          ${td(`<span class="text-muted-foreground cursor-grab">${icons.grip("size-4")}</span>`, "w-8")}
+          ${td(`<div class="flex items-center gap-2.5">${avatar(g.name, "sm")}<div class="min-w-0"><div class="truncate font-medium">${g.name}</div><div class="text-muted-foreground truncate text-xs">${g.desc}</div></div></div>`)}
+          ${td(nativeSelect("_role", roles, role), "w-36")}
+          ${td(button("ghost", "icon-sm", icons.trash("size-4"), 'data-remove title="Remove"'), "w-10 text-right")}
+        </tr>`;
+      const p5 = panel({
+        id: "related",
+        build: {"level": 4, "data": "entity", "uses": ["<code>sa-table</code>, <code>sa-native-select</code> / <code>sa-select</code>, <code>sa-avatar</code>, <code>sa-button</code>", "The sheet lookup as the picker (once it has multi mode)"], "needs": ["A repeater: indexed names (<code>Guides[0].Role</code>) renumbered on add / remove / reorder, drag reorder", "Per-row editors for the join entity's fields, with per-row validation", "Backend: an explicit join entity with its own fields, which is more than a plain many-to-many"], "note": "The UI is medium; the size comes from nested forms in the Dashboard."},
+        title: "5 · Related-items table (repeater)",
+        blurb: blurb(
+          "For a many-to-many with data on the join, such as a guide's role on this tour, the selection becomes a small table. Each row has its extra fields, drag to reorder, and remove. <strong>Add guides</strong> appends a random guide here; for real it would open the sheet lookup in multi mode and add everything ticked. It posts indexed names (<code>Guides[0].Id</code>, <code>Guides[0].Role</code>).",
+          "join entities with extra columns",
+          "any size (picker is remote)",
+        ),
+        wide: true,
+        body: demo(
+          "related",
+          `<div data-related class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div><div class="text-sm font-medium">Guides</div><div class="text-muted-foreground text-xs" data-count></div></div>
+              ${button("outline", "sm", `${icons.plus()} Add guides`, "data-add")}
+            </div>
+            <div data-table></div>
+            <div data-hidden hidden></div>
+          </div>`,
+        ),
+        pros: ["The only pattern that handles join-entity data", "Reorder, remove and edit in place", "Reuses Table, NativeSelect and the sheet lookup for picking"],
+        cons: ["Heavy for a plain many-to-many with no extra data", "Needs indexed model binding and server-side diffing of the join rows"],
+      });
+
+      // ---------------------------------------------------------------- 6. Read-only displays
+      const tours = [
+        { name: "Iberian Coast Explorer", dest: ["LIS", "MAD", "BCN"], guides: ["bruno", "pablo"], tags: ["culture", "food & wine", "beach"] },
+        { name: "Grand Asia Circuit", dest: ["SIN", "BKK", "HKG", "NRT", "HND", "DEL"], guides: ["chen", "hiro", "mei", "kavya", "isla"], tags: ["city break", "culture", "food & wine", "nightlife"] },
+        { name: "Southern Africa Safari", dest: ["JNB", "CPT", "NBO"], guides: ["olivia", "noah", "amara"], tags: ["safari", "wildlife", "luxury", "family", "adventure"] },
+        { name: "Nordic Lights", dest: ["KEF"], guides: ["finn"], tags: ["adventure"] },
+        { name: "Americas Grand Tour", dest: ["JFK", "ORD", "LAX", "YVR", "MEX", "BOG", "GRU", "EZE"], guides: [], tags: ["road trip", "city break", "hiking", "food & wine", "nightlife", "culture"] },
+      ];
+      const airportBy = (c) => airports.find((a) => a.code === c);
+      const guideBy = (id) => guides.find((g) => g.id === id);
+      const chipsCell = (codes, max) => {
+        if (!codes.length) return `<span class="text-muted-foreground">—</span>`;
+        const shown = codes.slice(0, max).map((c) => badge("secondary", c, "font-mono")).join("");
+        const rest = codes.slice(max);
+        return `<div class="flex flex-nowrap items-center gap-1">${shown}${rest.length ? `<span title="${rest.map((c) => airportBy(c).city).join(", ")}">${badge("outline", `+${rest.length}`)}</span>` : ""}</div>`;
+      };
+      const guidesCell = (ids) =>
+        ids.length ? `<div class="flex items-center gap-2">${avatarGroup(ids.map(guideBy), 3, "default")}</div>` : `<span class="text-muted-foreground">—</span>`;
+      const tagsCell = (t) => `<span class="block max-w-44 truncate" title="${t.join(", ")}">${t.join(", ")}</span>`;
+      const tourRows = tours.map((t) => `<tr data-slot="table-row" class="sa-table-row">${td(`<span class="font-medium">${t.name}</span>`)}${td(chipsCell(t.dest, 3))}${td(guidesCell(t.guides))}${td(tagsCell(t.tags))}${td(`<span class="tabular-nums">${t.dest.length}</span>`, "text-right")}</tr>`).join("");
+      const asia = tours[1];
+      const dlRow = (term, body) => `<div class="grid gap-1 py-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-4"><dt class="text-muted-foreground text-sm">${term}</dt><dd class="text-sm">${body}</dd></div>`;
+      const p6 = panel({
+        id: "display",
+        build: {"level": 2, "data": "entity", "uses": ["<code>sa-badge</code>, <code>sa-avatar-group</code> with count, <code>sa-item</code>", "<code>sa-tooltip</code> / title, DataGrid columns"], "needs": ["Display templates for collection values in grid cells and on detail views", "+N overflow; a rich hover list would need the hover card from popover #4", "Column options to pick the display"], "note": "Needed whichever editor wins."},
+        title: "6 · Read-only displays (index grid and detail view)",
+        blurb: blurb(
+          "Every multiselect also needs a display form. In a grid cell: the first 3 chips then <code>+N</code> (hover for the rest), an avatar stack via <code>sa-avatar-group</code> plus count, or a truncated comma list. On a detail view, show everything wrapped, with richer chips that carry media.",
+          "every multiselect",
+        ),
+        wide: true,
+        body: `
+          <div class="space-y-8">
+            <div class="space-y-2">
+              <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Index grid cells</p>
+              ${table(["Tour", "Destinations · chips +N", "Guides · avatar stack", "Tags · comma list", { label: "Stops", cls: "text-right" }], tourRows)}
+            </div>
+            <div class="space-y-2">
+              <p class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Detail view · ${asia.name}</p>
+              <dl class="divide-y rounded-lg border px-4">
+                ${dlRow("Destinations", `<div class="flex flex-wrap gap-1.5">${asia.dest.map((c) => { const a = airportBy(c); return `<span class="bg-muted/60 inline-flex items-center gap-1.5 rounded-md border py-0.5 pr-2 pl-0.5 text-xs">${codeChip(c)}${a.city}</span>`; }).join("")}</div>`)}
+                ${dlRow("Guides", `<div class="flex flex-wrap gap-2">${asia.guides.map((id) => { const g = guideBy(id); return `<span class="inline-flex items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs">${avatar(g.name, "sm")}${g.name}</span>`; }).join("")}</div>`)}
+                ${dlRow("Tags", `<div class="flex flex-wrap gap-1.5">${asia.tags.map((t) => badge("outline", t)).join("")}</div>`)}
+                ${dlRow("Guides (list)", `<ul class="space-y-2">${asia.guides.slice(0, 3).map((id) => { const g = guideBy(id); return `<li class="flex items-center gap-2.5">${avatar(g.name, "sm")}<span>${g.name}</span><span class="text-muted-foreground text-xs">${g.desc}</span></li>`; }).join("")}<li class="text-muted-foreground text-xs">and 2 more</li></ul>`)}
+              </dl>
+            </div>
+          </div>`,
+        pros: ["Chips with +N keep rows one line high", "The avatar stack reuses AvatarGroup and the count", "The detail view can show media chips for recognition"],
+        cons: ["The +N overflow needs a tooltip or hover card to be accessible (here it's only a title attribute)", "The comma list hides structure and isn't clickable"],
+      });
+
+      // ---------------------------------------------------------------- 7. Matrix selection
+      const langs = ["English", "Spanish", "French", "German", "Japanese", "Portuguese"];
+      const matrixGuides = guides.slice(0, 7);
+      const seed = new Set(["amara:English", "bruno:Portuguese", "bruno:Spanish", "chen:English", "dana:English", "elif:German", "finn:English", "gabriela:Spanish", "bruno:English"]);
+      const matrix = `
+        <div class="overflow-x-auto rounded-lg border">
+          <table class="w-full text-sm" data-matrix>
+            <thead><tr class="border-b">
+              <th class="px-3 py-2 text-left font-medium">Guide</th>
+              ${langs.map((l) => `<th class="px-2 py-2 text-center font-medium"><button type="button" data-col="${l}" class="hover:text-primary text-xs" title="Toggle column">${l}</button></th>`).join("")}
+            </tr></thead>
+            <tbody>${matrixGuides.map((g) => `
+              <tr class="border-b last:border-0">
+                <th class="px-3 py-1.5 text-left font-normal"><button type="button" data-row="${g.id}" class="hover:text-primary flex items-center gap-2" title="Toggle row">${avatar(g.name, "sm")}<span class="whitespace-nowrap">${g.name}</span></button></th>
+                ${langs.map((l) => `<td class="px-2 py-1.5 text-center"><span class="inline-flex justify-center">${checkbox(seed.has(`${g.id}:${l}`), `name="Languages" value="${g.id}:${l}" data-g="${g.id}" data-l="${l}" aria-label="${g.name} speaks ${l}"`)}</span></td>`).join("")}
+              </tr>`).join("")}</tbody>
+          </table>
+        </div>`;
+      const slots = ["Morning", "Afternoon", "Evening"];
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const avail = `
+        <div class="overflow-x-auto"><div class="grid gap-1 select-none" style="grid-template-columns: auto repeat(7, minmax(1.75rem, 1fr))" data-paint>
+          <span></span>${days.map((d) => `<span class="text-muted-foreground text-center text-xs">${d}</span>`).join("")}
+          ${slots.map((s, si) => `<span class="text-muted-foreground pr-2 text-xs leading-8">${s}</span>${days.map((d, di) => `
+            <label class="block h-8 cursor-pointer rounded-md border bg-background transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/80 hover:border-ring">
+              <input type="checkbox" class="sr-only" name="Availability" value="${d}-${s}" ${si < 2 && di < 5 ? "checked" : ""} />
+            </label>`).join("")}`).join("")}
+        </div></div>`;
+      const p7 = panel({
+        id: "matrix",
+        build: {"level": 3, "uses": ["<code>sa-table</code>, <code>sa-checkbox</code>"], "needs": ["Grid script: row and column header toggles, press-and-drag painting, keyboard", "Binding to a collection of pairs (guide × language): a model shape the Dashboard doesn't support"], "note": "Niche; only if a real resource needs it."},
+        title: "7 · Matrix selection",
+        blurb: blurb(
+          "When the multiselect is really a set of pairs (guide × language, day × time slot), a grid beats several separate multiselects. Click a header to toggle a whole row or column. In the availability grid, press and drag to paint cells on or off.",
+          "2D sets, ~3–10 × ~3–10",
+        ),
+        wide: true,
+        body: demo(
+          "matrix",
+          `<div class="grid gap-8 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+            ${field("Languages spoken", matrix, "One checkbox per guide × language pair; headers toggle a row or column.")}
+            ${field("Departure availability", avail, "Press and drag to paint.")}
+          </div>`,
+        ),
+        pros: ["Edits a whole 2D set in one view", "Row and column toggles make bulk edits fast", "Still just checkboxes underneath"],
+        cons: ["Only works when both axes are small", "A niche fit: few resources are modeled this way"],
+      });
+
+      document.getElementById("panels").innerHTML = [p1, p2, p3, p4, p5, p6, p7].join("");
+      document.getElementById("toc").innerHTML = [...document.querySelectorAll("#panels > section")]
+        .map((s) => `<a href="#${s.id}" class="hover:bg-muted rounded-md border px-2.5 py-1">${s.querySelector("h2").textContent}</a>`)
+        .join("");
+
+      const forms = [...document.querySelectorAll("form[data-demo]")];
+      forms.forEach(updatePost);
+      document.addEventListener("change", (e) => {
+        const f = e.target.closest("form[data-demo]");
+        if (f) updatePost(f);
+      });
+
+      // ---------------------------------------------------------------- Checklist behavior
+      {
+        const root = document.querySelector("[data-checklist]");
+        const form = root.closest("form");
+        const filter = root.querySelector("[data-filter]");
+        const onlySel = root.querySelector('[name="_selectedOnly"]');
+        ["LIS", "CPT", "KEF"].forEach((c) => (root.querySelector(`[data-row="${c}"] input`).checked = true));
+        const rows = () => [...root.querySelectorAll("[data-row]")];
+        const refresh = () => {
+          const t = filter.value.trim().toLowerCase();
+          let shown = 0;
+          rows().forEach((r) => {
+            const a = airportBy(r.dataset.row);
+            const match = !t || [a.city, a.code, a.country].some((v) => v.toLowerCase().includes(t));
+            const vis = match && (!onlySel.checked || r.querySelector("input").checked);
+            r.hidden = !vis;
+            if (vis) shown++;
+          });
+          const sel = rows().filter((r) => r.querySelector("input").checked).length;
+          root.querySelector("[data-count]").textContent = `${sel} of ${airports.length} selected${t || onlySel.checked ? ` · ${shown} shown` : ""}`;
+          root.querySelector("[data-empty]").hidden = shown > 0;
+          updatePost(form);
+        };
+        filter.addEventListener("input", refresh);
+        root.addEventListener("change", refresh);
+        root.querySelector("[data-all]").addEventListener("click", () => { rows().filter((r) => !r.hidden).forEach((r) => (r.querySelector("input").checked = true)); refresh(); });
+        root.querySelector("[data-none]").addEventListener("click", () => { rows().filter((r) => !r.hidden).forEach((r) => (r.querySelector("input").checked = false)); refresh(); });
+        refresh();
+      }
+
+      // ---------------------------------------------------------------- Choice cards behavior
+      {
+        const root = document.querySelector("[data-cards]");
+        const fieldEl = root.parentElement;
+        const count = () => (fieldEl.querySelector("[data-count]").textContent = `${root.querySelectorAll("input:checked").length} selected`);
+        root.addEventListener("change", count);
+        fieldEl.querySelector("[data-show-all]").addEventListener("click", (e) => {
+          const open = root.querySelector("[data-more]:not([hidden])");
+          root.querySelectorAll("[data-more]").forEach((el) => (el.hidden = !!open));
+          e.currentTarget.textContent = open ? "Show all 16" : "Show fewer";
+        });
+        count();
+      }
+
+      // ---------------------------------------------------------------- Transfer list behavior
+      {
+        const root = document.querySelector("[data-transfer]");
+        const form = root.closest("form");
+        let selected = ["hiro", "mei"];
+        const pane = (s) => root.querySelector(`[data-pane="${s}"]`);
+        const render = () => {
+          const fill = (side, list) => {
+            const p = pane(side);
+            const t = p.querySelector("[data-filter]").value.trim().toLowerCase();
+            const items = list.filter((g) => !t || g.name.toLowerCase().includes(t) || g.desc.toLowerCase().includes(t));
+            const hl = new Set([...p.querySelectorAll('[aria-selected="true"]')].map((o) => o.dataset.id));
+            p.querySelector("[data-list]").innerHTML = items.length ? items.map(transferOption).join("") : `<p class="text-muted-foreground px-2 py-6 text-center text-xs">${side === "selected" ? "No guides selected" : "Nothing to add"}</p>`;
+            p.querySelectorAll("[role=option]").forEach((o) => hl.has(o.dataset.id) && o.setAttribute("aria-selected", "true"));
+            p.querySelector("[data-count]").textContent = `${items.length}${t ? ` of ${list.length}` : ""}`;
+          };
+          fill("available", guides.filter((g) => !selected.includes(g.id)));
+          fill("selected", selected.map(guideBy));
+          root.querySelector("[data-hidden]").innerHTML = selected.map((id) => `<input type="hidden" name="Guides" value="${id}">`).join("");
+          updatePost(form);
+        };
+        const highlighted = (s) => [...pane(s).querySelectorAll('[aria-selected="true"]')].map((o) => o.dataset.id);
+        const shown = (s) => [...pane(s).querySelectorAll("[role=option]")].map((o) => o.dataset.id);
+        root.addEventListener("click", (e) => {
+          const opt = e.target.closest("[role=option]");
+          if (opt) {
+            if (!(e.ctrlKey || e.metaKey)) opt.parentElement.querySelectorAll("[aria-selected=true]").forEach((o) => o !== opt && o.setAttribute("aria-selected", "false"));
+            opt.setAttribute("aria-selected", opt.getAttribute("aria-selected") === "true" ? "false" : "true");
+            return;
+          }
+          const mv = e.target.closest("[data-move]")?.dataset.move;
+          const ord = e.target.closest("[data-order]")?.dataset.order;
+          if (mv === "add") selected.push(...highlighted("available"));
+          else if (mv === "add-all") selected.push(...shown("available"));
+          else if (mv === "remove") selected = selected.filter((id) => !highlighted("selected").includes(id));
+          else if (mv === "remove-all") selected = selected.filter((id) => !shown("selected").includes(id));
+          else if (ord) {
+            const ids = highlighted("selected");
+            if (ord === "down") ids.reverse();
+            ids.forEach((id) => {
+              const i = selected.indexOf(id), j = ord === "up" ? i - 1 : i + 1;
+              if (j >= 0 && j < selected.length && !ids.includes(selected[j])) [selected[i], selected[j]] = [selected[j], selected[i]];
+            });
+          } else return;
+          render();
+        });
+        root.addEventListener("dblclick", (e) => {
+          const opt = e.target.closest("[role=option]");
+          if (!opt) return;
+          const id = opt.dataset.id;
+          selected = opt.closest('[data-pane="available"]') ? [...selected, id] : selected.filter((x) => x !== id);
+          render();
+        });
+        root.addEventListener("input", (e) => e.target.matches("[data-filter]") && render());
+        render();
+      }
+
+      // ---------------------------------------------------------------- Related-items table behavior
+      {
+        const root = document.querySelector("[data-related]");
+        const form = root.closest("form");
+        let rows = [{ id: "olivia", role: "Lead" }, { id: "noah", role: "Support" }];
+        const render = () => {
+          root.querySelector("[data-table]").innerHTML = rows.length
+            ? table([{ label: "", cls: "w-8" }, "Guide", "Role", ""], rows.map((r) => relatedRow(guideBy(r.id), r.role)).join(""))
+            : `<div class="text-muted-foreground flex flex-col items-center gap-2 rounded-lg border border-dashed py-8 text-sm">${icons.users("size-5")}No guides on this tour yet.</div>`;
+          root.querySelector("[data-hidden]").innerHTML = rows.map((r, i) => `<input type="hidden" name="Guides[${i}].Id" value="${r.id}"><input type="hidden" name="Guides[${i}].Role" value="${r.role}">`).join("");
+          root.querySelector("[data-count]").textContent = `${rows.length} guide${rows.length === 1 ? "" : "s"} · drag to reorder`;
+          root.querySelector("[data-add]").disabled = rows.length === guides.length;
+          updatePost(form);
+        };
+        root.addEventListener("click", (e) => {
+          if (e.target.closest("[data-add]")) {
+            const free = guides.filter((g) => !rows.some((r) => r.id === g.id));
+            const pick = free[Math.floor(Math.random() * free.length)];
+            if (pick) rows.push({ id: pick.id, role: "Support" });
+            render();
+          } else if (e.target.closest("[data-remove]")) {
+            const id = e.target.closest("tr").dataset.id;
+            rows = rows.filter((r) => r.id !== id);
+            render();
+          }
+        });
+        root.addEventListener("change", (e) => {
+          if (!e.target.matches('select[name="_role"]')) return;
+          rows.find((r) => r.id === e.target.closest("tr").dataset.id).role = e.target.value;
+          render();
+        });
+        let dragId = null;
+        root.addEventListener("dragstart", (e) => { dragId = e.target.closest("tr")?.dataset.id; e.target.closest("tr")?.classList.add("opacity-40"); });
+        root.addEventListener("dragover", (e) => {
+          const tr = e.target.closest("tbody tr");
+          if (!tr || !dragId || tr.dataset.id === dragId) return;
+          e.preventDefault();
+          const from = rows.findIndex((r) => r.id === dragId), to = rows.findIndex((r) => r.id === tr.dataset.id);
+          const [m] = rows.splice(from, 1);
+          rows.splice(to, 0, m);
+          render();
+          root.querySelector(`tr[data-id="${dragId}"]`)?.classList.add("opacity-40");
+        });
+        root.addEventListener("dragend", () => { dragId = null; render(); });
+        render();
+      }
+
+      // ---------------------------------------------------------------- Matrix behavior
+      {
+        const m = document.querySelector("[data-matrix]");
+        const form = m.closest("form");
+        const toggleSet = (boxes) => { const on = boxes.some((b) => !b.checked); boxes.forEach((b) => (b.checked = on)); updatePost(form); };
+        m.addEventListener("click", (e) => {
+          const col = e.target.closest("[data-col]")?.dataset.col;
+          const row = e.target.closest("[data-row]")?.dataset.row;
+          if (col) toggleSet([...m.querySelectorAll(`input[data-l="${col}"]`)]);
+          if (row) toggleSet([...m.querySelectorAll(`input[data-g="${row}"]`)]);
+        });
+        // Drag painting: the first cell decides whether the stroke paints on or off
+        const grid = document.querySelector("[data-paint]");
+        let paint = null;
+        grid.addEventListener("pointerdown", (e) => {
+          const box = e.target.closest("label")?.querySelector("input");
+          if (!box) return;
+          e.preventDefault();
+          paint = !box.checked;
+          box.checked = paint;
+          updatePost(form);
+        });
+        grid.addEventListener("pointerover", (e) => {
+          if (paint === null) return;
+          const box = e.target.closest("label")?.querySelector("input");
+          if (box && box.checked !== paint) { box.checked = paint; updatePost(form); }
+        });
+        grid.addEventListener("click", (e) => e.target.closest("label") && e.preventDefault());
+        document.addEventListener("pointerup", () => (paint = null));
+      }
+
+      document.querySelector("main > header").insertAdjacentHTML("beforeend", backendNote());
+      controlBar();
+    </script>
+  </body>
+</html>

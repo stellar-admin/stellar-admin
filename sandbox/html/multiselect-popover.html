@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiselect popover patterns</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+      /* Prototype-only: popovers anchored to their control take its width */
+      [data-anchor-width] {
+        width: anchor-size(width);
+        min-width: 16rem;
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-10 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Multiselect · Popover &amp; combobox patterns</p>
+        <h1 class="text-2xl font-semibold">Popover and combobox multiselects</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Hand-built patterns where the choices open next to the field rather than in a sheet. Lists are the real <code>sel-command</code> component with
+          <code>data-filter="none"</code> (↑/↓, Home/End, Enter); multiselect toggles <code>data-checked</code> on the item and keeps the popover open. Popovers are
+          native <code>popover</code> elements with <code>sa-popover-content</code> and CSS anchor positioning. Remote searches go through a fake server with
+          350&nbsp;ms latency. Functional enough to feel; not production code.
+        </p>
+        <nav class="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-sm">
+          <a class="underline" href="#faceted">1 Faceted</a><a class="underline" href="#chips-in">2 Chips in input</a><a class="underline" href="#chips-below">3 Chips below</a>
+          <a class="underline" href="#summary">4 Summary + hovercard</a><a class="underline" href="#grouped">5 Grouped</a><a class="underline" href="#paste">6 Token paste</a>
+          <a class="underline" href="#two-pane">7 Selected / All</a><a class="underline" href="#mobile">8 Mobile drawer</a>
+        </nav>
+      </header>
+
+      <div id="patterns" class="grid gap-x-10 gap-y-14 lg:grid-cols-2"></div>
+    </main>
+
+    <script type="module">
+      import { airports, guides, airportsByRegion, fakeFetch, icons, avatar, airportAvatar, codeChip, button, badge, field, panel, controlBar, backendNote, effort, airport, guide } from "./multiselect-shared.js";
+
+      // ---------------------------------------------------------------- Shared bits
+      let uid = 0;
+      const nextId = (p) => `${p}-${++uid}`;
+
+      // A checkbox drawn inside a command item; it follows the item's data-checked so toggling needs no re-render
+      const box = () => `
+        <span data-box aria-hidden="true" class="border-input flex size-4 shrink-0 items-center justify-center rounded-[4px] border shadow-xs
+          group-data-[checked=true]/command-item:border-primary group-data-[checked=true]/command-item:bg-primary group-data-[checked=true]/command-item:text-primary-foreground
+          group-data-[checked=mixed]/command-item:border-primary group-data-[checked=mixed]/command-item:bg-primary group-data-[checked=mixed]/command-item:text-primary-foreground
+          [&>svg]:hidden [&>svg]:size-3.5 group-data-[checked=true]/command-item:[&>svg:first-child]:block group-data-[checked=mixed]/command-item:[&>svg:last-child]:block">
+          ${icons.check()}${icons.minus()}
+        </span>`;
+      const checkIndicator = icons.check("sa-command-item-indicator");
+
+      // A command item: box mode leads with a checkbox, check mode trails the library's check indicator
+      const item = (value, inner, checked, { mode = "box", trailing = "", cls = "" } = {}) => `
+        <div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="${value}" ${checked ? 'data-checked="true"' : ""}
+             class="sa-command-item group/command-item ${cls}">
+          ${mode === "box" ? box() : ""}${inner}${trailing}${mode === "check" ? checkIndicator : ""}
+        </div>`;
+
+      const commandInput = (id, placeholder) => `
+        <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+          <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+            <input placeholder="${placeholder}" type="text" id="${id}-input" aria-controls="${id}-list" role="combobox" aria-autocomplete="list" aria-expanded="true"
+                   autocomplete="off" spellcheck="false" data-slot="command-input" class="sa-command-input" />
+            <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icons.search("sa-command-input-icon")}</div>
+          </div>
+        </div>`;
+
+      const popover = (id, anchor, body, { mode = "auto", cls = "", side = "bottom-span-right", anchorWidth = false } = {}) => `
+        <div id="${id}" popover="${mode}" data-slot="popover-content" data-anchor-side="bottom" ${anchorWidth ? "data-anchor-width" : ""}
+             class="sa-popover-content anchored-${side} ${cls}" style="position-anchor: --${anchor}">${body}</div>`;
+
+      // A removable chip: a secondary badge with an x
+      const chip = (value, body, { invalid = false, title = "" } = {}) => `
+        <span data-slot="badge" data-chip="${value}" ${title ? `title="${title}"` : ""}
+              class="sa-badge ${invalid ? "sa-badge-variant-destructive" : "sa-badge-variant-secondary"} h-6 max-w-full gap-1 pr-0.5">
+          ${body}
+          <button type="button" data-remove="${value}" aria-label="Remove" class="hover:bg-foreground/10 -my-0.5 flex size-5 items-center justify-center rounded-sm opacity-60 hover:opacity-100 [&>svg]:size-3">${icons.x()}</button>
+        </span>`;
+
+      const separator = `<div role="separator" data-slot="command-separator" class="sa-command-separator"></div>`;
+      const muted = (text) => `<p class="text-muted-foreground px-2 py-6 text-center text-sm">${text}</p>`;
+      const skeletonRows = (n, avatarShape = true) =>
+        Array.from({ length: n }, () => `
+          <div class="sa-command-item pointer-events-none" aria-hidden="true">
+            ${avatarShape ? `<span class="bg-muted size-6 shrink-0 animate-pulse rounded-full"></span>` : ""}
+            <span class="flex flex-1 flex-col gap-1.5"><span class="bg-muted h-3 w-2/5 animate-pulse rounded"></span><span class="bg-muted h-2.5 w-3/5 animate-pulse rounded"></span></span>
+          </div>`).join("");
+
+      const filterAirports = (term) => {
+        const t = term.trim().toLowerCase();
+        return t ? airports.filter((a) => [a.city, a.code, a.country].some((v) => v.toLowerCase().includes(t))) : airports;
+      };
+      const tourCount = (a) => (a.code.charCodeAt(0) * 7 + a.code.charCodeAt(2)) % 23 + 1;
+
+      // Toggles a value in a set, mirrors it onto every item with that value, and returns the new state
+      const toggle = (set, value, root) => {
+        set.has(value) ? set.delete(value) : set.add(value);
+        root.querySelectorAll(`[data-slot="command-item"][data-value="${CSS.escape(value)}"]`).forEach((el) =>
+          set.has(value) ? el.setAttribute("data-checked", "true") : el.removeAttribute("data-checked"),
+        );
+        return set.has(value);
+      };
+
+      // The control look shared by the comboboxes: an input group that grows, wraps and shows a focus ring
+      const controlCls =
+        "sa-input-group group/input-group h-auto min-h-9 flex-wrap items-center gap-1 p-1 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50";
+
+      const patterns = [];
+
+      // ---------------------------------------------------------------- 1. Faceted popover
+      patterns.push(() => {
+        const id = nextId("faceted");
+        const selected = new Set(["LIS", "CPT", "HND"]);
+        const html = `
+          <div class="flex flex-wrap items-center gap-2" data-root="${id}">
+            <div class="relative">
+              <input type="search" placeholder="Filter tours…" class="sa-input h-8 w-48" data-slot="input" />
+            </div>
+            <span data-trigger-host></span>
+            ${popover(
+              `${id}-pop`,
+              `${id}-anchor`,
+              `<sel-command class="sa-command bg-transparent" data-slot="command" data-filter="none">
+                ${commandInput(id, "Destinations")}
+                <div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list" data-items></div>
+              </sel-command>`,
+              { cls: "w-60 p-0", side: "bottom-span-right" },
+            )}
+          </div>
+          <p class="text-muted-foreground mt-6 text-xs">Shown in a data grid toolbar, where shadcn uses it; it works as well as a form control for small, known sets.</p>`;
+        const trigger = () => {
+          const parts = [...selected].map(airport);
+          const right = !parts.length
+            ? ""
+            : `<span data-slot="separator" class="sa-separator sa-separator-vertical mx-0.5 h-4"></span>
+               ${parts.length > 2
+                 ? badge("secondary", `${parts.length} selected`, "rounded-sm px-1 font-normal")
+                 : parts.map((a) => badge("secondary", a.city, "rounded-sm px-1 font-normal")).join("")}`;
+          return button("outline", "sm", `${icons.circlePlus()}Destination${right}`, `popovertarget="${id}-pop" style="anchor-name: --${id}-anchor" data-trigger`, "border-dashed");
+        };
+        const list = (root, term = "") => {
+          const hits = filterAirports(term);
+          // Selected first, as shadcn does when the popover opens
+          const ordered = [...hits.filter((a) => selected.has(a.code)), ...hits.filter((a) => !selected.has(a.code))];
+          root.querySelector("[data-items]").innerHTML = ordered.length
+            ? ordered.map((a) => item(a.code, `<span class="truncate">${a.city}</span>`, selected.has(a.code), { trailing: `<span class="text-muted-foreground ml-auto font-mono text-xs">${tourCount(a)}</span>` })).join("") +
+              (selected.size ? separator + item("__clear", "Clear selection", false, { mode: "none", cls: "justify-center" }) : "")
+            : muted("No destinations found.");
+        };
+        const init = (root) => {
+          const host = root.querySelector("[data-trigger-host]");
+          host.innerHTML = trigger();
+          const pop = root.querySelector("[popover]");
+          const input = pop.querySelector("input");
+          pop.addEventListener("toggle", (e) => {
+            if (e.newState === "open") {
+              input.value = "";
+              list(root);
+              input.focus();
+            }
+          });
+          input.addEventListener("input", () => list(root, input.value));
+          root.addEventListener("itemselect", (e) => {
+            if (e.detail.value === "__clear") selected.clear(), list(root, input.value);
+            else toggle(selected, e.detail.value, root);
+            host.innerHTML = trigger();
+          });
+        };
+        return { init, id, html: panel({
+          id: "faceted",
+          build: {"level": 2, "data": "both", "uses": ["<code>sa-popover</code> with anchor positioning and light dismiss", "<code>sel-command</code> with client filtering and ↑/↓/Enter", "<code>sa-checkbox</code>, <code>sa-badge</code>, <code>sa-separator</code>, outline <code>sa-button</code>"], "needs": ["Script that toggles rows (checked state) and keeps the popover open", "Trigger badges / “N selected”, selection floated to the top on open", "Hidden inputs for posting; per-option counts need a server query"], "note": "Also the natural shape for multi-value index filters."},
+          title: "1 · Faceted popover",
+          blurb: "shadcn’s data-table filter: a dashed outline button that reports the selection as badges (or “N selected” past two), a searchable checkbox list with counts, the selection floated to the top on open, and Clear selection.",
+          body: `<div data-pattern="${id}">${html}</div>`,
+          pros: ["Very compact; the trigger doubles as the summary", "Feels familiar from shadcn tables", "Counts help when filtering"],
+          cons: ["Hides the selection beyond two items", "Odd as a form field: no label-aligned input box", "Not for large or remote sets"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- Combobox engine for patterns 2, 3, 4-editor and 8
+      // root: the element holding a sel-command with a [data-control] (holds the input) and a manual popover list
+      function combobox(root, { selected, fetch, renderItem, onChange, avatarSkeleton = true, toggleMode = "check" }) {
+        const input = root.querySelector('[data-slot="command-input"]');
+        const pop = root.querySelector("[popover]");
+        const items = root.querySelector("[data-items]");
+        let seq = 0;
+        let page = 0;
+        let lastTerm = null;
+
+        const open = () => !pop.matches(":popover-open") && (pop.showPopover(), load(input.value, true));
+        const close = () => pop.matches(":popover-open") && pop.hidePopover();
+
+        async function load(term, reset) {
+          const n = ++seq;
+          if (reset) {
+            page = 0;
+            items.innerHTML = skeletonRows(4, avatarSkeleton);
+          } else {
+            items.querySelector("[data-more]")?.replaceWith(Object.assign(document.createElement("div"), { innerHTML: skeletonRows(2, avatarSkeleton) }));
+          }
+          const res = await fetch(term, page);
+          if (n !== seq) return;
+          lastTerm = term;
+          const rows = res.items.map((x) => renderItem(x, selected)).join("");
+          const more = res.hasMore ? item("__more", `<span class="text-muted-foreground w-full text-center">Load more</span>`, false, { mode: "none", cls: "" }).replace("data-slot", 'data-more data-slot') : "";
+          if (reset) items.innerHTML = rows ? rows + more : muted(`No matches for “${term}”.`);
+          else {
+            items.querySelectorAll(".pointer-events-none").forEach((el) => el.remove());
+            items.insertAdjacentHTML("beforeend", rows + more);
+          }
+        }
+
+        input.addEventListener("focus", open);
+        input.addEventListener("click", open);
+        input.addEventListener("input", () => (open(), load(input.value, true)));
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowDown" && !pop.matches(":popover-open")) (open(), e.preventDefault());
+          else if (e.key === "Escape") close();
+          else if (e.key === "Backspace" && !input.value && selected.size) {
+            const last = [...selected].at(-1);
+            selected.delete(last);
+            items.querySelector(`[data-value="${CSS.escape(last)}"]`)?.removeAttribute("data-checked");
+            onChange();
+          }
+        });
+        root.addEventListener("focusout", (e) => {
+          if (!root.contains(e.relatedTarget)) close();
+        });
+        // Clicking a chip's x keeps focus in the input
+        root.addEventListener("mousedown", (e) => e.target.closest("[data-remove]") && e.preventDefault());
+        root.addEventListener("click", (e) => {
+          const rm = e.target.closest("[data-remove]");
+          if (rm) {
+            selected.delete(rm.dataset.remove);
+            items.querySelector(`[data-value="${CSS.escape(rm.dataset.remove)}"]`)?.removeAttribute("data-checked");
+            onChange();
+          } else if (e.target.closest("[data-control]") && e.target === e.currentTarget.querySelector("[data-control]")) input.focus();
+        });
+        root.addEventListener("itemselect", (e) => {
+          if (e.detail.value === "__more") {
+            page++;
+            load(lastTerm ?? "", false);
+            return;
+          }
+          toggle(selected, e.detail.value, root);
+          onChange();
+        });
+        return { open, close, input };
+      }
+
+      const guideRow = (g, sel) =>
+        item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, sel.has(g.id), { mode: "check" });
+      const guideFetch = (term, page) => fakeFetch(guides, term, { fields: ["name", "desc"], page, pageSize: 6 });
+
+      // ---------------------------------------------------------------- 2. Chips in input
+      patterns.push(() => {
+        const id = nextId("chipsin");
+        const selected = new Set(["hiro", "mei", "bruno"]);
+        const control = `
+          <sel-command class="block" data-filter="none" data-root>
+            <div data-control data-slot="input-group" role="group" class="${controlCls} cursor-text" style="anchor-name: --${id}-anchor">
+              <span data-chips class="contents"></span>
+              <input data-slot="command-input" role="combobox" aria-controls="${id}-list" aria-autocomplete="list" autocomplete="off" spellcheck="false"
+                     placeholder="Add a guide…" class="placeholder:text-muted-foreground h-7 min-w-28 flex-1 bg-transparent px-1.5 text-sm outline-none" />
+            </div>
+            ${popover(`${id}-pop`, `${id}-anchor`, `<div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list p-1" data-items></div>`, { mode: "manual", cls: "p-0 mt-1", anchorWidth: true })}
+          </sel-command>`;
+        const init = (root) => {
+          const chips = root.querySelector("[data-chips]");
+          const paint = () =>
+            (chips.innerHTML = [...selected].map((v) => chip(v, `${avatar(guide(v).name, "sm").replace('class="sa-avatar', 'class="-ml-1 size-4 text-[0.45rem] sa-avatar')}<span class="truncate">${guide(v).name}</span>`)).join(""));
+          paint();
+          combobox(root, { selected, fetch: guideFetch, renderItem: guideRow, onChange: paint });
+        };
+        return { init, id, html: panel({
+          id: "chips-in",
+          build: {"level": 3, "data": "entity", "uses": ["<code>sel-command</code> (data-filter=none) for the list and keyboard", "<code>sa-popover-content</code> styling and the <code>anchored-*</code> utilities", "Unused <code>sa-combobox-chips / -chip / -chip-remove</code> rules already in the shadcn themes", "The Lookup's server search, skeleton rows and Load more"], "needs": ["A combobox web component: focus stays in the input while ↑/↓ drive the list (aria-activedescendant), chips with Backspace and ←/→", "<code>popover=\"manual\"</code> plus close on focus loss, since click-outside dismissal fights the input", "Combobox CSS for parallax, ledger and aurora", "Results that render checked state for already-selected ids"], "note": "This is the “our own Tom Select” route; once the combobox core exists it also covers single select."},
+          title: "2 · Chips in the input",
+          blurb: "shadcn Combobox with <code>multiple</code>: chips sit inline before a text input; the listbox opens below on focus. Rows toggle and keep a check; Backspace in an empty input removes the last chip. Results are remote (fake 350 ms) with a skeleton and Load more.",
+          body: `<div data-pattern="${id}" class="max-w-md">${field("Guides", control, "Search by name, city or language.")}</div>`,
+          pros: ["The most familiar multiselect shape; selection always visible", "Works for remote, paged sets", "Keyboard-complete with Backspace removal"],
+          cons: ["Control height grows with the selection", "Chips truncate long titles; descriptions are lost", "Many chips (20+) become a wall"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 3. Chips / rows below
+      patterns.push(() => {
+        const id = nextId("below");
+        const selected = new Set(["LIS", "CPT", "HND", "KEF", "NBO"]);
+        let asRows = true;
+        const control = `
+          <sel-command class="block" data-filter="none" data-root>
+            <div data-control data-slot="input-group" role="group" class="sa-input-group group/input-group focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50" style="anchor-name: --${id}-anchor">
+              <input data-slot="command-input" role="combobox" aria-controls="${id}-list" autocomplete="off" placeholder="Add destinations…" class="sa-input sa-input-group-input" />
+              <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icons.search()}</div>
+              <div class="sa-input-group-addon sa-input-group-addon-align-inline-end text-xs tabular-nums" data-align="inline-end" data-slot="input-group-addon" role="group" data-count></div>
+            </div>
+            ${popover(`${id}-pop`, `${id}-anchor`, `<div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list p-1" data-items></div>`, { mode: "manual", cls: "p-0 mt-1", anchorWidth: true })}
+            <div data-selection class="mt-2"></div>
+          </sel-command>`;
+        const init = (root) => {
+          const sel = root.querySelector("[data-selection]");
+          const paint = () => {
+            root.querySelector("[data-count]").textContent = selected.size ? `${selected.size} selected` : "";
+            const list = [...selected].map(airport);
+            sel.innerHTML = !list.length
+              ? `<p class="text-muted-foreground rounded-md border border-dashed px-3 py-4 text-center text-sm">No destinations yet.</p>`
+              : asRows
+                ? `<div class="divide-y rounded-md border">${list
+                    .map((a) => `
+                      <div class="flex items-center gap-2.5 px-2.5 py-1.5 text-sm">
+                        ${codeChip(a.code, true)}
+                        <span class="flex min-w-0 flex-1 flex-col"><span class="truncate">${a.city}</span><span class="text-muted-foreground truncate text-xs">${a.country}</span></span>
+                        ${button("ghost", "icon-xs", icons.x(), `data-remove="${a.code}" aria-label="Remove ${a.city}"`, "text-muted-foreground")}
+                      </div>`)
+                    .join("")}</div>
+                   <div class="mt-1.5 flex justify-end">${button("link", "xs", "Clear all", "data-clear", "text-muted-foreground h-auto px-0")}</div>`
+                : `<div class="flex flex-wrap gap-1">${list.map((a) => chip(a.code, `<span class="font-mono text-[0.65rem]">${a.code}</span><span class="truncate">${a.city}</span>`)).join("")}</div>`;
+          };
+          paint();
+          const airportRow = (a, s) =>
+            item(a.code, `${codeChip(a.code, true)}<span class="flex min-w-0 flex-col"><span class="truncate">${a.city}</span><span class="text-muted-foreground truncate text-xs">${a.country}</span></span>`, s.has(a.code), { mode: "check" });
+          combobox(root, {
+            selected,
+            fetch: (term, page) => fakeFetch(airports, term, { fields: ["city", "code", "country"], page, pageSize: 8 }),
+            renderItem: airportRow,
+            avatarSkeleton: true,
+            onChange: paint,
+          });
+          root.addEventListener("click", (e) => {
+            if (e.target.closest("[data-clear]")) {
+              selected.clear();
+              root.querySelectorAll("[data-checked]").forEach((el) => el.removeAttribute("data-checked"));
+              paint();
+            }
+          });
+          root.closest("section").querySelector("[data-layout]").addEventListener("click", (e) => {
+            const b = e.target.closest("button");
+            if (!b) return;
+            asRows = b.dataset.layout === "rows";
+            b.parentElement.querySelectorAll("button").forEach((x) => x.toggleAttribute("data-active", x === b));
+            paint();
+          });
+        };
+        const switcher = `
+          <div class="mb-4 flex items-center gap-2 text-xs">
+            <span class="text-muted-foreground">Selection as</span>
+            <div data-layout class="flex gap-1">
+              <button type="button" data-layout="rows" data-active class="data-[active]:bg-primary data-[active]:text-primary-foreground rounded-md border px-2 py-0.5">rows</button>
+              <button type="button" data-layout="chips" class="data-[active]:bg-primary data-[active]:text-primary-foreground rounded-md border px-2 py-0.5">chips</button>
+            </div>
+          </div>`;
+        return { init, id, html: panel({
+          id: "chips-below",
+          build: {"level": 3, "data": "entity", "uses": ["<code>sel-command</code>, <code>sa-popover-content</code>", "<code>sa-item</code> rows with the Lookup's media and description parts (<code>_LookupSelection</code>)", "<code>sa-badge</code> for the chip variant"], "needs": ["The same combobox core as #2 (input-driven list in a popover)", "Selection list under the field with remove and Clear all"], "note": "Nearly all the cost is the combobox core shared with #2; with that in place this variation is small."},
+          title: "3 · Search above, selection below",
+          blurb: "The input stays one line and only searches; the selection is a list under it — compact rows with media and description (the single lookup’s item parts), or wrapped chips. Remove per row, or Clear all.",
+          body: `${switcher}<div data-pattern="${id}" class="max-w-md">${field("Destinations", control, "")}</div>`,
+          pros: ["Field height is stable while typing; the list can grow", "Rows keep media + description, so similar items are distinguishable", "Scales to dozens of items (could scroll / paginate)"],
+          cons: ["Takes vertical space in dense forms", "Two places to look (input vs. list)", "Needs a read-only twin for detail pages anyway"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 4. Summary trigger + hovercard
+      patterns.push(() => {
+        const id = nextId("summary");
+        const selected = new Set(["LHR", "CDG", "JFK", "SIN", "SYD", "CPT", "AKL"]);
+        const control = `
+          <div data-root>
+            <div data-slot="input-group" role="group" class="sa-input-group group/input-group pr-1" style="anchor-name: --${id}-anchor">
+              <button type="button" popovertarget="${id}-pop" class="flex h-full min-w-0 flex-1 items-center gap-2 px-3 text-left text-sm outline-none">
+                <span data-summary class="min-w-0 flex-1 truncate"></span>
+              </button>
+              <span data-more-host class="flex shrink-0 items-center gap-1"></span>
+              <button type="button" popovertarget="${id}-pop" aria-label="Edit" class="text-muted-foreground flex size-7 items-center justify-center [&>svg]:size-4">${icons.chevrons()}</button>
+            </div>
+            ${popover(
+              `${id}-pop`,
+              `${id}-anchor`,
+              `<sel-command class="sa-command bg-transparent" data-slot="command" data-filter="none">
+                ${commandInput(id, "Search airports")}
+                <div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list" data-items></div>
+                <div class="flex items-center justify-between border-t p-1.5 pl-3 text-xs"><span class="text-muted-foreground" data-foot></span>${button("ghost", "xs", "Done", `popovertarget="${id}-pop" popovertargetaction="hide"`)}</div>
+              </sel-command>`,
+              { cls: "p-0 mt-1", anchorWidth: true },
+            )}
+            <div id="${id}-card" popover="hint" class="sa-popover-content anchored-bottom-span-left w-64 p-0" style="position-anchor: --${id}-more">
+              <p class="text-muted-foreground border-b px-3 py-2 text-xs" data-card-title></p>
+              <ul data-card class="max-h-64 overflow-y-auto p-1 text-sm"></ul>
+            </div>
+          </div>`;
+        const init = (root) => {
+          const pop = root.querySelector(`#${id}-pop`);
+          const input = pop.querySelector("input");
+          const paint = () => {
+            const list = [...selected].map(airport);
+            // How many names fit is a layout question; the prototype shows three
+            const shown = list.slice(0, 3);
+            root.querySelector("[data-summary]").innerHTML = list.length
+              ? shown.map((a) => a.city).join(", ")
+              : `<span class="text-muted-foreground">Choose airports…</span>`;
+            root.querySelector("[data-more-host]").innerHTML =
+              list.length > 3
+                ? `<button type="button" interestfor="${id}-card" style="anchor-name: --${id}-more" class="sa-badge sa-badge-variant-secondary h-5 cursor-default" data-slot="badge">+${list.length - 3}</button>`
+                : "";
+            root.querySelector("[data-card-title]").textContent = `${list.length} airports`;
+            root.querySelector("[data-card]").innerHTML = list
+              .map((a) => `<li class="flex items-center gap-2 rounded-sm px-2 py-1">${codeChip(a.code)}<span class="truncate">${a.city}</span></li>`)
+              .join("");
+            root.querySelector("[data-foot]").textContent = `${list.length} selected`;
+          };
+          const list = (term = "") => {
+            const hits = filterAirports(term);
+            pop.querySelector("[data-items]").innerHTML = hits.length
+              ? hits.map((a) => item(a.code, `${codeChip(a.code)}<span class="truncate">${a.city}</span>`, selected.has(a.code))).join("")
+              : muted("No airports found.");
+          };
+          paint();
+          pop.addEventListener("toggle", (e) => e.newState === "open" && ((input.value = ""), list(), input.focus()));
+          input.addEventListener("input", () => list(input.value));
+          root.addEventListener("itemselect", (e) => (toggle(selected, e.detail.value, root), paint()));
+        };
+        return { init, id, html: panel({
+          id: "summary",
+          build: {"level": 3, "data": "both", "uses": ["<code>sa-popover</code>, <code>sel-command</code>, <code>sa-checkbox</code> (as #1)", "<code>sa-badge</code> for +N"], "needs": ["A hover card: there's no primitive, and interestfor / popover=hint are Chromium-only today, so it needs a fallback", "Summary text (“A, B and 2 more”) and the toggle script from #1"]},
+          title: "4 · Summary trigger with hovercard",
+          blurb: "The field is one line of text: the first names and a <code>+N</code> badge. Hovering (or focusing) the badge shows everything through <code>interestfor</code> and a <code>popover=hint</code>; clicking the field opens a checkbox popover with a Done footer.",
+          body: `<div data-pattern="${id}" class="max-w-md">${field("Hub airports", control, "Hover +4 to see the rest; click to edit.")}</div>`,
+          pros: ["Constant height; at home in dense grids and inline edit", "Same shape works as the read-only display", "Hovercard answers “which ones?” without opening the editor"],
+          cons: ["Selection is hidden until hover / open", "Hover isn’t available on touch (interestfor long-press only)", "Removing one item takes two steps"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 5. Grouped tri-state
+      patterns.push(() => {
+        const id = nextId("grouped");
+        const selected = new Set(["CPT", "JNB", "NBO", "CAI", "LIS", "MAD"]);
+        const control = `
+          <div data-root>
+            ${button("outline", "default", `<span data-summary class="min-w-0 flex-1 truncate text-left font-normal"></span>${icons.chevronDown("text-muted-foreground")}`, `popovertarget="${id}-pop" style="anchor-name: --${id}-anchor"`, "w-full justify-between")}
+            ${popover(
+              `${id}-pop`,
+              `${id}-anchor`,
+              `<sel-command class="sa-command bg-transparent" data-slot="command" data-filter="none">
+                ${commandInput(id, "Search airports or regions")}
+                <div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list max-h-80" data-items></div>
+              </sel-command>`,
+              { cls: "p-0 mt-1", anchorWidth: true },
+            )}
+          </div>`;
+        const init = (root) => {
+          const pop = root.querySelector("[popover]");
+          const input = pop.querySelector("input");
+          let term = "";
+          const visible = (g) => {
+            const t = term.trim().toLowerCase();
+            if (!t || g.region.toLowerCase().includes(t)) return g.airports;
+            return g.airports.filter((a) => [a.city, a.code, a.country].some((v) => v.toLowerCase().includes(t)));
+          };
+          const stateOf = (codes) => {
+            const n = codes.filter((c) => selected.has(c)).length;
+            return n === 0 ? "" : n === codes.length ? "true" : "mixed";
+          };
+          const paint = () => {
+            const regions = airportsByRegion.filter((g) => g.airports.some((a) => selected.has(a.code)));
+            root.querySelector("[data-summary]").innerHTML = selected.size
+              ? `${selected.size} airports <span class="text-muted-foreground">· ${regions.map((g) => {
+                  const s = stateOf(g.airports.map((a) => a.code));
+                  return s === "true" ? `all of ${g.region}` : g.region;
+                }).join(", ")}</span>`
+              : `<span class="text-muted-foreground">Choose airports…</span>`;
+            // Refresh the group rows' tri-state and counts in place
+            pop.querySelectorAll("[data-group]").forEach((el) => {
+              const g = airportsByRegion.find((x) => x.region === el.dataset.group);
+              const s = stateOf(g.airports.map((a) => a.code));
+              s ? el.setAttribute("data-checked", s) : el.removeAttribute("data-checked");
+              el.querySelector("[data-n]").textContent = `${g.airports.filter((a) => selected.has(a.code)).length}/${g.airports.length}`;
+            });
+            const all = pop.querySelector('[data-value="__all"]');
+            if (all) {
+              const s = stateOf(airportsByRegion.flatMap(visible).map((a) => a.code));
+              s ? all.setAttribute("data-checked", s) : all.removeAttribute("data-checked");
+            }
+          };
+          const list = () => {
+            const groups = airportsByRegion.map((g) => ({ g, hits: visible(g) })).filter((x) => x.hits.length);
+            const total = groups.reduce((n, x) => n + x.hits.length, 0);
+            pop.querySelector("[data-items]").innerHTML = !groups.length
+              ? muted("No airports found.")
+              : (term.trim() ? item("__all", `<span>Select all ${total} results</span>`, false, { cls: "text-muted-foreground" }) + separator : "") +
+                groups
+                  .map(({ g, hits }) => `
+                    <div role="presentation" data-slot="command-group" class="sa-command-group">
+                      <div role="group">
+                        ${item(`region:${g.region}`, `<span class="font-medium">${g.region}</span>`, false, { trailing: `<span class="text-muted-foreground ml-auto text-xs tabular-nums" data-n></span>` }).replace("data-slot=\"command-item\"", `data-group="${g.region}" data-slot="command-item"`)}
+                        ${hits.map((a) => item(a.code, `${codeChip(a.code)}<span class="truncate">${a.city}</span>`, selected.has(a.code), { cls: "pl-7" })).join("")}
+                      </div>
+                    </div>`)
+                  .join("");
+            paint();
+          };
+          paint();
+          pop.addEventListener("toggle", (e) => e.newState === "open" && ((input.value = term = ""), list(), input.focus()));
+          input.addEventListener("input", () => ((term = input.value), list()));
+          root.addEventListener("itemselect", (e) => {
+            const v = e.detail.value;
+            const setAll = (codes) => {
+              const on = stateOf(codes) !== "true";
+              codes.forEach((c) => (on ? selected.add(c) : selected.delete(c)));
+              pop.querySelectorAll("[data-value]").forEach((el) => {
+                if (codes.includes(el.dataset.value)) on ? el.setAttribute("data-checked", "true") : el.removeAttribute("data-checked");
+              });
+            };
+            if (v === "__all") setAll(airportsByRegion.flatMap(visible).map((a) => a.code));
+            else if (v.startsWith("region:")) setAll(visible(airportsByRegion.find((g) => g.region === v.slice(7))).map((a) => a.code));
+            else toggle(selected, v, root);
+            paint();
+          });
+        };
+        return { init, id, html: panel({
+          id: "grouped",
+          build: {"level": 3, "data": "entity", "uses": ["<code>sel-command</code> groups with headings", "<code>sa-checkbox</code> (native indeterminate)", "<code>sa-popover</code>"], "needs": ["Group rows as toggleable items with checked / mixed / empty logic", "“Select all N results” across pages needs the server to return the matching ids", "A group key on items from the server; a trigger that summarises by group"]},
+          title: "5 · Grouped with tri-state groups",
+          blurb: "Airports by region. A region row selects or clears all its (visible) airports and shows checked / mixed / empty with a count; a search narrows inside groups and offers “Select all N results”. The trigger summarises by group.",
+          body: `<div data-pattern="${id}" class="max-w-md">${field("Service area", control, "Tick a region to take all of its airports.")}</div>`,
+          pros: ["Bulk selection without a separate tool", "Group summary reads well (“all of Africa, Europe”)", "Select all results makes search-then-take-all fast"],
+          cons: ["Needs a grouping key on the lookup (an API addition)", "Group-select with remote paging is ambiguous (all loaded or all matching?)", "Mixed state is subtle in some themes"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 6. Token paste / bulk entry
+      patterns.push(() => {
+        const id = nextId("paste");
+        const tokens = []; // { raw, code|null }
+        const control = `
+          <div data-root>
+            <div data-control data-slot="input-group" role="group" class="${controlCls} cursor-text" style="anchor-name: --${id}-anchor">
+              <span data-chips class="contents"></span>
+              <input data-entry placeholder="Type or paste codes…" autocomplete="off" spellcheck="false" class="placeholder:text-muted-foreground h-7 min-w-32 flex-1 bg-transparent px-1.5 font-mono text-sm outline-none" />
+              ${button("ghost", "icon-xs", icons.clipboard(), `popovertarget="${id}-pop" aria-label="Paste a list" title="Paste a list"`, "text-muted-foreground ml-auto")}
+            </div>
+            <p data-errors class="text-destructive mt-1.5 text-sm" role="alert"></p>
+            ${popover(
+              `${id}-pop`,
+              `${id}-anchor`,
+              `<div class="space-y-2 p-3">
+                <p class="text-sm font-medium">Paste a list</p>
+                <textarea data-bulk rows="5" class="sa-textarea font-mono text-xs" data-slot="textarea" placeholder="One per line, or separated by commas">LHR
+CDG, FCO
+Tokyo Haneda
+QQQ</textarea>
+                <p class="text-muted-foreground text-xs">Codes or city names; separated by commas, semicolons, spaces or new lines.</p>
+                <div class="flex justify-end gap-2">${button("outline", "sm", "Cancel", `popovertarget="${id}-pop" popovertargetaction="hide"`)}${button("default", "sm", "Add", "data-bulk-add")}</div>
+              </div>`,
+              { cls: "p-0 mt-1", side: "bottom-span-left", anchorWidth: true },
+            )}
+          </div>`;
+        const resolve = (raw) => {
+          const t = raw.trim();
+          return airports.find((a) => a.code === t.toUpperCase()) ?? airports.find((a) => a.city.toLowerCase() === t.toLowerCase()) ?? null;
+        };
+        const init = (root) => {
+          const entry = root.querySelector("[data-entry]");
+          const paint = () => {
+            root.querySelector("[data-chips]").innerHTML = tokens
+              .map((t, i) =>
+                t.airport
+                  ? chip(String(i), `<span class="font-mono text-[0.65rem]">${t.airport.code}</span><span class="truncate">${t.airport.city}</span>`)
+                  : chip(String(i), `<span class="font-mono text-[0.7rem]">${t.raw}</span>`, { invalid: true, title: `“${t.raw}” isn’t a known airport code or city` }),
+              )
+              .join("");
+            const bad = tokens.filter((t) => !t.airport);
+            root.querySelector("[data-errors]").textContent = bad.length
+              ? `${bad.length === 1 ? "1 entry isn’t" : `${bad.length} entries aren’t`} a known airport: ${bad.map((t) => t.raw).join(", ")}. Remove ${bad.length === 1 ? "it" : "them"} to save.`
+              : "";
+            root.querySelector("[data-control]").toggleAttribute("aria-invalid", !!bad.length);
+            root.querySelector("[data-control]").classList.toggle("border-destructive", !!bad.length);
+          };
+          // Split on commas, semicolons and new lines; a piece that isn't a known city is then split on spaces ("cdg JFK")
+          const add = (text) => {
+            const pieces = text.split(/[,;\n\t]+/).map((s) => s.trim()).filter(Boolean).flatMap((p) => (resolve(p) ? [p] : p.split(/\s+/)));
+            for (const raw of pieces) {
+              const a = resolve(raw);
+              if (a && tokens.some((t) => t.airport?.code === a.code)) continue;
+              tokens.push({ raw, airport: a });
+            }
+            paint();
+          };
+          entry.addEventListener("keydown", (e) => {
+            if ((e.key === "Enter" || e.key === "," || e.key === ";") && entry.value.trim()) {
+              e.preventDefault();
+              add(entry.value);
+              entry.value = "";
+            } else if (e.key === "Backspace" && !entry.value && tokens.length) (tokens.pop(), paint());
+          });
+          entry.addEventListener("paste", (e) => {
+            e.preventDefault();
+            add(e.clipboardData.getData("text"));
+          });
+          root.addEventListener("click", (e) => {
+            const rm = e.target.closest("[data-remove]");
+            if (rm) (tokens.splice(Number(rm.dataset.remove), 1), paint());
+            else if (e.target.closest("[data-bulk-add]")) {
+              add(root.querySelector("[data-bulk]").value);
+              root.querySelector("[popover]").hidePopover();
+            } else if (e.target.matches("[data-control]")) entry.focus();
+          });
+          root.closest("section").querySelector("[data-demo]").addEventListener("click", () => add("LHR, cdg JFK; XXX"));
+          add("LIS, CPT");
+        };
+        return { init, id, html: panel({
+          id: "paste",
+          build: {"level": 3, "data": "entity", "uses": ["<code>sa-input-group</code>", "<code>sa-badge</code> chips, including the destructive variant"], "needs": ["Tokenizer script: separators, Enter, paste splitting, Backspace", "A bulk-resolve endpoint (codes/names → ids) and the invalid-token state", "Keyboard and a11y for the token input"], "note": "Self-contained; worth it only where people really arrive with lists."},
+          title: "6 · Token paste and bulk entry",
+          blurb: "For people who already have a list. Typing a separator (or Enter) turns text into tokens; pasting splits on commas, semicolons, spaces and new lines. Known codes or city names become chips; anything else stays as a destructive chip with a reason and a field error. The clipboard button opens a paste box.",
+          body: `<div class="mb-4">${button("outline", "xs", "Simulate paste “LHR, cdg JFK; XXX”", "data-demo")}</div><div data-pattern="${id}" class="max-w-md">${field("Route airports", control, "")}</div>`,
+          pros: ["Fast for power users and spreadsheets", "Unknown tokens are kept visible, not silently dropped", "Composes with a dropdown (2) for discovery"],
+          cons: ["Needs unique human keys (codes, emails, SKUs)", "Server has to resolve a batch of tokens", "Free-form entry invites ambiguity (“Tokyo”: HND or NRT?)"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 7. Selected / All tabs
+      patterns.push(() => {
+        const id = nextId("twopane");
+        const selected = new Set(["amara", "chen", "elif", "hiro", "isla", "kavya", "mei", "noah", "pablo"]);
+        let tab = "all";
+        const tabs = `
+          <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs px-2 pt-2">
+            <div data-slot="tabs-list" data-variant="default" role="tablist" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default w-full">
+              <button type="button" role="tab" data-slot="tabs-trigger" data-tab="all" class="sa-tabs-trigger">All guides</button>
+              <button type="button" role="tab" data-slot="tabs-trigger" data-tab="selected" class="sa-tabs-trigger">Selected <span data-count class="tabular-nums"></span></button>
+            </div>
+          </div>`;
+        const control = `
+          <div data-root>
+            <div class="flex items-center gap-2">
+              ${button("outline", "default", `${icons.users()}<span data-summary></span>`, `popovertarget="${id}-pop" style="anchor-name: --${id}-anchor"`)}
+              <span data-faces class="flex -space-x-1.5"></span>
+            </div>
+            ${popover(
+              `${id}-pop`,
+              `${id}-anchor`,
+              `${tabs}
+              <sel-command class="sa-command bg-transparent" data-slot="command" data-filter="none">
+                <div data-search>${commandInput(id, "Search guides")}</div>
+                <div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list h-72 max-h-72" data-items></div>
+                <div class="flex items-center justify-between border-t p-1.5 pl-3 text-xs" data-foot></div>
+              </sel-command>`,
+              { cls: "w-80 p-0 mt-1", side: "bottom-span-right" },
+            )}
+          </div>`;
+        const init = (root) => {
+          const pop = root.querySelector("[popover]");
+          const input = pop.querySelector("input");
+          const paint = () => {
+            root.querySelector("[data-summary]").textContent = selected.size ? `${selected.size} guides` : "Choose guides";
+            root.querySelector("[data-faces]").innerHTML =
+              [...selected].slice(0, 5).map((v) => avatar(guide(v).name, "sm").replace('class="sa-avatar', 'class="ring-background ring-2 sa-avatar')).join("") +
+              (selected.size > 5 ? `<span class="bg-muted ring-background flex size-6 items-center justify-center rounded-full text-[0.65rem] ring-2">+${selected.size - 5}</span>` : "");
+            root.querySelector("[data-count]").textContent = `(${selected.size})`;
+          };
+          const list = () => {
+            pop.querySelectorAll("[data-tab]").forEach((b) => {
+              const on = b.dataset.tab === tab;
+              b.toggleAttribute("data-active", on);
+              b.setAttribute("aria-selected", on);
+            });
+            const t = input.value.trim().toLowerCase();
+            const pool = tab === "all" ? guides : guides.filter((g) => selected.has(g.id));
+            const hits = t ? pool.filter((g) => (g.name + g.desc).toLowerCase().includes(t)) : pool;
+            pop.querySelector("[data-items]").innerHTML = hits.length
+              ? hits
+                  .map((g) =>
+                    tab === "all"
+                      ? item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id))
+                      : item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-1 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span><span class="text-muted-foreground ml-auto [&>svg]:size-4">${icons.x()}</span>`, false, { mode: "none" }),
+                  )
+                  .join("")
+              : muted(tab === "all" ? "No guides found." : "Nothing selected.");
+            pop.querySelector("[data-foot]").innerHTML =
+              tab === "all"
+                ? `<span class="text-muted-foreground">${selected.size} selected</span>${button("ghost", "xs", "Done", `popovertarget="${id}-pop" popovertargetaction="hide"`)}`
+                : `<span class="text-muted-foreground">Click to remove</span>${button("ghost", "xs", "Clear all", "data-clear", "text-destructive")}`;
+          };
+          paint();
+          pop.addEventListener("toggle", (e) => e.newState === "open" && ((tab = "all"), (input.value = ""), list(), input.focus()));
+          input.addEventListener("input", list);
+          pop.addEventListener("click", (e) => {
+            const b = e.target.closest("[data-tab]");
+            if (b) ((tab = b.dataset.tab), (input.value = ""), list(), input.focus());
+            if (e.target.closest("[data-clear]")) (selected.clear(), paint(), list());
+          });
+          root.addEventListener("itemselect", (e) => {
+            if (tab === "selected") (selected.delete(e.detail.value), list());
+            else toggle(selected, e.detail.value, root);
+            paint();
+          });
+        };
+        return { init, id, html: panel({
+          id: "two-pane",
+          build: {"level": 2, "data": "both", "uses": ["<code>sa-tabs</code>, <code>sa-popover</code>, <code>sel-command</code>, <code>sa-checkbox</code>", "<code>sa-avatar-group</code> with count for the face pile"], "needs": ["The toggle script from #1", "Selected tab rendered from the current selection (keeping display data for items outside the current results), Clear all"]},
+          title: "7 · “All” and “Selected” tabs",
+          blurb: "For selections too big to eyeball in the list: tabs switch the popover between everything (checkbox rows) and just the selection (click to remove, Clear all). The trigger shows a count and a face pile.",
+          body: `<div data-pattern="${id}">${field("Guides on this tour", control, "")}</div>`,
+          pros: ["Reviewing 30 selections is one click, not a scroll hunt", "Search works within the selection too", "Face pile is a nice summary for people"],
+          cons: ["Tabs inside a popover feel heavy for small sets", "Two modes to learn", "Remote “All” and local “Selected” behave differently"],
+        }) };
+      });
+
+      // ---------------------------------------------------------------- 8. Mobile drawer
+      patterns.push(() => {
+        const id = nextId("mobile");
+        const selected = new Set(["hiro", "mei", "bruno"]);
+        const html = `
+          <div class="flex flex-wrap items-start gap-8">
+            <div data-pattern="${id}" class="bg-background relative h-[640px] w-[375px] shrink-0 overflow-hidden rounded-[2rem] border-8 border-neutral-800 shadow-xl">
+              <div class="space-y-4 p-4 pt-6">
+                <p class="font-semibold">Edit tour</p>
+                ${field("Name", `<input class="sa-input" data-slot="input" value="Kyoto temples & tea" />`)}
+                ${field(
+                  "Guides",
+                  `<button type="button" data-open class="${controlCls} w-full cursor-pointer text-left"><span data-chips class="contents"></span><span class="text-muted-foreground px-1.5 text-sm">Add…</span></button>`,
+                )}
+                ${field("Starts", `<input class="sa-input" data-slot="input" value="12 Apr 2027" />`)}
+              </div>
+              <div data-drawer class="absolute inset-0 flex flex-col justify-end transition-opacity">
+                <div data-close class="absolute inset-0 bg-black/40"></div>
+                <div class="bg-popover text-popover-foreground relative flex max-h-[85%] flex-col rounded-t-2xl border-t shadow-2xl">
+                  <div class="mx-auto mt-2 h-1.5 w-10 rounded-full bg-muted-foreground/30"></div>
+                  <div class="flex items-center justify-between px-4 pt-2 pb-1"><p class="font-semibold">Guides</p>${button("ghost", "sm", "Done", "data-close")}</div>
+                  <sel-command class="sa-command min-h-0 flex-1 bg-transparent" data-slot="command" data-filter="none">
+                    <div class="px-2">${commandInput(id, "Search guides")}</div>
+                    <div data-selected-strip class="flex gap-1 overflow-x-auto px-4 py-2"></div>
+                    <div id="${id}-list" role="listbox" tabindex="-1" data-slot="command-list" class="sa-command-list max-h-none flex-1 px-2 pb-4" data-items></div>
+                  </sel-command>
+                </div>
+              </div>
+            </div>
+            <div class="text-muted-foreground max-w-xs space-y-2 text-sm">
+              <p>Below ~640px the same editor (2, 4, 5 or 7) renders as a bottom drawer instead of an anchored popover: full width, taller rows (44px targets), a horizontally scrolling strip of the current selection and a Done button.</p>
+              <p>This is close to what the existing lookup sheet already does — a strong argument for making the <em>sheet</em> the mobile presentation of whichever popover pattern wins.</p>
+              ${button("outline", "sm", "Toggle drawer", "data-toggle")}
+            </div>
+          </div>`;
+        const init = (root) => {
+          const drawer = root.querySelector("[data-drawer]");
+          const paint = () => {
+            root.querySelector("[data-chips]").innerHTML = [...selected].map((v) => chip(v, `<span class="truncate">${guide(v).name}</span>`)).join("");
+            root.querySelector("[data-selected-strip]").innerHTML = [...selected].map((v) => chip(v, `<span class="whitespace-nowrap">${guide(v).name}</span>`)).join("") || `<span class="text-muted-foreground text-xs">Nothing selected</span>`;
+          };
+          const list = (t = "") => {
+            const hits = guides.filter((g) => (g.name + g.desc).toLowerCase().includes(t.toLowerCase()));
+            root.querySelector("[data-items]").innerHTML = hits.map((g) => item(g.id, `${avatar(g.name, "default")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id), { cls: "min-h-11" })).join("");
+          };
+          const show = (on) => drawer.classList.toggle("hidden", !on);
+          paint();
+          list();
+          root.querySelector("input[data-slot=command-input]").addEventListener("input", (e) => list(e.target.value));
+          root.addEventListener("click", (e) => {
+            const rm = e.target.closest("[data-remove]");
+            if (rm) {
+              e.stopPropagation();
+              selected.delete(rm.dataset.remove);
+              root.querySelector(`[data-items] [data-value="${rm.dataset.remove}"]`)?.removeAttribute("data-checked");
+              paint();
+            } else if (e.target.closest("[data-open]")) show(true);
+            else if (e.target.closest("[data-close]")) show(false);
+          });
+          root.parentElement.querySelector("[data-toggle]").addEventListener("click", () => show(drawer.classList.contains("hidden")));
+          root.addEventListener("itemselect", (e) => (toggle(selected, e.detail.value, root), paint()));
+        };
+        return { init, id, html: panel({
+          id: "mobile",
+          build: {"level": 3, "data": "entity", "uses": ["<code>sa-sheet</code> with side=Bottom already exists", "<code>sel-command</code> for the rows"], "needs": ["Switching popover → bottom sheet at a breakpoint", "Drag handle, snap heights and keeping clear of the on-screen keyboard (visualViewport) — none exist", "The prototype is visual only"], "note": "The sheet lookup already works on phones, so this is only needed if a popover pattern wins on desktop."},
+          title: "8 · Narrow screens: bottom drawer",
+          blurb: "Visual study at 375px: an anchored popover is cramped on a phone and the on-screen keyboard covers it, so the editor becomes a bottom drawer. Rows and selection strip are live; the drawer is not animated.",
+          body: html,
+          wide: true,
+        }) };
+      });
+
+      // ---------------------------------------------------------------- Mount
+      const built = patterns.map((make) => make());
+      document.getElementById("patterns").innerHTML = built.map((b) => b.html).join("");
+      for (const b of built) b.init?.(document.querySelector(`[data-pattern="${b.id}"]`));
+
+      document.querySelector("main > header").insertAdjacentHTML("beforeend", backendNote());
+      controlBar();
+    </script>
+  </body>
+</html>
