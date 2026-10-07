@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -71,23 +72,39 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
         var effectiveSpacing = Spacing ?? 2;
         var effectiveOrientation = Orientation ?? ToggleGroupOrientation.Horizontal;
 
-        SetContext(
-            context,
-            new ToggleGroupContext
-            {
-                ClassNames = ClassNames,
-                Type = effectiveType,
-                Variant = effectiveVariant,
-                Size = effectiveSize,
-                Spacing = effectiveSpacing,
-                // Resolve the shared field name once so every child input posts under the same
-                // name (radios -> one scalar, checkboxes -> a collection).
-                FieldName = !string.IsNullOrEmpty(For?.Name)
-                    ? ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name)
-                    : Name,
-                SelectedValue = For?.Model,
-            }
-        );
+        // Resolve the shared field name once so every child input posts under the same name
+        // (radios -> one scalar, checkboxes -> a collection).
+        var fieldName =
+            For == null ? Name : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
+        var multiple = effectiveType == ToggleGroupType.Multiple;
+        var valueType =
+            For == null ? null
+            : multiple ? ChoiceGroupValue.ElementType(For.ModelExplorer.ModelType)
+            : For.ModelExplorer.ModelType;
+
+        // Posted values win over the model so a redisplayed form keeps what was submitted
+        var state = string.IsNullOrEmpty(fieldName)
+            ? null
+            : ViewContext.ViewData.ModelState[fieldName]?.RawValue;
+        var hasState = state != null;
+        var selection = ChoiceGroupValue
+            .Values(hasState ? state : For?.Model)
+            .Where(value => value != null)
+            .Select(value => ChoiceGroupValue.Normalize(value!, valueType));
+        var groupContext = new ToggleGroupContext
+        {
+            ClassNames = ClassNames,
+            Type = effectiveType,
+            Variant = effectiveVariant,
+            Size = effectiveSize,
+            Spacing = effectiveSpacing,
+            FieldName = fieldName,
+            SelectedValues = (hasState && !multiple ? selection.Take(1) : selection).ToHashSet(
+                StringComparer.Ordinal
+            ),
+            ValueType = valueType,
+        };
+        SetContext(context, groupContext);
 
         var userClass = output.GetUserSuppliedClass();
 
@@ -138,6 +155,17 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
         );
 
         output.Content.AppendHtml(childContent);
+
+        // Unchecked checkboxes post nothing, so the checkbox group's marker lets an empty
+        // selection clear the bound collection
+        if (multiple && !string.IsNullOrEmpty(fieldName) && groupContext.HasEnabledItem)
+        {
+            var marker = new TagBuilder("input") { TagRenderMode = TagRenderMode.SelfClosing };
+            marker.Attributes["type"] = "hidden";
+            marker.Attributes["name"] = CheckboxGroupModelBinderProvider.MarkerPrefix + fieldName;
+            marker.Attributes["value"] = "true";
+            output.Content.AppendHtml(marker);
+        }
 
         return FieldLayout.Stacked;
     }

@@ -228,4 +228,22 @@
             grid-template-rows: repeat(var(--sa-rows-lg), auto);
         }
     }
+
+    /* Toggle group editors wrap their separate toggles, and chips round them into pills with a check that shows
+       while on. */
+    .sa-toggle-group.sa-toggle-group-wrap {
+        flex-wrap: wrap;
+    }
+
+    .sa-toggle-group.sa-toggle-chips > .sa-toggle-group-item {
+        border-radius: calc(infinity * 1px);
+    }
+
+    .sa-toggle-chips .sa-toggle-chip-check {
+        display: none;
+    }
+
+    .sa-toggle-chips .sa-toggle-group-item:has(:checked) .sa-toggle-chip-check {
+        display: block;
+    }
 }

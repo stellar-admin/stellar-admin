@@ -337,6 +337,122 @@ public class ChoiceEditorTests
     }
 
     [Test]
+    public async Task ToggleGroupEditor_CollectionProperty_RendersMultipleChips()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='toggle-group']");
+        await Assert.That(group.ClassList.Contains("sa-toggle-chips")).IsTrue();
+        var checkboxes = group.QuerySelectorAll("input[type='checkbox'][name='Entity.Cabins']");
+        await Assert
+            .That(checkboxes.Select(checkbox => checkbox.GetAttribute("value")))
+            .IsEquivalentTo(["Economy", "PremiumEconomy", "Business"]);
+        await Assert
+            .That(
+                checkboxes
+                    .Where(checkbox => checkbox.HasAttribute("checked"))
+                    .Select(checkbox => checkbox.GetAttribute("value"))
+            )
+            .IsEquivalentTo(["Economy", "Business"]);
+        await Assert.That(group.QuerySelectorAll(".sa-toggle-chip-check").Length).IsEqualTo(3);
+        await Assert
+            .That(group.QuerySelector("input[type='hidden']")?.GetAttribute("name"))
+            .IsEqualTo("__sa_checkbox_group.Entity.Cabins");
+    }
+
+    [Test]
+    public async Task ToggleGroupEditor_JoinedAppearance_RendersSingleJoinedGroup()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabin)
+                .UseEditor<ToggleGroupEditor>(editor =>
+                    editor.Appearance = ToggleGroupAppearance.Joined
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='toggle-group']");
+        await Assert.That(group.GetAttribute("data-spacing")).IsEqualTo("0");
+        await Assert.That(group.ClassList.Contains("sa-toggle-group-wrap")).IsFalse();
+        var radios = group.QuerySelectorAll("input[type='radio'][name='Entity.Cabin']");
+        await Assert.That(radios.Length).IsEqualTo(3);
+        await Assert
+            .That(radios.Single(radio => radio.HasAttribute("checked")).GetAttribute("value"))
+            .IsEqualTo("Business");
+        await Assert.That(group.QuerySelectorAll("input[type='hidden']").Length).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task ToggleGroupEditor_NullNullableBoolean_SelectsEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Insured)
+                .UseEditor<ToggleGroupEditor>(editor =>
+                    editor.Appearance = ToggleGroupAppearance.Buttons
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='toggle-group']");
+        await Assert.That(group.ClassList.Contains("sa-toggle-group-wrap")).IsTrue();
+        await Assert.That(group.ClassList.Contains("sa-toggle-chips")).IsFalse();
+        var radios = group.QuerySelectorAll("input[type='radio'][name='Entity.Insured']");
+        await Assert
+            .That(radios.Select(radio => radio.GetAttribute("value")))
+            .IsEquivalentTo(["", "true", "false"]);
+        await Assert
+            .That(radios.Single(radio => radio.HasAttribute("checked")).GetAttribute("value"))
+            .IsEqualTo("");
+    }
+
+    [Test]
+    public async Task ToggleGroupEditor_RejectedSubmissionWithNoChips_KeepsEmptySelection()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+        {
+            fields.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>();
+            fields.Add(model => model.Seat);
+        });
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
+        // Turning every chip off posts only the marker the group renders
+        values["__sa_checkbox_group.Entity.Cabins"] = "true";
+        values["Entity.Seat"] = "";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(document.QuerySelectorAll("input[name='Entity.Cabins'][checked]").Length)
+            .IsEqualTo(0);
+    }
+
+    [Test]
     public async Task ChoiceEditor_RejectedSubmission_RetainsPostedChoice()
     {
         // Arrange

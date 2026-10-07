@@ -9,7 +9,7 @@ namespace StellarAdmin.TagHelpers;
 /// <remarks>
 ///     Browsers submit only checked checkboxes. When every item is unchecked, MVC cannot distinguish
 ///     an empty selection from a field that was not submitted, so an initialized collection can retain
-///     its previous values. Checkbox groups render a hidden presence marker to distinguish these cases.
+///     its previous values. Checkbox groups and multiple-select toggle groups render a hidden presence marker to distinguish these cases.
 ///     When the marker is submitted without selected values, this binder clears the collection and
 ///     records the empty submission in ModelState. Otherwise, it delegates to MVC's standard collection binder.
 ///     The accompanying value provider allows MVC to discover nested properties when only the marker is submitted.

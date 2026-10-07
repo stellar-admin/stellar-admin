@@ -100,6 +100,10 @@ public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         {
             inputOutput.Attributes.SetAttribute("disabled", "disabled");
         }
+        else if (toggleGroupContext != null)
+        {
+            toggleGroupContext.HasEnabledItem = true;
+        }
 
         // Visually hidden but still focusable so native keyboard selection drives has-* state.
         inputOutput.Attributes.SetAttribute("class", "peer sr-only");

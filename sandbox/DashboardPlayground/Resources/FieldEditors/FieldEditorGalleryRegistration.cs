@@ -44,6 +44,12 @@ internal static class FieldEditorGalleryRegistration
             50,
             ConfigureSegmentedControlFields
         );
+        dashboard.AddGalleryResource<ToggleGroupGallery>(
+            "toggle-group",
+            "Toggle group",
+            55,
+            ConfigureToggleGroupFields
+        );
         dashboard.AddGalleryResource<TextareaGallery>(
             "textarea",
             "Textarea",
@@ -699,6 +705,62 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.StyledCabin)
                     .UseEditor<SegmentedControlEditor>(toggle =>
                         toggle.ClassNames.Control = "border-dashed"
+                    );
+            }
+        );
+    }
+
+    private static void ConfigureToggleGroupFields(ResourceFieldsBuilder<ToggleGroupGallery> fields)
+    {
+        fields.AddSection(
+            "Appearances",
+            section =>
+            {
+                section.Description =
+                    "A collection property selects multiple values and any other property selects one. Chips is the default appearance.";
+                section.Add(model => model.Cabins).UseEditor<ToggleGroupEditor>();
+                section
+                    .Add(model => model.Amenities)
+                    .UseEditor<ToggleGroupEditor>(group => group.UseItems(GalleryAmenities.Items));
+                section.Add(model => model.Cabin).UseEditor<ToggleGroupEditor>();
+                section
+                    .Add(model => model.Days)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryDays.Items);
+                        group.Appearance = ToggleGroupAppearance.Joined;
+                    });
+                section
+                    .Add(model => model.OptionalCabin)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                        group.Appearance = ToggleGroupAppearance.Joined
+                    );
+                section
+                    .Add(model => model.Meals)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryMeals.Items);
+                        group.Appearance = ToggleGroupAppearance.Buttons;
+                    });
+                section
+                    .Add(model => model.Insured)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                        group.Appearance = ToggleGroupAppearance.Buttons
+                    );
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section.Add(model => model.TitledCabins).UseEditor<ToggleGroupEditor>().Title =
+                    "Title override";
+                section.Add(model => model.DescribedCabins).UseEditor<ToggleGroupEditor>();
+                section.Add(model => model.ReadOnlyCabins).UseEditor<ToggleGroupEditor>();
+                section
+                    .Add(model => model.StyledCabins)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                        group.ClassNames.Control = "rounded-lg border border-dashed p-3"
                     );
             }
         );

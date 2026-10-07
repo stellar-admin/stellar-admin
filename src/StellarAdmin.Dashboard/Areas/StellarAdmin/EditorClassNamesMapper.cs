@@ -157,6 +157,12 @@ internal static class EditorClassNamesMapper
             "Segmented control editors support only Control, which styles the segmented control."
         );
 
+    public static string? ForToggleGroup(ToggleGroupEditor editor) =>
+        ControlOnly(
+            editor.ClassNames,
+            "Toggle group editors support only Control, which styles the toggle group."
+        );
+
     private static string? ControlOnly(EditorClassNames? classes, string message)
     {
         if (

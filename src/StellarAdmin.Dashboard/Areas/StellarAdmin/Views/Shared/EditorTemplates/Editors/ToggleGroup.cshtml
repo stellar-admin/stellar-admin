@@ -1,0 +1,29 @@
+@inherits FieldEditorView<ToggleGroupEditor>
+
+@{
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+    var type = ViewData.ModelMetadata.ElementMetadata is null ? ToggleGroupType.Single : ToggleGroupType.Multiple;
+    var chips = Editor.Appearance == ToggleGroupAppearance.Chips;
+    var joined = Editor.Appearance == ToggleGroupAppearance.Joined;
+    var appearanceClass = joined ? null : chips ? "sa-toggle-group-wrap sa-toggle-chips" : "sa-toggle-group-wrap";
+    var classes = string.Join(' ', new[] { appearanceClass, EditorClassNamesMapper.ForToggleGroup(Editor) }.Where(css => css is not null));
+
+    // A null model selects nothing, so the empty choice is selected here until a value is posted
+    var emptySelected = Model is null
+                        && ViewData.ModelState[Html.NameForModel()]?.AttemptedValue is null;
+}
+
+<sa-toggle-group class="@classes" asp-for="@Model" type="@type" variant="ToggleVariant.Outline"
+                 spacing="@(joined ? 0 : 2)" label="@Title" description="@Description">
+    @foreach (var choice in choices)
+    {
+        bool? selected = emptySelected && choice.Value == "" ? true : null;
+        <sa-toggle-group-item value="@choice.Value" selected="@selected" disabled="@(IsReadOnly || choice.Disabled)">
+            @if (chips)
+            {
+                <sa-icon name="check" class="sa-toggle-chip-check" />
+            }
+            @choice.Text
+        </sa-toggle-group-item>
+    }
+</sa-toggle-group>

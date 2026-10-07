@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
@@ -26,39 +24,25 @@ internal sealed class ToggleGroupContext
     public required string? FieldName { get; init; }
 
     /// <summary>
-    ///     The value(s) bound through the group's <c>asp-for</c> — a scalar for a single-select
-    ///     group, a collection for a multiple-select group, or <c>null</c> when not model-bound.
+    ///     The selected values, normalized to the bound value type: the posted values when the
+    ///     field has model state, otherwise the bound model.
     /// </summary>
-    public required object? SelectedValue { get; init; }
+    public required IReadOnlySet<string> SelectedValues { get; init; }
 
     /// <summary>
-    ///     Determines whether an item with the given value is selected, based on the resolved
-    ///     <see cref="Type" /> and the bound <see cref="SelectedValue" />: a scalar comparison for a
-    ///     single-select group, a membership test for a multiple-select group.
+    ///     The scalar type the values are normalized to, or <c>null</c> when not model-bound.
     /// </summary>
-    public bool IsItemSelected(string itemValue)
-    {
-        if (SelectedValue == null)
-        {
-            return false;
-        }
+    public required Type? ValueType { get; init; }
 
-        if (Type == ToggleGroupType.Single)
-        {
-            return string.Equals(SelectedValue.ToString(), itemValue, StringComparison.Ordinal);
-        }
+    /// <summary>
+    ///     Whether an item that can be selected has rendered. Multiple-select groups render their
+    ///     empty-selection marker only then, so a fully disabled group never clears its value.
+    /// </summary>
+    public bool HasEnabledItem { get; set; }
 
-        if (SelectedValue is IEnumerable enumerable and not string)
-        {
-            foreach (var entry in enumerable)
-            {
-                if (string.Equals(entry?.ToString(), itemValue, StringComparison.Ordinal))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+    /// <summary>
+    ///     Determines whether an item with the given value is selected.
+    /// </summary>
+    public bool IsItemSelected(string itemValue) =>
+        SelectedValues.Contains(ChoiceGroupValue.Normalize(itemValue, ValueType));
 }

@@ -45,3 +45,23 @@ internal static class GalleryAmenities
         new("Airport transfer", "transfer"),
     ];
 }
+
+internal static class GalleryDays
+{
+    public static IReadOnlyList<SelectListItem> Items { get; } =
+    [
+        new("Mon", "mon"),
+        new("Tue", "tue"),
+        new("Wed", "wed"),
+        new("Thu", "thu"),
+        new("Fri", "fri"),
+        new("Sat", "sat"),
+        new("Sun", "sun"),
+    ];
+}
+
+internal static class GalleryMeals
+{
+    public static IReadOnlyList<SelectListItem> Items { get; } =
+    [new("Breakfast", "breakfast"), new("Lunch", "lunch"), new("Dinner", "dinner")];
+}
