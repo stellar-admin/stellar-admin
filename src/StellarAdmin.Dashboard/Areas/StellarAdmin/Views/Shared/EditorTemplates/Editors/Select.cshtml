@@ -1,12 +1,7 @@
-@using Microsoft.AspNetCore.Mvc.Rendering
 @inherits FieldEditorView<SelectEditor>
 
 @{
-    // Supplied items pass through unchanged so their groups and disabled state are kept
-    var items = EditorData as IEnumerable<SelectListItem>
-                ?? Editor.ResolveChoices(EditorData, ViewData.ModelMetadata)
-                    .Select(choice => new SelectListItem(choice.Text, choice.Value, false, choice.Disabled))
-                    .ToList();
+    var items = ChoiceSelectListItems.Create(Editor.ResolveChoices(EditorData, ViewData.ModelMetadata));
 }
 
 <sa-select class-names="@EditorClassNamesMapper.ForSelect(Editor)" asp-for="@Model" asp-items="@items"

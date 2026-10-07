@@ -13,6 +13,18 @@ public enum Cabin
     Business,
 }
 
+public enum Meal
+{
+    [Display(Name = "Pasta", GroupName = "Hot")]
+    Pasta,
+
+    [Display(Name = "Salad", GroupName = "Cold")]
+    Salad,
+
+    [Display(Name = "Curry", GroupName = "Hot")]
+    Curry,
+}
+
 [Flags]
 public enum Extras
 {
@@ -30,6 +42,8 @@ public sealed class ChoiceFieldsModel
     public Extras Extras { get; set; }
 
     public bool? Insured { get; set; }
+
+    public Meal Meal { get; set; }
 
     public Cabin? OptionalCabin { get; set; }
 

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.FieldEditors;
 
@@ -17,6 +17,21 @@ public enum GalleryCabin
     First,
 }
 
+public enum GalleryFare
+{
+    [Display(GroupName = "Saver")]
+    Basic,
+
+    [Display(GroupName = "Saver")]
+    Classic,
+
+    [Display(GroupName = "Flexible")]
+    Flex,
+
+    [Display(Name = "Flex plus", GroupName = "Flexible")]
+    FlexPlus,
+}
+
 [Flags]
 public enum GalleryExtras
 {
@@ -28,40 +43,50 @@ public enum GalleryExtras
 
 internal static class GallerySeats
 {
-    public static IReadOnlyList<SelectListItem> Items { get; } =
-    [new("Aisle", "aisle"), new("Middle", "middle"), new("Window", "window")];
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [new("aisle", "Aisle"), new("middle", "Middle"), new("window", "Window")];
+}
+
+internal static class GalleryDescribedSeats
+{
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [
+        new("aisle", "Aisle") { Description = "Easy to stretch and get up." },
+        new("middle", "Middle"),
+        new("window", "Window") { Description = "A view and somewhere to lean." },
+    ];
 }
 
 internal static class GalleryAmenities
 {
-    public static IReadOnlyList<SelectListItem> Items { get; } =
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
     [
-        new("Wi-Fi on board", "wifi"),
-        new("Lounge access", "lounge"),
-        new("Priority boarding", "priority"),
-        new("Extra baggage", "baggage"),
-        new("Seat selection", "seat"),
-        new("Travel insurance", "insurance"),
-        new("Airport transfer", "transfer"),
+        new("wifi", "Wi-Fi on board"),
+        new("lounge", "Lounge access"),
+        new("priority", "Priority boarding"),
+        new("baggage", "Extra baggage"),
+        new("seat", "Seat selection"),
+        new("insurance", "Travel insurance"),
+        new("transfer", "Airport transfer"),
     ];
 }
 
 internal static class GalleryDays
 {
-    public static IReadOnlyList<SelectListItem> Items { get; } =
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
     [
-        new("Mon", "mon"),
-        new("Tue", "tue"),
-        new("Wed", "wed"),
-        new("Thu", "thu"),
-        new("Fri", "fri"),
-        new("Sat", "sat"),
-        new("Sun", "sun"),
+        new("mon", "Mon"),
+        new("tue", "Tue"),
+        new("wed", "Wed"),
+        new("thu", "Thu"),
+        new("fri", "Fri"),
+        new("sat", "Sat"),
+        new("sun", "Sun"),
     ];
 }
 
 internal static class GalleryMeals
 {
-    public static IReadOnlyList<SelectListItem> Items { get; } =
-    [new("Breakfast", "breakfast"), new("Lunch", "lunch"), new("Dinner", "dinner")];
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [new("breakfast", "Breakfast"), new("lunch", "Lunch"), new("dinner", "Dinner")];
 }

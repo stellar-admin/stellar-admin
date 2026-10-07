@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.Resources.Editors;
@@ -16,7 +15,7 @@ internal static class EfCoreChoiceItemsLoader
         where TContext : DbContext
         where TEntity : class
     {
-        var projection = CreateProjection(itemOptions.ValueExpression, itemOptions.TextExpression);
+        var projection = CreateProjection(itemOptions);
         var orderQuery = itemOptions.OrderQuery;
         var emptyOptionText = itemOptions.EmptyOptionText;
 
@@ -31,22 +30,27 @@ internal static class EfCoreChoiceItemsLoader
                 }
 
                 var rows = await query.Select(projection).ToListAsync(cancellationToken);
-                var items = new List<SelectListItem>(
-                    rows.Count + (emptyOptionText is null ? 0 : 1)
-                );
+                var items = new List<ChoiceItem>(rows.Count + (emptyOptionText is null ? 0 : 1));
                 if (emptyOptionText is not null)
                 {
-                    items.Add(new SelectListItem(emptyOptionText, ""));
+                    items.Add(new ChoiceItem("", emptyOptionText));
                 }
 
                 foreach (var row in rows)
                 {
+                    // Posted values bind in the current culture, as the editors match them
                     var itemValue =
-                        Convert.ToString(row.Value, CultureInfo.InvariantCulture)
+                        Convert.ToString(row.Value, CultureInfo.CurrentCulture)
                         ?? throw new InvalidOperationException(
                             "Choice item values cannot be null."
                         );
-                    items.Add(new SelectListItem(row.Text, itemValue));
+                    items.Add(
+                        new ChoiceItem(itemValue, row.Text)
+                        {
+                            Description = row.Description,
+                            Group = row.Group is null ? null : new ChoiceGroup(row.Group),
+                        }
+                    );
                 }
 
                 return items;
@@ -57,21 +61,41 @@ internal static class EfCoreChoiceItemsLoader
     private static Expression<Func<TEntity, ChoiceItemProjection<TValue>>> CreateProjection<
         TEntity,
         TValue
-    >(Expression<Func<TEntity, TValue>> value, Expression<Func<TEntity, string>> text)
+    >(EfCoreChoiceItemsOptions<TEntity, TValue> options)
+        where TEntity : class
     {
         var entity = Expression.Parameter(typeof(TEntity), "entity");
-        var valueBody = new ReplaceParameterVisitor(value.Parameters[0], entity).Visit(value.Body)!;
-        var textBody = new ReplaceParameterVisitor(text.Parameters[0], entity).Visit(text.Body)!;
         var constructor = typeof(ChoiceItemProjection<TValue>).GetConstructor([
             typeof(TValue),
+            typeof(string),
+            typeof(string),
             typeof(string),
         ])!;
 
         return Expression.Lambda<Func<TEntity, ChoiceItemProjection<TValue>>>(
-            Expression.New(constructor, valueBody, textBody),
+            Expression.New(
+                constructor,
+                Rebind(options.ValueExpression, entity),
+                Rebind(options.TextExpression, entity),
+                RebindOrNull(options.DescriptionExpression, entity),
+                RebindOrNull(options.GroupExpression, entity)
+            ),
             entity
         );
     }
 
-    private sealed record ChoiceItemProjection<TValue>(TValue Value, string Text);
+    private static Expression Rebind(LambdaExpression selector, ParameterExpression entity) =>
+        new ReplaceParameterVisitor(selector.Parameters[0], entity).Visit(selector.Body)!;
+
+    private static Expression RebindOrNull(
+        LambdaExpression? selector,
+        ParameterExpression entity
+    ) => selector is null ? Expression.Constant(null, typeof(string)) : Rebind(selector, entity);
+
+    private sealed record ChoiceItemProjection<TValue>(
+        TValue Value,
+        string Text,
+        string? Description,
+        string? Group
+    );
 }

@@ -6,6 +6,7 @@ using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Editors;
+using TUnit.Assertions.Enums;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
@@ -450,6 +451,101 @@ public class ChoiceEditorTests
         await Assert
             .That(document.QuerySelectorAll("input[name='Entity.Cabins'][checked]").Length)
             .IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task SelectEditor_GroupedChoices_RendersOptionGroups()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<SelectEditor>(select =>
+                    select.UseItems([
+                        new ChoiceItem("1a", "1A") { Group = new("Front") },
+                        new ChoiceItem("any", "Any seat"),
+                        new ChoiceItem("30c", "30C") { Group = new("Back") { Disabled = true } },
+                        new ChoiceItem("2b", "2B") { Group = new("Front") },
+                    ])
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var select = document.RequiredElement("select[name='Entity.Seat']");
+        await Assert
+            .That(OptionValues(select))
+            .IsEquivalentTo(["1a", "2b", "any", "30c"], CollectionOrdering.Matching);
+        await Assert
+            .That(select.QuerySelectorAll("optgroup").Select(group => group.GetAttribute("label")))
+            .IsEquivalentTo(["Front", "Back"], CollectionOrdering.Matching);
+        await Assert
+            .That(select.QuerySelectorAll("optgroup[label='Front'] option").Length)
+            .IsEqualTo(2);
+        await Assert
+            .That(select.RequiredElement("optgroup[label='Back']").HasAttribute("disabled"))
+            .IsTrue();
+    }
+
+    [Test]
+    public async Task SelectEditor_EnumGroupNames_RendersOptionGroups()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.Meal)
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var select = document.RequiredElement("select[name='Entity.Meal']");
+        await Assert
+            .That(
+                select
+                    .QuerySelectorAll("optgroup[label='Hot'] option")
+                    .Select(option => option.GetAttribute("value"))
+            )
+            .IsEquivalentTo(["Pasta", "Curry"], CollectionOrdering.Matching);
+        await Assert
+            .That(select.QuerySelectorAll("optgroup[label='Cold'] option").Length)
+            .IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_SuppliedDescriptions_RendersDescriptions()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<RadioGroupEditor>(radio =>
+                    radio.UseItems([
+                        new ChoiceItem("aisle", "Aisle") { Description = "Easy to stretch." },
+                        new ChoiceItem("window", "Window"),
+                    ])
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-slot='field-description']")
+                    .Select(description => description.TextContent.Trim())
+            )
+            .Contains("Easy to stretch.");
+        await Assert
+            .That(document.QuerySelectorAll("input[type=radio][name='Entity.Seat']").Length)
+            .IsEqualTo(2);
     }
 
     [Test]

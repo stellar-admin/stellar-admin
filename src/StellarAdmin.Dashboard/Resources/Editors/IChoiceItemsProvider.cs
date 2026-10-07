@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
@@ -10,5 +8,5 @@ public interface IChoiceItemsProvider
     /// <summary>
     ///     Returns the available choices.
     /// </summary>
-    Task<IReadOnlyList<SelectListItem>> GetItemsAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<ChoiceItem>> GetItemsAsync(CancellationToken cancellationToken);
 }

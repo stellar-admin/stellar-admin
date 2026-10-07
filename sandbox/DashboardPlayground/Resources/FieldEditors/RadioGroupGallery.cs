@@ -50,7 +50,7 @@ public sealed class RadioGroupGallery
     [Display(Name = "string · [Required] · UseItems")]
     public string? Seat { get; set; }
 
-    [Display(Name = "string · UseItems · Cards · ClassNames.Option.Root")]
+    [Display(Name = "string · UseItems with descriptions · Cards · ClassNames.Option.Root")]
     public string? SeatCards { get; set; }
 
     public static RadioGroupGallery CreateSample() =>

@@ -22,6 +22,9 @@ public sealed class SelectGallery
     [Display(Name = "enum · [Display(Description)]", Description = "Shown below the select.")]
     public GalleryCabin DescribedCabin { get; set; }
 
+    [Display(Name = "enum · [Display(GroupName)]")]
+    public GalleryFare Fare { get; set; }
+
     [Display(Name = "bool?")]
     public bool? Insured { get; set; }
 
@@ -53,7 +56,7 @@ public sealed class SelectGallery
     [Display(Name = "string · [Required] · UseItems")]
     public string? Seat { get; set; }
 
-    [Display(Name = "string? · UseItems with groups and a disabled item")]
+    [Display(Name = "string? · UseItems with groups, a disabled group and a disabled item")]
     public string? Airport { get; set; }
 
     [Display(Name = "enum · ClassNames.Control")]
@@ -66,6 +69,7 @@ public sealed class SelectGallery
             OptionalCabin = GalleryCabin.Business,
             RequiredCabin = GalleryCabin.Economy,
             DescribedCabin = GalleryCabin.First,
+            Fare = GalleryFare.Flex,
             Insured = true,
             Extras = GalleryExtras.Meals | GalleryExtras.Lounge,
             TitledCabin = GalleryCabin.Business,

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.Resources.Builders;
@@ -258,6 +257,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.OptionalCabin);
                 section.Add(model => model.RequiredCabin);
                 section.Add(model => model.DescribedCabin);
+                section.Add(model => model.Fare);
                 section.Add(model => model.Insured);
                 section.Add(model => model.Extras);
             }
@@ -288,18 +288,21 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.Airport)
                     .UseEditor<SelectEditor>(select =>
                     {
-                        var europe = new SelectListGroup { Name = "Europe" };
-                        var americas = new SelectListGroup { Name = "Americas" };
+                        var europe = new ChoiceGroup("Europe");
                         select.UseItems([
-                            new SelectListItem("Not set", ""),
-                            new SelectListItem("Lisbon", "LIS") { Group = europe },
-                            new SelectListItem("Madrid", "MAD") { Group = europe },
-                            new SelectListItem("Reykjavík, closed", "KEF")
+                            new ChoiceItem("", "Not set"),
+                            new ChoiceItem("LIS", "Lisbon") { Group = europe },
+                            new ChoiceItem("JFK", "New York") { Group = new("Americas") },
+                            new ChoiceItem("MAD", "Madrid") { Group = europe },
+                            new ChoiceItem("KEF", "Reykjavík, closed")
                             {
                                 Disabled = true,
                                 Group = europe,
                             },
-                            new SelectListItem("New York", "JFK") { Group = americas },
+                            new ChoiceItem("NRT", "Tokyo")
+                            {
+                                Group = new("Asia, closed") { Disabled = true },
+                            },
                         ]);
                     });
                 section
@@ -553,7 +556,7 @@ internal static class FieldEditorGalleryRegistration
                     {
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.ClassNames.Option.Root = "border-dashed";
-                        radio.UseItems(GallerySeats.Items);
+                        radio.UseItems(GalleryDescribedSeats.Items);
                     });
             }
         );

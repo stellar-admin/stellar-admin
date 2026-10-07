@@ -16,11 +16,11 @@ public abstract class ChoiceEditor : FieldEditor
     /// </summary>
     public string EmptyChoiceText { get; set; } = "Not set";
 
-    internal Func<
-        IServiceProvider,
-        CancellationToken,
-        Task<IReadOnlyList<SelectListItem>>
-    >? ItemsLoader { get; private set; }
+    internal Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>>? ItemsLoader
+    {
+        get;
+        private set;
+    }
 
     /// <summary>
     ///     Selects a registered provider that supplies choices for each request.
@@ -35,19 +35,38 @@ public abstract class ChoiceEditor : FieldEditor
     /// <summary>
     ///     Supplies a fixed set of choices.
     /// </summary>
-    public void UseItems(IEnumerable<SelectListItem> items)
+    public void UseItems(IEnumerable<ChoiceItem> items)
     {
         ArgumentNullException.ThrowIfNull(items);
 
         var snapshot = items.ToArray();
-        ItemsLoader = (_, _) => Task.FromResult<IReadOnlyList<SelectListItem>>(snapshot);
+        ItemsLoader = (_, _) => Task.FromResult<IReadOnlyList<ChoiceItem>>(snapshot);
+    }
+
+    /// <summary>
+    ///     Supplies a fixed set of choices from select list items. An item without a value posts its text, and its
+    ///     selected state is ignored, since the field's value decides the selection.
+    /// </summary>
+    public void UseItems(IEnumerable<SelectListItem> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        UseItems(
+            items.Select(item => new ChoiceItem(item.Value ?? item.Text, item.Text)
+            {
+                Disabled = item.Disabled,
+                Group = item.Group is null
+                    ? null
+                    : new ChoiceGroup(item.Group.Name ?? "") { Disabled = item.Group.Disabled },
+            })
+        );
     }
 
     /// <summary>
     ///     Supplies choices from a request-aware asynchronous loader.
     /// </summary>
     public void UseItems(
-        Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<SelectListItem>>> itemsLoader
+        Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>> itemsLoader
     )
     {
         ArgumentNullException.ThrowIfNull(itemsLoader);
@@ -55,31 +74,24 @@ public abstract class ChoiceEditor : FieldEditor
         ItemsLoader = itemsLoader;
     }
 
-    internal IReadOnlyList<EditorChoice> ResolveChoices(object? editorData, ModelMetadata metadata)
+    internal IReadOnlyList<ChoiceItem> ResolveChoices(object? editorData, ModelMetadata metadata)
     {
-        if (editorData is IEnumerable<SelectListItem> items)
+        if (editorData is IReadOnlyList<ChoiceItem> items)
         {
-            return items
-                .Select(item => new EditorChoice(
-                    item.Value ?? item.Text,
-                    item.Text,
-                    null,
-                    item.Disabled
-                ))
-                .ToArray();
+            return items;
         }
 
         // A collection property takes its choices from the element type
         var valueMetadata = metadata.ElementMetadata ?? metadata;
         var valueType = valueMetadata.UnderlyingOrModelType;
-        List<EditorChoice> choices;
+        List<ChoiceItem> choices;
         if (valueMetadata.IsEnum && !valueMetadata.IsFlagsEnum)
         {
             choices = EnumChoices(valueMetadata, valueType);
         }
         else if (valueType == typeof(bool))
         {
-            choices = [new("true", "Yes", null, false), new("false", "No", null, false)];
+            choices = [new("true", "Yes"), new("false", "No")];
         }
         else
         {
@@ -90,13 +102,13 @@ public abstract class ChoiceEditor : FieldEditor
 
         if (metadata.IsNullableValueType)
         {
-            choices.Insert(0, new("", EmptyChoiceText, null, false));
+            choices.Insert(0, new("", EmptyChoiceText));
         }
 
         return choices;
     }
 
-    private static List<EditorChoice> EnumChoices(ModelMetadata metadata, Type enumType)
+    private static List<ChoiceItem> EnumChoices(ModelMetadata metadata, Type enumType)
     {
         // Choices submit the member name, which binds and matches the model like the number does
         var names = metadata
@@ -112,10 +124,14 @@ public abstract class ChoiceEditor : FieldEditor
                     ?.GetCustomAttribute<DisplayAttribute>()
                     ?.GetDescription();
 
-                return new EditorChoice(name, pair.Key.Name, description, false);
+                return new ChoiceItem(name, pair.Key.Name)
+                {
+                    Description = description,
+                    Group = string.IsNullOrEmpty(pair.Key.Group)
+                        ? null
+                        : new ChoiceGroup(pair.Key.Group),
+                };
             })
             .ToList();
     }
 }
-
-internal sealed record EditorChoice(string Value, string Text, string? Description, bool Disabled);

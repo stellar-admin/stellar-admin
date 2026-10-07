@@ -5,19 +5,19 @@ using StellarAdmin.Dashboard.Resources.Editors;
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
 /// <summary>
-///     Configures EF Core choices for select editors.
+///     Configures EF Core choices for choice editors.
 /// </summary>
-public static class SelectEditorExtensions
+public static class ChoiceEditorExtensions
 {
-    extension(SelectEditor editor)
+    extension(ChoiceEditor editor)
     {
         /// <summary>
-        ///     Loads select choices from an EF Core entity set using required value and text selectors.
+        ///     Loads choices from an EF Core entity set using required value and text selectors.
         /// </summary>
         public void UseItems<TContext, TEntity, TValue>(
             Expression<Func<TEntity, TValue>> value,
             Expression<Func<TEntity, string>> text,
-            Action<EfCoreSelectItemsBuilder<TEntity, TValue>>? configure = null
+            Action<EfCoreChoiceItemsBuilder<TEntity, TValue>>? configure = null
         )
             where TContext : DbContext
             where TEntity : class
@@ -27,8 +27,8 @@ public static class SelectEditorExtensions
             ArgumentNullException.ThrowIfNull(text);
 
             var itemOptions = new EfCoreChoiceItemsOptions<TEntity, TValue>(value, text);
-            var builder = new EfCoreSelectItemsBuilder<TEntity, TValue>(itemOptions);
-            configure?.Invoke(builder);
+            configure?.Invoke(new EfCoreChoiceItemsBuilder<TEntity, TValue>(itemOptions));
+
             EfCoreChoiceItemsLoader.Configure<TContext, TEntity, TValue>(editor, itemOptions);
         }
     }

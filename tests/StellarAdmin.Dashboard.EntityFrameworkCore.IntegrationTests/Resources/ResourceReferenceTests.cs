@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Net;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +11,7 @@ using StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Infrastructure
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.Resources;
 
@@ -33,7 +34,7 @@ public class ResourceReferenceTests
 
         // Act
         var choices =
-            (IReadOnlyList<SelectListItem>)
+            (IReadOnlyList<ChoiceItem>)
                 (await handler.PrepareAsync(context, CancellationToken.None))!;
 
         // Assert
@@ -43,6 +44,83 @@ public class ResourceReferenceTests
         await Assert
             .That(choices.Select(choice => choice.Value).ToArray())
             .IsEquivalentTo(["2", "1", "3"]);
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_LoadsEntityChoicesWithDescriptionsAndGroups()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync();
+        await using var scope = sut.Services.CreateAsyncScope();
+        var editor = new RadioGroupEditor();
+        editor.UseItems<CatalogDbContext, Category, int>(
+            category => category.Id,
+            category => category.Name,
+            items =>
+                items
+                    .OrderBy(category => category.Name)
+                    .UseDescription(category => category.Name + " supplies")
+                    .UseGroup(category => category.Id == 2 ? "Food" : null)
+        );
+        var handler = new RadioGroupEditorHandler(editor, scope.ServiceProvider);
+        var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
+
+        // Act
+        var choices =
+            (IReadOnlyList<ChoiceItem>)
+                (await handler.PrepareAsync(context, CancellationToken.None))!;
+
+        // Assert
+        await Assert
+            .That(choices)
+            .IsEquivalentTo(
+                [
+                    new ChoiceItem("2", "Beverage")
+                    {
+                        Description = "Beverage supplies",
+                        Group = new("Food"),
+                    },
+                    new ChoiceItem("1", "Office") { Description = "Office supplies" },
+                    new ChoiceItem("3", "Technology") { Description = "Technology supplies" },
+                ],
+                CollectionOrdering.Matching
+            );
+    }
+
+    [Test]
+    public async Task SelectEditor_FractionalValues_FormatsInCurrentCulture()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync();
+        await using var scope = sut.Services.CreateAsyncScope();
+        var editor = new SelectEditor();
+        editor.UseItems<CatalogDbContext, Category, double>(
+            category => category.Id + 0.5,
+            category => category.Name,
+            items => items.OrderBy(category => category.Id)
+        );
+        var handler = new SelectEditorHandler(editor, scope.ServiceProvider);
+        var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
+        var previousCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+        IReadOnlyList<ChoiceItem> choices;
+
+        // Act
+        try
+        {
+            choices =
+                (IReadOnlyList<ChoiceItem>)
+                    (await handler.PrepareAsync(context, CancellationToken.None))!;
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+
+        // Assert
+        await Assert
+            .That(choices.Select(choice => choice.Value))
+            .IsEquivalentTo(["1,5", "2,5", "3,5"], CollectionOrdering.Matching);
     }
 
     [Test]
