@@ -8,7 +8,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [dashboard-form-grid](dashboard-form-grid.md) | implemented | Column counts and spans per breakpoint for Dashboard create and edit forms, replacing `AddRow`; all three phases done 2026-10-07 and awaiting review. |
 | [dashboard-theme-configuration](dashboard-theme-configuration.md) | implemented | Dashboard supports app-wide selection of all fifteen shipped themes and opt-in suggested fonts. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
@@ -31,6 +30,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [consumer-skill-consolidation](archive/consumer-skill-consolidation.md) | completed |
 | [custom-sidebar-links](archive/custom-sidebar-links.md) | completed; `AddSidebarLink` for host Razor Pages, MVC actions and URLs, merged with resource groups in the sidebar and command palette, and host pages that opt into the Dashboard layout with `StellarAdminLayouts.Dashboard`. Icons, route values, sub-menus and a partial override test are unscheduled. |
 | [dashboard-authorization](archive/dashboard-authorization.md) | completed; `RequireAuthorization` on Dashboard and resource builders, an authorization-aware async sidebar, and the `MapStellarAdmin` convention builder, with HTTP integration tests. Per-action requirements are deferred. |
+| [dashboard-form-grid](archive/dashboard-form-grid.md) | completed; column counts and spans per breakpoint for Dashboard create and edit forms, set with `Columns` and `ColumnSpan` on the form, sections, groups and fields, per-section `Layout`, and `AddRow` removed, with a Form layouts gallery in the playground. `ColumnStart` and a Small start for plain `Columns(n)` are unscheduled. |
 | [demo-theme-selector](archive/demo-theme-selector.md) | completed |
 | [ef-test-migration](archive/ef-test-migration.md) | completed; all 325 solution tests pass through discovery on 2026-09-18 |
 | [field-editor-catalog](archive/field-editor-catalog.md) | completed; built-in `UseEditor` field editors with data-type templates forwarding to them, a DashboardPlayground editor gallery and a consumer reference section. A slider value display and gallery pixel comparison are follow-ups. |

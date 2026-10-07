@@ -7,8 +7,8 @@ using StellarAdmin.TagHelpers;
 
 namespace DashboardPlayground.Resources.FormLayouts;
 
-// Visual harness for form grid layouts. See docs/plans/dashboard-form-grid.md. Resize the window, or open the create
-// forms from a lookup's New button, to see each breakpoint.
+// Visual harness for form grid layouts. See docs/plans/archive/dashboard-form-grid.md. Resize the window, or open
+// the create forms from a lookup's New button, to see each breakpoint.
 internal static class FormLayoutGalleryRegistration
 {
     private const string Group = "Form layouts";

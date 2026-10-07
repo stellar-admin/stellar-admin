@@ -1,6 +1,6 @@
 # Dashboard form grid
 
-Status: implemented, 2026-10-07. All three phases done; awaiting review.
+Status: completed, 2026-10-07. All three phases are implemented and committed. `ColumnStart`, and whether a plain `Columns(n)` should start at Small rather than Medium so narrow groups get their columns, are unscheduled.
 
 ## Goal
 
@@ -17,7 +17,7 @@ A developer can set the column count of any form scope (the form root, a section
 - A group is a container with no title or border. It gives part of the form its own column count, or stacks several fields in one cell of the parent grid. A section does the same with a title and the section's layout.
 - A section can override the form's section layout with `section.Layout`. Precedence: the Create sheet's forced `Stacked`, then the section, then the form's `SectionLayout`, then the app-wide default in the Dashboard forms options.
 - The grid stays internal to the Dashboard. `<sa-form-row>` in the TagHelpers package is unchanged; the work can move into the Tag Helpers later if needed.
-- The [options builder conventions](../conventions/options-builders.md) gain a rule: layout values that vary per breakpoint use fluent methods with a tier builder; plain scalars stay properties.
+- The [options builder conventions](../../conventions/options-builders.md) gain a rule: layout values that vary per breakpoint use fluent methods with a tier builder; plain scalars stay properties.
 
 ## Public API
 
