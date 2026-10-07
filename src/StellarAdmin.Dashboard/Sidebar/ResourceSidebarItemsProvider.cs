@@ -29,19 +29,29 @@ internal sealed class ResourceSidebarItemsProvider(
 
         return items
             .GroupBy(entry => entry.Item.Group, StringComparer.Ordinal)
-            .Select(group => new SidebarGroupItem(
-                group.Key,
-                group
-                    .OrderBy(entry => entry.Item.Order)
-                    .ThenBy(entry => entry.Index)
-                    .Select(entry => new SidebarActionLinkItem(
-                        entry.Item.Label,
-                        entry.ControllerName,
-                        "Index",
-                        "StellarAdmin"
-                    ))
-                    .ToArray()
-            ))
+            .Select(
+                SidebarItem (group) =>
+                    new SidebarGroupItem(
+                        group.Key,
+                        group
+                            .OrderBy(entry => entry.Item.Order)
+                            .ThenBy(entry => entry.Index)
+                            .Select(
+                                (entry) =>
+                                    new SidebarActionLinkItem(
+                                        entry.Item.Label,
+                                        entry.ControllerName,
+                                        "Index",
+                                        "StellarAdmin"
+                                    )
+                                    {
+                                        Order = entry.Item.Order,
+                                    }
+                            )
+                            .Cast<SidebarLinkItemBase>()
+                            .ToArray()
+                    )
+            )
             .ToArray();
     }
 }

@@ -1,3 +1,5 @@
+using StellarAdmin.Dashboard.Sidebar;
+
 namespace StellarAdmin.Dashboard;
 
 /// <summary>
@@ -16,4 +18,6 @@ public class StellarAdminDashboardOptions
     public IList<string> Stylesheets { get; } = [];
 
     internal List<object> AuthorizationMetadata { get; } = [];
+
+    internal List<SidebarLinkOptions> SidebarLinks { get; } = [];
 }

@@ -14,6 +14,6 @@ public class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItem
             sidebarItems.AddRange(await provider.GetItemsAsync(HttpContext));
         }
 
-        return View(sidebarItems);
+        return View(SidebarItemsMerger.Merge(sidebarItems));
     }
 }

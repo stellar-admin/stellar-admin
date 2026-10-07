@@ -3,8 +3,10 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Dashboard.Infrastructure.Authorization;
 using StellarAdmin.Dashboard.Infrastructure.Mvc;
+using StellarAdmin.Dashboard.Sidebar;
 
 namespace StellarAdmin.Dashboard;
 
@@ -128,6 +130,47 @@ public class StellarAdminDashboardBuilder
         {
             _options.Scripts.Add(path);
         }
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a link to the sidebar.
+    /// </summary>
+    /// <param name="label">The link label.</param>
+    /// <param name="target">The link destination.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    public StellarAdminDashboardBuilder AddSidebarLink(string label, SidebarLinkTarget target)
+    {
+        return AddSidebarLink(label, target, _ => { });
+    }
+
+    /// <summary>
+    ///     Adds and configures a link to the sidebar.
+    /// </summary>
+    /// <param name="label">The link label.</param>
+    /// <param name="target">The link destination.</param>
+    /// <param name="configure">Configures the link.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    public StellarAdminDashboardBuilder AddSidebarLink(
+        string label,
+        SidebarLinkTarget target,
+        Action<SidebarLinkBuilder> configure
+    )
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(label);
+        ArgumentNullException.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var link = new SidebarLinkOptions(label, target);
+        configure(new SidebarLinkBuilder(link));
+        _options.SidebarLinks.Add(link);
+
+        Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<ISidebarItemsProvider, SidebarLinkItemsProvider>()
+        );
 
         return this;
     }
