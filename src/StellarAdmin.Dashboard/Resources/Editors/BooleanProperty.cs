@@ -9,7 +9,7 @@ internal static class BooleanProperty
         if (metadata.ModelType != typeof(bool))
         {
             throw new InvalidOperationException(
-                $"{editor.GetType().Name} on {metadata.PropertyName} requires a non-nullable Boolean property. Use SelectEditor, RadioGroupEditor or ToggleButtonsEditor for a nullable Boolean."
+                $"{editor.GetType().Name} on {metadata.PropertyName} requires a non-nullable Boolean property. Use SelectEditor, RadioGroupEditor or SegmentedControlEditor for a nullable Boolean."
             );
         }
     }

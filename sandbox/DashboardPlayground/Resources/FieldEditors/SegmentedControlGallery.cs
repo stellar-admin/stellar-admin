@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DashboardPlayground.Resources.FieldEditors;
 
-// Each property is one toggle buttons scenario, and its display name describes the scenario.
-public sealed class ToggleButtonsGallery
+// Each property is one segmented control scenario, and its display name describes the scenario.
+public sealed class SegmentedControlGallery
     : FieldEditorGalleryRecord,
-        IFieldEditorGalleryRecord<ToggleButtonsGallery>
+        IFieldEditorGalleryRecord<SegmentedControlGallery>
 {
     [Display(Name = "enum")]
     public GalleryCabin Cabin { get; set; }
@@ -36,7 +36,7 @@ public sealed class ToggleButtonsGallery
     [Display(Name = "enum · ClassNames.Control")]
     public GalleryCabin StyledCabin { get; set; }
 
-    public static ToggleButtonsGallery CreateSample() =>
+    public static SegmentedControlGallery CreateSample() =>
         new()
         {
             Cabin = GalleryCabin.Business,

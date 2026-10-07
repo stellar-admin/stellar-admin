@@ -38,11 +38,11 @@ internal static class FieldEditorGalleryRegistration
             40,
             ConfigureCheckboxGroupFields
         );
-        dashboard.AddGalleryResource<ToggleButtonsGallery>(
-            "toggle-buttons",
-            "Toggle buttons",
+        dashboard.AddGalleryResource<SegmentedControlGallery>(
+            "segmented-control",
+            "Segmented control",
             50,
-            ConfigureToggleButtonsFields
+            ConfigureSegmentedControlFields
         );
         dashboard.AddGalleryResource<TextareaGallery>(
             "textarea",
@@ -599,8 +599,8 @@ internal static class FieldEditorGalleryRegistration
         );
     }
 
-    private static void ConfigureToggleButtonsFields(
-        ResourceFieldsBuilder<ToggleButtonsGallery> fields
+    private static void ConfigureSegmentedControlFields(
+        ResourceFieldsBuilder<SegmentedControlGallery> fields
     )
     {
         fields.AddSection(
@@ -608,24 +608,24 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<ToggleButtonsEditor> without UseItems. The enum or Boolean property supplies the choices.";
-                section.Add(model => model.Cabin).UseEditor<ToggleButtonsEditor>();
-                section.Add(model => model.OptionalCabin).UseEditor<ToggleButtonsEditor>();
-                section.Add(model => model.Insured).UseEditor<ToggleButtonsEditor>();
+                    "UseEditor<SegmentedControlEditor> without UseItems. The enum or Boolean property supplies the choices.";
+                section.Add(model => model.Cabin).UseEditor<SegmentedControlEditor>();
+                section.Add(model => model.OptionalCabin).UseEditor<SegmentedControlEditor>();
+                section.Add(model => model.Insured).UseEditor<SegmentedControlEditor>();
             }
         );
         fields.AddSection(
             "Field configuration",
             section =>
             {
-                section.Add(model => model.TitledCabin).UseEditor<ToggleButtonsEditor>().Title =
+                section.Add(model => model.TitledCabin).UseEditor<SegmentedControlEditor>().Title =
                     "Title override";
-                section.Add(model => model.DescribedCabin).UseEditor<ToggleButtonsEditor>();
+                section.Add(model => model.DescribedCabin).UseEditor<SegmentedControlEditor>();
                 section
                     .Add(model => model.FieldDescribedCabin)
-                    .UseEditor<ToggleButtonsEditor>()
+                    .UseEditor<SegmentedControlEditor>()
                     .Description = "Set with the field's Description.";
-                section.Add(model => model.ReadOnlyCabin).UseEditor<ToggleButtonsEditor>();
+                section.Add(model => model.ReadOnlyCabin).UseEditor<SegmentedControlEditor>();
             }
         );
         fields.AddSection(
@@ -634,10 +634,12 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.Seat)
-                    .UseEditor<ToggleButtonsEditor>(toggle => toggle.UseItems(GallerySeats.Items));
+                    .UseEditor<SegmentedControlEditor>(toggle =>
+                        toggle.UseItems(GallerySeats.Items)
+                    );
                 section
                     .Add(model => model.StyledCabin)
-                    .UseEditor<ToggleButtonsEditor>(toggle =>
+                    .UseEditor<SegmentedControlEditor>(toggle =>
                         toggle.ClassNames.Control = "border-dashed"
                     );
             }

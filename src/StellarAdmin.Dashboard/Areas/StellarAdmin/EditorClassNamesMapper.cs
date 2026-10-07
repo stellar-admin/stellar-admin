@@ -151,10 +151,10 @@ internal static class EditorClassNamesMapper
         };
     }
 
-    public static string? ForToggleButtons(ToggleButtonsEditor editor) =>
+    public static string? ForSegmentedControl(SegmentedControlEditor editor) =>
         ControlOnly(
             editor.ClassNames,
-            "Toggle buttons editors support only Control, which styles the buttons container."
+            "Segmented control editors support only Control, which styles the segmented control."
         );
 
     private static string? ControlOnly(EditorClassNames? classes, string message)

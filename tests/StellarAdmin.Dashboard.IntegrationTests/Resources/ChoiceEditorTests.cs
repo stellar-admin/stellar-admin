@@ -207,15 +207,15 @@ public class ChoiceEditorTests
     }
 
     [Test]
-    public async Task ToggleButtonsEditor_RendersSegmentedControlWithChoices()
+    public async Task SegmentedControlEditor_RendersSegmentedControlWithChoices()
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
         {
-            fields.Add(model => model.Cabin).UseEditor<ToggleButtonsEditor>();
+            fields.Add(model => model.Cabin).UseEditor<SegmentedControlEditor>();
             fields
                 .Add(model => model.Seat)
-                .UseEditor<ToggleButtonsEditor>(toggle =>
+                .UseEditor<SegmentedControlEditor>(toggle =>
                 {
                     toggle.ClassNames.Control = "seat-buttons";
                     toggle.UseItems([

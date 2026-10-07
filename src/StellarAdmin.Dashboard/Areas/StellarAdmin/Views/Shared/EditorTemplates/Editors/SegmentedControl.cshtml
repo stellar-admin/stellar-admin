@@ -1,10 +1,10 @@
-@inherits FieldEditorView<ToggleButtonsEditor>
+@inherits FieldEditorView<SegmentedControlEditor>
 
 @{
     var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
 }
 
-<sa-segmented-control class="@EditorClassNamesMapper.ForToggleButtons(Editor)" asp-for="@Model"
+<sa-segmented-control class="@EditorClassNamesMapper.ForSegmentedControl(Editor)" asp-for="@Model"
                       label="@Title" description="@Description" disabled="@IsReadOnly">
     @foreach (var choice in choices)
     {
