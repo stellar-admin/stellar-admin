@@ -31,3 +31,17 @@ internal static class GallerySeats
     public static IReadOnlyList<SelectListItem> Items { get; } =
     [new("Aisle", "aisle"), new("Middle", "middle"), new("Window", "window")];
 }
+
+internal static class GalleryAmenities
+{
+    public static IReadOnlyList<SelectListItem> Items { get; } =
+    [
+        new("Wi-Fi on board", "wifi"),
+        new("Lounge access", "lounge"),
+        new("Priority boarding", "priority"),
+        new("Extra baggage", "baggage"),
+        new("Seat selection", "seat"),
+        new("Travel insurance", "insurance"),
+        new("Airport transfer", "transfer"),
+    ];
+}

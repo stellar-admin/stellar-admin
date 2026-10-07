@@ -207,6 +207,98 @@ public class ChoiceEditorTests
     }
 
     [Test]
+    public async Task CheckboxGroupEditor_CardsAppearance_RendersChoiceCards()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabins)
+                .UseEditor<CheckboxGroupEditor>(editor =>
+                    editor.Appearance = CheckboxGroupAppearance.Cards
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var cards = document.QuerySelectorAll(
+            "[data-slot='checkbox-group'] > label[data-slot='field-label'] > [data-slot='field']"
+        );
+        await Assert.That(cards.Length).IsEqualTo(3);
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_Columns_WritesColumnsAndRowsForDownFlow()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabins)
+                .UseEditor<CheckboxGroupEditor>(editor => editor.Columns(2))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='checkbox-group']");
+        await Assert.That(group.ClassList.Contains("sa-choice-columns-down")).IsTrue();
+        await Assert
+            .That(group.GetAttribute("style"))
+            .IsEqualTo(
+                "--sa-cols-md:2;--sa-cols-lg:2;--sa-rows:3;--sa-rows-sm:3;--sa-rows-md:2;--sa-rows-lg:2"
+            );
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_ColumnsAcross_WritesOnlyColumns()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabins)
+                .UseEditor<CheckboxGroupEditor>(editor =>
+                {
+                    editor.Columns(columns => columns.Small(2).Large(3));
+                    editor.Flow = CheckboxGroupFlow.Across;
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='checkbox-group']");
+        await Assert.That(group.ClassList.Contains("sa-choice-columns")).IsTrue();
+        await Assert.That(group.ClassList.Contains("sa-choice-columns-down")).IsFalse();
+        await Assert
+            .That(group.GetAttribute("style"))
+            .IsEqualTo("--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3");
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_WithoutColumns_LeavesOutColumnAttributes()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.Cabins).UseEditor<CheckboxGroupEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='checkbox-group']");
+        await Assert.That(group.ClassList.Contains("sa-choice-columns")).IsFalse();
+        await Assert.That(group.HasAttribute("style")).IsFalse();
+    }
+
+    [Test]
     public async Task SegmentedControlEditor_RendersSegmentedControlWithChoices()
     {
         // Arrange

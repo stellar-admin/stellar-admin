@@ -36,6 +36,24 @@ public sealed class CheckboxGroupGallery
     [Display(Name = "List<enum> · ClassNames.Control")]
     public List<GalleryCabin> StyledCabins { get; set; } = [];
 
+    [Display(Name = "List<enum> · Appearance = Cards")]
+    public List<GalleryCabin> CardCabins { get; set; } = [];
+
+    [Display(Name = "string[] · Columns(2)")]
+    public string[] Amenities { get; set; } = [];
+
+    [Display(Name = "string[] · Columns(Small(2), Large(3)) · Flow = Across")]
+    public string[] AcrossAmenities { get; set; } = [];
+
+    [Display(Name = "List<enum> · Appearance = Cards · Columns(2)")]
+    public List<GalleryCabin> CardColumnCabins { get; set; } = [];
+
+    [Display(Name = "string[] · Columns(2) in a half-width field")]
+    public string[] NarrowAmenities { get; set; } = [];
+
+    [Display(Name = "string[] · Columns(2) in a half-width field, beside it")]
+    public string[] NarrowAmenitiesBeside { get; set; } = [];
+
     public static CheckboxGroupGallery CreateSample() =>
         new()
         {
@@ -47,5 +65,11 @@ public sealed class CheckboxGroupGallery
             DescribedCabins = [],
             ReadOnlyCabins = [GalleryCabin.Business],
             StyledCabins = [GalleryCabin.Economy],
+            CardCabins = [GalleryCabin.Business],
+            Amenities = ["wifi", "seat"],
+            AcrossAmenities = ["lounge", "transfer"],
+            CardColumnCabins = [GalleryCabin.PremiumEconomy],
+            NarrowAmenities = ["wifi"],
+            NarrowAmenitiesBeside = ["insurance"],
         };
 }

@@ -597,6 +597,64 @@ internal static class FieldEditorGalleryRegistration
                     );
             }
         );
+        fields.AddSection(
+            "Appearance and columns",
+            section =>
+            {
+                section.Description =
+                    "Columns respond to the field's width, and the choices flow down each column unless Flow is Across.";
+                section
+                    .Add(model => model.CardCabins)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                        group.Appearance = CheckboxGroupAppearance.Cards
+                    );
+                section
+                    .Add(model => model.Amenities)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryAmenities.Items);
+                        group.Columns(2);
+                    });
+                section
+                    .Add(model => model.AcrossAmenities)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryAmenities.Items);
+                        group.Columns(columns => columns.Small(2).Large(3));
+                        group.Flow = CheckboxGroupFlow.Across;
+                    });
+                section
+                    .Add(model => model.CardColumnCabins)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.Appearance = CheckboxGroupAppearance.Cards;
+                        group.Columns(2);
+                    });
+            }
+        );
+        fields.AddSection(
+            "Columns in narrow fields",
+            section =>
+            {
+                section.Description =
+                    "The same Columns(2) stays at one column while the field is narrower than the medium breakpoint.";
+                section.Columns(2);
+                section
+                    .Add(model => model.NarrowAmenities)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryAmenities.Items);
+                        group.Columns(2);
+                    });
+                section
+                    .Add(model => model.NarrowAmenitiesBeside)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.UseItems(GalleryAmenities.Items);
+                        group.Columns(2);
+                    });
+            }
+        );
     }
 
     private static void ConfigureSegmentedControlFields(

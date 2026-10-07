@@ -122,7 +122,8 @@ public class ResourceFieldsBuilder<TResource>
     ///     Sets the number of columns, starting at the medium breakpoint.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1. Below the medium breakpoint, the fields use one column.
+    ///     Defaults to 1. Breakpoints are measured against the form's width. Below the medium breakpoint, the
+    ///     fields use one column.
     /// </remarks>
     public ResourceFieldsBuilder<TResource> Columns(int count)
     {
@@ -135,6 +136,9 @@ public class ResourceFieldsBuilder<TResource>
     /// <summary>
     ///     Sets the number of columns at each breakpoint.
     /// </summary>
+    /// <remarks>
+    ///     Breakpoints are measured against the form's width.
+    /// </remarks>
     public ResourceFieldsBuilder<TResource> Columns(Action<GridColumnsBuilder> configure)
     {
         var columns = GridColumnsBuilder.Build(configure);

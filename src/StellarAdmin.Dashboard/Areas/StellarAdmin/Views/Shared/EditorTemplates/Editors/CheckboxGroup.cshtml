@@ -2,10 +2,18 @@
 
 @{
     var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+    var variant = Editor.Appearance == CheckboxGroupAppearance.Cards ? CheckboxGroupVariant.ChoiceCard : CheckboxGroupVariant.Default;
+    var down = Editor.Flow == CheckboxGroupFlow.Down;
+    var columns = Editor.ColumnDefinitions?.Resolve();
+    var style = columns is { } tiers ? ChoiceColumnsStyle.Format(tiers, choices.Count, down) : null;
+    // Razor renders a null data attribute as empty, so the columns are marked with classes
+    var columnsClass = columns is null ? null : down ? "sa-choice-columns sa-choice-columns-down" : "sa-choice-columns";
+    var classes = string.Join(' ', new[] { EditorClassNamesMapper.ForCheckboxGroup(Editor), columnsClass }.Where(css => css is not null));
 }
 
-<sa-checkbox-group class="@EditorClassNamesMapper.ForCheckboxGroup(Editor)" asp-for="@Model"
-                   label="@Title" description="@Description" disabled="@IsReadOnly">
+<sa-checkbox-group class="@classes" asp-for="@Model"
+                   label="@Title" description="@Description" disabled="@IsReadOnly" variant="@variant"
+                   style="@style">
     @foreach (var choice in choices)
     {
         // A bound empty description still renders its paragraph, so the attribute is left out instead

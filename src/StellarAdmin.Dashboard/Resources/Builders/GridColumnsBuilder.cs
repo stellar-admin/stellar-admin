@@ -3,7 +3,7 @@ using StellarAdmin.Dashboard.Resources.Options;
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
 /// <summary>
-///     Configures the number of form columns at each breakpoint.
+///     Configures the number of columns at each breakpoint.
 /// </summary>
 /// <remarks>
 ///     A breakpoint without a count uses the count of the next smaller breakpoint.
@@ -28,7 +28,7 @@ public sealed class GridColumnsBuilder
     }
 
     /// <summary>
-    ///     Sets the number of columns when the form is at least 56rem wide.
+    ///     Sets the number of columns when the container is at least 56rem wide.
     /// </summary>
     public GridColumnsBuilder Large(int count)
     {
@@ -38,7 +38,7 @@ public sealed class GridColumnsBuilder
     }
 
     /// <summary>
-    ///     Sets the number of columns when the form is at least 40rem wide.
+    ///     Sets the number of columns when the container is at least 40rem wide.
     /// </summary>
     public GridColumnsBuilder Medium(int count)
     {
@@ -48,7 +48,7 @@ public sealed class GridColumnsBuilder
     }
 
     /// <summary>
-    ///     Sets the number of columns when the form is at least 30rem wide.
+    ///     Sets the number of columns when the container is at least 30rem wide.
     /// </summary>
     public GridColumnsBuilder Small(int count)
     {

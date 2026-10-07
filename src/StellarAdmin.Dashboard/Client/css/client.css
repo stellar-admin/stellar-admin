@@ -67,6 +67,30 @@
     initial-value: 1;
 }
 
+@property --sa-rows {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-rows-sm {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-rows-md {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --sa-rows-lg {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: 1;
+}
+
 @layer components {
     .sa-resource-index-grid .sa-data-grid-footer {
         flex-wrap: wrap;
@@ -160,6 +184,48 @@
 
         .sa-form-grid-content > * {
             grid-column: span var(--sa-span-lg);
+        }
+    }
+
+    /* Choice groups in columns reuse the grid variables, measured against the field. The down flow fills each column
+       before the next, so the views also write the row count per tier. */
+    .sa-field-group.sa-choice-columns {
+        display: grid;
+        grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
+    }
+
+    .sa-field-group.sa-choice-columns-down {
+        grid-auto-flow: column;
+        grid-template-rows: repeat(var(--sa-rows), auto);
+    }
+
+    @container field-group (min-width: 30rem) {
+        .sa-field-group.sa-choice-columns {
+            grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
+        }
+
+        .sa-field-group.sa-choice-columns-down {
+            grid-template-rows: repeat(var(--sa-rows-sm), auto);
+        }
+    }
+
+    @container field-group (min-width: 40rem) {
+        .sa-field-group.sa-choice-columns {
+            grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
+        }
+
+        .sa-field-group.sa-choice-columns-down {
+            grid-template-rows: repeat(var(--sa-rows-md), auto);
+        }
+    }
+
+    @container field-group (min-width: 56rem) {
+        .sa-field-group.sa-choice-columns {
+            grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
+        }
+
+        .sa-field-group.sa-choice-columns-down {
+            grid-template-rows: repeat(var(--sa-rows-lg), auto);
         }
     }
 }

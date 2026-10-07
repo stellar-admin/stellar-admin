@@ -10,6 +10,8 @@ internal static class FormGridStyle
 {
     public static string? Columns(FormGridTiers columns) => Format("--sa-cols", columns);
 
+    public static string? Rows(FormGridTiers rows) => Format("--sa-rows", rows);
+
     public static string? Span(FormGridTiers span) => Format("--sa-span", span);
 
     private static string? Format(string variable, FormGridTiers tiers)

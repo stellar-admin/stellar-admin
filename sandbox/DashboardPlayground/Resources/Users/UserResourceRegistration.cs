@@ -121,8 +121,7 @@ internal static class UserResourceRegistration
                                                 role => role.Name!,
                                                 items => items.OrderBy(role => role.Name)
                                             );
-                                            options.ClassNames.Control =
-                                                "sm:block sm:columns-2 sm:-mb-3 sm:*:pb-3 sm:*:break-inside-avoid";
+                                            options.Columns(2);
                                         });
                                     }
                                 );
@@ -218,8 +217,7 @@ internal static class UserResourceRegistration
                                                 role => role.Name!,
                                                 items => items.OrderBy(role => role.Name)
                                             );
-                                            options.ClassNames.Control =
-                                                "sm:block sm:columns-2 sm:-mb-3 sm:*:pb-3 sm:*:break-inside-avoid";
+                                            options.Columns(2);
                                         });
                                     }
                                 );
