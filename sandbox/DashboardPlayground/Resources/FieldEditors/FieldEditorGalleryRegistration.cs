@@ -256,6 +256,7 @@ internal static class FieldEditorGalleryRegistration
                 section.Add(model => model.Cabin);
                 section.Add(model => model.OptionalCabin);
                 section.Add(model => model.RequiredCabin);
+                section.Add(model => model.UnsetRequiredCabin);
                 section.Add(model => model.DescribedCabin);
                 section.Add(model => model.Fare);
                 section.Add(model => model.Insured);
@@ -282,6 +283,9 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.AnyCabin)
                     .UseEditor<SelectEditor>(select => select.EmptyChoiceText = "Any cabin");
                 section
+                    .Add(model => model.OmittedCabin)
+                    .UseEditor<SelectEditor>(select => select.EmptyChoice = EmptyChoice.Omit);
+                section
                     .Add(model => model.Seat)
                     .UseEditor<SelectEditor>(select => select.UseItems(GallerySeats.Items));
                 section
@@ -290,7 +294,6 @@ internal static class FieldEditorGalleryRegistration
                     {
                         var europe = new ChoiceGroup("Europe");
                         select.UseItems([
-                            new ChoiceItem("", "Not set"),
                             new ChoiceItem("LIS", "Lisbon") { Group = europe },
                             new ChoiceItem("JFK", "New York") { Group = new("Americas") },
                             new ChoiceItem("MAD", "Madrid") { Group = europe },

@@ -183,7 +183,7 @@ public class ResourceReferenceTests
     }
 
     [Test]
-    public async Task Create_OmitsEmptyOptionByDefault()
+    public async Task Create_EmptyChoiceOmit_LeavesOutEmptyChoice()
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
@@ -192,11 +192,13 @@ public class ResourceReferenceTests
                     fields
                         .Add(product => product.CategoryId)
                         .UseEditor<SelectEditor>(options =>
+                        {
                             options.UseItems<CatalogDbContext, Category, int>(
                                 category => category.Id,
                                 category => category.Name
-                            )
-                        )
+                            );
+                            options.EmptyChoice = EmptyChoice.Omit;
+                        })
                 )
             )
         );
@@ -388,16 +390,15 @@ public class ResourceReferenceTests
         );
     }
 
-    private static void ConfigureCategoryItems(SelectEditor options) =>
+    private static void ConfigureCategoryItems(SelectEditor options)
+    {
         options.UseItems<CatalogDbContext, Category, int>(
             category => category.Id,
             category => category.Name,
-            items =>
-            {
-                items.OrderBy(category => category.Name);
-                items.IncludeEmptyOption("Not specified");
-            }
+            items => items.OrderBy(category => category.Name)
         );
+        options.EmptyChoiceText = "Not specified";
+    }
 
     private static async Task<Dictionary<string, string>> PrepareForm(HttpClient client, string url)
     {

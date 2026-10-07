@@ -12,7 +12,13 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public abstract class ChoiceEditor : FieldEditor
 {
     /// <summary>
-    ///     The text of the empty choice added for a nullable enum or Boolean property.
+    ///     Whether the choices start with an empty choice, which clears the value. Defaults to
+    ///     <see cref="EmptyChoice.Auto" />.
+    /// </summary>
+    public EmptyChoice EmptyChoice { get; set; }
+
+    /// <summary>
+    ///     The text of the empty choice.
     /// </summary>
     public string EmptyChoiceText { get; set; } = "Not set";
 
@@ -21,6 +27,10 @@ public abstract class ChoiceEditor : FieldEditor
         get;
         private set;
     }
+
+    // A select shows its first choice as selected when none is, so it keeps the empty choice while a required value
+    // is unset
+    internal virtual bool KeepsEmptyChoiceWhileUnset => false;
 
     /// <summary>
     ///     Selects a registered provider that supplies choices for each request.
@@ -74,38 +84,18 @@ public abstract class ChoiceEditor : FieldEditor
         ItemsLoader = itemsLoader;
     }
 
-    internal IReadOnlyList<ChoiceItem> ResolveChoices(object? editorData, ModelMetadata metadata)
+    internal IReadOnlyList<ChoiceItem> ResolveChoices(
+        object? editorData,
+        ModelMetadata metadata,
+        object? model
+    )
     {
-        if (editorData is IReadOnlyList<ChoiceItem> items)
-        {
-            return items;
-        }
+        var choices = editorData as IReadOnlyList<ChoiceItem> ?? PropertyChoices(metadata);
 
-        // A collection property takes its choices from the element type
-        var valueMetadata = metadata.ElementMetadata ?? metadata;
-        var valueType = valueMetadata.UnderlyingOrModelType;
-        List<ChoiceItem> choices;
-        if (valueMetadata.IsEnum && !valueMetadata.IsFlagsEnum)
-        {
-            choices = EnumChoices(valueMetadata, valueType);
-        }
-        else if (valueType == typeof(bool))
-        {
-            choices = [new("true", "Yes"), new("false", "No")];
-        }
-        else
-        {
-            throw new InvalidOperationException(
-                $"{GetType().Name} on {metadata.PropertyName} requires UseItems unless the property is a non-flags enum or a Boolean."
-            );
-        }
-
-        if (metadata.IsNullableValueType)
-        {
-            choices.Insert(0, new("", EmptyChoiceText));
-        }
-
-        return choices;
+        // Supplied choices that already clear the value keep their own empty choice
+        return IncludesEmptyChoice(metadata, model) && !choices.Any(choice => choice.Value == "")
+            ? [new ChoiceItem("", EmptyChoiceText), .. choices]
+            : choices;
     }
 
     private static List<ChoiceItem> EnumChoices(ModelMetadata metadata, Type enumType)
@@ -133,5 +123,34 @@ public abstract class ChoiceEditor : FieldEditor
                 };
             })
             .ToList();
+    }
+
+    private bool IncludesEmptyChoice(ModelMetadata metadata, object? model) =>
+        metadata.ElementMetadata is null
+        && EmptyChoice switch
+        {
+            EmptyChoice.Include => true,
+            EmptyChoice.Omit => false,
+            _ => !metadata.IsRequired || (KeepsEmptyChoiceWhileUnset && model is null),
+        };
+
+    private List<ChoiceItem> PropertyChoices(ModelMetadata metadata)
+    {
+        // A collection property takes its choices from the element type
+        var valueMetadata = metadata.ElementMetadata ?? metadata;
+        var valueType = valueMetadata.UnderlyingOrModelType;
+        if (valueMetadata.IsEnum && !valueMetadata.IsFlagsEnum)
+        {
+            return EnumChoices(valueMetadata, valueType);
+        }
+
+        if (valueType == typeof(bool))
+        {
+            return [new("true", "Yes"), new("false", "No")];
+        }
+
+        throw new InvalidOperationException(
+            $"{GetType().Name} on {metadata.PropertyName} requires UseItems unless the property is a non-flags enum or a Boolean."
+        );
     }
 }

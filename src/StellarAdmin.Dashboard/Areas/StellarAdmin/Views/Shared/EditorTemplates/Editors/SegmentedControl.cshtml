@@ -1,13 +1,15 @@
 @inherits FieldEditorView<SegmentedControlEditor>
 
 @{
-    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
+    var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
 <sa-segmented-control class="@EditorClassNamesMapper.ForSegmentedControl(Editor)" asp-for="@Model"
                       label="@Title" description="@Description" disabled="@IsReadOnly">
     @foreach (var choice in choices)
     {
-        <sa-segmented-control-item value="@choice.Value" disabled="@choice.Disabled">@choice.Text</sa-segmented-control-item>
+        bool? selected = emptySelected && choice.Value == "" ? true : null;
+        <sa-segmented-control-item value="@choice.Value" selected="@selected" disabled="@choice.Disabled">@choice.Text</sa-segmented-control-item>
     }
 </sa-segmented-control>

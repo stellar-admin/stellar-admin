@@ -16,18 +16,6 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Adds an empty choice with the specified text before the entity choices.
-    /// </summary>
-    public EfCoreChoiceItemsBuilder<TEntity, TValue> IncludeEmptyOption(string text)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(text);
-
-        _options.EmptyOptionText = text;
-
-        return this;
-    }
-
-    /// <summary>
     ///     Orders the choices by an entity property. Grouped choices keep this order within their group.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> OrderBy<TSort>(

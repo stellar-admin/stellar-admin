@@ -3,13 +3,10 @@
 
 @{
     var metadata = ViewData.ModelMetadata;
-    var choices = Editor.ResolveChoices(EditorData, metadata);
+    var choices = Editor.ResolveChoices(EditorData, metadata, Model);
     var classes = EditorClassNamesMapper.ForRadio(Editor);
     var cards = Editor.Appearance == RadioGroupAppearance.Cards;
-
-    // MVC never checks a radio for a null model, so the empty choice is checked here until a value is posted
-    var emptyChecked = Model is null
-                       && ViewData.ModelState[Html.NameForModel()]?.AttemptedValue is null;
+    var emptyChecked = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
 <sa-field-set class="@classes.Root">

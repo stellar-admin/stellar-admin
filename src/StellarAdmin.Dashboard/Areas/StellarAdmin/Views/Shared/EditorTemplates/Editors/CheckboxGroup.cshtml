@@ -1,7 +1,7 @@
 @inherits FieldEditorView<CheckboxGroupEditor>
 
 @{
-    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
     var variant = Editor.Appearance == CheckboxGroupAppearance.Cards ? CheckboxGroupVariant.ChoiceCard : CheckboxGroupVariant.Default;
     var down = Editor.Flow == CheckboxGroupFlow.Down;
     var columns = Editor.ColumnDefinitions?.Resolve();

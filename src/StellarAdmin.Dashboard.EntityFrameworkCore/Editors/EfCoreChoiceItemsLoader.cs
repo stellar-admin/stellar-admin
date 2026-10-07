@@ -17,7 +17,6 @@ internal static class EfCoreChoiceItemsLoader
     {
         var projection = CreateProjection(itemOptions);
         var orderQuery = itemOptions.OrderQuery;
-        var emptyOptionText = itemOptions.EmptyOptionText;
 
         editor.UseItems(
             async (services, cancellationToken) =>
@@ -30,11 +29,7 @@ internal static class EfCoreChoiceItemsLoader
                 }
 
                 var rows = await query.Select(projection).ToListAsync(cancellationToken);
-                var items = new List<ChoiceItem>(rows.Count + (emptyOptionText is null ? 0 : 1));
-                if (emptyOptionText is not null)
-                {
-                    items.Add(new ChoiceItem("", emptyOptionText));
-                }
+                var items = new List<ChoiceItem>(rows.Count);
 
                 foreach (var row in rows)
                 {

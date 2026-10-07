@@ -20,6 +20,12 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
     public bool? Disabled { get; set; }
 
     /// <summary>
+    ///     Whether this option is selected, overriding the bound or initial value. A posted value still takes
+    ///     precedence.
+    /// </summary>
+    public bool? Selected { get; set; }
+
+    /// <summary>
     ///     The value submitted when this option is selected.
     /// </summary>
     public string? Value { get; set; }
@@ -69,7 +75,23 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
         group.FirstInputId ??= input.Attributes["id"];
         input.Attributes["data-slot"] = "segmented-control-input";
         input.AddCssClass("sa-segmented-control-input");
-        if (group.For == null && string.Equals(group.Value, Value, StringComparison.Ordinal))
+        // A posted value decides a bound group's selection, as it does without Selected
+        var posted =
+            group.For != null
+            && ViewContext.ViewData.ModelState.TryGetValue(group.Name, out var entry)
+            && entry.AttemptedValue != null;
+        if (Selected is { } selected && !posted)
+        {
+            if (selected)
+            {
+                input.Attributes["checked"] = "checked";
+            }
+            else
+            {
+                input.Attributes.Remove("checked");
+            }
+        }
+        else if (group.For == null && string.Equals(group.Value, Value, StringComparison.Ordinal))
         {
             input.Attributes["checked"] = "checked";
         }

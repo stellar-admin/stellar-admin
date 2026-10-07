@@ -49,6 +49,7 @@ Use the component for a single choice from a short list. It has one horizontal a
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `disabled` | `bool` | — | `true`, `false` |
+| `selected` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

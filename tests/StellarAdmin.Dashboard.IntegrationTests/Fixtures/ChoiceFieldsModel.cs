@@ -47,6 +47,11 @@ public sealed class ChoiceFieldsModel
 
     public Cabin? OptionalCabin { get; set; }
 
+    public string? Preference { get; set; }
+
+    [Required]
+    public Cabin? RequiredCabin { get; set; }
+
     [Required]
     public string? Seat { get; set; }
 }

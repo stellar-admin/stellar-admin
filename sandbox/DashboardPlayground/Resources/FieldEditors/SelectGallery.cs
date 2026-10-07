@@ -19,6 +19,10 @@ public sealed class SelectGallery
     [Display(Name = "enum? · [Required]")]
     public GalleryCabin? RequiredCabin { get; set; }
 
+    [Required]
+    [Display(Name = "enum? · [Required] · unset, so the empty choice stays as a placeholder")]
+    public GalleryCabin? UnsetRequiredCabin { get; set; }
+
     [Display(Name = "enum · [Display(Description)]", Description = "Shown below the select.")]
     public GalleryCabin DescribedCabin { get; set; }
 
@@ -52,11 +56,16 @@ public sealed class SelectGallery
     [Display(Name = "enum? · EmptyChoiceText")]
     public GalleryCabin? AnyCabin { get; set; }
 
+    [Display(Name = "enum? · EmptyChoice.Omit")]
+    public GalleryCabin? OmittedCabin { get; set; }
+
     [Required]
     [Display(Name = "string · [Required] · UseItems")]
     public string? Seat { get; set; }
 
-    [Display(Name = "string? · UseItems with groups, a disabled group and a disabled item")]
+    [Display(
+        Name = "string? · UseItems with groups, a disabled group and a disabled item, and the empty choice of an optional value"
+    )]
     public string? Airport { get; set; }
 
     [Display(Name = "enum · ClassNames.Control")]
@@ -77,6 +86,7 @@ public sealed class SelectGallery
             ReadOnlyCabin = GalleryCabin.First,
             ReadOnlyInsured = false,
             AnyCabin = null,
+            OmittedCabin = GalleryCabin.Business,
             Seat = "window",
             Airport = "LIS",
             StyledCabin = GalleryCabin.Economy,

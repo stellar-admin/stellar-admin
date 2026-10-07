@@ -1,16 +1,13 @@
 @inherits FieldEditorView<ToggleGroupEditor>
 
 @{
-    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata);
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
     var type = ViewData.ModelMetadata.ElementMetadata is null ? ToggleGroupType.Single : ToggleGroupType.Multiple;
     var chips = Editor.Appearance == ToggleGroupAppearance.Chips;
     var joined = Editor.Appearance == ToggleGroupAppearance.Joined;
     var appearanceClass = joined ? null : chips ? "sa-toggle-group-wrap sa-toggle-chips" : "sa-toggle-group-wrap";
     var classes = string.Join(' ', new[] { appearanceClass, EditorClassNamesMapper.ForToggleGroup(Editor) }.Where(css => css is not null));
-
-    // A null model selects nothing, so the empty choice is selected here until a value is posted
-    var emptySelected = Model is null
-                        && ViewData.ModelState[Html.NameForModel()]?.AttemptedValue is null;
+    var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
 <sa-toggle-group class="@classes" asp-for="@Model" type="@type" variant="ToggleVariant.Outline"

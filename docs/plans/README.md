@@ -8,7 +8,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 
 | Record | Status | Current assessment |
 | --- | --- | --- |
-| [dashboard-choice-editors](dashboard-choice-editors.md) | active | `ToggleButtonsEditor` renamed to `SegmentedControlEditor`; checkbox group appearance, columns and flow, and a `ToggleGroupEditor` with chips, joined and buttons appearances implemented; a public `ChoiceItem` and `ChoiceGroup` for every source and editor implemented and awaiting review. Planned next: an editor-owned empty choice and shared item media for choices and lookups. |
+| [dashboard-choice-editors](dashboard-choice-editors.md) | active | `ToggleButtonsEditor` renamed to `SegmentedControlEditor`; checkbox group appearance, columns and flow, and a `ToggleGroupEditor` with chips, joined and buttons appearances implemented; a public `ChoiceItem` and `ChoiceGroup` for every source and editor, and an editor-owned empty choice, implemented; the empty choice awaiting review. Planned next: shared item media for choices and lookups. |
 | [dashboard-theme-configuration](dashboard-theme-configuration.md) | implemented | Dashboard supports app-wide selection of all fifteen shipped themes and opt-in suggested fonts. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |

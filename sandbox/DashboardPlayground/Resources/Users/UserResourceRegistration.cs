@@ -69,6 +69,7 @@ internal static class UserResourceRegistration
                                     field =>
                                     {
                                         field.UseEditor<SelectEditor>(options =>
+                                        {
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 Department,
@@ -77,12 +78,10 @@ internal static class UserResourceRegistration
                                                 department => department.Id,
                                                 department => department.Name,
                                                 items =>
-                                                {
-                                                    items.OrderBy(department => department.Name);
-                                                    items.IncludeEmptyOption("Not specified");
-                                                }
-                                            )
-                                        );
+                                                    items.OrderBy(department => department.Name)
+                                            );
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                     }
                                 );
                                 section.AddGroup(group =>
@@ -91,13 +90,17 @@ internal static class UserResourceRegistration
                                     group
                                         .Add(model => model.PreferredLanguage)
                                         .UseEditor<SelectEditor>(options =>
-                                            options.UseItems(UserLookups.Languages())
-                                        );
+                                        {
+                                            options.UseItems(UserLookups.Languages());
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                     group
                                         .Add(model => model.TimeZoneId)
                                         .UseEditor<SelectEditor>(options =>
-                                            options.UseItems(UserLookups.TimeZones())
-                                        );
+                                        {
+                                            options.UseItems(UserLookups.TimeZones());
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                 });
                             }
                         );
@@ -165,6 +168,7 @@ internal static class UserResourceRegistration
                                     field =>
                                     {
                                         field.UseEditor<SelectEditor>(options =>
+                                        {
                                             options.UseItems<
                                                 ApplicationDbContext,
                                                 Department,
@@ -173,12 +177,10 @@ internal static class UserResourceRegistration
                                                 department => department.Id,
                                                 department => department.Name,
                                                 items =>
-                                                {
-                                                    items.OrderBy(department => department.Name);
-                                                    items.IncludeEmptyOption("Not specified");
-                                                }
-                                            )
-                                        );
+                                                    items.OrderBy(department => department.Name)
+                                            );
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                     }
                                 );
                                 section.AddGroup(group =>
@@ -187,13 +189,17 @@ internal static class UserResourceRegistration
                                     group
                                         .Add(model => model.PreferredLanguage)
                                         .UseEditor<SelectEditor>(options =>
-                                            options.UseItems(UserLookups.Languages())
-                                        );
+                                        {
+                                            options.UseItems(UserLookups.Languages());
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                     group
                                         .Add(model => model.TimeZoneId)
                                         .UseEditor<SelectEditor>(options =>
-                                            options.UseItems(UserLookups.TimeZones())
-                                        );
+                                        {
+                                            options.UseItems(UserLookups.TimeZones());
+                                            options.EmptyChoiceText = "Not specified";
+                                        });
                                 });
                             }
                         );

@@ -13,6 +13,12 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ChoiceEditorTests
 {
+    private static readonly ChoiceItem[] SeatChoices =
+    [
+        new("aisle", "Aisle"),
+        new("window", "Window"),
+    ];
+
     [Test]
     public async Task EnumDataTypeTemplate_RendersSelectWithMemberChoices()
     {
@@ -478,7 +484,7 @@ public class ChoiceEditorTests
         var select = document.RequiredElement("select[name='Entity.Seat']");
         await Assert
             .That(OptionValues(select))
-            .IsEquivalentTo(["1a", "2b", "any", "30c"], CollectionOrdering.Matching);
+            .IsEquivalentTo(["", "1a", "2b", "any", "30c"], CollectionOrdering.Matching);
         await Assert
             .That(select.QuerySelectorAll("optgroup").Select(group => group.GetAttribute("label")))
             .IsEquivalentTo(["Front", "Back"], CollectionOrdering.Matching);
@@ -546,6 +552,190 @@ public class ChoiceEditorTests
         await Assert
             .That(document.QuerySelectorAll("input[type=radio][name='Entity.Seat']").Length)
             .IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task SelectEditor_RequiredUnsetValue_AddsEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<SelectEditor>(select => select.UseItems(SeatChoices))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var select = document.RequiredElement("select[name='Entity.Seat']");
+        await Assert
+            .That(OptionValues(select))
+            .IsEquivalentTo(["", "aisle", "window"], CollectionOrdering.Matching);
+        await Assert
+            .That(select.RequiredElement("option[value='']").TextContent)
+            .IsEqualTo("Not set");
+    }
+
+    [Test]
+    public async Task SelectEditor_RequiredValueSet_LeavesOutEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+        {
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<SelectEditor>(select => select.UseItems(SeatChoices));
+            fields.Add(model => model.RequiredCabin);
+        });
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products/create");
+        values["Entity.Seat"] = "aisle";
+        values["Entity.RequiredCabin"] = "";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync("/stellaradmin/products/create", content);
+        var document = await response.ReadDocumentAsync();
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(OptionValues(document.RequiredElement("select[name='Entity.Seat']")))
+            .IsEquivalentTo(["aisle", "window"], CollectionOrdering.Matching);
+        await Assert
+            .That(
+                document
+                    .RequiredElement("select[name='Entity.RequiredCabin'] option[selected]")
+                    .GetAttribute("value")
+            )
+            .IsEqualTo("");
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_RequiredNullableEnum_LeavesOutEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.RequiredCabin).UseEditor<RadioGroupEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var radios = document.QuerySelectorAll("input[type=radio][name='Entity.RequiredCabin']");
+        await Assert.That(radios.Length).IsEqualTo(3);
+        await Assert.That(radios.Any(radio => radio.HasAttribute("checked"))).IsFalse();
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_OptionalSuppliedChoices_ChecksAddedEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Preference)
+                .UseEditor<RadioGroupEditor>(radio =>
+                {
+                    radio.UseItems(SeatChoices);
+                    radio.EmptyChoiceText = "No preference";
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var empty = document.RequiredElement(
+            "input[type=radio][name='Entity.Preference'][value='']"
+        );
+        await Assert.That(empty.HasAttribute("checked")).IsTrue();
+        await Assert
+            .That(document.RequiredElement($"label[for='{empty.Id}']").TextContent.Trim())
+            .IsEqualTo("No preference");
+    }
+
+    [Test]
+    public async Task SelectEditor_SuppliedEmptyChoice_IsNotDuplicated()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Preference)
+                .UseEditor<SelectEditor>(select =>
+                    select.UseItems([new ChoiceItem("", "Any seat"), .. SeatChoices])
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var select = document.RequiredElement("select[name='Entity.Preference']");
+        await Assert
+            .That(OptionValues(select))
+            .IsEquivalentTo(["", "aisle", "window"], CollectionOrdering.Matching);
+        await Assert
+            .That(select.RequiredElement("option[value='']").TextContent)
+            .IsEqualTo("Any seat");
+    }
+
+    [Test]
+    public async Task ChoiceEditor_EmptyChoiceSetting_OverridesAuto()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+        {
+            fields
+                .Add(model => model.RequiredCabin)
+                .UseEditor<RadioGroupEditor>(radio => radio.EmptyChoice = EmptyChoice.Include);
+            fields
+                .Add(model => model.OptionalCabin)
+                .UseEditor<SelectEditor>(select => select.EmptyChoice = EmptyChoice.Omit);
+            fields
+                .Add(model => model.Cabins)
+                .UseEditor<CheckboxGroupEditor>(group => group.EmptyChoice = EmptyChoice.Include);
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("input[name='Entity.RequiredCabin'][value='']"))
+            .IsNotNull();
+        await Assert
+            .That(document.QuerySelector("select[name='Entity.OptionalCabin'] option[value='']"))
+            .IsNull();
+        await Assert.That(document.QuerySelector("input[name='Entity.Cabins'][value='']")).IsNull();
+    }
+
+    [Test]
+    public async Task SegmentedControlEditor_NullNullableEnum_SelectsEmptyChoice()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.OptionalCabin).UseEditor<SegmentedControlEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("input[name='Entity.OptionalCabin']:checked")
+                    .GetAttribute("value")
+            )
+            .IsEqualTo("");
     }
 
     [Test]

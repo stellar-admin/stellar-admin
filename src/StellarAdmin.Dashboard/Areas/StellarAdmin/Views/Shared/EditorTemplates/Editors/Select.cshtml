@@ -1,7 +1,7 @@
 @inherits FieldEditorView<SelectEditor>
 
 @{
-    var items = ChoiceSelectListItems.Create(Editor.ResolveChoices(EditorData, ViewData.ModelMetadata));
+    var items = ChoiceSelectListItems.Create(Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model));
 }
 
 <sa-select class-names="@EditorClassNamesMapper.ForSelect(Editor)" asp-for="@Model" asp-items="@items"
