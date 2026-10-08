@@ -19,6 +19,10 @@ public sealed class MultiLookupSheetEditor
     /// </summary>
     public LookupItems? Items { get; private set; }
 
+    internal bool CreateEnabled { get; private set; }
+
+    internal Type? CreateResourceType { get; private set; }
+
     internal MultiLookupFieldOptions FieldOptions { get; } = new();
 
     internal LookupSheetOptions SheetOptions { get; } = new();
@@ -35,6 +39,22 @@ public sealed class MultiLookupSheetEditor
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(FieldOptions);
+    }
+
+    /// <summary>
+    ///     Shows a button in the sheet for creating a new item, which is then selected. The item is created with the
+    ///     create form of the resource registered for the items' type.
+    /// </summary>
+    public void EnableCreate() => CreateEnabled = true;
+
+    /// <summary>
+    ///     Shows a button in the sheet for creating a new item, which is then selected. The item is created with the
+    ///     create form of the specified resource.
+    /// </summary>
+    public void EnableCreate<TResource>()
+    {
+        CreateEnabled = true;
+        CreateResourceType = typeof(TResource);
     }
 
     /// <summary>

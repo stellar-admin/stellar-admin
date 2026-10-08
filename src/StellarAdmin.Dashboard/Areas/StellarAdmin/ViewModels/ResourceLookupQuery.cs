@@ -21,6 +21,12 @@ public sealed class ResourceLookupQuery
     public string? Form { get; set; }
 
     /// <summary>
+    ///     The sheet level of the form that contains the field: 0 for the page, or the level of a create form in a
+    ///     sheet. A multi-select lookup's create form opens one level above it.
+    /// </summary>
+    public int Level { get; set; }
+
+    /// <summary>
     ///     The values of the currently selected items, which are empty when nothing is selected.
     /// </summary>
     public string[] Selected { get; set; } = [];

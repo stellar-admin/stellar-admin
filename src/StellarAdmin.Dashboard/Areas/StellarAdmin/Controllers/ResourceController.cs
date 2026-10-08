@@ -399,7 +399,9 @@ public class ResourceController<TResource>(
             : null;
 
         // The picker sends the selected values with every request, so Load more marks those selected by then. Only the
-        // first page reports an empty result; a later page simply ends the list.
+        // first page reports an empty result, which offers New; a later page simply ends the list.
+        var isEmpty = query.Skip == 0 && results.Items.Count == 0;
+
         return PartialView(
             "_LookupResults",
             new LookupResultsViewModel(
@@ -409,9 +411,10 @@ public class ResourceController<TResource>(
                 query.Selected,
                 term,
                 false,
-                query.Skip == 0 && results.Items.Count == 0,
+                isEmpty,
                 false,
-                labels
+                labels,
+                isEmpty ? await GetLookupCreateUrlAsync(options, editor, query) : null
             )
         );
     }
@@ -466,7 +469,7 @@ public class ResourceController<TResource>(
     ///     Renders the search panel of a lookup field for the shared sheet.
     /// </summary>
     [HttpGet]
-    public IActionResult LookupSheet([FromQuery] ResourceLookupQuery query)
+    public async Task<IActionResult> LookupSheet([FromQuery] ResourceLookupQuery query)
     {
         if (
             !ModelState.IsValid
@@ -485,6 +488,8 @@ public class ResourceController<TResource>(
                 id = (string?)null,
                 form = query.Form,
                 field = query.Field,
+                @for = editor is MultiLookupSheetEditor ? query.For : null,
+                level = query.Level > 0 ? query.Level : (int?)null,
             }
         )!;
 
@@ -495,7 +500,8 @@ public class ResourceController<TResource>(
                 query.For,
                 editor.SheetOptions.Title ?? label,
                 resultsUrl,
-                new LookupLabelContext(label, editor.SheetOptions.MinimumSearchLength, null)
+                new LookupLabelContext(label, editor.SheetOptions.MinimumSearchLength, null),
+                await GetLookupCreateUrlAsync(options, editor, query)
             )
         );
     }
@@ -741,6 +747,43 @@ public class ResourceController<TResource>(
             ?? MetadataProvider
                 .GetMetadataForProperty(property.DeclaringType!, property.Name)
                 .GetDisplayName();
+    }
+
+    // A multi-select lookup's create form opens one level above the form that contains the field
+    private async Task<string?> GetLookupCreateUrlAsync(
+        FormFieldOptions options,
+        ILookupSheetEditor editor,
+        ResourceLookupQuery query
+    )
+    {
+        if (
+            editor is not MultiLookupSheetEditor { CreateEnabled: true, Items: { } items } multi
+            || string.IsNullOrEmpty(query.For)
+        )
+        {
+            return null;
+        }
+
+        var controller = await LookupCreateResource.FindControllerAsync(
+            HttpContext.RequestServices,
+            nameof(MultiLookupSheetEditor),
+            options.FieldName,
+            items,
+            multi.CreateResourceType
+        );
+
+        return controller is null
+            ? null
+            : Url.Action(
+                nameof(CreateSheet),
+                controller,
+                new
+                {
+                    id = (string?)null,
+                    @for = query.For,
+                    level = query.Level + 1,
+                }
+            );
     }
 
     private async Task<(

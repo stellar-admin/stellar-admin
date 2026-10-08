@@ -1,6 +1,6 @@
 # Multi-select lookup editor
 
-Status: **active**. Phases 0 to 3 are done; phase 4 is next. Last updated: 2026-10-08.
+Status: **active**. Phases 0 to 4 are done and awaiting review. Last updated: 2026-10-08.
 
 A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](archive/sheet-stack.md). The design comes from the [multi-select lookup prototype](../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
 
@@ -91,6 +91,16 @@ From the prototype sessions:
 
 - New in the no-results state and the footer, with Alt+N.
 - The editor listens for `lookup-created` and adds the new item, checked, keeping the search.
+
+**Done (2026-10-08):**
+
+- `MultiLookupSheetEditor.EnableCreate()` and `EnableCreate<TResource>()`. The single editor's lookup of the creating resource, its create form and the user's authorization moved to an internal `LookupCreateResource`, which both editors use; its exception messages name the editor.
+- The multi-select sheet shows New beside Done in the footer, with an Alt+N hint (⌥N on a Mac), and in the no-results state of the All view; the Selected view has none. New opens the resource's create form as the next sheet level. `ResourceLookupQuery.Level` carries the level of the form that contains the field, so the create form binds with the prefix of the level above it; the field's sheet URL and the sheet's results URL pass it on, and the results URL also carries `for`.
+- The picker listens for `lookup-created` on its editor, renders the created item's row with the Selected view's search, selects its value, removes the no-results message, puts the row checked at the top of the results and keeps the search, selected for the next one. If the row can't be rendered, the key is selected without one.
+- New lookup label: `NewHint` ("new"). New uses the existing `CreateLabel`.
+- The playground's first destinations field in the Multi lookup gallery enables create, with the airport resource's create form.
+- Not done: the consumer setup reference doesn't describe the editor. After a create, the highlight stays on the row that had it rather than moving to the new row.
+- Checks: the solution builds with no new warnings. `StellarAdmin.Dashboard.Tests` 79 of 79, `StellarAdmin.Dashboard.IntegrationTests` 398 of 398 (9 new in `MultiLookupCreateTests`) and `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` 73 of 73 pass. Headless Chromium against the playground gallery at desktop and phone width, with no script errors: a search without results offers New, Alt+N opens the create form as level 2, and the created airport comes back checked at the top of the results with the search kept and selected, in the field and in the count; Done then fires one `change`.
 
 ## Not in this plan
 

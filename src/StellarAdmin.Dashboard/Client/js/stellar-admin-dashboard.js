@@ -205,6 +205,8 @@ customElements.define("dashboard-remote-sheet", DashboardRemoteSheet);
 // on the document for elements already removed from the page never reach it, and removing it cancels its requests.
 // A multi-select picker toggles items in its editor and stays open: All | Selected switches to searching only the
 // selected items, where an unchecked item leaves the list, and Done or Ctrl+Enter (⌘↵ on a Mac) closes the sheet.
+// New, or Alt+N (⌥N), opens the create form as the next level, and the created item comes back checked at the top of
+// the results, with the search kept.
 class DashboardLookupPicker extends HTMLElement {
   static #mac = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform ?? navigator.platform);
   #enter = false;
@@ -284,11 +286,24 @@ class DashboardLookupPicker extends HTMLElement {
     });
 
     // Ctrl+Enter closes before the command list sees the Enter; a plain Enter marks the toggle as made from the
-    // keyboard, so the search text is selected for the next search
+    // keyboard, so the search text is selected for the next search. Alt+N is matched by its key's position, since ⌥N
+    // types a character on a Mac.
     this.addEventListener(
       "keydown",
       (event) => {
-        if (!this.#multiple || event.key !== "Enter" || event.isComposing) {
+        if (!this.#multiple || event.isComposing) {
+          return;
+        }
+
+        const create = this.querySelector("[data-sheet-open][data-lookup='create']");
+        if (event.altKey && event.code === "KeyN" && !event.ctrlKey && !event.metaKey && create) {
+          event.preventDefault();
+          event.stopPropagation();
+          create.click();
+          return;
+        }
+
+        if (event.key !== "Enter") {
           return;
         }
 
@@ -313,11 +328,23 @@ class DashboardLookupPicker extends HTMLElement {
 
     const editor = this.#editor;
     editor.beginEdit();
-    this.closest("dialog")?.addEventListener("close", () => editor.endEdit(), { once: true });
+    editor.addEventListener("lookup-created", this.#onCreated);
+    this.closest("dialog")?.addEventListener(
+      "close",
+      () => {
+        editor.removeEventListener("lookup-created", this.#onCreated);
+        editor.endEdit();
+      },
+      { once: true },
+    );
 
     if (DashboardLookupPicker.#mac) {
       this.querySelector("[data-lookup='done-key'] kbd").textContent = "⌘";
       this.querySelector("[data-lookup='done']").setAttribute("aria-keyshortcuts", "Meta+Enter");
+      const newKey = this.querySelector("[data-lookup='new-key'] kbd");
+      if (newKey) {
+        newKey.textContent = "⌥";
+      }
     }
 
     this.#update();
@@ -332,6 +359,47 @@ class DashboardLookupPicker extends HTMLElement {
   get #editor() {
     return document.getElementById(this.getAttribute("for"));
   }
+
+  // The server renders the created item's row, checked, as the Selected view does, along with the value the form
+  // posts for it. If that fails, the key is selected without a row.
+  #onCreated = async (event) => {
+    const key = event.detail.key;
+    const search = this.querySelector("[data-lookup='search']");
+    const url = new URL(search.getAttribute("hx-get"), document.baseURI);
+    url.searchParams.set("selectedOnly", "true");
+    url.searchParams.append("selected", key);
+
+    let row = null;
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const parsed = document.createElement("template");
+        parsed.innerHTML = await response.text();
+        row = parsed.content.querySelector("[data-lookup='item']");
+      }
+    } catch {
+      // The key is selected below
+    }
+
+    const value = row?.dataset.value ?? key;
+    if (!this.#selected.includes(value)) {
+      this.#editor.toggle(value);
+    }
+
+    if (row) {
+      for (const element of this.#results.querySelectorAll(
+        `[data-lookup='message'], [data-lookup='item'][data-value="${CSS.escape(value)}"]`,
+      )) {
+        element.remove();
+      }
+
+      this.#results.prepend(row);
+    }
+
+    this.#update();
+    search.focus();
+    search.select();
+  };
 
   get #multiple() {
     return this.hasAttribute("multiple");

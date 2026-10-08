@@ -12,5 +12,6 @@ internal sealed record LookupResultsViewModel(
     bool IsTermTooShort,
     bool IsEmpty,
     bool IsSelectedOnly,
-    LookupLabelContext Labels
+    LookupLabelContext Labels,
+    string? CreateUrl = null
 );

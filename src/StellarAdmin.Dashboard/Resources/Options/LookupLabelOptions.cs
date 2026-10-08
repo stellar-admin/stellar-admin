@@ -85,6 +85,11 @@ public sealed class LookupLabelOptions
         context => $"and {context.Count} more";
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for creating an item.
+    /// </summary>
+    public Func<LookupLabelContext, string> NewHint { get; set; } = context => "new";
+
+    /// <summary>
     ///     The callback that generates the read-only lookup's text when nothing is selected.
     /// </summary>
     public Func<LookupLabelContext, string> NoneText { get; set; } = context => "None";

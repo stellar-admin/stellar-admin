@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Dashboard.Infrastructure.Authorization;
-
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
 /// <summary>
@@ -27,45 +23,15 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
 
         var item = (await items.FindAsync(services, context, cancellationToken)).FirstOrDefault();
         var createController = Editor.CreateEnabled
-            ? await FindCreateControllerAsync(context, items)
+            ? await LookupCreateResource.FindControllerAsync(
+                services,
+                nameof(LookupSheetEditor),
+                context.FieldName,
+                items,
+                Editor.CreateResourceType
+            )
             : null;
 
         return new LookupSheetEditorData(item, createController);
-    }
-
-    // The resource registered for the items' type creates new items; a user it doesn't authorize gets no button
-    private async Task<string?> FindCreateControllerAsync(
-        FieldEditorContext context,
-        LookupItems items
-    )
-    {
-        var type =
-            Editor.CreateResourceType
-            ?? items.ItemType
-            ?? throw new InvalidOperationException(
-                $"LookupSheetEditor on {context.FieldName} enables create, but its items have no type. Use EnableCreate<TResource>() to select the resource."
-            );
-        var resource =
-            services
-                .GetServices<ResourceRegistration>()
-                .FirstOrDefault(registration => registration.ResourceType == type)
-            ?? throw new InvalidOperationException(
-                $"LookupSheetEditor on {context.FieldName} enables create, but no resource is registered for {type.Name}."
-            );
-        if (!resource.ResolveCanCreate(services))
-        {
-            throw new InvalidOperationException(
-                $"LookupSheetEditor on {context.FieldName} enables create, but the {resource.ControllerName} resource has no create form."
-            );
-        }
-
-        var httpContext = services.GetRequiredService<IHttpContextAccessor>().HttpContext!;
-
-        return await AuthorizationMetadata.AuthorizeAsync(
-            resource.ResolveAuthorizationMetadata(services),
-            httpContext
-        )
-            ? resource.ControllerName
-            : null;
     }
 }

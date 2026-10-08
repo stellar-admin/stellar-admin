@@ -207,6 +207,19 @@ public sealed class LookupLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for creating an item.
+    /// </summary>
+    public Func<LookupLabelContext, string> NewHint
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.NewHint = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the read-only lookup's text when nothing is selected.
     /// </summary>
     public Func<LookupLabelContext, string> NoneText

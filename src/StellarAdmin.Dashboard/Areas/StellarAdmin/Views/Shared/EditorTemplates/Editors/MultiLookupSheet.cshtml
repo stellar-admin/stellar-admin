@@ -21,12 +21,13 @@
     var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
     var errorId = $"{id}-error";
     var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
-    // The sheet opens as the next level of the stack; a create form in a sheet looks up from its own resource
+    // The sheet opens as the next level of the stack, and its create form above that; a create form in a sheet looks up
+    // from its own resource
     var sheetLevel = ViewData[ViewDataKeys.SheetLevel] as int?;
     var form = sheetLevel is not null ? "create" : ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
     var canLookUp = Field?.FieldName is not null;
     var sheetUrl = canLookUp
-        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id })
+        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id, level = sheetLevel })
         : null;
     var selectionUrl = canLookUp
         ? Url.Action("MultiLookupSelection", new { id = (string?)null, form, field = Field!.FieldName })

@@ -45,7 +45,7 @@
 }
 
 @* The lookup picker loaded into a sheet; for names the editor that results belong to. A multi-select picker can show
-   only the selected items, and its footer closes the sheet. *@
+   only the selected items, and its footer closes the sheet and, with create enabled, opens the create form. *@
 <dashboard-lookup-picker class="contents" for="@Model.For" multiple="@multiple">
     <sa-sheet-header>
         <sa-sheet-title>@Model.Title</sa-sheet-title>
@@ -83,8 +83,20 @@
             <div class="text-muted-foreground hidden items-center gap-1 text-xs sm:flex" aria-hidden="true">
                 <sa-kbd>↵</sa-kbd> @labels.Lookup.ToggleHint(Model.Labels)
                 <sa-kbd-group class="ml-2" data-lookup="done-key"><sa-kbd>Ctrl</sa-kbd><sa-kbd>↵</sa-kbd></sa-kbd-group> @labels.Lookup.DoneHint(Model.Labels)
+                @if (Model.CreateUrl is not null)
+                {
+                    <sa-kbd-group class="ml-2" data-lookup="new-key"><sa-kbd>Alt</sa-kbd><sa-kbd>N</sa-kbd></sa-kbd-group> @labels.Lookup.NewHint(Model.Labels)
+                }
             </div>
             <div class="flex gap-2">
+                @if (Model.CreateUrl is not null)
+                {
+                    <sa-button type="button" variant="ButtonVariant.Outline" class="flex-1" aria-keyshortcuts="Alt+N"
+                               data-sheet-open="@Model.CreateUrl" data-lookup="create">
+                        <sa-icon name="plus" />
+                        @labels.Lookup.CreateLabel(Model.Labels)
+                    </sa-button>
+                }
                 <sa-button type="button" class="flex-1" aria-keyshortcuts="Control+Enter" data-lookup="done">@labels.Lookup.DoneLabel(Model.Labels)</sa-button>
             </div>
         </sa-sheet-footer>

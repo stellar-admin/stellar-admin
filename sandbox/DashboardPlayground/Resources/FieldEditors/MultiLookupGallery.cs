@@ -9,7 +9,7 @@ public sealed class MultiLookupGallery
 {
     // Layouts
 
-    [Display(Name = "List<string> · Chips (default) · UseCode")]
+    [Display(Name = "List<string> · Chips (default) · UseCode · EnableCreate")]
     public List<string> Destinations { get; set; } = [];
 
     [Display(Name = "string[] · Chips · UseAvatar")]

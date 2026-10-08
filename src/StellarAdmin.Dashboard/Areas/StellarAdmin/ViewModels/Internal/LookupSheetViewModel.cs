@@ -8,5 +8,6 @@ internal sealed record LookupSheetViewModel(
     string For,
     string Title,
     string ResultsUrl,
-    LookupLabelContext Labels
+    LookupLabelContext Labels,
+    string? CreateUrl
 );
