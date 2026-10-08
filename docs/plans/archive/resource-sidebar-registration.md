@@ -1,6 +1,6 @@
 # Resource sidebar registration
 
-Status: implemented, 2026-09-24.
+Status: completed. Implemented 2026-09-24; archived 2026-10-09.
 
 ## Goal
 

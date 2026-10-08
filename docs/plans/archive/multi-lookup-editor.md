@@ -7,7 +7,7 @@ A lookup editor that selects several items from a searchable sheet, built on the
 ## Scope
 
 - The field binds a collection of keys: `TValue[]`, `List<TValue>` or another collection MVC binds. These save today through plain models and custom create and edit handlers, such as the playground's `string[] RoleIds`.
-- EF Core entities with a many-to-many navigation are not in this plan. `ValidateEntityFormFields` rejects navigation fields, MVC can't bind entities from posted keys, and `UpdateAsync` copies values rather than adding and removing items. That needs its own approval, because [generic-resources-follow-ups](../generic-resources-follow-ups.md) keeps single-record references as the relationship scope.
+- EF Core entities with a many-to-many navigation are not in this plan. `ValidateEntityFormFields` rejects navigation fields, MVC can't bind entities from posted keys, and `UpdateAsync` copies values rather than adding and removing items. That needs its own approval, because [generic-resources-follow-ups](generic-resources-follow-ups.md) keeps single-record references as the relationship scope.
 
 ## Design decisions
 

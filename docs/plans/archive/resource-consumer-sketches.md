@@ -10,7 +10,7 @@ This assessment uses the current checkout; earlier status, paths, permissions an
 
 Status: proposed. Last updated: 2026-09-06. Affected repo: workspace documentation only; prospective implementation belongs in `stellar-admin-pro/`.
 
-Follow-up: the [2026-09-08 brainstorming session](generic-resources-brainstorming.md) narrows the initial work to StellarAdmin-managed EF CRUD with consumer override points, followed by form layout and single-record references. That session is now closed; use the [follow-up backlog](../generic-resources-follow-ups.md) for deferred work. The broader alternatives below remain exploratory context.
+Follow-up: the [2026-09-08 brainstorming session](generic-resources-brainstorming.md) narrows the initial work to StellarAdmin-managed EF CRUD with consumer override points, followed by form layout and single-record references. That session is now closed; use the [follow-up backlog](generic-resources-follow-ups.md) for deferred work. The broader alternatives below remain exploratory context.
 
 ## Purpose and agreed requirements
 

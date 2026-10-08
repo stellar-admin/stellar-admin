@@ -9,8 +9,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | Record | Status | Current assessment |
 | --- | --- | --- |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
-| [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
-| [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
@@ -38,6 +36,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [field-editor-catalog](archive/field-editor-catalog.md) | completed; built-in `UseEditor` field editors with data-type templates forwarding to them, a DashboardPlayground editor gallery and a consumer reference section. A slider value display and gallery pixel comparison are follow-ups. |
 | [form-section](oss/archive/form-section.md) | completed |
 | [generic-resources-brainstorming](archive/generic-resources-brainstorming.md) | completed |
+| [generic-resources-follow-ups](archive/generic-resources-follow-ups.md) | superseded; most items settled by later work, items 2 and 5 not re-checked |
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |
 | [grid-nested-field-binding](archive/grid-nested-field-binding.md) | completed |
 | [ice-theme](archive/ice-theme.md) | completed |
@@ -72,6 +71,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [resource-consumer-sketches](archive/resource-consumer-sketches.md) | superseded |
 | [resource-form-header-actions](archive/resource-form-header-actions.md) | completed |
 | [resource-index-page-view-model](archive/resource-index-page-view-model.md) | completed |
+| [resource-sidebar-registration](archive/resource-sidebar-registration.md) | completed |
 | [resources-project-extraction](archive/resources-project-extraction.md) | superseded |
 | [segmented-control](oss/archive/segmented-control.md) | completed |
 | [semantic-icons](archive/semantic-icons.md) | completed; IconOptions tests migrated to TUnit on 2026-09-18 |

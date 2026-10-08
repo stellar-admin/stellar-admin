@@ -6,7 +6,7 @@ Status: completed on 2026-10-01 on the `field-editor-catalog` branch. The spike 
 
 Ship a full set of built-in form field editors that `UseEditor<T>` can select, similar to the Filament form field catalog. Editors have friendly names such as `TextInputEditor`, `SelectEditor` and `RadioGroupEditor`, and each accepts editor-specific settings. The MVC editor templates named after data types (`String`, `Int32`, `Currency`, `Boolean`, …) stay, because metadata-based template resolution and per-type app overrides are important. Each piece of editor markup exists once. The data-type templates forward to a friendly editor instead of repeating its markup.
 
-This supersedes item 6, "Richer typed EditorOptions", in [generic-resources-follow-ups](../generic-resources-follow-ups.md).
+This supersedes item 6, "Richer typed EditorOptions", in [generic-resources-follow-ups](generic-resources-follow-ups.md).
 
 ## Starting point
 

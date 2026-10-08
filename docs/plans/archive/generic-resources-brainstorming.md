@@ -10,7 +10,7 @@ This assessment uses the current checkout; earlier status, paths, permissions an
 
 ## Historical record
 
-Status: completed for the agreed implementation scope; session closed 2026-09-10. Basic EF resources, form layouts, editor part classes, and initial EF single-record references are implemented. Deferred work is tracked in the [generic resource follow-up backlog](../generic-resources-follow-ups.md); no follow-up is active or implicitly authorized.
+Status: completed for the agreed implementation scope; session closed 2026-09-10. Basic EF resources, form layouts, editor part classes, and initial EF single-record references are implemented. Deferred work is tracked in the [generic resource follow-up backlog](generic-resources-follow-ups.md); no follow-up is active or implicitly authorized.
 
 ## Session closeout
 
@@ -213,7 +213,7 @@ Jerrie requested that we address sidebar registration at the end of this effort.
 
 ## Historical implementation and verification
 
-The session is closed. Consult the [follow-up backlog](../generic-resources-follow-ups.md) when Jerrie selects further work; the checkpoints below record implementation history.
+The session is closed. Consult the [follow-up backlog](generic-resources-follow-ups.md) when Jerrie selects further work; the checkpoints below record implementation history.
 
 During this session, inspected the existing resource options/builders, field binding, Identity user persistence, MVC controller registration, and index query execution. The index executor currently materializes synchronously; controller registration currently identifies registrations by CLR controller type. Account for those constraints when implementing async EF execution and resource identity.
 
