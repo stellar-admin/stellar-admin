@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multi-select lookup</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <!-- The Dashboard stylesheet sizes item media (sa-choice-media) the way the editors do -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+      /* Phone frame: only the live form */
+      html[data-phone] [data-not-phone] {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-14 px-6 pt-10 pb-32" id="page">
+      <header class="space-y-3" data-not-phone>
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · LookupEditor · multiple values</p>
+        <h1 class="text-2xl font-semibold">Multi-select lookup</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Narrowing down the sheet lookup for collections. The field, the sheet, the result rows and the loading and empty states use the markup the
+          shipped single-value lookup renders, captured from the playground. The exploration this came from is on the
+          <a class="underline" href="multiselect-sheet.html">sheet</a> and <a class="underline" href="multiselect-popover.html">popover</a> pages.
+        </p>
+        <div class="grid max-w-5xl gap-4 text-sm md:grid-cols-2">
+          <div class="rounded-lg border p-4">
+            <p class="mb-2 font-medium">Decided</p>
+            <ul class="text-muted-foreground list-disc space-y-1 pl-5">
+              <li>Immediate: each toggle updates the field behind the sheet. There is no draft and no Cancel.</li>
+              <li>One <code>change</code> event when the sheet closes, and only if the value changed. Removing from the field fires it straight away.</li>
+              <li>Enter toggles the active row and selects the search text. Esc, Done, Ctrl or ⌘+Enter and the backdrop all close and keep the selection.</li>
+              <li>The form posts the field's name once per value.</li>
+              <li>Create (6): New in the no-results state and in the sheet footer (B1 + B3), with Alt+N (⌥N on a Mac) from anywhere in the sheet.</li>
+              <li>Footer (7): two rows, the count, Clear and key hints above New and Done.</li>
+            </ul>
+          </div>
+          <div class="rounded-lg border p-4">
+            <p class="mb-2 font-medium">Open, switchable on the live form</p>
+            <ol class="text-muted-foreground list-decimal space-y-1 pl-5">
+              <li>How the field shows the selection</li>
+              <li>How a row shows that it is selected</li>
+              <li>Whether the sheet lists the selection under the search</li>
+              <li>What happens at a maximum count</li>
+              <li>The phone layout (bottom of the page)</li>
+              <li>Where New lives, for creating a guide that isn't in the list</li>
+              <li>The sheet footer, and whether it needs Done</li>
+            </ol>
+            <p class="text-muted-foreground mt-3">
+              Proposed, always on: seeing the whole selection. An All | Selected control sits under the search, with the count on Selected. The
+              Selected view searches within the selection, drops a row when it is unchecked, and has Clear all, so the footer no longer holds
+              the count or Clear. A read-only Summary shows the List display.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <!-- ---------------------------------------------------------------- Live candidate -->
+      <section class="space-y-4">
+        <div data-not-phone>
+          <h2 class="text-lg font-semibold">Live: in a form</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">Every switch restyles both fields and the sheet they open.</p>
+        </div>
+        <div class="space-y-3" id="switches" data-not-phone></div>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
+          <form id="live-form" class="min-w-0 bg-card text-card-foreground space-y-6 rounded-xl border p-6 shadow-sm" onsubmit="return false">
+            <div>
+              <h3 class="font-semibold">Edit tour package</h3>
+              <p class="text-muted-foreground text-sm">Iberian Coast Explorer</p>
+            </div>
+            <div data-slot="field" data-orientation="vertical" class="sa-field group/field sa-field-orientation-vertical">
+              <label data-slot="field-label" class="sa-label sa-field-label" for="live-name">Name</label>
+              <input id="live-name" data-slot="input" class="sa-input" value="Iberian Coast Explorer" />
+            </div>
+            <div id="live-destinations"></div>
+            <div id="live-guides"></div>
+          </form>
+          <div class="space-y-4" data-not-phone>
+            <div class="space-y-2">
+              <p class="text-muted-foreground text-xs tracking-wide uppercase">Posted values</p>
+              <pre id="posted" class="bg-muted text-muted-foreground overflow-x-auto rounded-lg p-4 font-mono text-xs"></pre>
+            </div>
+            <div class="space-y-2">
+              <p class="text-muted-foreground text-xs tracking-wide uppercase">change events</p>
+              <pre id="events" class="bg-muted text-muted-foreground max-h-48 overflow-y-auto rounded-lg p-4 font-mono text-xs">None yet.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------------------------- Field displays -->
+      <section class="space-y-4" data-not-phone>
+        <div>
+          <h2 class="text-lg font-semibold">1 · Field displays</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            Each candidate empty, with a few guides, with many guides (12) and read-only. <strong>List</strong> extends the shipped Card layout (an
+            <code>sa-item</code> per value). <strong>Chips</strong> and <strong>Summary</strong> extend the Input layout (one control height while the
+            selection is short). Remove and Clear work, and Add opens the sheet.
+          </p>
+        </div>
+        <div id="displays" class="space-y-10"></div>
+      </section>
+
+      <!-- ---------------------------------------------------------------- Create -->
+      <section class="space-y-4" data-not-phone>
+        <div>
+          <h2 class="text-lg font-semibold">6 · Create</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            Switch 6 places New on the live <strong>Guides</strong> field. The create form is a stand-in for the resource's create form; Create adds the guide to
+            the items and selects it.
+          </p>
+        </div>
+        <ul class="text-muted-foreground max-w-4xl list-disc space-y-1 pl-5 text-sm">
+          <li><strong>A · New in the field</strong> opens the create form in the shared sheet, like the single lookup does today, but stays visible while
+            values are selected. The new guide is appended and the field fires <code>change</code> straight away.</li>
+          <li><strong>B · New in the lookup sheet</strong> opens the create form in the nested sheet on top of the lookup sheet. Create closes it, and the new
+            guide shows checked at the top of the results, with the search kept. The lookup sheet fires <code>change</code> when it closes.
+            <ul class="list-[circle] pl-5">
+              <li><strong>B1</strong>: a button in the "No results found" state only.</li>
+              <li><strong>B1 + B2</strong>: B1, plus a "New guide" row after the results that the arrow keys and Enter reach, like Load more.</li>
+              <li><strong>B1 + B3</strong>: B1, plus New in the sheet footer, which stays in reach however long the list is. Switch 7 lays out the
+                footer around it.</li>
+            </ul>
+          </li>
+          <li>Switch 7: <strong>New + Done</strong> moves the count, Clear and the key hints to a line under the search, leaving the footer for actions.
+            <strong>No Done</strong> does the same and closes with Esc, the backdrop or the close button; the footer only exists for New.
+            <strong>Two rows</strong> keeps everything in the footer, with the actions full width. <strong>One row</strong> is the earlier footer.</li>
+          <li>In every variant, New is unavailable at the limit (switch 4). A lookup inside a create form never offers New, since it already uses the
+            nested sheet; that isn't shown here.</li>
+        </ul>
+      </section>
+
+      <!-- ---------------------------------------------------------------- Phone -->
+      <section class="space-y-4" data-not-phone>
+        <div>
+          <h2 class="text-lg font-semibold">5 · Phone</h2>
+          <p class="text-muted-foreground max-w-3xl text-sm">
+            The live form at 390px, with the current switches. The right-side sheet takes the full width there. Open a field to try it.
+          </p>
+        </div>
+        <iframe id="phone" title="Phone" class="h-[760px] w-[390px] rounded-[2rem] border-8 border-neutral-800 bg-white"></iframe>
+      </section>
+    </main>
+
+    <!-- The dashboard's shared sheet, as _RemoteSheet renders it (id shortened); a field fills the content when it opens it -->
+    <sel-dialog>
+      <dialog id="ms-sheet" data-slot="sheet-content" data-side="right" class="sa-sheet-content">
+        <button type="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="ms-sheet" command="close" data-slot="button">
+          <svg class="size-4" fill="none" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke="currentColor" height="24" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span>
+        </button>
+        <div class="sa-sheet-body">
+          <div id="ms-sheet-content" class="contents" data-sheet="content"></div>
+        </div>
+      </dialog>
+    </sel-dialog>
+
+    <!-- The dashboard's nested sheet: the create form opened from inside the lookup sheet -->
+    <sel-dialog>
+      <dialog id="ms-nested" data-slot="sheet-content" data-side="right" class="sa-sheet-content">
+        <button type="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="ms-nested" command="close" data-slot="button">
+          <svg class="size-4" fill="none" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke="currentColor" height="24" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span>
+        </button>
+        <div class="sa-sheet-body">
+          <div id="ms-nested-content" class="contents" data-sheet="content"></div>
+        </div>
+      </dialog>
+    </sel-dialog>
+
+    <script type="module">
+      // Only the Voyager data and the page's control bar come from the exploration pages; everything else is local
+      import { airports, controlBar } from "./lookup-shared.js";
+      import { guides } from "./multiselect-shared.js";
+
+      const params = new URLSearchParams(location.search);
+      const phone = params.has("phone");
+      if (phone) {
+        document.documentElement.toggleAttribute("data-phone", true);
+        document.getElementById("page").className = "space-y-4 p-3";
+      }
+
+      // ---------------------------------------------------------------- Markup helpers
+      const svg = (body, cls = "") =>
+        `<svg class="${cls}" fill="none" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke="currentColor" height="24" stroke-width="2" viewBox="0 0 24 24" width="24">${body}</svg>`;
+      const icons = {
+        x: (c) => svg('<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>', c),
+        plus: (c) => svg('<path d="M5 12h14"></path><path d="M12 5v14"></path>', c),
+        search: (c) => svg('<path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle>', c),
+        searchX: (c) => svg('<path d="m13.5 8.5-5 5"></path><path d="m8.5 8.5 5 5"></path><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>', c),
+        chevrons: (c) => svg('<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>', c),
+        check: (c) => svg('<path d="M20 6 9 17l-5-5"></path>', c),
+      };
+
+      const initials = (name) => {
+        const w = name.split(/\s+/);
+        return (w.length > 1 ? w[0][0] + w[1][0] : name.slice(0, 2)).toUpperCase();
+      };
+      // As _ItemMedia renders it
+      const itemMedia = (kind, value, text, placement) => {
+        const attrs = `data-media="${kind}" data-placement="${placement}"`;
+        if (kind === "avatar") {
+          const size = placement === "card" || placement === "lookup-lg" ? "default" : "sm";
+          return `<span class="sa-avatar group/avatar sa-choice-media" ${attrs} data-slot="avatar" data-size="${size}">${
+            value ? `<img data-slot="avatar-image" src="${value}" alt="${text}" class="sa-avatar-image" />` : `<span class="sa-avatar-fallback" data-slot="avatar-fallback">${initials(text)}</span>`
+          }</span>`;
+        }
+        return `<span class="sa-choice-media" ${attrs}>${value}</span>`;
+      };
+
+      const kbd = (key) => `<kbd data-slot="kbd" class="sa-kbd">${key}</kbd>`;
+      const isMac = /Mac|iPhone|iPad/.test(navigator.userAgentData?.platform ?? navigator.platform);
+      const doneKey = isMac ? "⌘↵" : "Ctrl ↵";
+      const isDoneKey = (e) => e.key === "Enter" && (isMac ? e.metaKey : e.ctrlKey);
+      // Browsers keep Ctrl+N for a new window, so New is Alt+N; it matches the physical key, since ⌥N on a Mac types a dead key
+      const newKey = isMac ? "⌥N" : "Alt N";
+      const isNewKey = (e) => e.code === "KeyN" && e.altKey && !e.ctrlKey && !e.metaKey;
+
+      const button = (variant, size, body, attrs = "", cls = "") =>
+        `<button type="button" ${attrs} data-slot="button" class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}">${body}</button>`;
+      const checkbox = (checked) => `
+        <span class="sa-input-control-wrapper">
+          <input type="checkbox" ${checked ? "checked" : ""} tabindex="-1" aria-hidden="true" data-box data-slot="input" class="sa-checkbox peer" />
+          <span class="sa-checkbox-indicator">${icons.check("sa-checkbox-indicator-icon")}</span>
+        </span>`;
+
+      // ---------------------------------------------------------------- Sources
+      const sources = {
+        destinations: {
+          label: "Destinations", noun: "destinations", one: "destination",
+          items: airports, fields: ["city", "code", "country"],
+          key: (a) => a.code, title: (a) => a.city, desc: (a) => `${a.code} · ${a.country}`,
+          media: (a, placement) => itemMedia("code", a.code, a.city, placement),
+          skeleton: "size-7 rounded-md",
+        },
+        guides: {
+          label: "Guides", noun: "guides", one: "guide",
+          items: guides, fields: ["name", "desc"],
+          key: (g) => g.id, title: (g) => g.name, desc: (g) => g.desc,
+          media: (g, placement) => itemMedia("avatar", g.photo, g.name, placement),
+          skeleton: "size-8 rounded-full",
+        },
+      };
+      const find = (s, v) => s.items.find((x) => s.key(x) === v);
+
+      // ---------------------------------------------------------------- Switches
+      const switchDefs = [
+        { key: "display", label: "1 · Field display", options: { list: "List (Card layout)", chips: "Chips (Input layout)", summary: "Summary (Input layout)" } },
+        { key: "marker", label: "2 · Selected row", options: { check: "Trailing check (shipped)", checkbox: "Leading checkbox" } },
+        { key: "tray", label: "3 · Selection in the sheet", options: { count: "None (All | Selected only)", tray: "Chips under the search" } },
+        { key: "limit", label: "4 · Guides limit", options: { none: "None", three: "At most 3" } },
+        {
+          key: "create",
+          label: "6 · Create (guides)",
+          options: { field: "A · New in the field", empty: "B1 · No-results state", row: "B1 + B2 · Last row", footer: "B1 + B3 · Footer button" },
+          initial: "footer",
+        },
+        {
+          key: "footer",
+          label: "7 · Sheet footer",
+          options: { split: "New + Done, count under the search", nodone: "No Done", stacked: "Two rows", inline: "One row (before)" },
+          initial: "stacked",
+        },
+      ];
+      const state = Object.fromEntries(switchDefs.map((d) => [d.key, params.get(d.key) ?? d.initial ?? Object.keys(d.options)[0]]));
+
+      function renderSwitches() {
+        document.getElementById("switches").innerHTML = switchDefs
+          .map(
+            (d) => `
+            <div class="flex flex-wrap items-center gap-2 text-sm">
+              <span class="text-muted-foreground w-48 shrink-0">${d.label}</span>
+              ${Object.entries(d.options)
+                .map(([v, text]) => button(state[d.key] === v ? "default" : "outline", "xs", text, `data-switch="${d.key}" data-value="${v}"`))
+                .join("")}
+            </div>`,
+          )
+          .join("");
+      }
+
+      // ---------------------------------------------------------------- Field model
+      // A field owns its value; displays render it, and the sheet edits it directly
+      const fields = new Map();
+      let fieldSeq = 0;
+      function makeField({ source, selected = [], display = null, readonly = false, limitable = false, creatable = false, name, mount }) {
+        const f = { id: `f${++fieldSeq}`, source: sources[source], selected: [...selected], display, readonly, limitable, creatable, name, mount, expanded: false };
+        fields.set(f.id, f);
+        return f;
+      }
+      const maxOf = (f) => (f.limitable && state.limit === "three" ? 3 : null);
+      const atMax = (f) => maxOf(f) !== null && f.selected.length >= maxOf(f);
+      // Where the field offers New: A in the field, the B variants in the lookup sheet
+      const createIn = (f, ...variants) => f.creatable && !f.readonly && variants.includes(state.create);
+      const newLabel = (f) => `New ${f.source.one}`;
+      const fullTitle = (f) => (atMax(f) ? `title="Remove a ${f.source.one} to add another"` : "");
+
+      const changed = (f, how) => {
+        const log = document.getElementById("events");
+        const line = `${new Date().toLocaleTimeString()}  ${f.name ?? f.id}  change (${how}) → [${f.selected.join(", ")}]`;
+        log.textContent = log.textContent === "None yet." ? line : `${line}\n${log.textContent}`;
+      };
+      const refreshField = (f) => {
+        f.mount.innerHTML = renderField(f);
+        f.onRender?.(f);
+      };
+
+      // ---------------------------------------------------------------- Field displays
+      const openAttrs = (f) => `commandfor="ms-sheet" command="show-modal" data-open-field="${f.id}"`;
+      const describedBy = (f) => `${f.id}-error`;
+
+      // The shipped empty button (dashed input group); the Card layout's is h-12
+      const dashedGroup = (tall, cls, body) => `
+        <div class="sa-input-group group/input-group w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm ${tall ? "h-12" : ""} text-muted-foreground ${cls}" role="group" data-slot="input-group">${body}</div>`;
+      const dashedButtonClass =
+        "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors disabled:pointer-events-none disabled:opacity-50";
+      // A: the shipped New button beside Choose, kept while values are selected
+      const fieldNew = (f, tall) =>
+        createIn(f, "field")
+          ? dashedGroup(
+              tall,
+              "shrink-0",
+              `<button type="button" class="${dashedButtonClass}" data-slot="input-group-control" data-create="${f.id}" data-from="field" ${atMax(f) ? "disabled" : ""} ${fullTitle(f)}>
+                ${icons.plus("size-4 shrink-0")}<span class="truncate">${newLabel(f)}</span>
+              </button>`,
+            )
+          : "";
+      const emptyButton = (f, icon, text, tall) => `
+        <div class="flex gap-2" data-empty>
+          ${dashedGroup(
+            tall,
+            "flex-1",
+            `<button type="button" class="${dashedButtonClass}" data-slot="input-group-control" ${openAttrs(f)} aria-describedby="${describedBy(f)}">
+              ${icons[icon]("size-4 shrink-0")}<span class="truncate">${text}</span>
+            </button>`,
+          )}
+          ${fieldNew(f, tall)}
+        </div>`;
+      const none = `<div class="sa-input flex items-center"><span class="text-muted-foreground">None</span></div>`;
+      const removeLabel = (s, x) => `Remove ${s.title(x)}`;
+
+      const displays = {
+        // The Card layout per value: media, title, description and Remove, then a dashed Add
+        list: (f) => {
+          const s = f.source;
+          if (!f.selected.length) return f.readonly ? none : emptyButton(f, "search", `Choose ${s.noun}`, true);
+          const limit = 5;
+          const shown = f.expanded ? f.selected : f.selected.slice(0, limit);
+          const variant = f.readonly ? "muted" : "outline";
+          const rows = shown.map((v) => {
+            const x = find(s, v);
+            return `
+              <div data-slot="item" data-variant="${variant}" data-size="xs" class="sa-item group/item sa-item-size-xs sa-item-variant-${variant} flex-nowrap" role="listitem">
+                <div data-slot="item-media" data-variant="default" class="sa-item-media sa-item-media-variant-default">${s.media(x, "lookup-lg")}</div>
+                <div data-slot="item-content" class="sa-item-content min-w-0 gap-0">
+                  <div data-slot="item-title" class="sa-item-title w-full text-sm"><span class="truncate">${s.title(x)}</span></div>
+                  <p data-slot="item-description" class="sa-item-description truncate text-xs">${s.desc(x)}</p>
+                </div>
+                ${f.readonly ? "" : `<div data-slot="item-actions" class="sa-item-actions gap-0.5">${button("ghost", "icon-xs", `${icons.x()}<span class="sr-only">${removeLabel(s, x)}</span>`, `data-remove="${v}" data-field="${f.id}"`)}</div>`}
+              </div>`;
+          });
+          const more =
+            f.selected.length > limit
+              ? `<button type="button" data-expand="${f.id}" class="text-muted-foreground hover:text-foreground self-start text-xs underline-offset-4 hover:underline">${f.expanded ? "Show fewer" : `Show ${f.selected.length - limit} more`}</button>`
+              : "";
+          const add = f.readonly ? "" : emptyButton(f, "plus", `Add ${s.noun}`, false);
+          return `<div class="flex flex-col gap-1.5"><div class="flex flex-col gap-1.5" role="list" aria-labelledby="${f.id}-label">${rows.join("")}</div>${more}${add}</div>`;
+        },
+
+        // Wrapping chips in an input-height box, with Add at the end
+        chips: (f) => {
+          const s = f.source;
+          const chip = (v) => {
+            const x = find(s, v);
+            return `
+              <span data-slot="badge" class="sa-badge sa-badge-variant-secondary h-6 gap-1 pl-0.5 ${f.readonly ? "pr-2" : "pr-0.5"}">
+                ${s.media(x, "inline")}
+                <span>${s.title(x)}</span>
+                ${f.readonly ? "" : `<button type="button" data-remove="${v}" data-field="${f.id}" class="hover:bg-foreground/10 rounded-sm p-0.5"><span class="sr-only">${removeLabel(s, x)}</span>${icons.x("size-3")}</button>`}
+              </span>`;
+          };
+          if (f.readonly) return f.selected.length ? `<div class="flex flex-wrap gap-1">${f.selected.map(chip).join("")}</div>` : none;
+          // Empty, the box stays an input: a placeholder and the chevrons, like a select
+          if (!f.selected.length) {
+            return `
+              <div class="flex gap-2">
+                <div role="group" data-slot="input-group" class="sa-input-group group/input-group h-9 min-w-0 flex-1 items-stretch p-0">
+                  <button type="button" ${openAttrs(f)} aria-describedby="${describedBy(f)}" data-slot="input-group-control"
+                          class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
+                    <span class="truncate">Choose ${s.noun}…</span>${icons.chevrons("size-4 shrink-0 opacity-60")}
+                  </button>
+                </div>
+                ${fieldNew(f, false)}
+              </div>`;
+          }
+          const chipButton = "text-muted-foreground hover:text-foreground hover:bg-muted flex h-6 items-center gap-1 rounded-md px-1.5 text-xs disabled:pointer-events-none disabled:opacity-50";
+          return `
+            <div role="group" data-slot="input-group" aria-labelledby="${f.id}-label" class="sa-input-group group/input-group h-auto min-h-9 flex-wrap items-center gap-1 p-1">
+              ${f.selected.map(chip).join("")}
+              <button type="button" ${openAttrs(f)} class="${chipButton}">${icons.plus("size-3.5")}Add<span class="sr-only"> ${s.noun}</span></button>
+              ${
+                createIn(f, "field")
+                  ? `<button type="button" data-create="${f.id}" data-from="field" ${atMax(f) ? "disabled" : ""} ${fullTitle(f)} class="${chipButton}">${icons.plus("size-3.5")}New<span class="sr-only"> ${s.one}</span></button>`
+                  : ""
+              }
+            </div>`;
+        },
+
+        // The Input layout's button group: a preview, the names, a count, and Clear
+        summary: (f) => {
+          const s = f.source;
+          const items = f.selected.map((v) => find(s, v));
+          const text = items.length <= 2 ? items.map(s.title).join(", ") : `${items.slice(0, 2).map(s.title).join(", ")} and ${items.length - 2} more`;
+          // Read-only: truncated names hide the selection with nothing to open, so it shows as the List display
+          if (f.readonly) return displays.list(f);
+          if (!items.length) return emptyButton(f, "search", `Choose ${s.noun}`, false);
+          const preview =
+            s === sources.guides
+              ? `<span class="flex shrink-0 -space-x-1.5 *:ring-2 *:ring-background">${items.slice(0, 3).map((x) => s.media(x, "lookup")).join("")}</span>`
+              : `<span class="flex shrink-0 gap-1">${items.slice(0, 3).map((x) => s.media(x, "inline")).join("")}</span>`;
+          return `
+            <div role="group" data-slot="button-group" data-orientation="horizontal" aria-labelledby="${f.id}-label" class="sa-button-group sa-button-group-orientation-horizontal w-full">
+              <button type="button" ${openAttrs(f)} data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default min-w-0 flex-1 justify-start pl-1.5 font-normal">
+                <span class="sr-only">Change ${s.label}, </span>
+                ${preview}
+                <span class="min-w-0 truncate">${text}</span>
+                <span class="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">${items.length}</span>
+                ${icons.chevrons("text-muted-foreground size-4 shrink-0")}
+              </button>
+              ${createIn(f, "field") ? button("outline", "icon", `${icons.plus()}<span class="sr-only">${newLabel(f)}</span>`, `data-create="${f.id}" data-from="field" ${atMax(f) ? "disabled" : ""} ${fullTitle(f) || `title="${newLabel(f)}"`}`) : ""}
+              ${button("outline", "icon", `${icons.x()}<span class="sr-only">Clear ${s.label}</span>`, `data-clear="${f.id}"`)}
+            </div>`;
+        },
+      };
+
+      function renderField(f) {
+        const s = f.source;
+        const max = maxOf(f);
+        const display = f.display ?? state.display;
+        return `
+          <div class="sa-field group/field sa-field-orientation-vertical min-w-0 [&>*]:w-full [&>.sr-only]:w-auto" data-orientation="vertical" data-slot="field">
+            <label id="${f.id}-label" data-slot="field-label" class="sa-label sa-field-label group/field-label peer/field-label">${s.label}</label>
+            ${f.selected.map((v) => `<input type="hidden" name="${f.name ?? f.id}" value="${v}" />`).join("")}
+            ${displays[display](f)}
+            <div id="${describedBy(f)}" class="sa-field-error" data-slot="field-error" role="alert"></div>
+            ${max && !f.readonly ? `<p data-slot="field-description" class="sa-field-description">Up to ${max} ${s.noun}.</p>` : ""}
+          </div>`;
+      }
+
+      // ---------------------------------------------------------------- The sheet
+      const pageSize = 10;
+      let sheet = null; // { f, uid, term, page, reqId, openedWith }
+
+      const indicator = icons.check("sa-command-item-indicator");
+      // aria-selected belongs to sel-command (the active row), so the prototype marks selection with aria-checked
+      function rowHtml(f, x) {
+        const s = f.source;
+        const v = s.key(x);
+        const on = f.selected.includes(v);
+        const blocked = !on && atMax(f);
+        return `
+          <div data-lookup="item" role="option" aria-selected="false" aria-checked="${on}" tabindex="-1" data-slot="command-item" data-value="${v}"
+               ${on ? 'data-checked="true"' : ""} ${blocked ? 'data-disabled="true" aria-disabled="true"' : ""} class="sa-command-item group/command-item">
+            ${state.marker === "checkbox" ? `<span class="pointer-events-none flex">${checkbox(on)}</span>` : ""}
+            ${s.media(x, "lookup-lg")}
+            <div class="flex min-w-0 flex-col">
+              <span class="truncate" data-lookup="item-title">${s.title(x)}</span>
+              <span class="text-muted-foreground truncate text-xs" data-lookup="item-description">${s.desc(x)}</span>
+            </div>
+            ${state.marker === "check" ? indicator : ""}
+          </div>`;
+      }
+      const moreHtml = `<div class="sa-command-item group/command-item text-muted-foreground justify-center" data-lookup="more" role="option" aria-selected="false" tabindex="-1" data-slot="command-item">Load more</div>`;
+      const loadingRows = (s) =>
+        `<div class="sa-command-item pointer-events-none" aria-hidden="true">
+          <div class="sa-skeleton shrink-0 ${s.skeleton}" data-slot="skeleton"></div>
+          <div class="flex flex-1 flex-col gap-1.5"><div class="sa-skeleton h-3.5 w-2/5" data-slot="skeleton"></div><div class="sa-skeleton h-3 w-3/5" data-slot="skeleton"></div></div>
+        </div>`.repeat(4);
+      const sheetNew = (f, size, cls = "", attrs = "") =>
+        button("outline", size, `${icons.plus()}${newLabel(f)}`, `data-create="${f.id}" data-from="sheet" ${atMax(f) ? "disabled" : ""} ${fullTitle(f)} ${attrs}`, cls);
+      // B1: New in the empty state, where the need is strongest
+      const noResults = (f, term) => `
+        <div class="sa-empty border-0 p-4" data-lookup="message" data-slot="empty">
+          <div data-slot="empty-header" class="sa-empty-header">
+            <div data-slot="empty-icon" data-variant="icon" class="sa-empty-media sa-empty-media-icon">${icons.searchX()}</div>
+            <div data-slot="empty-title" class="sa-empty-title">No results found</div>
+            ${term ? `<div data-slot="empty-description" class="sa-empty-description">Nothing matches “${term}”.</div>` : ""}
+          </div>
+          ${createIn(f, "empty", "row", "footer") ? `<div data-slot="empty-content" class="sa-empty-content">${sheetNew(f, "sm")}</div>` : ""}
+        </div>`;
+      // B2: a command item after the results, so the arrow keys and Enter reach it like Load more
+      const createRow = (f) => `
+        <div class="sa-command-item group/command-item text-muted-foreground" data-lookup="create" role="option" aria-selected="false" tabindex="-1" data-slot="command-item"
+             ${atMax(f) ? 'data-disabled="true" aria-disabled="true"' : ""}>
+          <span class="flex size-8 shrink-0 items-center justify-center rounded-full border border-dashed">${icons.plus("size-4")}</span>
+          <span>${newLabel(f)}…</span>
+        </div>`;
+
+      const trayHtml = (f) => {
+        const s = f.source;
+        if (!f.selected.length) return `<p class="text-muted-foreground text-xs">Nothing selected yet.</p>`;
+        return f.selected
+          .map((v) => {
+            const x = find(s, v);
+            return `<span data-slot="badge" class="sa-badge sa-badge-variant-outline h-6 gap-1 pl-0.5 pr-0.5">${s.media(x, "inline")}${s.title(x)}<button type="button" data-untoggle="${v}" class="hover:bg-foreground/10 rounded-sm p-0.5"><span class="sr-only">${removeLabel(s, x)}</span>${icons.x("size-3")}</button></span>`;
+          })
+          .join("");
+      };
+
+      // ---------------------------------------------------------------- Sheet footer layouts
+      // The pieces: New (when the create switch puts it in the footer), the count with Clear, the key hints, and Done
+      // All | Selected under the search: the Selected tab carries the count, and its view has Clear all
+      const countLabel = (f) => (maxOf(f) ? `${f.selected.length}/${maxOf(f)}` : `${f.selected.length}`);
+      function viewHtml(f) {
+        const seg = (value, text, on, disabled = false) => `
+          <label for="${sheet.uid}-view-${value}" data-slot="segmented-control-item" class="sa-segmented-control-item">
+            <input type="radio" name="${sheet.uid}-view" value="${value}" id="${sheet.uid}-view-${value}" data-view data-slot="segmented-control-input"
+                   class="sa-segmented-control-input" ${on ? "checked" : ""} ${disabled ? "disabled" : ""} />${text}
+          </label>`;
+        return `
+          <div class="mt-3 flex items-center justify-between gap-3">
+            <div role="radiogroup" aria-label="Show" data-slot="segmented-control" class="sa-segmented-control">
+              ${seg("all", "All", !sheet.only)}
+              ${seg("selected", `Selected <span data-slot="badge" data-count class="sa-badge sa-badge-variant-secondary h-5 min-w-5 px-1.5 tabular-nums">${countLabel(f)}</span>`, !!sheet.only, !f.selected.length)}
+            </div>
+            ${button("ghost", "sm", "Clear all", `data-clear-all ${sheet.only ? "" : "hidden"} ${f.selected.length ? "" : "disabled"}`)}
+          </div>`;
+      }
+      const hintsHtml = (closeKey, closeText, f = null) =>
+        `<span class="hidden items-center gap-1 whitespace-nowrap sm:flex">${kbd("↵")} toggle <span class="ml-2">${kbd(closeKey)}</span> ${closeText}${
+          f && createIn(f, "footer") ? `<span class="ml-2">${kbd(newKey)}</span> new` : ""
+        }</span>`;
+      const footerNew = (f, cls = "") => (createIn(f, "footer") ? sheetNew(f, "sm", cls, 'aria-keyshortcuts="Alt+N"') : "");
+      const doneButton = (cls = "") => button("default", "sm", "Done", "data-done", cls);
+
+      // split and nodone move the hints to a line under the search, so the footer only holds actions
+      function statusHtml(f) {
+        if (!["split", "nodone"].includes(state.footer)) return "";
+        const hints = state.footer === "nodone" ? hintsHtml("Esc", "close") : hintsHtml(doneKey, "done");
+        return `<div class="text-muted-foreground mt-2 hidden items-center gap-3 text-xs sm:flex">${hints}</div>`;
+      }
+
+      function footerHtml(f) {
+        const footer = (body, cls = "flex-row items-center justify-between") => `<div data-slot="sheet-footer" class="sa-sheet-footer border-t ${cls}">${body}</div>`;
+        switch (state.footer) {
+          case "split":
+            // New at the start, Done at the end; the space between keeps them apart
+            return footer(`${footerNew(f) || "<span></span>"}${doneButton()}`);
+          case "nodone":
+            // Esc, the backdrop and the close button close; the footer exists only for New
+            return createIn(f, "footer") ? footer(footerNew(f, "w-full sm:w-auto")) : "";
+          case "stacked":
+            return footer(
+              `<div class="text-muted-foreground hidden items-center gap-3 text-xs sm:flex">${hintsHtml(doneKey, "done", f)}</div>
+               <div class="flex gap-2">${footerNew(f, "flex-1")}${doneButton("flex-1")}</div>`,
+              "flex-col gap-3",
+            );
+          default:
+            // The earlier single row; with New, the hints give up their room
+            return footer(`
+              <span>${footerNew(f)}</span>
+              <span class="text-muted-foreground flex items-center gap-3 text-xs">${createIn(f, "footer") ? "" : hintsHtml(doneKey, "done")}${doneButton()}</span>`);
+        }
+      }
+
+      function sheetHtml(f, uid) {
+        const s = f.source;
+        const max = maxOf(f);
+        return `
+          <div class="contents" data-picker>
+            <div data-slot="sheet-header" class="sa-sheet-header">
+              <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${s.label}</h2>
+              ${max ? `<p data-slot="sheet-description" class="sa-sheet-description" data-limit-note>Choose up to ${max}.</p>` : ""}
+            </div>
+            <sel-command id="${uid}" class="sa-command min-h-0 flex-1 bg-transparent px-6 pb-3" data-slot="command" data-filter="none">
+              <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+                <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+                  <input name="term" autofocus="" aria-label="Search" data-lookup="search" type="text" id="${uid}-input" aria-controls="${uid}-list" role="combobox"
+                         aria-autocomplete="list" aria-expanded="true" autocomplete="off" autocorrect="off" spellcheck="false" data-slot="command-input" class="sa-command-input" />
+                  <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icons.search("sa-command-input-icon")}</div>
+                </div>
+              </div>
+              ${viewHtml(f)}
+              ${statusHtml(f)}
+              ${state.tray === "tray" ? `<div data-tray class="mt-3 flex max-h-[4.5rem] flex-wrap gap-1 overflow-y-auto">${trayHtml(f)}</div>` : ""}
+              <div class="sa-command-list mt-3 max-h-none flex-1" aria-label="${s.label}" aria-multiselectable="true" id="${uid}-list" role="listbox" tabindex="-1" data-slot="command-list">
+                <div data-lookup="results">${loadingRows(s)}</div>
+              </div>
+            </sel-command>
+${footerHtml(f)}
+          </div>`;
+      }
+
+      const sheetRoot = () => document.getElementById("ms-sheet-content");
+      const dialog = document.getElementById("ms-sheet");
+
+      // Stand-in for the htmx results swap: the server filters and pages the search
+      // only: search within these values (the Selected view)
+      function fakeFetch(s, term, page, { only = null } = {}) {
+        const t = term.trim().toLowerCase();
+        const pool = only ? only.map((v) => find(s, v)) : s.items;
+        const hits = t ? pool.filter((x) => s.fields.some((k) => String(x[k]).toLowerCase().includes(t))) : pool;
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ items: hits.slice(page * pageSize, (page + 1) * pageSize), hasMore: hits.length > (page + 1) * pageSize, total: hits.length }), 250),
+        );
+      }
+      async function loadResults(append = false) {
+        const sh = sheet;
+        const f = sh.f;
+        const results = sheetRoot().querySelector("[data-lookup='results']");
+        const id = ++sh.reqId;
+        sh.page = append ? sh.page + 1 : 0;
+        const res = await fakeFetch(f.source, sh.term, sh.page, { only: sh.only ? f.selected : null });
+        if (sheet !== sh || id !== sh.reqId) return;
+        const rows = (items) => items.map((x) => rowHtml(f, x)).join("");
+        const html = rows(res.items) + (res.hasMore ? moreHtml : "") + (createIn(f, "row") && !sh.only ? createRow(f) : "");
+        if (append) {
+          results.querySelector("[data-lookup='more']")?.remove();
+          results.querySelector("[data-lookup='create']")?.remove();
+          results.insertAdjacentHTML("beforeend", html);
+        } else if (sh.only) {
+          results.innerHTML = res.total ? html : noSelected(f, sh.term);
+        } else {
+          results.innerHTML = res.total ? html : noResults(f, sh.term);
+        }
+      }
+
+      const noSelected = (f, term) => `
+        <div class="sa-empty border-0 p-4" data-lookup="message" data-slot="empty">
+          <div data-slot="empty-header" class="sa-empty-header">
+            <div data-slot="empty-title" class="sa-empty-title">${term.trim() ? `No selected ${f.source.noun} match “${term}”` : `No ${f.source.noun} selected`}</div>
+          </div>
+        </div>`;
+
+      // The Selected view lists the selection as it is: unchecking a row removes it
+      function setView(view) {
+        const f = sheet.f;
+        sheet.only = view === "selected";
+        const root = sheetRoot();
+        root.querySelector("[data-lookup='search']").placeholder = sheet.only ? `Search selected ${f.source.noun}` : "";
+        root.querySelector("[data-clear-all]").hidden = !sheet.only;
+        syncSheet();
+        loadResults();
+      }
+
+      // Updates the rows, the count and the tray in place, so the active row and scroll position stay
+      function syncSheet() {
+        const f = sheet.f;
+        const root = sheetRoot();
+        const blocked = atMax(f);
+        root.querySelectorAll("[data-lookup='item']").forEach((el) => {
+          const on = f.selected.includes(el.dataset.value);
+          if (on) el.setAttribute("data-checked", "true");
+          else el.removeAttribute("data-checked");
+          el.setAttribute("aria-checked", on);
+          const off = !on && blocked;
+          if (off) el.setAttribute("data-disabled", "true"), el.setAttribute("aria-disabled", "true");
+          else el.removeAttribute("data-disabled"), el.removeAttribute("aria-disabled");
+          const box = el.querySelector("[data-box]");
+          if (box) box.checked = on;
+        });
+        root.querySelectorAll("[data-count]").forEach((el) => (el.textContent = countLabel(f)));
+        // Selected stays reachable while its view is showing, even once everything is unchecked
+        const selectedTab = root.querySelector("[data-view][value='selected']");
+        if (selectedTab) selectedTab.disabled = !f.selected.length && !sheet.only;
+        const clearAll = root.querySelector("[data-clear-all]");
+        if (clearAll) clearAll.disabled = !f.selected.length;
+        const tray = root.querySelector("[data-tray]");
+        if (tray) tray.innerHTML = trayHtml(f);
+        root.querySelectorAll("[data-create]").forEach((el) => {
+          el.disabled = blocked;
+          if (blocked) el.title = `Remove a ${f.source.one} to add another`;
+          else el.removeAttribute("title");
+        });
+        const row = root.querySelector("[data-lookup='create']");
+        if (row) {
+          if (blocked) row.setAttribute("data-disabled", "true"), row.setAttribute("aria-disabled", "true");
+          else row.removeAttribute("data-disabled"), row.removeAttribute("aria-disabled");
+        }
+        const note = root.querySelector("[data-limit-note]");
+        if (note) note.textContent = blocked ? `Choose up to ${maxOf(f)}. Remove one to choose another.` : `Choose up to ${maxOf(f)}.`;
+        refreshField(f);
+      }
+
+      function toggle(v) {
+        const f = sheet.f;
+        const i = f.selected.indexOf(v);
+        if (i >= 0) f.selected.splice(i, 1);
+        else if (!atMax(f)) f.selected.push(v);
+        else return;
+        if (i >= 0 && sheet.only) dropRows([v]);
+        syncSheet();
+      }
+
+      // In the Selected view, unselected rows leave the list
+      function dropRows(values) {
+        const results = sheetRoot().querySelector("[data-lookup='results']");
+        values.forEach((v) => results.querySelector(`[data-lookup='item'][data-value="${v}"]`)?.remove());
+        if (!results.querySelector("[data-lookup='item']")) results.innerHTML = noSelected(sheet.f, sheet.term);
+      }
+
+      function openSheet(f) {
+        sheet = { f, uid: `cmd${f.id}${Date.now()}`, term: "", page: 0, reqId: 0, openedWith: f.selected.join("\n") };
+        sheetRoot().innerHTML = sheetHtml(f, sheet.uid);
+        loadResults();
+      }
+
+      // ---------------------------------------------------------------- Create
+      // A stand-in for the resource's create form, laid out as _CreateSheet renders it: A loads it into the shared sheet, the B variants into the
+      // nested sheet over the lookup sheet
+      const nested = document.getElementById("ms-nested");
+      let creating = null; // { f, from, dialog, root }
+
+      function createHtml(f, dlg) {
+        const field = (id, label, required, hint = "") => `
+          <div data-slot="field" data-orientation="vertical" class="sa-field group/field sa-field-orientation-vertical">
+            <label data-slot="field-label" class="sa-label sa-field-label" for="${id}">${label}</label>
+            <input id="${id}" name="${id}" data-slot="input" class="sa-input" ${required ? "required" : ""} autocomplete="off" aria-describedby="${id}-error" />
+            ${hint ? `<p data-slot="field-description" class="sa-field-description">${hint}</p>` : ""}
+            <div id="${id}-error" data-slot="field-error" class="sa-field-error" role="alert"></div>
+          </div>`;
+        return `
+          <div data-slot="sheet-header" class="sa-sheet-header">
+            <h2 data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${newLabel(f)}</h2>
+          </div>
+          <form data-create-form novalidate class="flex min-h-0 flex-1 flex-col">
+            <div class="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
+              <div data-slot="field-group" class="sa-field-group">
+                ${field("create-name", "Name", true)}
+                ${field("create-base", "Home base and languages", false, "For example: Porto · Portuguese, English")}
+              </div>
+            </div>
+            <div data-slot="sheet-footer" class="sa-sheet-footer">
+              <button type="submit" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Create</button>
+              ${button("outline", "default", "Cancel", `commandfor="${dlg.id}" command="close"`)}
+            </div>
+          </form>`;
+      }
+
+      function openCreate(f, from) {
+        if (atMax(f)) return;
+        const dlg = from === "sheet" ? nested : dialog;
+        const root = dlg.querySelector("[data-sheet='content']");
+        creating = { f, from, dialog: dlg, root };
+        root.innerHTML = createHtml(f, dlg);
+        if (!dlg.open) dlg.showModal();
+        root.querySelector("#create-name").focus();
+      }
+
+      function submitCreate(form) {
+        const { f, from, dialog: dlg } = creating;
+        const name = form.querySelector("#create-name");
+        const fieldEl = name.closest("[data-slot='field']");
+        if (!name.value.trim()) {
+          fieldEl.setAttribute("data-invalid", "true");
+          name.setAttribute("aria-invalid", "true");
+          // MVC's validation class shows the error
+          const error = form.querySelector("#create-name-error");
+          error.textContent = "Enter a name.";
+          error.classList.add("field-validation-error");
+          name.focus();
+          return;
+        }
+        // The server creates the item; the field then shows it the way it shows any other value
+        const title = name.value.trim();
+        const id = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now().toString(36)}`;
+        const x = { id, name: title, desc: form.querySelector("#create-base").value.trim() || "New guide", photo: null };
+        guides.unshift(x);
+        creating = null;
+        dlg.close();
+
+        if (from === "field") {
+          f.selected.push(id);
+          refreshField(f);
+          changed(f, "created in the field");
+          f.mount.querySelector("[data-open-field]")?.focus();
+          return;
+        }
+
+        // Back in the lookup sheet: the new item shows checked at the top of the results, and the search stays as it was
+        toggle(id);
+        const results = sheetRoot().querySelector("[data-lookup='results']");
+        results.querySelector("[data-lookup='message']")?.remove();
+        results.insertAdjacentHTML("afterbegin", rowHtml(f, x));
+        if (createIn(f, "row") && !results.querySelector("[data-lookup='create']")) results.insertAdjacentHTML("beforeend", createRow(f));
+        syncSheet();
+        const search = sheetRoot().querySelector("[data-lookup='search']");
+        search?.focus();
+        search?.select();
+      }
+
+      document.addEventListener("submit", (e) => {
+        if (!e.target.matches("[data-create-form]") || !creating) return;
+        e.preventDefault();
+        submitCreate(e.target);
+      });
+      document.addEventListener("input", (e) => {
+        if (e.target.id !== "create-name") return;
+        e.target.closest("[data-slot='field']").removeAttribute("data-invalid");
+        e.target.removeAttribute("aria-invalid");
+        document.getElementById("create-name-error").classList.remove("field-validation-error");
+      });
+      // Cancel, Esc or the backdrop: the nested sheet returns focus to New, which stays in the lookup sheet
+      nested.addEventListener("close", () => {
+        if (creating?.dialog === nested) creating = null;
+        document.getElementById("ms-nested-content").innerHTML = "";
+      });
+
+      // Closing fires one change, if the value differs from when the sheet opened, and returns focus to the field
+      dialog.addEventListener("close", () => {
+        if (creating?.dialog === dialog) {
+          creating.f.mount.querySelector("[data-create]")?.focus();
+          creating = null;
+        }
+        if (!sheet) {
+          sheetRoot().innerHTML = "";
+          return;
+        }
+        const f = sheet.f;
+        if (f.selected.join("\n") !== sheet.openedWith) changed(f, "sheet closed");
+        sheet = null;
+        sheetRoot().innerHTML = "";
+        f.mount.querySelector("[data-open-field]")?.focus();
+      });
+
+      // ---------------------------------------------------------------- Events
+      let enterToggle = false;
+
+      sheetRoot().addEventListener("itemselect", (e) => {
+        if (!sheet) return;
+        const item = e.target.closest("[data-slot='command-item']");
+        if (item?.matches("[data-lookup='more']")) {
+          loadResults(true);
+          return;
+        }
+        if (item?.matches("[data-lookup='create']")) {
+          if (item.dataset.disabled !== "true") openCreate(sheet.f, "sheet");
+          return;
+        }
+        if (!item || item.dataset.disabled === "true") return;
+        toggle(item.dataset.value);
+        // Enter: the next search replaces the last one
+        if (enterToggle) sheetRoot().querySelector("[data-lookup='search']")?.select();
+      });
+
+      sheetRoot().addEventListener("change", (e) => {
+        if (sheet && e.target.matches("[data-view]")) setView(e.target.value);
+      });
+
+      sheetRoot().addEventListener("input", (e) => {
+        if (!sheet || !e.target.matches("[data-lookup='search']")) return;
+        sheet.term = e.target.value;
+        clearTimeout(sheet.debounce);
+        sheet.debounce = setTimeout(() => loadResults(), 300);
+      });
+
+      sheetRoot().addEventListener("click", (e) => {
+        if (!sheet) return;
+        const untoggle = e.target.closest("[data-untoggle]");
+        if (untoggle) toggle(untoggle.dataset.untoggle);
+        if (e.target.closest("[data-clear-all]")) {
+          const cleared = sheet.f.selected.splice(0);
+          if (sheet.only) dropRows(cleared);
+          syncSheet();
+        }
+        if (e.target.closest("[data-done]")) dialog.close();
+      });
+
+      // Ctrl or ⌘+Enter closes from anywhere in the sheet; a plain Enter marks the toggle as keyboard-made
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          // The create form handles its own keys
+          if (!sheet || !dialog.open || nested.open) return;
+          if (isDoneKey(e)) {
+            e.preventDefault();
+            e.stopPropagation();
+            dialog.close();
+          } else if (isNewKey(e) && createIn(sheet.f, "footer")) {
+            // At the limit New is disabled, so the key does nothing
+            e.preventDefault();
+            e.stopPropagation();
+            openCreate(sheet.f, "sheet");
+          } else if (e.key === "Enter") {
+            enterToggle = true;
+            setTimeout(() => (enterToggle = false));
+          }
+        },
+        true,
+      );
+
+      document.addEventListener("click", (e) => {
+        const open = e.target.closest("[data-open-field]");
+        if (open) return openSheet(fields.get(open.dataset.openField));
+        const create = e.target.closest("[data-create]");
+        if (create) return openCreate(fields.get(create.dataset.create), create.dataset.from);
+        const remove = e.target.closest("[data-remove]");
+        if (remove) {
+          const f = fields.get(remove.dataset.field);
+          f.selected = f.selected.filter((v) => v !== remove.dataset.remove);
+          refreshField(f);
+          changed(f, "removed in the field");
+          // Keep focus in the field: the next Remove, else the Add or Choose button
+          (f.mount.querySelector("[data-remove]") ?? f.mount.querySelector("[data-open-field]"))?.focus();
+          return;
+        }
+        const clear = e.target.closest("[data-clear]");
+        if (clear) {
+          const f = fields.get(clear.dataset.clear);
+          f.selected = [];
+          refreshField(f);
+          changed(f, "cleared in the field");
+          f.mount.querySelector("[data-open-field]")?.focus();
+          return;
+        }
+        const expand = e.target.closest("[data-expand]");
+        if (expand) {
+          const f = fields.get(expand.dataset.expand);
+          f.expanded = !f.expanded;
+          refreshField(f);
+          return;
+        }
+        const sw = e.target.closest("[data-switch]");
+        if (sw) {
+          state[sw.dataset.switch] = sw.dataset.value;
+          const url = new URL(location.href);
+          url.searchParams.set(sw.dataset.switch, sw.dataset.value);
+          history.replaceState(null, "", url);
+          renderSwitches();
+          fields.forEach(refreshField);
+          syncPhone();
+        }
+      });
+
+      // ---------------------------------------------------------------- Mount
+      const posted = () => {
+        const data = new FormData(document.getElementById("live-form"));
+        document.getElementById("posted").textContent = [...data.entries()].map(([k, v]) => `${k}=${v}`).join("\n");
+      };
+      for (const [source, selected, limitable] of [
+        ["destinations", ["ATH", "BCN", "LIS"], false],
+        ["guides", ["amara", "dana"], true],
+      ]) {
+        const f = makeField({ source, selected, limitable, creatable: source === "guides", name: sources[source].label, mount: document.getElementById(`live-${source}`) });
+        f.onRender = posted;
+        refreshField(f);
+      }
+
+      if (!phone) {
+        const few = ["amara", "bruno", "elif"];
+        const many = guides.slice(0, 12).map((g) => g.id);
+        document.getElementById("displays").innerHTML = Object.keys(displays)
+          .map(
+            (d) => `
+            <div class="space-y-3">
+              <h3 class="font-medium">${switchDefs[0].options[d]}</h3>
+              <div class="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-4" data-row="${d}">
+                ${["Empty", "A few", "Many (12)", "Read-only"].map((c) => `<div class="space-y-2"><p class="text-muted-foreground text-xs">${c}</p><div data-cell></div></div>`).join("")}
+              </div>
+            </div>`,
+          )
+          .join("");
+        for (const d of Object.keys(displays)) {
+          const cells = document.querySelectorAll(`[data-row="${d}"] [data-cell]`);
+          [[], few, many, few].forEach((selected, i) => refreshField(makeField({ source: "guides", selected, display: d, readonly: i === 3, mount: cells[i] })));
+        }
+        renderSwitches();
+        controlBar();
+      }
+
+      function syncPhone() {
+        if (phone) return;
+        const url = new URL(location.href);
+        url.searchParams.set("phone", "");
+        document.getElementById("phone").src = url;
+      }
+      syncPhone();
+    </script>
+  </body>
+</html>
