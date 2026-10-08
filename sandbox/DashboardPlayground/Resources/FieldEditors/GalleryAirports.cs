@@ -83,8 +83,13 @@ public sealed class GalleryAirportStore
 public sealed class GalleryAirportLookupSource(GalleryAirportStore store)
     : ILookupSource<GalleryAirport, string>
 {
-    public Task<GalleryAirport?> FindAsync(string value, CancellationToken cancellationToken) =>
-        Task.FromResult(store.ToArray().FirstOrDefault(airport => airport.Code == value));
+    public Task<IReadOnlyCollection<GalleryAirport>> FindAsync(
+        IReadOnlyCollection<string> values,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult<IReadOnlyCollection<GalleryAirport>>(
+            store.ToArray().Where(airport => values.Contains(airport.Code)).ToArray()
+        );
 
     public Task<LookupPage<GalleryAirport>> SearchAsync(
         LookupQuery query,

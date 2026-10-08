@@ -37,8 +37,13 @@ public sealed class CategoryStore
 
 public sealed class CategoryLookupSource(CategoryStore store) : ILookupSource<Category, int>
 {
-    public Task<Category?> FindAsync(int value, CancellationToken cancellationToken) =>
-        Task.FromResult(store.Categories.FirstOrDefault(category => category.Id == value));
+    public Task<IReadOnlyCollection<Category>> FindAsync(
+        IReadOnlyCollection<int> values,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult<IReadOnlyCollection<Category>>(
+            store.Categories.Where(category => values.Contains(category.Id)).ToArray()
+        );
 
     public Task<LookupPage<Category>> SearchAsync(
         LookupQuery query,

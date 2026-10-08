@@ -25,10 +25,11 @@ public abstract class LookupItems
     public abstract Type? MediaType { get; }
 
     /// <summary>
-    ///     Returns the selected item for the field's current value, with the value formatted in the current culture, or
-    ///     null when nothing is selected.
+    ///     Returns the selected items for the field's current value, which is one value or a collection of values, in
+    ///     the order of the values and with each value formatted in the current culture. The list is empty when nothing
+    ///     is selected.
     /// </summary>
-    public abstract Task<ChoiceItem?> FindAsync(
+    public abstract Task<IReadOnlyList<ChoiceItem>> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
@@ -59,33 +60,36 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 
     public override Type? MediaType => mediaType;
 
-    public override async Task<ChoiceItem?> FindAsync(
+    public override async Task<IReadOnlyList<ChoiceItem>> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
     )
     {
-        switch (context.Value)
+        var values = ReadValues(context);
+        if (values.Count == 0)
         {
-            case null:
-                return null;
-            case TValue current:
-                var entity = await services
-                    .GetRequiredService<TSource>()
-                    .FindAsync(current, cancellationToken);
+            return [];
+        }
 
-                // A value the source no longer has is still displayed, so the selection stays visible
-                return entity is null
-                    ? new ChoiceItem(
+        var entities = await services
+            .GetRequiredService<TSource>()
+            .FindAsync(values, cancellationToken);
+
+        // A value the source no longer has is still displayed, so the selection stays visible
+        return values
+            .Select(current =>
+                entities.FirstOrDefault(entity =>
+                    EqualityComparer<TValue>.Default.Equals(value(entity), current)
+                )
+                    is { } entity
+                    ? CreateItem(entity)
+                    : new ChoiceItem(
                         FormatValue(current),
                         Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
                     )
-                    : CreateItem(entity);
-            default:
-                throw new InvalidOperationException(
-                    $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
-                );
-        }
+            )
+            .ToArray();
     }
 
     public override async Task<LookupResults> SearchAsync(
@@ -100,6 +104,20 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 
         return new LookupResults(page.Items.Select(CreateItem).ToArray(), page.HasMore);
     }
+
+    private static IReadOnlyList<TValue> ReadValues(FieldEditorContext context) =>
+        context.Value switch
+        {
+            null => [],
+            TValue current => [current],
+            IEnumerable<TValue> values => values
+                .Where(current => current is not null)
+                .Distinct()
+                .ToArray(),
+            _ => throw new InvalidOperationException(
+                $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+            ),
+        };
 
     // Selected values are posted with the form, which binds them in the current culture
     private static string FormatValue(TValue current) =>

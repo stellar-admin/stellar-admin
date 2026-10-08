@@ -18,6 +18,11 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         nameof(string.Contains),
         [typeof(string)]
     )!;
+    private static readonly MethodInfo ValueContainsMethod = new Func<
+        IEnumerable<TValue>,
+        TValue,
+        bool
+    >(Enumerable.Contains).Method;
     private static readonly MethodInfo ToLowerMethod = typeof(string).GetMethod(
         nameof(string.ToLower),
         Type.EmptyTypes
@@ -46,53 +51,59 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
 
     public override Type? MediaType => _options.Media?.Type;
 
-    public override async Task<ChoiceItem?> FindAsync(
+    public override async Task<IReadOnlyList<ChoiceItem>> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
     )
     {
-        switch (context.Value)
+        var values = ReadValues(context);
+        if (values.Count == 0)
         {
-            case null:
-                return null;
-            case TValue current:
-                var db = services.GetRequiredService<TContext>();
+            return [];
+        }
 
-                // An edit page loads the reference with the entity; a changed selection no longer matches it
-                if (
-                    db.Model.FindEntityType(context.Model.GetType()) is { } model
-                    && FindNavigation(model, context.FieldName)
-                        ?.PropertyInfo?.GetValue(context.Model)
-                        is TEntity reference
-                    && EqualityComparer<TValue>.Default.Equals(_value(reference), current)
-                )
+        var db = services.GetRequiredService<TContext>();
+
+        // An edit page loads the reference with the entity; a changed selection no longer matches it
+        if (
+            values is [var current]
+            && db.Model.FindEntityType(context.Model.GetType()) is { } model
+            && FindNavigation(model, context.FieldName)?.PropertyInfo?.GetValue(context.Model)
+                is TEntity reference
+            && EqualityComparer<TValue>.Default.Equals(_value(reference), current)
+        )
+        {
+            return
+            [
+                new ChoiceItem(FormatValue(current), _title(reference))
                 {
-                    return new ChoiceItem(FormatValue(current), _title(reference))
-                    {
-                        Description = _description?.Invoke(reference),
-                        Media = CreateMedia(_media?.Invoke(reference)),
-                    };
-                }
+                    Description = _description?.Invoke(reference),
+                    Media = CreateMedia(_media?.Invoke(reference)),
+                },
+            ];
+        }
 
-                var row = await db.Set<TEntity>()
-                    .AsNoTracking()
-                    .Where(ValueEquals(current))
-                    .Select(_projection)
-                    .FirstOrDefaultAsync(cancellationToken);
+        var rows = await db.Set<TEntity>()
+            .AsNoTracking()
+            .Where(ValueIn(values))
+            .Select(_projection)
+            .ToListAsync(cancellationToken);
 
-                // A value the entity set no longer has is still displayed, so the selection stays visible
-                return row is null
-                    ? new ChoiceItem(
+        // A value the entity set no longer has is still displayed, so the selection stays visible
+        return values
+            .Select(current =>
+                rows.FirstOrDefault(row =>
+                    EqualityComparer<TValue>.Default.Equals(row.Value, current)
+                )
+                    is { } row
+                    ? CreateItem(row)
+                    : new ChoiceItem(
                         FormatValue(current),
                         Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
                     )
-                    : CreateItem(row);
-            default:
-                throw new InvalidOperationException(
-                    $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
-                );
-        }
+            )
+            .ToArray();
     }
 
     public INavigation? FindNavigation(IEntityType model, string fieldName)
@@ -182,6 +193,20 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         ParameterExpression entity
     ) => selector is null ? Expression.Constant(null, typeof(string)) : Rebind(selector, entity);
 
+    private static IReadOnlyList<TValue> ReadValues(FieldEditorContext context) =>
+        context.Value switch
+        {
+            null => [],
+            TValue current => [current],
+            IEnumerable<TValue> values => values
+                .Where(current => current is not null)
+                .Distinct()
+                .ToArray(),
+            _ => throw new InvalidOperationException(
+                $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+            ),
+        };
+
     // Selected values are posted with the form, which binds them in the current culture
     private static string FormatValue(TValue value) =>
         Convert.ToString(value, CultureInfo.CurrentCulture) ?? "";
@@ -219,13 +244,19 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         return Expression.Lambda<Func<TEntity, bool>>(body, entity);
     }
 
-    private Expression<Func<TEntity, bool>> ValueEquals(TValue current)
+    private Expression<Func<TEntity, bool>> ValueIn(IReadOnlyList<TValue> values)
     {
-        Expression<Func<TValue>> parameter = () => current;
+        // Captured values are sent as one query parameter rather than inlined
+        var array = values.ToArray();
+        Expression<Func<TValue[]>> parameter = () => array;
         var entity = Expression.Parameter(typeof(TEntity), "entity");
 
         return Expression.Lambda<Func<TEntity, bool>>(
-            Expression.Equal(Rebind(_options.ValueExpression, entity), parameter.Body),
+            Expression.Call(
+                ValueContainsMethod,
+                parameter.Body,
+                Rebind(_options.ValueExpression, entity)
+            ),
             entity
         );
     }

@@ -52,8 +52,13 @@ public sealed class LayoutDestinationStore
 public sealed class LayoutDestinationLookupSource(LayoutDestinationStore store)
     : ILookupSource<LayoutDestination, string>
 {
-    public Task<LayoutDestination?> FindAsync(string value, CancellationToken cancellationToken) =>
-        Task.FromResult(store.ToArray().FirstOrDefault(destination => destination.Code == value));
+    public Task<IReadOnlyCollection<LayoutDestination>> FindAsync(
+        IReadOnlyCollection<string> values,
+        CancellationToken cancellationToken
+    ) =>
+        Task.FromResult<IReadOnlyCollection<LayoutDestination>>(
+            store.ToArray().Where(destination => values.Contains(destination.Code)).ToArray()
+        );
 
     public Task<LookupPage<LayoutDestination>> SearchAsync(
         LookupQuery query,

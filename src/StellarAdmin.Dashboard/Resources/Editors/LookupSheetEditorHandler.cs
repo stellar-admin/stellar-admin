@@ -25,7 +25,7 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
                 $"LookupSheetEditor on {context.FieldName} requires UseItems."
             );
 
-        var item = await items.FindAsync(services, context, cancellationToken);
+        var item = (await items.FindAsync(services, context, cancellationToken)).FirstOrDefault();
         var createController = Editor.CreateEnabled
             ? await FindCreateControllerAsync(context, items)
             : null;

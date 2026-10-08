@@ -6,9 +6,12 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public interface ILookupSource<TEntity, TValue>
 {
     /// <summary>
-    ///     Returns the item with the specified value, or null when it does not exist.
+    ///     Returns the items with the specified values, in any order. Values that do not exist are left out.
     /// </summary>
-    Task<TEntity?> FindAsync(TValue value, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<TEntity>> FindAsync(
+        IReadOnlyCollection<TValue> values,
+        CancellationToken cancellationToken
+    );
 
     /// <summary>
     ///     Returns a page of items matching the query.

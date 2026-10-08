@@ -1,6 +1,6 @@
 # Multi-select lookup editor
 
-Status: **active**. Phase 0 is done; phase 1 is next. Last updated: 2026-10-08.
+Status: **active**. Phases 0 and 1 are done; phase 2 is next. Last updated: 2026-10-08.
 
 A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](archive/sheet-stack.md). The design comes from the [multi-select lookup prototype](../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
 
@@ -41,6 +41,15 @@ From the prototype sessions:
 - `LookupItems.FindAsync` reads one value or a collection from `context.Value` and returns the items in value order. A value the source no longer has keeps its placeholder item.
 - EF Core items query `WHERE value IN (…)` once. The edit page's loaded reference is used for a single value, as today.
 - The single `LookupSheetEditor`, the playground's airport and layout destination sources and the test fixtures move to the new method. No behaviour changes.
+
+**Done (2026-10-08):**
+
+- `ILookupSource<TEntity, TValue>.FindAsync` takes `IReadOnlyCollection<TValue>` and returns `IReadOnlyCollection<TEntity>`, leaving out values that don't exist.
+- `LookupItems.FindAsync` returns `IReadOnlyList<ChoiceItem>`: empty for no value, one item for a single value, and for a collection one item per distinct non-null value, in value order. A missing value gets the placeholder item, as before. The generic items call the source once and match entities to values with the value selector.
+- `EfCoreLookupItems` filters with `Enumerable.Contains` on a captured array, so EF Core sends the values as one parameter. The loaded-reference shortcut applies when there is one value.
+- `LookupSheetEditorHandler` and `ResourceController.LookupSelection` take the first item. The playground airport and layout destination sources, the `CategoryLookupSource` fixture, the `UntypedItems` test double and the setup reference's `ILookupSource` sample use the new signatures.
+- The type-mismatch exception still names `LookupSheetEditor`; phase 2 makes it name the editor in use.
+- Checks: the solution builds with no new warnings. `StellarAdmin.Dashboard.Tests` 79 of 79, `StellarAdmin.Dashboard.IntegrationTests` 362 of 362 and `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` 73 of 73 pass; the EF Core query runs in `RejectedEdit_DisplaysChangedSelection` and `Create_DisplaysSelectionWithoutNavigation`. No new tests and no browser check.
 
 ## Phase 2: the editor on the server
 

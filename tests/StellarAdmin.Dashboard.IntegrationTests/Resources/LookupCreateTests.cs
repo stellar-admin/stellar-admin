@@ -608,11 +608,11 @@ public class LookupCreateTests
 
         public override Type? MediaType => null;
 
-        public override Task<ChoiceItem?> FindAsync(
+        public override Task<IReadOnlyList<ChoiceItem>> FindAsync(
             IServiceProvider services,
             FieldEditorContext context,
             CancellationToken cancellationToken
-        ) => Task.FromResult<ChoiceItem?>(null);
+        ) => Task.FromResult<IReadOnlyList<ChoiceItem>>([]);
 
         public override Task<LookupResults> SearchAsync(
             IServiceProvider services,

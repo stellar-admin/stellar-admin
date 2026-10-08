@@ -426,11 +426,13 @@ public class ResourceController<TResource>(
         var model = query.Form!.Equals("create", StringComparison.OrdinalIgnoreCase)
             ? _resourceOptions.Create!.CreateModel()
             : RuntimeHelpers.GetUninitializedObject(_resourceOptions.Edit!.ModelType);
-        var item = await items.FindAsync(
-            HttpContext.RequestServices,
-            new FieldEditorContext(options.FieldName, model, current),
-            cancellationToken
-        );
+        var item = (
+            await items.FindAsync(
+                HttpContext.RequestServices,
+                new FieldEditorContext(options.FieldName, model, current),
+                cancellationToken
+            )
+        ).FirstOrDefault();
 
         // Selected values are posted with the form, which binds them in the current culture
         return PartialView(
