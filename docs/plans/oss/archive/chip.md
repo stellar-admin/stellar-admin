@@ -8,7 +8,7 @@ Add `sa-chip` to `StellarAdmin.TagHelpers`: a compact token for a selected or en
 
 The Dashboard has two chip looks, built two ways, and neither is a library component:
 
-- The [multi-select lookup editor](../../multi-lookup-editor.md) renders each chip as an `sa-badge` with a plain `<button>` for Remove and `.sa-choice-media` for its media. The badge takes the theme's radius, but the Remove button (`rounded-sm`), the code box (`rounded-sm bg-muted`) and the avatar (round) have fixed shapes and colours. In Parallax the Remove button is square inside a pill and the code has almost no contrast with the chip; in Aurora the round avatars sit in square chips.
+- The [multi-select lookup editor](../../archive/multi-lookup-editor.md) renders each chip as an `sa-badge` with a plain `<button>` for Remove and `.sa-choice-media` for its media. The badge takes the theme's radius, but the Remove button (`rounded-sm`), the code box (`rounded-sm bg-muted`) and the avatar (round) have fixed shapes and colours. In Parallax the Remove button is square inside a pill and the code has almost no contrast with the chip; in Aurora the round avatars sit in square chips.
 - `ToggleGroupEditor`'s chips appearance uses real `sa-toggle-group-item`s, but the Dashboard CSS forces a pill radius in every theme (`border-radius: calc(infinity * 1px)`) and uses the same fixed-shape media.
 
 Neither matches the other within a theme, and both need Dashboard CSS for something every theme should decide.

@@ -1,13 +1,13 @@
 # Multi-select lookup editor
 
-Status: **active**. Phases 0 to 4 are done and awaiting review. Last updated: 2026-10-08.
+Status: **completed**. Phases 0 to 4 are done. Last updated: 2026-10-09.
 
-A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](archive/sheet-stack.md). The design comes from the [multi-select lookup prototype](../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
+A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](sheet-stack.md). The design comes from the [multi-select lookup prototype](../../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
 
 ## Scope
 
 - The field binds a collection of keys: `TValue[]`, `List<TValue>` or another collection MVC binds. These save today through plain models and custom create and edit handlers, such as the playground's `string[] RoleIds`.
-- EF Core entities with a many-to-many navigation are not in this plan. `ValidateEntityFormFields` rejects navigation fields, MVC can't bind entities from posted keys, and `UpdateAsync` copies values rather than adding and removing items. That needs its own approval, because [generic-resources-follow-ups](generic-resources-follow-ups.md) keeps single-record references as the relationship scope.
+- EF Core entities with a many-to-many navigation are not in this plan. `ValidateEntityFormFields` rejects navigation fields, MVC can't bind entities from posted keys, and `UpdateAsync` copies values rather than adding and removing items. That needs its own approval, because [generic-resources-follow-ups](../generic-resources-follow-ups.md) keeps single-record references as the relationship scope.
 
 ## Design decisions
 

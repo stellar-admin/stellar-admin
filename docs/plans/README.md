@@ -13,7 +13,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
-| [multi-lookup-editor](multi-lookup-editor.md) | active | A lookup editor that selects several items from a searchable sheet, binding a collection of keys, in five phases; phase 0 renamed `LookupEditor` to `LookupSheetEditor`, phase 1 made `ILookupSource.FindAsync` take many values, phase 2 added `MultiLookupSheetEditor` with List, Chips and Summary layouts, phase 3 added the multi-select sheet, and phase 4 added New in the sheet; all phases are done and awaiting review. EF Core many-to-many navigations are out of scope. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 
@@ -54,6 +53,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [lookup-editor](archive/lookup-editor.md) | completed; searchable `LookupEditor` with the display redesign, a shared dashboard sheet that loads its content from the server, and plain custom elements in the dashboard script. Creating items from the lookup followed in [lookup-create](archive/lookup-create.md). |
 | [menu-color-appearance-accent](oss/archive/menu-color-appearance-accent.md) | completed |
 | [meridian-theme](archive/meridian-theme.md) | completed |
+| [multi-lookup-editor](archive/multi-lookup-editor.md) | completed |
 | [observatory-default-theme](archive/observatory-default-theme.md) | completed |
 | [observatory-theme](archive/observatory-theme.md) | completed |
 | [optional-theme-fonts](archive/optional-theme-fonts.md) | completed |
