@@ -42,9 +42,13 @@ public abstract class ChoiceGroupItemTagHelper : StellarAdminTagHelperBase
         }
 
         group.ItemCount++;
+        var item = new ChoiceGroupItemContext { Multiple = multiple };
+        SetContext(context, item);
+        var label = await output.GetChildContentAsync();
         var content = await group.RenderItem(
             Value,
-            await output.GetChildContentAsync(),
+            label,
+            item.Media,
             Description,
             Disabled == true,
             output.GetUserSuppliedClass()

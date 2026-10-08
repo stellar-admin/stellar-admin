@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Choice item media</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Real built library assets; nova to start. Swappable from the control bar. The Dashboard bundle adds the chip rules. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+      /* Chip check placement variants. A: the check takes the media's place while on. B: the check sits before the
+         media. C: the check trails the text. The Dashboard bundle already shows .sa-toggle-chip-check while on. */
+      .chip-a .sa-toggle-group-item:has(:checked) .choice-media {
+        display: none;
+      }
+      .chip-c .sa-toggle-chip-check {
+        order: 3;
+      }
+      .chip-c .choice-text {
+        order: 2;
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1500px] space-y-14 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Dashboard choice editors · Phase 6</p>
+        <h1 class="text-2xl font-semibold">Choice item media</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Each media kind of <code>ItemMedia</code> in every choice editor and appearance, using the markup the editors render today with the media
+          added. The candidate sizes are in the grids; the strips at the end compare the open questions. Select ignores media, so it is not shown. All
+          inputs are live.
+        </p>
+        <dl class="text-muted-foreground grid max-w-3xl grid-cols-[auto_1fr] gap-x-4 gap-y-1 pt-2 text-xs">
+          <dt class="text-foreground font-medium">Inline candidate</dt>
+          <dd>icon <code>size-4</code> · avatar and image <code>size-5</code> · code badge <code>h-5</code></dd>
+          <dt class="text-foreground font-medium">Card candidate</dt>
+          <dd>icon <code>size-5</code> · avatar and image <code>size-8</code> · code square <code>size-8</code></dd>
+          <dt class="text-foreground font-medium">Lookups today</dt>
+          <dd>avatar <code>size-6</code> inline and <code>size-8</code> with a description · code badge inline, <code>size-7</code> square with a description</dd>
+        </dl>
+        <nav class="flex flex-wrap gap-x-4 gap-y-1 pt-2 text-sm" id="toc"></nav>
+      </header>
+
+      <div id="sections" class="space-y-16"></div>
+    </main>
+
+    <div class="bg-popover text-popover-foreground fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg border p-2 text-xs shadow-lg">
+      <select id="theme" class="bg-background rounded-md border px-2 py-1">
+        <option value="shadcn.nova">nova</option>
+        <option value="shadcn.vega">vega</option>
+        <option value="shadcn.maia">maia</option>
+        <option value="shadcn.lyra">lyra</option>
+        <option value="shadcn.mira">mira</option>
+        <option value="parallax">parallax</option>
+        <option value="observatory">observatory</option>
+        <option value="ledger">ledger</option>
+        <option value="aurora">aurora</option>
+      </select>
+      <button id="dark" type="button" class="bg-background hover:bg-muted rounded-md border px-2 py-1">Dark</button>
+    </div>
+
+    <script type="module">
+      // ---------------------------------------------------------------- Icons (Lucide paths; the editors render <sa-icon>)
+      const svg = (body, cls = "size-4") =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls}">${body}</svg>`;
+      const paths = {
+        plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+        train:
+          '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>',
+        ship: '<path d="M12 10.189V14"/><path d="M12 2v3"/><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76"/><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
+        car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        circle: '<circle cx="12" cy="12" r="10"/>',
+      };
+
+      // ---------------------------------------------------------------- Sample items, one set per media kind
+      const img = (name) => `../../docs/DocsSamples/wwwroot/${name}`;
+      const kinds = [
+        {
+          key: "icon",
+          label: "Icon",
+          items: [
+            { value: "flight", text: "Flight", description: "Fastest between cities.", media: { icon: "plane" } },
+            { value: "train", text: "Train", description: "City centre to city centre.", media: { icon: "train" } },
+            { value: "ferry", text: "Ferry", description: "Island hops and coastal routes.", media: { icon: "ship" } },
+            { value: "car", text: "Car hire", description: "Pick up at the airport.", media: { icon: "car" } },
+          ],
+        },
+        {
+          key: "avatar",
+          label: "Avatar",
+          items: [
+            { value: "ana", text: "Ana Ribeiro", description: "Lisbon walking tours.", media: { avatar: img("avatars/avatar-1.jpg") } },
+            { value: "thabo", text: "Thabo Nkosi", description: "Cape Peninsula drives.", media: { avatar: img("avatars/avatar-2.jpg") } },
+            { value: "yuki", text: "Yuki Tanaka", description: "Kyoto temples and gardens.", media: { avatar: img("avatars/avatar-3.jpg") } },
+            { value: "lena", text: "Lena Fischer", description: "No photo yet, so initials.", media: { avatar: null } },
+          ],
+        },
+        {
+          key: "initials",
+          label: "Avatar, initials",
+          items: [
+            { value: "maya", text: "Maya Chen", description: "Corporate travel desk.", media: { avatar: null } },
+            { value: "omar", text: "Omar Haddad", description: "Group bookings.", media: { avatar: null } },
+            { value: "priya", text: "Priya Nair", description: "Honeymoons and retreats.", media: { avatar: null } },
+            { value: "jonas", text: "Jonas Berg", description: "Rail passes.", media: { avatar: null } },
+          ],
+        },
+        {
+          key: "image",
+          label: "Image",
+          items: [
+            { value: "lisbon", text: "Lisbon", description: "Trams, tiles and pastéis.", media: { image: img("cities/lisbon.jpg") } },
+            { value: "cape-town", text: "Cape Town", description: "Table Mountain views.", media: { image: img("cities/cape-town.jpg") } },
+            { value: "kyoto", text: "Kyoto", description: "Temples and tea houses.", media: { image: img("cities/kyoto.jpg") } },
+            { value: "chiang-mai", text: "Chiang Mai", description: "Night markets and hills.", media: { image: img("cities/chiang-mai.jpg") } },
+          ],
+        },
+        {
+          key: "code",
+          label: "Code",
+          items: [
+            { value: "LIS", text: "Lisbon", description: "Humberto Delgado.", media: { code: "LIS" } },
+            { value: "CPT", text: "Cape Town", description: "Cape Town International.", media: { code: "CPT" } },
+            { value: "KIX", text: "Osaka", description: "Kansai International.", media: { code: "KIX" } },
+            { value: "CNX", text: "Chiang Mai", description: "Chiang Mai International.", media: { code: "CNX" } },
+          ],
+        },
+        {
+          key: "none",
+          label: "No media",
+          items: [
+            { value: "economy", text: "Economy", description: "Standard seat." },
+            { value: "premium", text: "Premium economy", description: "Extra legroom." },
+            { value: "business", text: "Business", description: "Lie-flat seats." },
+            { value: "first", text: "First", description: "Private suites." },
+          ],
+        },
+      ];
+      const byKey = Object.fromEntries(kinds.map((k) => [k.key, k]));
+
+      // ---------------------------------------------------------------- Media rendering, per size
+      // Sizes: icon / avatar and image / code. "inline" sits before the text, "card" leads a card.
+      const sizes = {
+        inline: { icon: "size-4", box: "size-5", fallback: "text-[0.55rem]", code: "h-5 px-1.5 text-[0.65rem] rounded-sm" },
+        inline6: { icon: "size-4", box: "size-6", fallback: "text-[0.6rem]", code: "h-5 px-1.5 text-[0.65rem] rounded-sm" },
+        small: { icon: "size-3.5", box: "size-4", fallback: "text-[0.5rem]", code: "h-4 px-1 text-[0.6rem] rounded-sm" },
+        card: { icon: "size-5", box: "size-8", fallback: "", code: "size-8 justify-center text-[0.65rem] rounded-md" },
+        cardLg: { icon: "size-6", box: "size-10", fallback: "", code: "size-10 justify-center text-xs rounded-md" },
+      };
+      const initials = (name) => {
+        const w = name.split(/\s+/);
+        return (w.length > 1 ? w[0][0] + w[1][0] : name.slice(0, 2)).toUpperCase();
+      };
+      const media = (item, size = "inline") => {
+        const m = item.media;
+        const s = sizes[size];
+        if (!m) return "";
+        if (m.icon) return svg(paths[m.icon], `choice-media ${s.icon} shrink-0`);
+        if ("avatar" in m) {
+          const big = size === "card" || size === "cardLg";
+          return `<span data-slot="avatar" data-size="${big ? "default" : "sm"}" class="sa-avatar group/avatar choice-media ${s.box}">${
+            m.avatar
+              ? `<img data-slot="avatar-image" class="sa-avatar-image" src="${m.avatar}" alt="" />`
+              : `<span data-slot="avatar-fallback" class="sa-avatar-fallback ${s.fallback}">${initials(item.text)}</span>`
+          }</span>`;
+        }
+        if (m.image) {
+          const radius = size === "card" || size === "cardLg" ? "rounded-md" : "rounded-sm";
+          return `<img src="${m.image}" alt="" class="choice-media ${s.box} ${radius} shrink-0 object-cover" />`;
+        }
+        if (m.code)
+          return `<span class="choice-media bg-muted text-foreground inline-flex shrink-0 items-center font-mono font-medium ${s.code}">${m.code}</span>`;
+        return "";
+      };
+
+      // ---------------------------------------------------------------- Editor markup, as rendered today plus media
+      let seq = 0;
+      const nextName = () => `f${++seq}`;
+      const indicator = (type) =>
+        type === "radio"
+          ? `<span class="sa-radiobutton-indicator">${svg(paths.circle, "sa-radiobutton-indicator-icon")}</span>`
+          : `<span class="sa-checkbox-indicator">${svg(paths.check, "sa-checkbox-indicator-icon")}</span>`;
+      const control = (type, name, id, value, checked) =>
+        `<span class="sa-input-control-wrapper"><input type="${type}" name="${name}" id="${id}" value="${value}" ${checked ? "checked" : ""} data-slot="input" class="${type === "radio" ? "sa-radiobutton" : "sa-checkbox"} peer">${indicator(type)}</span>`;
+      const groupClass = (type) =>
+        type === "radio" ? "sa-field-group group/field-group" : "sa-field-group group/field-group [&_[data-slot=field-label]]:font-normal";
+
+      // Plain list. layout: "inline" puts small media before the text; "spanning" puts large media beside text and
+      // description, as lookups do with a description
+      const list = (type, items, { describe = false, size = "inline", layout = "inline", reserve = false } = {}) => {
+        const name = nextName();
+        const rows = items
+          .map((item, i) => {
+            const id = `${name}-${i}`;
+            const checked = type === "radio" ? i === 1 : i % 2 === 1;
+            const m = media(item, size) || (reserve ? `<span class="${reserve} shrink-0"></span>` : "");
+            const desc = describe && item.description ? `<p data-slot="field-description" class="sa-field-description">${item.description}</p>` : "";
+            if (layout === "spanning" && describe) {
+              return `<div data-slot="field" data-orientation="horizontal" class="sa-field group/field sa-field-orientation-horizontal">
+                ${control(type, name, id, item.value, checked)}
+                <label for="${id}" class="flex min-w-0 cursor-pointer items-start gap-2.5">${m}
+                  <div data-slot="field-content" class="sa-field-content group/field-content">
+                    <span data-slot="field-label" class="sa-label sa-field-label group/field-label">${item.text}</span>${desc}
+                  </div>
+                </label>
+              </div>`;
+            }
+            const label = `<label for="${id}" data-slot="field-label" class="sa-label sa-field-label group/field-label peer/field-label items-center">${m}<span>${item.text}</span></label>`;
+            return `<div data-slot="field" data-orientation="horizontal" class="sa-field group/field sa-field-orientation-horizontal">
+              ${control(type, name, id, item.value, checked)}
+              ${desc ? `<div data-slot="field-content" class="sa-field-content group/field-content">${label}${desc}</div>` : label}
+            </div>`;
+          })
+          .join("");
+        return `<div data-slot="${type === "radio" ? "radio-group" : "checkbox-group"}" class="${groupClass(type)}">${rows}</div>`;
+      };
+
+      // Cards. placement: "leading" puts media before the content; "top" stacks it above the title
+      const cards = (type, items, { describe = true, size = "card", placement = "leading" } = {}) => {
+        const name = nextName();
+        const rows = items
+          .map((item, i) => {
+            const id = `${name}-${i}`;
+            const checked = type === "radio" ? i === 1 : i % 2 === 1;
+            const desc = describe ? `<p data-slot="field-description" class="sa-field-description">${item.description}</p>` : "";
+            const m = media(item, size);
+            const content =
+              placement === "title"
+                ? `<div data-slot="field-content" class="sa-field-content group/field-content"><div data-slot="field-label" class="sa-field-title items-center">${m}${item.text}</div>${desc}</div>`
+                : placement === "top"
+                ? `<div data-slot="field-content" class="sa-field-content group/field-content gap-2">${m ? `<div>${m}</div>` : ""}<div data-slot="field-label" class="sa-field-title">${item.text}</div>${desc}</div>`
+                : `${m}<div data-slot="field-content" class="sa-field-content group/field-content"><div data-slot="field-label" class="sa-field-title">${item.text}</div>${desc}</div>`;
+            return `<label for="${id}" data-slot="field-label" class="sa-label sa-field-label group/field-label peer/field-label">
+              <div data-slot="field" data-orientation="horizontal" class="sa-field group/field sa-field-orientation-horizontal ${placement === "leading" ? "items-center" : ""}">
+                ${content}
+                ${control(type, name, id, item.value, checked)}
+              </div>
+            </label>`;
+          })
+          .join("");
+        return `<div data-slot="${type === "radio" ? "radio-group" : "checkbox-group"}" class="${groupClass(type)} ${placement === "top" ? "grid-cols-2 grid" : ""}">${rows}</div>`;
+      };
+
+      const segmented = (items, { size = "inline" } = {}) => {
+        const name = nextName();
+        const segs = items
+          .map(
+            (item, i) =>
+              `<label for="${name}-${i}" data-slot="segmented-control-item" class="sa-segmented-control-item gap-1.5"><input class="sa-segmented-control-input" data-slot="segmented-control-input" id="${name}-${i}" name="${name}" type="radio" value="${item.value}" ${i === 1 ? "checked" : ""} />${media(item, size)}${item.text}</label>`,
+          )
+          .join("");
+        return `<div role="radiogroup" data-slot="segmented-control" class="sa-segmented-control">${segs}</div>`;
+      };
+
+      // Toggle group: "chips" (wrap, pills, check), "joined" (spacing 0) or "buttons" (wrap, spacing 2)
+      const toggles = (items, { appearance = "chips", multiple = true, size = "inline", chipVariant = "chip-a" } = {}) => {
+        const name = nextName();
+        const spacing = appearance === "joined" ? "0" : "2";
+        const cls =
+          appearance === "chips" ? `sa-toggle-group-wrap sa-toggle-chips ${chipVariant}` : appearance === "buttons" ? "sa-toggle-group-wrap" : "";
+        const check = appearance === "chips" ? svg(paths.check, "sa-toggle-chip-check") : "";
+        const btns = items
+          .map((item, i) => {
+            const checked = multiple ? i % 2 === 0 : i === 1;
+            return `<label data-slot="toggle-group-item" data-variant="outline" data-size="default" data-spacing="${spacing}" class="sa-toggle group/toggle sa-toggle-variant-outline sa-toggle-size-default sa-toggle-group-item"><input type="${multiple ? "checkbox" : "radio"}" data-slot="toggle-group-item-input" name="${name}" value="${item.value}" ${checked ? "checked" : ""} class="peer sr-only">${check}${media(item, size)}<span class="choice-text">${item.text}</span></label>`;
+          })
+          .join("");
+        return `<div class="sa-toggle-group group/toggle-group ${cls}" role="group" data-slot="toggle-group" data-variant="outline" data-size="default" data-spacing="${spacing}" data-orientation="horizontal" style="--gap: ${spacing}">${btns}</div>`;
+      };
+
+      // ---------------------------------------------------------------- Page building blocks
+      const caption = (title, note = "") =>
+        `<figcaption class="mb-3 space-y-0.5"><p class="text-sm font-medium">${title}</p>${note ? `<p class="text-muted-foreground text-xs">${note}</p>` : ""}</figcaption>`;
+      const cell = (title, body, note = "") => `<figure class="min-w-0 rounded-lg border p-4">${caption(title, note)}${body}</figure>`;
+      const section = (id, title, intro, body) => `
+        <section id="${id}" class="scroll-mt-6 space-y-4">
+          <div class="space-y-1"><h2 class="text-lg font-semibold">${title}</h2>${intro ? `<p class="text-muted-foreground max-w-3xl text-sm">${intro}</p>` : ""}</div>
+          ${body}
+        </section>`;
+      const grid = (cells, cols = "md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6") => `<div class="grid grid-cols-1 gap-4 ${cols}">${cells}</div>`;
+      const rows = (cells) => `<div class="space-y-3">${cells}</div>`;
+      const row = (title, body, note = "") =>
+        `<figure class="grid min-w-0 grid-cols-1 items-center gap-3 rounded-lg border p-4 lg:grid-cols-[10rem_1fr]">${caption(title, note).replace("mb-3", "mb-0")}<div class="min-w-0">${body}</div></figure>`;
+      const perKind = (render) => kinds.map((k) => cell(k.label, render(k.items))).join("");
+      const perKindRows = (render) => kinds.map((k) => row(k.label, render(k.items))).join("");
+      const strip = (letter, title, note, body, cls = "") => `
+        <figure class="min-w-0 rounded-lg border p-4 ${cls}">
+          ${caption(`<span class="bg-primary text-primary-foreground mr-2 inline-flex size-5 items-center justify-center rounded-full text-[0.65rem]">${letter}</span>${title}`, note)}
+          ${body}
+        </figure>`;
+
+      // ---------------------------------------------------------------- Sections
+      const sections = [
+        section("radio", "Radio group", "Media sits between the radio and the text, at the inline size.", grid(perKind((items) => list("radio", items)))),
+        section(
+          "radio-described",
+          "Radio group with descriptions",
+          "Candidate: the media stays at the inline size on the text's line; the description wraps under the text. Strip 2 compares the lookup-style spanning media.",
+          grid(perKind((items) => list("radio", items, { describe: true }))),
+        ),
+        section("checkbox", "Checkbox group", "Same layout as the radio group.", grid(perKind((items) => list("checkbox", items)))),
+        section(
+          "radio-cards",
+          "Radio group cards",
+          "Media leads the card at the card size, centred against the title and description.",
+          grid(perKind((items) => cards("radio", items))),
+        ),
+        section(
+          "checkbox-cards",
+          "Checkbox group cards, no descriptions",
+          "Cards without descriptions keep the card-sized media, which sets the card height.",
+          grid(perKind((items) => cards("checkbox", items, { describe: false }))),
+        ),
+        section(
+          "segmented",
+          "Segmented control",
+          "Inline size inside the segment, with a gap-1.5 between media and text.",
+          rows(perKindRows((items) => segmented(items))),
+        ),
+        section("chips", "Toggle group chips", "Candidate A: the check takes the media's place while a chip is on (strip 4).", rows(perKindRows((items) => toggles(items)))),
+        section("joined", "Toggle group joined", "Single selection, inline size.", rows(perKindRows((items) => toggles(items, { appearance: "joined", multiple: false })))),
+        section("buttons", "Toggle group buttons", "Multiple selection, inline size.", rows(perKindRows((items) => toggles(items, { appearance: "buttons" })))),
+        section(
+          "questions",
+          "Open questions",
+          "Each strip compares the candidates for one question; the first option in each is the one used in the grids above.",
+          `<div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            ${strip(
+              1,
+              "Avatar and image size inline",
+              "A: size-5, a little taller than the 16px icon, keeping rows at the text height. B: size-6, the lookups' inline avatar, which makes rows taller than items without media.",
+              `<div class="grid grid-cols-2 gap-6">
+                <div class="space-y-3"><p class="text-muted-foreground text-xs">A · size-5</p>${list("radio", byKey.avatar.items)}${list("checkbox", byKey.image.items)}${toggles(byKey.avatar.items.slice(0, 3))}</div>
+                <div class="space-y-3"><p class="text-muted-foreground text-xs">B · size-6</p>${list("radio", byKey.avatar.items, { size: "inline6" })}${list("checkbox", byKey.image.items, { size: "inline6" })}${toggles(byKey.avatar.items.slice(0, 3), { size: "inline6" })}</div>
+              </div>`,
+            )}
+            ${strip(
+              2,
+              "Media with a description in a plain list",
+              "A: inline size on the text's line. B: as lookups do, card-sized media spanning text and description.",
+              `<div class="grid grid-cols-2 gap-6">
+                <div class="space-y-3"><p class="text-muted-foreground text-xs">A · inline</p>${list("radio", byKey.avatar.items, { describe: true })}${list("checkbox", byKey.code.items, { describe: true })}</div>
+                <div class="space-y-3"><p class="text-muted-foreground text-xs">B · spanning, size-8</p>${list("radio", byKey.avatar.items, { describe: true, size: "card", layout: "spanning" })}${list("checkbox", byKey.code.items, { describe: true, size: "card", layout: "spanning" })}</div>
+              </div>`,
+            )}
+            ${strip(
+              3,
+              "Card media size and placement",
+              "A: leading, size-8. B: leading, size-10. C: above the title, size-10, in a two-column grid.",
+              `<div class="space-y-6">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div class="space-y-3"><p class="text-muted-foreground text-xs">A · leading, size-8</p>${cards("radio", byKey.image.items.slice(0, 3))}</div>
+                  <div class="space-y-3"><p class="text-muted-foreground text-xs">B · leading, size-10</p>${cards("radio", byKey.image.items.slice(0, 3), { size: "cardLg" })}</div>
+                </div>
+                <div class="space-y-3"><p class="text-muted-foreground text-xs">C · top, size-10, two columns</p>${cards("radio", byKey.image.items, { size: "cardLg", placement: "top" })}</div>
+              </div>`,
+            )}
+            ${strip(
+              7,
+              "Checkbox cards: media before the content, or inside the title",
+              "1: the media leads the card, as approved (needs a media attribute on sa-checkbox-group-item). 3: the media sits inside the title, where the tag helper puts the item's content today, at the inline size (3a) or the card size (3b).",
+              ["avatar", "code", "icon"]
+                .map(
+                  (k) => `<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div class="space-y-3"><p class="text-muted-foreground text-xs">1 · leading, size-8</p>${cards("checkbox", byKey[k].items.slice(0, 3))}</div>
+                    <div class="space-y-3"><p class="text-muted-foreground text-xs">3a · in the title, inline size</p>${cards("checkbox", byKey[k].items.slice(0, 3), { size: "inline", placement: "title" })}</div>
+                    <div class="space-y-3"><p class="text-muted-foreground text-xs">3b · in the title, size-8</p>${cards("checkbox", byKey[k].items.slice(0, 3), { placement: "title" })}</div>
+                  </div>`,
+                )
+                .join('<div class="h-6"></div>'),
+              "xl:col-span-2",
+            )}
+            ${strip(
+              4,
+              "Chip check mark placement",
+              "A: the check replaces the media while on, so chips keep their width. B: the check sits before the media, so a chip grows when turned on. C: the check trails the text.",
+              `<div class="space-y-4">
+                ${["chip-a", "chip-b", "chip-c"]
+                  .map(
+                    (v, i) =>
+                      `<div class="space-y-2"><p class="text-muted-foreground text-xs">${"ABC"[i]}</p>${toggles(byKey.icon.items, { chipVariant: v })}${toggles(byKey.avatar.items, { chipVariant: v })}${toggles(byKey.code.items, { chipVariant: v })}${toggles(byKey.none.items, { chipVariant: v })}</div>`,
+                  )
+                  .join("")}
+              </div>`,
+            )}
+            ${strip(
+              5,
+              "Media size in the segmented control and joined toggles",
+              "A: the inline size (icon size-4, avatar and image size-5). B: a smaller size (icon size-3.5, avatar and image size-4, code h-4).",
+              `<div class="space-y-4">
+                <div class="space-y-2"><p class="text-muted-foreground text-xs">A · inline</p>${segmented(byKey.avatar.items)}${segmented(byKey.code.items)}${toggles(byKey.image.items, { appearance: "joined", multiple: false })}</div>
+                <div class="space-y-2"><p class="text-muted-foreground text-xs">B · small</p>${segmented(byKey.avatar.items, { size: "small" })}${segmented(byKey.code.items, { size: "small" })}${toggles(byKey.image.items, { appearance: "joined", multiple: false, size: "small" })}</div>
+              </div>`,
+            )}
+            ${strip(
+              6,
+              "Items without media among items with media",
+              "A: no space is kept, so text without media starts at the media. B: the media's space is kept, so the text lines up.",
+              (() => {
+                const mixed = [byKey.icon.items[0], { value: "walk", text: "On foot", description: "No media." }, byKey.icon.items[1], byKey.icon.items[3]];
+                return `<div class="grid grid-cols-2 gap-6">
+                  <div class="space-y-3"><p class="text-muted-foreground text-xs">A · no space</p>${list("radio", mixed)}</div>
+                  <div class="space-y-3"><p class="text-muted-foreground text-xs">B · space kept</p>${list("radio", mixed, { reserve: "size-4" })}</div>
+                </div>`;
+              })(),
+            )}
+          </div>`,
+        ),
+      ];
+      document.getElementById("sections").innerHTML = sections.join("");
+      document.getElementById("toc").innerHTML = [...document.querySelectorAll("#sections > section")]
+        .map((s) => `<a class="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline" href="#${s.id}">${s.querySelector("h2").textContent}</a>`)
+        .join("");
+
+      // ---------------------------------------------------------------- Control bar
+      const theme = document.getElementById("theme");
+      theme.addEventListener("change", () => {
+        document.getElementById("theme-css").href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${theme.value}.css`;
+      });
+      document.getElementById("dark").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
+      const params = new URLSearchParams(location.search);
+      if (params.get("theme")) {
+        theme.value = params.get("theme");
+        theme.dispatchEvent(new Event("change"));
+      }
+      if (params.has("dark")) document.documentElement.classList.add("dark");
+    </script>
+  </body>
+</html>

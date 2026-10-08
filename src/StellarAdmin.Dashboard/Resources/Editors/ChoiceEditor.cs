@@ -12,6 +12,11 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public abstract class ChoiceEditor : FieldEditor
 {
     /// <summary>
+    ///     Additional CSS classes for the parts of the editor.
+    /// </summary>
+    public override ChoiceEditorClassNames ClassNames { get; } = new();
+
+    /// <summary>
     ///     Whether the choices start with an empty choice, which clears the value. Defaults to
     ///     <see cref="EmptyChoice.Auto" />.
     /// </summary>

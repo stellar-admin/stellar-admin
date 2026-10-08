@@ -9,6 +9,8 @@ internal sealed class EfCoreChoiceItemsOptions<TEntity, TValue>
 
     internal Expression<Func<TEntity, string?>>? GroupExpression { get; set; }
 
+    internal EfCoreItemMedia<TEntity>? Media { get; set; }
+
     internal Expression<Func<TEntity, string>> TextExpression { get; }
 
     internal Expression<Func<TEntity, TValue>> ValueExpression { get; }

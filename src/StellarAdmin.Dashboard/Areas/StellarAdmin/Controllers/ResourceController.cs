@@ -439,7 +439,8 @@ public class ResourceController<TResource>(
                     item,
                     editor.Layout,
                     editor.FieldOptions.ShowMedia,
-                    false
+                    false,
+                    editor.ClassNames.Media
                 )
             )
         );

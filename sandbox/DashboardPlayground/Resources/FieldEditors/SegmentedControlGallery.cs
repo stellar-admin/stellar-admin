@@ -36,6 +36,15 @@ public sealed class SegmentedControlGallery
     [Display(Name = "enum · ClassNames.Control")]
     public GalleryCabin StyledCabin { get; set; }
 
+    [Display(Name = "string · UseItems with icons")]
+    public string? Transport { get; set; }
+
+    [Display(Name = "string · UseItems with avatars")]
+    public string? Guide { get; set; }
+
+    [Display(Name = "string · UseItems with codes · ClassNames.Media")]
+    public string? AirportCode { get; set; }
+
     public static SegmentedControlGallery CreateSample() =>
         new()
         {
@@ -48,5 +57,8 @@ public sealed class SegmentedControlGallery
             FieldDescribedCabin = GalleryCabin.First,
             ReadOnlyCabin = GalleryCabin.First,
             StyledCabin = GalleryCabin.Economy,
+            Transport = "train",
+            Guide = "yuki",
+            AirportCode = "LIS",
         };
 }

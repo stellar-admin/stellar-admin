@@ -17,6 +17,7 @@ internal static class EfCoreChoiceItemsLoader
     {
         var projection = CreateProjection(itemOptions);
         var orderQuery = itemOptions.OrderQuery;
+        var media = itemOptions.Media;
 
         editor.UseItems(
             async (services, cancellationToken) =>
@@ -44,6 +45,7 @@ internal static class EfCoreChoiceItemsLoader
                         {
                             Description = row.Description,
                             Group = row.Group is null ? null : new ChoiceGroup(row.Group),
+                            Media = media?.Create(row.Media),
                         }
                     );
                 }
@@ -65,6 +67,7 @@ internal static class EfCoreChoiceItemsLoader
             typeof(string),
             typeof(string),
             typeof(string),
+            typeof(string),
         ])!;
 
         return Expression.Lambda<Func<TEntity, ChoiceItemProjection<TValue>>>(
@@ -73,7 +76,8 @@ internal static class EfCoreChoiceItemsLoader
                 Rebind(options.ValueExpression, entity),
                 Rebind(options.TextExpression, entity),
                 RebindOrNull(options.DescriptionExpression, entity),
-                RebindOrNull(options.GroupExpression, entity)
+                RebindOrNull(options.GroupExpression, entity),
+                RebindOrNull(options.Media?.Selector, entity)
             ),
             entity
         );
@@ -91,6 +95,7 @@ internal static class EfCoreChoiceItemsLoader
         TValue Value,
         string Text,
         string? Description,
-        string? Group
+        string? Group,
+        string? Media
     );
 }

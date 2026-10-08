@@ -121,7 +121,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         var group = new ChoiceGroupContext
         {
             Multiple = multiple,
-            RenderItem = async (value, label, itemDescription, disabled, css) =>
+            RenderItem = async (value, label, media, itemDescription, disabled, css) =>
             {
                 var formatted = ChoiceGroupValue.Normalize(value, valueType);
                 if (!seen.Add(formatted))
@@ -137,6 +137,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
                     $"{id}-{++itemIndex}",
                     formatted,
                     label,
+                    media,
                     itemDescription,
                     multiple,
                     card,
@@ -231,6 +232,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
                         item.Value ?? item.Text,
                         new HtmlContentBuilder().Append(item.Text),
                         null,
+                        null,
                         item.Disabled,
                         null
                     )
@@ -264,6 +266,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         string id,
         string value,
         IHtmlContent labelContent,
+        IHtmlContent? media,
         string? description,
         bool multiple,
         bool card,
@@ -328,7 +331,18 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             field.InnerHtml.AppendHtml(input);
         }
 
+        // Media leads a card, and sits before the text of a plain option
+        if (media != null && !card)
+        {
+            label.InnerHtml.AppendHtml(media);
+        }
+
         label.InnerHtml.AppendHtml(labelContent);
+        if (media != null && card)
+        {
+            field.InnerHtml.AppendHtml(media);
+        }
+
         if (card || description != null)
         {
             var content = Element("div", "field-content", "sa-field-content group/field-content");

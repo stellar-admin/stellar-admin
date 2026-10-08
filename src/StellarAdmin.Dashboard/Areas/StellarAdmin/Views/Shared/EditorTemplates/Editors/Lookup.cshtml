@@ -12,7 +12,7 @@
     var allowClear = canLookUp && (Editor.FieldOptions.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
     var isCard = Editor.Layout == LookupEditorLayout.Card;
     var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
-    var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp);
+    var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
     var labels = LabelOptions.Value;
     var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
     var chooseText = Editor.FieldOptions.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);

@@ -53,6 +53,20 @@ public sealed class RadioGroupGallery
     [Display(Name = "string · UseItems with descriptions · Cards · ClassNames.Option.Root")]
     public string? SeatCards { get; set; }
 
+    // Media
+
+    [Display(Name = "string · UseItems with icons and descriptions")]
+    public string? Transport { get; set; }
+
+    [Display(Name = "string · UseItems with codes")]
+    public string? AirportCode { get; set; }
+
+    [Display(Name = "string · UseItems with avatars · Cards")]
+    public string? Guide { get; set; }
+
+    [Display(Name = "string · UseItems with images · Cards · ClassNames.Media")]
+    public string? City { get; set; }
+
     public static RadioGroupGallery CreateSample() =>
         new()
         {
@@ -67,5 +81,9 @@ public sealed class RadioGroupGallery
             ReadOnlyCabinCards = GalleryCabin.PremiumEconomy,
             Seat = "aisle",
             SeatCards = "window",
+            Transport = "train",
+            AirportCode = "CPT",
+            Guide = "thabo",
+            City = "kyoto",
         };
 }

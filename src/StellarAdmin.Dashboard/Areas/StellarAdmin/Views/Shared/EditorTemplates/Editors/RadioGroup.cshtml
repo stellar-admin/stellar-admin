@@ -21,11 +21,16 @@
             var id = TagBuilder.CreateSanitizedId($"{Html.IdForModel()}_{choice.Value}", "_");
             var disabled = IsReadOnly || choice.Disabled;
             var isChecked = emptyChecked && choice.Value == "" ? "checked" : null;
+            var media = ItemMediaViewModel.Create(choice.Media, choice.Text, cards ? ItemMediaPlacement.Card : ItemMediaPlacement.Inline, classes.Media);
 
             if (cards)
             {
                 <sa-field-label class="@classes.Option.Root" for="@id">
                     <sa-field orientation="FieldOrientation.Horizontal">
+                        @if (media is not null)
+                        {
+                            <partial name="_ItemMedia" model="media" />
+                        }
                         <sa-field-content class="@classes.Option.Content">
                             <sa-field-title class="@classes.Option.Label">@choice.Text</sa-field-title>
 
@@ -46,7 +51,13 @@
                     <sa-input asp-for="@Model" type="radio" value="@choice.Value" id="@id" checked="@isChecked"
                               disabled="@disabled" render-field="false" class-names="@classes.Option" />
                     <sa-field-content class="@classes.Option.Content">
-                        <sa-field-label class="@classes.Option.Label" for="@id">@choice.Text</sa-field-label>
+                        <sa-field-label class="@classes.Option.Label" for="@id">
+                            @if (media is not null)
+                            {
+                                <partial name="_ItemMedia" model="media" />
+                            }
+                            @choice.Text
+                        </sa-field-label>
 
                         @if (!string.IsNullOrEmpty(choice.Description))
                         {

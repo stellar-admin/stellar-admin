@@ -88,6 +88,57 @@ public class ResourceReferenceTests
     }
 
     [Test]
+    [Arguments(false)]
+    [Arguments(true)]
+    public async Task ChoiceEditor_UseCodeOrUseAvatar_LoadsEntityMedia(bool avatar)
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync();
+        await using var scope = sut.Services.CreateAsyncScope();
+        var editor = new RadioGroupEditor();
+        editor.UseItems<CatalogDbContext, Category, int>(
+            category => category.Id,
+            category => category.Name,
+            items =>
+            {
+                items.OrderBy(category => category.Name);
+                if (avatar)
+                {
+                    items.UseAvatar(category =>
+                        category.Id == 2 ? null : "/images/" + category.Name
+                    );
+                }
+                else
+                {
+                    items.UseCode(category =>
+                        category.Id == 2 ? "" : category.Name.Substring(0, 3)
+                    );
+                }
+            }
+        );
+        var handler = new RadioGroupEditorHandler(editor, scope.ServiceProvider);
+        var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
+
+        // Act
+        var choices =
+            (IReadOnlyList<ChoiceItem>)
+                (await handler.PrepareAsync(context, CancellationToken.None))!;
+
+        // Assert
+        ItemMedia?[] expected = avatar
+            ?
+            [
+                new ItemMedia.Avatar(null),
+                new ItemMedia.Avatar("/images/Office"),
+                new ItemMedia.Avatar("/images/Technology"),
+            ]
+            : [null, new ItemMedia.Code("Off"), new ItemMedia.Code("Tec")];
+        await Assert
+            .That(choices.Select(choice => choice.Media).ToArray())
+            .IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
     public async Task SelectEditor_FractionalValues_FormatsInCurrentCulture()
     {
         // Arrange

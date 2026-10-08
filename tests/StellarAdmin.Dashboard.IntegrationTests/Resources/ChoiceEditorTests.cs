@@ -13,6 +13,14 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
 public class ChoiceEditorTests
 {
+    private static readonly ChoiceItem[] MediaChoices =
+    [
+        new("aisle", "Aisle") { Media = new ItemMedia.Icon("armchair") },
+        new("window", "Window Seat") { Media = new ItemMedia.Avatar(null) },
+        new("middle", "Middle") { Media = new ItemMedia.Image("/seats/middle.jpg") },
+        new("exit", "Exit row") { Media = new ItemMedia.Code("EXIT") },
+    ];
+
     private static readonly ChoiceItem[] SeatChoices =
     [
         new("aisle", "Aisle"),
@@ -794,6 +802,193 @@ public class ChoiceEditorTests
         await Assert
             .That(await response.Content.ReadAsStringAsync())
             .Contains("SelectEditor on Seat requires UseItems");
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_ChoiceMedia_RendersEachKindBeforeTheText()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<RadioGroupEditor>(radio => radio.UseItems(MediaChoices))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var media = document.QuerySelectorAll("label[data-slot='field-label'] > .sa-choice-media");
+        await Assert
+            .That(media.Select(element => element.GetAttribute("data-media")))
+            .IsEquivalentTo(["icon", "avatar", "image", "code"]);
+        await Assert
+            .That(media.All(element => element.GetAttribute("data-placement") == "inline"))
+            .IsTrue();
+        await Assert.That(media[0].LocalName).IsEqualTo("svg");
+        await Assert.That(media[1].TextContent.Trim()).IsEqualTo("WS");
+        await Assert.That(media[2].GetAttribute("src")).IsEqualTo("/seats/middle.jpg");
+        await Assert.That(media[2].GetAttribute("alt")).IsEqualTo("");
+        await Assert.That(media[3].TextContent).IsEqualTo("EXIT");
+        await Assert.That(media[3].ParentElement!.TextContent.Trim().EndsWith("Exit row")).IsTrue();
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_CardsWithMediaClassNames_LeadsEachCard()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<RadioGroupEditor>(radio =>
+                {
+                    radio.Appearance = RadioGroupAppearance.Cards;
+                    radio.ClassNames.Media = "size-10";
+                    radio.UseItems(MediaChoices);
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var leading = document
+            .QuerySelectorAll("label > [data-slot='field']")
+            .Select(field => field.FirstElementChild!)
+            .Where(element => element.ClassList.Contains("sa-choice-media"))
+            .ToArray();
+        await Assert.That(leading.Length).IsEqualTo(4);
+        await Assert
+            .That(leading.All(element => element.GetAttribute("data-placement") == "card"))
+            .IsTrue();
+        await Assert.That(leading.All(element => element.ClassList.Contains("size-10"))).IsTrue();
+    }
+
+    [Test]
+    public async Task CheckboxGroupEditor_CardsWithMedia_LeadsEachCard()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabins)
+                .UseEditor<CheckboxGroupEditor>(group =>
+                {
+                    group.Appearance = CheckboxGroupAppearance.Cards;
+                    group.UseItems([
+                        new ChoiceItem("Economy", "Economy") { Media = new ItemMedia.Code("Y") },
+                        new ChoiceItem("Business", "Business") { Media = new ItemMedia.Code("J") },
+                    ]);
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var fields = document.QuerySelectorAll(
+            "[data-slot='checkbox-group'] label > [data-slot='field']"
+        );
+        await Assert
+            .That(fields.Select(field => field.FirstElementChild!.TextContent))
+            .IsEquivalentTo(["Y", "J"]);
+        await Assert
+            .That(fields.Select(field => field.Children[1].GetAttribute("data-slot")))
+            .IsEquivalentTo(["field-content", "field-content"]);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll(".sa-field-title")
+                    .Select(title => title.TextContent.Trim())
+            )
+            .IsEquivalentTo(["Economy", "Business"]);
+    }
+
+    [Test]
+    public async Task SegmentedControlEditor_ChoiceMedia_RendersMediaBeforeTheText()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<SegmentedControlEditor>(toggle =>
+                {
+                    toggle.ClassNames.Media = "border";
+                    toggle.UseItems(MediaChoices);
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var media = document.QuerySelectorAll(
+            "[data-slot='segmented-control-item'] > .sa-choice-media"
+        );
+        await Assert.That(media.Length).IsEqualTo(4);
+        await Assert.That(media.All(element => element.ClassList.Contains("border"))).IsTrue();
+        await Assert.That(media[3].ParentElement!.TextContent.Trim().EndsWith("Exit row")).IsTrue();
+    }
+
+    [Test]
+    [Arguments(ToggleGroupCheckPlacement.ReplaceMedia, "sa-toggle-chips-check-replace")]
+    [Arguments(ToggleGroupCheckPlacement.End, "sa-toggle-chips-check-end")]
+    public async Task ToggleGroupEditor_CheckPlacement_MarksTheChips(
+        ToggleGroupCheckPlacement placement,
+        string placementClass
+    )
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<ToggleGroupEditor>(group =>
+                {
+                    group.CheckPlacement = placement;
+                    group.UseItems(MediaChoices);
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='toggle-group']");
+        await Assert.That(group.ClassList.Contains(placementClass)).IsTrue();
+        await Assert
+            .That(
+                group.QuerySelectorAll("[data-slot='toggle-group-item'] > .sa-choice-media").Length
+            )
+            .IsEqualTo(4);
+    }
+
+    [Test]
+    public async Task ToggleGroupEditor_CheckPlacementStart_LeavesOutPlacementClasses()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Seat)
+                .UseEditor<ToggleGroupEditor>(group =>
+                {
+                    group.CheckPlacement = ToggleGroupCheckPlacement.Start;
+                    group.UseItems(MediaChoices);
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='toggle-group']");
+        await Assert
+            .That(group.ClassList.Any(css => css.StartsWith("sa-toggle-chips-check")))
+            .IsFalse();
     }
 
     private static IEnumerable<string?> OptionValues(AngleSharp.Dom.IElement select) =>

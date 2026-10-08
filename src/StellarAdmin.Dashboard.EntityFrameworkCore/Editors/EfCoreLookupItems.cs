@@ -36,7 +36,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         _value = options.ValueExpression.Compile();
         _title = options.TitleExpression.Compile();
         _description = options.DescriptionExpression?.Compile();
-        _media = options.MediaExpression?.Compile();
+        _media = options.Media?.Selector.Compile();
         _projection = CreateProjection(options);
     }
 
@@ -44,9 +44,9 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
 
     public override Type ItemType => typeof(TEntity);
 
-    public override LookupMediaType? MediaType => _media is null ? null : _options.MediaType;
+    public override Type? MediaType => _options.Media?.Type;
 
-    public override async Task<LookupItem?> FindAsync(
+    public override async Task<ChoiceItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
@@ -68,11 +68,11 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
                     && EqualityComparer<TValue>.Default.Equals(_value(reference), current)
                 )
                 {
-                    return new LookupItem(
-                        _title(reference),
-                        _description?.Invoke(reference),
-                        CreateMedia(_media?.Invoke(reference))
-                    );
+                    return new ChoiceItem(FormatValue(current), _title(reference))
+                    {
+                        Description = _description?.Invoke(reference),
+                        Media = CreateMedia(_media?.Invoke(reference)),
+                    };
                 }
 
                 var row = await db.Set<TEntity>()
@@ -83,12 +83,11 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
 
                 // A value the entity set no longer has is still displayed, so the selection stays visible
                 return row is null
-                    ? new LookupItem(
-                        Convert.ToString(current, CultureInfo.InvariantCulture) ?? "",
-                        null,
-                        null
+                    ? new ChoiceItem(
+                        FormatValue(current),
+                        Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
                     )
-                    : new LookupItem(row.Title ?? "", row.Description, CreateMedia(row.Media));
+                    : CreateItem(row);
             default:
                 throw new InvalidOperationException(
                     $"LookupEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
@@ -145,16 +144,8 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
             .Select(_projection)
             .ToListAsync(cancellationToken);
 
-        // Selected values are posted with the form, which binds them in the current culture
         return new LookupResults(
-            rows.Take(query.Take)
-                .Select(row => new LookupResult(
-                    Convert.ToString(row.Value, CultureInfo.CurrentCulture) ?? "",
-                    row.Title ?? "",
-                    row.Description,
-                    CreateMedia(row.Media)
-                ))
-                .ToArray(),
+            rows.Take(query.Take).Select(CreateItem).ToArray(),
             rows.Count > query.Take
         );
     }
@@ -177,7 +168,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
                 Rebind(options.ValueExpression, entity),
                 Rebind(options.TitleExpression, entity),
                 RebindOrNull(options.DescriptionExpression, entity),
-                RebindOrNull(options.MediaExpression, entity)
+                RebindOrNull(options.Media?.Selector, entity)
             ),
             entity
         );
@@ -191,8 +182,18 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
         ParameterExpression entity
     ) => selector is null ? Expression.Constant(null, typeof(string)) : Rebind(selector, entity);
 
-    private LookupMedia? CreateMedia(string? value) =>
-        _media is null ? null : new LookupMedia(_options.MediaType, value);
+    // Selected values are posted with the form, which binds them in the current culture
+    private static string FormatValue(TValue value) =>
+        Convert.ToString(value, CultureInfo.CurrentCulture) ?? "";
+
+    private ChoiceItem CreateItem(LookupProjection row) =>
+        new(FormatValue(row.Value), row.Title ?? "")
+        {
+            Description = row.Description,
+            Media = CreateMedia(row.Media),
+        };
+
+    private ItemMedia? CreateMedia(string? value) => _options.Media?.Create(value);
 
     private Expression<Func<TEntity, bool>> Matches(string term)
     {

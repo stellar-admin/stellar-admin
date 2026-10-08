@@ -44,6 +44,21 @@ public sealed class ToggleGroupGallery
     [Display(Name = "List<enum> · ClassNames.Control")]
     public List<GalleryCabin> StyledCabins { get; set; } = [];
 
+    [Display(Name = "string[] · UseItems with icons · Chips")]
+    public string[] Transports { get; set; } = [];
+
+    [Display(Name = "string[] · UseItems with avatars · Chips · CheckPlacement = Start")]
+    public string[] Guides { get; set; } = [];
+
+    [Display(Name = "string[] · UseItems with codes · Chips · CheckPlacement = End")]
+    public string[] AirportCodes { get; set; } = [];
+
+    [Display(Name = "string · UseItems with images · Joined")]
+    public string? City { get; set; }
+
+    [Display(Name = "string[] · UseItems with icons · Buttons")]
+    public string[] ButtonTransports { get; set; } = [];
+
     public static ToggleGroupGallery CreateSample() =>
         new()
         {
@@ -58,5 +73,10 @@ public sealed class ToggleGroupGallery
             DescribedCabins = [GalleryCabin.Economy],
             ReadOnlyCabins = [GalleryCabin.Business],
             StyledCabins = [],
+            Transports = ["flight", "ferry"],
+            Guides = ["ana", "yuki"],
+            AirportCodes = ["LIS", "KIX"],
+            City = "cape-town",
+            ButtonTransports = ["train"],
         };
 }

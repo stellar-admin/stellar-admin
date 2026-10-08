@@ -1,6 +1,6 @@
 ---
 component: RadioGroup
-tags: [sa-radio-group, sa-radio-group-item]
+tags: [sa-radio-group, sa-radio-group-item, sa-radio-group-item-media]
 generated: true
 ---
 
@@ -35,6 +35,7 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 |-----|-------------|
 | `<sa-radio-group>` | A group of radio options bound to a scalar value. |
 | `<sa-radio-group-item>` | An option in a radio group. |
+| `<sa-radio-group-item-media>` | The media of a radio group option, such as an icon, avatar or image. It sits before the option's text, or leads the card in the choice card variant. |
 
 ## Attributes
 

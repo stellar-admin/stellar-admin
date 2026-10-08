@@ -203,6 +203,58 @@ public class ResourceLookupTests
     }
 
     [Test]
+    public async Task Search_UseImage_ShowsImagesForItemsWithUrls()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            ConfigureLookupEdit(
+                resource,
+                items =>
+                    items
+                        .OrderBy(category => category.Id)
+                        .UseImage(category =>
+                            category.Id == 1 ? null : "/images/" + category.Id.ToString() + ".png"
+                        )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/products/lookup?form=edit&field=CategoryId"
+        );
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-lookup='item'] > img[data-media='image']")
+                    .Select(image => image.GetAttribute("src"))
+            )
+            .IsEquivalentTo(["/images/2.png", "/images/3.png"]);
+    }
+
+    [Test]
+    public async Task Edit_UseIcon_ShowsIconOfSelection()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            ConfigureLookupEdit(resource, items => items.UseIcon(_ => "tag"))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync("/stellaradmin/products/edit/1");
+        var document = await ReadDocument(response);
+
+        // Assert
+        await Assert
+            .That(document.QuerySelector("[data-lookup='selected'] svg[data-media='icon']"))
+            .IsNotNull();
+    }
+
+    [Test]
     public async Task CreateFromLookup_SelectsCreatedEntity()
     {
         // Arrange

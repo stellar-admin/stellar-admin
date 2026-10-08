@@ -1,0 +1,34 @@
+@model ItemMediaViewModel
+
+@{
+    var placement = Model.Placement switch
+    {
+        ItemMediaPlacement.Card => "card",
+        ItemMediaPlacement.Lookup => "lookup",
+        ItemMediaPlacement.LookupLarge => "lookup-lg",
+        _ => "inline",
+    };
+    var css = Model.Class is null ? "sa-choice-media" : $"sa-choice-media {Model.Class}";
+    var avatarSize = Model.Placement is ItemMediaPlacement.Card or ItemMediaPlacement.LookupLarge ? AvatarSize.Default : AvatarSize.Small;
+}
+
+@* The client stylesheet sizes media by kind and placement *@
+@switch (Model.Media)
+{
+    case ItemMedia.Icon icon:
+        <sa-icon name="@icon.Name" class="@css" data-media="icon" data-placement="@placement" aria-hidden="true" />
+        break;
+    case ItemMedia.Avatar { Url: null or "" }:
+        <sa-avatar name="@Model.Text" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
+        break;
+    case ItemMedia.Avatar avatar:
+        <sa-avatar name="@Model.Text" src="@avatar.Url" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
+        break;
+    case ItemMedia.Image image:
+        @* The text sits beside the image, so it has no alternative text of its own *@
+        <img src="@image.Url" alt="" class="@css" data-media="image" data-placement="@placement" />
+        break;
+    case ItemMedia.Code code:
+        <span class="@css" data-media="code" data-placement="@placement">@code.Value</span>
+        break;
+}

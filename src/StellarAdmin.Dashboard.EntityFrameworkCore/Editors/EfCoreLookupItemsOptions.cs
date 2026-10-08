@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
@@ -8,9 +7,7 @@ internal sealed class EfCoreLookupItemsOptions<TEntity, TValue>
 {
     internal Expression<Func<TEntity, string?>>? DescriptionExpression { get; set; }
 
-    internal Expression<Func<TEntity, string?>>? MediaExpression { get; set; }
-
-    internal LookupMediaType MediaType { get; set; }
+    internal EfCoreItemMedia<TEntity>? Media { get; set; }
 
     internal Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? OrderQuery { get; set; }
 

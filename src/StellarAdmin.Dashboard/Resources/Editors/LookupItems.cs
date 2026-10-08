@@ -19,14 +19,16 @@ public abstract class LookupItems
     public virtual Type? ItemType => null;
 
     /// <summary>
-    ///     The kind of media the items display, or null when they have none.
+    ///     The type of media the items display, such as <see cref="ItemMedia.Avatar" />, or null when they have none.
+    ///     The loading placeholders take its shape.
     /// </summary>
-    public abstract LookupMediaType? MediaType { get; }
+    public abstract Type? MediaType { get; }
 
     /// <summary>
-    ///     Returns the selected item for the field's current value, or null when nothing is selected.
+    ///     Returns the selected item for the field's current value, with the value formatted in the current culture, or
+    ///     null when nothing is selected.
     /// </summary>
-    public abstract Task<LookupItem?> FindAsync(
+    public abstract Task<ChoiceItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
@@ -46,8 +48,8 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
     Func<TEntity, TValue> value,
     Func<TEntity, string> title,
     Func<TEntity, string?>? description,
-    Func<TEntity, LookupMedia>? media,
-    LookupMediaType? mediaType
+    Func<TEntity, ItemMedia?>? media,
+    Type? mediaType
 ) : LookupItems
     where TSource : class, ILookupSource<TEntity, TValue>
 {
@@ -55,9 +57,9 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 
     public override Type ItemType => typeof(TEntity);
 
-    public override LookupMediaType? MediaType => mediaType;
+    public override Type? MediaType => mediaType;
 
-    public override async Task<LookupItem?> FindAsync(
+    public override async Task<ChoiceItem?> FindAsync(
         IServiceProvider services,
         FieldEditorContext context,
         CancellationToken cancellationToken
@@ -74,12 +76,11 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
 
                 // A value the source no longer has is still displayed, so the selection stays visible
                 return entity is null
-                    ? new LookupItem(Format(current), null, null)
-                    : new LookupItem(
-                        title(entity),
-                        description?.Invoke(entity),
-                        media?.Invoke(entity)
-                    );
+                    ? new ChoiceItem(
+                        FormatValue(current),
+                        Convert.ToString(current, CultureInfo.InvariantCulture) ?? ""
+                    )
+                    : CreateItem(entity);
             default:
                 throw new InvalidOperationException(
                     $"LookupEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
@@ -97,19 +98,17 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
             .GetRequiredService<TSource>()
             .SearchAsync(query, cancellationToken);
 
-        // Selected values are posted with the form, which binds them in the current culture
-        return new LookupResults(
-            page.Items.Select(entity => new LookupResult(
-                    Convert.ToString(value(entity), CultureInfo.CurrentCulture) ?? "",
-                    title(entity),
-                    description?.Invoke(entity),
-                    media?.Invoke(entity)
-                ))
-                .ToArray(),
-            page.HasMore
-        );
+        return new LookupResults(page.Items.Select(CreateItem).ToArray(), page.HasMore);
     }
 
-    private static string Format(TValue current) =>
-        Convert.ToString(current, CultureInfo.InvariantCulture) ?? "";
+    // Selected values are posted with the form, which binds them in the current culture
+    private static string FormatValue(TValue current) =>
+        Convert.ToString(current, CultureInfo.CurrentCulture) ?? "";
+
+    private ChoiceItem CreateItem(TEntity entity) =>
+        new(FormatValue(value(entity)), title(entity))
+        {
+            Description = description?.Invoke(entity),
+            Media = media?.Invoke(entity),
+        };
 }

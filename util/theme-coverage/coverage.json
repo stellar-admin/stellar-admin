@@ -2648,7 +2648,8 @@
     "CheckboxGroup": {
       "tags": [
         "sa-checkbox-group",
-        "sa-checkbox-group-item"
+        "sa-checkbox-group-item",
+        "sa-checkbox-group-item-media"
       ],
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/CheckboxGroup/CheckboxGroupTagHelper.cs",
@@ -7052,7 +7053,8 @@
     "RadioGroup": {
       "tags": [
         "sa-radio-group",
-        "sa-radio-group-item"
+        "sa-radio-group-item",
+        "sa-radio-group-item-media"
       ],
       "hooks": [],
       "example": "src/StellarAdmin.TagHelpers/TagHelpers/RadioGroup/RadioGroupTagHelper.cs",

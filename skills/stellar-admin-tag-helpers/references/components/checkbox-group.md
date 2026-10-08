@@ -1,6 +1,6 @@
 ---
 component: CheckboxGroup
-tags: [sa-checkbox-group, sa-checkbox-group-item]
+tags: [sa-checkbox-group, sa-checkbox-group-item, sa-checkbox-group-item-media]
 generated: true
 ---
 
@@ -37,6 +37,7 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 |-----|-------------|
 | `<sa-checkbox-group>` | A group of checkbox options bound to a collection. |
 | `<sa-checkbox-group-item>` | An option in a checkbox group. |
+| `<sa-checkbox-group-item-media>` | The media of a checkbox group option, such as an icon, avatar or image. It sits before the option's text, or leads the card in the choice card variant. |
 
 ## Attributes
 

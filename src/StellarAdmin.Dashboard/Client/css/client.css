@@ -246,4 +246,80 @@
     .sa-toggle-chips .sa-toggle-group-item:has(:checked) .sa-toggle-chip-check {
         display: block;
     }
+
+    /* A chip's check mark takes its media's place while on by default, or sits after the text. */
+    .sa-toggle-chips.sa-toggle-chips-check-replace .sa-toggle-group-item:has(:checked) .sa-choice-media {
+        display: none;
+    }
+
+    .sa-toggle-chips.sa-toggle-chips-check-end .sa-toggle-chip-check {
+        order: 1;
+    }
+
+    /* Item media: the icon, avatar, image or code beside a choice's or lookup item's text. Inline media sits before
+       the text, card media leads a choice card, and lookups size it by whether their items have descriptions. These
+       are component rules, so utilities from ClassNames.Media replace the sizes. */
+    .sa-choice-media {
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+    .sa-choice-media[data-media="icon"] {
+        @apply size-4;
+    }
+
+    .sa-choice-media[data-media="icon"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply size-5;
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="inline"],
+    .sa-choice-media[data-media="image"][data-placement="inline"] {
+        @apply size-5;
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="inline"] .sa-avatar-fallback {
+        @apply text-[0.55rem];
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="lookup"],
+    .sa-choice-media[data-media="image"][data-placement="lookup"] {
+        @apply size-6;
+    }
+
+    .sa-choice-media[data-media="avatar"]:is([data-placement="card"], [data-placement="lookup-lg"]),
+    .sa-choice-media[data-media="image"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply size-8;
+    }
+
+    .sa-choice-media[data-media="image"] {
+        @apply rounded-sm object-cover;
+    }
+
+    .sa-choice-media[data-media="image"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply rounded-md;
+    }
+
+    .sa-choice-media[data-media="code"] {
+        @apply bg-muted text-foreground inline-flex items-center justify-center rounded-sm font-mono text-[0.65rem] font-medium;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="inline"] {
+        @apply h-5 px-1.5;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="lookup"] {
+        @apply px-1.5 py-0.5 text-[0.7rem];
+    }
+
+    .sa-choice-media[data-media="code"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply rounded-md;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="card"] {
+        @apply size-8;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="lookup-lg"] {
+        @apply size-7;
+    }
 }

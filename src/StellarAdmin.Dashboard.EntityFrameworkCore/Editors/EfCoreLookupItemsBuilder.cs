@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 
@@ -79,7 +78,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
 
     /// <summary>
     ///     Displays an avatar beside each item's title, with the title's initials when the image URL is null.
-    ///     Replaces a code.
+    ///     Replaces other media.
     /// </summary>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseAvatar(
         Expression<Func<TEntity, string?>> imageUrl
@@ -87,14 +86,14 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     {
         ArgumentNullException.ThrowIfNull(imageUrl);
 
-        _options.MediaType = LookupMediaType.Avatar;
-        _options.MediaExpression = imageUrl;
+        _options.Media = EfCoreItemMedia<TEntity>.Avatar(imageUrl);
 
         return this;
     }
 
     /// <summary>
-    ///     Displays a short code beside each item's title. Replaces an avatar.
+    ///     Displays a short code beside each item's title. An item with a null or empty code has no media. Replaces
+    ///     other media.
     /// </summary>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseCode(
         Expression<Func<TEntity, string?>> code
@@ -102,8 +101,7 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     {
         ArgumentNullException.ThrowIfNull(code);
 
-        _options.MediaType = LookupMediaType.Code;
-        _options.MediaExpression = code;
+        _options.Media = EfCoreItemMedia<TEntity>.Code(code);
 
         return this;
     }
@@ -118,6 +116,36 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
         ArgumentNullException.ThrowIfNull(description);
 
         _options.DescriptionExpression = description;
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Displays a registered icon beside each item's title. An item with a null or empty icon name has no media.
+    ///     Replaces other media.
+    /// </summary>
+    public EfCoreLookupItemsBuilder<TEntity, TValue> UseIcon(
+        Expression<Func<TEntity, string?>> iconName
+    )
+    {
+        ArgumentNullException.ThrowIfNull(iconName);
+
+        _options.Media = EfCoreItemMedia<TEntity>.Icon(iconName);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Displays a square image beside each item's title. An item with a null or empty image URL has no media.
+    ///     Replaces other media.
+    /// </summary>
+    public EfCoreLookupItemsBuilder<TEntity, TValue> UseImage(
+        Expression<Func<TEntity, string?>> imageUrl
+    )
+    {
+        ArgumentNullException.ThrowIfNull(imageUrl);
+
+        _options.Media = EfCoreItemMedia<TEntity>.Image(imageUrl);
 
         return this;
     }

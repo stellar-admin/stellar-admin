@@ -543,13 +543,13 @@ public class LookupCreateTests
     {
         public override bool HasDescription => false;
 
-        public override LookupMediaType? MediaType => null;
+        public override Type? MediaType => null;
 
-        public override Task<LookupItem?> FindAsync(
+        public override Task<ChoiceItem?> FindAsync(
             IServiceProvider services,
             FieldEditorContext context,
             CancellationToken cancellationToken
-        ) => Task.FromResult<LookupItem?>(null);
+        ) => Task.FromResult<ChoiceItem?>(null);
 
         public override Task<LookupResults> SearchAsync(
             IServiceProvider services,

@@ -15,7 +15,7 @@
 | [ButtonGroup](components/button-group.md) | `<sa-button-group>`, `<sa-button-group-separator>`, `<sa-button-group-text>` | Groups related buttons together as a single visual unit. |
 | [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents. |
 | [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | A scrollable collection of slides with optional navigation controls. |
-| [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>` | A group of checkbox options bound to a collection. |
+| [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>`, `<sa-checkbox-group-item-media>` | A group of checkbox options bound to a collection. |
 | [Collapsible](components/collapsible.md) | `<sa-collapsible>` | A container whose content can be expanded or collapsed. |
 | [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
 | [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-column>`, `<sa-data-grid-empty>`, … | A data grid that renders a full table from declarative column definitions and a data source. |
@@ -41,7 +41,7 @@
 | [Popover](components/popover.md) | `<sa-popover>`, `<sa-popover-description>`, `<sa-popover-header>`, … | A floating panel of rich content anchored to a trigger element, rendered as a native popover. |
 | [Progress](components/progress.md) | `<sa-progress>`, `<sa-progress-label>`, `<sa-progress-value>` | A progress bar that visualizes the completion of a task as a filled track. |
 | [Questionnaire](components/questionnaire.md) | `<sa-questionnaire>`, `<sa-questionnaire-actions>`, `<sa-questionnaire-choice>`, … | A container for one or more questionnaire items. |
-| [RadioGroup](components/radio-group.md) | `<sa-radio-group>`, `<sa-radio-group-item>` | A group of radio options bound to a scalar value. |
+| [RadioGroup](components/radio-group.md) | `<sa-radio-group>`, `<sa-radio-group-item>`, `<sa-radio-group-item-media>` | A group of radio options bound to a scalar value. |
 | [SegmentedControl](components/segmented-control.md) | `<sa-segmented-control>`, `<sa-segmented-control-item>` | A group of radio buttons styled as a segmented control. |
 | [Select](components/select.md) | `<sa-select>` | A styled dropdown for choosing a single option, wrapping a native `<select>` element with a custom chevron icon. |
 | [Separator](components/separator.md) | `<sa-separator>` | A thin dividing line between sections of content, rendered as a `<div>` with `role="separator"`. |

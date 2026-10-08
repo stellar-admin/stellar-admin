@@ -3,7 +3,7 @@
 
 @{
     var editor = Model.Editor;
-    var hasDescription = editor.Items!.HasDescription;
+    var placement = editor.Items!.HasDescription ? ItemMediaPlacement.LookupLarge : ItemMediaPlacement.Lookup;
     var labels = LabelOptions.Value;
 }
 
@@ -32,15 +32,15 @@ else if (Model.IsEmpty)
 
 @foreach (var item in Model.Items)
 {
-    var media = editor.SheetOptions.ShowMedia ? LookupMediaViewModel.Create(item.Media, item.Title, hasDescription) : null;
+    var media = editor.SheetOptions.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, editor.ClassNames.Media) : null;
 
     <sa-command-item value="@item.Value" checked="@(item.Value == Model.Selected)" data-lookup="item">
         @if (media is not null)
         {
-            <partial name="_LookupMedia" model="media" />
+            <partial name="_ItemMedia" model="media" />
         }
         <div class="flex min-w-0 flex-col">
-            <span class="truncate" data-lookup="item-title">@item.Title</span>
+            <span class="truncate" data-lookup="item-title">@item.Text</span>
             @if (!string.IsNullOrEmpty(item.Description))
             {
                 <span class="text-muted-foreground truncate text-xs" data-lookup="item-description">@item.Description</span>
@@ -49,7 +49,7 @@ else if (Model.IsEmpty)
         @* The editor's display of this item, swapped in when it is selected *@
         <template data-lookup="selection">
             <partial name="_LookupSelection"
-                     model="new LookupSelectionViewModel(new LookupItem(item.Title, item.Description, item.Media), editor.Layout, editor.FieldOptions.ShowMedia, false)" />
+                     model="new LookupSelectionViewModel(item, editor.Layout, editor.FieldOptions.ShowMedia, false, editor.ClassNames.Media)" />
         </template>
     </sa-command-item>
 }

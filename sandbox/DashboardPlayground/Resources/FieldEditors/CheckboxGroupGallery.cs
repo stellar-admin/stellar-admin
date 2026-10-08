@@ -54,6 +54,18 @@ public sealed class CheckboxGroupGallery
     [Display(Name = "string[] · Columns(2) in a half-width field, beside it")]
     public string[] NarrowAmenitiesBeside { get; set; } = [];
 
+    [Display(Name = "string[] · UseItems with icons")]
+    public string[] Transports { get; set; } = [];
+
+    [Display(Name = "string[] · UseItems with codes and descriptions")]
+    public string[] AirportCodes { get; set; } = [];
+
+    [Display(Name = "string[] · UseItems with avatars · Cards")]
+    public string[] Guides { get; set; } = [];
+
+    [Display(Name = "string[] · UseItems with images · Cards · Columns(2)")]
+    public string[] Cities { get; set; } = [];
+
     public static CheckboxGroupGallery CreateSample() =>
         new()
         {
@@ -71,5 +83,9 @@ public sealed class CheckboxGroupGallery
             CardColumnCabins = [GalleryCabin.PremiumEconomy],
             NarrowAmenities = ["wifi"],
             NarrowAmenitiesBeside = ["insurance"],
+            Transports = ["flight", "ferry"],
+            AirportCodes = ["CPT"],
+            Guides = ["ana", "lena"],
+            Cities = ["lisbon", "kyoto"],
         };
 }

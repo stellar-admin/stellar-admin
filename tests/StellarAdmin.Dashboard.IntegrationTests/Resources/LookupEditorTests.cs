@@ -329,6 +329,52 @@ public class LookupEditorTests
     }
 
     [Test]
+    public async Task UseImageAndUseIcon_ShowMediaWithMediaClasses()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+            {
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.ClassNames.Media = "size-7";
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items => items.UseImage(category => $"/images/{category.Code}.png")
+                        );
+                    });
+                fields
+                    .Add(model => model.PrimaryCategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items => items.UseIcon(_ => "tag")
+                        )
+                    );
+            },
+            new() { CategoryId = 2, PrimaryCategoryId = 1 }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var image = document.RequiredElement("#Entity_CategoryId-selected img[data-media='image']");
+        await Assert.That(image.GetAttribute("src")).IsEqualTo("/images/NTB.png");
+        await Assert.That(image.GetAttribute("data-placement")).IsEqualTo("lookup");
+        await Assert.That(image.ClassList.Contains("size-7")).IsTrue();
+        var icon = document.RequiredElement(
+            "#Entity_PrimaryCategoryId-selected svg[data-media='icon']"
+        );
+        await Assert.That(icon.ClassList.Contains("sa-choice-media")).IsTrue();
+    }
+
+    [Test]
     public async Task ShowMediaFalse_HidesMedia()
     {
         // Arrange
@@ -735,6 +781,40 @@ public class LookupEditorTests
             .IsEqualTo(4);
         await Assert
             .That(loading.Content.QuerySelectorAll("[data-slot='skeleton'].h-3").Length)
+            .IsEqualTo(4);
+    }
+
+    [Test]
+    public async Task LookupSheet_ImageResults_LoadingRowsTakeTheImageShape()
+    {
+        // Arrange
+        await using var sut = await CreateLookupFieldsHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryId)
+                    .UseEditor<LookupEditor>(lookup =>
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items => items.UseImage(category => $"/images/{category.Code}.png")
+                        )
+                    ),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookupsheet?form=create&field=CategoryId&for=Entity_CategoryId"
+        );
+
+        // Assert
+        var loading = (IHtmlTemplateElement)
+            document.RequiredElement("template[data-lookup='loading']");
+        await Assert
+            .That(
+                loading.Content.QuerySelectorAll("[data-slot='skeleton'].size-6.rounded-sm").Length
+            )
             .IsEqualTo(4);
     }
 

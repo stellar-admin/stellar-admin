@@ -408,27 +408,39 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseCode and UseAvatar display media beside each item. The layout is a card when the items have a description, otherwise a button.";
+                    "UseCode, UseAvatar, UseImage and UseIcon display media beside each item. The layout is a card when the items have a description, otherwise a button. Only Lisbon and Cape Town have images; the other airports have no media.";
                 section
                     .Add(model => model.CodeAirport)
                     .UseEditor<LookupEditor>(lookup =>
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                        UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.CodeInputAirport)
                     .UseEditor<LookupEditor>(lookup =>
-                        UseAirports(lookup, media: LookupMediaType.Code)
+                        UseAirports(lookup, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.AvatarAirport)
                     .UseEditor<LookupEditor>(lookup =>
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Avatar)
+                        UseAirports(lookup, describe: true, media: AirportMedia.Avatar)
                     );
                 section
                     .Add(model => model.AvatarInputAirport)
                     .UseEditor<LookupEditor>(lookup =>
-                        UseAirports(lookup, media: LookupMediaType.Avatar)
+                        UseAirports(lookup, media: AirportMedia.Avatar)
                     );
+                section
+                    .Add(model => model.ImageAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                        UseAirports(lookup, describe: true, media: AirportMedia.Image)
+                    );
+                section
+                    .Add(model => model.IconInputAirport)
+                    .UseEditor<LookupEditor>(lookup =>
+                    {
+                        lookup.ClassNames.Media = "text-muted-foreground";
+                        UseAirports(lookup, media: AirportMedia.Icon);
+                    });
                 section
                     .Add(model => model.InputLayoutAirport)
                     .UseEditor<LookupEditor>(lookup =>
@@ -441,42 +453,42 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<LookupEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.Layout = LookupEditorLayout.Card);
-                        UseAirports(lookup, media: LookupMediaType.Code);
+                        UseAirports(lookup, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.EditorMediaHiddenAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.ShowMedia = false);
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                        UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.SheetMediaHiddenAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.ShowMedia = false);
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                        UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.CreatableAirport)
                     .UseEditor<LookupEditor>(lookup =>
                     {
                         lookup.EnableCreate();
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Code);
+                        UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.ReadOnlyCodeAirport)
                     .UseEditor<LookupEditor>(lookup =>
-                        UseAirports(lookup, describe: true, media: LookupMediaType.Code)
+                        UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
             }
         );
 
-        // The gallery has no airport images, so avatars show the title's initials
+        // The gallery has no airport photos, so avatars show the title's initials and only two airports have images
         static void UseAirports(
             LookupEditor lookup,
             bool describe = false,
-            LookupMediaType? media = null
+            AirportMedia? media = null
         ) =>
             lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
                 airport => airport.Code,
@@ -484,7 +496,7 @@ internal static class FieldEditorGalleryRegistration
                 items =>
                 {
                     // A code chip already shows the code
-                    if (describe && media == LookupMediaType.Code)
+                    if (describe && media == AirportMedia.Code)
                     {
                         items.UseDescription(airport => airport.Country);
                     }
@@ -493,13 +505,27 @@ internal static class FieldEditorGalleryRegistration
                         items.UseDescription(airport => $"{airport.Code} · {airport.Country}");
                     }
 
-                    if (media == LookupMediaType.Code)
+                    switch (media)
                     {
-                        items.UseCode(airport => airport.Code);
-                    }
-                    else if (media == LookupMediaType.Avatar)
-                    {
-                        items.UseAvatar(_ => null);
+                        case AirportMedia.Code:
+                            items.UseCode(airport => airport.Code);
+                            break;
+                        case AirportMedia.Avatar:
+                            items.UseAvatar(_ => null);
+                            break;
+                        case AirportMedia.Image:
+                            items.UseImage(airport =>
+                                airport.Code switch
+                                {
+                                    "LIS" => "/images/lisbon.jpg",
+                                    "CPT" => "/images/cape-town.jpg",
+                                    _ => null,
+                                }
+                            );
+                            break;
+                        case AirportMedia.Icon:
+                            items.UseIcon(_ => "plane-landing");
+                            break;
                     }
                 }
             );
@@ -560,6 +586,45 @@ internal static class FieldEditorGalleryRegistration
                         radio.Appearance = RadioGroupAppearance.Cards;
                         radio.ClassNames.Option.Root = "border-dashed";
                         radio.UseItems(GalleryDescribedSeats.Items);
+                    });
+            }
+        );
+        fields.AddSection(
+            "Media",
+            section =>
+            {
+                section.Description =
+                    "Choices with ItemMedia: icons, avatars, images or codes. Media sits before the text, and leads cards at a larger size.";
+                section.Columns(2);
+                section
+                    .Add(model => model.Transport)
+                    .UseEditor<RadioGroupEditor>(radio => radio.UseItems(GalleryTransport.Items));
+                section
+                    .Add(model => model.AirportCode)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                        radio.UseItems(
+                            GalleryAirportCodes.Items.Select(item =>
+                                item with
+                                {
+                                    Description = null,
+                                }
+                            )
+                        )
+                    );
+                section
+                    .Add(model => model.Guide)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                    {
+                        radio.Appearance = RadioGroupAppearance.Cards;
+                        radio.UseItems(GalleryGuides.Items);
+                    });
+                section
+                    .Add(model => model.City)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                    {
+                        radio.Appearance = RadioGroupAppearance.Cards;
+                        radio.ClassNames.Media = "size-10";
+                        radio.UseItems(GalleryCities.Items);
                     });
             }
         );
@@ -667,6 +732,42 @@ internal static class FieldEditorGalleryRegistration
                     });
             }
         );
+        fields.AddSection(
+            "Media",
+            section =>
+            {
+                section.Description =
+                    "Choices with ItemMedia: icons, avatars, images or codes. Media sits before the text, and leads cards at a larger size.";
+                section.Columns(2);
+                section
+                    .Add(model => model.Transports)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                        group.UseItems(
+                            GalleryTransport.Items.Select(item => item with { Description = null })
+                        )
+                    );
+                section
+                    .Add(model => model.AirportCodes)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                        group.UseItems(GalleryAirportCodes.Items)
+                    );
+                section
+                    .Add(model => model.Guides)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.Appearance = CheckboxGroupAppearance.Cards;
+                        group.UseItems(GalleryGuides.Items);
+                    });
+                section
+                    .Add(model => model.Cities)
+                    .UseEditor<CheckboxGroupEditor>(group =>
+                    {
+                        group.Appearance = CheckboxGroupAppearance.Cards;
+                        group.UseItems(GalleryCities.Items);
+                        group.Columns(2);
+                    });
+            }
+        );
     }
 
     private static void ConfigureSegmentedControlFields(
@@ -712,6 +813,31 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<SegmentedControlEditor>(toggle =>
                         toggle.ClassNames.Control = "border-dashed"
                     );
+            }
+        );
+        fields.AddSection(
+            "Media",
+            section =>
+            {
+                section.Description =
+                    "Choices with ItemMedia display it before the text. A segmented control has no descriptions.";
+                section
+                    .Add(model => model.Transport)
+                    .UseEditor<SegmentedControlEditor>(toggle =>
+                        toggle.UseItems(GalleryTransport.Items)
+                    );
+                section
+                    .Add(model => model.Guide)
+                    .UseEditor<SegmentedControlEditor>(toggle =>
+                        toggle.UseItems(GalleryGuides.Items)
+                    );
+                section
+                    .Add(model => model.AirportCode)
+                    .UseEditor<SegmentedControlEditor>(toggle =>
+                    {
+                        toggle.ClassNames.Media = "border bg-transparent";
+                        toggle.UseItems(GalleryAirportCodes.Items);
+                    });
             }
         );
     }
@@ -768,6 +894,45 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<ToggleGroupEditor>(group =>
                         group.ClassNames.Control = "rounded-lg border border-dashed p-3"
                     );
+            }
+        );
+        fields.AddSection(
+            "Media",
+            section =>
+            {
+                section.Description =
+                    "Choices with ItemMedia display it before the text. A chip's check mark replaces its media while on, unless CheckPlacement moves it.";
+                section
+                    .Add(model => model.Transports)
+                    .UseEditor<ToggleGroupEditor>(group => group.UseItems(GalleryTransport.Items));
+                section
+                    .Add(model => model.Guides)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.CheckPlacement = ToggleGroupCheckPlacement.Start;
+                        group.UseItems(GalleryGuides.Items);
+                    });
+                section
+                    .Add(model => model.AirportCodes)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.CheckPlacement = ToggleGroupCheckPlacement.End;
+                        group.UseItems(GalleryAirportCodes.Items);
+                    });
+                section
+                    .Add(model => model.City)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.Appearance = ToggleGroupAppearance.Joined;
+                        group.UseItems(GalleryCities.Items);
+                    });
+                section
+                    .Add(model => model.ButtonTransports)
+                    .UseEditor<ToggleGroupEditor>(group =>
+                    {
+                        group.Appearance = ToggleGroupAppearance.Buttons;
+                        group.UseItems(GalleryTransport.Items);
+                    });
             }
         );
     }

@@ -6,6 +6,11 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 public sealed class LookupEditor : FieldEditor, IFieldEditor<LookupEditorHandler>
 {
     /// <summary>
+    ///     Additional CSS classes for the parts of the editor.
+    /// </summary>
+    public override LookupEditorClassNames ClassNames { get; } = new();
+
+    /// <summary>
     ///     The configured items, or null until items are selected.
     /// </summary>
     public LookupItems? Items { get; private set; }

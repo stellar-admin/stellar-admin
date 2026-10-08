@@ -68,6 +68,12 @@ public sealed class LookupGallery
     [Display(Name = "string? · UseAvatar")]
     public string? AvatarInputAirport { get; set; }
 
+    [Display(Name = "string? · UseImage with UseDescription")]
+    public string? ImageAirport { get; set; }
+
+    [Display(Name = "string? · UseIcon · ClassNames.Media")]
+    public string? IconInputAirport { get; set; }
+
     [Display(Name = "string? · UseDescription · editor Layout Input")]
     public string? InputLayoutAirport { get; set; }
 
@@ -107,6 +113,8 @@ public sealed class LookupGallery
             CodeInputAirport = "BCN",
             AvatarAirport = "HKG",
             AvatarInputAirport = "IST",
+            ImageAirport = "LIS",
+            IconInputAirport = "JNB",
             InputLayoutAirport = "KEF",
             CardLayoutAirport = "LHR",
             EditorMediaHiddenAirport = "MEX",
@@ -114,4 +122,13 @@ public sealed class LookupGallery
             CreatableAirport = null,
             ReadOnlyCodeAirport = "ZRH",
         };
+}
+
+// The media of the lookup gallery's airports
+internal enum AirportMedia
+{
+    Code,
+    Avatar,
+    Image,
+    Icon,
 }

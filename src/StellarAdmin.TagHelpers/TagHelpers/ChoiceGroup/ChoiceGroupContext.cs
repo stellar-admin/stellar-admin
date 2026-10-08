@@ -11,6 +11,7 @@ internal sealed class ChoiceGroupContext
     public required Func<
         string,
         IHtmlContent,
+        IHtmlContent?,
         string?,
         bool,
         string?,

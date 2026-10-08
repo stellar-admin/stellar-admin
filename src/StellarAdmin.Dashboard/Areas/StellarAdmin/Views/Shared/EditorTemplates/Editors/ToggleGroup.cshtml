@@ -5,7 +5,13 @@
     var type = ViewData.ModelMetadata.ElementMetadata is null ? ToggleGroupType.Single : ToggleGroupType.Multiple;
     var chips = Editor.Appearance == ToggleGroupAppearance.Chips;
     var joined = Editor.Appearance == ToggleGroupAppearance.Joined;
-    var appearanceClass = joined ? null : chips ? "sa-toggle-group-wrap sa-toggle-chips" : "sa-toggle-group-wrap";
+    var checkClass = Editor.CheckPlacement switch
+    {
+        ToggleGroupCheckPlacement.ReplaceMedia => "sa-toggle-chips-check-replace",
+        ToggleGroupCheckPlacement.End => "sa-toggle-chips-check-end",
+        _ => null,
+    };
+    var appearanceClass = joined ? null : chips ? $"sa-toggle-group-wrap sa-toggle-chips {checkClass}".TrimEnd() : "sa-toggle-group-wrap";
     var classes = string.Join(' ', new[] { appearanceClass, EditorClassNamesMapper.ForToggleGroup(Editor) }.Where(css => css is not null));
     var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
@@ -15,10 +21,15 @@
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
         <sa-toggle-group-item value="@choice.Value" selected="@selected" disabled="@(IsReadOnly || choice.Disabled)">
             @if (chips)
             {
                 <sa-icon name="check" class="sa-toggle-chip-check" />
+            }
+            @if (media is not null)
+            {
+                <partial name="_ItemMedia" model="media" />
             }
             @choice.Text
         </sa-toggle-group-item>

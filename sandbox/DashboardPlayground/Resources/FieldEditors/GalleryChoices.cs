@@ -90,3 +90,112 @@ internal static class GalleryMeals
     public static IReadOnlyList<ChoiceItem> Items { get; } =
     [new("breakfast", "Breakfast"), new("lunch", "Lunch"), new("dinner", "Dinner")];
 }
+
+// Choices with each kind of media, for the media sections of the choice editor galleries
+internal static class GalleryTransport
+{
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [
+        new("flight", "Flight")
+        {
+            Description = "Fastest between cities.",
+            Media = new ItemMedia.Icon("plane"),
+        },
+        new("train", "Train")
+        {
+            Description = "City centre to city centre.",
+            Media = new ItemMedia.Icon("train-front"),
+        },
+        new("ferry", "Ferry")
+        {
+            Description = "Island hops and coastal routes.",
+            Media = new ItemMedia.Icon("ship"),
+        },
+        new("car", "Car hire")
+        {
+            Description = "Pick up at the airport.",
+            Media = new ItemMedia.Icon("car"),
+        },
+    ];
+}
+
+internal static class GalleryGuides
+{
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [
+        new("ana", "Ana Ribeiro")
+        {
+            Description = "Lisbon walking tours.",
+            Media = new ItemMedia.Avatar("/images/avatar-1.jpg"),
+        },
+        new("thabo", "Thabo Nkosi")
+        {
+            Description = "Cape Peninsula drives.",
+            Media = new ItemMedia.Avatar("/images/avatar-2.jpg"),
+        },
+        new("yuki", "Yuki Tanaka")
+        {
+            Description = "Kyoto temples and gardens.",
+            Media = new ItemMedia.Avatar("/images/avatar-3.jpg"),
+        },
+        new("lena", "Lena Fischer")
+        {
+            Description = "No photo yet, so her initials show.",
+            Media = new ItemMedia.Avatar(null),
+        },
+    ];
+}
+
+internal static class GalleryCities
+{
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [
+        new("lisbon", "Lisbon")
+        {
+            Description = "Trams, tiles and pastéis.",
+            Media = new ItemMedia.Image("/images/lisbon.jpg"),
+        },
+        new("cape-town", "Cape Town")
+        {
+            Description = "Table Mountain views.",
+            Media = new ItemMedia.Image("/images/cape-town.jpg"),
+        },
+        new("kyoto", "Kyoto")
+        {
+            Description = "Temples and tea houses.",
+            Media = new ItemMedia.Image("/images/kyoto.jpg"),
+        },
+        new("chiang-mai", "Chiang Mai")
+        {
+            Description = "Night markets and hills.",
+            Media = new ItemMedia.Image("/images/chiang-mai.jpg"),
+        },
+    ];
+}
+
+internal static class GalleryAirportCodes
+{
+    public static IReadOnlyList<ChoiceItem> Items { get; } =
+    [
+        new("LIS", "Lisbon")
+        {
+            Description = "Humberto Delgado.",
+            Media = new ItemMedia.Code("LIS"),
+        },
+        new("CPT", "Cape Town")
+        {
+            Description = "Cape Town International.",
+            Media = new ItemMedia.Code("CPT"),
+        },
+        new("KIX", "Osaka")
+        {
+            Description = "Kansai International.",
+            Media = new ItemMedia.Code("KIX"),
+        },
+        new("CNX", "Chiang Mai")
+        {
+            Description = "Chiang Mai International.",
+            Media = new ItemMedia.Code("CNX"),
+        },
+    ];
+}

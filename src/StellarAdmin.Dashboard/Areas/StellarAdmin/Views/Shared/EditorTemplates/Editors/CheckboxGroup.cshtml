@@ -9,6 +9,7 @@
     // Razor renders a null data attribute as empty, so the columns are marked with classes
     var columnsClass = columns is null ? null : down ? "sa-choice-columns sa-choice-columns-down" : "sa-choice-columns";
     var classes = string.Join(' ', new[] { EditorClassNamesMapper.ForCheckboxGroup(Editor), columnsClass }.Where(css => css is not null));
+    var placement = variant == CheckboxGroupVariant.ChoiceCard ? ItemMediaPlacement.Card : ItemMediaPlacement.Inline;
 }
 
 <sa-checkbox-group class="@classes" asp-for="@Model"
@@ -16,14 +17,28 @@
                    style="@style">
     @foreach (var choice in choices)
     {
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, placement, Editor.ClassNames.Media);
+
         // A bound empty description still renders its paragraph, so the attribute is left out instead
         if (string.IsNullOrEmpty(choice.Description))
         {
-            <sa-checkbox-group-item value="@choice.Value" disabled="@choice.Disabled">@choice.Text</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="@choice.Value" disabled="@choice.Disabled">
+                @if (media is not null)
+                {
+                    <sa-checkbox-group-item-media><partial name="_ItemMedia" model="media" /></sa-checkbox-group-item-media>
+                }
+                @choice.Text
+            </sa-checkbox-group-item>
         }
         else
         {
-            <sa-checkbox-group-item value="@choice.Value" description="@choice.Description" disabled="@choice.Disabled">@choice.Text</sa-checkbox-group-item>
+            <sa-checkbox-group-item value="@choice.Value" description="@choice.Description" disabled="@choice.Disabled">
+                @if (media is not null)
+                {
+                    <sa-checkbox-group-item-media><partial name="_ItemMedia" model="media" /></sa-checkbox-group-item-media>
+                }
+                @choice.Text
+            </sa-checkbox-group-item>
         }
     }
 </sa-checkbox-group>

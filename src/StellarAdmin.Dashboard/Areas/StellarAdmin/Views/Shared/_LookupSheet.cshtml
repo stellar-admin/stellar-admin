@@ -9,10 +9,14 @@
     var skeletonMediaClass = editor.SheetOptions.ShowMedia
         ? (editor.Items!.MediaType, editor.Items.HasDescription) switch
         {
-            (LookupMediaType.Code, true) => "size-7 rounded-md",
-            (LookupMediaType.Code, false) => "h-5 w-8 rounded-sm",
-            (LookupMediaType.Avatar, true) => "size-8 rounded-full",
-            (LookupMediaType.Avatar, false) => "size-6 rounded-full",
+            ({ } type, true) when type == typeof(ItemMedia.Code) => "size-7 rounded-md",
+            ({ } type, false) when type == typeof(ItemMedia.Code) => "h-5 w-8 rounded-sm",
+            ({ } type, true) when type == typeof(ItemMedia.Avatar) => "size-8 rounded-full",
+            ({ } type, false) when type == typeof(ItemMedia.Avatar) => "size-6 rounded-full",
+            ({ } type, true) when type == typeof(ItemMedia.Image) => "size-8 rounded-md",
+            ({ } type, false) when type == typeof(ItemMedia.Image) => "size-6 rounded-sm",
+            ({ } type, true) when type == typeof(ItemMedia.Icon) => "size-5 rounded-sm",
+            ({ } type, false) when type == typeof(ItemMedia.Icon) => "size-4 rounded-sm",
             _ => null,
         }
         : null;
