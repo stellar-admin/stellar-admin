@@ -1,6 +1,6 @@
 # Dashboard choice editors
 
-Status: active, phases 1 to 3 implemented 2026-10-07; phase 4 (choice items) implemented 2026-10-08; phase 5 (empty choice) implemented 2026-10-08 and awaiting review; phases 6 and 7 (media) not started.
+Status: completed, 2026-10-08. All seven phases are implemented and committed. The sheet and popover multi-select lookup patterns and an attribute for enum member icons are unscheduled.
 
 ## Goal
 
@@ -58,7 +58,7 @@ Analysis of the current flow, from each source through the item types to each te
 4. `ChoiceItem` and `ChoiceGroup` as the public item types: the `SelectListItem` adapter, Select through the shared route with groups, enum group names, and the single EF Core extension on `ChoiceEditor`. Implemented 2026-10-08.
 5. Editor-owned empty choice with `EmptyChoice`, removing `IncludeEmptyOption`, and the shared null-selection helper. Implemented 2026-10-08.
 6. Media prototype in `sandbox/html`: each media case in every choice editor and appearance, with sizes for the segmented control and joined toggles and the chip check mark placement. Stops for visual approval. Approved 2026-10-08. Built as `sandbox/html/choice-media.html`: the editors' current markup with media added, a grid per editor and appearance, and six strips (inline avatar and image size, media beside a description, card media size and placement, chip check placement, segmented and joined size, items without media); checked by screenshot in nova and dark vega at desktop and phone widths. Option A won every strip; the decisions are under Media.
-7. `ItemMedia` replacing the lookup media types and `ChoiceItem` replacing `LookupResult` and `LookupItem`, with media rendered in the choice editors as approved, `ClassNames.Media`, `ToggleGroupEditor.CheckPlacement`, the group item media tags and the builder methods. Implemented 2026-10-08; awaiting review.
+7. `ItemMedia` replacing the lookup media types and `ChoiceItem` replacing `LookupResult` and `LookupItem`, with media rendered in the choice editors as approved, `ClassNames.Media`, `ToggleGroupEditor.CheckPlacement`, the group item media tags and the builder methods. Implemented 2026-10-08.
 
 Each implementation phase covers tests, playground gallery entries and the Dashboard consumer reference, and stops for review.
 
