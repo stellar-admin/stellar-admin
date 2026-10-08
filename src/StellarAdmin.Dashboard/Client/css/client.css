@@ -229,14 +229,23 @@
         }
     }
 
-    /* Toggle group editors wrap their separate toggles, and chips round them into pills with a check that shows
-       while on. */
+    /* Toggle group editors wrap their separate toggles, and chips take the theme's chip radius, with a check that
+       shows while on. Their avatars, images and codes follow the chip's shape, inset by the toggle's padding. */
     .sa-toggle-group.sa-toggle-group-wrap {
         flex-wrap: wrap;
     }
 
     .sa-toggle-group.sa-toggle-chips > .sa-toggle-group-item {
-        border-radius: calc(infinity * 1px);
+        border-radius: var(--sa-chip-radius);
+    }
+
+    .sa-toggle-chips .sa-toggle-group-item > .sa-choice-media:is([data-media="avatar"], [data-media="image"], [data-media="code"]) {
+        border-radius: max(0px, calc(var(--sa-chip-radius) - 4px));
+
+        & > *,
+        &::after {
+            border-radius: inherit;
+        }
     }
 
     .sa-toggle-chips .sa-toggle-chip-check {

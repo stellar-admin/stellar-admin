@@ -70,14 +70,15 @@ public class MultiLookupSheetEditorTests
 
         // Assert
         var selected = document.RequiredElement("#Entity_CategoryIds-selected");
-        await Assert.That(selected.GetAttribute("data-slot")).IsEqualTo("input-group");
+        await Assert.That(selected.GetAttribute("data-slot")).IsEqualTo("chip-group");
+        await Assert.That(selected.GetAttribute("data-appearance")).IsEqualTo("input");
         await Assert.That(selected.HasAttribute("hidden")).IsFalse();
-        var chips = selected.QuerySelectorAll("[data-slot='badge'][data-lookup='item']");
+        var chips = selected.QuerySelectorAll("[data-slot='chip'][data-lookup='item']");
         await Assert
             .That(chips.Select(chip => chip.GetAttribute("data-value")!))
             .IsEquivalentTo(["2", "1"], CollectionOrdering.Matching);
         await Assert
-            .That(chips[0].RequiredElement("[data-lookup='remove'] .sr-only").TextContent)
+            .That(chips[0].RequiredElement("[data-lookup='remove']").GetAttribute("aria-label"))
             .IsEqualTo("Remove Notebooks");
         await Assert
             .That(selected.RequiredElement("#Entity_CategoryIds-add").TextContent.Trim())
@@ -85,6 +86,39 @@ public class MultiLookupSheetEditorTests
         await Assert
             .That(document.RequiredElement("#Entity_CategoryIds-empty").HasAttribute("hidden"))
             .IsTrue();
+    }
+
+    [Test]
+    public async Task ChipsLayout_WithCodes_RendersEachCodeAsTheChipsMedia()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.ClassNames.Media = "font-semibold";
+                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                            category => category.Id,
+                            category => category.Name,
+                            items => items.UseCode(category => category.Code)
+                        );
+                    }),
+            new() { CategoryIds = [2] }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        var code = document.RequiredElement(
+            "#Entity_CategoryIds-selected [data-slot='chip'] > code:first-child"
+        );
+        await Assert.That(code.TextContent).IsEqualTo("NTB");
+        await Assert.That(code.ClassList.Contains("font-semibold")).IsTrue();
+        await Assert.That(code.ClassList.Contains("sa-choice-media")).IsFalse();
     }
 
     [Test]
@@ -275,7 +309,7 @@ public class MultiLookupSheetEditorTests
         var document = await client.GetDocumentAsync(EditUrl);
 
         // Assert
-        var chips = document.QuerySelectorAll("[role='list'] [data-slot='badge']");
+        var chips = document.QuerySelectorAll("[role='list'] [data-slot='chip']");
         await Assert
             .That(chips.Select(chip => chip.TextContent.Trim()))
             .IsEquivalentTo(["Cameras", "Notebooks"], CollectionOrdering.Matching);
@@ -325,7 +359,7 @@ public class MultiLookupSheetEditorTests
             .That(
                 document
                     .QuerySelectorAll("[data-lookup='item']")
-                    .Select(chip => chip.QuerySelector("span")!.TextContent)
+                    .Select(chip => chip.TextContent.Trim())
             )
             .IsEquivalentTo(["Cameras", "99"], CollectionOrdering.Matching);
     }
@@ -444,7 +478,7 @@ public class MultiLookupSheetEditorTests
             .That(
                 document
                     .QuerySelectorAll("#Entity_LimitedCategoryIds-selected [data-lookup='item']")
-                    .Select(chip => chip.QuerySelector("span")!.TextContent)
+                    .Select(chip => chip.TextContent.Trim())
             )
             .IsEquivalentTo(["Lenses", "Cameras", "Notebooks"], CollectionOrdering.Matching);
         await Assert
@@ -454,9 +488,9 @@ public class MultiLookupSheetEditorTests
             .That(
                 document
                     .RequiredElement("#Entity_LimitedCategoryIds-selected")
-                    .ClassList.Contains("border-destructive")
+                    .GetAttribute("aria-invalid")
             )
-            .IsTrue();
+            .IsEqualTo("true");
     }
 
     [Test]
@@ -663,12 +697,12 @@ public class MultiLookupSheetEditorTests
         );
 
         // Assert
-        var chips = document.QuerySelectorAll("[data-slot='badge'][data-lookup='item']");
+        var chips = document.QuerySelectorAll("[data-slot='chip'][data-lookup='item']");
         await Assert
             .That(chips.Select(chip => chip.GetAttribute("data-value")!))
             .IsEquivalentTo(["2", "1"], CollectionOrdering.Matching);
         await Assert
-            .That(chips[0].RequiredElement("[data-lookup='remove'] .sr-only").TextContent)
+            .That(chips[0].RequiredElement("[data-lookup='remove']").GetAttribute("aria-label"))
             .IsEqualTo("Remove Notebooks");
     }
 

@@ -3248,6 +3248,7 @@
    and focus ring) with padding that centres the chips; its invalid ring shows at rest, as the
    input group's does. */
 @layer components.theme {
+  :root,
   .sa-chip,
   .sa-chip-group {
     --sa-chip-h: 22px;

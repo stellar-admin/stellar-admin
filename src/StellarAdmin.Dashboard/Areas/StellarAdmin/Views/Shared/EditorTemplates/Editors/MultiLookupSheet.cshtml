@@ -37,7 +37,6 @@
     var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(isInvalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
     var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
     var hasMedia = options.ShowMedia && Editor.Items?.MediaType is not null;
-    var chipButtonClass = "min-w-0 text-muted-foreground hover:text-foreground hover:bg-muted flex h-6 items-center gap-1 rounded-md px-1.5 text-xs outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]";
 
     ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
         options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, Editor.ClassNames.Media) : null;
@@ -56,19 +55,19 @@
         }
         else if (layout == MultiLookupSheetEditorLayout.Chips)
         {
-            <div class="@($"flex flex-wrap gap-1 {classes.Control}")" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+            <sa-chip-group class="@classes.Control" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                 @foreach (var item in items)
                 {
-                    var media = Media(item, ItemMediaPlacement.Inline);
-                    <sa-badge variant="BadgeVariant.Secondary" class="@($"h-6 gap-1 pr-2 {(media is null ? "pl-2" : "pl-0.5")}")" role="listitem">
+                    var media = Media(item, ItemMediaPlacement.Chip);
+                    <sa-chip role="listitem">
                         @if (media is not null)
                         {
                             <partial name="_ItemMedia" model="media" />
                         }
-                        <span>@item.Text</span>
-                    </sa-badge>
+                        @item.Text
+                    </sa-chip>
                 }
-            </div>
+            </sa-chip-group>
         }
         else
         {
@@ -119,17 +118,18 @@
                     break;
 
                 case MultiLookupSheetEditorLayout.Chips:
-                    <sa-input-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
-                                    class="@($"h-auto min-h-9 flex-wrap items-center gap-1 p-1 {invalidRing} {classes.Control}")"
-                                    aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                    <sa-chip-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
+                                   appearance="ChipGroupAppearance.Input" invalid="isInvalid" class="@classes.Control"
+                                   aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                         <span class="contents" data-lookup="items">
                             <partial name="_MultiLookupItems" model="editableItems" />
                         </span>
-                        <button type="button" id="@($"{id}-add")" class="@chipButtonClass" data-sheet-open="@sheetUrl" data-lookup="open">
-                            <sa-icon name="plus" class="size-3.5 shrink-0" />
+                        <sa-button type="button" id="@($"{id}-add")" variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall"
+                                   class="text-muted-foreground hover:text-foreground min-w-0" data-sheet-open="@sheetUrl" data-lookup="open">
+                            <sa-icon name="plus" />
                             <span class="truncate">@addText</span>
-                        </button>
-                    </sa-input-group>
+                        </sa-button>
+                    </sa-chip-group>
                     @* Empty, the box stays an input: the hint and the chevrons, like a select *@
                     <sa-input-group id="@($"{id}-empty")" data-lookup="empty" hidden="@(items.Count > 0)"
                                     class="@($"h-9 min-w-0 items-stretch p-0 {invalidRing} {classes.Control}")">

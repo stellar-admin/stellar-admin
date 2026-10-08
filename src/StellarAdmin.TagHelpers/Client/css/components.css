@@ -306,10 +306,11 @@
   .sa-checkbox-indicator-icon {
     @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--sa-checkbox-checked-foreground,var(--primary-foreground))];
   }
-  /* Chip: each theme sets the --sa-chip-* variables on .sa-chip and .sa-chip-group (size, radius,
-     type size, fill, text, border, remove icon colour, and the fill and border inside an
-     input-styled group) and styles the input-styled box; the rules here size and place
-     everything from those variables. */
+  /* Chip: each theme sets the --sa-chip-* variables (size, radius, type size, fill, text, border,
+     remove icon colour, and the fill and border inside an input-styled group) on :root, for other
+     components that match the chip, and again on .sa-chip and .sa-chip-group, so the colours
+     follow a nested dark scope. It also styles the input-styled box; the rules here size and
+     place everything from those variables. */
   .sa-chip {
     --chip-inset: var(--sa-chip-inset, 2px);
     --chip-media: calc(var(--sa-chip-h) - 2px - 2 * var(--chip-inset));
@@ -404,7 +405,8 @@
       gap: 0.25rem;
     }
   }
-  .sa-chip-group[data-appearance="input"] > .sa-chip {
+  /* Any chip in the group, so chips can sit in a display: contents wrapper that a script replaces */
+  .sa-chip-group[data-appearance="input"] .sa-chip {
     --sa-chip-bg: var(--sa-chip-input-bg);
     --sa-chip-border: var(--sa-chip-input-border);
   }

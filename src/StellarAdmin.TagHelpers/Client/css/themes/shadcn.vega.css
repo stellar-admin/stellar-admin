@@ -1217,6 +1217,7 @@
 /* Chip: upstream's combobox chip (height, padding, radius, type size, and its fill as the fill inside
    the input-styled group), with the muted fill on other surfaces. The input-styled group is upstream's
    combobox chips box; the group carries aria-invalid itself. */
+:root,
 .sa-chip,
 .sa-chip-group {
   --sa-chip-h: --spacing(5.5);

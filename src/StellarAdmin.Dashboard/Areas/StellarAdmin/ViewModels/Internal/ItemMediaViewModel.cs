@@ -23,4 +23,5 @@ internal enum ItemMediaPlacement
     Card,
     Lookup,
     LookupLarge,
+    Chip,
 }

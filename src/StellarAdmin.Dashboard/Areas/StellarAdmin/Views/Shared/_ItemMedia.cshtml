@@ -12,23 +12,48 @@
     var avatarSize = Model.Placement is ItemMediaPlacement.Card or ItemMediaPlacement.LookupLarge ? AvatarSize.Default : AvatarSize.Small;
 }
 
-@* The client stylesheet sizes media by kind and placement *@
-@switch (Model.Media)
+@* In a chip the media is the bare element, which the chip sizes and shapes by element; elsewhere the client stylesheet
+   sizes it by kind and placement *@
+@if (Model.Placement == ItemMediaPlacement.Chip)
 {
-    case ItemMedia.Icon icon:
-        <sa-icon name="@icon.Name" class="@css" data-media="icon" data-placement="@placement" aria-hidden="true" />
-        break;
-    case ItemMedia.Avatar { Url: null or "" }:
-        <sa-avatar name="@Model.Text" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
-        break;
-    case ItemMedia.Avatar avatar:
-        <sa-avatar name="@Model.Text" src="@avatar.Url" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
-        break;
-    case ItemMedia.Image image:
-        @* The text sits beside the image, so it has no alternative text of its own *@
-        <img src="@image.Url" alt="" class="@css" data-media="image" data-placement="@placement" />
-        break;
-    case ItemMedia.Code code:
-        <span class="@css" data-media="code" data-placement="@placement">@code.Value</span>
-        break;
+    switch (Model.Media)
+    {
+        case ItemMedia.Icon icon:
+            <sa-icon name="@icon.Name" class="@Model.Class" aria-hidden="true" />
+            break;
+        case ItemMedia.Avatar { Url: null or "" }:
+            <sa-avatar name="@Model.Text" size="AvatarSize.Small" class="@Model.Class" />
+            break;
+        case ItemMedia.Avatar avatar:
+            <sa-avatar name="@Model.Text" src="@avatar.Url" size="AvatarSize.Small" class="@Model.Class" />
+            break;
+        case ItemMedia.Image image:
+            <img src="@image.Url" alt="" class="@Model.Class" />
+            break;
+        case ItemMedia.Code code:
+            <code class="@Model.Class">@code.Value</code>
+            break;
+    }
+}
+else
+{
+    switch (Model.Media)
+    {
+        case ItemMedia.Icon icon:
+            <sa-icon name="@icon.Name" class="@css" data-media="icon" data-placement="@placement" aria-hidden="true" />
+            break;
+        case ItemMedia.Avatar { Url: null or "" }:
+            <sa-avatar name="@Model.Text" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
+            break;
+        case ItemMedia.Avatar avatar:
+            <sa-avatar name="@Model.Text" src="@avatar.Url" size="avatarSize" class="@css" data-media="avatar" data-placement="@placement" />
+            break;
+        case ItemMedia.Image image:
+            @* The text sits beside the image, so it has no alternative text of its own *@
+            <img src="@image.Url" alt="" class="@css" data-media="image" data-placement="@placement" />
+            break;
+        case ItemMedia.Code code:
+            <span class="@css" data-media="code" data-placement="@placement">@code.Value</span>
+            break;
+    }
 }

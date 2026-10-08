@@ -27,18 +27,15 @@
     case MultiLookupSheetEditorLayout.Chips:
         @foreach (var item in items)
         {
-            var media = Media(item, ItemMediaPlacement.Inline);
-            <sa-badge variant="BadgeVariant.Secondary" class="@($"h-6 gap-1 pr-0.5 {(media is null ? "pl-2" : "pl-0.5")}")" data-lookup="item" data-value="@item.Value">
+            var media = Media(item, ItemMediaPlacement.Chip);
+            <sa-chip data-lookup="item" data-value="@item.Value">
                 @if (media is not null)
                 {
                     <partial name="_ItemMedia" model="media" />
                 }
-                <span>@item.Text</span>
-                <button type="button" class="hover:bg-foreground/10 focus-visible:ring-ring/50 rounded-sm p-0.5 outline-none focus-visible:ring-[3px]" data-lookup="remove">
-                    <sa-icon name="x" class="size-3" />
-                    <span class="sr-only">@removeText @item.Text</span>
-                </button>
-            </sa-badge>
+                @item.Text
+                <sa-chip-remove aria-label="@($"{removeText} {item.Text}")" data-lookup="remove" />
+            </sa-chip>
         }
         break;
 
