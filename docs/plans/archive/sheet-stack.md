@@ -1,8 +1,8 @@
 # Stacked sheets for the lookup editor
 
-Status: **active**. Phase 1 is committed (8a4e111); phase 2 is implemented and awaiting review. Last updated: 2026-10-08.
+Status: **completed**. All three phases are implemented, reviewed and committed (8a4e111, f8623b5 and the phase 3 commit). The items under [Not in this plan](#not-in-this-plan) are unscheduled. Last updated: 2026-10-08.
 
-The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteSheet`s, `dashboard-sheet` and `dashboard-nested-sheet`. A create form's lookups open in the second sheet and hide New, so creating stops one level down. This plan replaces the fixed pair with a stack of any depth, styled with the recede concept from the [stacked sheets prototype](../../sandbox/html/sheet-stack.html) (commit 6f5895b), and applies it to the existing single-select `LookupEditor` before the multi-select work starts. Each phase stops for review.
+The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteSheet`s, `dashboard-sheet` and `dashboard-nested-sheet`. A create form's lookups open in the second sheet and hide New, so creating stops one level down. This plan replaces the fixed pair with a stack of any depth, styled with the recede concept from the [stacked sheets prototype](../../../sandbox/html/sheet-stack.html) (commit 6f5895b), and applies it to the existing single-select `LookupEditor` before the multi-select work starts. Each phase stops for review.
 
 ## Phase 1: one sheet per level
 
@@ -29,7 +29,7 @@ The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteS
 - Phones: the top sheet is full width and covered levels are hidden.
 - Verify: five deep in headless Chromium, in light and dark mode, with Esc, click-back and the scroll lock, at desktop and phone widths, in at least two themes.
 
-**Done (2026-10-08, uncommitted):**
+**Done (2026-10-08, f8623b5):**
 
 - `_RemoteSheet` gives the sheet the class `sa-sheet-stack-level`, and the Dashboard stylesheet styles it: covered levels (`data-under`) move `--sa-sheet-shift × 40px` left and scale down 4.5% per level from the right edge, with rounded corners and a dimming `::after`; levels after the first have no backdrop. The exit animation keeps a closing sheet in the top layer (`display` and `overlay` transition with `allow-discrete`). Below 40rem, levels above the first fill the width and covered levels hide.
 - The script restacks on every open and close, numbers level ids with a counter, and removes a closed level once its animations finish. Esc (keydown, not the dialog's cancel) closes only the top level unless a popover in it is open. A click on the top level's backdrop over a covered level closes the levels above it, and hovering there lightens the dim and shows a pointer; both are off below 40rem.
@@ -39,6 +39,11 @@ The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteS
 ## Phase 3: hand-back contract
 
 - A level returns its result (a created item's key) to the owner of the level below through one event. The single-select editor replaces its value; a future multi-select editor will add the item to its selection. No multi-select code goes in this phase.
+
+**Done (2026-10-08):**
+
+- `dashboard-lookup-created` closes its level and dispatches a bubbling `lookup-created` event with `detail.key` from the hidden input it names. `dashboard-lookup-editor` listens for it and selects the item; `selectCreated` became private. A multi-select editor will listen for the same event and add the item.
+- Checks: in headless Chromium the three-level create flow still selects each created airport in the field below (QQC, QQB, then QQA on the page), and Choose at level 2 still selects a search result. No server code changed.
 
 ## Not in this plan
 

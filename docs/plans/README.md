@@ -13,7 +13,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
-| [sheet-stack](sheet-stack.md) | proposed | Replace the Dashboard's two fixed sheets with a stack of any depth in the recede style, applied to the single-select lookup editor before multi-select. |
 | [command](oss/command.md) | active | shadcn Command port in phases; Phase 5 (demos, website docs, skills reference, tests) implemented 2026-09-29 and awaiting review. |
 | [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 
@@ -76,6 +75,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [semantic-icons](archive/semantic-icons.md) | completed; IconOptions tests migrated to TUnit on 2026-09-18 |
 | [shadcn-theme-fonts](archive/shadcn-theme-fonts.md) | completed |
 | [shadcn-theme-namespace](archive/shadcn-theme-namespace.md) | completed |
+| [sheet-stack](archive/sheet-stack.md) | completed; Dashboard sheets stack to any depth from one template, with covered levels receding behind the top one, Esc closing one level, click-back to a covered level, a phone layout, a `sel-dialog` scroll lock that holds while any modal is open, per-level create form prefixes with New at every level, and a `lookup-created` event that hands a created key to the editor below. A breadcrumb trail, a depth limit, New in the search sheet and turning New off per field are unscheduled. |
 | [slider-value-display](archive/slider-value-display.md) | completed; composable `sa-slider-value` and `sa-slider-marks`, `SliderEditor` value and mark settings, website docs and tests. A field-level `aria-describedby` fix is a follow-up. |
 | [toast](oss/archive/toast.md) | completed; `<sa-toaster>`, `window.stellarAdmin.toast` and the TempData-backed `IToastNotifier` with page-load, redirect and `SA-Toasts` header delivery, across all themes, with demos, website docs, skills reference and tests. Dashboard use is a separate task. |
 | [taghelper-test-migration](archive/taghelper-test-migration.md) | completed; solution-wide CI/release test discovery verified on 2026-09-18 |

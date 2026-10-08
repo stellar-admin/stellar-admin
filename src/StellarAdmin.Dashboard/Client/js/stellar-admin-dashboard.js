@@ -311,26 +311,26 @@ class DashboardCreateSheet extends HTMLElement {
 
 customElements.define("dashboard-create-sheet", DashboardCreateSheet);
 
-// Replaces the create form once the item is created: it closes the sheet and passes the new item's key to the
-// editor whose hidden input it names. Without a key, the sheet only closes.
+// Replaces the create form once the item is created: it closes its level and sends lookup-created with the new
+// item's key from the hidden input it names, in the level below. The editor that owns the input decides what to do
+// with it; a single-select editor selects it in place of its value. Without a key, the level only closes.
 class DashboardLookupCreated extends HTMLElement {
   connectedCallback() {
-    const editor = document
-      .getElementById(this.getAttribute("for"))
-      ?.closest("dashboard-lookup-editor");
+    const input = document.getElementById(this.getAttribute("for"));
     const key = this.getAttribute("value");
 
     this.closest("dialog")?.close();
-    if (editor && key) {
-      editor.selectCreated(key);
+    if (key) {
+      input?.dispatchEvent(new CustomEvent("lookup-created", { bubbles: true, detail: { key } }));
     }
   }
 }
 
 customElements.define("dashboard-lookup-created", DashboardLookupCreated);
 
-// A lookup editor: the picker sends a selection to its hidden input as lookup-select, and Clear empties it. It
-// shows either the selection or the empty buttons, and moves focus to the button that is still shown.
+// A lookup editor: the picker sends a selection to its hidden input as lookup-select, a create form sends a created
+// item's key as lookup-created, and Clear empties it. It shows either the selection or the empty buttons, and moves
+// focus to the button that is still shown.
 class DashboardLookupEditor extends HTMLElement {
   constructor() {
     super();
@@ -339,6 +339,8 @@ class DashboardLookupEditor extends HTMLElement {
       this.#setValue(event.detail.value, event.detail.selection);
       this.querySelector("[data-lookup='selected'] [data-lookup='open']").focus();
     });
+
+    this.addEventListener("lookup-created", (event) => this.#selectCreated(event.detail.key));
 
     this.addEventListener("click", (event) => {
       if (event.target.closest("[data-lookup='clear']")) {
@@ -350,7 +352,7 @@ class DashboardLookupEditor extends HTMLElement {
 
   // The server renders the created item's display from the field's settings, and the value the form posts for it.
   // If that fails, the key stands in for the title, as it does for a value the items no longer have.
-  async selectCreated(key) {
+  async #selectCreated(key) {
     const url = new URL(this.getAttribute("selection-url"), document.baseURI);
     url.searchParams.set("value", key);
 
