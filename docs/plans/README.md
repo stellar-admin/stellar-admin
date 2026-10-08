@@ -13,7 +13,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [resource-sidebar-registration](resource-sidebar-registration.md) | implemented | Automatic resource sidebar links use one Dashboard provider, with label, group, order, and visibility configuration. |
 | [generic-resources-follow-ups](generic-resources-follow-ups.md) | parked | Identity package sidebar migration is superseded; operations overrides, richer reference editors/sources, navigation-free references and editor options remain deferred. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
-| [component-parity](oss/component-parity.md) | active | Missing components remain backlog; Carousel is complete and DataGrid covers server-rendered data tables. |
 
 ## Retired implementation and research records
 
@@ -26,6 +25,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [chip](oss/archive/chip.md) | completed |
 | [choice-groups](archive/choice-groups.md) | completed. Product helpers, typed binding, display variants, website docs and exports, consumer references, 76 passing TagHelpers tests, and Chromium checks verified 2026-09-18 |
 | [command](oss/archive/command.md) | completed |
+| [component-parity](oss/archive/component-parity.md) | archived; backlog checked 2026-09-18, no longer maintained |
 | [component-showcases](archive/component-showcases.md) | completed |
 | [concourse-theme](archive/concourse-theme.md) | completed |
 | [consumer-skill-consolidation](archive/consumer-skill-consolidation.md) | completed |

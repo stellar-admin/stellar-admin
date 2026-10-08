@@ -98,7 +98,7 @@ Because Dropdown Menu is the keystone, the same resolution + token composition m
 
 - Add a docs sample demonstrating each `menuColor` / `menuAccent` combination (travel theme — Voyager Travel).
 - Note the global `AddStellarAdmin` option in the theming docs.
-- Update the component-parity backlog (`component-parity.md`, sibling in this plans folder) once shipped.
+- Update the component-parity backlog (`component-parity.md`, sibling in this archive folder) once shipped.
 
 ## Open questions (resolve before implementing)
 

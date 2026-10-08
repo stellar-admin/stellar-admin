@@ -2,7 +2,7 @@
 
 ## Code audit — 2026-09-18
 
-Current status: **active**. Compared the listed backlog against current TagHelpers folders, client components, DocsSamples, generator registrations and website component docs. Carousel is implemented with native scrolling; DataGrid is now a TagHelpers component covering server-rendered data-table scenarios. Missing named components remain backlog, and a hover-capable Popover does not establish a dedicated Hover Card implementation. This is a local implementation audit, not a fresh inventory of upstream shadcn releases.
+Current status: **archived** (2026-10-09); the backlog below is no longer maintained. Compared the listed backlog against current TagHelpers folders, client components, DocsSamples, generator registrations and website component docs. Carousel is implemented with native scrolling; DataGrid is now a TagHelpers component covering server-rendered data-table scenarios. Missing named components remain backlog, and a hover-capable Popover does not establish a dedicated Hover Card implementation. This is a local implementation audit, not a fresh inventory of upstream shadcn releases.
 
 This assessment uses the current checkout; earlier status, paths, permissions and verification notes below describe historical sessions. Runtime/browser and hosted release checks were not rerun for this documentation audit.
 
@@ -134,7 +134,7 @@ machinery the rest of this tier reuses.
 | Calendar | ☐ | yes | date grid + keyboard nav |
 | Date Picker | ☐ | yes | Calendar + Popover |
 | Carousel | ✅ | yes — `sel-carousel` | native scroll-snap; helpers, themes, samples, exports and website docs implemented |
-| Sonner / Toast | ✅ | yes — `sel-toaster` | `<sa-toaster>`, `window.stellarAdmin.toast`, and `IToastNotifier` for server toasts (page loads, redirects and the `SA-Toasts` header on AJAX responses); themes, samples, exports, website docs and skills reference implemented. See [the toast plan](archive/toast.md). |
+| Sonner / Toast | ✅ | yes — `sel-toaster` | `<sa-toaster>`, `window.stellarAdmin.toast`, and `IToastNotifier` for server toasts (page loads, redirects and the `SA-Toasts` header on AJAX responses); themes, samples, exports, website docs and skills reference implemented. See [the toast plan](toast.md). |
 | Drawer | ☐ | yes | Sheet covers most side-panel cases; Drawer is the draggable bottom sheet |
 | Resizable | ☐ | yes | drag-to-resize panels |
 | Scroll Area | ☐ | yes | custom scrollbars |
