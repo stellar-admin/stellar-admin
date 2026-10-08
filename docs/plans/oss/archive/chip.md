@@ -1,14 +1,14 @@
 # Chip
 
-Status: **implemented**. All phases are done. Last updated: 2026-10-09.
+Status: **completed**. All phases are done. Last updated: 2026-10-09.
 
-Add `sa-chip` to `StellarAdmin.TagHelpers`: a compact token for a selected or entered value, with optional media and an optional remove button, that works on its own, inside an input-styled group and read-only, in all fifteen themes. Work follows the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow and the [prototype-component](../../../.agents/skills/prototype-component/SKILL.md) skill, in phases with a review after each; approval of one phase does not authorize the next.
+Add `sa-chip` to `StellarAdmin.TagHelpers`: a compact token for a selected or entered value, with optional media and an optional remove button, that works on its own, inside an input-styled group and read-only, in all fifteen themes. Work follows the [port-shadcn-component](../../../../.agents/skills/port-shadcn-component/SKILL.md) workflow and the [prototype-component](../../../../.agents/skills/prototype-component/SKILL.md) skill, in phases with a review after each; approval of one phase does not authorize the next.
 
 ## Why
 
 The Dashboard has two chip looks, built two ways, and neither is a library component:
 
-- The [multi-select lookup editor](../multi-lookup-editor.md) renders each chip as an `sa-badge` with a plain `<button>` for Remove and `.sa-choice-media` for its media. The badge takes the theme's radius, but the Remove button (`rounded-sm`), the code box (`rounded-sm bg-muted`) and the avatar (round) have fixed shapes and colours. In Parallax the Remove button is square inside a pill and the code has almost no contrast with the chip; in Aurora the round avatars sit in square chips.
+- The [multi-select lookup editor](../../multi-lookup-editor.md) renders each chip as an `sa-badge` with a plain `<button>` for Remove and `.sa-choice-media` for its media. The badge takes the theme's radius, but the Remove button (`rounded-sm`), the code box (`rounded-sm bg-muted`) and the avatar (round) have fixed shapes and colours. In Parallax the Remove button is square inside a pill and the code has almost no contrast with the chip; in Aurora the round avatars sit in square chips.
 - `ToggleGroupEditor`'s chips appearance uses real `sa-toggle-group-item`s, but the Dashboard CSS forces a pill radius in every theme (`border-radius: calc(infinity * 1px)`) and uses the same fixed-shape media.
 
 Neither matches the other within a theme, and both need Dashboard CSS for something every theme should decide.
@@ -197,7 +197,7 @@ A `sa-chip-media` wrapper with a `ChipMediaVariant` was considered and dropped (
 ### Phase 3: docs
 
 - DocsSamples pages in Voyager Travel content: intro, media, removable, in an input group, read-only, disabled, invalid.
-- Website docs page and exports, per [website integration](../../repos/website.md); the consumer skills reference regenerated.
+- Website docs page and exports, per [website integration](../../../repos/website.md); the consumer skills reference regenerated.
 
 ### Phase 4: Dashboard adoption
 
