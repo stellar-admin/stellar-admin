@@ -13,7 +13,7 @@ public class ChipTagHelper : StellarAdminTagHelperBase
     ///     Whether the chip is disabled, which dims it and disables its remove button.
     /// </summary>
     /// <remarks>
-    ///     Defaults to the containing <c>&lt;sa-chip-group&gt;</c>'s setting.
+    ///     Defaults to the setting of the chip group that contains it.
     /// </remarks>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }

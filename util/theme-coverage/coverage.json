@@ -2727,7 +2727,7 @@
         "sa-chip-group",
         "sa-chip-remove"
       ],
-      "example": "src/StellarAdmin.TagHelpers/TagHelpers/Chip/ChipTagHelper.cs",
+      "example": "docs/DocsSamples/Pages/Chip/Index.cshtml",
       "themes": {
         "concourse": {
           "status": "reviewed",

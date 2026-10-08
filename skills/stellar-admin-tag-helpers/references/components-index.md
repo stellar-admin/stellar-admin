@@ -16,6 +16,7 @@
 | [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents. |
 | [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | A scrollable collection of slides with optional navigation controls. |
 | [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>`, `<sa-checkbox-group-item-media>` | A group of checkbox options bound to a collection. |
+| [Chip](components/chip.md) | `<sa-chip>`, `<sa-chip-group>`, `<sa-chip-remove>` | A compact token for a selected or entered value, with optional media before its label and an optional remove button after it. |
 | [Collapsible](components/collapsible.md) | `<sa-collapsible>` | A container whose content can be expanded or collapsed. |
 | [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
 | [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-column>`, `<sa-data-grid-empty>`, … | A data grid that renders a full table from declarative column definitions and a data source. |

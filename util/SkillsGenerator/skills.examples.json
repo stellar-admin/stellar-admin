@@ -19,6 +19,7 @@
   "ButtonGroup": ["ButtonGroup/_Basic", "ButtonGroup/_WithInput"],
   "Card": ["Card/_Intro", "Card/_MeetingNotes"],
   "Carousel": ["Carousel/_Intro", "Carousel/_Sizes", "Carousel/_Indicators", "Carousel/_Vertical"],
+  "Chip": ["Chip/_Intro", "Chip/_Media", "Chip/_Removable", "Chip/_ReadOnly", "Chip/_Invalid"],
   "Collapsible": ["Collapsible/_Intro", "Collapsible/_Settings"],
   "Command": ["Command/_Intro", "Command/_Dialog", "Command/_KeyboardShortcut", "Command/_Checked"],
   "DataGrid": ["DataGrid/_Intro"],

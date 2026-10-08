@@ -65,6 +65,7 @@ internal static class DemoNavigation
                 new DemoItem("Avatar", "/Avatar/Index"),
                 new DemoItem("Badge", "/Badge/Index"),
                 new DemoItem("Carousel", "/Carousel/Index"),
+                new DemoItem("Chip", "/Chip/Index"),
                 new DemoItem("Data Grid", "/DataGrid/Index"),
                 new DemoItem("Empty", "/Empty/Index"),
                 new DemoItem("Icon", "/Icon/Index"),

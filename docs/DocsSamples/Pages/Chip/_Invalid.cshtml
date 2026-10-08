@@ -1,0 +1,23 @@
+<div class="w-full max-w-md">
+    <!-- code begin -->
+    <sa-field>
+        <sa-field-title id="tour-stops-label">Tour stops</sa-field-title>
+        <sa-chip-group
+            appearance="ChipGroupAppearance.Input"
+            invalid="true"
+            aria-labelledby="tour-stops-label"
+            aria-describedby="tour-stops-error"
+        >
+            <sa-chip>
+                Chiang Mai
+                <sa-chip-remove aria-label="Remove Chiang Mai"/>
+            </sa-chip>
+            <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.ExtraSmall">
+                <sa-icon name="plus"/>
+                Add stop
+            </sa-button>
+        </sa-chip-group>
+        <sa-field-error id="tour-stops-error">Choose at least two stops for a multi-city tour.</sa-field-error>
+    </sa-field>
+    <!-- code end -->
+</div>
