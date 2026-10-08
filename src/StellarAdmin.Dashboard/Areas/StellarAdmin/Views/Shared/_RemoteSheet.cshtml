@@ -5,7 +5,8 @@
     var sheetLabels = LabelOptions.Value.Sheet;
 }
 
-@* A sheet whose content buttons load with htmx; it shows the loading state again when it closes *@
+@* A level of the sheet stack, whose content the button that opened it loads with htmx; the script gives each level its
+   own id in place of the model's *@
 <dashboard-remote-sheet class="contents">
     <sa-sheet id="@Model">
         <div id="@($"{Model}-content")" class="contents" data-sheet="content">

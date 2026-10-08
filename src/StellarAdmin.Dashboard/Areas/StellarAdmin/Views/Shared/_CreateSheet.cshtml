@@ -5,7 +5,7 @@
     var form = Model.Form;
     var sheetLabels = LabelOptions.Value.Sheet;
 
-    // The fields bind with the sheet's prefix, and their lookups open the nested sheet. Sections stack, since the
+    // The fields bind with the sheet level's prefix, and their lookups open the next level. Sections stack, since the
     // sheet is too narrow to split them; the section partial also overrides a section's own layout.
     var fieldsViewData = new ViewDataDictionary(ViewData)
     {
@@ -15,12 +15,12 @@
         [ViewDataKeys.FormSectionLayout] = FormSectionLayout.Stacked,
         [ViewDataKeys.EditorData] = form.EditorData,
         [ViewDataKeys.EditorTemplates] = form.EditorTemplates,
-        [ViewDataKeys.InCreateSheet] = true,
+        [ViewDataKeys.SheetLevel] = Model.Level,
     };
-    fieldsViewData.TemplateInfo.HtmlFieldPrefix = CreateSheetViewModel.BindingPrefix;
+    fieldsViewData.TemplateInfo.HtmlFieldPrefix = Model.BindingPrefix;
 }
 
-@* A resource's create form loaded into the shared sheet; for names the lookup editor that selects the new item *@
+@* A resource's create form loaded into a sheet; for names the lookup editor that selects the new item *@
 <dashboard-create-sheet class="contents" for="@Model.For">
     <sa-sheet-header>
         <sa-sheet-title>@form.Title</sa-sheet-title>
@@ -28,7 +28,7 @@
 
     @* Without settling, htmx doesn't copy the old fields' attributes onto the new ones, which would reset the value of
        the invalid field that the component focuses *@
-    <form method="post" action="@Model.PostUrl" asp-antiforgery="true" hx-post="@Model.PostUrl" hx-target="#dashboard-sheet-content"
+    <form method="post" action="@Model.PostUrl" asp-antiforgery="true" hx-post="@Model.PostUrl" hx-target="closest [data-sheet='content']"
           hx-swap="innerHTML settle:0" class="flex min-h-0 flex-1 flex-col">
         <div class="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
             <sa-field-group>
@@ -47,7 +47,7 @@
 
         <sa-sheet-footer>
             <sa-button type="submit" data-create-sheet="submit">@form.SubmitLabel</sa-button>
-            <sa-button type="button" variant="ButtonVariant.Outline" commandfor="dashboard-sheet" command="close">Cancel</sa-button>
+            <sa-button type="button" variant="ButtonVariant.Outline" data-sheet="close">Cancel</sa-button>
         </sa-sheet-footer>
     </form>
 </dashboard-create-sheet>

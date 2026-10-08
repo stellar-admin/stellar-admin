@@ -15,7 +15,7 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 public class LookupCreateTests
 {
     private const string CreateSheetUrl =
-        "/stellaradmin/categories/createsheet?for=Entity_CategoryId";
+        "/stellaradmin/categories/createsheet?for=Entity_CategoryId&level=1";
 
     [Test]
     public async Task NewButton_LoadsReferencedResourceCreateFormIntoSheet()
@@ -32,10 +32,8 @@ public class LookupCreateTests
         // Assert
         var create = document.RequiredElement("#Entity_CategoryId-create");
         await Assert.That(create.GetAttribute("data-lookup")).IsEqualTo("create");
-        await Assert.That(create.GetAttribute("commandfor")).IsEqualTo("dashboard-sheet");
-        await Assert.That(create.GetAttribute("command")).IsEqualTo("show-modal");
-        await Assert.That(create.GetAttribute("hx-get")).IsEqualTo(CreateSheetUrl);
-        await Assert.That(create.GetAttribute("hx-target")).IsEqualTo("#dashboard-sheet-content");
+        await Assert.That(create.GetAttribute("data-sheet-open")).IsEqualTo(CreateSheetUrl);
+        await Assert.That(create.HasAttribute("hx-get")).IsFalse();
         await Assert
             .That(document.RequiredElement("dashboard-lookup-editor").GetAttribute("selection-url"))
             .IsEqualTo("/stellaradmin/products/lookupselection?form=create&field=CategoryId");
@@ -61,7 +59,11 @@ public class LookupCreateTests
 
         // Assert
         await Assert
-            .That(document.RequiredElement("#Entity_CategoryId-create").GetAttribute("hx-get"))
+            .That(
+                document
+                    .RequiredElement("#Entity_CategoryId-create")
+                    .GetAttribute("data-sheet-open")
+            )
             .IsEqualTo(CreateSheetUrl);
     }
 
@@ -181,7 +183,9 @@ public class LookupCreateTests
             .IsEqualTo("Create Category");
         var form = sheet.RequiredElement("form");
         await Assert.That(form.GetAttribute("hx-post")).IsEqualTo(CreateSheetUrl);
-        await Assert.That(form.GetAttribute("hx-target")).IsEqualTo("#dashboard-sheet-content");
+        await Assert
+            .That(form.GetAttribute("hx-target"))
+            .IsEqualTo("closest [data-sheet='content']");
         await Assert
             .That(form.QuerySelector("input[name='__RequestVerificationToken']"))
             .IsNotNull();
@@ -233,7 +237,7 @@ public class LookupCreateTests
     }
 
     [Test]
-    public async Task CreateSheet_LookupField_OpensNestedSheetWithoutNew()
+    public async Task CreateSheet_LookupField_OpensNextLevel()
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
@@ -243,28 +247,70 @@ public class LookupCreateTests
 
         // Act
         var document = await client.GetDocumentAsync(
-            "/stellaradmin/products/createsheet?for=Entity_ProductId"
+            "/stellaradmin/products/createsheet?for=Entity_ProductId&level=1"
         );
 
         // Assert
         var open = document.RequiredElement("#Sheet_CategoryId-choose");
-        await Assert.That(open.GetAttribute("commandfor")).IsEqualTo("dashboard-nested-sheet");
         await Assert
-            .That(open.GetAttribute("hx-target"))
-            .IsEqualTo("#dashboard-nested-sheet-content");
-        await Assert
-            .That(open.GetAttribute("hx-get"))
+            .That(open.GetAttribute("data-sheet-open"))
             .IsEqualTo(
                 "/stellaradmin/products/lookupsheet?form=create&field=CategoryId&for=Sheet_CategoryId"
             );
-        await Assert.That(document.QuerySelector("[data-lookup='create']")).IsNull();
         await Assert
-            .That(document.RequiredElement("dashboard-lookup-editor").HasAttribute("selection-url"))
-            .IsFalse();
-        var picker = await client.GetDocumentAsync(open.GetAttribute("hx-get")!);
+            .That(
+                document.RequiredElement("#Sheet_CategoryId-create").GetAttribute("data-sheet-open")
+            )
+            .IsEqualTo("/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2");
+        await Assert
+            .That(document.RequiredElement("dashboard-lookup-editor").GetAttribute("selection-url"))
+            .IsEqualTo("/stellaradmin/products/lookupselection?form=create&field=CategoryId");
+        var picker = await client.GetDocumentAsync(open.GetAttribute("data-sheet-open")!);
         await Assert
             .That(picker.RequiredElement("dashboard-lookup-picker").GetAttribute("for"))
             .IsEqualTo("Sheet_CategoryId");
+    }
+
+    [Test]
+    public async Task CreateSheet_SecondLevel_BindsWithLevelPrefix()
+    {
+        // Arrange
+        await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
+        using var client = sut.GetTestClient();
+        const string url = "/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2";
+
+        // Act
+        var document = await client.GetDocumentAsync(url);
+
+        // Assert
+        var form = document.RequiredElement("dashboard-create-sheet form");
+        await Assert.That(form.GetAttribute("hx-post")).IsEqualTo(url);
+        await Assert
+            .That(form.RequiredElement("input[name='Sheet2.Name']").Id)
+            .IsEqualTo("Sheet2_Name");
+        await Assert.That(document.QuerySelector("[id^='Sheet_']")).IsNull();
+    }
+
+    [Test]
+    public async Task CreateSheetPost_SecondLevel_BindsWithLevelPrefix()
+    {
+        // Arrange
+        await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
+        using var client = sut.GetTestClient();
+        const string url = "/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2";
+        var values = await PrepareForm(client, url);
+        values["Sheet2.Name"] = "Lenses";
+        values["Sheet2.Code"] = "LEN";
+        using var content = new FormUrlEncodedContent(values);
+
+        // Act
+        using var response = await client.PostAsync(url, content);
+
+        // Assert
+        var document = await response.ReadDocumentAsync();
+        var created = document.RequiredElement("dashboard-lookup-created");
+        await Assert.That(created.GetAttribute("for")).IsEqualTo("Sheet_CategoryId");
+        await Assert.That(created.GetAttribute("value")).IsEqualTo("3");
     }
 
     [Test]
@@ -294,8 +340,10 @@ public class LookupCreateTests
     }
 
     [Test]
-    [Arguments("/stellaradmin/categories/createsheet")]
-    [Arguments("/stellaradmin/inventory-items/createsheet?for=Entity_CategoryId")]
+    [Arguments("/stellaradmin/categories/createsheet?level=1")]
+    [Arguments("/stellaradmin/categories/createsheet?for=Entity_CategoryId")]
+    [Arguments("/stellaradmin/categories/createsheet?for=Entity_CategoryId&level=0")]
+    [Arguments("/stellaradmin/inventory-items/createsheet?for=Entity_CategoryId&level=1")]
     public async Task CreateSheet_WithoutLookupOrCreateForm_ReturnsNotFound(string url)
     {
         // Arrange
@@ -435,7 +483,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(fields => fields.Add(model => model.CategoryId));
         using var client = sut.GetTestClient();
-        var url = "/stellaradmin/products/createsheet?for=Entity_ProductId";
+        var url = "/stellaradmin/products/createsheet?for=Entity_ProductId&level=1";
         var values = await PrepareForm(client, url);
         using var content = new FormUrlEncodedContent(values);
 

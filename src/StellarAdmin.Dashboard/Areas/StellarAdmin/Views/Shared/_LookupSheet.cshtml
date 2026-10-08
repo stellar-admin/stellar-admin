@@ -43,7 +43,7 @@
     }
 }
 
-@* The lookup picker loaded into the shared sheet; for names the editor that results belong to *@
+@* The lookup picker loaded into a sheet; for names the editor that results belong to *@
 <dashboard-lookup-picker class="contents" for="@Model.For">
     <sa-sheet-header>
         <sa-sheet-title>@Model.Title</sa-sheet-title>
@@ -52,10 +52,10 @@
     <sa-command filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
         <sa-command-input name="term" autofocus="" placeholder="@editor.SheetOptions.SearchPlaceholder"
                           aria-label="@(editor.SheetOptions.SearchPlaceholder ?? labels.Lookup.SearchLabel(Model.Labels))" data-lookup="search"
-                          hx-get="@Model.ResultsUrl" hx-target="#dashboard-sheet-results" hx-trigger="load, input changed delay:300ms, lookup-retry" />
+                          hx-get="@Model.ResultsUrl" hx-target="@($"#{Model.For}-results")" hx-trigger="load, input changed delay:300ms, lookup-retry" />
         <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@Model.Title">
             @* The loading rows show until the first results arrive *@
-            <div id="dashboard-sheet-results" data-lookup="results">
+            <div id="@($"{Model.For}-results")" data-lookup="results">
                 @{ await LoadingRows(); }
             </div>
         </sa-command-list>

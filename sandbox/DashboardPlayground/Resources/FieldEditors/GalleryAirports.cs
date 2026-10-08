@@ -5,7 +5,12 @@ using StellarAdmin.Dashboard.Resources.Editors;
 namespace DashboardPlayground.Resources.FieldEditors;
 
 // The items of the lookup gallery
-public sealed record GalleryAirport(string Code, string City, string Country);
+public sealed record GalleryAirport(
+    string Code,
+    string City,
+    string Country,
+    string? HubCode = null
+);
 
 // The airports of the lookup gallery, kept in memory for the lifetime of the app so the gallery can create them
 public sealed class GalleryAirportStore
@@ -132,6 +137,10 @@ public sealed class CreateGalleryAirportModel
 
     [Required]
     public string Country { get; set; } = "";
+
+    // Looks up another airport, which can be created in turn, so creating one stacks sheets without limit
+    [Display(Name = "Hub")]
+    public string? HubCode { get; set; }
 }
 
 // The create model isn't the resource, so the handler returns the new airport's key
@@ -141,5 +150,5 @@ public sealed class CreateGalleryAirportHandler(GalleryAirportStore store)
     public Task<ResourceOperationResult> CreateAsync(
         CreateGalleryAirportModel model,
         CancellationToken cancellationToken
-    ) => Task.FromResult(store.Add(new(model.Code, model.City, model.Country)));
+    ) => Task.FromResult(store.Add(new(model.Code, model.City, model.Country, model.HubCode)));
 }

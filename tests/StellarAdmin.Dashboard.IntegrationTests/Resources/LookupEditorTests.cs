@@ -504,7 +504,7 @@ public class LookupEditorTests
     }
 
     [Test]
-    public async Task LookupButtons_OpenSharedSheet()
+    public async Task LookupButtons_OpenSheet()
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
@@ -522,16 +522,13 @@ public class LookupEditorTests
         foreach (var open in openers)
         {
             await Assert.That(open.GetAttribute("type")).IsEqualTo("button");
-            await Assert.That(open.GetAttribute("command")).IsEqualTo("show-modal");
-            await Assert.That(open.GetAttribute("commandfor")).IsEqualTo("dashboard-sheet");
             await Assert
-                .That(open.GetAttribute("hx-get"))
+                .That(open.GetAttribute("data-sheet-open"))
                 .IsEqualTo(
                     "/stellaradmin/products/lookupsheet?form=create&field=CategoryId&for=Entity_CategoryId"
                 );
+            await Assert.That(open.HasAttribute("hx-get")).IsFalse();
         }
-
-        await Assert.That(document.GetElementById("dashboard-sheet")?.TagName).IsEqualTo("DIALOG");
     }
 
     [Test]
@@ -1017,10 +1014,9 @@ public class LookupEditorTests
         var open = page.RequiredElement("[data-lookup='open']");
 
         // Act
-        var panel = await client.GetDocumentAsync(open.GetAttribute("hx-get")!);
+        var panel = await client.GetDocumentAsync(open.GetAttribute("data-sheet-open")!);
 
         // Assert
-        await Assert.That(open.GetAttribute("hx-target")).IsEqualTo("#dashboard-sheet-content");
         var root = panel.RequiredElement("dashboard-lookup-picker");
         await Assert
             .That(root.GetAttribute("for"))
@@ -1034,10 +1030,10 @@ public class LookupEditorTests
         await Assert
             .That(search.GetAttribute("hx-get"))
             .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId");
-        await Assert.That(search.GetAttribute("hx-target")).IsEqualTo("#dashboard-sheet-results");
+        await Assert.That(search.GetAttribute("hx-target")).IsEqualTo("#Entity_CategoryId-results");
         await Assert.That(search.GetAttribute("hx-trigger")).StartsWith("load");
         await Assert
-            .That(root.RequiredElement("#dashboard-sheet-results").ChildElementCount)
+            .That(root.RequiredElement("#Entity_CategoryId-results").ChildElementCount)
             .IsEqualTo(4);
     }
 

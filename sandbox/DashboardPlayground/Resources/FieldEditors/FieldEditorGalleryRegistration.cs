@@ -107,6 +107,21 @@ internal static class FieldEditorGalleryRegistration
                             fields.Add(model => model.Code);
                             fields.Add(model => model.City);
                             fields.Add(model => model.Country);
+                            fields
+                                .Add(model => model.HubCode)
+                                .UseEditor<LookupEditor>(lookup =>
+                                {
+                                    lookup.UseItems<
+                                        GalleryAirportLookupSource,
+                                        GalleryAirport,
+                                        string
+                                    >(
+                                        airport => airport.Code,
+                                        airport => airport.City,
+                                        items => items.UseDescription(airport => airport.Country)
+                                    );
+                                    lookup.EnableCreate();
+                                });
                         })
                 );
             }

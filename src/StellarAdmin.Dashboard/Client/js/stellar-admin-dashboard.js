@@ -1,30 +1,43 @@
-// Lookup editors: the lookup picker loads into the shared sheet, and the server renders search results
-// with htmx into its sa-command, which handles the keyboard; selecting or clearing an item only updates
-// the field's hidden value and shows either the selection or the empty buttons. New loads the referenced
-// resource's create form into the shared sheet, and a created item is selected like a search result.
+// Lookup editors: the lookup picker loads into a sheet, and the server renders search results with htmx into its
+// sa-command, which handles the keyboard; selecting or clearing an item only updates the field's hidden value and
+// shows either the selection or the empty buttons. New loads the referenced resource's create form into a sheet, and
+// a created item is selected like a search result.
 
-// A shared sheet: the button that opened it loads its content with htmx. The sheet is modal, so only that
-// opener's request, or a request from the content, can be in flight; closing the sheet cancels them and shows
-// the loading state again, so a late response never fills the sheet for the next opener. A failed load shows
-// the sheet's error, and Retry repeats the opener's request. The layout has two: a create form in the first
-// opens its lookups in the second.
+// A level of the sheet stack. A button with data-sheet-open adds a level from the layout's template, above any that
+// are open, and loads the URL it names into the level with htmx; a create form's lookups open further levels in
+// turn. The sheet is modal, so only that opener's request, or a request from the content, can be in flight; closing
+// the sheet cancels them and removes the level, so a late response never fills it. A failed load shows the sheet's
+// error, and Retry repeats the opener's request.
 class DashboardRemoteSheet extends HTMLElement {
   #opener = null;
+
+  // Each level replaces the template's id with its own, so its close button and content have unique targets
+  static open(opener) {
+    const level = document.querySelectorAll("dashboard-remote-sheet").length + 1;
+    const fragment = document.importNode(
+      document.getElementById("dashboard-sheet-template").content,
+      true,
+    );
+    const sheet = fragment.querySelector("dashboard-remote-sheet");
+    for (const element of sheet.querySelectorAll("[id^='dashboard-sheet'], [commandfor]")) {
+      for (const name of ["id", "commandfor"]) {
+        const value = element.getAttribute(name);
+        if (value?.startsWith("dashboard-sheet")) {
+          element.setAttribute(name, value.replace("dashboard-sheet", `dashboard-sheet-${level}`));
+        }
+      }
+    }
+
+    document.body.append(sheet);
+    sheet.#opener = opener;
+    sheet.querySelector("dialog").showModal();
+    sheet.#load();
+  }
 
   constructor() {
     super();
 
-    // The dialog's command and close events don't bubble, so they are caught on the way down
-    this.addEventListener(
-      "command",
-      (event) => {
-        if (event.command === "show-modal") {
-          this.#opener = event.source;
-        }
-      },
-      { capture: true },
-    );
-
+    // The dialog's close event doesn't bubble, so it is caught on the way down
     this.addEventListener(
       "close",
       () => {
@@ -37,7 +50,7 @@ class DashboardRemoteSheet extends HTMLElement {
           }
         }
 
-        this.#show("loading");
+        this.remove();
       },
       { capture: true },
     );
@@ -45,10 +58,9 @@ class DashboardRemoteSheet extends HTMLElement {
     this.addEventListener("click", (event) => {
       if (event.target.closest("[data-sheet='retry']")) {
         this.#show("loading");
-        htmx.ajax("GET", this.#opener.getAttribute("hx-get"), {
-          source: this.#opener,
-          target: `#${this.#content.id}`,
-        });
+        this.#load();
+      } else if (event.target.closest("[data-sheet='close']")) {
+        this.querySelector("dialog").close();
       }
     });
   }
@@ -80,6 +92,13 @@ class DashboardRemoteSheet extends HTMLElement {
     return this.querySelector("[data-sheet='content']");
   }
 
+  #load() {
+    htmx.ajax("GET", this.#opener.dataset.sheetOpen, {
+      source: this.#opener,
+      target: this.#content,
+    });
+  }
+
   #show(name) {
     this.#content.replaceChildren(
       this.querySelector(`template[data-sheet='${name}']`).content.cloneNode(true),
@@ -87,9 +106,16 @@ class DashboardRemoteSheet extends HTMLElement {
   }
 }
 
+document.addEventListener("click", (event) => {
+  const opener = event.target.closest("[data-sheet-open]");
+  if (opener) {
+    DashboardRemoteSheet.open(opener);
+  }
+});
+
 customElements.define("dashboard-remote-sheet", DashboardRemoteSheet);
 
-// A lookup's picker in the shared sheet: a search and the results to choose from; for names the hidden input of
+// A lookup's picker in a sheet: a search and the results to choose from; for names the hidden input of
 // the editor that results belong to. It only handles events from its own elements, so htmx events dispatched on
 // the document for elements already removed from the page never reach it, and removing it cancels its requests.
 class DashboardLookupPicker extends HTMLElement {
@@ -161,9 +187,9 @@ class DashboardLookupPicker extends HTMLElement {
 
 customElements.define("dashboard-lookup-picker", DashboardLookupPicker);
 
-// A resource's create form in the shared sheet, for a lookup editor's New button. It posts with htmx into the
-// sheet, so a rejected form comes back with its errors and a created item comes back as dashboard-lookup-created.
-// A post that fails shows the form's error and keeps what was typed.
+// A resource's create form in a sheet, for a lookup editor's New button. It posts with htmx into the sheet, so a
+// rejected form comes back with its errors and a created item comes back as dashboard-lookup-created. A post that
+// fails shows the form's error and keeps what was typed.
 class DashboardCreateSheet extends HTMLElement {
   constructor() {
     super();

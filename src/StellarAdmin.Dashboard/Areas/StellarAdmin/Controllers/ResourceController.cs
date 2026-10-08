@@ -74,37 +74,39 @@ public class ResourceController<TResource>(
     }
 
     /// <summary>
-    ///     Displays the create form in the shared sheet, for a lookup field that creates its item.
+    ///     Displays the create form in a sheet, for a lookup field that creates its item.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> CreateSheet(
         [FromQuery(Name = "for")] string? lookup,
+        [FromQuery] int level,
         CancellationToken cancellationToken
     )
     {
-        return _resourceOptions.Create is { } create && !string.IsNullOrEmpty(lookup)
-            ? await CreateSheetView(create.CreateModel(), lookup, cancellationToken)
+        return _resourceOptions.Create is { } create && !string.IsNullOrEmpty(lookup) && level >= 1
+            ? await CreateSheetView(create.CreateModel(), lookup, level, cancellationToken)
             : NotFound();
     }
 
     /// <summary>
-    ///     Creates a resource from the create form in the shared sheet, and returns its key to the lookup field.
+    ///     Creates a resource from the create form in a sheet, and returns its key to the lookup field.
     /// </summary>
     [HttpPost]
     [ActionName(nameof(CreateSheet))]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateSheetPost(
         [FromQuery(Name = "for")] string? lookup,
+        [FromQuery] int level,
         CancellationToken cancellationToken
     )
     {
-        if (_resourceOptions.Create is null || string.IsNullOrEmpty(lookup))
+        if (_resourceOptions.Create is null || string.IsNullOrEmpty(lookup) || level < 1)
         {
             return NotFound();
         }
 
         var (resource, result) = await SubmitCreateAsync(
-            CreateSheetViewModel.BindingPrefix,
+            CreateSheetViewModel.GetBindingPrefix(level),
             cancellationToken
         );
         if (result is { IsNotFound: true })
@@ -114,7 +116,7 @@ public class ResourceController<TResource>(
 
         if (result is not { IsSuccess: true })
         {
-            return await CreateSheetView(resource, lookup, cancellationToken);
+            return await CreateSheetView(resource, lookup, level, cancellationToken);
         }
 
         // A create model other than the resource has no key selector, so its handler returns the key
@@ -548,13 +550,22 @@ public class ResourceController<TResource>(
     private async Task<PartialViewResult> CreateSheetView(
         object resource,
         string lookup,
+        int level,
         CancellationToken cancellationToken
     )
     {
         var form = await CreateFormModelAsync(resource, cancellationToken);
-        var postUrl = Url.Action(nameof(CreateSheet), new { id = (string?)null, @for = lookup })!;
+        var postUrl = Url.Action(
+            nameof(CreateSheet),
+            new
+            {
+                id = (string?)null,
+                @for = lookup,
+                level,
+            }
+        )!;
 
-        return PartialView("_CreateSheet", new CreateSheetViewModel(form, lookup, postUrl));
+        return PartialView("_CreateSheet", new CreateSheetViewModel(form, lookup, level, postUrl));
     }
 
     private async Task<ViewResult> CreateView(object resource, CancellationToken cancellationToken)

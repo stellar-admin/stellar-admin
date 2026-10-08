@@ -42,9 +42,10 @@
     </sa-sidebar-inset>
 </sa-sidebar-wrapper>
 
-@* One sheet for the whole page, outside any form; buttons load content into it with htmx. A create form in it opens its
-   lookups in the nested sheet, which stacks over it *@
-<partial name="/Areas/StellarAdmin/Views/Shared/_RemoteSheet.cshtml" model="@("dashboard-sheet")" />
-<partial name="/Areas/StellarAdmin/Views/Shared/_RemoteSheet.cshtml" model="@("dashboard-nested-sheet")" />
+@* The sheets stack: a button that opens one adds a level from this template, outside any form, and loads its content
+   with htmx; the level is removed again when it closes *@
+<template id="dashboard-sheet-template">
+    <partial name="/Areas/StellarAdmin/Views/Shared/_RemoteSheet.cshtml" model="@("dashboard-sheet")" />
+</template>
 </body>
 </html>

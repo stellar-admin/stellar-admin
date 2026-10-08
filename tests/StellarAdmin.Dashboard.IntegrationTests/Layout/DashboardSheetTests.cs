@@ -28,9 +28,12 @@ public class DashboardSheetTests
         var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
+        var sheet = (
+            (IHtmlTemplateElement)document.RequiredElement("template#dashboard-sheet-template")
+        ).Content;
         var error = (
             (IHtmlTemplateElement)
-                document.RequiredElement("#dashboard-sheet template[data-sheet='error']")
+                sheet.RequiredElement("#dashboard-sheet template[data-sheet='error']")
         ).Content;
         await Assert
             .That(error.QuerySelector("[data-slot='empty-title']")?.TextContent)
@@ -44,7 +47,7 @@ public class DashboardSheetTests
     }
 
     [Test]
-    public async Task Layout_RendersSharedAndNestedSheets()
+    public async Task Layout_RendersSheetLevelTemplate()
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(new([]));
@@ -54,13 +57,16 @@ public class DashboardSheetTests
         var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
-        foreach (var id in new[] { "dashboard-sheet", "dashboard-nested-sheet" })
-        {
-            var sheet = document.RequiredElement($"dashboard-remote-sheet > sel-dialog > #{id}");
-            await Assert
-                .That(sheet.RequiredElement("[data-sheet='content']").Id)
-                .IsEqualTo($"{id}-content");
-            await Assert.That(sheet.QuerySelector("template[data-sheet='error']")).IsNotNull();
-        }
+        await Assert.That(document.QuerySelector("dashboard-remote-sheet")).IsNull();
+        var template = (
+            (IHtmlTemplateElement)document.RequiredElement("template#dashboard-sheet-template")
+        ).Content;
+        var sheet = template.RequiredElement(
+            "dashboard-remote-sheet > sel-dialog > #dashboard-sheet"
+        );
+        await Assert
+            .That(sheet.RequiredElement("[data-sheet='content']").Id)
+            .IsEqualTo("dashboard-sheet-content");
+        await Assert.That(sheet.QuerySelector("template[data-sheet='error']")).IsNotNull();
     }
 }

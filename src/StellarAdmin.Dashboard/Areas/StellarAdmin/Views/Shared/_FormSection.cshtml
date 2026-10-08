@@ -4,7 +4,7 @@
     var sectionOptions = (FormSectionOptions)ViewData[ViewDataKeys.FormContainer]!;
 
     // The create sheet is too narrow to split sections, so it stacks them whatever their layout
-    var layout = ViewData[ViewDataKeys.InCreateSheet] is true
+    var layout = ViewData[ViewDataKeys.SheetLevel] is int
         ? FormSectionLayout.Stacked
         : sectionOptions.Layout ?? ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
 }

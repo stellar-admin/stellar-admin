@@ -26,8 +26,7 @@ public class HostPageLayoutTests
         await Assert.That(document.Title).IsEqualTo("Sales report - StellarAdmin");
         await Assert.That(document.QuerySelector("#sales-report")).IsNotNull();
         await Assert.That(document.QuerySelector("#--command-palette")).IsNotNull();
-        await Assert.That(document.QuerySelector("#dashboard-sheet")).IsNotNull();
-        await Assert.That(document.QuerySelector("#dashboard-nested-sheet")).IsNotNull();
+        await Assert.That(document.QuerySelector("template#dashboard-sheet-template")).IsNotNull();
         await Assert
             .That(
                 document.TextContents(

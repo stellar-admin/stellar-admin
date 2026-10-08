@@ -47,6 +47,6 @@ public static class ViewDataKeys
     // The inline span variables of the container being rendered, resolved against its parent grid
     internal const string FormSpanStyle = "StellarAdminFormSpanStyle";
 
-    // Set while a create form renders in the shared sheet, so its lookups open the nested sheet
-    internal const string InCreateSheet = "StellarAdminInCreateSheet";
+    // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
+    internal const string SheetLevel = "StellarAdminSheetLevel";
 }
