@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="en" data-concept="push" data-scrim="base" data-trail="on">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stacked sheets</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" />
+
+    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme {
+        --font-sans: "Geist", sans-serif;
+      }
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+
+      /* ---------- The stack: every open level is its own modal sheet ----------
+         The script sets on each level: data-depth (1 = bottom), data-under (a level is above it),
+         --below (levels above it) and --shift (--below capped at 3, so deep stacks stop moving). */
+      dialog[data-stack] {
+        transition:
+          translate 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          scale 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.25s ease;
+      }
+      dialog[data-stack][data-leaving] {
+        translate: 110% 0 !important;
+        scale: 1 !important;
+        transition: translate 0.22s ease-in;
+      }
+      /* Dims a covered level when only the bottom level has a scrim */
+      [data-dim] {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+        pointer-events: none;
+        background: rgb(0 0 0 / 0.16);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .dark [data-dim] {
+        background: rgb(0 0 0 / 0.4);
+      }
+      html[data-scrim="base"] dialog[data-under] [data-dim] {
+        opacity: 1;
+      }
+      html[data-scrim="base"] dialog[data-stack]:not([data-depth="1"])::backdrop {
+        background: transparent;
+        backdrop-filter: none;
+      }
+      dialog[data-under][data-hover] [data-dim] {
+        opacity: 0.35 !important;
+      }
+      dialog[data-pointing] {
+        cursor: pointer;
+      }
+      [data-rail] {
+        display: none;
+      }
+      html[data-trail="off"]:not([data-concept="history"]) [data-trail] {
+        display: none;
+      }
+
+      /* A · Push: covered levels slide left and stay readable (Ant Design push, Payload drawers).
+         G · Inline stacks its lookup sheets the same way. */
+      html:is([data-concept="push"], [data-concept="inline"]) dialog[data-under] {
+        translate: calc(var(--shift) * -112px) 0;
+      }
+
+      /* B · Recede: covered levels shrink back like a card deck and peek out on the left */
+      html[data-concept="recede"] dialog[data-under] {
+        transform-origin: right center;
+        translate: calc(var(--shift) * -40px) 0;
+        scale: calc(1 - var(--shift) * 0.045);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      /* C · Spines: covered levels fold into labelled spines on the top sheet's left edge */
+      html[data-concept="spines"] dialog[data-under] {
+        opacity: 0;
+      }
+      html[data-concept="spines"] dialog[data-stack]:not([data-under]) {
+        overflow: visible;
+      }
+      html[data-concept="spines"] dialog[data-stack]:not([data-under]) [data-rail] {
+        display: flex;
+      }
+
+      /* E · Title bars: covered levels hide and become bars across the top sheet, oldest at the back like paper edges */
+      [data-bars] {
+        display: none;
+      }
+      html[data-concept="bars"] dialog[data-under] {
+        opacity: 0;
+      }
+      html[data-concept="bars"] dialog[data-stack]:not([data-under]) [data-bars] {
+        display: block;
+      }
+      html[data-concept="bars"] dialog[data-stack]:not([data-under]) .sa-sheet-close {
+        top: calc(var(--bars, 0) * 36px + 12px);
+      }
+      html[data-concept="bars"] [data-trail] {
+        display: none;
+      }
+
+      /* F · Side by side: covered levels sit beside the top one, as many as fit; older ones go behind the leftmost */
+      html[data-concept="panes"] dialog[data-under] {
+        translate: calc(var(--pane) * -100%) 0;
+      }
+      html[data-concept="panes"][data-scrim="base"] dialog[data-under] [data-dim] {
+        opacity: 0.4;
+      }
+      html[data-concept="panes"] dialog[data-buried] {
+        opacity: 0;
+      }
+
+      /* D · One sheet: covered levels hide and the top level replaces them in place, with Back (Strapi 5) */
+      html[data-concept="history"] dialog[data-under] {
+        opacity: 0;
+        transition: none;
+      }
+      html[data-concept="history"] dialog[data-stack]:not([data-depth="1"]) {
+        animation: none;
+      }
+      html[data-concept="history"] dialog[data-stack]:not([data-depth="1"]):not([data-leaving]) .sa-sheet-body {
+        animation: history-in 0.22s ease-out;
+      }
+      html[data-concept="history"] dialog[data-stack]:not([data-depth="1"])[data-leaving] {
+        translate: 0 0 !important;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      @keyframes history-in {
+        from {
+          opacity: 0;
+          translate: 24px 0;
+        }
+      }
+
+      /* Phones: every concept is one full-width sheet with Back */
+      @media (max-width: 639px) {
+        dialog[data-stack] {
+          width: 100% !important;
+          max-width: none !important;
+        }
+        dialog[data-under] {
+          translate: 0 0 !important;
+          scale: 1 !important;
+          opacity: 0 !important;
+        }
+        [data-rail] {
+          display: none !important;
+        }
+        html:not([data-concept="bars"]) [data-trail] {
+          display: flex !important;
+        }
+      }
+
+      [data-flash] {
+        animation: flash 1.2s ease-out;
+        border-radius: var(--radius-md);
+      }
+      @keyframes flash {
+        from {
+          box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 45%, transparent);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <main class="mx-auto max-w-[1300px] space-y-12 px-6 pt-10 pb-32">
+      <header class="space-y-3">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · Dashboard sheets · stacking</p>
+        <h1 class="text-2xl font-semibold">Stacked sheets</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          Every lookup offers New, and every create form's lookups offer Choose and New again, so the stack has no limit. Each level is its own modal
+          <code>&lt;dialog&gt;</code> created when it opens and removed when it closes, instead of the two fixed placeholders the layout renders today. Concepts A
+          to F only change how the covered levels look; G avoids most levels by nesting create forms inline. Switch between them from the control bar while a stack is open.
+        </p>
+      </header>
+
+      <!-- Live: the edit page underneath the stack -->
+      <section class="grid gap-8 lg:grid-cols-[minmax(0,34rem)_1fr]">
+        <div class="bg-card rounded-xl border p-6">
+          <p class="text-muted-foreground mb-1 text-xs">Tour packages ›</p>
+          <h2 class="mb-6 text-lg font-semibold">Edit tour package</h2>
+          <div data-slot="field-group" class="sa-field-group" data-owner-root="tour"></div>
+        </div>
+        <div class="space-y-4 text-sm">
+          <div class="rounded-lg border p-4">
+            <p class="mb-2 font-medium">Try it</p>
+            <ol class="text-muted-foreground list-decimal space-y-1 pl-5">
+              <li>Lead guide → <b>New guide</b>, then Home city → <b>New city</b>, then Country → <b>New country</b>… Region's “Part of” is a region again, so it never ends.</li>
+              <li>Or Choose a lookup, then New in its footer: creating selects the record in the field below and closes the lookup too.</li>
+              <li>Esc, the close button and Cancel close only the top level. Back and the trail go down a level; a trail item or spine jumps several.</li>
+              <li>In Push, Recede and Side by side, click a covered sheet to go back to it.</li>
+            </ol>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button type="button" data-demo="5" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-sm">Open five deep</button>
+              <button type="button" data-demo="9" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-sm">Open nine deep</button>
+            </div>
+          </div>
+          <div class="rounded-lg border p-4">
+            <p class="mb-2 font-medium">Shared by every concept</p>
+            <ul class="text-muted-foreground list-disc space-y-1 pl-5">
+              <li>One modal dialog per level, so the browser keeps focus inside the top one, Esc closes only it and focus returns to the button that opened it.</li>
+              <li>The new record is selected in the field below; when it came from a lookup's New, the lookup closes with it.</li>
+              <li>A trail in each header names the path (Edit tour package › New guide › New city) with Back. Toggle it off to judge a concept without it.</li>
+              <li>Scrim: <b>base</b> darkens the page once and dims covered sheets; <b>each</b> gives every level its own scrim and blur, as the library does today.</li>
+              <li>Below 640px every concept is one full-width sheet with Back and the trail; Title bars keep their bars instead of the trail, and Inline still nests.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-lg font-semibold">Concepts</h2>
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4" id="concepts"></div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold">Open questions</h2>
+        <ul class="text-muted-foreground max-w-3xl list-disc space-y-1 pl-5 text-sm">
+          <li>Jumping back several levels discards the forms above. Ask first when one of them has changes, or keep them as drafts?</li>
+          <li>Should the close button close only its level (as here) or the whole stack, with Esc for one level?</li>
+          <li>Push stops moving after three covered levels and Spines keep adding 40px per level; at nine deep, should older levels collapse into one “…” spine?</li>
+          <li>Should a covered level stay live (its sheet keeps its search and scroll position) — needed for Push and Recede, which show it?</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold">What this means for the library</h2>
+        <ul class="text-muted-foreground max-w-3xl list-disc space-y-1 pl-5 text-sm">
+          <li>
+            The layout's two fixed placeholders (<code>dashboard-sheet</code>, <code>dashboard-nested-sheet</code>) become a sheet created per level from a template, and the
+            lookup and create views stop hardcoding which one they target: a field's opener targets “a new level above mine”.
+          </li>
+          <li>
+            <code>sel-dialog</code> sets <code>body.style.overflow</code> from its own dialog only, so closing a level clears it while the levels below are still open. With a
+            stack it has to count open modal sheets. The prototype restores the lock after each close; without that the page scrollbar comes back over the sheets.
+          </li>
+          <li>
+            Esc has to be handled by the stack: Chrome groups modal dialogs opened without a user gesture and closes the whole group on one Esc. Clicks keep each
+            level separate, but a sheet opened after a slow server response, or by script, can join the group.
+          </li>
+          <li>Every sheet's backdrop blurs (<code>backdrop-blur-xs</code>), so with a scrim per level each covered level is blurred once more; the base scrim avoids that.</li>
+          <li>Covered levels move with the individual <code>translate</code> and <code>scale</code> properties, so they don't fight the sheet's enter animation on <code>transform</code>.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module">
+      import { controlBar } from "./lookup-shared.js";
+
+      // ---------- Voyager data: each create form has a lookup to the next entity, and region refers to itself ----------
+      const entities = {
+        guide: {
+          noun: "guide",
+          plural: "Guides",
+          ref: { key: "city", label: "Home city", entity: "city" },
+          extra: { label: "Languages", hint: "For example: Portuguese, English" },
+          items: [
+            ["Ana Ferreira", "Porto"],
+            ["Kenji Sato", "Kyoto"],
+            ["Lucía Romero", "Seville"],
+            ["Tomáš Novák", "Prague"],
+            ["Amara Okafor", "Cape Town"],
+            ["Freya Lindqvist", "Tromsø"],
+          ],
+        },
+        city: {
+          noun: "city",
+          plural: "Cities",
+          ref: { key: "country", label: "Country", entity: "country" },
+          extra: { label: "Airport code", hint: "Three letters, for example OPO" },
+          items: [
+            ["Porto", "Portugal"],
+            ["Kyoto", "Japan"],
+            ["Seville", "Spain"],
+            ["Prague", "Czechia"],
+            ["Cape Town", "South Africa"],
+            ["Tromsø", "Norway"],
+            ["Cusco", "Peru"],
+            ["Hanoi", "Vietnam"],
+          ],
+        },
+        country: {
+          noun: "country",
+          plural: "Countries",
+          ref: { key: "region", label: "Region", entity: "region" },
+          extra: { label: "Currency", hint: "For example: EUR" },
+          items: [
+            ["Portugal", "Southern Europe"],
+            ["Japan", "East Asia"],
+            ["Spain", "Southern Europe"],
+            ["Czechia", "Central Europe"],
+            ["South Africa", "Southern Africa"],
+            ["Norway", "Northern Europe"],
+            ["Peru", "South America"],
+            ["Vietnam", "Southeast Asia"],
+          ],
+        },
+        region: {
+          noun: "region",
+          plural: "Regions",
+          ref: { key: "parent", label: "Part of", entity: "region" },
+          extra: null,
+          items: [
+            ["Southern Europe", "Europe"],
+            ["Central Europe", "Europe"],
+            ["Northern Europe", "Europe"],
+            ["East Asia", "Asia"],
+            ["Southeast Asia", "Asia"],
+            ["Southern Africa", "Africa"],
+            ["South America", "Americas"],
+            ["Europe", null],
+            ["Asia", null],
+            ["Africa", null],
+            ["Americas", null],
+          ],
+        },
+      };
+      for (const e of Object.values(entities)) e.items = e.items.map(([name, ref]) => ({ name, ref }));
+      const findItem = (entity, name) => entities[entity].items.find((x) => x.name === name);
+      const cap = (s) => s[0].toUpperCase() + s.slice(1);
+
+      // ---------- Markup helpers: the classes the tag helpers and the shipped Lookup editor render ----------
+      const svg = (paths, c = "") =>
+        `<svg class="${c}" fill="none" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke="currentColor" height="24" stroke-width="2" viewBox="0 0 24 24" width="24">${paths}</svg>`;
+      const icons = {
+        x: (c) => svg('<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>', c),
+        plus: (c) => svg('<path d="M5 12h14"></path><path d="M12 5v14"></path>', c),
+        search: (c) => svg('<path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle>', c),
+        chevrons: (c) => svg('<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>', c),
+        check: (c) => svg('<path d="M20 6 9 17l-5-5"></path>', c),
+        left: (c) => svg('<path d="m15 18-6-6 6-6"></path>', c),
+        right: (c) => svg('<path d="m9 18 6-6-6-6"></path>', c),
+      };
+      const button = (variant, size, body, attrs = "", cls = "") =>
+        `<button type="button" ${attrs} data-slot="button" class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}">${body}</button>`;
+      const kbd = (key) => `<kbd data-slot="kbd" class="sa-kbd">${key}</kbd>`;
+
+      const emptyClass = "w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm text-muted-foreground";
+      const emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
+
+      // ---------- Owners: the page form and every create level hold field values ----------
+      const owners = {};
+      const tour = { uid: "tour", values: { name: "Douro Valley wine trail", guide: null, city: "Porto" } };
+      owners.tour = tour;
+      tour.fields = [
+        { key: "guide", label: "Lead guide", entity: "guide" },
+        { key: "city", label: "Start city", entity: "city" },
+      ];
+
+      function lookupFieldHtml(owner, key, label, entity) {
+        const id = `${owner.uid}-${key}`;
+        const value = owner.values[key];
+        const e = entities[entity];
+        const at = `data-owner="${owner.uid}" data-key="${key}" data-entity="${entity}"`;
+        const body = owner.inline?.[key]
+          ? inlinePanelHtml(owner.inline[key])
+          : value
+          ? `<div role="group" data-slot="button-group" data-orientation="horizontal" class="sa-button-group sa-button-group-orientation-horizontal w-full" aria-labelledby="${id}-label">
+               ${button(
+                 "outline",
+                 "default",
+                 `<span class="truncate">${value}</span><span class="text-muted-foreground min-w-0 truncate">${findItem(entity, value)?.ref ?? ""}</span>${icons.chevrons("text-muted-foreground ml-auto size-4 shrink-0")}`,
+                 `data-act="choose" ${at}`,
+                 "min-w-0 flex-1 justify-start gap-2 font-normal",
+               )}
+               ${button("outline", "icon", `${icons.x()}<span class="sr-only">Clear</span>`, `data-act="clear" ${at}`)}
+             </div>`
+          : `<div class="flex gap-2">
+               <div data-slot="input-group" role="group" class="sa-input-group group/input-group ${emptyClass}">
+                 <button type="button" class="${emptyButtonClass}" data-slot="input-group-control" data-act="choose" ${at}>${icons.search("size-4 shrink-0")}<span class="truncate">Choose ${e.noun}</span></button>
+               </div>
+               <div data-slot="input-group" role="group" class="sa-input-group group/input-group ${emptyClass} shrink-0">
+                 <button type="button" class="${emptyButtonClass}" data-slot="input-group-control" data-act="new" ${at}>${icons.plus("size-4 shrink-0")}<span class="truncate">New ${e.noun}</span></button>
+               </div>
+             </div>`;
+        return `
+          <div id="${id}-field" data-slot="field" data-orientation="vertical" class="sa-field group/field sa-field-orientation-vertical">
+            <label data-slot="field-label" class="sa-label sa-field-label" id="${id}-label">${label}</label>
+            ${body}
+          </div>`;
+      }
+
+      const textFieldHtml = (id, label, value = "", { required = false, hint = "" } = {}) => `
+        <div data-slot="field" data-orientation="vertical" class="sa-field group/field sa-field-orientation-vertical">
+          <label data-slot="field-label" class="sa-label sa-field-label" for="${id}">${label}</label>
+          <input id="${id}" data-slot="input" class="sa-input" value="${value}" ${required ? "required" : ""} autocomplete="off" aria-describedby="${id}-error" />
+          ${hint ? `<p data-slot="field-description" class="sa-field-description">${hint}</p>` : ""}
+          <div id="${id}-error" data-slot="field-error" class="sa-field-error" role="alert"></div>
+        </div>`;
+
+      function renderTour() {
+        document.querySelector("[data-owner-root='tour']").innerHTML =
+          textFieldHtml("tour-name", "Name", tour.values.name, { required: true }) + tour.fields.map((f) => lookupFieldHtml(tour, f.key, f.label, f.entity)).join("");
+      }
+
+      function renderField(owner, key) {
+        const field = document.getElementById(`${owner.uid}-${key}-field`);
+        const f = owner.fields.find((x) => x.key === key);
+        field.outerHTML = lookupFieldHtml(owner, key, f.label, f.entity);
+        return document.getElementById(`${owner.uid}-${key}-field`);
+      }
+
+      function setField(owner, key, value) {
+        owner.values[key] = value;
+        const fresh = renderField(owner, key);
+        if (value) fresh.lastElementChild.setAttribute("data-flash", "");
+      }
+
+      // ---------- G · Inline: a create form nested under the field that needs it ----------
+      function inlinePanelHtml(inl) {
+        const e = entities[inl.entity];
+        const at = `data-owner="${inl.uid}"`;
+        return `
+          <div data-inline="${inl.uid}" role="group" aria-labelledby="${inl.uid}-title" class="bg-muted/30 space-y-4 rounded-lg border p-3">
+            <div class="flex items-center justify-between gap-2">
+              <p id="${inl.uid}-title" class="text-sm font-medium">New ${e.noun}</p>
+              ${button("ghost", "icon-xs", `${icons.x()}<span class="sr-only">Cancel new ${e.noun}</span>`, `data-act="inline-cancel" ${at}`)}
+            </div>
+            <div data-slot="field-group" class="sa-field-group">
+              ${textFieldHtml(`${inl.uid}-name`, "Name", inl.prefill ?? "", { required: true })}
+              ${e.extra ? textFieldHtml(`${inl.uid}-extra`, e.extra.label, "", { hint: e.extra.hint }) : ""}
+              ${lookupFieldHtml(inl, e.ref.key, e.ref.label, e.ref.entity)}
+            </div>
+            <div class="flex gap-2">
+              ${button("default", "sm", `Create ${e.noun}`, `data-act="inline-create" ${at}`)}
+              ${button("outline", "sm", "Cancel", `data-act="inline-cancel" ${at}`)}
+            </div>
+          </div>`;
+      }
+
+      function openInline(owner, key, prefill) {
+        const f = owner.fields.find((x) => x.key === key);
+        const e = entities[f.entity];
+        const inl = { uid: `inl${++seq}`, kind: "inline", entity: f.entity, parent: owner, key, prefill, values: { [e.ref.key]: null } };
+        inl.fields = [{ key: e.ref.key, label: e.ref.label, entity: e.ref.entity }];
+        owners[inl.uid] = inl;
+        (owner.inline ??= {})[key] = inl;
+        renderField(owner, key);
+        document.getElementById(`${inl.uid}-name`).focus();
+        return inl;
+      }
+
+      function closeInline(inl, created) {
+        delete inl.parent.inline[inl.key];
+        if (created) setField(inl.parent, inl.key, created);
+        else renderField(inl.parent, inl.key);
+        document.querySelector(`#${inl.parent.uid}-${inl.key}-field button`)?.focus();
+      }
+
+      // ---------- The stack ----------
+      const stack = [];
+      let seq = 0;
+
+      function trailHtml(level, depth) {
+        const names = ["Edit tour package", ...stack.slice(0, depth - 1).map((l) => l.title), level.title];
+        const crumb = (name, i) =>
+          i === names.length - 1
+            ? `<li data-slot="breadcrumb-item" class="sa-breadcrumb-item min-w-0"><span data-slot="breadcrumb-page" role="link" aria-disabled="true" aria-current="page" class="sa-breadcrumb-page truncate">${name}</span></li>`
+            : `<li data-slot="breadcrumb-item" class="sa-breadcrumb-item min-w-0"><button type="button" data-act="goto" data-index="${i - 1}" data-slot="breadcrumb-link" class="sa-breadcrumb-link truncate">${name}</button></li>`;
+        const sep = `<li data-slot="breadcrumb-separator" role="presentation" aria-hidden="true" class="sa-breadcrumb-separator">${icons.right()}</li>`;
+        // Long trails keep the start and the last two
+        let items = names.map((n, i) => crumb(n, i));
+        if (items.length > 4)
+          items = [
+            items[0],
+            `<li data-slot="breadcrumb-item" class="sa-breadcrumb-item"><span data-slot="breadcrumb-ellipsis" role="presentation" aria-hidden="true" class="sa-breadcrumb-ellipsis">…</span></li>`,
+            ...items.slice(-2),
+          ];
+        return `
+          <div data-trail class="mb-1 -ml-2 flex min-w-0 items-center gap-1 pr-8 text-xs">
+            ${button("ghost", "icon-xs", `${icons.left()}<span class="sr-only">Back</span>`, `data-act="back" title="Back"`)}
+            <nav aria-label="breadcrumb" data-slot="breadcrumb" class="sa-breadcrumb min-w-0">
+              <ol data-slot="breadcrumb-list" class="sa-breadcrumb-list flex-nowrap gap-1 text-xs">${items.join(sep)}</ol>
+            </nav>
+          </div>`;
+      }
+
+      const headerHtml = (level, depth, description) => `
+        <div data-slot="sheet-header" class="sa-sheet-header">
+          ${trailHtml(level, depth)}
+          <h2 id="${level.uid}-title" data-slot="sheet-title" class="sa-sheet-title sa-font-heading font-heading">${level.title}</h2>
+          ${description ? `<p data-slot="sheet-description" class="sa-sheet-description">${description}</p>` : ""}
+        </div>`;
+
+      function openLevel(level, bodyHtml) {
+        const depth = stack.length + 1;
+        level.depth = depth;
+        const wrap = document.createElement("sel-dialog");
+        wrap.innerHTML = `
+          <dialog id="${level.uid}" data-stack data-slot="sheet-content" data-side="right" class="sa-sheet-content" aria-labelledby="${level.uid}-title">
+            ${button("ghost", "icon-sm", `${icons.x("size-4")}<span class="sr-only">Close</span>`, `data-act="close"`, "sa-sheet-close z-30")}
+            <div data-rail class="absolute inset-y-0 right-full"></div>
+            <div data-dim></div>
+            <div class="sa-sheet-body"><div data-bars class="shrink-0"></div>${bodyHtml(depth)}</div>
+          </dialog>`;
+        document.body.append(wrap);
+        level.wrap = wrap;
+        level.el = wrap.querySelector("dialog");
+        stack.push(level);
+        level.el.addEventListener("cancel", (e) => {
+          e.preventDefault();
+          closeFrom(stack.indexOf(level));
+        });
+        level.el.addEventListener("close", () => {
+          const i = stack.indexOf(level);
+          if (i >= 0) stack.splice(i, 1);
+          wrap.remove();
+          restack();
+          // Works around sel-dialog clearing the body's scroll lock while lower levels are still open (see the library notes)
+          if (stack.length) {
+            const scrollbar = innerWidth - document.documentElement.clientWidth;
+            document.body.style.overflow = "hidden";
+            document.body.style.paddingRight = `${scrollbar}px`;
+          }
+        });
+        level.el.showModal();
+        level.el.querySelector("[autofocus]")?.focus();
+        restack();
+        return level;
+      }
+
+      // Closes the level at index and every level above it, top first, after they slide out
+      function closeFrom(index) {
+        const leaving = stack.slice(index);
+        if (!leaving.length) return;
+        leaving.forEach((l) => l.el.setAttribute("data-leaving", ""));
+        const remaining = stack.slice(0, index);
+        stack.length = index;
+        restack(remaining);
+        setTimeout(() => leaving.reverse().forEach((l) => l.el.close()), 220);
+      }
+
+      function restack(levels = stack) {
+        const n = levels.length;
+        // Side by side: how many sheets fit next to each other, keeping a strip of the page
+        const width = levels[0]?.el.offsetWidth || 420;
+        const fit = Math.max(1, Math.floor((innerWidth - 64) / width));
+        levels.forEach((l, i) => {
+          const below = n - 1 - i;
+          l.el.dataset.depth = i + 1;
+          l.el.style.setProperty("--below", below);
+          l.el.style.setProperty("--shift", Math.min(below, 3));
+          l.el.style.setProperty("--pane", Math.min(below, fit - 1));
+          l.el.toggleAttribute("data-buried", below > fit - 1);
+          l.el.toggleAttribute("data-under", below > 0);
+          l.el.removeAttribute("data-hover");
+        });
+        const top = levels[n - 1];
+        // The control bar rides on the top sheet, since a modal sheet makes the rest of the page inert
+        (top ? top.el : document.body).append(bar);
+        bar.style.cssText = top ? "left: 1rem; right: auto" : "";
+        if (top) {
+          top.el.querySelector("[data-rail]").innerHTML = levels
+            .slice(0, -1)
+            .map(
+              (l, i) => `
+              <button type="button" data-act="goto" data-index="${i}" title="Back to ${l.title}"
+                      class="bg-popover text-muted-foreground hover:bg-muted hover:text-foreground flex h-full w-10 flex-col items-center gap-3 border-l py-4 text-xs transition-colors">
+                <span class="bg-muted text-foreground grid size-5 place-items-center rounded-full text-[10px] tabular-nums">${i + 1}</span>
+                <span class="rotate-180 truncate whitespace-nowrap [writing-mode:vertical-rl]">${l.title}</span>
+              </button>`,
+            )
+            .join("");
+          renderBars(top, levels);
+        }
+      }
+
+      // Title bars: oldest at the back and narrowest, like the edges of a paper stack. Past five, the middle folds into “N more”.
+      function renderBars(top, levels) {
+        const covered = levels.slice(0, -1).map((l, i) => ({ l, i }));
+        let shown = covered;
+        if (covered.length > 5 && !top.el.hasAttribute("data-bars-open"))
+          shown = [covered[0], { more: covered.length - 4, i: 1 }, ...covered.slice(-3)];
+        const summary = (l) => l.el.querySelector(`#${l.uid}-name`)?.value.trim() || l.el.querySelector("[data-search]")?.value.trim() || "";
+        top.el.querySelector("[data-bars]").innerHTML = shown
+          .map((b, k) => {
+            const inset = (shown.length - 1 - k) * 6;
+            const cls = `bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground -mb-px flex h-9 w-[calc(100%-${inset * 2}px)] items-center gap-2 rounded-t-md border px-4 text-left text-xs transition-colors`;
+            if (b.more)
+              return `<button type="button" data-act="bars-open" class="${cls} mx-auto">… ${b.more} more</button>`;
+            const name = summary(b.l);
+            return `
+              <button type="button" data-act="goto" data-index="${b.i}" title="Back to ${b.l.title}" class="${cls} mx-auto">
+                <span class="bg-background text-foreground grid size-5 shrink-0 place-items-center rounded-full text-[10px] tabular-nums">${b.i + 1}</span>
+                <span class="text-foreground shrink-0 font-medium">${b.l.title}</span>
+                ${name ? `<span class="min-w-0 truncate">· ${name}</span>` : ""}
+              </button>`;
+          })
+          .join("");
+        top.el.style.setProperty("--bars", shown.length);
+      }
+
+      // ---------- Levels ----------
+      function openLookup(entity, current, onPick, context) {
+        const e = entities[entity];
+        const level = { uid: `lvl${++seq}`, kind: "lookup", entity, title: `Choose ${e.noun}`, current, onPick };
+        const rows = (term = "") =>
+          e.items
+            .filter((x) => x.name.toLowerCase().includes(term.toLowerCase()))
+            .map(
+              (x) => `
+              <div data-act="pick" data-name="${x.name}" role="option" aria-selected="false" tabindex="-1" data-slot="command-item" ${x.name === current ? 'data-checked="true"' : ""}
+                   class="sa-command-item group/command-item">
+                <div class="flex min-w-0 flex-col">
+                  <span class="truncate">${x.name}</span>
+                  <span class="text-muted-foreground truncate text-xs">${x.ref ?? "—"}</span>
+                </div>
+                ${x.name === current ? icons.check("sa-command-item-indicator") : ""}
+              </div>`,
+            )
+            .join("") ||
+          `<div class="sa-empty border-0 p-4" data-slot="empty"><div data-slot="empty-header" class="sa-empty-header"><div data-slot="empty-title" class="sa-empty-title">No results found</div></div></div>`;
+        level.rows = rows;
+        return openLevel(
+          level,
+          (depth) => `
+          ${headerHtml(level, depth, context)}
+          <sel-command id="${level.uid}-cmd" class="sa-command min-h-0 flex-1 bg-transparent px-6 pb-3" data-slot="command" data-filter="none">
+            <div class="sa-command-input-wrapper" data-slot="command-input-wrapper">
+              <div class="sa-input-group group/input-group sa-command-input-group" data-slot="input-group" role="group">
+                <input autofocus aria-label="Search" data-search type="text" id="${level.uid}-input" aria-controls="${level.uid}-list" role="combobox"
+                       aria-autocomplete="list" aria-expanded="true" autocomplete="off" spellcheck="false" data-slot="command-input" class="sa-command-input" />
+                <div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-align="inline-start" data-slot="input-group-addon" role="group">${icons.search("sa-command-input-icon")}</div>
+              </div>
+            </div>
+            <div class="sa-command-list mt-3 max-h-none flex-1" aria-label="${e.plural}" id="${level.uid}-list" role="listbox" tabindex="-1" data-slot="command-list">
+              <div data-results>${rows()}</div>
+            </div>
+          </sel-command>
+          <div data-slot="sheet-footer" class="sa-sheet-footer flex-row items-center justify-between border-t">
+            ${button("outline", "sm", `${icons.plus()}New ${e.noun}`, `data-act="lookup-new"`)}
+            <span class="text-muted-foreground hidden items-center gap-1 text-xs sm:flex">${kbd("Esc")} back</span>
+          </div>`,
+        );
+      }
+
+      function openCreate(entity, onCreated, prefill = {}) {
+        const e = entities[entity];
+        const level = { uid: `lvl${++seq}`, kind: "create", entity, title: `New ${e.noun}`, onCreated, values: { [e.ref.key]: prefill.ref ?? null } };
+        level.fields = [{ key: e.ref.key, label: e.ref.label, entity: e.ref.entity }];
+        owners[level.uid] = level;
+        return openLevel(
+          level,
+          (depth) => `
+          ${headerHtml(level, depth)}
+          <form data-create novalidate class="flex min-h-0 flex-1 flex-col">
+            <div class="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
+              <div data-slot="field-group" class="sa-field-group">
+                ${textFieldHtml(`${level.uid}-name`, "Name", prefill.name ?? "", { required: true })}
+                ${e.extra ? textFieldHtml(`${level.uid}-extra`, e.extra.label, "", { hint: e.extra.hint }) : ""}
+                ${lookupFieldHtml(level, e.ref.key, e.ref.label, e.ref.entity)}
+              </div>
+            </div>
+            <div data-slot="sheet-footer" class="sa-sheet-footer">
+              <button type="submit" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Create ${e.noun}</button>
+              ${button("outline", "default", "Cancel", `data-act="close"`)}
+            </div>
+          </form>`,
+        );
+      }
+
+      const contextFor = (owner, key) =>
+        `For “${owner.fields.find((f) => f.key === key).label}” on ${owner === tour ? "this tour package" : `the new ${entities[owner.entity].noun}`}`;
+      const levelOf = (el) => stack.find((l) => l.el === el.closest("dialog"));
+
+      // ---------- Events ----------
+      document.addEventListener("click", (ev) => {
+        const t = ev.target.closest("[data-act]");
+        // A click on the top sheet's backdrop over a covered sheet goes back to it (Push and Recede show them)
+        if (!t) {
+          const top = stack[stack.length - 1];
+          const hit = top && ev.target === top.el ? coveredAt(ev.clientX, ev.clientY) : -1;
+          if (hit >= 0) closeFrom(hit + 1);
+          return;
+        }
+        const act = t.dataset.act;
+        const level = levelOf(t);
+        if (act === "close" || act === "back") return closeFrom(stack.indexOf(level));
+        if (act === "goto") return closeFrom(Number(t.dataset.index) + 1);
+        if (act === "choose" || act === "new" || act === "clear") {
+          const owner = owners[t.dataset.owner];
+          const { key, entity } = t.dataset;
+          if (act === "clear") return setField(owner, key, null);
+          if (act === "choose") return openLookup(entity, owner.values[key], (name) => setField(owner, key, name), contextFor(owner, key));
+          // Inline nests the create form under the field; the page's own fields still open a sheet
+          if (html.dataset.concept === "inline" && owner !== tour) return openInline(owner, key);
+          return openCreate(entity, (item) => setField(owner, key, item.name));
+        }
+        if (act === "inline-cancel") return closeInline(owners[t.dataset.owner]);
+        if (act === "inline-create") {
+          const inl = owners[t.dataset.owner];
+          const name = document.getElementById(`${inl.uid}-name`);
+          if (!name.value.trim()) {
+            name.setAttribute("aria-invalid", "true");
+            document.getElementById(`${inl.uid}-name-error`).textContent = "Enter a name.";
+            return name.focus();
+          }
+          entities[inl.entity].items.unshift({ name: name.value.trim(), ref: inl.values[entities[inl.entity].ref.key] });
+          return closeInline(inl, name.value.trim());
+        }
+        if (act === "bars-open") {
+          level.el.toggleAttribute("data-bars-open", true);
+          return renderBars(level, stack);
+        }
+        if (act === "pick") {
+          level.onPick(t.dataset.name);
+          return closeFrom(stack.indexOf(level));
+        }
+        if (act === "lookup-new") {
+          // The new record is selected in the field below the lookup, and the lookup closes with the create form
+          return openCreate(level.entity, (item) => {
+            level.onPick(item.name);
+            return stack.indexOf(level);
+          });
+        }
+      });
+
+      // Esc closes the top level only. Chrome groups modal dialogs opened without a user gesture (like the demo's) and closes the whole
+      // group on one Esc, so the stack handles the key itself instead of relying on the dialog's cancel
+      document.addEventListener(
+        "keydown",
+        (ev) => {
+          if (ev.key !== "Escape" || !stack.length || ev.defaultPrevented) return;
+          ev.preventDefault();
+          closeFrom(stack.length - 1);
+        },
+        true,
+      );
+
+      document.addEventListener("submit", (ev) => {
+        const form = ev.target.closest("[data-create]");
+        if (!form) return;
+        ev.preventDefault();
+        const level = levelOf(form);
+        const name = form.querySelector(`#${level.uid}-name`);
+        const error = form.querySelector(`#${level.uid}-name-error`);
+        if (!name.value.trim()) {
+          name.setAttribute("aria-invalid", "true");
+          error.textContent = "Enter a name.";
+          name.focus();
+          return;
+        }
+        const item = { name: name.value.trim(), ref: level.values[entities[level.entity].ref.key] };
+        entities[level.entity].items.unshift(item);
+        const from = level.onCreated(item);
+        closeFrom(typeof from === "number" && from >= 0 ? from : stack.indexOf(level));
+      });
+
+      document.addEventListener("input", (ev) => {
+        if (!ev.target.matches("[data-search]")) return;
+        const level = levelOf(ev.target);
+        level.el.querySelector("[data-results]").innerHTML = level.rows(ev.target.value);
+      });
+
+      // Which covered level is under the pointer: the nearest one wins
+      function coveredAt(x, y) {
+        if (!["push", "recede", "panes", "inline"].includes(document.documentElement.dataset.concept) || matchMedia("(max-width: 639px)").matches) return -1;
+        const top = stack[stack.length - 1];
+        const r = top.el.getBoundingClientRect();
+        if (x >= r.left) return -1;
+        for (let i = stack.length - 2; i >= 0; i--) {
+          const b = stack[i].el.getBoundingClientRect();
+          if (x >= b.left && x <= b.right && y >= b.top && y <= b.bottom) return i;
+        }
+        return -1;
+      }
+      document.addEventListener("mousemove", (ev) => {
+        const top = stack[stack.length - 1];
+        if (!top) return;
+        const hit = ev.target === top.el ? coveredAt(ev.clientX, ev.clientY) : -1;
+        stack.forEach((l, i) => l.el.toggleAttribute("data-hover", i === hit));
+        top.el.toggleAttribute("data-pointing", hit >= 0);
+      });
+
+      // ---------- Demo: open a deep stack in one go ----------
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      async function demo(depth) {
+        closeFrom(0);
+        await wait(300);
+        const chain = ["guide", "city", "country", "region", "region", "region", "region", "region", "region"];
+        const names = ["Inês Duarte", "Luang Prabang", "Laos", "Mekong", "Indochina", "Mainland Southeast Asia", "Southeast Asia", "Asia-Pacific", "Eastern Hemisphere"];
+        let owner = tour;
+        let key = "guide";
+        for (let i = 0; i < depth; i++) {
+          const o = owner;
+          const k = key;
+          // The last level is a lookup, so the deep stack shows both kinds of sheet
+          if (i === depth - 1) {
+            openLookup(chain[i], null, (name) => setField(o, k, name), contextFor(o, k));
+          } else if (i > 0 && html.dataset.concept === "inline") {
+            owner = openInline(o, k, names[i]);
+            key = entities[chain[i]].ref.key;
+          } else {
+            const level = openCreate(chain[i], (item) => setField(o, k, item.name), { name: names[i] });
+            owner = level;
+            key = entities[chain[i]].ref.key;
+          }
+          await wait(380);
+        }
+      }
+      document.addEventListener("click", (ev) => {
+        const d = ev.target.closest("[data-demo]");
+        if (d) demo(Number(d.dataset.demo));
+      });
+
+      // ---------- Concept cards and control bar ----------
+      const concepts = [
+        {
+          key: "push",
+          name: "A · Push",
+          from: "Ant Design push, Payload drawers",
+          how: "Covered sheets slide 112px left per level and stay readable under a dim. Movement stops after three covered levels.",
+          plus: "You see where you came from; click a covered sheet to go back.",
+          minus: "Needs width: from about three levels the oldest are mostly off screen or behind.",
+        },
+        {
+          key: "recede",
+          name: "B · Recede",
+          from: "iOS stacked sheets, turned sideways",
+          how: "Covered sheets shrink back 4.5% per level and peek out on the left, like a card deck.",
+          plus: "Reads as depth at any count while using little width; click a peeking card to go back.",
+          minus: "The covered content is too small and dim to read; it signals depth rather than showing it.",
+        },
+        {
+          key: "spines",
+          name: "C · Spines",
+          from: "Sanity collapsed panes, browser tab strips",
+          how: "Covered sheets fold into 40px spines on the top sheet's left edge, each with its number and title.",
+          plus: "Every level is named and one click away; the top sheet keeps its full width.",
+          minus: "A new idiom in the library; nine levels take 360px of spines.",
+        },
+        {
+          key: "history",
+          name: "D · One sheet",
+          from: "Strapi 5 relation modal",
+          how: "Only the top level shows; it replaces the one below in place, with Back and the trail as the way down.",
+          plus: "Calm and identical on desktop and phones; no extra width at any depth.",
+          minus: "The level below is out of sight, so the trail has to carry the context.",
+        },
+        {
+          key: "bars",
+          name: "E · Title bars",
+          from: "Basecamp 2 page stacking, as bars",
+          how: "Covered sheets collapse into 36px bars across the top of the sheet, oldest at the back like paper edges, each with the name typed so far.",
+          plus: "Titles read horizontally, cost no width and work on phones too; every level is one click away.",
+          minus: "Costs height: past five covered levels the middle ones fold into “N more”.",
+        },
+        {
+          key: "panes",
+          name: "F · Side by side",
+          from: "Sanity panes, Finder column view",
+          how: "Covered sheets sit fully visible beside the top one, as many as fit (three at 1440px); older ones go behind the leftmost.",
+          plus: "You can read the form you're filling in while you create what it needs.",
+          minus: "Wide screens only, and past what fits it hides levels like the others; the trail is the only sign of them.",
+        },
+        {
+          key: "inline",
+          name: "G · Inline",
+          from: "Linear and Notion inline create, nested",
+          how: "New in a create sheet expands the form under its field, and deeper News nest further. Choose and the lookup's New still open sheets, stacked as in Push.",
+          plus: "Creating adds no layer: the whole chain is one scrolling form you can read top to bottom.",
+          minus: "Each level indents about 13px and the form grows long; closing the sheet discards everything nested in it.",
+        },
+      ];
+      document.getElementById("concepts").innerHTML = concepts
+        .map(
+          (c) => `
+          <div class="flex flex-col gap-2 rounded-lg border p-4 text-sm">
+            <div class="flex items-center justify-between gap-2">
+              <p class="font-medium">${c.name}</p>
+              ${button("outline", "xs", "Show", `data-show-concept="${c.key}"`)}
+            </div>
+            <p class="text-muted-foreground text-xs">From ${c.from}</p>
+            <p>${c.how}</p>
+            <p class="text-muted-foreground"><b class="text-foreground">+</b> ${c.plus}</p>
+            <p class="text-muted-foreground"><b class="text-foreground">−</b> ${c.minus}</p>
+          </div>`,
+        )
+        .join("");
+
+      const html = document.documentElement;
+      const params = new URLSearchParams(location.search);
+      for (const k of ["concept", "scrim", "trail"]) if (params.get(k)) html.dataset[k] = params.get(k);
+      if (params.has("dark")) html.classList.add("dark");
+
+      const seg = (k, v, text) =>
+        `<button type="button" data-set="${k}" data-value="${v}" class="rounded-md px-2 py-1 hover:bg-muted data-[active]:bg-primary data-[active]:text-primary-foreground">${text}</button>`;
+      const bar = controlBar(
+        `<span class="mx-1 h-5 border-l"></span>${concepts.map((c) => seg("concept", c.key, c.name.split(" · ")[1])).join("")}
+         <span class="mx-1 h-5 border-l"></span><span class="text-muted-foreground px-1">scrim</span>${seg("scrim", "base", "base")}${seg("scrim", "each", "each")}
+         <span class="mx-1 h-5 border-l"></span>${seg("trail", "on", "trail")}`,
+      );
+      const sync = () => {
+        bar.querySelectorAll("[data-set]").forEach((b) => b.toggleAttribute("data-active", html.dataset[b.dataset.set] === b.dataset.value));
+        const p = new URLSearchParams(location.search);
+        for (const k of ["concept", "scrim", "trail"]) p.set(k, html.dataset[k]);
+        history.replaceState(null, "", `?${p}`);
+      };
+      bar.addEventListener("click", (ev) => {
+        const b = ev.target.closest("[data-set]");
+        if (!b) return;
+        const { set, value } = b.dataset;
+        html.dataset[set] = set === "trail" ? (html.dataset.trail === "on" ? "off" : "on") : value;
+        sync();
+      });
+      document.addEventListener("click", (ev) => {
+        const b = ev.target.closest("[data-show-concept]");
+        if (!b) return;
+        html.dataset.concept = b.dataset.showConcept;
+        sync();
+        demo(4);
+      });
+      sync();
+      renderTour();
+      if (params.get("demo")) demo(Number(params.get("demo")));
+    </script>
+  </body>
+</html>
