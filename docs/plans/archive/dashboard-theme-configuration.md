@@ -1,6 +1,6 @@
 # Dashboard theme configuration
 
-Status: implemented and verified.
+Status: completed. Implemented and verified 2026-09-24; archived 2026-10-09.
 
 Dashboard previously hardcoded the shadcn Nova stylesheet in its shared layout. The requested app-wide API is `dashboard.ConfigureTheme(theme => { theme.Name = DashboardTheme.Ice; theme.IncludeSuggestedFonts = true; })`. No call keeps Nova and does not request web fonts.
 
