@@ -102,6 +102,21 @@ Use a nullable property with `[Required]` when the server must reject no selecti
     asp-items="@([new SelectListItem("First option", "first", true), new SelectListItem("Second option", "second")])" />
 ```
 
+*From `Pages/RadioGroup/_Media.cshtml`*
+
+```razor
+<sa-radio-group name="media-radio" value="ana" label="Tour guide" variant="RadioGroupVariant.ChoiceCard">
+    <sa-radio-group-item value="ana" description="Lisbon walking tours">
+        <sa-radio-group-item-media><sa-avatar src="/avatars/avatar-1.jpg" /></sa-radio-group-item-media>
+        Ana Ferreira
+    </sa-radio-group-item>
+    <sa-radio-group-item value="yuki" description="Kyoto temples and gardens">
+        <sa-radio-group-item-media><sa-avatar src="/avatars/avatar-2.jpg" /></sa-radio-group-item-media>
+        Yuki Tanaka
+    </sa-radio-group-item>
+</sa-radio-group>
+```
+
 *From `Pages/RadioGroup/_Validation.cshtml`*
 
 ```razor

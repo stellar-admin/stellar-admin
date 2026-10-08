@@ -105,6 +105,25 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
     asp-items="@([new SelectListItem("First option", "first", true), new SelectListItem("Second option", "second")])" />
 ```
 
+*From `Pages/CheckboxGroup/_Media.cshtml`*
+
+```razor
+<sa-checkbox-group name="media-checkbox" values="@(["flight"])" label="Transport">
+    <sa-checkbox-group-item value="flight">
+        <sa-checkbox-group-item-media><sa-icon name="plane" /></sa-checkbox-group-item-media>
+        Flight
+    </sa-checkbox-group-item>
+    <sa-checkbox-group-item value="train">
+        <sa-checkbox-group-item-media><sa-icon name="train-front" /></sa-checkbox-group-item-media>
+        Train
+    </sa-checkbox-group-item>
+    <sa-checkbox-group-item value="ferry">
+        <sa-checkbox-group-item-media><sa-icon name="ship" /></sa-checkbox-group-item-media>
+        Ferry
+    </sa-checkbox-group-item>
+</sa-checkbox-group>
+```
+
 *From `Pages/CheckboxGroup/_Validation.cshtml`*
 
 ```razor
