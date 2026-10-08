@@ -16,7 +16,7 @@ Affected repos: workspace (this plan and maintained guidance), website, stellar-
 
 ## Intent and scope
 
-Make Observatory the main suggested StellarAdmin theme and align the public website, documentation shell, and React shadcn components with its overall colours. The user authorized implementation and explicitly allows retaining the existing shadcn component styles. Selector labels and ordering must remain unchanged; Observatory is selected only as the fallback. The maintained [Observatory specification](../../design/themes/observatory.md) and [theme CSS](../../../stellar-admin/src/StellarAdmin.TagHelpers/Client/css/themes/observatory.css) remain the design authority.
+Make Observatory the main suggested StellarAdmin theme and align the public website, documentation shell, and React shadcn components with its overall colours. The user authorized implementation and explicitly allows retaining the existing shadcn component styles. Selector labels and ordering must remain unchanged; Observatory is selected only as the fallback. The maintained [Observatory specification](../../design/themes/observatory.md) and [theme CSS](../../../src/StellarAdmin.TagHelpers/Client/css/themes/observatory.css) remain the design authority.
 
 Recommended interpretation: Observatory becomes the recommendation for new applications and the default for visitors without a valid saved choice. Existing applications still select their stylesheet explicitly. All other themes remain available, and valid saved demo preferences remain respected. The website always uses the Observatory palette; selecting another demo theme changes the examples only.
 

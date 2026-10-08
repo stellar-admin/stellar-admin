@@ -12,7 +12,7 @@ Status: completed — implemented and verified locally; not committed or publish
 
 ## Scope and authorization
 
-Jerrie supplied `concourse_handoff/`, asked to start adding the theme, and authorized continuation after the foundation preview. The maintained design authority is the [Concourse specification](../../design/themes/concourse.md) plus [theme CSS](../../../stellar-admin/src/StellarAdmin.TagHelpers/Client/css/themes/concourse.css). Follow the [custom-theme workflow](../../design/custom-theme-workflow.md) for future extensions. No commits, pushes, or publishing were performed during implementation. Handoff deletion was subsequently authorized and completed; see the cleanup note below.
+Jerrie supplied `concourse_handoff/`, asked to start adding the theme, and authorized continuation after the foundation preview. The maintained design authority is the [Concourse specification](../../design/themes/concourse.md) plus [theme CSS](../../../src/StellarAdmin.TagHelpers/Client/css/themes/concourse.css). Follow the [custom-theme workflow](../../design/custom-theme-workflow.md) for future extensions. No commits, pushes, or publishing were performed during implementation. Handoff deletion was subsequently authorized and completed; see the cleanup note below.
 
 All five repositories remain on their existing branches with uncommitted changes. Initial workspace status contained only untracked `concourse_handoff/`; OSS, Pro, website, and consumer skills were clean. User handoff files were preserved during implementation. Work was performed locally without sub-agents or additional worktrees.
 
