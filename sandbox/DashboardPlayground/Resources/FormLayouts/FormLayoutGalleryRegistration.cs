@@ -380,7 +380,9 @@ internal static class FormLayoutGalleryRegistration
             {
                 section.Description =
                     "New opens the destination create form in the sheet. Its section is Split with Small(2), and the sheet stacks it.";
-                section.Add(model => model.Destination).UseEditor<LookupEditor>(UseDestinations);
+                section
+                    .Add(model => model.Destination)
+                    .UseEditor<LookupSheetEditor>(UseDestinations);
             }
         );
     }
@@ -409,7 +411,9 @@ internal static class FormLayoutGalleryRegistration
                 section.Columns(3);
                 section.Add(model => model.TravellerName);
                 section.Add(model => model.Cabin).UseEditor<SelectEditor>();
-                section.Add(model => model.Destination).UseEditor<LookupEditor>(UseDestinations);
+                section
+                    .Add(model => model.Destination)
+                    .UseEditor<LookupSheetEditor>(UseDestinations);
                 section.Add(model => model.Departure);
                 section.Add(model => model.CheckedBags);
                 section.Add(model => model.SeatCabin).UseEditor<RadioGroupEditor>();
@@ -434,7 +438,7 @@ internal static class FormLayoutGalleryRegistration
         );
     }
 
-    private static void UseDestinations(LookupEditor lookup)
+    private static void UseDestinations(LookupSheetEditor lookup)
     {
         lookup.UseItems<LayoutDestinationLookupSource, LayoutDestination, string>(
             destination => destination.Code,

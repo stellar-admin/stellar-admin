@@ -212,7 +212,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         {
             var navigations = edit
                 .Fields.Select(field =>
-                    field.Editor is LookupEditor { Items: IEfCoreLookupReference reference }
+                    field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
                         ? reference.FindNavigation(entityType, field.FieldName)?.Name
                         : null
                 )

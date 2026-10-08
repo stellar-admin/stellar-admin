@@ -331,7 +331,7 @@ customElements.define("dashboard-lookup-created", DashboardLookupCreated);
 // A lookup editor: the picker sends a selection to its hidden input as lookup-select, a create form sends a created
 // item's key as lookup-created, and Clear empties it. It shows either the selection or the empty buttons, and moves
 // focus to the button that is still shown.
-class DashboardLookupEditor extends HTMLElement {
+class DashboardLookupSheetEditor extends HTMLElement {
   constructor() {
     super();
 
@@ -410,4 +410,4 @@ class DashboardLookupEditor extends HTMLElement {
   }
 }
 
-customElements.define("dashboard-lookup-editor", DashboardLookupEditor);
+customElements.define("dashboard-lookup-sheet-editor", DashboardLookupSheetEditor);

@@ -37,7 +37,7 @@ public sealed class LookupGallery
     [Display(Name = "string? · a value the source does not have")]
     public string? UnknownAirport { get; set; }
 
-    // UseEditor<LookupEditor> settings
+    // UseEditor<LookupSheetEditor> settings
 
     [Display(Name = "string? · sheet Title · SearchPlaceholder · editor EmptyText")]
     public string? LabelledAirport { get; set; }

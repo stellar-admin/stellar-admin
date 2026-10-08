@@ -4,7 +4,7 @@ using StellarAdmin.Dashboard.Resources.Editors;
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 
 internal sealed record LookupSheetViewModel(
-    LookupEditor Editor,
+    LookupSheetEditor Editor,
     string For,
     string Title,
     string ResultsUrl,

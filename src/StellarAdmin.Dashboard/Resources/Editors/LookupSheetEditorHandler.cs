@@ -7,11 +7,11 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 /// <summary>
 ///     Displays a field as a lookup and resolves the selected item.
 /// </summary>
-public sealed class LookupEditorHandler(LookupEditor editor, IServiceProvider services)
-    : FieldEditorHandler<LookupEditor>(editor)
+public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceProvider services)
+    : FieldEditorHandler<LookupSheetEditor>(editor)
 {
     /// <inheritdoc />
-    public override string TemplateName => "Editors/Lookup";
+    public override string TemplateName => "Editors/LookupSheet";
 
     /// <inheritdoc />
     public override async Task<object?> PrepareAsync(
@@ -22,7 +22,7 @@ public sealed class LookupEditorHandler(LookupEditor editor, IServiceProvider se
         var items =
             Editor.Items
             ?? throw new InvalidOperationException(
-                $"LookupEditor on {context.FieldName} requires UseItems."
+                $"LookupSheetEditor on {context.FieldName} requires UseItems."
             );
 
         var item = await items.FindAsync(services, context, cancellationToken);
@@ -30,7 +30,7 @@ public sealed class LookupEditorHandler(LookupEditor editor, IServiceProvider se
             ? await FindCreateControllerAsync(context, items)
             : null;
 
-        return new LookupEditorData(item, createController);
+        return new LookupSheetEditorData(item, createController);
     }
 
     // The resource registered for the items' type creates new items; a user it doesn't authorize gets no button
@@ -43,19 +43,19 @@ public sealed class LookupEditorHandler(LookupEditor editor, IServiceProvider se
             Editor.CreateResourceType
             ?? items.ItemType
             ?? throw new InvalidOperationException(
-                $"LookupEditor on {context.FieldName} enables create, but its items have no type. Use EnableCreate<TResource>() to select the resource."
+                $"LookupSheetEditor on {context.FieldName} enables create, but its items have no type. Use EnableCreate<TResource>() to select the resource."
             );
         var resource =
             services
                 .GetServices<ResourceRegistration>()
                 .FirstOrDefault(registration => registration.ResourceType == type)
             ?? throw new InvalidOperationException(
-                $"LookupEditor on {context.FieldName} enables create, but no resource is registered for {type.Name}."
+                $"LookupSheetEditor on {context.FieldName} enables create, but no resource is registered for {type.Name}."
             );
         if (!resource.ResolveCanCreate(services))
         {
             throw new InvalidOperationException(
-                $"LookupEditor on {context.FieldName} enables create, but the {resource.ControllerName} resource has no create form."
+                $"LookupSheetEditor on {context.FieldName} enables create, but the {resource.ControllerName} resource has no create form."
             );
         }
 

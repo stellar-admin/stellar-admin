@@ -109,7 +109,7 @@ internal static class FieldEditorGalleryRegistration
                             fields.Add(model => model.Country);
                             fields
                                 .Add(model => model.HubCode)
-                                .UseEditor<LookupEditor>(lookup =>
+                                .UseEditor<LookupSheetEditor>(lookup =>
                                 {
                                     lookup.UseItems<
                                         GalleryAirportLookupSource,
@@ -337,16 +337,16 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<LookupEditor> with UseItems from a registered ILookupSource. Optional fields can be cleared.";
+                    "UseEditor<LookupSheetEditor> with UseItems from a registered ILookupSource. Optional fields can be cleared.";
                 section
                     .Add(model => model.Airport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.RequiredAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.DescribedItemsAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup, describe: true));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup, describe: true));
             }
         );
         fields.AddSection(
@@ -355,30 +355,30 @@ internal static class FieldEditorGalleryRegistration
             {
                 section
                     .Add(model => model.TitledAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup))
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup))
                     .Title = "Title override";
                 section
                     .Add(model => model.DescribedAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.FieldDescribedAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup))
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup))
                     .Description = "Set with the field's Description.";
                 section
                     .Add(model => model.ReadOnlyAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
                 section
                     .Add(model => model.UnknownAirport)
-                    .UseEditor<LookupEditor>(lookup => UseAirports(lookup));
+                    .UseEditor<LookupSheetEditor>(lookup => UseAirports(lookup));
             }
         );
         fields.AddSection(
-            "LookupEditor settings",
+            "LookupSheetEditor settings",
             section =>
             {
                 section
                     .Add(model => model.LabelledAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet =>
                         {
@@ -390,28 +390,28 @@ internal static class FieldEditorGalleryRegistration
                     });
                 section
                     .Add(model => model.UnclearableAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.AllowClear = false);
                         UseAirports(lookup);
                     });
                 section
                     .Add(model => model.SearchedAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.MinimumSearchLength = 2);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.PagedAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.PageSize = 5);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.StyledAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.ClassNames.Control = "max-w-xs";
                         UseAirports(lookup);
@@ -426,74 +426,74 @@ internal static class FieldEditorGalleryRegistration
                     "UseCode, UseAvatar, UseImage and UseIcon display media beside each item. The layout is a card when the items have a description, otherwise a button. Only Lisbon and Cape Town have images; the other airports have no media.";
                 section
                     .Add(model => model.CodeAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.CodeInputAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, media: AirportMedia.Code)
                     );
                 section
                     .Add(model => model.AvatarAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Avatar)
                     );
                 section
                     .Add(model => model.AvatarInputAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, media: AirportMedia.Avatar)
                     );
                 section
                     .Add(model => model.ImageAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Image)
                     );
                 section
                     .Add(model => model.IconInputAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.ClassNames.Media = "text-muted-foreground";
                         UseAirports(lookup, media: AirportMedia.Icon);
                     });
                 section
                     .Add(model => model.InputLayoutAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Input);
+                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Input);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.CardLayoutAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Card);
+                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Card);
                         UseAirports(lookup, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.EditorMediaHiddenAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.ShowMedia = false);
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.SheetMediaHiddenAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.ShowMedia = false);
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.CreatableAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.EnableCreate();
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.ReadOnlyCodeAirport)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         UseAirports(lookup, describe: true, media: AirportMedia.Code)
                     );
             }
@@ -501,7 +501,7 @@ internal static class FieldEditorGalleryRegistration
 
         // The gallery has no airport photos, so avatars show the title's initials and only two airports have images
         static void UseAirports(
-            LookupEditor lookup,
+            LookupSheetEditor lookup,
             bool describe = false,
             AirportMedia? media = null
         ) =>

@@ -22,7 +22,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -35,7 +35,11 @@ public class LookupCreateTests
         await Assert.That(create.GetAttribute("data-sheet-open")).IsEqualTo(CreateSheetUrl);
         await Assert.That(create.HasAttribute("hx-get")).IsFalse();
         await Assert
-            .That(document.RequiredElement("dashboard-lookup-editor").GetAttribute("selection-url"))
+            .That(
+                document
+                    .RequiredElement("dashboard-lookup-sheet-editor")
+                    .GetAttribute("selection-url")
+            )
             .IsEqualTo("/stellaradmin/products/lookupselection?form=create&field=CategoryId");
     }
 
@@ -46,7 +50,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CategoryId)
-                .UseEditor<LookupEditor>(lookup =>
+                .UseEditor<LookupSheetEditor>(lookup =>
                 {
                     lookup.UseItems(new UntypedItems());
                     lookup.EnableCreate<Category>();
@@ -74,7 +78,7 @@ public class LookupCreateTests
         await using var sut = await CreateHost(fields =>
             fields
                 .Add(model => model.CategoryId)
-                .UseEditor<LookupEditor>(lookup =>
+                .UseEditor<LookupSheetEditor>(lookup =>
                 {
                     lookup.UseItems(new UntypedItems());
                     lookup.EnableCreate();
@@ -97,7 +101,8 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             addCategoryResource: false
         );
         using var client = sut.GetTestClient();
@@ -117,7 +122,8 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             dashboard =>
                 dashboard.AddResource<Category>(resource =>
                     resource.UseDataSource<CategoryDataSource>()
@@ -145,7 +151,8 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             configureCategories: resource =>
                 resource.RequireAuthorization(policy => policy.RequireRole("Catalog")),
             configureServices: TestAuthenticationHandler.Register
@@ -161,7 +168,11 @@ public class LookupCreateTests
             .That(document.QuerySelector("[data-lookup='create']") is not null)
             .IsEqualTo(authorized);
         await Assert
-            .That(document.RequiredElement("dashboard-lookup-editor").HasAttribute("selection-url"))
+            .That(
+                document
+                    .RequiredElement("dashboard-lookup-sheet-editor")
+                    .HasAttribute("selection-url")
+            )
             .IsEqualTo(authorized);
     }
 
@@ -241,7 +252,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -263,7 +274,11 @@ public class LookupCreateTests
             )
             .IsEqualTo("/stellaradmin/categories/createsheet?for=Sheet_CategoryId&level=2");
         await Assert
-            .That(document.RequiredElement("dashboard-lookup-editor").GetAttribute("selection-url"))
+            .That(
+                document
+                    .RequiredElement("dashboard-lookup-sheet-editor")
+                    .GetAttribute("selection-url")
+            )
             .IsEqualTo("/stellaradmin/products/lookupselection?form=create&field=CategoryId");
         var picker = await client.GetDocumentAsync(open.GetAttribute("data-sheet-open")!);
         await Assert
@@ -502,7 +517,7 @@ public class LookupCreateTests
     {
         // Arrange
         await using var sut = await CreateHost(fields =>
-            fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories)
+            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories)
         );
         using var client = sut.GetTestClient();
 
@@ -533,7 +548,7 @@ public class LookupCreateTests
         // Arrange
         await using var sut = await CreateHost(fields =>
         {
-            fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories);
+            fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories);
             fields.Add(model => model.PrimaryCategoryId);
         });
         using var client = sut.GetTestClient();
@@ -576,7 +591,7 @@ public class LookupCreateTests
             }
         );
 
-    private static void UseCategories(LookupEditor lookup)
+    private static void UseCategories(LookupSheetEditor lookup)
     {
         lookup.UseItems<CategoryLookupSource, Category, int>(
             category => category.Id,

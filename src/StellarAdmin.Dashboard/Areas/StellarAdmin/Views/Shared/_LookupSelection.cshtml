@@ -2,7 +2,7 @@
 
 @{
     var item = Model.Item;
-    var isCard = Model.Layout == LookupEditorLayout.Card;
+    var isCard = Model.Layout == LookupSheetEditorLayout.Card;
 
     var placement = isCard ? ItemMediaPlacement.LookupLarge : ItemMediaPlacement.Lookup;
     var media = Model.ShowMedia && item is not null ? ItemMediaViewModel.Create(item.Media, item.Text, placement, Model.MediaClass) : null;

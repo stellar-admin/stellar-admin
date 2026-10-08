@@ -11,14 +11,15 @@ using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelp
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Resources;
 
-public class LookupEditorTests
+public class LookupSheetEditorTests
 {
     [Test]
     public async Task SelectedValue_ShowsItemAndHidesEmptyButtons()
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new() { CategoryId = 2 }
         );
         using var client = sut.GetTestClient();
@@ -58,7 +59,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -90,7 +92,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.EmptyText = "Pick a category");
                         UseCategories(lookup);
@@ -116,7 +118,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.EnableCreate();
                         UseCategories(lookup);
@@ -155,7 +157,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.EnableCreate();
                         UseCategories(lookup);
@@ -179,7 +181,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new() { CategoryId = 2 }
         );
         using var client = sut.GetTestClient();
@@ -201,7 +204,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name
@@ -230,9 +233,9 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupEditorLayout.Input);
+                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Input);
                         UseCategories(lookup);
                     }),
             new() { CategoryId = 2 }
@@ -256,7 +259,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -285,7 +288,7 @@ public class LookupEditorTests
             {
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -294,7 +297,7 @@ public class LookupEditorTests
                     );
                 fields
                     .Add(model => model.PrimaryCategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -337,7 +340,7 @@ public class LookupEditorTests
             {
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.ClassNames.Media = "size-7";
                         lookup.UseItems<CategoryLookupSource, Category, int>(
@@ -348,7 +351,7 @@ public class LookupEditorTests
                     });
                 fields
                     .Add(model => model.PrimaryCategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -382,7 +385,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
@@ -410,7 +413,9 @@ public class LookupEditorTests
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
             fields =>
-                fields.Add(model => model.FixedCategoryId).UseEditor<LookupEditor>(UseCategories),
+                fields
+                    .Add(model => model.FixedCategoryId)
+                    .UseEditor<LookupSheetEditor>(UseCategories),
             new() { FixedCategoryId = 2 }
         );
         using var client = sut.GetTestClient();
@@ -435,7 +440,9 @@ public class LookupEditorTests
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
             fields =>
-                fields.Add(model => model.FixedCategoryId).UseEditor<LookupEditor>(UseCategories),
+                fields
+                    .Add(model => model.FixedCategoryId)
+                    .UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -457,7 +464,9 @@ public class LookupEditorTests
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
             fields =>
-                fields.Add(model => model.PrimaryCategoryId).UseEditor<LookupEditor>(UseCategories),
+                fields
+                    .Add(model => model.PrimaryCategoryId)
+                    .UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -485,7 +494,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new() { CategoryId = 99 }
         );
         using var client = sut.GetTestClient();
@@ -508,7 +518,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -536,7 +547,7 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(),
+            fields => fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(),
             new()
         );
         using var client = sut.GetTestClient();
@@ -548,7 +559,7 @@ public class LookupEditorTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
         await Assert
             .That(await response.Content.ReadAsStringAsync())
-            .Contains("LookupEditor on CategoryId requires UseItems.");
+            .Contains("LookupSheetEditor on CategoryId requires UseItems.");
     }
 
     [Test]
@@ -556,7 +567,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new() { CategoryId = 2 }
         );
         using var client = sut.GetTestClient();
@@ -567,7 +579,7 @@ public class LookupEditorTests
         // Assert
         var clear = document.RequiredElement("#Entity_CategoryId-selected [data-lookup='clear']");
         await Assert.That(clear.GetAttribute("type")).IsEqualTo("button");
-        await Assert.That(clear.Closest("dashboard-lookup-editor")).IsNotNull();
+        await Assert.That(clear.Closest("dashboard-lookup-sheet-editor")).IsNotNull();
     }
 
     [Test]
@@ -576,7 +588,9 @@ public class LookupEditorTests
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
             fields =>
-                fields.Add(model => model.PrimaryCategoryId).UseEditor<LookupEditor>(UseCategories),
+                fields
+                    .Add(model => model.PrimaryCategoryId)
+                    .UseEditor<LookupSheetEditor>(UseCategories),
             new() { PrimaryCategoryId = 1 }
         );
         using var client = sut.GetTestClient();
@@ -596,7 +610,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.PrimaryCategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Editor(editor => editor.AllowClear = true);
                         UseCategories(lookup);
@@ -617,7 +631,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -654,7 +669,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -686,7 +701,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -716,7 +732,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
@@ -749,7 +765,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -789,7 +805,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                         lookup.UseItems<CategoryLookupSource, Category, int>(
                             category => category.Id,
                             category => category.Name,
@@ -820,7 +836,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -844,7 +861,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.PageSize = 1);
                         UseCategories(lookup);
@@ -886,7 +903,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new()
         );
         using var client = sut.GetTestClient();
@@ -912,7 +930,8 @@ public class LookupEditorTests
     {
         // Arrange
         await using var sut = await CreateLookupFieldsHost(
-            fields => fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories),
+            fields =>
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories),
             new(),
             dashboard =>
                 dashboard.ConfigureResourceLabels(labels =>
@@ -943,7 +962,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet => sheet.MinimumSearchLength = 2);
                         UseCategories(lookup);
@@ -976,7 +995,7 @@ public class LookupEditorTests
         await using var sut = await CreateLookupFieldsHost(
             fields =>
             {
-                fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories);
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories);
                 fields.Add(model => model.PrimaryCategoryId);
             },
             new()
@@ -998,7 +1017,7 @@ public class LookupEditorTests
             fields =>
                 fields
                     .Add(model => model.CategoryId)
-                    .UseEditor<LookupEditor>(lookup =>
+                    .UseEditor<LookupSheetEditor>(lookup =>
                     {
                         lookup.Sheet(sheet =>
                         {
@@ -1047,7 +1066,7 @@ public class LookupEditorTests
         await using var sut = await CreateLookupFieldsHost(
             fields =>
             {
-                fields.Add(model => model.CategoryId).UseEditor<LookupEditor>(UseCategories);
+                fields.Add(model => model.CategoryId).UseEditor<LookupSheetEditor>(UseCategories);
                 fields.Add(model => model.PrimaryCategoryId);
             },
             new()
@@ -1061,7 +1080,7 @@ public class LookupEditorTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
-    private static void UseCategories(LookupEditor lookup) =>
+    private static void UseCategories(LookupSheetEditor lookup) =>
         lookup.UseItems<CategoryLookupSource, Category, int>(
             category => category.Id,
             category => category.Name,

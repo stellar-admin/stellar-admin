@@ -27,7 +27,7 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<LookupEditor>(UseCategories);
+                            field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
                 })
@@ -43,7 +43,7 @@ internal static class ProductResourceRegistration
                         field =>
                         {
                             field.Title = "Category";
-                            field.UseEditor<LookupEditor>(UseCategories);
+                            field.UseEditor<LookupSheetEditor>(UseCategories);
                         }
                     );
                 })
@@ -92,7 +92,7 @@ internal static class ProductResourceRegistration
     }
 
     // New opens the category resource's create form, and selects the category it creates
-    private static void UseCategories(LookupEditor lookup)
+    private static void UseCategories(LookupSheetEditor lookup)
     {
         lookup.Sheet(sheet =>
         {

@@ -18,7 +18,7 @@ public sealed class LookupFieldOptions
     /// <summary>
     ///     How the selected item is laid out, or null to use a card when the items have a description.
     /// </summary>
-    public LookupEditorLayout? Layout { get; set; }
+    public LookupSheetEditorLayout? Layout { get; set; }
 
     /// <summary>
     ///     Whether the selected item's media is displayed.

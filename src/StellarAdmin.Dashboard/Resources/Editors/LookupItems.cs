@@ -83,7 +83,7 @@ internal sealed class LookupItems<TSource, TEntity, TValue>(
                     : CreateItem(entity);
             default:
                 throw new InvalidOperationException(
-                    $"LookupEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+                    $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
                 );
         }
     }

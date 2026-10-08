@@ -1,16 +1,16 @@
 @using Microsoft.AspNetCore.Mvc.ModelBinding
 @using StellarAdmin.Dashboard.Resources
-@inherits FieldEditorView<LookupEditor>
+@inherits FieldEditorView<LookupSheetEditor>
 @inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
 
 @{
-    var data = (LookupEditorData?)EditorData;
+    var data = (LookupSheetEditorData?)EditorData;
     var item = data?.Item;
     var classes = EditorClassNamesMapper.ForInput(Editor);
     var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
     var canLookUp = !IsReadOnly && Field?.FieldName is not null;
     var allowClear = canLookUp && (Editor.FieldOptions.AllowClear ?? !ViewData.ModelMetadata.IsRequired);
-    var isCard = Editor.Layout == LookupEditorLayout.Card;
+    var isCard = Editor.Layout == LookupSheetEditorLayout.Card;
     var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
     var selection = new LookupSelectionViewModel(item, Editor.Layout, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
     var labels = LabelOptions.Value;
@@ -44,7 +44,7 @@
     <sa-field-label class="@classes.Label" id="@($"{id}-label")">@label</sa-field-label>
 
     @* Shows a selection made in a sheet, and clears the value *@
-    <dashboard-lookup-editor class="contents" selection-url="@selectionUrl">
+    <dashboard-lookup-sheet-editor class="contents" selection-url="@selectionUrl">
         <input type="hidden" asp-for="@Model" data-lookup="value" />
 
         @if (!canLookUp)
@@ -145,7 +145,7 @@
                 }
             </div>
         }
-    </dashboard-lookup-editor>
+    </dashboard-lookup-sheet-editor>
 
     <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
     <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>

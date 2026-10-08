@@ -7,9 +7,9 @@ namespace StellarAdmin.Dashboard.EntityFrameworkCore;
 /// <summary>
 ///     Configures EF Core items for lookup editors.
 /// </summary>
-public static class LookupEditorExtensions
+public static class LookupSheetEditorExtensions
 {
-    extension(LookupEditor editor)
+    extension(LookupSheetEditor editor)
     {
         /// <summary>
         ///     Searches lookup items in an EF Core entity set using required value and title selectors.

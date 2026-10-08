@@ -612,7 +612,7 @@ public class ResourceController<TResource>(
         );
     }
 
-    private (FormFieldOptions, LookupEditor)? FindLookupField(ResourceLookupQuery query)
+    private (FormFieldOptions, LookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
     {
         var fields = query.Form?.ToLowerInvariant() switch
         {
@@ -623,7 +623,7 @@ public class ResourceController<TResource>(
 
         return
             fields?.FirstOrDefault(options => options.FieldName == query.Field)
-                is { IsReadOnly: false, Editor: LookupEditor editor } options
+                is { IsReadOnly: false, Editor: LookupSheetEditor editor } options
             ? (options, editor)
             : null;
     }

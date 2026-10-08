@@ -94,7 +94,7 @@ public class ResourceLookupTests
                     fields.Add(product => product.Price);
                     fields
                         .Add(product => product.CategoryId)
-                        .UseEditor<LookupEditor>(options => ConfigureItems(options, _ => { }));
+                        .UseEditor<LookupSheetEditor>(options => ConfigureItems(options, _ => { }));
                 })
             )
         );
@@ -264,7 +264,7 @@ public class ResourceLookupTests
                     edit.Fields(fields =>
                         fields
                             .Add(product => product.CategoryId)
-                            .UseEditor<LookupEditor>(options =>
+                            .UseEditor<LookupSheetEditor>(options =>
                             {
                                 ConfigureItems(options, _ => { });
                                 options.EnableCreate();
@@ -280,8 +280,9 @@ public class ResourceLookupTests
         );
         using var client = sut.GetTestClient();
         var page = await ReadDocument(await client.GetAsync("/stellaradmin/products/edit/1"));
-        var createUrl = page.QuerySelector("[data-lookup='create']")!.GetAttribute("hx-get")!;
-        var selectionUrl = page.QuerySelector("dashboard-lookup-editor")!
+        var createUrl = page.QuerySelector("[data-lookup='create']")!
+            .GetAttribute("data-sheet-open")!;
+        var selectionUrl = page.QuerySelector("dashboard-lookup-sheet-editor")!
             .GetAttribute("selection-url")!;
         var values = await PrepareForm(client, createUrl);
         values["Sheet.Name"] = "Garden";
@@ -296,7 +297,7 @@ public class ResourceLookupTests
         // Assert
         await Assert
             .That(createUrl)
-            .IsEqualTo("/stellaradmin/categories/createsheet?for=Entity_CategoryId");
+            .IsEqualTo("/stellaradmin/categories/createsheet?for=Entity_CategoryId&level=1");
         await Assert.That(key).IsEqualTo("4");
         var template = (IHtmlTemplateElement)
             selection.QuerySelector("template[data-lookup='selection']")!;
@@ -317,7 +318,7 @@ public class ResourceLookupTests
                 fields.Add(product => product.Price);
                 fields
                     .Add(product => product.CategoryId)
-                    .UseEditor<LookupEditor>(options =>
+                    .UseEditor<LookupSheetEditor>(options =>
                     {
                         options.Sheet(sheet => sheet.PageSize = pageSize);
                         ConfigureItems(options, configure);
@@ -326,7 +327,7 @@ public class ResourceLookupTests
         );
 
     private static void ConfigureItems(
-        LookupEditor options,
+        LookupSheetEditor options,
         Action<EfCoreLookupItemsBuilder<Category, int>> configure
     ) =>
         options.UseItems<CatalogDbContext, Category, int>(
