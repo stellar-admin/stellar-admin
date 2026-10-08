@@ -14,6 +14,14 @@
         @labels.Lookup.MinimumSearchLengthMessage(Model.Labels)
     </p>
 }
+else if (Model.IsEmpty && Model.IsSelectedOnly)
+{
+    <sa-empty class="border-0 p-4" data-lookup="message">
+        <sa-empty-header>
+            <sa-empty-title>@labels.Lookup.NoSelectedTitle(Model.Labels)</sa-empty-title>
+        </sa-empty-header>
+    </sa-empty>
+}
 else if (Model.IsEmpty)
 {
     <sa-empty class="border-0 p-4" data-lookup="message">
@@ -32,9 +40,9 @@ else if (Model.IsEmpty)
 
 @foreach (var item in Model.Items)
 {
-    var media = editor.SheetOptions.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, editor.ClassNames.Media) : null;
+    var media = editor.SheetOptions.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, editor.MediaClassName) : null;
 
-    <sa-command-item value="@item.Value" checked="@(item.Value == Model.Selected)" data-lookup="item">
+    <sa-command-item value="@item.Value" checked="@Model.Selected.Contains(item.Value)" data-lookup="item">
         @if (media is not null)
         {
             <partial name="_ItemMedia" model="media" />
@@ -46,11 +54,14 @@ else if (Model.IsEmpty)
                 <span class="text-muted-foreground truncate text-xs" data-lookup="item-description">@item.Description</span>
             }
         </div>
-        @* The editor's display of this item, swapped in when it is selected *@
-        <template data-lookup="selection">
-            <partial name="_LookupSelection"
-                     model="new LookupSelectionViewModel(item, editor.Layout, editor.FieldOptions.ShowMedia, false, editor.ClassNames.Media)" />
-        </template>
+        @* A single-select editor's display of this item, swapped in when it is selected *@
+        @if (editor is LookupSheetEditor single)
+        {
+            <template data-lookup="selection">
+                <partial name="_LookupSelection"
+                         model="new LookupSelectionViewModel(item, single.Layout, single.FieldOptions.ShowMedia, false, single.ClassNames.Media)" />
+            </template>
+        }
     </sa-command-item>
 }
 

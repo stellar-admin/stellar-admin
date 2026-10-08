@@ -1,0 +1,66 @@
+@model MultiLookupItemsViewModel
+@using StellarAdmin.Dashboard.Resources
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var editor = Model.Editor;
+    var items = Model.Items;
+    var options = editor.FieldOptions;
+    var labels = LabelOptions.Value;
+    var labelContext = new LookupLabelContext(Model.Label, editor.SheetOptions.MinimumSearchLength, null);
+    var removeText = labels.Lookup.RemoveLabel(labelContext);
+
+    ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
+        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, editor.ClassNames.Media) : null;
+}
+
+@* The selected items of an editable field, rendered with the field and again as items are selected in the sheet *@
+@switch (options.Layout)
+{
+    case MultiLookupSheetEditorLayout.List:
+        @foreach (var item in items)
+        {
+            <partial name="_MultiLookupListItem" model="new MultiLookupListItemViewModel(item, Media(item, ItemMediaPlacement.LookupLarge), removeText)" />
+        }
+        break;
+
+    case MultiLookupSheetEditorLayout.Chips:
+        @foreach (var item in items)
+        {
+            var media = Media(item, ItemMediaPlacement.Inline);
+            <sa-badge variant="BadgeVariant.Secondary" class="@($"h-6 gap-1 pr-0.5 {(media is null ? "pl-2" : "pl-0.5")}")" data-lookup="item" data-value="@item.Value">
+                @if (media is not null)
+                {
+                    <partial name="_ItemMedia" model="media" />
+                }
+                <span>@item.Text</span>
+                <button type="button" class="hover:bg-foreground/10 focus-visible:ring-ring/50 rounded-sm p-0.5 outline-none focus-visible:ring-[3px]" data-lookup="remove">
+                    <sa-icon name="x" class="size-3" />
+                    <span class="sr-only">@removeText @item.Text</span>
+                </button>
+            </sa-badge>
+        }
+        break;
+
+    default:
+        var named = items.Take(2).Select(item => item.Text);
+        var summary = items.Count > 2
+            ? $"{string.Join(", ", named)} {labels.Lookup.MoreText(new LookupLabelContext(Model.Label, editor.SheetOptions.MinimumSearchLength, null) { Count = items.Count - 2 })}"
+            : string.Join(", ", named);
+        var previews = items.Take(3).Select(item => Media(item, item.Media is ItemMedia.Avatar ? ItemMediaPlacement.Lookup : ItemMediaPlacement.Inline)).OfType<ItemMediaViewModel>().ToArray();
+        var avatars = previews.Length > 0 && previews.All(preview => preview.Media is ItemMedia.Avatar);
+
+        <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @Model.Label, </span>
+        @if (previews.Length > 0)
+        {
+            <span class="@(avatars ? "*:ring-background flex shrink-0 -space-x-1.5 *:ring-2" : "flex shrink-0 gap-1")">
+                @foreach (var preview in previews)
+                {
+                    <partial name="_ItemMedia" model="preview" />
+                }
+            </span>
+        }
+        <span class="min-w-0 truncate">@summary</span>
+        <span class="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">@items.Count</span>
+        break;
+}

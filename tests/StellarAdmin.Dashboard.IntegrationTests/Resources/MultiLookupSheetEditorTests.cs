@@ -459,6 +459,298 @@ public class MultiLookupSheetEditorTests
             .IsTrue();
     }
 
+    [Test]
+    public async Task OpenButtons_OpenTheSheetAndTheEditorRendersItsItems()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new() { CategoryIds = [1] }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(EditUrl);
+
+        // Assert
+        var editor = document.RequiredElement("dashboard-multi-lookup-sheet-editor");
+        await Assert.That(editor.Id).IsEqualTo("Entity_CategoryIds");
+        await Assert.That(editor.GetAttribute("name")).IsEqualTo("Entity.CategoryIds");
+        await Assert
+            .That(editor.GetAttribute("selection-url"))
+            .IsEqualTo("/stellaradmin/products/multilookupselection?form=edit&field=CategoryIds");
+        await Assert
+            .That(
+                editor
+                    .QuerySelectorAll("[data-lookup='open']")
+                    .Select(button => button.GetAttribute("data-sheet-open"))
+            )
+            .IsEquivalentTo([
+                "/stellaradmin/products/lookupsheet?form=edit&field=CategoryIds&for=Entity_CategoryIds",
+                "/stellaradmin/products/lookupsheet?form=edit&field=CategoryIds&for=Entity_CategoryIds",
+            ]);
+    }
+
+    [Test]
+    public async Task LookupSheet_ShowsAllAndSelectedViewsAndDone()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookupsheet?form=edit&field=CategoryIds&for=Entity_CategoryIds"
+        );
+
+        // Assert
+        var picker = document.RequiredElement("dashboard-lookup-picker");
+        await Assert.That(picker.HasAttribute("multiple")).IsTrue();
+        var views = picker.QuerySelectorAll("[data-lookup='view'] input[type='radio']");
+        await Assert
+            .That(views.Select(view => view.GetAttribute("value")!))
+            .IsEquivalentTo(["all", "selected"], CollectionOrdering.Matching);
+        await Assert.That(views[0].HasAttribute("checked")).IsTrue();
+        await Assert
+            .That(picker.RequiredElement("[data-lookup='count']").TextContent)
+            .IsEqualTo("0");
+        await Assert
+            .That(picker.RequiredElement("[data-lookup='clear-all']").HasAttribute("hidden"))
+            .IsTrue();
+        await Assert
+            .That(picker.RequiredElement("[data-lookup='done']").TextContent.Trim())
+            .IsEqualTo("Done");
+    }
+
+    [Test]
+    public async Task Lookup_ChecksEachSelectedItem()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=edit&field=CategoryIds&selected=1&selected=2"
+        );
+
+        // Assert
+        var items = document.QuerySelectorAll("[data-lookup='item']");
+        await Assert
+            .That(items.Select(item => item.GetAttribute("data-checked")))
+            .IsEquivalentTo(["true", "true"]);
+        await Assert.That(document.QuerySelector("template[data-lookup='selection']")).IsNull();
+    }
+
+    [Test]
+    public async Task Lookup_SelectedOnly_ShowsSelectedItemsInValueOrder()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Sheet(sheet => sheet.PageSize = 1);
+                        UseCategories(lookup);
+                    }),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=edit&field=CategoryIds&selected=2&selected=1&selectedOnly=true"
+        );
+
+        // Assert
+        await Assert
+            .That(document.TextContents("[data-lookup='item-title']"))
+            .IsEquivalentTo(["Notebooks", "Cameras"], CollectionOrdering.Matching);
+        await Assert.That(document.QuerySelector("[data-lookup='more']")).IsNull();
+    }
+
+    [Test]
+    public async Task Lookup_SelectedOnlyWithTerm_ShowsMatchingSelectedItems()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/lookup?form=edit&field=CategoryIds&selected=2&selected=1&selectedOnly=true&term=ntb"
+        );
+
+        // Assert
+        await Assert
+            .That(document.TextContents("[data-lookup='item-title']"))
+            .IsEquivalentTo(["Notebooks"]);
+    }
+
+    [Test]
+    [Arguments("selected=1&term=lens", "No selected categoryIds match “lens”")]
+    [Arguments("", "No categoryIds selected")]
+    public async Task Lookup_SelectedOnlyWithoutMatches_ShowsNoSelectedTitle(
+        string query,
+        string title
+    )
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            $"/stellaradmin/products/lookup?form=edit&field=CategoryIds&selectedOnly=true&{query}"
+        );
+
+        // Assert
+        await Assert
+            .That(
+                document
+                    .RequiredElement("[data-lookup='message'] [data-slot='empty-title']")
+                    .TextContent
+            )
+            .IsEqualTo(title);
+        await Assert.That(document.QuerySelector("[data-lookup='item']")).IsNull();
+    }
+
+    [Test]
+    public async Task MultiLookupSelection_RendersTheLayoutsItemsInValueOrder()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/multilookupselection?form=edit&field=CategoryIds&selected=2&selected=1"
+        );
+
+        // Assert
+        var chips = document.QuerySelectorAll("[data-slot='badge'][data-lookup='item']");
+        await Assert
+            .That(chips.Select(chip => chip.GetAttribute("data-value")!))
+            .IsEquivalentTo(["2", "1"], CollectionOrdering.Matching);
+        await Assert
+            .That(chips[0].RequiredElement("[data-lookup='remove'] .sr-only").TextContent)
+            .IsEqualTo("Remove Notebooks");
+    }
+
+    [Test]
+    public async Task MultiLookupSelection_SummaryLayout_RendersTheSummary()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor =>
+                            editor.Layout = MultiLookupSheetEditorLayout.Summary
+                        );
+                        UseCategories(lookup);
+                    }),
+            new(),
+            categories => categories.Add(Category(3, "Lenses"))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/multilookupselection?form=edit&field=CategoryIds&selected=3&selected=1&selected=2"
+        );
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement(".truncate").TextContent)
+            .IsEqualTo("Lenses, Cameras and 1 more");
+        await Assert.That(document.RequiredElement(".tabular-nums").TextContent).IsEqualTo("3");
+    }
+
+    [Test]
+    [Arguments("form=edit&field=CategoryIds&selected=camera")]
+    [Arguments("form=create&field=CategoryIds&selected=1")]
+    [Arguments("form=edit&field=Unknown&selected=1")]
+    public async Task MultiLookupSelection_InvalidValueOrField_ReturnsNotFound(string query)
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var response = await client.GetAsync(
+            $"/stellaradmin/products/multilookupselection?{query}"
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    public async Task LookupSelection_MultiLookupField_ReturnsNotFound()
+    {
+        // Arrange
+        await using var sut = await CreateHost(
+            fields =>
+                fields
+                    .Add(model => model.CategoryIds)
+                    .UseEditor<MultiLookupSheetEditor>(UseCategories),
+            new()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var response = await client.GetAsync(
+            "/stellaradmin/products/lookupselection?form=edit&field=CategoryIds&value=1"
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+    }
+
     private static Category Category(int id, string name) =>
         new()
         {

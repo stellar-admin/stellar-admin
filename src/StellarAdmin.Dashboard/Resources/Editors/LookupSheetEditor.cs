@@ -3,7 +3,10 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 /// <summary>
 ///     Configures a lookup editor, which selects one item from a long list in a searchable sheet.
 /// </summary>
-public sealed class LookupSheetEditor : FieldEditor, IFieldEditor<LookupSheetEditorHandler>
+public sealed class LookupSheetEditor
+    : FieldEditor,
+        IFieldEditor<LookupSheetEditorHandler>,
+        ILookupSheetEditor
 {
     /// <summary>
     ///     Additional CSS classes for the parts of the editor.
@@ -30,6 +33,10 @@ public sealed class LookupSheetEditor : FieldEditor, IFieldEditor<LookupSheetEdi
         );
 
     internal LookupSheetOptions SheetOptions { get; } = new();
+
+    string? ILookupSheetEditor.MediaClassName => ClassNames.Media;
+
+    LookupSheetOptions ILookupSheetEditor.SheetOptions => SheetOptions;
 
     /// <summary>
     ///     Configures how the field is displayed in the form.

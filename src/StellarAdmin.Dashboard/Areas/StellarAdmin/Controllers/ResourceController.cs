@@ -349,6 +349,18 @@ public class ResourceController<TResource>(
             editor.SheetOptions.MinimumSearchLength,
             term
         );
+        if (query.SelectedOnly)
+        {
+            return await SelectedLookupResults(
+                query,
+                options,
+                editor,
+                term,
+                labels,
+                cancellationToken
+            );
+        }
+
         if ((term?.Length ?? 0) < editor.SheetOptions.MinimumSearchLength)
         {
             return PartialView(
@@ -360,6 +372,7 @@ public class ResourceController<TResource>(
                     query.Selected,
                     term,
                     true,
+                    false,
                     false,
                     labels
                 )
@@ -381,12 +394,12 @@ public class ResourceController<TResource>(
                     field = query.Field,
                     term,
                     skip = query.Skip + results.Items.Count,
-                    selected = query.Selected,
                 }
             )
             : null;
 
-        // Only the first page reports an empty result; a later page simply ends the list
+        // The picker sends the selected values with every request, so Load more marks those selected by then. Only the
+        // first page reports an empty result; a later page simply ends the list.
         return PartialView(
             "_LookupResults",
             new LookupResultsViewModel(
@@ -397,6 +410,7 @@ public class ResourceController<TResource>(
                 term,
                 false,
                 query.Skip == 0 && results.Items.Count == 0,
+                false,
                 labels
             )
         );
@@ -415,21 +429,19 @@ public class ResourceController<TResource>(
         if (
             !ModelState.IsValid
             || string.IsNullOrEmpty(value)
-            || FindLookupField(query) is not ({ } options, { Items: { } items } editor)
+            || FindLookupField(query)
+                is not
+                ({ } options, LookupSheetEditor { Items: { } items } editor)
             || !TryConvertKey(options, value, out var current)
         )
         {
             return NotFound();
         }
 
-        // The new item is shown without the form's model, so a model that has never been bound stands in for it
-        var model = query.Form!.Equals("create", StringComparison.OrdinalIgnoreCase)
-            ? _resourceOptions.Create!.CreateModel()
-            : RuntimeHelpers.GetUninitializedObject(_resourceOptions.Edit!.ModelType);
         var item = (
             await items.FindAsync(
                 HttpContext.RequestServices,
-                new FieldEditorContext(options.FieldName, model, current),
+                new FieldEditorContext(options.FieldName, CreateLookupModel(query), current),
                 cancellationToken
             )
         ).FirstOrDefault();
@@ -488,6 +500,55 @@ public class ResourceController<TResource>(
         );
     }
 
+    /// <summary>
+    ///     Renders a multi-select lookup field's display of the items with the specified values, as they are selected in
+    ///     its sheet.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> MultiLookupSelection(
+        [FromQuery] ResourceLookupQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            !ModelState.IsValid
+            || FindLookupField(query)
+                is not
+                ({ } options, MultiLookupSheetEditor { Items: { } items } editor)
+            || !TryConvertSelected(options, query.Selected, out var values)
+        )
+        {
+            return NotFound();
+        }
+
+        var selected = await items.FindAsync(
+            HttpContext.RequestServices,
+            new FieldEditorContext(options.FieldName, CreateLookupModel(query), values),
+            cancellationToken
+        );
+
+        return PartialView(
+            "_MultiLookupItems",
+            new MultiLookupItemsViewModel(editor, selected, GetFieldLabel(options))
+        );
+    }
+
+    // The collection's elements, such as int for List<int>; a nullable element converts to its underlying type
+    private static Type? GetElementType(Type collectionType)
+    {
+        var element = collectionType.IsArray
+            ? collectionType.GetElementType()
+            : collectionType
+                .GetInterfaces()
+                .Append(collectionType)
+                .FirstOrDefault(type =>
+                    type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                )
+                ?.GetGenericArguments()[0];
+
+        return element is null ? null : Nullable.GetUnderlyingType(element) ?? element;
+    }
+
     // Keys are formatted in the invariant culture, and converted to the field's type for the lookup's items
     private static bool TryConvertKey(FormFieldOptions options, string key, out object? value)
     {
@@ -504,6 +565,42 @@ public class ResourceController<TResource>(
             value = null;
             return false;
         }
+    }
+
+    // Selected values are posted as the form posts them, in the current culture, and converted to an array of the
+    // field's element type for the lookup's items
+    private static bool TryConvertSelected(
+        FormFieldOptions options,
+        IReadOnlyList<string> keys,
+        out Array values
+    )
+    {
+        values = Array.Empty<object>();
+        if (GetElementType(options.PropertyPath[^1].PropertyType) is not { } type)
+        {
+            return false;
+        }
+
+        var converter = TypeDescriptor.GetConverter(type);
+        var converted = Array.CreateInstance(type, keys.Count);
+        try
+        {
+            for (var index = 0; index < keys.Count; index++)
+            {
+                converted.SetValue(
+                    converter.ConvertFromString(null, CultureInfo.CurrentCulture, keys[index]),
+                    index
+                );
+            }
+        }
+        catch (Exception exception)
+            when (exception is ArgumentException or FormatException or NotSupportedException)
+        {
+            return false;
+        }
+
+        values = converted;
+        return true;
     }
 
     private void AddValidationErrors(
@@ -524,6 +621,12 @@ public class ResourceController<TResource>(
 
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
+
+    // Lookup items are found without the form's model, so a model that has never been bound stands in for it
+    private object CreateLookupModel(ResourceLookupQuery query) =>
+        query.Form!.Equals("create", StringComparison.OrdinalIgnoreCase)
+            ? _resourceOptions.Create!.CreateModel()
+            : RuntimeHelpers.GetUninitializedObject(_resourceOptions.Edit!.ModelType);
 
     private async Task<ResourceFormPageViewModel> CreateFormModelAsync(
         object resource,
@@ -614,7 +717,7 @@ public class ResourceController<TResource>(
         );
     }
 
-    private (FormFieldOptions, LookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
+    private (FormFieldOptions, ILookupSheetEditor)? FindLookupField(ResourceLookupQuery query)
     {
         var fields = query.Form?.ToLowerInvariant() switch
         {
@@ -625,7 +728,7 @@ public class ResourceController<TResource>(
 
         return
             fields?.FirstOrDefault(options => options.FieldName == query.Field)
-                is { IsReadOnly: false, Editor: LookupSheetEditor editor } options
+                is { IsReadOnly: false, Editor: ILookupSheetEditor editor } options
             ? (options, editor)
             : null;
     }
@@ -807,6 +910,56 @@ public class ResourceController<TResource>(
     }
 
     // Binds and saves the create form; the result is null when binding failed
+    // The Selected view of a multi-select lookup: the selected items whose title or description contains the term,
+    // in the order they were selected, without paging
+    private async Task<IActionResult> SelectedLookupResults(
+        ResourceLookupQuery query,
+        FormFieldOptions options,
+        ILookupSheetEditor editor,
+        string? term,
+        LookupLabelContext labels,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            editor is not MultiLookupSheetEditor
+            || !TryConvertSelected(options, query.Selected, out var values)
+        )
+        {
+            return NotFound();
+        }
+
+        var selected = await editor.Items!.FindAsync(
+            HttpContext.RequestServices,
+            new FieldEditorContext(options.FieldName, CreateLookupModel(query), values),
+            cancellationToken
+        );
+        var matches = term is null
+            ? selected
+            : selected
+                .Where(item =>
+                    item.Text.Contains(term, StringComparison.CurrentCultureIgnoreCase)
+                    || item.Description?.Contains(term, StringComparison.CurrentCultureIgnoreCase)
+                        == true
+                )
+                .ToArray();
+
+        return PartialView(
+            "_LookupResults",
+            new LookupResultsViewModel(
+                editor,
+                matches,
+                null,
+                query.Selected,
+                term,
+                false,
+                matches.Count == 0,
+                true,
+                labels
+            )
+        );
+    }
+
     private async Task<(object Resource, ResourceOperationResult? Result)> SubmitCreateAsync(
         string prefix,
         CancellationToken cancellationToken

@@ -1,5 +1,5 @@
 // Lookup editors: the lookup picker loads into a sheet, and the server renders search results with htmx into its
-// sa-command, which handles the keyboard; selecting or clearing an item only updates the field's hidden value and
+// sa-command, which handles the keyboard; selecting or clearing an item only updates the field's hidden values and
 // shows either the selection or the empty buttons. New loads the referenced resource's create form into a sheet, and
 // a created item is selected like a search result.
 
@@ -200,10 +200,15 @@ document.addEventListener("keydown", (event) => {
 
 customElements.define("dashboard-remote-sheet", DashboardRemoteSheet);
 
-// A lookup's picker in a sheet: a search and the results to choose from; for names the hidden input of
-// the editor that results belong to. It only handles events from its own elements, so htmx events dispatched on
-// the document for elements already removed from the page never reach it, and removing it cancels its requests.
+// A lookup's picker in a sheet: a search and the results to choose from; for names the editor that results belong to,
+// its hidden input for a single-select lookup. It only handles events from its own elements, so htmx events dispatched
+// on the document for elements already removed from the page never reach it, and removing it cancels its requests.
+// A multi-select picker toggles items in its editor and stays open: All | Selected switches to searching only the
+// selected items, where an unchecked item leaves the list, and Done or Ctrl+Enter (⌘↵ on a Mac) closes the sheet.
 class DashboardLookupPicker extends HTMLElement {
+  static #mac = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform ?? navigator.platform);
+  #enter = false;
+
   constructor() {
     super();
 
@@ -211,6 +216,11 @@ class DashboardLookupPicker extends HTMLElement {
     this.addEventListener("itemselect", (event) => {
       const item = event.target;
       if (item.matches("[data-lookup='more']")) {
+        return;
+      }
+
+      if (this.#multiple) {
+        this.#toggle(item);
         return;
       }
 
@@ -224,9 +234,17 @@ class DashboardLookupPicker extends HTMLElement {
       );
     });
 
-    // Searches send the editor's current value, so the server marks the selected result
+    // Searches send the editor's current values, so the server marks the selected results
     this.addEventListener("htmx:config:request", (event) => {
-      event.detail.ctx.request.body.set("selected", this.#editor.value);
+      const body = event.detail.ctx.request.body;
+      body.delete("selected");
+      for (const value of this.#selected) {
+        body.append("selected", value);
+      }
+
+      if (this.#selectedOnly) {
+        body.set("selectedOnly", "true");
+      }
     });
 
     // A failed search shows the error in the results, and a failed Load more in its place; cancelled requests show nothing
@@ -249,10 +267,60 @@ class DashboardLookupPicker extends HTMLElement {
     // Retry shows the loading rows again and repeats the search; typing keeps the current results until the new ones arrive
     this.addEventListener("click", (event) => {
       if (event.target.closest("[data-lookup='retry']")) {
-        this.querySelector("[data-lookup='results']").replaceChildren(this.#template("loading"));
-        this.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookup-retry"));
+        this.#search();
+      } else if (event.target.closest("[data-lookup='clear-all']")) {
+        this.#clearAll();
+      } else if (event.target.closest("[data-lookup='done']")) {
+        this.closest("dialog").close();
       }
     });
+
+    this.addEventListener("change", (event) => {
+      if (event.target.closest("[data-lookup='view']")) {
+        this.querySelector("[data-lookup='clear-all']").hidden = !this.#selectedOnly;
+        this.#update();
+        this.#search();
+      }
+    });
+
+    // Ctrl+Enter closes before the command list sees the Enter; a plain Enter marks the toggle as made from the
+    // keyboard, so the search text is selected for the next search
+    this.addEventListener(
+      "keydown",
+      (event) => {
+        if (!this.#multiple || event.key !== "Enter" || event.isComposing) {
+          return;
+        }
+
+        if (DashboardLookupPicker.#mac ? event.metaKey : event.ctrlKey) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.closest("dialog").close();
+        } else {
+          this.#enter = true;
+          setTimeout(() => (this.#enter = false));
+        }
+      },
+      { capture: true },
+    );
+  }
+
+  // A multi-select editor sends one change when the sheet closes, if its values changed
+  connectedCallback() {
+    if (!this.#multiple) {
+      return;
+    }
+
+    const editor = this.#editor;
+    editor.beginEdit();
+    this.closest("dialog")?.addEventListener("close", () => editor.endEdit(), { once: true });
+
+    if (DashboardLookupPicker.#mac) {
+      this.querySelector("[data-lookup='done-key'] kbd").textContent = "⌘";
+      this.querySelector("[data-lookup='done']").setAttribute("aria-keyshortcuts", "Meta+Enter");
+    }
+
+    this.#update();
   }
 
   disconnectedCallback() {
@@ -263,6 +331,73 @@ class DashboardLookupPicker extends HTMLElement {
 
   get #editor() {
     return document.getElementById(this.getAttribute("for"));
+  }
+
+  get #multiple() {
+    return this.hasAttribute("multiple");
+  }
+
+  get #selected() {
+    return this.#multiple ? this.#editor.values : [this.#editor.value];
+  }
+
+  get #selectedOnly() {
+    return this.querySelector("[data-lookup='view'] input[value='selected']")?.checked ?? false;
+  }
+
+  get #results() {
+    return this.querySelector("[data-lookup='results']");
+  }
+
+  #toggle(item) {
+    const checked = this.#editor.toggle(item.dataset.value);
+    if (checked) {
+      item.setAttribute("data-checked", "true");
+    } else {
+      item.removeAttribute("data-checked");
+    }
+
+    if (!checked && this.#selectedOnly) {
+      item.remove();
+      if (!this.#results.querySelector("[data-lookup='item']")) {
+        this.#search();
+      }
+    }
+
+    this.#update();
+    if (this.#enter) {
+      this.querySelector("[data-lookup='search']").select();
+    }
+  }
+
+  // No undo: the Selected view empties, and searches again to show that nothing is selected
+  #clearAll() {
+    this.#editor.clearAll();
+    for (const item of this.#results.querySelectorAll("[data-lookup='item']")) {
+      item.removeAttribute("data-checked");
+    }
+
+    this.#update();
+    if (this.#selectedOnly) {
+      this.#search();
+    }
+
+    this.querySelector("[data-lookup='search']").focus();
+  }
+
+  #search() {
+    this.#results.replaceChildren(this.#template("loading"));
+    this.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookup-retry"));
+  }
+
+  // The count, and the Selected view and Clear all are only enabled with a selection, though the Selected view stays
+  // reachable while it shows
+  #update() {
+    const count = this.#selected.length;
+    this.querySelector("[data-lookup='count']").textContent = count;
+    this.querySelector("[data-lookup='view'] input[value='selected']").disabled =
+      count === 0 && !this.#selectedOnly;
+    this.querySelector("[data-lookup='clear-all']").disabled = count === 0;
   }
 
   #template(name) {
@@ -412,10 +547,15 @@ class DashboardLookupSheetEditor extends HTMLElement {
 
 customElements.define("dashboard-lookup-sheet-editor", DashboardLookupSheetEditor);
 
-// A multi-select lookup editor: a hidden input per selected value, and the items that display them. Remove takes an
-// item and its value out, and Clear takes them all. It shows either the selection or the empty buttons, moves focus to
-// a button that is still shown, and fires change on itself when the value changes.
+// A multi-select lookup editor: a hidden input per selected value, and the items that display them. The picker toggles
+// values and clears them all, and the server renders the items again from the values, the latest request winning.
+// Remove takes an item and its value out, and Clear takes them all. It shows either the selection or the empty
+// buttons, and moves focus to a button that is still shown. It fires change on itself when Remove or Clear changes
+// the value, and once when the sheet closes if the value changed while it was open.
 class DashboardMultiLookupSheetEditor extends HTMLElement {
+  #initial = null;
+  #request = null;
+
   constructor() {
     super();
 
@@ -427,6 +567,50 @@ class DashboardMultiLookupSheetEditor extends HTMLElement {
         this.#clear();
       }
     });
+  }
+
+  get values() {
+    return this.#values.map((input) => input.value);
+  }
+
+  beginEdit() {
+    this.#initial = this.values.join("\n");
+  }
+
+  clearAll() {
+    for (const input of this.#values) {
+      input.remove();
+    }
+
+    this.#show();
+    this.#render();
+  }
+
+  endEdit() {
+    const changed = this.#initial !== null && this.#initial !== this.values.join("\n");
+    this.#initial = null;
+    this.#openButton()?.focus();
+    if (changed) {
+      this.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  // Adds a value at the end, or removes it, and returns whether it is selected
+  toggle(value) {
+    const input = this.#values.find((element) => element.value === value);
+    if (input) {
+      input.remove();
+    } else {
+      const added = document.createElement("input");
+      added.type = "hidden";
+      added.name = this.getAttribute("name");
+      added.value = value;
+      this.querySelector("[data-lookup='values']").append(added);
+    }
+
+    this.#show();
+    this.#render();
+    return !input;
   }
 
   get #items() {
@@ -445,7 +629,7 @@ class DashboardMultiLookupSheetEditor extends HTMLElement {
 
     this.#values.find((input) => input.value === item.dataset.value)?.remove();
     item.remove();
-    this.#update();
+    this.#changed();
     (next?.querySelector("[data-lookup='remove']") ?? this.#openButton())?.focus();
   }
 
@@ -454,19 +638,72 @@ class DashboardMultiLookupSheetEditor extends HTMLElement {
       element.remove();
     }
 
-    this.#update();
+    this.#changed();
     this.#openButton()?.focus();
+  }
+
+  // A rendering still on its way has older values, so it is replaced
+  #changed() {
+    this.#show();
+    if (this.#request) {
+      this.#render();
+    }
+
+    this.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   #openButton() {
     return this.querySelector("[data-lookup='open']:not([hidden] *)");
   }
 
-  #update() {
+  // Removed items leave straight away; if the rendering fails, added items show when the form is next rendered
+  async #render() {
+    const values = this.values;
+    for (const item of this.#items) {
+      if (!values.includes(item.dataset.value)) {
+        item.remove();
+      }
+    }
+
+    this.#request?.abort();
+    const request = new AbortController();
+    this.#request = request;
+
+    const url = new URL(this.getAttribute("selection-url"), document.baseURI);
+    for (const value of values) {
+      url.searchParams.append("selected", value);
+    }
+
+    try {
+      const response = await fetch(url, { signal: request.signal });
+      if (!response.ok) {
+        return;
+      }
+
+      const html = await response.text();
+      if (this.#request !== request) {
+        return;
+      }
+
+      const container = this.querySelector("[data-lookup='items']");
+      const focused = container.contains(document.activeElement);
+      container.innerHTML = html;
+      if (focused) {
+        this.#openButton()?.focus();
+      }
+    } catch {
+      // A cancelled or failed rendering keeps the items shown
+    } finally {
+      if (this.#request === request) {
+        this.#request = null;
+      }
+    }
+  }
+
+  #show() {
     const empty = this.#values.length === 0;
     this.querySelector("[data-lookup='selected']").hidden = empty;
     this.querySelector("[data-lookup='empty']").hidden = !empty;
-    this.dispatchEvent(new Event("change", { bubbles: true }));
   }
 }
 

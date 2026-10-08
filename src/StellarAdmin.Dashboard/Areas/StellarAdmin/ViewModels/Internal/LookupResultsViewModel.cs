@@ -4,12 +4,13 @@ using StellarAdmin.Dashboard.Resources.Editors;
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 
 internal sealed record LookupResultsViewModel(
-    LookupSheetEditor Editor,
+    ILookupSheetEditor Editor,
     IReadOnlyList<ChoiceItem> Items,
     string? MoreUrl,
-    string? Selected,
+    IReadOnlyCollection<string> Selected,
     string? Term,
     bool IsTermTooShort,
     bool IsEmpty,
+    bool IsSelectedOnly,
     LookupLabelContext Labels
 );

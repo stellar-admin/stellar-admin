@@ -4,6 +4,7 @@
 @{
     var editor = Model.Editor;
     var labels = LabelOptions.Value;
+    var multiple = editor is MultiLookupSheetEditor;
 
     // The loading rows take the shape of the results' media: the Card size with a description, otherwise the Input size
     var skeletonMediaClass = editor.SheetOptions.ShowMedia
@@ -43,16 +44,31 @@
     }
 }
 
-@* The lookup picker loaded into a sheet; for names the editor that results belong to *@
-<dashboard-lookup-picker class="contents" for="@Model.For">
+@* The lookup picker loaded into a sheet; for names the editor that results belong to. A multi-select picker can show
+   only the selected items, and its footer closes the sheet. *@
+<dashboard-lookup-picker class="contents" for="@Model.For" multiple="@multiple">
     <sa-sheet-header>
         <sa-sheet-title>@Model.Title</sa-sheet-title>
     </sa-sheet-header>
 
-    <sa-command filter="CommandFilter.None" class="min-h-0 flex-1 bg-transparent px-6 pb-6">
+    <sa-command filter="CommandFilter.None" class="@($"min-h-0 flex-1 bg-transparent px-6 {(multiple ? "pb-3" : "pb-6")}")">
         <sa-command-input name="term" autofocus="" placeholder="@editor.SheetOptions.SearchPlaceholder"
                           aria-label="@(editor.SheetOptions.SearchPlaceholder ?? labels.Lookup.SearchLabel(Model.Labels))" data-lookup="search"
                           hx-get="@Model.ResultsUrl" hx-target="@($"#{Model.For}-results")" hx-trigger="load, input changed delay:300ms, lookup-retry" />
+        @if (multiple)
+        {
+            @* The picker sets the count and the disabled states from the editor's values *@
+            <div class="mt-3 flex items-center justify-between gap-3">
+                <sa-segmented-control name="@($"{Model.For}-view")" value="all" aria-label="@labels.Lookup.ViewLabel(Model.Labels)">
+                    <sa-segmented-control-item value="all" data-lookup="view">@labels.Lookup.AllLabel(Model.Labels)</sa-segmented-control-item>
+                    <sa-segmented-control-item value="selected" data-lookup="view">
+                        @labels.Lookup.SelectedLabel(Model.Labels)
+                        <sa-badge variant="BadgeVariant.Secondary" class="h-5 min-w-5 px-1.5 tabular-nums" data-lookup="count">0</sa-badge>
+                    </sa-segmented-control-item>
+                </sa-segmented-control>
+                <sa-button type="button" variant="ButtonVariant.Ghost" size="ButtonSize.Small" hidden data-lookup="clear-all">@labels.Lookup.ClearAllLabel(Model.Labels)</sa-button>
+            </div>
+        }
         <sa-command-list class="mt-3 max-h-none flex-1" aria-label="@Model.Title">
             @* The loading rows show until the first results arrive *@
             <div id="@($"{Model.For}-results")" data-lookup="results">
@@ -60,6 +76,19 @@
             </div>
         </sa-command-list>
     </sa-command>
+
+    @if (multiple)
+    {
+        <sa-sheet-footer class="gap-3 border-t">
+            <div class="text-muted-foreground hidden items-center gap-1 text-xs sm:flex" aria-hidden="true">
+                <sa-kbd>↵</sa-kbd> @labels.Lookup.ToggleHint(Model.Labels)
+                <sa-kbd-group class="ml-2" data-lookup="done-key"><sa-kbd>Ctrl</sa-kbd><sa-kbd>↵</sa-kbd></sa-kbd-group> @labels.Lookup.DoneHint(Model.Labels)
+            </div>
+            <div class="flex gap-2">
+                <sa-button type="button" class="flex-1" aria-keyshortcuts="Control+Enter" data-lookup="done">@labels.Lookup.DoneLabel(Model.Labels)</sa-button>
+            </div>
+        </sa-sheet-footer>
+    }
 
     <template data-lookup="loading">
         @{ await LoadingRows(); }

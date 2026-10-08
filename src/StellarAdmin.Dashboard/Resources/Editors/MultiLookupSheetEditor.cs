@@ -6,7 +6,8 @@ namespace StellarAdmin.Dashboard.Resources.Editors;
 /// </summary>
 public sealed class MultiLookupSheetEditor
     : FieldEditor,
-        IFieldEditor<MultiLookupSheetEditorHandler>
+        IFieldEditor<MultiLookupSheetEditorHandler>,
+        ILookupSheetEditor
 {
     /// <summary>
     ///     Additional CSS classes for the parts of the editor.
@@ -21,6 +22,10 @@ public sealed class MultiLookupSheetEditor
     internal MultiLookupFieldOptions FieldOptions { get; } = new();
 
     internal LookupSheetOptions SheetOptions { get; } = new();
+
+    string? ILookupSheetEditor.MediaClassName => ClassNames.Media;
+
+    LookupSheetOptions ILookupSheetEditor.SheetOptions => SheetOptions;
 
     /// <summary>
     ///     Configures how the field is displayed in the form.

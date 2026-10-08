@@ -875,7 +875,8 @@ public class LookupSheetEditorTests
             "/stellaradmin/products/lookup?form=create&field=CategoryId&selected=2"
         );
         var more = first.RequiredElement("[data-lookup='more']");
-        var second = await client.GetDocumentAsync(more.GetAttribute("hx-get")!);
+        // The picker sends the selected value with every request
+        var second = await client.GetDocumentAsync($"{more.GetAttribute("hx-get")}&selected=2");
 
         // Assert
         await Assert
@@ -885,9 +886,7 @@ public class LookupSheetEditorTests
         await Assert.That(more.GetAttribute("hx-swap")).IsEqualTo("outerHTML");
         await Assert
             .That(more.GetAttribute("hx-get"))
-            .IsEqualTo(
-                "/stellaradmin/products/lookup?form=create&field=CategoryId&skip=1&selected=2"
-            );
+            .IsEqualTo("/stellaradmin/products/lookup?form=create&field=CategoryId&skip=1");
         await Assert
             .That(second.TextContents("[data-lookup='item-title']"))
             .IsEquivalentTo(["Notebooks"]);

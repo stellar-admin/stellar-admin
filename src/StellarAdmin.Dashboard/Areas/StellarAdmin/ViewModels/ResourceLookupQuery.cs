@@ -21,9 +21,14 @@ public sealed class ResourceLookupQuery
     public string? Form { get; set; }
 
     /// <summary>
-    ///     The value of the currently selected item, or null when nothing is selected.
+    ///     The values of the currently selected items, which are empty when nothing is selected.
     /// </summary>
-    public string? Selected { get; set; }
+    public string[] Selected { get; set; } = [];
+
+    /// <summary>
+    ///     Whether a multi-select lookup searches only its selected items.
+    /// </summary>
+    public bool SelectedOnly { get; set; }
 
     /// <summary>
     ///     The number of results to skip.

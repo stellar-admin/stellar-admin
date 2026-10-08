@@ -14,6 +14,11 @@ public sealed class LookupLabelOptions
         context => $"Add {SentenceCase(context.FieldLabel)}";
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for showing every item.
+    /// </summary>
+    public Func<LookupLabelContext, string> AllLabel { get; set; } = context => "All";
+
+    /// <summary>
     ///     The callback that generates the lookup's change button label.
     /// </summary>
     public Func<LookupLabelContext, string> ChangeLabel { get; set; } = context => "Change";
@@ -25,6 +30,11 @@ public sealed class LookupLabelOptions
         context => $"Choose {SentenceCase(context.FieldLabel)}";
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's clear all button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> ClearAllLabel { get; set; } = context => "Clear all";
+
+    /// <summary>
     ///     The callback that generates the lookup's clear button label for screen readers.
     /// </summary>
     public Func<LookupLabelContext, string> ClearLabel { get; set; } =
@@ -34,6 +44,16 @@ public sealed class LookupLabelOptions
     ///     The callback that generates the empty lookup's create button label.
     /// </summary>
     public Func<LookupLabelContext, string> CreateLabel { get; set; } = context => "New";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for closing the sheet.
+    /// </summary>
+    public Func<LookupLabelContext, string> DoneHint { get; set; } = context => "done";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's done button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> DoneLabel { get; set; } = context => "Done";
 
     /// <summary>
     ///     The callback that generates the lookup's failed search description.
@@ -82,6 +102,15 @@ public sealed class LookupLabelOptions
         context => "No results found";
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's title when no selected item matches the search.
+    /// </summary>
+    public Func<LookupLabelContext, string> NoSelectedTitle { get; set; } =
+        context =>
+            context.Term is null
+                ? $"No {SentenceCase(context.FieldLabel)} selected"
+                : $"No selected {SentenceCase(context.FieldLabel)} match “{context.Term}”";
+
+    /// <summary>
     ///     The callback that generates the multi-select lookup's remove button label for screen readers, which the
     ///     item's title follows.
     /// </summary>
@@ -96,6 +125,21 @@ public sealed class LookupLabelOptions
     ///     The callback that generates the lookup's search input label for screen readers when it has no placeholder.
     /// </summary>
     public Func<LookupLabelContext, string> SearchLabel { get; set; } = context => "Search";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for showing the selected items.
+    /// </summary>
+    public Func<LookupLabelContext, string> SelectedLabel { get; set; } = context => "Selected";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for selecting or deselecting an item.
+    /// </summary>
+    public Func<LookupLabelContext, string> ToggleHint { get; set; } = context => "toggle";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for screen readers of the choice between every item and the selected items.
+    /// </summary>
+    public Func<LookupLabelContext, string> ViewLabel { get; set; } = context => "Show";
 
     // Labels are usually sentence case, so they continue a sentence unless they start with an acronym
     private static string SentenceCase(string label)

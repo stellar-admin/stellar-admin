@@ -1,6 +1,6 @@
 # Multi-select lookup editor
 
-Status: **active**. Phases 0 to 2 are done; phase 3 is next. Last updated: 2026-10-08.
+Status: **active**. Phases 0 to 3 are done; phase 4 is next. Last updated: 2026-10-08.
 
 A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](archive/sheet-stack.md). The design comes from the [multi-select lookup prototype](../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
 
@@ -74,6 +74,18 @@ From the prototype sessions:
 - The field updates on each toggle and fires one `change` on close.
 - The `sel-command` highlight fix in TagHelpers.
 - Phone layout.
+
+**Done (2026-10-08):**
+
+- The field's Add, Choose and Summary buttons open the lookup sheet. `ResourceController.FindLookupField` accepts either editor through an internal `ILookupSheetEditor` (items, sheet options, media class), so `Lookup` and `LookupSheet` serve both; `LookupSelection` stays single-select.
+- `ResourceLookupQuery.Selected` is now `string[]`, and every search sends the editor's current values, so results are checked by value. Load more no longer carries `selected` in its URL, because the picker sends the values with each request. `SelectedOnly` searches the selected items: one `FindAsync`, filtered by title or description in the current culture, in value order, without paging, with a `NoSelectedTitle` message when nothing matches.
+- A new `MultiLookupSelection` action renders the field's items for a set of values with the `_MultiLookupItems` partial, which the editor template also uses. Each toggle updates the hidden inputs straight away and fetches the items again, the latest request winning; a removed item leaves at once.
+- The multi-select sheet: All | Selected (a segmented control, with the count on Selected), Clear all in the Selected view, trailing checks, and a footer with key hints (hidden on phones) above Done. Enter toggles and selects the search text; Ctrl+Enter (⌘↵ on a Mac) and Done close. Unchecking in the Selected view removes the row, and an empty view searches again to show the message. The editor fires one `change` when the sheet closes, only if the values changed, and focuses its visible open button.
+- New lookup labels: `AllLabel`, `SelectedLabel`, `ViewLabel`, `ClearAllLabel`, `DoneLabel`, `DoneHint`, `ToggleHint` and `NoSelectedTitle`.
+- `sel-command` keeps the highlight in place when the active item is removed with nothing added in its place: the next item takes it, or else the previous one.
+- The playground gallery's description mentions the sheet.
+- Not done: the consumer setup reference still doesn't describe the editor. At 390px the sheet covers 75% of the width, the same as the single lookup's sheet.
+- Checks: the solution builds with no new warnings. `StellarAdmin.Dashboard.Tests` 79 of 79, `StellarAdmin.Dashboard.IntegrationTests` 389 of 389 (13 new tests in `MultiLookupSheetEditorTests`, and the Load more test no longer expects `selected` in the URL) and `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` 73 of 73 pass. Headless Chromium against the playground gallery, at desktop width in light and dark and at phone width, with no script errors: Enter and click toggles, field updates, the Selected view, unchecking with the highlight kept, Clear all, Ctrl+Enter, Done, one `change` per changed session and none for an unchanged one, Load more checks, the Summary layout, and the posted values.
 
 ## Phase 4: create
 

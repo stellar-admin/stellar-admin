@@ -24,6 +24,19 @@ public sealed class LookupLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for showing every item.
+    /// </summary>
+    public Func<LookupLabelContext, string> AllLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.AllLabel = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the lookup's change button label.
     /// </summary>
     public Func<LookupLabelContext, string> ChangeLabel
@@ -54,6 +67,21 @@ public sealed class LookupLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's clear all button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> ClearAllLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Lookup.ClearAllLabel = value
+            );
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the lookup's clear button label for screen readers.
     /// </summary>
     public Func<LookupLabelContext, string> ClearLabel
@@ -78,6 +106,32 @@ public sealed class LookupLabelsBuilder
             _services.Configure<ResourceLabelOptions>(options =>
                 options.Lookup.CreateLabel = value
             );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for closing the sheet.
+    /// </summary>
+    public Func<LookupLabelContext, string> DoneHint
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.DoneHint = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's done button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> DoneLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.DoneLabel = value);
         }
     }
 
@@ -196,6 +250,21 @@ public sealed class LookupLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's title when no selected item matches the search.
+    /// </summary>
+    public Func<LookupLabelContext, string> NoSelectedTitle
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Lookup.NoSelectedTitle = value
+            );
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the multi-select lookup's remove button label for screen readers.
     /// </summary>
     public Func<LookupLabelContext, string> RemoveLabel
@@ -235,6 +304,47 @@ public sealed class LookupLabelsBuilder
             _services.Configure<ResourceLabelOptions>(options =>
                 options.Lookup.SearchLabel = value
             );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for showing the selected items.
+    /// </summary>
+    public Func<LookupLabelContext, string> SelectedLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Lookup.SelectedLabel = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's key hint for selecting or deselecting an item.
+    /// </summary>
+    public Func<LookupLabelContext, string> ToggleHint
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.ToggleHint = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup sheet's label for screen readers of the choice between every item and the selected items.
+    /// </summary>
+    public Func<LookupLabelContext, string> ViewLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.ViewLabel = value);
         }
     }
 

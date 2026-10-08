@@ -34,6 +34,7 @@ export class Command extends LitElement {
   #observer = new MutationObserver((records) => this.#refresh(true, records));
   // Children of each container reordered by sorting, in their original order.
   #originalOrder = new Map<Element, Element[]>();
+  #selectable: HTMLElement[] = [];
   #selected: HTMLElement | null = null;
   #values = new WeakMap<HTMLElement, string>();
 
@@ -106,7 +107,8 @@ export class Command extends LitElement {
    * Assigns missing item IDs and re-filters. After a change to the list made outside this
    * component (`fromMutation`), the active item is kept when it is still selectable, and when it was
    * removed, the first item added in the same change takes over, such as the next page swapped in
-   * for a "load more" item.
+   * for a "load more" item. An active item removed with nothing added in its place hands over to
+   * the item that followed it, or else the one before it, so the highlight stays where it was.
    */
   #refresh(fromMutation = false, records: MutationRecord[] = []) {
     if (fromMutation) {
@@ -123,7 +125,16 @@ export class Command extends LitElement {
         item.id = id;
       }
     }
-    this.#filter(fromMutation, this.#addedInPlaceOfSelected(records));
+    this.#filter(fromMutation, this.#addedInPlaceOfSelected(records), this.#neighbors());
+  }
+
+  /** The previously selectable items nearest the active item: those after it, then those before it. */
+  #neighbors() {
+    const index = this.#selectable.indexOf(this.#selected!);
+    if (index < 0) {
+      return [];
+    }
+    return [...this.#selectable.slice(index + 1), ...this.#selectable.slice(0, index).reverse()];
   }
 
   /** The nodes added by the mutations when they removed the active item. */
@@ -137,7 +148,7 @@ export class Command extends LitElement {
     return removed ? records.flatMap((record) => Array.from(record.addedNodes)) : [];
   }
 
-  #filter(keepSelection = false, replacements: Node[] = []) {
+  #filter(keepSelection = false, replacements: Node[] = [], neighbors: HTMLElement[] = []) {
     const search = this.#clientFiltering ? (this.#input?.value ?? "").trim() : "";
     const items = this.#items();
 
@@ -174,8 +185,11 @@ export class Command extends LitElement {
 
     const selectable = this.#selectableItems();
     const keep = keepSelection && this.#selected && selectable.includes(this.#selected);
-    const replacement = selectable.find((item) => replacements.some((node) => node.contains(item)));
+    const replacement =
+      selectable.find((item) => replacements.some((node) => node.contains(item))) ??
+      neighbors.find((item) => selectable.includes(item));
     this.#select(keep ? this.#selected : (replacement ?? selectable[0] ?? null), !keep);
+    this.#selectable = selectable;
 
     // Discard the records of this component's own reordering so it does not trigger a refresh.
     this.#observer.takeRecords();

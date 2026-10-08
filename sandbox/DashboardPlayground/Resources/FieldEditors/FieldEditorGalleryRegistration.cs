@@ -560,7 +560,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "UseEditor<MultiLookupSheetEditor> on a collection of keys. Remove and Clear edit the selection.";
+                    "UseEditor<MultiLookupSheetEditor> on a collection of keys. Add, Choose or the summary opens the sheet, where each result toggles; Remove and Clear edit the selection.";
                 section
                     .Add(model => model.Destinations)
                     .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
