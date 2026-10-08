@@ -1,8 +1,8 @@
 # Command
 
-Status: **active** — Phase 5 complete and awaiting review; demos committed (`c8c31c5`), docs, skills reference, tests and theme-spec notes uncommitted. Last updated: 2026-09-29.
+Status: **completed**. All phases are done; the demos, website docs, skills reference, tests and theme-spec notes are committed. Last updated: 2026-10-09.
 
-Port shadcn's Command component (`cmdk`-based command palette) into `StellarAdmin.TagHelpers`, following the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
+Port shadcn's Command component (`cmdk`-based command palette) into `StellarAdmin.TagHelpers`, following the [port-shadcn-component](../../../../.agents/skills/port-shadcn-component/SKILL.md) workflow. Work proceeds in phases with a review checkpoint after each; approval of one phase does not authorize the next.
 
 ## Resuming
 
