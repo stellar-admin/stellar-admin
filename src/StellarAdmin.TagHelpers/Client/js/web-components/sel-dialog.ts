@@ -12,13 +12,20 @@ class Dialog extends LitElement {
     const dialog = this.querySelector("dialog");
     if (!dialog) return;
 
+    // The page stays locked while any modal dialog is open, so closing one stacked over another keeps it locked. The
+    // scrollbar is measured only when the lock starts, since the page has none while locked.
     const sync = () => {
       const isOpen = dialog.open;
-      const isModal = dialog.matches(":modal");
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      const isLocked = document.querySelector("dialog:modal") !== null;
+      const { style } = document.body;
 
-      document.body.style.overflow = isOpen && isModal ? "hidden" : "";
-      document.body.style.paddingRight = isOpen && isModal ? `${scrollbarWidth}px` : "";
+      if (isLocked && style.overflow !== "hidden") {
+        style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
+        style.overflow = "hidden";
+      } else if (!isLocked) {
+        style.overflow = "";
+        style.paddingRight = "";
+      }
 
       dialog.toggleAttribute("data-open", isOpen);
       dialog.toggleAttribute("data-closed", !isOpen);

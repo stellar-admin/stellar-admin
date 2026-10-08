@@ -322,4 +322,73 @@
     .sa-choice-media[data-media="code"][data-placement="lookup-lg"] {
         @apply size-7;
     }
+
+    /* The sheet stack: the script sets data-under on a level's sheet while another level is above it, and
+       --sa-sheet-shift to the number of levels above it, capped at 3 so deep stacks stop moving. Covered levels
+       recede like a card deck and peek out on the left, dimmed; only the bottom level's backdrop shows. A closing
+       level stays in the top layer until its exit animation ends. */
+    dialog.sa-sheet-stack-level {
+        transform-origin: right center;
+        transition:
+            translate 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            scale 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            border-radius 0.35s,
+            opacity 0.3s,
+            display 0.3s allow-discrete,
+            overlay 0.3s allow-discrete;
+    }
+
+    dialog.sa-sheet-stack-level[data-under] {
+        translate: calc(var(--sa-sheet-shift) * -40px) 0;
+        scale: calc(1 - var(--sa-sheet-shift) * 0.045);
+        border-radius: calc(var(--radius) + 4px);
+        overflow: hidden;
+    }
+
+    dialog.sa-sheet-stack-level::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        background: oklch(0 0 0 / 0.16);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .dark dialog.sa-sheet-stack-level::after {
+        background: oklch(0 0 0 / 0.4);
+    }
+
+    dialog.sa-sheet-stack-level[data-under]::after {
+        opacity: 1;
+    }
+
+    /* A click on the top level's backdrop over a covered level goes back to it */
+    dialog.sa-sheet-stack-level[data-under][data-hover]::after {
+        opacity: 0.4;
+    }
+
+    dialog.sa-sheet-stack-level[data-pointing] {
+        cursor: pointer;
+    }
+
+    dashboard-remote-sheet ~ dashboard-remote-sheet dialog.sa-sheet-stack-level::backdrop {
+        background: transparent;
+        backdrop-filter: none;
+    }
+
+    /* Phones: the levels above the first fill the width, and covered levels hide */
+    @media (width < 40rem) {
+        dashboard-remote-sheet ~ dashboard-remote-sheet dialog.sa-sheet-stack-level[data-side] {
+            width: 100%;
+            max-width: none;
+        }
+
+        dialog.sa-sheet-stack-level[data-under] {
+            translate: none;
+            scale: none;
+            opacity: 0;
+        }
+    }
 }

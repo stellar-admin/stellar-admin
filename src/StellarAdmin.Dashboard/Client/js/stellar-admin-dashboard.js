@@ -6,14 +6,16 @@
 // A level of the sheet stack. A button with data-sheet-open adds a level from the layout's template, above any that
 // are open, and loads the URL it names into the level with htmx; a create form's lookups open further levels in
 // turn. The sheet is modal, so only that opener's request, or a request from the content, can be in flight; closing
-// the sheet cancels them and removes the level, so a late response never fills it. A failed load shows the sheet's
-// error, and Retry repeats the opener's request.
+// the sheet cancels them and removes the level once it has slid out, so a late response never fills it. A failed
+// load shows the sheet's error, and Retry repeats the opener's request. Covered levels recede behind the top one:
+// Esc closes only the top level, and a click on a covered level's visible edge closes the levels above it.
 class DashboardRemoteSheet extends HTMLElement {
+  static #count = 0;
   #opener = null;
 
   // Each level replaces the template's id with its own, so its close button and content have unique targets
   static open(opener) {
-    const level = document.querySelectorAll("dashboard-remote-sheet").length + 1;
+    const level = ++DashboardRemoteSheet.#count;
     const fragment = document.importNode(
       document.getElementById("dashboard-sheet-template").content,
       true,
@@ -31,7 +33,51 @@ class DashboardRemoteSheet extends HTMLElement {
     document.body.append(sheet);
     sheet.#opener = opener;
     sheet.querySelector("dialog").showModal();
+    DashboardRemoteSheet.#restack();
     sheet.#load();
+  }
+
+  // The open levels' sheets, bottom first
+  static get levels() {
+    return [...document.querySelectorAll("dashboard-remote-sheet > sel-dialog > dialog")].filter(
+      (dialog) => dialog.open,
+    );
+  }
+
+  // Marks the covered levels and how far each recedes, for the stylesheet
+  static #restack() {
+    const levels = DashboardRemoteSheet.levels;
+    levels.forEach((dialog, index) => {
+      const above = levels.length - 1 - index;
+      dialog.toggleAttribute("data-under", above > 0);
+      dialog.style.setProperty("--sa-sheet-shift", Math.min(above, 3));
+      dialog.removeAttribute("data-hover");
+      dialog.removeAttribute("data-pointing");
+    });
+  }
+
+  // The covered level whose visible edge is under a click on the top level's backdrop, nearest first
+  static coveredAt(event) {
+    const levels = DashboardRemoteSheet.levels;
+    const top = levels.at(-1);
+    if (event.target !== top || matchMedia("(width < 40rem)").matches) {
+      return -1;
+    }
+
+    if (event.clientX >= top.getBoundingClientRect().left) {
+      return -1;
+    }
+
+    return levels.findLastIndex((dialog, index) => {
+      const box = dialog.getBoundingClientRect();
+      return (
+        index < levels.length - 1 &&
+        event.clientX >= box.left &&
+        event.clientX <= box.right &&
+        event.clientY >= box.top &&
+        event.clientY <= box.bottom
+      );
+    });
   }
 
   constructor() {
@@ -50,7 +96,8 @@ class DashboardRemoteSheet extends HTMLElement {
           }
         }
 
-        this.remove();
+        DashboardRemoteSheet.#restack();
+        this.#removeAfterExit();
       },
       { capture: true },
     );
@@ -88,6 +135,12 @@ class DashboardRemoteSheet extends HTMLElement {
     this.#show("error");
   };
 
+  async #removeAfterExit() {
+    const dialog = this.querySelector("dialog");
+    await Promise.allSettled(dialog.getAnimations().map((animation) => animation.finished));
+    this.remove();
+  }
+
   get #content() {
     return this.querySelector("[data-sheet='content']");
   }
@@ -110,7 +163,39 @@ document.addEventListener("click", (event) => {
   const opener = event.target.closest("[data-sheet-open]");
   if (opener) {
     DashboardRemoteSheet.open(opener);
+    return;
   }
+
+  const covered = DashboardRemoteSheet.coveredAt(event);
+  if (covered >= 0) {
+    for (const dialog of DashboardRemoteSheet.levels.slice(covered + 1).reverse()) {
+      dialog.close();
+    }
+  }
+});
+
+document.addEventListener("mousemove", (event) => {
+  const levels = DashboardRemoteSheet.levels;
+  const covered = DashboardRemoteSheet.coveredAt(event);
+  levels.forEach((dialog, index) => dialog.toggleAttribute("data-hover", index === covered));
+  levels.at(-1)?.toggleAttribute("data-pointing", covered >= 0);
+});
+
+// Esc closes the top level only, unless a popover in it is open: browsers can group modal dialogs and close them all
+// on one Esc, so the stack handles the key instead of the dialog's cancel
+document.addEventListener("keydown", (event) => {
+  const top = DashboardRemoteSheet.levels.at(-1);
+  if (
+    event.key !== "Escape" ||
+    event.defaultPrevented ||
+    !top?.contains(event.target) ||
+    top.querySelector(":popover-open")
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  top.close();
 });
 
 customElements.define("dashboard-remote-sheet", DashboardRemoteSheet);

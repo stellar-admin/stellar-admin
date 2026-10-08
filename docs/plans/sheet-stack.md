@@ -1,6 +1,6 @@
 # Stacked sheets for the lookup editor
 
-Status: **active**. Phase 1 is implemented and awaiting review. Last updated: 2026-10-08.
+Status: **active**. Phase 1 is committed (8a4e111); phase 2 is implemented and awaiting review. Last updated: 2026-10-08.
 
 The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteSheet`s, `dashboard-sheet` and `dashboard-nested-sheet`. A create form's lookups open in the second sheet and hide New, so creating stops one level down. This plan replaces the fixed pair with a stack of any depth, styled with the recede concept from the [stacked sheets prototype](../../sandbox/html/sheet-stack.html) (commit 6f5895b), and applies it to the existing single-select `LookupEditor` before the multi-select work starts. Each phase stops for review.
 
@@ -12,7 +12,7 @@ The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteS
 - `ViewDataKeys.InCreateSheet` becomes the depth. The lookup template uses it for the prefix and the form name, and no longer hides New inside a create sheet.
 - Verify: the existing lookup and create flows still work at depth 1, and a nested create (tour → guide → city) selects each new record in the field below.
 
-**Done (2026-10-08, uncommitted):**
+**Done (2026-10-08, 8a4e111):**
 
 - `_Layout` renders `<template id="dashboard-sheet-template">` holding one `_RemoteSheet`. `DashboardRemoteSheet.open(opener)` imports it, renames the `dashboard-sheet` ids and `commandfor` to `dashboard-sheet-{level}`, appends it to the body, `showModal()`s it and loads the opener's URL; the close event aborts its requests and removes the level. A document click listener opens a level for any `[data-sheet-open]` button.
 - Lookup openers carry `data-sheet-open="{url}"` instead of `commandfor`, `command`, `hx-get` and `hx-target`. The search results' id is `{for}-results`; the create form posts to `closest [data-sheet='content']`, and Cancel is `data-sheet="close"`.
@@ -28,6 +28,13 @@ The Dashboard currently allows two sheets. `_Layout` renders two fixed `_RemoteS
 - Clicking a covered sheet's visible edge closes the levels above it.
 - Phones: the top sheet is full width and covered levels are hidden.
 - Verify: five deep in headless Chromium, in light and dark mode, with Esc, click-back and the scroll lock, at desktop and phone widths, in at least two themes.
+
+**Done (2026-10-08, uncommitted):**
+
+- `_RemoteSheet` gives the sheet the class `sa-sheet-stack-level`, and the Dashboard stylesheet styles it: covered levels (`data-under`) move `--sa-sheet-shift × 40px` left and scale down 4.5% per level from the right edge, with rounded corners and a dimming `::after`; levels after the first have no backdrop. The exit animation keeps a closing sheet in the top layer (`display` and `overlay` transition with `allow-discrete`). Below 40rem, levels above the first fill the width and covered levels hide.
+- The script restacks on every open and close, numbers level ids with a counter, and removes a closed level once its animations finish. Esc (keydown, not the dialog's cancel) closes only the top level unless a popover in it is open. A click on the top level's backdrop over a covered level closes the levels above it, and hovering there lightens the dim and shows a pointer; both are off below 40rem.
+- `sel-dialog` (TagHelpers) keeps the page locked while any `dialog:modal` is open, and measures the scrollbar only when the lock starts.
+- Checks: Dashboard integration tests 362 of 362 pass. In headless Chromium on the lookup gallery, five levels deep with real clicks and keys: Esc closes 5 → 4 → 3, click-back on level 1's edge closes levels 2 and 3, a click inside the top sheet closes nothing, and the page stays locked until the last level closes; the same in shadcn.vega dark. At 390px the top level fills the width, covered levels are hidden and click-back is off. The phase 1 create flow still selects each created airport in the field below.
 
 ## Phase 3: hand-back contract
 
