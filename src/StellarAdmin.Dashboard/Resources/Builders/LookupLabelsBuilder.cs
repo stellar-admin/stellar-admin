@@ -11,6 +11,19 @@ public sealed class LookupLabelsBuilder
     private readonly IServiceCollection _services;
 
     /// <summary>
+    ///     The callback that generates the multi-select lookup's add button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> AddLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.AddLabel = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the lookup's change button label.
     /// </summary>
     public Func<LookupLabelContext, string> ChangeLabel
@@ -127,6 +140,19 @@ public sealed class LookupLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the end of a multi-select lookup's summary, for the items it doesn't name.
+    /// </summary>
+    public Func<LookupLabelContext, string> MoreText
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Lookup.MoreText = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the read-only lookup's text when nothing is selected.
     /// </summary>
     public Func<LookupLabelContext, string> NoneText
@@ -165,6 +191,21 @@ public sealed class LookupLabelsBuilder
 
             _services.Configure<ResourceLabelOptions>(options =>
                 options.Lookup.NoResultsTitle = value
+            );
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup's remove button label for screen readers.
+    /// </summary>
+    public Func<LookupLabelContext, string> RemoveLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Lookup.RemoveLabel = value
             );
         }
     }

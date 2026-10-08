@@ -1,0 +1,196 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using StellarAdmin.Dashboard.Resources
+@inherits FieldEditorView<MultiLookupSheetEditor>
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var items = ((MultiLookupSheetEditorData?)EditorData)?.Items ?? [];
+    var classes = EditorClassNamesMapper.ForInput(Editor);
+    var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
+    var options = Editor.FieldOptions;
+    // A read-only summary would hide the names it truncates with nothing to open, so it shows a list
+    var layout = IsReadOnly && options.Layout == MultiLookupSheetEditorLayout.Summary ? MultiLookupSheetEditorLayout.List : options.Layout;
+    var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
+    var labels = LabelOptions.Value;
+    var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
+    var chooseText = options.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
+    var addText = labels.Lookup.AddLabel(labelContext);
+    var removeText = labels.Lookup.RemoveLabel(labelContext);
+
+    var id = Html.IdForModel();
+    var name = Html.NameForModel();
+    var descriptionId = string.IsNullOrEmpty(Description ?? ViewData.ModelMetadata.Description) ? null : $"{id}-description";
+    var errorId = $"{id}-error";
+    var describedBy = string.Join(' ', new[] { descriptionId, errorId }.OfType<string>());
+    var invalidRing = isInvalid ? "border-destructive ring-destructive/20 ring-[3px]" : "";
+    var emptyClass = $"w-auto min-w-0 items-stretch overflow-hidden border-dashed p-0 text-sm {(isInvalid ? "border-destructive text-destructive" : "text-muted-foreground")}";
+    var emptyButtonClass = "hover:bg-muted/50 hover:text-foreground flex min-w-0 flex-1 items-center justify-center gap-2 px-3 outline-none transition-colors";
+    var chipButtonClass = "min-w-0 text-muted-foreground hover:text-foreground hover:bg-muted flex h-6 items-center gap-1 rounded-md px-1.5 text-xs outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]";
+
+    ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
+        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, Editor.ClassNames.Media) : null;
+}
+
+<sa-field class="@classes.Root">
+    <sa-field-label class="@classes.Label" id="@($"{id}-label")">@label</sa-field-label>
+
+    @if (IsReadOnly)
+    {
+        @if (items.Count == 0)
+        {
+            <div class="@($"sa-input flex items-center {classes.Control}")" aria-describedby="@describedBy">
+                <span class="text-muted-foreground">@labels.Lookup.NoneText(labelContext)</span>
+            </div>
+        }
+        else if (layout == MultiLookupSheetEditorLayout.Chips)
+        {
+            <div class="@($"flex flex-wrap gap-1 {classes.Control}")" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                @foreach (var item in items)
+                {
+                    var media = Media(item, ItemMediaPlacement.Inline);
+                    <sa-badge variant="BadgeVariant.Secondary" class="@($"h-6 gap-1 pr-2 {(media is null ? "pl-2" : "pl-0.5")}")" role="listitem">
+                        @if (media is not null)
+                        {
+                            <partial name="_ItemMedia" model="media" />
+                        }
+                        <span>@item.Text</span>
+                    </sa-badge>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="@($"flex flex-col gap-1.5 {classes.Control}")" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                @foreach (var item in items)
+                {
+                    <partial name="_MultiLookupListItem" model="new MultiLookupListItemViewModel(item, Media(item, ItemMediaPlacement.LookupLarge), null)" />
+                }
+            </div>
+        }
+    }
+    else
+    {
+        @* Removing items edits the hidden inputs. The marker posts an empty selection, which binds an empty collection. *@
+        <dashboard-multi-lookup-sheet-editor class="contents">
+            <input type="hidden" name="@($"__sa_checkbox_group.{name}")" value="true" />
+            <div data-lookup="values" hidden>
+                @foreach (var item in items)
+                {
+                    <input type="hidden" name="@name" value="@item.Value" />
+                }
+            </div>
+
+            @switch (layout)
+            {
+                case MultiLookupSheetEditorLayout.List:
+                    <div id="@($"{id}-selected")" data-lookup="selected" class="@($"flex flex-col gap-1.5 {classes.Control}")" hidden="@(items.Count == 0)">
+                        <div class="flex flex-col gap-1.5" role="list" aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                            @foreach (var item in items)
+                            {
+                                <partial name="_MultiLookupListItem" model="new MultiLookupListItemViewModel(item, Media(item, ItemMediaPlacement.LookupLarge), removeText)" />
+                            }
+                        </div>
+                        <sa-input-group class="@emptyClass">
+                            <button type="button" id="@($"{id}-add")" class="@emptyButtonClass" data-slot="input-group-control" data-lookup="open">
+                                <sa-icon name="plus" class="size-4 shrink-0" />
+                                <span class="truncate">@addText</span>
+                            </button>
+                        </sa-input-group>
+                    </div>
+                    <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
+                        <sa-input-group class="@($"h-12 {emptyClass} flex-1 {classes.Control}")">
+                            <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
+                                    aria-describedby="@describedBy" data-lookup="open">
+                                <sa-icon name="search" class="size-4 shrink-0" />
+                                <span class="truncate">@chooseText</span>
+                            </button>
+                        </sa-input-group>
+                    </div>
+                    break;
+
+                case MultiLookupSheetEditorLayout.Chips:
+                    <sa-input-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
+                                    class="@($"h-auto min-h-9 flex-wrap items-center gap-1 p-1 {invalidRing} {classes.Control}")"
+                                    aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                        @foreach (var item in items)
+                        {
+                            var media = Media(item, ItemMediaPlacement.Inline);
+                            <sa-badge variant="BadgeVariant.Secondary" class="@($"h-6 gap-1 pr-0.5 {(media is null ? "pl-2" : "pl-0.5")}")" data-lookup="item" data-value="@item.Value">
+                                @if (media is not null)
+                                {
+                                    <partial name="_ItemMedia" model="media" />
+                                }
+                                <span>@item.Text</span>
+                                <button type="button" class="hover:bg-foreground/10 focus-visible:ring-ring/50 rounded-sm p-0.5 outline-none focus-visible:ring-[3px]" data-lookup="remove">
+                                    <sa-icon name="x" class="size-3" />
+                                    <span class="sr-only">@removeText @item.Text</span>
+                                </button>
+                            </sa-badge>
+                        }
+                        <button type="button" id="@($"{id}-add")" class="@chipButtonClass" data-lookup="open">
+                            <sa-icon name="plus" class="size-3.5 shrink-0" />
+                            <span class="truncate">@addText</span>
+                        </button>
+                    </sa-input-group>
+                    @* Empty, the box stays an input: the hint and the chevrons, like a select *@
+                    <sa-input-group id="@($"{id}-empty")" data-lookup="empty" hidden="@(items.Count > 0)"
+                                    class="@($"h-9 min-w-0 items-stretch p-0 {invalidRing} {classes.Control}")">
+                        <button type="button" id="@($"{id}-choose")" data-slot="input-group-control" aria-describedby="@describedBy" data-lookup="open"
+                                aria-invalid="@(isInvalid ? "true" : null)"
+                                class="text-muted-foreground flex min-w-0 flex-1 items-center justify-between gap-2 px-3 text-sm outline-none">
+                            <span class="truncate">@chooseText</span>
+                            <sa-icon name="chevrons-up-down" class="size-4 shrink-0 opacity-60" />
+                        </button>
+                    </sa-input-group>
+                    break;
+
+                default:
+                    var named = items.Take(2).Select(item => item.Text);
+                    var summary = items.Count > 2
+                        ? $"{string.Join(", ", named)} {labels.Lookup.MoreText(new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null) { Count = items.Count - 2 })}"
+                        : string.Join(", ", named);
+                    var previews = items.Take(3).Select(item => Media(item, item.Media is ItemMedia.Avatar ? ItemMediaPlacement.Lookup : ItemMediaPlacement.Inline)).OfType<ItemMediaViewModel>().ToArray();
+                    var avatars = previews.Length > 0 && previews.All(preview => preview.Media is ItemMedia.Avatar);
+
+                    @* The summary is the button that opens the sheet, so each segment of the group has its own focus ring *@
+                    <sa-button-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)" class="@($"w-full {classes.Control}")"
+                                     aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
+                        <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline"
+                                   class="@($"min-w-0 flex-1 justify-start font-normal {(previews.Length > 0 ? "pl-1.5" : "")} {invalidRing}")"
+                                   aria-invalid="@(isInvalid ? "true" : null)" data-lookup="open">
+                            <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
+                            @if (previews.Length > 0)
+                            {
+                                <span class="@(avatars ? "*:ring-background flex shrink-0 -space-x-1.5 *:ring-2" : "flex shrink-0 gap-1")">
+                                    @foreach (var preview in previews)
+                                    {
+                                        <partial name="_ItemMedia" model="preview" />
+                                    }
+                                </span>
+                            }
+                            <span class="min-w-0 truncate">@summary</span>
+                            <span class="text-muted-foreground ml-auto shrink-0 text-xs tabular-nums">@items.Count</span>
+                            <sa-icon name="chevrons-up-down" class="text-muted-foreground size-4 shrink-0" />
+                        </sa-button>
+                        <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Icon" data-lookup="clear">
+                            <sa-icon name="x" />
+                            <span class="sr-only">@labels.Lookup.ClearLabel(labelContext)</span>
+                        </sa-button>
+                    </sa-button-group>
+                    <div id="@($"{id}-empty")" data-lookup="empty" class="flex gap-2" hidden="@(items.Count > 0)">
+                        <sa-input-group class="@($"{emptyClass} flex-1 {classes.Control}")">
+                            <button type="button" id="@($"{id}-choose")" class="@emptyButtonClass" data-slot="input-group-control"
+                                    aria-describedby="@describedBy" data-lookup="open">
+                                <sa-icon name="search" class="size-4 shrink-0" />
+                                <span class="truncate">@chooseText</span>
+                            </button>
+                        </sa-input-group>
+                    </div>
+                    break;
+            }
+        </dashboard-multi-lookup-sheet-editor>
+    }
+
+    <sa-field-error class="@classes.Error" id="@errorId" asp-for="@Model" />
+    <sa-field-description class="@classes.Description" id="@descriptionId" asp-for="@Model">@Description</sa-field-description>
+</sa-field>

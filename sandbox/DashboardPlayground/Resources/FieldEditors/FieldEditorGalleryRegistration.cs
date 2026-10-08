@@ -25,6 +25,13 @@ internal static class FieldEditorGalleryRegistration
         dashboard.Services.AddSingleton<GalleryAirportLookupSource>();
         dashboard.AddGalleryResource<LookupGallery>("lookup", "Lookup", 25, ConfigureLookupFields);
         dashboard.AddAirportResource();
+        dashboard.Services.AddSingleton<GalleryGuideLookupSource>();
+        dashboard.AddGalleryResource<MultiLookupGallery>(
+            "multi-lookup",
+            "Multi lookup",
+            26,
+            ConfigureMultiLookupFields
+        );
         dashboard.AddGalleryResource<RadioGroupGallery>(
             "radio-group",
             "Radio group",
@@ -541,6 +548,151 @@ internal static class FieldEditorGalleryRegistration
                         case AirportMedia.Icon:
                             items.UseIcon(_ => "plane-landing");
                             break;
+                    }
+                }
+            );
+    }
+
+    private static void ConfigureMultiLookupFields(ResourceFieldsBuilder<MultiLookupGallery> fields)
+    {
+        fields.AddSection(
+            "Layouts",
+            section =>
+            {
+                section.Description =
+                    "UseEditor<MultiLookupSheetEditor> on a collection of keys. Remove and Clear edit the selection.";
+                section
+                    .Add(model => model.Destinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                section
+                    .Add(model => model.Guides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseGuides(lookup));
+                section
+                    .Add(model => model.ListDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        UseDestinations(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.ListGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        UseGuides(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.SummaryDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor =>
+                            editor.Layout = MultiLookupSheetEditorLayout.Summary
+                        );
+                        UseDestinations(lookup);
+                    });
+                section
+                    .Add(model => model.SummaryGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor =>
+                            editor.Layout = MultiLookupSheetEditorLayout.Summary
+                        );
+                        UseGuides(lookup);
+                    });
+            }
+        );
+        fields.AddSection(
+            "Field configuration",
+            section =>
+            {
+                section
+                    .Add(model => model.RequiredDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                section
+                    .Add(model => model.LimitedGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseGuides(lookup));
+                section
+                    .Add(model => model.UnknownDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                section
+                    .Add(model => model.LabelledDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.EmptyText = "Any destination");
+                        lookup.Sheet(sheet => sheet.Title = "Select destinations");
+                        UseDestinations(lookup);
+                    });
+                section
+                    .Add(model => model.MediaHiddenGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.ShowMedia = false);
+                        UseGuides(lookup);
+                    });
+                section
+                    .Add(model => model.StyledDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.ClassNames.Control = "max-w-sm";
+                        lookup.ClassNames.Media = "bg-primary text-primary-foreground";
+                        UseDestinations(lookup);
+                    });
+            }
+        );
+        fields.AddSection(
+            "Read-only",
+            section =>
+            {
+                section
+                    .Add(model => model.ReadOnlyDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+                section
+                    .Add(model => model.ReadOnlyListGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        UseGuides(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.ReadOnlySummaryGuides)
+                    .UseEditor<MultiLookupSheetEditor>(lookup =>
+                    {
+                        lookup.Editor(editor =>
+                            editor.Layout = MultiLookupSheetEditorLayout.Summary
+                        );
+                        UseGuides(lookup, describe: true);
+                    });
+                section
+                    .Add(model => model.ReadOnlyEmptyDestinations)
+                    .UseEditor<MultiLookupSheetEditor>(lookup => UseDestinations(lookup));
+            }
+        );
+
+        static void UseDestinations(MultiLookupSheetEditor lookup, bool describe = false) =>
+            lookup.UseItems<GalleryAirportLookupSource, GalleryAirport, string>(
+                airport => airport.Code,
+                airport => airport.City,
+                items =>
+                {
+                    items.UseCode(airport => airport.Code);
+                    if (describe)
+                    {
+                        items.UseDescription(airport => airport.Country);
+                    }
+                }
+            );
+
+        // The gallery has no guide photos, so avatars show the guide's initials
+        static void UseGuides(MultiLookupSheetEditor lookup, bool describe = false) =>
+            lookup.UseItems<GalleryGuideLookupSource, GalleryGuide, string>(
+                guide => guide.Id,
+                guide => guide.Name,
+                items =>
+                {
+                    items.UseAvatar(_ => null);
+                    if (describe)
+                    {
+                        items.UseDescription(guide => $"{guide.Region} · {guide.Languages}");
                     }
                 }
             );

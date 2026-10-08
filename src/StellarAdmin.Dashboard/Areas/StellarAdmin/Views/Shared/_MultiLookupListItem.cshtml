@@ -1,0 +1,31 @@
+@model MultiLookupListItemViewModel
+
+@{
+    var item = Model.Item;
+    var readOnly = Model.RemoveLabel is null;
+}
+
+@* A multi-select lookup's selected item in the List layout: the media, title and description, and Remove while it can be edited *@
+<sa-item variant="@(readOnly ? ItemVariant.Muted : ItemVariant.Outline)" size="ItemSize.ExtraSmall" class="flex-nowrap" role="listitem"
+         data-lookup="item" data-value="@item.Value">
+    @if (Model.Media is not null)
+    {
+        <sa-item-media><partial name="_ItemMedia" model="Model.Media" /></sa-item-media>
+    }
+    <sa-item-content class="min-w-0 gap-0">
+        <sa-item-title class="w-full text-sm"><span class="truncate">@item.Text</span></sa-item-title>
+        @if (!string.IsNullOrEmpty(item.Description))
+        {
+            <sa-item-description class="truncate text-xs">@item.Description</sa-item-description>
+        }
+    </sa-item-content>
+    @if (!readOnly)
+    {
+        <sa-item-actions>
+            <sa-button type="button" variant="ButtonVariant.Ghost" size="ButtonSize.IconExtraSmall" data-lookup="remove">
+                <sa-icon name="x" />
+                <span class="sr-only">@Model.RemoveLabel @item.Text</span>
+            </sa-button>
+        </sa-item-actions>
+    }
+</sa-item>

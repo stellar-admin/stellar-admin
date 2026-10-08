@@ -8,6 +8,12 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public sealed class LookupLabelOptions
 {
     /// <summary>
+    ///     The callback that generates the multi-select lookup's add button label.
+    /// </summary>
+    public Func<LookupLabelContext, string> AddLabel { get; set; } =
+        context => $"Add {SentenceCase(context.FieldLabel)}";
+
+    /// <summary>
     ///     The callback that generates the lookup's change button label.
     /// </summary>
     public Func<LookupLabelContext, string> ChangeLabel { get; set; } = context => "Change";
@@ -52,6 +58,13 @@ public sealed class LookupLabelOptions
         context => $"Type at least {context.MinimumSearchLength} characters to search.";
 
     /// <summary>
+    ///     The callback that generates the end of a multi-select lookup's summary, for the
+    ///     <see cref="LookupLabelContext.Count" /> items it doesn't name.
+    /// </summary>
+    public Func<LookupLabelContext, string> MoreText { get; set; } =
+        context => $"and {context.Count} more";
+
+    /// <summary>
     ///     The callback that generates the read-only lookup's text when nothing is selected.
     /// </summary>
     public Func<LookupLabelContext, string> NoneText { get; set; } = context => "None";
@@ -67,6 +80,12 @@ public sealed class LookupLabelOptions
     /// </summary>
     public Func<LookupLabelContext, string> NoResultsTitle { get; set; } =
         context => "No results found";
+
+    /// <summary>
+    ///     The callback that generates the multi-select lookup's remove button label for screen readers, which the
+    ///     item's title follows.
+    /// </summary>
+    public Func<LookupLabelContext, string> RemoveLabel { get; set; } = context => "Remove";
 
     /// <summary>
     ///     The callback that generates the lookup's retry button label after a failed search.

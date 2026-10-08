@@ -203,7 +203,7 @@ internal sealed class EfCoreLookupItems<TContext, TEntity, TValue>
                 .Distinct()
                 .ToArray(),
             _ => throw new InvalidOperationException(
-                $"LookupSheetEditor on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
+                $"The lookup on {context.FieldName} has a {context.Value.GetType().Name} value, but its items use {typeof(TValue).Name}."
             ),
         };
 

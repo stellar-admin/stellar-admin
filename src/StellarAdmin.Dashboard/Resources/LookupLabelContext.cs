@@ -6,6 +6,11 @@ namespace StellarAdmin.Dashboard.Resources;
 public sealed class LookupLabelContext(string fieldLabel, int minimumSearchLength, string? term)
 {
     /// <summary>
+    ///     The number of items the text counts, such as the selected items a summary doesn't name.
+    /// </summary>
+    public int Count { get; init; }
+
+    /// <summary>
     ///     The field's label.
     /// </summary>
     public string FieldLabel { get; } = fieldLabel;

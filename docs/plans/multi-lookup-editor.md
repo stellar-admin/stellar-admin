@@ -1,6 +1,6 @@
 # Multi-select lookup editor
 
-Status: **active**. Phases 0 and 1 are done; phase 2 is next. Last updated: 2026-10-08.
+Status: **active**. Phases 0 to 2 are done; phase 3 is next. Last updated: 2026-10-08.
 
 A lookup editor that selects several items from a searchable sheet, built on the single-select lookup editor and the [sheet stack](archive/sheet-stack.md). The design comes from the [multi-select lookup prototype](../../sandbox/html/multiselect-lookup.html) (commit 6569834). Each phase stops for review.
 
@@ -20,7 +20,7 @@ From the prototype sessions:
 - Keys: Enter toggles the highlighted row. Esc, Done, Ctrl+Enter (⌘↵ on a Mac) or the backdrop closes the sheet. Alt+N (⌥N) opens New.
 - The footer has two rows: key hints above **New | Done**. On phones the hints row is hidden.
 - Create is B1 + B3: New in the no-results state and in the footer. The form opens as the next sheet level, and the created item comes back checked, through `lookup-created`, with the search kept.
-- Limit: the maximum comes from `[MaxLength]` or `[Length]`, with an option to override it. At the limit, unchecked rows and New are disabled, the sheet shows "Choose up to N" and the field shows "Up to N guides".
+- No limit in the editor (changed 2026-10-08): any number of items can be selected, and validation on the model, such as `[MaxLength]` or `[Length]`, rejects too many on post. A hard limit in the editor can follow if needed.
 - `sel-command` keeps the highlight in place when a row is removed from the list.
 
 ## Phase 0: rename the single lookup to `LookupSheetEditor`
@@ -54,21 +54,30 @@ From the prototype sessions:
 ## Phase 2: the editor on the server
 
 - A `MultiLookupSheetEditor` with its handler, binding a collection field, and the List, Chips and Summary templates, including read-only.
-- The limit from `[MaxLength]` or `[Length]`, with an override, and validation on post.
 - An empty-selection marker, so removing every item clears the collection.
 - A rejected post shows the posted keys again with their labels, from one find call.
 - A Multi lookup gallery in the playground, with destinations (airports) and guides on an in-memory model, in Voyager Travel content.
 
+**Done (2026-10-08):**
+
+- `MultiLookupSheetEditor` with `UseItems` (registered `ILookupSource` or custom `LookupItems`), `Editor(...)` with `MultiLookupFieldOptions` (`Layout`, `EmptyText`, `ShowMedia`), `Sheet(...)` with the shared `LookupSheetOptions`, and `ClassNames` (`MultiLookupSheetEditorClassNames` with `Media`). `MultiLookupSheetEditorLayout` is `List`, `Chips` and `Summary`; `Chips` is the default. EF Core items come from a `MultiLookupSheetEditorExtensions.UseItems<TContext, TEntity, TValue>` beside the single editor's.
+- `MultiLookupSheetEditorHandler` resolves the items with one `LookupItems.FindAsync` call, so a rejected post shows the posted keys with their titles. The template `Editors/MultiLookupSheet` renders a hidden input per value and the checkbox group's `__sa_checkbox_group.` marker, which binds an empty collection when every item is removed. List rows are `sa-item`s with Remove and a dashed Add; Chips are badges with Remove inside an input group with Add; Summary names two items, ends with "and N more", counts them and has Clear. Read-only shows chips or rows without inputs, a read-only Summary shows the list, and an empty one shows None. An invalid field gets the destructive border.
+- `dashboard-multi-lookup-sheet-editor` handles Remove and Clear: it removes the item and its input, swaps to the empty buttons when nothing is left, moves focus to the next Remove or the open button, and fires `change` on itself. The Add, Choose and Summary buttons don't open a sheet yet (phase 3).
+- New lookup labels: `AddLabel` ("Add {field}"), `RemoveLabel` ("Remove", followed by the title) and `MoreText` ("and {Count} more"), with `Count` added to `LookupLabelContext`. The type-mismatch exception now says "The lookup on {field}" instead of naming `LookupSheetEditor`.
+- The playground has a Multi lookup gallery (`MultiLookupGallery`, with `GalleryGuideLookupSource` and Voyager Travel guides) covering the three layouts, `[MinLength]`, `[MaxLength]`, unknown values, `EmptyText`, `ShowMedia`, class names and read-only.
+- Not done: the consumer setup reference doesn't describe the editor yet. The overlapping avatars in a Summary clip each other's initials, as they did in the prototype.
+- Checks: the solution builds. `StellarAdmin.Dashboard.Tests` 79 of 79, `StellarAdmin.Dashboard.IntegrationTests` 376 of 376 (14 new in `MultiLookupSheetEditorTests`) and `StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests` 73 of 73 pass. Headless Chromium against the playground gallery, at desktop width in light and dark and at phone width: Remove, Clear, focus, `change` and the posted form values (an emptied field posts only the marker) behave as described. The chips' Add label wrapped on phones and now truncates.
+
 ## Phase 3: the sheet
 
-- Multi-select results with trailing checks, All | Selected with the count and Clear all, Enter to toggle, Done and Ctrl+Enter to close, the two-row footer, and the limit.
+- Multi-select results with trailing checks, All | Selected with the count and Clear all, Enter to toggle, Done and Ctrl+Enter to close, and the two-row footer.
 - The field updates on each toggle and fires one `change` on close.
 - The `sel-command` highlight fix in TagHelpers.
 - Phone layout.
 
 ## Phase 4: create
 
-- New in the no-results state and the footer, with Alt+N, disabled at the limit.
+- New in the no-results state and the footer, with Alt+N.
 - The editor listens for `lookup-created` and adds the new item, checked, keeping the search.
 
 ## Not in this plan

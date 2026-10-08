@@ -411,3 +411,63 @@ class DashboardLookupSheetEditor extends HTMLElement {
 }
 
 customElements.define("dashboard-lookup-sheet-editor", DashboardLookupSheetEditor);
+
+// A multi-select lookup editor: a hidden input per selected value, and the items that display them. Remove takes an
+// item and its value out, and Clear takes them all. It shows either the selection or the empty buttons, moves focus to
+// a button that is still shown, and fires change on itself when the value changes.
+class DashboardMultiLookupSheetEditor extends HTMLElement {
+  constructor() {
+    super();
+
+    this.addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-lookup='remove']");
+      if (remove) {
+        this.#remove(remove.closest("[data-lookup='item']"));
+      } else if (event.target.closest("[data-lookup='clear']")) {
+        this.#clear();
+      }
+    });
+  }
+
+  get #items() {
+    return [...this.querySelectorAll("[data-lookup='item']")];
+  }
+
+  get #values() {
+    return [...this.querySelectorAll("[data-lookup='values'] input")];
+  }
+
+  // Focus moves to the next item's Remove, or the previous one's after the last item, or else the add button
+  #remove(item) {
+    const items = this.#items;
+    const index = items.indexOf(item);
+    const next = items[index + 1] ?? items[index - 1];
+
+    this.#values.find((input) => input.value === item.dataset.value)?.remove();
+    item.remove();
+    this.#update();
+    (next?.querySelector("[data-lookup='remove']") ?? this.#openButton())?.focus();
+  }
+
+  #clear() {
+    for (const element of [...this.#values, ...this.#items]) {
+      element.remove();
+    }
+
+    this.#update();
+    this.#openButton()?.focus();
+  }
+
+  #openButton() {
+    return this.querySelector("[data-lookup='open']:not([hidden] *)");
+  }
+
+  #update() {
+    const empty = this.#values.length === 0;
+    this.querySelector("[data-lookup='selected']").hidden = empty;
+    this.querySelector("[data-lookup='empty']").hidden = !empty;
+    this.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+
+customElements.define("dashboard-multi-lookup-sheet-editor", DashboardMultiLookupSheetEditor);
