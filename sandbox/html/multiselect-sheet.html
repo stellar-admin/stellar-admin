@@ -14,6 +14,8 @@
 
     <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
     <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <!-- The Dashboard stylesheet sizes item media (sa-choice-media) the way the editors do -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
     <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
@@ -120,6 +122,7 @@
           <h2 class="text-lg font-semibold">Sheet behaviours</h2>
           <p class="text-muted-foreground max-w-3xl text-sm">
             The sheet as it would appear, laid out inline. Each one is live and writes to the small field under it.
+            Keys: <kbd data-slot="kbd" class="sa-kbd">↵</kbd> toggles the active row and selects the search text, so the next search replaces it; <kbd data-slot="kbd" class="sa-kbd">Esc</kbd> closes, discarding the draft in the staged sheets; <kbd data-slot="kbd" class="sa-kbd">⌘↵</kbd> or <kbd data-slot="kbd" class="sa-kbd">Ctrl ↵</kbd> closes as Done from anywhere in the sheet.
           </p>
         </div>
         <div id="sheets" class="flex flex-wrap items-start gap-x-8 gap-y-12"></div>
@@ -137,7 +140,7 @@
     </sel-dialog>
 
     <script type="module">
-      import { airports, guides, fakeFetch, icons, avatar, airportAvatar, codeChip, button, badge, checkbox, controlBar, backendNote, effort } from "./multiselect-shared.js";
+      import { airports, guides, fakeFetch, icons, avatar, airportMedia, guideMedia, button, badge, checkbox, controlBar, backendNote, effort, kbd, doneKey, isDoneKey } from "./multiselect-shared.js";
 
       // ---------------------------------------------------------------- Sources
       const sources = {
@@ -145,14 +148,14 @@
           noun: "airports", one: "airport", label: "Destinations",
           items: airports, fields: ["city", "code", "country"],
           key: (a) => a.code, title: (a) => a.city, desc: (a) => a.country,
-          media: (a, large) => codeChip(a.code, large),
+          media: (a, large) => airportMedia(a, large ? "lookup-lg" : "lookup"),
           short: (a) => a.code,
         },
         guides: {
           noun: "guides", one: "guide", label: "Guides",
           items: guides, fields: ["name", "desc"],
           key: (g) => g.id, title: (g) => g.name, desc: (g) => g.desc,
-          media: (g, large) => avatar(g.name, large ? "default" : "sm"),
+          media: (g, large) => guideMedia(g, large ? "lookup-lg" : "lookup"),
           short: (g) => g.name.split(" ")[0],
         },
       };
@@ -220,7 +223,7 @@
             const x = find(s, v);
             return `
               <span data-slot="badge" class="sa-badge sa-badge-variant-secondary h-6 gap-1 pr-0.5 pl-1 ${s === sources.airports ? "" : "pl-0.5"}">
-                ${s === sources.airports ? `<span class="font-mono text-[0.65rem] opacity-70">${x.code}</span>` : avatar(x.name, "sm").replace('data-size="sm"', 'data-size="sm" style="--avatar-size:1.125rem" ')}
+                ${s === sources.airports ? `<span class="font-mono text-[0.65rem] opacity-70">${x.code}</span>` : avatar(x.name, "sm", x.photo).replace('data-size="sm"', 'data-size="sm" style="--avatar-size:1.125rem" ')}
                 <span>${s.title(x)}</span>
                 ${f.readonly ? "<span class='w-1'></span>" : `<button type="button" data-remove="${v}" data-field="${f.id}" class="hover:bg-foreground/10 rounded-sm p-0.5"><span class="sr-only">Remove ${s.title(x)}</span>${icons.x("size-3")}</button>`}
               </span>`;
@@ -246,8 +249,8 @@
           if (f.readonly) return items.length ? `<div class="sa-input flex items-center"><span class="truncate" title="${items.map(s.title).join(", ")}">${text}</span></div>` : none;
           if (!items.length) return emptyDashed(f);
           const preview = s === sources.airports
-            ? `<span class="flex shrink-0 gap-1">${items.slice(0, 3).map((x) => codeChip(x.code)).join("")}</span>`
-            : `<span class="flex shrink-0 -space-x-1.5 *:ring-background *:ring-2">${items.slice(0, 3).map((x) => avatar(x.name, "sm")).join("")}</span>`;
+            ? `<span class="flex shrink-0 gap-1">${items.slice(0, 3).map((x) => airportMedia(x, "inline")).join("")}</span>`
+            : `<span class="flex shrink-0 -space-x-1.5 *:ring-background *:ring-2">${items.slice(0, 3).map((x) => avatar(x.name, "sm", x.photo)).join("")}</span>`;
           return `
             <div role="group" data-slot="button-group" class="sa-button-group flex w-full">
               <button type="button" ${openBtnAttrs(f)} data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-default min-w-0 flex-1 justify-start gap-2 pl-1.5 font-normal">
@@ -345,7 +348,7 @@
           </div>`;
       }
       const moreHtml = `<div role="option" aria-selected="false" tabindex="-1" data-slot="command-item" data-value="" data-more class="sa-command-item group/command-item text-muted-foreground justify-center">Load more</div>`;
-      const skeleton = `<div class="sa-command-item pointer-events-none" aria-hidden="true"><div class="bg-muted size-7 shrink-0 animate-pulse rounded-md"></div><div class="flex flex-1 flex-col gap-1.5"><div class="bg-muted h-3.5 w-2/5 animate-pulse rounded"></div><div class="bg-muted h-3 w-3/5 animate-pulse rounded"></div></div></div>`;
+      const skeleton = `<div class="sa-command-item pointer-events-none" aria-hidden="true"><div class="bg-muted size-8 shrink-0 animate-pulse rounded-md"></div><div class="flex flex-1 flex-col gap-1.5"><div class="bg-muted h-3.5 w-2/5 animate-pulse rounded"></div><div class="bg-muted h-3 w-3/5 animate-pulse rounded"></div></div></div>`;
 
       const tabsHtml = (sh) => `
         <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs px-6">
@@ -369,14 +372,14 @@
         if (sh.kind === "immediate" || sh.kind === "add") {
           return `
             <div data-slot="sheet-footer" class="sa-sheet-footer flex-row items-center justify-between border-t">
-              <span class="text-muted-foreground text-xs" data-note>${sh.kind === "add" ? "Rows are added as you pick them." : "Changes apply as you pick."}</span>
-              ${button("outline", "sm", "Close", 'data-close')}
+              <span class="text-muted-foreground flex items-center gap-1.5 text-xs" data-note>${kbd("↵")} ${sh.kind === "add" ? "add" : "toggle"} ${kbd("Esc")} close</span>
+              ${button("outline", "sm", `Close ${kbd(doneKey)}`, 'data-close')}
             </div>`;
         }
         return `
           <div data-slot="sheet-footer" class="sa-sheet-footer flex-row items-center justify-between border-t">
             <span class="text-muted-foreground flex items-center gap-2 text-xs"><span data-count-text>${n} selected</span>${button("link", "xs", "Clear", 'data-clear-draft class="h-auto px-0"')}</span>
-            <span class="flex gap-2">${button("outline", "sm", "Cancel", "data-close")}${button("default", "sm", "Done", "data-done")}</span>
+            <span class="flex gap-2">${button("outline", "sm", `Cancel ${kbd("Esc")}`, "data-close")}${button("default", "sm", `Done ${kbd(doneKey)}`, "data-done")}</span>
           </div>`;
       };
 
@@ -529,6 +532,8 @@
           return;
         }
         toggle(sh, root, e.detail.value);
+        // After Enter, select the search text so typing the next search replaces it
+        if (enterToggle) root.querySelector("[data-search]")?.select();
       });
       document.addEventListener("click", (e) => {
         const t = e.target;
@@ -581,6 +586,34 @@
         const open = t.closest("[data-ms-open]");
         if (open) openDialogFor(fields.get(open.dataset.msOpen));
       });
+
+      // ---------------------------------------------------------------- Keys
+      // Enter toggles (sel-command handles it; this only notes it was the keyboard). Ctrl/⌘+Enter closes as Done, or
+      // Close in the write-through sheets. The dialog closes itself on Escape, which discards a staged draft; the inline
+      // frames stand in for it.
+      let enterToggle = false;
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          const root = e.target.closest?.("[data-sheet-root]");
+          const sh = root?._sheet;
+          if (!sh) return;
+          if (isDoneKey(e)) {
+            e.preventDefault();
+            e.stopPropagation();
+            root.querySelector(sh.writeThrough ? "[data-close]" : "[data-done]")?.click();
+            if (root !== dialogBody) root.querySelector("[data-search]")?.focus();
+          } else if (e.key === "Escape" && root !== dialogBody) {
+            e.preventDefault();
+            sh.onClose?.(false);
+            root.querySelector("[data-search]")?.focus();
+          } else if (e.key === "Enter" && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
+            enterToggle = true;
+            setTimeout(() => (enterToggle = false));
+          }
+        },
+        true,
+      );
 
       // ---------------------------------------------------------------- The real dialog
       const dialog = document.getElementById("ms-sheet");

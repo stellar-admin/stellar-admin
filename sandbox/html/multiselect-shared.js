@@ -46,6 +46,9 @@ export const guides = [
   ["olivia", "Olivia Brown", "Cape Town · English, Afrikaans"],
   ["pablo", "Pablo Díaz", "Buenos Aires · Spanish"],
 ].map(([id, name, desc]) => ({ id, name, desc }));
+// A few guides have photos; the rest fall back to initials, as a real data set would
+const guidePhotos = { amara: 1, bruno: 2, chen: 3 };
+for (const g of guides) g.photo = guidePhotos[g.id] ? `../../docs/DocsSamples/wwwroot/avatars/avatar-${guidePhotos[g.id]}.jpg` : null;
 
 // Trip amenities — a small, fixed set (toggle chips / checklist territory)
 export const amenities = [
@@ -98,6 +101,35 @@ export const airportAvatar = (a, size = "sm") => avatar(a.city, size, photos[a.c
 // Large = the size-7 square used with a description; small = the inline h-5 chip
 export const codeChip = (code, large = false) =>
   `<span class="bg-muted text-foreground flex shrink-0 items-center justify-center rounded-md font-mono font-medium ${large ? "size-7 text-[0.65rem]" : "h-5 px-1.5 text-[0.65rem]"}">${code}</span>`;
+
+// Item media as the Dashboard's _ItemMedia partial renders it. The Dashboard stylesheet sizes it by kind and placement:
+// "inline" (choice editors), "card" (choice cards), "lookup" (rows without a description) and "lookup-lg" (rows with one).
+// kind: "icon" (value is an icons.* function), "avatar" (value is a URL or null for initials), "image" (URL) or "code".
+export const itemMedia = (kind, value, text, placement = "lookup") => {
+  const attrs = `data-media="${kind}" data-placement="${placement}"`;
+  switch (kind) {
+    case "icon":
+      return value("sa-choice-media").replace("<svg", `<svg ${attrs} aria-hidden="true"`);
+    case "avatar": {
+      const size = placement === "card" || placement === "lookup-lg" ? "default" : "sm";
+      return `<span data-slot="avatar" data-size="${size}" class="sa-avatar group/avatar sa-choice-media" ${attrs}>${
+        value ? `<img data-slot="avatar-image" src="${value}" alt="${text}" class="sa-avatar-image" />` : `<span data-slot="avatar-fallback" class="sa-avatar-fallback">${initials(text)}</span>`
+      }</span>`;
+    }
+    case "image":
+      return `<img src="${value}" alt="" class="sa-choice-media" ${attrs} />`;
+    default:
+      return `<span class="sa-choice-media" ${attrs}>${value}</span>`;
+  }
+};
+export const guideMedia = (g, placement) => itemMedia("avatar", g.photo, g.name, placement);
+export const airportMedia = (a, placement) => itemMedia("code", a.code, a.city, placement);
+
+// Keyboard hints: sa-kbd markup, and the platform's modifier for Done
+export const kbd = (key) => `<kbd data-slot="kbd" class="sa-kbd">${key}</kbd>`;
+export const isMac = /Mac|iPhone|iPad/.test(navigator.userAgentData?.platform ?? navigator.platform);
+export const doneKey = isMac ? "⌘↵" : "Ctrl ↵";
+export const isDoneKey = (e) => e.key === "Enter" && (isMac ? e.metaKey : e.ctrlKey);
 
 export const button = (variant, size, body, attrs = "", cls = "") =>
   `<button type="button" ${attrs} class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size} ${cls}" data-slot="button">${body}</button>`;

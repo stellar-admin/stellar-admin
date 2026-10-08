@@ -14,6 +14,8 @@
 
     <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
     <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css" />
+    <!-- The Dashboard stylesheet sizes item media (sa-choice-media) the way the editors do -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
     <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
@@ -86,7 +88,7 @@
     </main>
 
     <script type="module">
-      import { airports, guides, airportsByRegion, fakeFetch, icons, avatar, airportAvatar, codeChip, button, badge, field, panel, controlBar, backendNote, effort, airport, guide } from "./multiselect-shared.js";
+      import { airports, guides, airportsByRegion, fakeFetch, icons, avatar, airportMedia, guideMedia, button, badge, field, panel, controlBar, backendNote, effort, airport, guide, kbd, doneKey, isDoneKey } from "./multiselect-shared.js";
 
       // ---------------------------------------------------------------- Shared bits
       let uid = 0;
@@ -135,7 +137,7 @@
       const skeletonRows = (n, avatarShape = true) =>
         Array.from({ length: n }, () => `
           <div class="sa-command-item pointer-events-none" aria-hidden="true">
-            ${avatarShape ? `<span class="bg-muted size-6 shrink-0 animate-pulse rounded-full"></span>` : ""}
+            ${avatarShape ? `<span class="bg-muted size-8 shrink-0 animate-pulse rounded-full"></span>` : ""}
             <span class="flex flex-1 flex-col gap-1.5"><span class="bg-muted h-3 w-2/5 animate-pulse rounded"></span><span class="bg-muted h-2.5 w-3/5 animate-pulse rounded"></span></span>
           </div>`).join("");
 
@@ -302,7 +304,7 @@
       }
 
       const guideRow = (g, sel) =>
-        item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, sel.has(g.id), { mode: "check" });
+        item(g.id, `${guideMedia(g, "lookup-lg")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, sel.has(g.id), { mode: "check" });
       const guideFetch = (term, page) => fakeFetch(guides, term, { fields: ["name", "desc"], page, pageSize: 6 });
 
       // ---------------------------------------------------------------- 2. Chips in input
@@ -321,7 +323,7 @@
         const init = (root) => {
           const chips = root.querySelector("[data-chips]");
           const paint = () =>
-            (chips.innerHTML = [...selected].map((v) => chip(v, `${avatar(guide(v).name, "sm").replace('class="sa-avatar', 'class="-ml-1 size-4 text-[0.45rem] sa-avatar')}<span class="truncate">${guide(v).name}</span>`)).join(""));
+            (chips.innerHTML = [...selected].map((v) => chip(v, `${avatar(guide(v).name, "sm", guide(v).photo).replace('class="sa-avatar', 'class="-ml-1 size-4 text-[0.45rem] sa-avatar')}<span class="truncate">${guide(v).name}</span>`)).join(""));
           paint();
           combobox(root, { selected, fetch: guideFetch, renderItem: guideRow, onChange: paint });
         };
@@ -362,7 +364,7 @@
                 ? `<div class="divide-y rounded-md border">${list
                     .map((a) => `
                       <div class="flex items-center gap-2.5 px-2.5 py-1.5 text-sm">
-                        ${codeChip(a.code, true)}
+                        ${airportMedia(a, "lookup-lg")}
                         <span class="flex min-w-0 flex-1 flex-col"><span class="truncate">${a.city}</span><span class="text-muted-foreground truncate text-xs">${a.country}</span></span>
                         ${button("ghost", "icon-xs", icons.x(), `data-remove="${a.code}" aria-label="Remove ${a.city}"`, "text-muted-foreground")}
                       </div>`)
@@ -372,7 +374,7 @@
           };
           paint();
           const airportRow = (a, s) =>
-            item(a.code, `${codeChip(a.code, true)}<span class="flex min-w-0 flex-col"><span class="truncate">${a.city}</span><span class="text-muted-foreground truncate text-xs">${a.country}</span></span>`, s.has(a.code), { mode: "check" });
+            item(a.code, `${airportMedia(a, "lookup-lg")}<span class="flex min-w-0 flex-col"><span class="truncate">${a.city}</span><span class="text-muted-foreground truncate text-xs">${a.country}</span></span>`, s.has(a.code), { mode: "check" });
           combobox(root, {
             selected,
             fetch: (term, page) => fakeFetch(airports, term, { fields: ["city", "code", "country"], page, pageSize: 8 }),
@@ -458,14 +460,14 @@
                 : "";
             root.querySelector("[data-card-title]").textContent = `${list.length} airports`;
             root.querySelector("[data-card]").innerHTML = list
-              .map((a) => `<li class="flex items-center gap-2 rounded-sm px-2 py-1">${codeChip(a.code)}<span class="truncate">${a.city}</span></li>`)
+              .map((a) => `<li class="flex items-center gap-2 rounded-sm px-2 py-1">${airportMedia(a, "lookup")}<span class="truncate">${a.city}</span></li>`)
               .join("");
             root.querySelector("[data-foot]").textContent = `${list.length} selected`;
           };
           const list = (term = "") => {
             const hits = filterAirports(term);
             pop.querySelector("[data-items]").innerHTML = hits.length
-              ? hits.map((a) => item(a.code, `${codeChip(a.code)}<span class="truncate">${a.city}</span>`, selected.has(a.code))).join("")
+              ? hits.map((a) => item(a.code, `${airportMedia(a, "lookup")}<span class="truncate">${a.city}</span>`, selected.has(a.code))).join("")
               : muted("No airports found.");
           };
           paint();
@@ -546,7 +548,7 @@
                     <div role="presentation" data-slot="command-group" class="sa-command-group">
                       <div role="group">
                         ${item(`region:${g.region}`, `<span class="font-medium">${g.region}</span>`, false, { trailing: `<span class="text-muted-foreground ml-auto text-xs tabular-nums" data-n></span>` }).replace("data-slot=\"command-item\"", `data-group="${g.region}" data-slot="command-item"`)}
-                        ${hits.map((a) => item(a.code, `${codeChip(a.code)}<span class="truncate">${a.city}</span>`, selected.has(a.code), { cls: "pl-7" })).join("")}
+                        ${hits.map((a) => item(a.code, `${airportMedia(a, "lookup")}<span class="truncate">${a.city}</span>`, selected.has(a.code), { cls: "pl-7" })).join("")}
                       </div>
                     </div>`)
                   .join("");
@@ -708,7 +710,7 @@ QQQ</textarea>
           const paint = () => {
             root.querySelector("[data-summary]").textContent = selected.size ? `${selected.size} guides` : "Choose guides";
             root.querySelector("[data-faces]").innerHTML =
-              [...selected].slice(0, 5).map((v) => avatar(guide(v).name, "sm").replace('class="sa-avatar', 'class="ring-background ring-2 sa-avatar')).join("") +
+              [...selected].slice(0, 5).map((v) => avatar(guide(v).name, "sm", guide(v).photo).replace('class="sa-avatar', 'class="ring-background ring-2 sa-avatar')).join("") +
               (selected.size > 5 ? `<span class="bg-muted ring-background flex size-6 items-center justify-center rounded-full text-[0.65rem] ring-2">+${selected.size - 5}</span>` : "");
             root.querySelector("[data-count]").textContent = `(${selected.size})`;
           };
@@ -725,8 +727,8 @@ QQQ</textarea>
               ? hits
                   .map((g) =>
                     tab === "all"
-                      ? item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id))
-                      : item(g.id, `${avatar(g.name, "sm")}<span class="flex min-w-0 flex-1 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span><span class="text-muted-foreground ml-auto [&>svg]:size-4">${icons.x()}</span>`, false, { mode: "none" }),
+                      ? item(g.id, `${guideMedia(g, "lookup-lg")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id))
+                      : item(g.id, `${guideMedia(g, "lookup-lg")}<span class="flex min-w-0 flex-1 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span><span class="text-muted-foreground ml-auto [&>svg]:size-4">${icons.x()}</span>`, false, { mode: "none" }),
                   )
                   .join("")
               : muted(tab === "all" ? "No guides found." : "Nothing selected.");
@@ -803,7 +805,7 @@ QQQ</textarea>
           };
           const list = (t = "") => {
             const hits = guides.filter((g) => (g.name + g.desc).toLowerCase().includes(t.toLowerCase()));
-            root.querySelector("[data-items]").innerHTML = hits.map((g) => item(g.id, `${avatar(g.name, "default")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id), { cls: "min-h-11" })).join("");
+            root.querySelector("[data-items]").innerHTML = hits.map((g) => item(g.id, `${guideMedia(g, "lookup-lg")}<span class="flex min-w-0 flex-col"><span class="truncate">${g.name}</span><span class="text-muted-foreground truncate text-xs">${g.desc}</span></span>`, selected.has(g.id), { cls: "min-h-11" })).join("");
           };
           const show = (on) => drawer.classList.toggle("hidden", !on);
           paint();
@@ -832,10 +834,62 @@ QQQ</textarea>
         }) };
       });
 
+      // ---------------------------------------------------------------- Keys, for every pattern
+      // Enter toggles (sel-command handles it; this only notes it was the keyboard, then selects the search text so the
+      // next search replaces it). Escape closes and keeps the selection: the auto popovers close themselves and the
+      // comboboxes already handle it. Ctrl/⌘+Enter closes from anywhere in the panel. Tab out of a popover closes it.
+      const panelOf = (el) => el.closest?.("[popover]:not([popover=hint])") ?? el.closest?.("sel-command")?.querySelector("[popover]:not([popover=hint])");
+      const searchOf = (el) => (el.closest("sel-command") ?? el).querySelector('[data-slot="command-input"]');
+      let enterToggle = false;
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key !== "Enter" || e.shiftKey || e.altKey) return;
+          const pop = panelOf(e.target);
+          if (!pop) return;
+          const open = pop.matches(":popover-open");
+          if (isDoneKey(e)) {
+            if (!open) return;
+            e.preventDefault();
+            e.stopPropagation();
+            pop.hidePopover();
+            // Back to the trigger for the button-opened popovers; the comboboxes keep focus in their input
+            if (pop.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body)
+              document.querySelector(`[popovertarget="${pop.id}"]`)?.focus();
+          } else if (!e.ctrlKey && !e.metaKey) {
+            if (!open) {
+              // A closed combobox: Enter opens it rather than toggling a row nobody can see
+              e.preventDefault();
+              e.stopPropagation();
+              e.target.click();
+              return;
+            }
+            enterToggle = true;
+            setTimeout(() => (enterToggle = false));
+          }
+        },
+        true,
+      );
+      document.addEventListener("itemselect", (e) => enterToggle && searchOf(e.target)?.select());
+      document.addEventListener(
+        "focusout",
+        (e) => {
+          const pop = e.target.closest?.("[popover=auto]");
+          if (pop?.matches(":popover-open") && e.relatedTarget && !pop.contains(e.relatedTarget)) pop.hidePopover();
+        },
+        true,
+      );
+      const keyHint = `
+        <div data-key-hint class="text-muted-foreground flex items-center gap-1.5 border-t px-2.5 py-1.5 text-xs">
+          ${kbd("↵")} toggle <span class="ml-auto flex items-center gap-1.5">${kbd("Esc")} or ${kbd(doneKey)} close</span>
+        </div>`;
+
       // ---------------------------------------------------------------- Mount
       const built = patterns.map((make) => make());
       document.getElementById("patterns").innerHTML = built.map((b) => b.html).join("");
       for (const b of built) b.init?.(document.querySelector(`[data-pattern="${b.id}"]`));
+      // Every list popover shows the keys at its foot
+      document.querySelectorAll("[popover]:not([popover=hint])").forEach((pop) => pop.querySelector('[data-slot="command-list"]') && pop.insertAdjacentHTML("beforeend", keyHint));
 
       document.querySelector("main > header").insertAdjacentHTML("beforeend", backendNote());
       controlBar();
