@@ -28,3 +28,23 @@
 .sa-slider-mark-label {
   @apply text-muted-foreground text-xs tabular-nums;
 }
+
+/* Chip: upstream's combobox chip (height, padding, radius, type size, and its fill as the fill inside
+   the input-styled group), with the muted fill on other surfaces. The input-styled group is upstream's
+   combobox chips box; the group carries aria-invalid itself. */
+.sa-chip,
+.sa-chip-group {
+  --sa-chip-h: --spacing(5.5);
+  --sa-chip-px: --spacing(2);
+  --sa-chip-radius: 0px;
+  --sa-chip-font-size: --theme(--text-xs);
+  --sa-chip-bg: var(--muted);
+  --sa-chip-fg: var(--foreground);
+  --sa-chip-border: transparent;
+  --sa-chip-remove-fg: var(--muted-foreground);
+  --sa-chip-input-bg: var(--muted);
+  --sa-chip-input-border: transparent;
+}
+.sa-chip-group[data-appearance="input"] {
+  @apply border-transparent border-b-input bg-transparent focus-within:border-b-ring aria-invalid:border-b-destructive dark:aria-invalid:border-b-destructive/50 min-h-10 rounded-none border bg-clip-padding px-0 py-1.5 text-sm transition-[color,border-color] has-data-[slot=chip]:px-0;
+}

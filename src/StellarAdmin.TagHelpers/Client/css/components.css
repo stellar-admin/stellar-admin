@@ -306,6 +306,124 @@
   .sa-checkbox-indicator-icon {
     @apply pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--sa-checkbox-checked-foreground,var(--primary-foreground))];
   }
+  /* Chip: each theme sets the --sa-chip-* variables on .sa-chip and .sa-chip-group (size, radius,
+     type size, fill, text, border, remove icon colour, and the fill and border inside an
+     input-styled group) and styles the input-styled box; the rules here size and place
+     everything from those variables. */
+  .sa-chip {
+    --chip-inset: var(--sa-chip-inset, 2px);
+    --chip-media: calc(var(--sa-chip-h) - 2px - 2 * var(--chip-inset));
+    --chip-media-radius: max(0px, calc(var(--sa-chip-radius) - 1px - var(--chip-inset)));
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.25rem;
+    height: var(--sa-chip-h);
+    padding-inline: var(--sa-chip-px);
+    border: 1px solid var(--sa-chip-border);
+    border-radius: var(--sa-chip-radius);
+    background: var(--sa-chip-bg);
+    color: var(--sa-chip-fg);
+    font-size: var(--sa-chip-font-size);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    &[data-disabled],
+    &:has(> .sa-chip-remove:disabled) {
+      opacity: 0.5;
+    }
+  }
+  /* Media goes directly in the chip, before the label, and is styled by element. Avatars, images
+     and codes sit --chip-inset from the chip's edge, with a radius that follows the chip's. */
+  .sa-chip > svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+  .sa-chip > :is([data-slot="avatar"], img, code) {
+    flex-shrink: 0;
+    margin-inline-start: calc(var(--chip-inset) - var(--sa-chip-px));
+    border-radius: var(--chip-media-radius);
+  }
+  .sa-chip > :is([data-slot="avatar"], img) {
+    width: var(--chip-media);
+    height: var(--chip-media);
+    object-fit: cover;
+  }
+  .sa-chip > [data-slot="avatar"] > *,
+  .sa-chip > [data-slot="avatar"]::after {
+    border-radius: inherit;
+  }
+  .sa-chip > [data-slot="avatar"] > [data-slot="avatar-fallback"] {
+    font-size: 0.5rem;
+  }
+  .sa-chip > code {
+    display: inline-block;
+    padding: calc((var(--chip-media) - 1cap) / 2) 0.25rem;
+    background: color-mix(in oklab, currentColor 12%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 500;
+    /* Trims the line to the capitals, so the padding centres capitals and digits whatever the
+       mono font's ascent; without text-box support the box is a little taller. text-box needs
+       an inline-block: it does not reach text inside an inline-flex box. */
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
+  }
+  /* The remove button is a ghost icon button, resized to the media box and shaped like the media.
+     It keeps the theme's focus ring; the chip dims instead of the button when it is disabled. */
+  .sa-chip > .sa-chip-remove {
+    width: var(--chip-media);
+    min-width: 0;
+    height: var(--chip-media);
+    margin-inline: -0.125rem calc(var(--chip-inset) - var(--sa-chip-px));
+    padding: 0;
+    border: 0;
+    border-radius: var(--chip-media-radius);
+    background: transparent;
+    color: var(--sa-chip-remove-fg);
+    opacity: 1;
+    &:not(:focus-visible) {
+      box-shadow: none;
+    }
+    & svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+    &:hover {
+      background: color-mix(in oklab, var(--sa-chip-fg) 12%, transparent);
+      color: var(--sa-chip-fg);
+    }
+  }
+  .sa-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    &[data-appearance="input"] {
+      gap: 0.25rem;
+    }
+  }
+  .sa-chip-group[data-appearance="input"] > .sa-chip {
+    --sa-chip-bg: var(--sa-chip-input-bg);
+    --sa-chip-border: var(--sa-chip-input-border);
+  }
+  /* A button beside the chips (Add) takes the chip's height, padding, radius, type size and icon
+     size, so it lines up with them whatever its own size. */
+  .sa-chip-group > [data-slot="button"] {
+    gap: 0.25rem;
+    height: var(--sa-chip-h);
+    min-height: 0;
+    padding-block: 0;
+    padding-inline: var(--sa-chip-px);
+    border-radius: var(--sa-chip-radius);
+    font-size: var(--sa-chip-font-size);
+    line-height: 1;
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
   .sa-command {
     @apply flex size-full flex-col overflow-hidden;
   }

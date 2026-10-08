@@ -2716,6 +2716,126 @@
         }
       }
     },
+    "Chip": {
+      "tags": [
+        "sa-chip",
+        "sa-chip-group",
+        "sa-chip-remove"
+      ],
+      "hooks": [
+        "sa-chip",
+        "sa-chip-group",
+        "sa-chip-remove"
+      ],
+      "example": "src/StellarAdmin.TagHelpers/TagHelpers/Chip/ChipTagHelper.cs",
+      "themes": {
+        "concourse": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "ledger": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.luma": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.lyra": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.maia": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.mira": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.nova": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.rhea": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.sera": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "shadcn.vega": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "ice": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "observatory": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "meridian": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "aurora": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        },
+        "parallax": {
+          "status": "reviewed",
+          "rules": [
+            "sa-chip",
+            "sa-chip-group"
+          ]
+        }
+      }
+    },
     "Collapsible": {
       "tags": [
         "sa-collapsible"

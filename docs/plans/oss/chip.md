@@ -1,6 +1,6 @@
 # Chip
 
-Status: **active**. Phase 1 (prototype and contrast check) is built and awaits review of its open decisions. Last updated: 2026-10-08.
+Status: **active**. Phase 2 (CSS, tag helpers and tests) is built and awaits review. Last updated: 2026-10-09.
 
 Add `sa-chip` to `StellarAdmin.TagHelpers`: a compact token for a selected or entered value, with optional media and an optional remove button, that works on its own, inside an input-styled group and read-only, in all fifteen themes. Work follows the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow and the [prototype-component](../../../.agents/skills/prototype-component/SKILL.md) skill, in phases with a review after each; approval of one phase does not authorize the next.
 
@@ -166,19 +166,19 @@ A `sa-chip-media` wrapper with a `ChipMediaVariant` was considered and dropped (
 
 `ToggleGroupEditor`'s chips appearance stays a toggle group, because its chips are selectable, not removable. Its forced pill radius and fixed media shapes are replaced so it reads as the same family as `sa-chip` in each theme: the radius and media shape come from the theme's chip treatment instead of Dashboard CSS. How (a shared radius variable, or a toggle-group chips appearance in TagHelpers) is settled in phase 1 with the prototype in front of us.
 
-## Open decisions
+## Decisions
 
-- How the shadcn styles get their chip rules without re-running ThemeGenerator: per-theme `custom.css` additions that map upstream's `combobox-chip` values onto `sa-chip` selectors, or a ThemeGenerator mapping as its own task. Recommended: `custom.css`, recorded per theme.
-- The code treatment inside a chip.
-- Whether the toggle-group chips get a TagHelpers appearance or only a shared variable.
+- The shadcn styles get their chip rules from per-theme `custom.css` additions that map upstream's `combobox-chip` values onto `sa-chip` selectors, copied into the generated theme files (2026-10-09).
+- A code in a chip is a filled box: the chip's text colour at 12% (2026-10-09).
+- The toggle-group chips share the chip's `--sa-chip-radius` and media shape; no TagHelpers appearance (2026-10-09).
 
 ## Phases
 
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0 | API design (this document) | done |
-| 1 | Prototype and contrast check | awaiting review |
-| 2 | CSS, tag helpers, custom-theme coverage and tests | not started |
+| 1 | Prototype and contrast check | done |
+| 2 | CSS, tag helpers, custom-theme coverage and tests | awaiting review |
 | 3 | DocsSamples demos, website docs and consumer skills reference | not started |
 | 4 | Dashboard adoption | not started |
 
@@ -218,3 +218,5 @@ A `sa-chip-media` wrapper with a `ChipMediaVariant` was considered and dropped (
 - 2026-10-08: media goes directly in the chip, styled by element; `sa-chip-media` and `ChipMediaVariant` dropped.
 - 2026-10-08: phase 1 prototype `sandbox/html/chip.html`: the candidate in the components layer on ten surfaces (page, card, input, input on a card, focused, invalid, three read-only, disabled) and five strips (standalone fill, code, remove button, media inset, today and the toggle-group chips). The baseline per theme is read from upstream's combobox chip (shadcn styles) or the badge and input (custom themes); the remove icon uses the muted foreground and the media box's size and radius; the code is centred on its capitals with `text-box: trim-both cap alphabetic`. A scratchpad capture script rendered all fifteen themes, light and dark (450 captures): no text, remove or code contrast failures. Weakest chip fills against their surface: the page in Aurora, Observatory and Parallax light (1.03–1.04) and Ice light (1.05), the card and input in Ice dark (1.07), and the input on a card in Lyra, Nova and Vega dark (1.06). Found on the way: `var(--x, color-mix(… var(--y) …))` went stale in Chromium when `.dark` toggled, so phase 2 avoids color-mix inside a var() fallback.
 - 2026-10-09: a button directly in `sa-chip-group` (Add) takes the chip's height, inline padding, radius, type size and icon size; it had been 1–6px taller than the chips in every theme (Concourse, Ledger and Sera the most).
+- 2026-10-09: phase 1 approved, with the muted fill, the filled code, the media-box remove button, a 2px inset and the shared radius for the toggle-group chips.
+- 2026-10-09: phase 2. `TagHelpers/Chip/`: `ChipTagHelper`, `ChipRemoveTagHelper`, `ChipGroupTagHelper`, `ChipGroupAppearance` and an internal `ChipContext` that passes `disabled` from the group to its chips and from a chip to its remove button; the remove button renders the `Close` semantic icon when empty and throws without `aria-label`. Structural rules in `components.css` from the prototype's candidate, except that the remove button keeps the theme's focus ring (the prototype removed its box shadow, so a focused remove button showed no ring of its own). Each theme sets the `--sa-chip-*` variables on `.sa-chip` and `.sa-chip-group` and styles `.sa-chip-group[data-appearance="input"]`: the eight shadcn styles from upstream's combobox chip and chips box in `Themes/*.custom.css` and the generated files, with `has-aria-invalid` read as `aria-invalid` on the group and upstream's narrower padding when the box holds chips; the seven custom themes from their badge (height, radius) and input group (box, focus and invalid rings), with a `--border` edge on every chip, recorded in their specifications. Ice's chip is 22px rather than its 23.5px badge so the chips fit its 28px input group. Coverage reviews Chip in all fifteen themes, with the tag helper as its reference until phase 3 adds the DocsSamples page. Verified: 251 TagHelpers tests pass (8 new); `npm run build:css` and the coverage check pass; a scratchpad copy of the prototype linked to the built bundles, without the candidate rules, measured all fifteen themes in light and dark: no failures (text at least 10.7:1, remove icon at least 3.76:1, code at least 7.6:1), the Add button and every chip the same height, the input box at the input's height, and a focus ring on the focused remove button. The custom themes' borders lift the faintest chips (Aurora, Observatory and Parallax light page) to 1.17–1.25 against the surface; the shadcn styles keep upstream's borderless chip, so the input on a card in Lyra, Nova and Vega dark stays at 1.06.

@@ -3360,3 +3360,47 @@
     color: var(--muted-foreground);
   }
 }
+
+/* Chip composes the badge's height and radius, with a border like the badge's so the muted fill
+   reads on every surface. The input-styled group is the input group's box (height, border, surface
+   and focus ring) with padding that centres the chips; its invalid ring shows while focused, as
+   the input group's does. */
+@layer components.theme {
+  .sa-chip,
+  .sa-chip-group {
+    --sa-chip-h: 21px;
+    --sa-chip-px: 6px;
+    --sa-chip-radius: 999px;
+    --sa-chip-font-size: 12px;
+    --sa-chip-bg: var(--muted);
+    --sa-chip-fg: var(--foreground);
+    --sa-chip-border: var(--border);
+    --sa-chip-remove-fg: var(--muted-foreground);
+    --sa-chip-input-bg: var(--muted);
+    --sa-chip-input-border: var(--border);
+  }
+  .sa-chip-group[data-appearance="input"] {
+    min-height: var(--sa-parallax-control-h-md);
+    padding: max(2px, calc((var(--sa-parallax-control-h-md) - 2px - var(--sa-chip-h)) / 2));
+    border: 1px solid var(--input);
+    border-radius: var(--sa-parallax-radius-md);
+    background: var(--sa-parallax-surface-input);
+    box-shadow: 0 0 #0000;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+    &:has(:focus-visible) {
+      border-color: var(--ring);
+      box-shadow:
+        0 0 #0000,
+        var(--sa-parallax-focus-ring);
+    }
+    &[aria-invalid="true"] {
+      border-color: var(--destructive);
+      box-shadow: 0 0 #0000;
+      &:focus-within {
+        box-shadow: var(--sa-parallax-focus-ring-danger);
+      }
+    }
+  }
+}
