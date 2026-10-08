@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chip</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link id="theme-fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&display=swap" />
+
+    <!-- Real built library assets; swappable from the control bar. The Dashboard bundle is only for the "today" strip. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.shadcn.nova.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @theme inline {
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+
+    <!-- The candidate: the future sa-chip rules, in the bundle's components layer so specificity and order behave as
+         they will in the library. Per-theme values arrive as --sa-chip-* variables: the script derives a baseline from
+         each theme (upstream's combobox chip for the shadcn styles, the badge and input for the custom themes) and
+         #tuning below overrides it where the grid shows a theme needs more. -->
+    <style>
+      @layer components {
+        /* structural */
+        .sa-chip-group {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.375rem;
+        }
+
+        /* themed: a chip inside the input box takes the input surface's values */
+        .sa-chip-group[data-appearance="input"] {
+          --sa-chip-bg: var(--sa-chip-input-bg);
+          --sa-chip-border: var(--sa-chip-input-border, transparent);
+        }
+
+        /* The input box for themes without upstream combobox chips rules (the custom themes); the shadcn styles get
+           .sa-combobox-chips from the script. Values are copied from the theme's .sa-input. */
+        .sa-chip-group[data-appearance="input"]:not(.sa-combobox-chips) {
+          gap: 0.25rem;
+          min-height: var(--proto-input-h);
+          padding: max(2px, calc((var(--proto-input-h) - 2px - var(--sa-chip-h)) / 2));
+          border: 1px solid var(--proto-input-border);
+          border-radius: var(--proto-input-radius);
+          background: var(--proto-input-bg);
+          transition:
+            border-color 0.15s,
+            box-shadow 0.15s;
+          &:focus-within {
+            border-color: var(--ring);
+            box-shadow: 0 0 0 var(--sa-control-focus-ring-width, 3px) color-mix(in oklab, var(--ring) 40%, transparent);
+          }
+          &[aria-invalid="true"] {
+            border-color: var(--destructive);
+            box-shadow: 0 0 0 var(--sa-control-focus-ring-width, 3px) color-mix(in oklab, var(--destructive) 20%, transparent);
+          }
+        }
+
+        /* A button beside the chips (Add) takes the chip's height, padding, radius, type size and icon size, so it
+           lines up with them in every theme whatever its own size */
+        .sa-chip-group > [data-slot="button"] {
+          gap: 0.25rem;
+          height: var(--sa-chip-h);
+          min-height: 0;
+          padding-block: 0;
+          padding-inline: var(--sa-chip-px);
+          border-radius: var(--sa-chip-radius);
+          font-size: var(--sa-chip-font-size, 0.75rem);
+          line-height: 1;
+          & svg {
+            width: 0.875rem;
+            height: 0.875rem;
+          }
+        }
+
+        /* structural */
+        .sa-chip {
+          --chip-inset: var(--sa-chip-inset, 2px);
+          --chip-media: calc(var(--sa-chip-h) - 2px - 2 * var(--chip-inset));
+          --chip-media-radius: max(0px, calc(var(--sa-chip-radius) - 1px - var(--chip-inset)));
+          display: inline-flex;
+          flex-shrink: 0;
+          align-items: center;
+          gap: 0.25rem;
+          height: var(--sa-chip-h);
+          padding-inline: var(--sa-chip-px);
+          border: 1px solid var(--sa-chip-border, transparent);
+          border-radius: var(--sa-chip-radius);
+          background: var(--sa-chip-bg);
+          color: var(--sa-chip-fg);
+          font-size: var(--sa-chip-font-size, 0.75rem);
+          font-weight: 500;
+          line-height: 1;
+          white-space: nowrap;
+        }
+
+        /* Media: styled by element, inset from the chip's edge by --chip-inset on top, bottom and start, with a
+           radius that follows the chip's */
+        .sa-chip > svg {
+          width: 0.875rem;
+          height: 0.875rem;
+          flex-shrink: 0;
+        }
+        .sa-chip > :is([data-slot="avatar"], img, code) {
+          flex-shrink: 0;
+          margin-inline-start: calc(var(--chip-inset) - var(--sa-chip-px));
+          border-radius: var(--chip-media-radius);
+        }
+        .sa-chip > :is([data-slot="avatar"], img) {
+          width: var(--chip-media);
+          height: var(--chip-media);
+          object-fit: cover;
+        }
+        .sa-chip > [data-slot="avatar"] > *,
+        .sa-chip > [data-slot="avatar"]::after {
+          border-radius: inherit;
+        }
+        .sa-chip > [data-slot="avatar"] > [data-slot="avatar-fallback"] {
+          font-size: 0.5rem;
+        }
+        .sa-chip > code {
+          display: inline-block;
+          padding: calc((var(--chip-media) - 1cap) / 2) 0.25rem;
+          background: color-mix(in oklab, currentColor 12%, transparent);
+          font-family: var(--font-mono);
+          font-size: 0.625rem;
+          font-weight: 500;
+          /* Trims the line to the capitals, so the padding centres capitals and digits whatever the mono font's
+             ascent (Mira has no mono web font); without text-box support the box is a little taller */
+          line-height: 1;
+          text-box: trim-both cap alphabetic;
+        }
+
+        /* The remove button: an sa-button (ghost, icon-xs), resized to the media box and shaped like the media */
+        .sa-chip > .sa-chip-remove {
+          width: var(--chip-media);
+          min-width: 0;
+          height: var(--chip-media);
+          margin-inline: -0.125rem calc(var(--chip-inset) - var(--sa-chip-px));
+          padding: 0;
+          border: 0;
+          border-radius: var(--chip-media-radius);
+          background: transparent;
+          box-shadow: none;
+          color: var(--sa-chip-remove-fg);
+          opacity: 1;
+          & svg {
+            width: 0.75rem;
+            height: 0.75rem;
+          }
+          &:hover {
+            background: color-mix(in oklab, var(--sa-chip-fg) 12%, transparent);
+            color: var(--sa-chip-fg);
+          }
+        }
+
+        .sa-chip:has(> .sa-chip-remove:disabled),
+        .sa-chip[data-disabled] {
+          opacity: 0.5;
+        }
+      }
+    </style>
+
+    <!-- Derived per-theme baseline, written by the script on every theme or mode change -->
+    <style id="derived"></style>
+
+    <!-- Per-theme tuning, the draft of phase 2's theme rules. Empty until the grid shows a theme needs it. -->
+    <style id="tuning">
+      @layer components {
+      }
+    </style>
+
+    <!-- Comparison strips: overrides scoped to one strip's figure -->
+    <style>
+      .proto-swapping *,
+      .proto-swapping *::after,
+      .proto-swapping *::before {
+        transition: none !important;
+      }
+
+      @layer components {
+        .fill-secondary .sa-chip {
+          --sa-chip-bg: var(--secondary);
+          --sa-chip-fg: var(--secondary-foreground);
+        }
+        .fill-outline .sa-chip {
+          --sa-chip-bg: transparent;
+          --sa-chip-border: var(--border);
+        }
+        .fill-muted-border .sa-chip {
+          --sa-chip-border: var(--border);
+        }
+        .fill-accent .sa-chip {
+          --sa-chip-bg: var(--accent);
+          --sa-chip-fg: var(--accent-foreground);
+        }
+        .fill-input .sa-chip {
+          --sa-chip-bg: var(--sa-chip-input-bg);
+        }
+
+        .code-outline .sa-chip > code {
+          background: transparent;
+          box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 30%, transparent);
+        }
+        .code-text .sa-chip > code {
+          margin-inline-start: 0;
+          padding-inline: 0;
+          background: transparent;
+          color: color-mix(in oklab, currentColor 70%, transparent);
+        }
+        .code-inverted .sa-chip > code {
+          background: var(--sa-chip-fg);
+          color: var(--background);
+        }
+
+        /* Strip 3 renders B and C without the sa-chip-remove class; B adds upstream's chip-remove rule */
+        .sa-chip:has(> .proto-upstream-remove) {
+          padding-inline-end: 0;
+        }
+        .sa-chip > .proto-upstream-remove {
+          margin-inline-start: -0.25rem;
+          opacity: 0.5;
+          &:hover {
+            opacity: 1;
+          }
+        }
+
+        .inset-1 .sa-chip {
+          --sa-chip-inset: 1px;
+        }
+        .inset-3 .sa-chip {
+          --sa-chip-inset: 3px;
+        }
+
+        /* Toggle-group chips following the chip: the chip's radius instead of the Dashboard's pill, and media with the
+           radius inset by the toggle's own padding */
+        .toggle-aligned .sa-toggle-group.sa-toggle-chips > .sa-toggle-group-item {
+          border-radius: var(--sa-chip-radius);
+        }
+        .toggle-aligned .sa-toggle-group-item > :is(.sa-choice-media[data-media="avatar"], .sa-choice-media[data-media="image"], .sa-choice-media[data-media="code"]) {
+          border-radius: max(0px, calc(var(--sa-chip-radius) - 4px));
+          & > *,
+          &::after {
+            border-radius: inherit;
+          }
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-background text-foreground font-sans">
+    <!-- Probes the script reads each theme's baseline from -->
+    <div id="probes" aria-hidden="true" style="position: absolute; visibility: hidden; pointer-events: none; left: -9999px; top: 0">
+      <div class="sa-combobox-chips" data-probe="chips"><span class="sa-combobox-chip" data-slot="combobox-chip" data-probe="chip">Lisbon</span></div>
+      <span data-slot="badge" class="sa-badge sa-badge-variant-secondary" data-probe="badge">Lisbon</span>
+      <input class="sa-input" data-slot="input" data-probe="input" />
+    </div>
+
+    <main class="mx-auto max-w-[1400px] space-y-14 px-6 pt-10 pb-32">
+      <header class="space-y-2">
+        <p class="text-muted-foreground text-xs tracking-wide uppercase">Prototype · sa-chip · Phase 1</p>
+        <h1 class="text-2xl font-semibold">Chip</h1>
+        <p class="text-muted-foreground max-w-3xl text-sm">
+          The proposed <code>sa-chip</code>, <code>sa-chip-remove</code> and <code>sa-chip-group</code> markup on every surface, with each theme's
+          baseline taken from upstream's combobox chip (shadcn styles) or the theme's badge and input (custom themes). The contrast table measures
+          the current theme and mode; <code>contact/capture.mjs</code> measures all fifteen.
+        </p>
+        <nav class="flex flex-wrap gap-x-4 gap-y-1 pt-2 text-sm" id="toc"></nav>
+      </header>
+
+      <section id="candidate" class="space-y-4" data-capture="candidate">
+        <h2 class="text-lg font-semibold">Candidate on every surface</h2>
+        <div id="rows" class="divide-y rounded-lg border"></div>
+      </section>
+
+      <div id="strips" class="space-y-14"></div>
+
+      <section id="contrast" class="space-y-3">
+        <h2 class="text-lg font-semibold">Contrast · <span id="contrast-theme"></span></h2>
+        <p class="text-muted-foreground text-sm">
+          Text at least 4.5:1 and the remove icon at least 3:1 against the chip's fill, composited over its surface. The chip against its surface is
+          reported, not judged: fill is the fill's contrast with the surface, border the border's.
+        </p>
+        <div id="contrast-table" class="overflow-x-auto"></div>
+      </section>
+    </main>
+
+    <div class="bg-popover text-popover-foreground fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-lg border p-2 text-xs shadow-lg">
+      <select id="theme" class="bg-background rounded-md border px-2 py-1"></select>
+      <button id="dark" type="button" class="bg-background hover:bg-muted rounded-md border px-2 py-1">Dark</button>
+    </div>
+
+    <script type="module">
+      // ---------------------------------------------------------------- Themes and their fonts
+      const themes = {
+        aurora: "Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
+        concourse: "Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500",
+        ice: "IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700",
+        ledger: "Lexend:wght@300..700&family=JetBrains+Mono:wght@400;500",
+        meridian: "Instrument+Sans:wght@600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
+        observatory: "IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
+        parallax: "Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
+        "shadcn.luma": "Inter:wght@400..700",
+        "shadcn.lyra": "JetBrains+Mono:wght@400..700",
+        "shadcn.maia": "Figtree:wght@400..700",
+        "shadcn.mira": "Inter:wght@400..700",
+        "shadcn.nova": "Geist:wght@400..700",
+        "shadcn.rhea": "Inter:wght@400..700",
+        "shadcn.sera": "Noto+Sans:wght@400..700&family=Playfair+Display:wght@400..700",
+        "shadcn.vega": "Inter:wght@400..700",
+      };
+
+      // ---------------------------------------------------------------- Markup, as the tag helpers would emit it
+      const svg = (body) =>
+        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" height="24" stroke-width="2" fill="none" stroke-linejoin="round" width="24" stroke-linecap="round" stroke="currentColor">${body}</svg>`;
+      const icons = {
+        x: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+        plus: '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+        check: '<path d="M20 6 9 17l-5-5"></path>',
+        plane:
+          '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>',
+        train:
+          '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"></path><path d="m9 15-1-1"></path><path d="m15 15 1-1"></path><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"></path><path d="m8 19-2 3"></path><path d="m16 19 2 3"></path>',
+      };
+      const img = (path) => `../../docs/DocsSamples/wwwroot/${path}`;
+      const avatar = (name, src) =>
+        src
+          ? `<span data-slot="avatar" data-size="sm" class="sa-avatar group/avatar"><img alt="" class="sa-avatar-image" data-slot="avatar-image" src="${img(src)}"></span>`
+          : `<span data-slot="avatar" data-size="sm" class="sa-avatar group/avatar"><span class="sa-avatar-fallback" data-slot="avatar-fallback">${name
+              .split(" ")
+              .map((w) => w[0])
+              .join("")}</span></span>`;
+
+      // One sample per media kind; the code chip is the one the contrast table reads for the code
+      const samples = [
+        { key: "text", label: "Lisbon" },
+        { key: "icon", label: "Flights", media: svg(icons.plane) },
+        { key: "avatar", label: "Elena Marchetti", media: avatar("Elena Marchetti", "avatars/avatar-1.jpg") },
+        { key: "initials", label: "Priya Nair", media: avatar("Priya Nair") },
+        { key: "image", label: "Kyoto", media: `<img src="${img("cities/kyoto.jpg")}" alt="">` },
+        { key: "code", label: "Cape Town", media: "<code>CPT</code>" },
+      ];
+      const remove = (label) =>
+        `<button type="button" aria-label="Remove ${label}" data-slot="chip-remove" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-xs sa-chip-remove">${svg(icons.x)}</button>`;
+      const chip = (s, { removable = true, disabled = false } = {}) =>
+        `<span data-slot="chip" class="sa-chip" data-sample="${s.key}"${disabled ? " data-disabled" : ""}>${s.media ?? ""}${s.label}${
+          removable ? remove(s.label).replace("<button ", disabled ? "<button disabled " : "<button ") : ""
+        }</span>`;
+      const addButton = `<button data-slot="button" class="sa-button group/button sa-button-variant-ghost sa-button-size-xs">${svg(icons.plus)} Add destination</button>`;
+      const group = ({ appearance = "plain", removable = true, disabled = false, invalid = false, add = false, list = false, focus = false } = {}) =>
+        `<div data-slot="chip-group" class="sa-chip-group" data-appearance="${appearance}"${invalid ? ' aria-invalid="true"' : ""}${
+          disabled ? " data-disabled" : ""
+        }${list ? ' role="list"' : ""}${focus ? " data-focus" : ""}>${samples
+          .map((s) => chip(s, { removable, disabled }).replace("<span ", list ? '<span role="listitem" ' : "<span "))
+          .join("")}${add ? addButton.replace("<button ", disabled ? "<button disabled " : "<button ") : ""}${
+          // Prototype only: upstream's invalid ring keys on a descendant with aria-invalid
+          invalid ? '<span aria-invalid="true" hidden></span>' : ""
+        }</div>`;
+
+      // ---------------------------------------------------------------- Candidate rows: one per surface
+      const rows = [
+        { key: "page", label: "Page · Plain", surface: "page", html: group() },
+        { key: "card", label: "Card · Plain", surface: "card", html: group() },
+        { key: "input", label: "Input", surface: "page", html: group({ appearance: "input", add: true }) },
+        { key: "input-card", label: "Input on a card", surface: "card", html: group({ appearance: "input", add: true }) },
+        { key: "input-focus", label: "Input · focused", surface: "page", html: group({ appearance: "input", add: true, focus: true }) },
+        { key: "input-invalid", label: "Input · invalid", surface: "page", html: group({ appearance: "input", add: true, invalid: true }) },
+        { key: "readonly", label: "Read-only · Plain, list", surface: "page", html: group({ removable: false, list: true }) },
+        { key: "readonly-card", label: "Read-only on a card", surface: "card", html: group({ removable: false, list: true }) },
+        { key: "readonly-input", label: "Read-only · Input, no remove", surface: "page", html: group({ appearance: "input", removable: false }) },
+        { key: "disabled", label: "Disabled · Input", surface: "page", html: group({ appearance: "input", disabled: true, add: true }) },
+      ];
+      const surface = (kind, html) =>
+        kind === "card"
+          ? `<div class="sa-card group/card" data-slot="card" data-size="default"><div class="px-(--sa-card-px,1.5rem)">${html}</div></div>`
+          : html;
+      document.getElementById("rows").innerHTML = rows
+        .map(
+          (r) =>
+            `<div class="grid grid-cols-[180px_1fr] items-center gap-4 p-4" data-row="${r.key}" data-surface="${r.surface}"><div class="text-muted-foreground text-xs">${r.label}</div><div data-capture="row-${r.key}">${surface(r.surface, r.html)}</div></div>`,
+        )
+        .join("");
+
+      // ---------------------------------------------------------------- Comparison strips
+      const strip = (n, title, caption, body) =>
+        `<section id="s${n}" class="space-y-3" data-capture="strip-${n}"><h2 class="text-lg font-semibold">${n} · ${title}</h2><p class="text-muted-foreground max-w-4xl text-sm">${caption}</p><figure class="space-y-5 rounded-lg border p-5">${body}</figure></section>`;
+      const option = (label, cls, html) => `<div class="space-y-2 ${cls}"><p class="text-muted-foreground text-xs">${label}</p>${html}</div>`;
+      const onCard = (html) => surface("card", html);
+
+      // Today's markup, from _MultiLookupItems and MultiLookupSheet (editable) and the toggle group editor
+      const todayMedia = {
+        icon: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" height="24" stroke-width="2" fill="none" stroke-linejoin="round" width="24" stroke-linecap="round" stroke="currentColor" class="sa-choice-media" data-media="icon" data-placement="inline" aria-hidden="true">${icons.plane}</svg>`,
+        avatar: `<span data-slot="avatar" data-size="sm" class="sa-avatar group/avatar sa-choice-media" data-media="avatar" data-placement="inline"><img alt="" class="sa-avatar-image" data-slot="avatar-image" src="${img("avatars/avatar-1.jpg")}"></span>`,
+        initials: `<span data-slot="avatar" data-size="sm" class="sa-avatar group/avatar sa-choice-media" data-media="avatar" data-placement="inline"><span class="sa-avatar-fallback" data-slot="avatar-fallback">PN</span></span>`,
+        image: `<img src="${img("cities/kyoto.jpg")}" alt="" class="sa-choice-media" data-media="image" data-placement="inline">`,
+        code: `<span class="sa-choice-media" data-media="code" data-placement="inline">CPT</span>`,
+      };
+      const todayChip = (s) =>
+        `<span data-slot="badge" class="sa-badge sa-badge-variant-secondary h-6 gap-1 pr-0.5 ${todayMedia[s.key] ? "pl-0.5" : "pl-2"}">${todayMedia[s.key] ?? ""}<span>${s.label}</span><button type="button" class="hover:bg-foreground/10 focus-visible:ring-ring/50 rounded-sm p-0.5 outline-none focus-visible:ring-[3px]">${svg(icons.x).replace("<svg ", '<svg class="size-3" ')}</button></span>`;
+      const todayGroup = `<div role="group" data-slot="input-group" class="sa-input-group h-auto min-h-9 flex-wrap items-center gap-1 p-1">${samples.map(todayChip).join("")}</div>`;
+      const toggleItem = (s, checked) =>
+        `<label data-slot="toggle-group-item" data-variant="outline" data-size="default" data-spacing="2" class="sa-toggle group/toggle sa-toggle-variant-outline sa-toggle-size-default sa-toggle-group-item"><input type="checkbox" data-slot="toggle-group-item-input" name="t" value="${s.key}"${checked ? ' checked="checked"' : ""} class="peer sr-only">${svg(icons.check).replace("<svg ", '<svg class="sa-toggle-chip-check" ')}${todayMedia[s.key] ?? ""}${s.label}</label>`;
+      const toggleGroup = `<div role="group" data-slot="toggle-group" data-variant="outline" data-size="default" data-spacing="2" data-orientation="horizontal" style="--gap: 2" class="sa-toggle-group group/toggle-group sa-toggle-group-wrap sa-toggle-chips sa-toggle-chips-check-replace">${samples
+        .map((s, i) => toggleItem(s, i % 2 === 1))
+        .join("")}</div>`;
+
+      const strips = [
+        strip(
+          1,
+          "Standalone fill",
+          "A chip on the page and on a card, with no input around it. A: muted (the candidate). B: secondary. C: outline, no fill and a border. D: muted with a border. E: the input-surface fill outside the input.",
+          ["A · muted|", "B · secondary|fill-secondary", "C · outline|fill-outline", "D · muted + border|fill-muted-border", "E · input fill|fill-input"]
+            .map((o) => o.split("|"))
+            .map(([label, cls]) => option(label, cls, `<div class="grid grid-cols-2 items-center gap-4">${group()}${onCard(group())}</div>`))
+            .join(""),
+        ),
+        strip(
+          2,
+          "Code",
+          "A: a box filled with the text colour at 12% (the candidate). B: an outline. C: monospace text without a box, at 70%. D: inverted.",
+          ["A · filled|", "B · outline|code-outline", "C · text|code-text", "D · inverted|code-inverted"]
+            .map((o) => o.split("|"))
+            .map(([label, cls]) => option(label, cls, `<div class="grid grid-cols-2 items-center gap-4">${group()}${group({ appearance: "input" })}</div>`))
+            .join(""),
+        ),
+        strip(
+          3,
+          "Remove button",
+          "A: the media box's size and shape, in the muted foreground (the candidate). B: upstream, icon-xs at 50% opacity with the chip's end padding removed. C: the theme's ghost icon-xs button with no chip rule, the square-in-a-pill case.",
+          [
+            ["A · media box", "sa-chip-remove"],
+            ["B · upstream", "proto-upstream-remove"],
+            ["C · plain button", ""],
+          ]
+            .map(([label, cls]) =>
+              option(label, "", `<div class="grid grid-cols-2 items-center gap-4">${group()}${group({ appearance: "input" })}</div>`.replaceAll(" sa-chip-remove", cls ? ` ${cls}` : "")),
+            )
+            .join(""),
+        ),
+        strip(
+          4,
+          "Media inset",
+          "The gap between the media (and remove button) and the chip's edge: 1px, 2px (the candidate) and 3px.",
+          ["1px|inset-1", "2px|", "3px|inset-3"]
+            .map((o) => o.split("|"))
+            .map(([label, cls]) => option(label, cls, group({ appearance: "input" })))
+            .join(""),
+        ),
+        strip(
+          5,
+          "Today and the toggle-group chips",
+          "Today: the multi-select lookup's chips (badge, plain button, choice media) and the toggle-group chips with the Dashboard's pill. Aligned: the candidate chip beside toggle chips that take the chip's radius and media shape.",
+          option("Today · lookup chips", "", todayGroup) +
+            option("Today · toggle-group chips", "", toggleGroup) +
+            option("Candidate · chips", "", group({ appearance: "input", add: true })) +
+            option("Aligned · toggle-group chips", "toggle-aligned", toggleGroup),
+        ),
+      ];
+      document.getElementById("strips").innerHTML = strips.join("");
+      document.getElementById("toc").innerHTML = [...document.querySelectorAll("main > section, #strips > section")]
+        .map((s) => `<a class="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline" href="#${s.id}">${s.querySelector("h2").textContent}</a>`)
+        .join("");
+
+      // ---------------------------------------------------------------- Per-theme baseline
+      const probe = (name) => document.querySelector(`[data-probe=${name}]`);
+      const derive = () => {
+        const chips = getComputedStyle(probe("chips"));
+        const upstream = chips.display === "flex";
+        const chipStyle = getComputedStyle(probe("chip"));
+        const badge = getComputedStyle(probe("badge"));
+        const input = getComputedStyle(probe("input"));
+        const vars = upstream
+          ? {
+              "--sa-chip-h": chipStyle.height,
+              "--sa-chip-px": chipStyle.paddingLeft,
+              "--sa-chip-radius": chipStyle.borderTopLeftRadius,
+              "--sa-chip-font-size": chipStyle.fontSize,
+              "--sa-chip-input-bg": chipStyle.backgroundColor,
+            }
+          : {
+              "--sa-chip-h": `${Math.max(20, probe("badge").getBoundingClientRect().height)}px`,
+              "--sa-chip-px": "6px",
+              "--sa-chip-radius": badge.borderTopLeftRadius,
+              "--sa-chip-font-size": "0.75rem",
+              "--sa-chip-input-bg": "var(--muted)",
+            };
+        Object.assign(vars, {
+          "--sa-chip-bg": "var(--muted)",
+          "--sa-chip-fg": "var(--foreground)",
+          "--sa-chip-remove-fg": "var(--muted-foreground)",
+          "--proto-input-h": input.height,
+          "--proto-input-bg": input.backgroundColor,
+          "--proto-input-border": input.borderTopColor,
+          "--proto-input-radius": input.borderTopLeftRadius,
+        });
+        document.getElementById("derived").textContent = `@layer components { :root { ${Object.entries(vars)
+          .map(([k, v]) => `${k}: ${v};`)
+          .join(" ")} } }`;
+        // The shadcn styles' input box is upstream's combobox chips box
+        document.querySelectorAll('.sa-chip-group[data-appearance="input"]').forEach((g) => g.classList.toggle("sa-combobox-chips", upstream));
+        return { upstream, ...vars };
+      };
+
+      // ---------------------------------------------------------------- Contrast
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 1;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const paint = (layers) => {
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, 1, 1);
+        for (const [color, alpha = 1] of layers) {
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = "#fff";
+          ctx.fillStyle = color;
+          ctx.fillRect(0, 0, 1, 1);
+        }
+        return [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      };
+      // Background layers from the root down to the element; disabled chips are exempt and not measured
+      const backgrounds = (el) => {
+        const layers = [];
+        for (let e = el; e; e = e.parentElement) layers.unshift([getComputedStyle(e).backgroundColor]);
+        return layers;
+      };
+      const luminance = (rgb) =>
+        rgb.map((c) => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)).reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+      const ratio = (a, b) => {
+        const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+        return (x + 0.05) / (y + 0.05);
+      };
+      const measure = () => {
+        const results = [];
+        for (const row of document.querySelectorAll("#rows [data-row]")) {
+          if (row.dataset.row === "disabled") continue;
+          const group = row.querySelector(".sa-chip-group");
+          const chipEl = group.querySelector('.sa-chip[data-sample="text"]');
+          const codeChip = group.querySelector('.sa-chip[data-sample="code"]');
+          const code = codeChip.querySelector("code");
+          const removeEl = chipEl.querySelector(".sa-chip-remove");
+          const surfaceBg = paint(backgrounds(chipEl.parentElement));
+          const chipLayers = backgrounds(chipEl);
+          const chipBg = paint(chipLayers);
+          const text = paint([...chipLayers, [getComputedStyle(chipEl).color]]);
+          const border = getComputedStyle(chipEl);
+          const borderColor = paint([...backgrounds(chipEl.parentElement), [border.borderTopColor]]);
+          const result = {
+            row: row.dataset.row,
+            text: ratio(text, chipBg),
+            fill: ratio(chipBg, surfaceBg),
+            border: parseFloat(border.borderTopWidth) > 0 ? ratio(borderColor, surfaceBg) : null,
+            code: ratio(paint([...backgrounds(code), [getComputedStyle(code).color]]), paint(backgrounds(code))),
+          };
+          if (removeEl) {
+            const rs = getComputedStyle(removeEl);
+            result.remove = ratio(paint([...backgrounds(removeEl), [rs.color, parseFloat(rs.opacity)]]), chipBg);
+          }
+          results.push(result);
+        }
+        return results;
+      };
+      const fmt = (v, min) =>
+        v == null ? '<td class="text-muted-foreground px-2 py-1">—</td>' : `<td class="px-2 py-1 tabular-nums ${min && v < min ? "text-destructive font-semibold" : ""}">${v.toFixed(2)}</td>`;
+      const renderContrast = () => {
+        const rowsOut = measure();
+        document.getElementById("contrast-theme").textContent = `${theme.value} · ${document.documentElement.classList.contains("dark") ? "dark" : "light"}`;
+        document.getElementById("contrast-table").innerHTML = `<table class="text-sm"><thead><tr class="text-muted-foreground text-left text-xs">${[
+          "Surface",
+          "Text ≥ 4.5",
+          "Remove ≥ 3",
+          "Code ≥ 4.5",
+          "Fill",
+          "Border",
+        ]
+          .map((h) => `<th class="px-2 py-1 font-medium">${h}</th>`)
+          .join("")}</tr></thead><tbody>${rowsOut
+          .map((r) => `<tr class="border-t"><td class="px-2 py-1">${r.row}</td>${fmt(r.text, 4.5)}${fmt(r.remove, 3)}${fmt(r.code, 4.5)}${fmt(r.fill)}${fmt(r.border)}</tr>`)
+          .join("")}</tbody></table>`;
+        return rowsOut;
+      };
+
+      // ---------------------------------------------------------------- Control bar
+      const theme = document.getElementById("theme");
+      theme.innerHTML = Object.keys(themes)
+        .map((t) => `<option value="${t}">${t}</option>`)
+        .join("");
+      theme.value = "shadcn.nova";
+      const loaded = (link) =>
+        new Promise((resolve) => {
+          link.addEventListener("load", resolve, { once: true });
+          link.addEventListener("error", resolve, { once: true });
+        });
+      // Swaps the theme and its fonts, sets the mode, and re-derives the baseline; capture.mjs calls it too
+      window.setProtoTheme = async (name, dark) => {
+        const css = document.getElementById("theme-css");
+        const fonts = document.getElementById("theme-fonts");
+        const waits = [];
+        const href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${name}.css`;
+        if (!css.href.endsWith(href.slice(5))) {
+          waits.push(loaded(css));
+          css.setAttribute("href", href);
+        }
+        const fontHref = `https://fonts.googleapis.com/css2?family=${themes[name]}&display=swap`;
+        if (fonts.href !== fontHref) {
+          waits.push(loaded(fonts));
+          fonts.href = fontHref;
+        }
+        // Transitions would leave colours mid-way when the contrast is measured
+        document.documentElement.classList.add("proto-swapping");
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.dataset.protoTheme = name;
+        theme.value = name;
+        await Promise.all(waits);
+        await document.fonts.ready;
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const baseline = derive();
+        // The focused row shows the box's focus ring with focus on its first remove button
+        document.querySelector("[data-focus] .sa-chip-remove")?.focus();
+        const contrast = renderContrast();
+        document.documentElement.classList.remove("proto-swapping");
+        return { baseline, contrast };
+      };
+      window.measureChips = renderContrast;
+      theme.addEventListener("change", () => setProtoTheme(theme.value, document.documentElement.classList.contains("dark")));
+      document.getElementById("dark").addEventListener("click", () => setProtoTheme(theme.value, !document.documentElement.classList.contains("dark")));
+      const params = new URLSearchParams(location.search);
+      await setProtoTheme(params.get("theme") ?? "shadcn.nova", params.has("dark"));
+      window.protoReady = true;
+    </script>
+  </body>
+</html>

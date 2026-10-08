@@ -1,6 +1,6 @@
 # Chip
 
-Status: **proposed**. The API design below awaits review; no phase has started. Last updated: 2026-10-08.
+Status: **active**. Phase 1 (prototype and contrast check) is built and awaits review of its open decisions. Last updated: 2026-10-08.
 
 Add `sa-chip` to `StellarAdmin.TagHelpers`: a compact token for a selected or entered value, with optional media and an optional remove button, that works on its own, inside an input-styled group and read-only, in all fifteen themes. Work follows the [port-shadcn-component](../../../.agents/skills/port-shadcn-component/SKILL.md) workflow and the [prototype-component](../../../.agents/skills/prototype-component/SKILL.md) skill, in phases with a review after each; approval of one phase does not authorize the next.
 
@@ -176,8 +176,8 @@ A `sa-chip-media` wrapper with a `ChipMediaVariant` was considered and dropped (
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 0 | API design (this document) | awaiting review |
-| 1 | Prototype and contrast check | not started |
+| 0 | API design (this document) | done |
+| 1 | Prototype and contrast check | awaiting review |
 | 2 | CSS, tag helpers, custom-theme coverage and tests | not started |
 | 3 | DocsSamples demos, website docs and consumer skills reference | not started |
 | 4 | Dashboard adoption | not started |
@@ -216,3 +216,5 @@ A `sa-chip-media` wrapper with a `ChipMediaVariant` was considered and dropped (
 
 - 2026-10-08: research and API proposal written.
 - 2026-10-08: media goes directly in the chip, styled by element; `sa-chip-media` and `ChipMediaVariant` dropped.
+- 2026-10-08: phase 1 prototype `sandbox/html/chip.html`: the candidate in the components layer on ten surfaces (page, card, input, input on a card, focused, invalid, three read-only, disabled) and five strips (standalone fill, code, remove button, media inset, today and the toggle-group chips). The baseline per theme is read from upstream's combobox chip (shadcn styles) or the badge and input (custom themes); the remove icon uses the muted foreground and the media box's size and radius; the code is centred on its capitals with `text-box: trim-both cap alphabetic`. A scratchpad capture script rendered all fifteen themes, light and dark (450 captures): no text, remove or code contrast failures. Weakest chip fills against their surface: the page in Aurora, Observatory and Parallax light (1.03–1.04) and Ice light (1.05), the card and input in Ice dark (1.07), and the input on a card in Lyra, Nova and Vega dark (1.06). Found on the way: `var(--x, color-mix(… var(--y) …))` went stale in Chromium when `.dark` toggled, so phase 2 avoids color-mix inside a var() fallback.
+- 2026-10-09: a button directly in `sa-chip-group` (Add) takes the chip's height, inline padding, radius, type size and icon size; it had been 1–6px taller than the chips in every theme (Concourse, Ledger and Sera the most).
