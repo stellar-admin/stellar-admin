@@ -33,6 +33,11 @@
     --sa-badge-ghost-bg-hover: var(--sa-color-hover);
     --sa-badge-link-fg: var(--sa-color-accent-text);
   }
+  .dark .sa-badge {
+    /* Lighter than danger text: the soft tint is translucent, and on a tinted row (a selected or
+       hovered data grid row) it keeps 4.5:1 only with more room. */
+    --sa-badge-danger-fg: oklch(from var(--sa-color-danger) max(l, 0.82) min(c, 0.12) h);
+  }
 }
 
 @layer sa.components {
