@@ -5,7 +5,10 @@
    this becomes a plain build with reset.css in place of preflight.
 
    Converted components (components/*.css) list the old selectors they replace; the build removes
-   those rules from components.css and the theme file, so only the converted rules style them. */
+   those rules from components.css and the theme file, so only the converted rules style them. The
+   build imports every components/*.css file at the marker below, in name order, so a component must
+   not rely on another component's file coming first: a rule that adjusts another component's part
+   out-ranks it by selector instead. */
 
 @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 @import "tailwindcss" source(none);
@@ -17,7 +20,5 @@
 @import "./anchors.css";
 @import "./components.css";
 @import "./themes/shadcn.nova.css";
-@import "./components/input.css";
-@import "./components/input-group.css";
-@import "./components/switch.css";
+/* components/*.css */
 @custom-variant dark (&:is(.dark *));

@@ -177,44 +177,42 @@
       height: var(--sa-input-group-addon-icon);
     }
   }
+
+  /* In-group buttons are buttons (button.css); these out-rank its rules by selector. */
+  .sa-button.sa-input-group-button {
+    --_shadow: 0 0 #0000;
+    --_shadow-hover: 0 0 #0000;
+    --_shadow-active: 0 0 #0000;
+    --_text: var(--sa-text-sm);
+    gap: calc(2 * var(--sa-unit));
+  }
+  .sa-button.sa-input-group-button-size-xs {
+    --_h: var(--sa-input-group-button-h-xs);
+    --_px: calc(1.5 * var(--sa-unit));
+    --_radius: var(--sa-input-group-button-radius);
+    --_icon: 0.875rem;
+    gap: var(--sa-unit);
+  }
+  .sa-button.sa-input-group-button-size-sm {
+    --_h: var(--sa-input-group-button-h-sm);
+  }
+  .sa-button.sa-input-group-button-size-icon-xs {
+    --_h: var(--sa-input-group-button-h-xs);
+    --_radius: var(--sa-input-group-button-radius);
+    width: var(--_h);
+    padding: 0;
+  }
+  .sa-button.sa-input-group-button-size-icon-sm {
+    --_h: var(--sa-input-group-button-h-sm);
+    width: var(--_h);
+    padding: 0;
+  }
 }
 
-/* Transitional: in-group buttons and the textarea are still drawn by the unconverted Button and
-   Textarea rules in Tailwind's components layer, which sits above sa.components, so the group's
-   adjustments to them live there too, after those rules. They move into sa.components when Button
-   and Textarea convert. */
+/* Transitional: the in-group textarea is still drawn by the unconverted Textarea rules in Tailwind's
+   components layer, which sits above sa.components, so the group's adjustments to it live there
+   too, after those rules. They move into sa.components when Textarea converts. */
 @layer components {
-  .sa-input-group-button {
-    display: flex;
-    align-items: center;
-    gap: calc(2 * var(--sa-unit));
-    box-shadow: none;
-    font-size: var(--sa-text-sm);
-  }
-  .sa-input-group-button-size-xs {
-    gap: var(--sa-unit);
-    height: var(--sa-input-group-button-h-xs);
-    padding-inline: calc(1.5 * var(--sa-unit));
-    border-radius: var(--sa-input-group-button-radius);
-    & > svg:not([class*="size-"]) {
-      width: 0.875rem;
-      height: 0.875rem;
-    }
-  }
-  .sa-input-group-button-size-sm {
-    height: var(--sa-input-group-button-h-sm);
-  }
-  .sa-input-group-button-size-icon-xs {
-    width: var(--sa-input-group-button-h-xs);
-    height: var(--sa-input-group-button-h-xs);
-    padding: 0;
-    border-radius: var(--sa-input-group-button-radius);
-  }
-  .sa-input-group-button-size-icon-sm {
-    width: var(--sa-input-group-button-h-sm);
-    height: var(--sa-input-group-button-h-sm);
-    padding: 0;
-  }
   .sa-input-group-textarea {
     flex: 1;
     padding-block: calc(2 * var(--sa-unit));

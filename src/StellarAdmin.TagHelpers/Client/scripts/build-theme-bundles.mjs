@@ -5,8 +5,9 @@
 // util/ThemeGenerator; author custom themes directly. Register each theme in
 // ClientOutput and util/theme-coverage/coverage.json. It also builds the token-driven
 // ../wwwroot/stellar-admin.css from its checked-in entry, css/stellar-admin.css: converted
-// components (css/components/*.css) name the selectors they replace in a "Replaces:" header, and
-// that bundle gets copies of components.css and the theme file without those rules.
+// components (css/components/*.css, imported in name order at the entry's marker) name the
+// selectors they replace in a "Replaces:" header, and that bundle gets copies of components.css and
+// the theme file without those rules.
 //
 //   node ./scripts/build-theme-bundles.mjs
 
@@ -64,9 +65,11 @@ function withoutRules(css, replaced) {
 
 function buildTokensBundle() {
   const css = resolve(clientRoot, "css");
+  const components = readdirSync(resolve(css, "components"))
+    .filter((file) => file.endsWith(".css"))
+    .sort();
   const replaced = new Set(
-    readdirSync(resolve(css, "components"))
-      .filter((file) => file.endsWith(".css"))
+    components
       .flatMap((file) => {
         const header = /Replaces:([^*]*)\*\//.exec(readFileSync(resolve(css, "components", file), "utf8"));
         return header ? header[1].split(/[\s,]+/).filter(Boolean) : [];
@@ -78,10 +81,15 @@ function buildTokensBundle() {
       resolve(entriesFolder, copy),
       withoutRules(readFileSync(resolve(css, source), "utf8"), replaced),
     );
-  const entry = readFileSync(resolve(css, "stellar-admin.css"), "utf8").replace(
-    /@import "\.\/([^"]+)";/g,
-    (_, path) => `@import "${legacy[path] ? `./${legacy[path]}` : `../css/${path}`}";`,
-  );
+  const entry = readFileSync(resolve(css, "stellar-admin.css"), "utf8")
+    .replace(
+      /@import "\.\/([^"]+)";/g,
+      (_, path) => `@import "${legacy[path] ? `./${legacy[path]}` : `../css/${path}`}";`,
+    )
+    .replace(
+      "/* components/*.css */",
+      components.map((file) => `@import "../css/components/${file}";`).join("\n"),
+    );
   writeFileSync(resolve(entriesFolder, "stellar-admin.css"), entry);
   return buildBundle("tokens", resolve(entriesFolder, "stellar-admin.css"), "../wwwroot/stellar-admin.css");
 }

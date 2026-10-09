@@ -1,0 +1,250 @@
+/* Button: <sa-button> and the parts other components render as buttons (ButtonRenderingHelper).
+   Replaces: .sa-button, .sa-button-variant-default, .sa-button-variant-secondary,
+   .sa-button-variant-outline, .sa-button-variant-ghost, .sa-button-variant-destructive,
+   .sa-button-variant-link, .sa-button-size-default, .sa-button-size-xs, .sa-button-size-sm,
+   .sa-button-size-lg, .sa-button-size-icon, .sa-button-size-icon-xs, .sa-button-size-icon-sm,
+   .sa-button-size-icon-lg */
+
+@layer sa.tokens {
+  .sa-button {
+    --sa-button-h: var(--sa-control-h);
+    --sa-button-h-xs: var(--sa-control-h-xs);
+    --sa-button-h-sm: var(--sa-control-h-sm);
+    --sa-button-h-lg: var(--sa-control-h-lg);
+    --sa-button-px: var(--sa-control-px);
+    --sa-button-px-xs: calc(2 * var(--sa-unit));
+    --sa-button-px-sm: var(--sa-control-px);
+    --sa-button-px-lg: var(--sa-control-px);
+    --sa-button-gap: var(--sa-control-gap);
+    --sa-button-radius: var(--sa-radius-control);
+    --sa-button-radius-sm: var(--sa-radius-control-sm);
+    --sa-button-text: var(--sa-text-control);
+    --sa-button-text-sm: min(var(--sa-text-control), 0.8rem);
+    --sa-button-text-xs: min(var(--sa-text-control), var(--sa-text-xs));
+    --sa-button-text-lg: var(--sa-text-control);
+    --sa-button-weight: var(--sa-weight-control);
+    --sa-button-icon: var(--sa-control-icon);
+    /* Relief (see --sa-relief): raised from 1, tactile at 2. */
+    --_relief-lift: clamp(0, var(--sa-relief), 1);
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;                                      /* dark mode weights the edges and the drop more */
+    --_relief-k-drop: 1;
+    --_relief-edge: rgb(0 0 0 / calc(0.25 * var(--_relief-press) * var(--_relief-k)));
+    --sa-button-shadow: var(--sa-shadow-control),
+      inset 0 -1px 0 var(--_relief-edge),
+      0 1px 1px rgb(0 0 0 / calc((0.07 + 0.03 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --sa-button-shadow-hover: var(--sa-shadow-control),
+      inset 0 -1px 0 var(--_relief-edge),
+      0 calc(1px + 1px * var(--_relief-press)) calc(1px + 2px * var(--_relief-press))
+        rgb(0 0 0 / calc((0.07 + 0.05 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --sa-button-shadow-active: var(--sa-shadow-control),
+      inset 0 1px 2px rgb(0 0 0 / calc(0.3 * var(--_relief-press) * var(--_relief-k)));
+    --sa-button-focus-border-mix: 100%;                  /* 0% keeps the variant's border on focus */
+
+    --sa-button-primary-bg: var(--sa-color-accent-fill);
+    --sa-button-primary-bg-hover: var(--sa-color-accent-hover);
+    --sa-button-primary-fg: var(--sa-color-on-accent);
+    --sa-button-primary-bg-active: var(--sa-button-primary-bg-hover);
+    --sa-button-primary-border: color-mix(in oklab, oklch(from var(--sa-color-accent-fill) calc(l - 0.1) c h) calc(var(--sa-outlines) * 100%), transparent);
+
+    --sa-button-secondary-bg: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-surface));
+    --sa-button-secondary-bg-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%)
+      calc(var(--sa-filled-secondary) * 100%), var(--sa-color-hover));
+    --sa-button-secondary-fg: var(--sa-color-ink);
+    --sa-button-secondary-bg-active: var(--sa-button-secondary-bg-hover);
+    --sa-button-secondary-border: color-mix(in oklab, var(--sa-color-line) calc(max(var(--sa-outlines), 1 - var(--sa-filled-secondary)) * 100%), transparent);
+
+    --sa-button-outline-bg: var(--sa-color-surface);
+    --sa-button-outline-bg-hover: var(--sa-color-hover);
+    --sa-button-outline-border: var(--sa-color-line);
+    --sa-button-outline-border-hover: var(--sa-button-outline-border);
+    --sa-button-outline-fg: var(--sa-color-ink);
+    --sa-button-outline-bg-active: var(--sa-button-outline-bg-hover);
+    --sa-button-outline-shadow: var(--sa-button-shadow);
+    --sa-button-outline-shadow-hover: var(--sa-button-shadow-hover);
+    --sa-button-outline-shadow-active: var(--sa-button-shadow-active);
+
+    --sa-button-ghost-fg: var(--sa-color-ink);
+    --sa-button-ghost-fg-hover: var(--sa-color-ink);
+    --sa-button-ghost-bg-hover: var(--sa-color-hover);
+    --sa-button-ghost-bg-active: var(--sa-button-ghost-bg-hover);
+
+    --sa-button-danger-bg: color-mix(in oklab, var(--sa-color-danger-fill) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-soft));
+    --sa-button-danger-bg-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-danger-fill) 88%, var(--sa-color-ink))
+      calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-soft-hover));
+    --sa-button-danger-fg: color-mix(in oklab, var(--sa-color-on-danger) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-text));
+    --sa-button-danger-bg-active: var(--sa-button-danger-bg-hover);
+    --sa-button-danger-border: color-mix(in oklab, color-mix(in oklab, oklch(from var(--sa-color-danger-fill) calc(l - 0.1) c h) calc(var(--sa-solid-destructive) * 100%),
+      color-mix(in oklab, var(--sa-color-danger) 45%, transparent)) calc(var(--sa-outlines) * 100%), transparent);
+
+    --sa-button-link-fg: var(--sa-color-accent-text);
+    --sa-button-link-decoration: var(--sa-link-decoration);
+    --sa-button-link-decoration-hover: underline;
+  }
+  .dark .sa-button {
+    --_relief-k: 1.45;
+    --_relief-k-drop: 2.5;
+    --sa-button-outline-bg: var(--sa-color-field);
+    --sa-button-outline-border: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-button {
+    --_h: var(--sa-button-h);
+    --_px: var(--sa-button-px);
+    --_radius: var(--sa-button-radius);
+    --_text: var(--sa-button-text);
+    --_icon: var(--sa-button-icon);
+    --_bg: transparent;
+    --_bg-hover: var(--_bg);
+    --_fg: inherit;
+    --_fg-hover: var(--_fg);
+    --_bg-active: var(--_bg-hover);
+    --_border: transparent;
+    --_border-hover: var(--_border);
+    --_shadow: var(--sa-button-shadow);
+    --_shadow-hover: var(--sa-button-shadow-hover);
+    --_shadow-active: var(--sa-button-shadow-active);
+
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-button-gap);
+    height: var(--_h);
+    padding-inline: var(--_px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--_radius);
+    background: var(--_bg);
+    background-clip: padding-box;
+    box-shadow: var(--_shadow);
+    color: var(--_fg);
+    font-size: var(--_text);
+    font-weight: var(--sa-button-weight);
+    line-height: 1;
+    white-space: nowrap;
+    outline: none;
+    user-select: none;
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--_icon); height: var(--_icon); }
+    &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(var(--_px) - 0.125rem); }
+    &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(var(--_px) - 0.125rem); }
+
+    &:hover:not(:disabled, [aria-disabled="true"]),
+    &[aria-expanded="true"] {
+      background-color: var(--_bg-hover);
+      border-color: var(--_border-hover);
+      box-shadow: var(--_shadow-hover);
+      color: var(--_fg-hover);
+    }
+    &:active:not(:disabled, [aria-disabled="true"], [aria-haspopup]) {
+      background-color: var(--_bg-active);
+      box-shadow: var(--_shadow-active);
+      transform: translateY(var(--sa-press-offset));
+    }
+    &:focus-visible {
+      border-color: color-mix(in oklab, var(--sa-focus-border) var(--sa-button-focus-border-mix), var(--_border));
+      box-shadow: var(--_shadow), var(--sa-focus-shadow);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_shadow), var(--sa-invalid-shadow);
+      &:focus-visible { box-shadow: var(--_shadow), var(--sa-invalid-focus-shadow); }
+    }
+    &:disabled, &[aria-disabled="true"] {
+      box-shadow: none;
+      opacity: var(--sa-disabled-opacity);
+      pointer-events: none;
+    }
+  }
+
+  .sa-button-variant-default {
+    --_bg: var(--sa-button-primary-bg);
+    --_bg-hover: var(--sa-button-primary-bg-hover);
+    --_bg-active: var(--sa-button-primary-bg-active);
+    --_border: var(--sa-button-primary-border);
+    --_fg: var(--sa-button-primary-fg);
+  }
+  .sa-button-variant-secondary {
+    --_bg: var(--sa-button-secondary-bg);
+    --_bg-hover: var(--sa-button-secondary-bg-hover);
+    --_bg-active: var(--sa-button-secondary-bg-active);
+    --_border: var(--sa-button-secondary-border);
+    --_fg: var(--sa-button-secondary-fg);
+  }
+  .sa-button-variant-outline {
+    --_bg: var(--sa-button-outline-bg);
+    --_bg-hover: var(--sa-button-outline-bg-hover);
+    --_bg-active: var(--sa-button-outline-bg-active);
+    --_border: var(--sa-button-outline-border);
+    --_border-hover: var(--sa-button-outline-border-hover);
+    --_fg: var(--sa-button-outline-fg);
+    --_shadow: var(--sa-button-outline-shadow);
+    --_shadow-hover: var(--sa-button-outline-shadow-hover);
+    --_shadow-active: var(--sa-button-outline-shadow-active);
+  }
+  .sa-button-variant-ghost {
+    --_fg: var(--sa-button-ghost-fg);
+    --_fg-hover: var(--sa-button-ghost-fg-hover);
+    --_bg-hover: var(--sa-button-ghost-bg-hover);
+    --_bg-active: var(--sa-button-ghost-bg-active);
+  }
+  :is(.sa-button-variant-ghost, .sa-button-variant-link) {
+    --_shadow: 0 0 #0000;
+    --_shadow-hover: 0 0 #0000;
+    --_shadow-active: 0 0 #0000;
+  }
+  .sa-button-variant-destructive {
+    --_bg: var(--sa-button-danger-bg);
+    --_bg-hover: var(--sa-button-danger-bg-hover);
+    --_bg-active: var(--sa-button-danger-bg-active);
+    --_border: var(--sa-button-danger-border);
+    --_fg: var(--sa-button-danger-fg);
+    --sa-focus-border: var(--sa-color-danger);
+    --sa-focus-shadow: var(--sa-invalid-focus-shadow);
+  }
+  .sa-button-variant-link {
+    --_fg: var(--sa-button-link-fg);
+    text-decoration: var(--sa-button-link-decoration);
+    text-underline-offset: 4px;
+    &:hover { text-decoration: var(--sa-button-link-decoration-hover); }
+  }
+
+  .sa-button-size-xs {
+    --_h: var(--sa-button-h-xs);
+    --_px: var(--sa-button-px-xs);
+    --_radius: var(--sa-button-radius-sm);
+    --_text: var(--sa-button-text-xs);
+    --_icon: 0.75rem;
+    gap: 0.25rem;
+  }
+  .sa-button-size-sm {
+    --_h: var(--sa-button-h-sm);
+    --_px: var(--sa-button-px-sm);
+    --_radius: var(--sa-button-radius-sm);
+    --_text: var(--sa-button-text-sm);
+    --_icon: 0.875rem;
+    gap: 0.25rem;
+  }
+  .sa-button-size-lg {
+    --_h: var(--sa-button-h-lg);
+    --_px: var(--sa-button-px-lg);
+    --_text: var(--sa-button-text-lg);
+  }
+  .sa-button-size-icon-xs { --_h: var(--sa-button-h-xs); --_radius: var(--sa-button-radius-sm); --_icon: 0.75rem; }
+  .sa-button-size-icon-sm { --_h: var(--sa-button-h-sm); --_radius: var(--sa-button-radius-sm); }
+  .sa-button-size-icon-lg { --_h: var(--sa-button-h-lg); }
+  :is(.sa-button-size-icon, .sa-button-size-icon-xs, .sa-button-size-icon-sm, .sa-button-size-icon-lg) {
+    width: var(--_h);
+    padding: 0;
+  }
+  /* Small buttons in a button group keep the group's corners. */
+  [data-slot="button-group"] :is(.sa-button-size-xs, .sa-button-size-sm, .sa-button-size-icon-xs, .sa-button-size-icon-sm) {
+    --_radius: var(--sa-button-radius);
+  }
+}
