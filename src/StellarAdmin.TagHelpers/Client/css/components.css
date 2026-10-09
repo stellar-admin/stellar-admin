@@ -455,8 +455,18 @@
        supplies surface, ring/shadow, and --card-spacing; these rules zero the card's own
        padding/gap so the table bleeds to the panel edges (py-0, not pt-0 — nova zeroes
        its bottom padding via has-[card-footer] itself, vega does not), and pad the edge
-       cells to the card's spacing token so cell content tracks the theme's footer padding. */
-    @apply gap-0 py-0 [&_tr>*:first-child]:pl-(--card-spacing) [&_tr>*:last-child]:pr-(--card-spacing);
+       cells to the card's spacing token so cell content tracks the theme's footer padding.
+       Only the grid's own rows are padded: rows of a table nested in a cell (such as a row's
+       details) keep their own padding, and the detail cell itself stays unpadded because its
+       content measures its insets from the row's cells. */
+    @apply gap-0 py-0;
+
+    & tr:not(td tr) > :first-child:not(.sa-table-row-detail-cell) {
+      padding-left: var(--card-spacing);
+    }
+    & tr:not(td tr) > :last-child:not(.sa-table-row-detail-cell) {
+      padding-right: var(--card-spacing);
+    }
   }
   .sa-data-grid-footer {
     /* Rides sa-card-footer (theme background + horizontal padding); the top border and

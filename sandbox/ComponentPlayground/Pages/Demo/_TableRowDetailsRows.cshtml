@@ -1,0 +1,33 @@
+@model ComponentPlayground.Pages.Demo.RowDetailRows
+
+@foreach (var booking in Model.Bookings)
+{
+    var expanded = booking.Id == Model.ExpandedId;
+    <sa-table-row>
+        <sa-table-cell class="w-px"><sa-table-row-detail-toggle aria-label="Toggle details for @booking.Reference" /></sa-table-cell>
+        <sa-table-cell class="font-medium">@booking.Reference</sa-table-cell>
+        <sa-table-cell>@booking.Lead</sa-table-cell>
+        <sa-table-cell>@booking.Destination</sa-table-cell>
+        <sa-table-cell><sa-badge variant="BadgeVariant.Secondary">@booking.Status</sa-badge></sa-table-cell>
+        <sa-table-cell class="text-right tabular-nums">@booking.Total</sa-table-cell>
+    </sa-table-row>
+    <sa-table-row-detail expanded="expanded">
+        @if (expanded)
+        {
+            <partial name="_TableRowDetailsBooking" model="booking" />
+        }
+        else
+        {
+            @* Loads on first expand. The event fires on the detail row; htmx 4 writes the
+               closest-ancestor source as <closest tr/> (htmx 2: from:closest tr). *@
+            <div hx-get="?handler=Details&id=@booking.Id"
+                 hx-trigger="row-detail-expand from:<closest tr/> once"
+                 hx-swap="outerHTML"
+                 class="flex flex-col gap-2"
+                 aria-busy="true">
+                <sa-skeleton class="h-4 w-1/3" />
+                <sa-skeleton class="h-4 w-2/3" />
+            </div>
+        }
+    </sa-table-row-detail>
+}

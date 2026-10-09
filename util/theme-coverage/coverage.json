@@ -2913,6 +2913,7 @@
         "sa-data-grid-header-template",
         "sa-data-grid-item-template",
         "sa-data-grid-pager",
+        "sa-data-grid-row-detail",
         "sa-data-grid-selection",
         "sa-data-grid-sort"
       ],
@@ -2941,6 +2942,9 @@
         "sa-table-head",
         "sa-table-header",
         "sa-table-row",
+        "sa-table-row-detail",
+        "sa-table-row-detail-toggle",
+        "sa-table-row-details",
         "sa-tabs",
         "sa-tabs-list",
         "sa-tabs-list-variant-default"

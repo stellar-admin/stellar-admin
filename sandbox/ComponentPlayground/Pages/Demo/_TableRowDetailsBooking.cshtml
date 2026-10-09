@@ -1,0 +1,24 @@
+@model ComponentPlayground.Pages.Demo.RowDetailBooking
+
+<dl class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
+    <div class="flex flex-col gap-0.5">
+        <dt class="text-xs text-muted-foreground">Email</dt>
+        <dd>@Model.Email</dd>
+    </div>
+    <div class="flex flex-col gap-0.5">
+        <dt class="text-xs text-muted-foreground">Party</dt>
+        <dd>@Model.Party</dd>
+    </div>
+    <div class="flex flex-col gap-0.5">
+        <dt class="text-xs text-muted-foreground">Departs</dt>
+        <dd>@Model.Departs</dd>
+    </div>
+    <div class="flex flex-col gap-0.5">
+        <dt class="text-xs text-muted-foreground">Total</dt>
+        <dd>@Model.Total</dd>
+    </div>
+    <div class="col-span-full flex flex-col gap-0.5">
+        <dt class="text-xs text-muted-foreground">Notes</dt>
+        <dd>@Model.Notes</dd>
+    </div>
+</dl>

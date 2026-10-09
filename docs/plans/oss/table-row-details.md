@@ -1,6 +1,6 @@
 # Table row details
 
-Status: phase 1 implemented, awaiting review (2026-10-09). Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
+Status: phases 1 and 2 implemented; phase 2 awaiting review (2026-10-09). Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
 
 ## Goal
 
@@ -115,6 +115,16 @@ Files: `src/StellarAdmin.TagHelpers/TagHelpers/Table/TableRowDetail*.cs` (three 
 
 Known limits: details stay hidden without JavaScript. A nested `sa-table-row-details` inside another inherits the outer wrapper's emphasis and row-click selectors where its own settings differ. `sel-table-selection` treats every `tbody` checkbox as a row checkbox, so checkboxes inside details would join the selection. Fix that in phase 2, where grids combine both.
 
+## Phase 2 implementation notes (2026-10-09)
+
+- `sa-data-grid-row-detail` takes `toggle` (`Leading`, `Trailing`, `None`), the five table-level settings, and `key-field` with `expanded-keys` instead of the planned per-row `expanded="@(Html.GridItem<T>()…)"`. The grid evaluates a child's attributes during its collect pass too, where `Html.GridItem<T>()` throws, so a per-row expression cannot work there. Keys follow `sa-data-grid-selection`'s `key-field` pattern and are compared as invariant strings. `expanded-keys` without `key-field` throws.
+- The template is the element's own content, run only in row passes (like `sa-data-grid-item-template`). The grid renders the detail row with the shared `TableRowDetailRendering` helper (also used by the table tag helpers now), and the toggles through `TableRowDetailToggleTagHelper`, with the server-side `aria-expanded`.
+- Order: selection, toggle, data columns, then the trailing toggle. Nesting: `sel-table-selection > sel-table-row-details > table container`. Toggle cells use an inline `width: 1px` (library bundles do not ship arbitrary utilities). Empty-state and detail `colspan` count the toggle column.
+- The aligned inset now starts at the column after the toggle's column, so a toggle after the selection checkbox aligns with the first data column. A toggle in the last cell (trailing or an actions column) falls back to bleed.
+- Padding leak fixed: `.sa-data-grid` pads `tr:not(td tr) > :first-child/:last-child`, excluding `.sa-table-row-detail-cell`. Rows of tables nested in cells keep their own padding, and the detail cell stays unpadded so the pinned content cannot overflow the container.
+- `sel-table-selection` now ignores checkboxes inside nested selection tables and inside its own detail rows (both for row checkboxes and select-all).
+- The ComponentPlayground demo files disappeared before the phase 1 commit (only the navigation entry was committed). Jerrie confirmed restoring them, so they were recreated with two grid sections added.
+
 ## Verification log
 
 2026-10-09, phase 1:
@@ -131,3 +141,18 @@ Known limits: details stay hidden without JavaScript. A nested `sa-table-row-det
   - `animate=false`, and the pinned content while scrolling sideways at 390px.
 - Screenshots reviewed in vega (light and dark), parallax, nova (rail), observatory, and ledger dark (rail), at desktop width plus 390px.
 - Not run: DocsSamples (phase 3), the Dashboard and EF integration suites (not affected), visual-regression scripts.
+
+2026-10-09, phase 2:
+
+- `tests/StellarAdmin.TagHelpers.Tests`: 268 passed (7 new grid row details tests in `TagHelpers/DataGrid/DataGridTagHelperTests.RowDetails.cs`). `tests/StellarAdmin.Dashboard.IntegrationTests`: 399 passed. Theme coverage passed (DataGrid tags and hooks updated). The JS and CSS bundles built.
+- CDP against ComponentPlayground (5208), 11 new grid checks passed:
+  - selection wrapping row details, with the toggle after the checkbox;
+  - `expanded-keys`, and a `colspan` covering selection, toggle and columns;
+  - the aligned inset after selection and toggle;
+  - a nested grid with its own padding, an unpadded detail cell and no overflow;
+  - a checkbox in the details staying out of the selection, while row selection still works;
+  - grid expand-all;
+  - `toggle=None` with the toggle in an actions column, row click and single mode;
+  - bleed fallback for an end-of-row toggle;
+  - mobile pinning.
+- The 18 phase 1 checks were re-run and still pass. Screenshots reviewed (vega, desktop).

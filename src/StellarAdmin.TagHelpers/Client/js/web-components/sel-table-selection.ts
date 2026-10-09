@@ -42,11 +42,28 @@ export class TableSelection extends LitElement {
   }
 
   get #selectAll(): HTMLInputElement | null {
-    return this.querySelector<HTMLInputElement>('thead input[type="checkbox"]');
+    return (
+      Array.from(this.querySelectorAll<HTMLInputElement>('thead input[type="checkbox"]')).find(
+        (checkbox) => this.#owns(checkbox),
+      ) ?? null
+    );
   }
 
   get #rowCheckboxes(): HTMLInputElement[] {
-    return Array.from(this.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]'));
+    return Array.from(
+      this.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]'),
+    ).filter((checkbox) => this.#owns(checkbox));
+  }
+
+  /**
+   * Whether a checkbox belongs to this table's selection: not inside a nested selection
+   * table, and not inside a row's details (`tr[data-slot="table-row-detail"]`) — details
+   * content is the author's, so its checkboxes are not row selectors.
+   */
+  #owns(checkbox: HTMLInputElement) {
+    if (checkbox.closest("sel-table-selection") !== this) return false;
+    const detailRow = checkbox.closest('tr[data-slot="table-row-detail"]');
+    return !detailRow || !this.contains(detailRow);
   }
 
   /** The values of the currently selected row checkboxes. */
@@ -58,7 +75,11 @@ export class TableSelection extends LitElement {
 
   #onChange = (event: Event) => {
     const target = event.target;
-    if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") {
+    if (
+      !(target instanceof HTMLInputElement) ||
+      target.type !== "checkbox" ||
+      !this.#owns(target)
+    ) {
       return;
     }
 

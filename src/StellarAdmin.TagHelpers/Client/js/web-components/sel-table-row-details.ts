@@ -29,8 +29,8 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
  * Settings are read from the element's data attributes on every interaction:
  *   - data-expand-mode="single|multiple"
  *   - data-row-click="true|false"
- *   - data-inset="aligned|bleed"  (aligned measures the first column after a
- *     leading toggle column into --sa-table-row-detail-inset)
+ *   - data-inset="aligned|bleed"  (aligned starts the content at the column after
+ *     the toggle's column; bleed at the row's first cell)
  *
  * Expanding or collapsing a row raises a bubbling `row-detail-expand` or
  * `row-detail-collapse` event on the detail row (detail: `{ row, detailRow }`),
@@ -296,8 +296,14 @@ export class TableRowDetails extends LitElement {
     if (!detailCell || !firstCell || !lastCell) return;
 
     const detailStyle = getComputedStyle(detailCell);
+    // Aligned: the column after the toggle's column, when the toggle leads the row (it may
+    // follow a selection column); a trailing toggle has no column after it.
+    const cells = Array.from(row.cells);
+    const toggleIndex = cells.findIndex((cell) => cell.querySelector(TOGGLE));
     const alignedCell =
-      this.dataset.inset === "aligned" && firstCell.querySelector(TOGGLE) ? row.cells[1] : null;
+      this.dataset.inset === "aligned" && toggleIndex >= 0
+        ? (cells[toggleIndex + 1] ?? null)
+        : null;
     const startCell = alignedCell ?? firstCell;
     const start =
       startCell.offsetLeft +

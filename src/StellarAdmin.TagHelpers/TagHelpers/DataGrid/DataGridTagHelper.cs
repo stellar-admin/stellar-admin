@@ -90,6 +90,25 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         containerBuilder.Attributes.Add("class", "sa-table-container");
         containerBuilder.InnerHtml.AppendHtml(tableBuilder);
 
+        // Optionally places the table inside the row details web component, which
+        // expands and collapses the detail rows
+        IHtmlContent tableContent = containerBuilder;
+        if (gridContext.RowDetail is { } rowDetail)
+        {
+            var detailsBuilder = new TagBuilder("sel-table-row-details");
+            foreach (
+                var (name, value) in TableRowDetailRendering.GetWrapperAttributes(
+                    rowDetail.Settings
+                )
+            )
+            {
+                detailsBuilder.Attributes.Add(name, value);
+            }
+            detailsBuilder.Attributes.Add("class", "sa-table-row-details");
+            detailsBuilder.InnerHtml.AppendHtml(containerBuilder);
+            tableContent = detailsBuilder;
+        }
+
         // Optionally places table inside table selection web component which
         // assists with managing table selection state
         if (gridContext.Selection is { } selection)
@@ -104,12 +123,12 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             {
                 selectionBuilder.Attributes.Add("class", selection.CssClass);
             }
-            selectionBuilder.InnerHtml.AppendHtml(containerBuilder);
+            selectionBuilder.InnerHtml.AppendHtml(tableContent);
             output.Content.AppendHtml(selectionBuilder);
         }
         else
         {
-            output.Content.AppendHtml(containerBuilder);
+            output.Content.AppendHtml(tableContent);
         }
 
         // If we have a pager, add a footer with the rendered pager
@@ -153,6 +172,13 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 )
             );
             headerRowBuilder.InnerHtml.AppendHtml(selectAllHeadBuilder);
+        }
+
+        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Leading })
+        {
+            headerRowBuilder.InnerHtml.AppendHtml(
+                await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
+            );
         }
 
         foreach (var column in gridContext.Columns)
@@ -202,6 +228,13 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             headerRowBuilder.InnerHtml.AppendHtml(headBuilder);
         }
 
+        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Trailing })
+        {
+            headerRowBuilder.InnerHtml.AppendHtml(
+                await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
+            );
+        }
+
         var headerBuilder = new TagBuilder("thead");
         headerBuilder.Attributes.Add("data-slot", "table-header");
         headerBuilder.Attributes.Add("class", "sa-table-header");
@@ -224,7 +257,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
 
         if (items.Count == 0)
         {
-            var columnCount = gridContext.Columns.Count + (gridContext.Selection is null ? 0 : 1);
+            var columnCount = GetColumnCount(gridContext);
 
             var emptyCellBuilder = new TagBuilder("td");
             emptyCellBuilder.Attributes.Add("data-slot", "table-cell");
@@ -300,6 +333,22 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                     rowBuilder.InnerHtml.AppendHtml(selectCellBuilder);
                 }
 
+                var rowDetail = gridContext.RowDetail;
+                var expanded = rowDetail is not null && IsExpanded(rowDetail, items[i]);
+                if (rowDetail is { Toggle: DataGridRowDetailToggle.Leading })
+                {
+                    rowBuilder.InnerHtml.AppendHtml(
+                        await RenderToggleCell(
+                            context,
+                            "td",
+                            "table-cell",
+                            "sa-table-cell",
+                            all: false,
+                            expanded
+                        )
+                    );
+                }
+
                 foreach (var cell in currentRow.Cells)
                 {
                     var cellBuilder = new TagBuilder("td");
@@ -312,7 +361,40 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                     rowBuilder.InnerHtml.AppendHtml(cellBuilder);
                 }
 
+                if (rowDetail is { Toggle: DataGridRowDetailToggle.Trailing })
+                {
+                    rowBuilder.InnerHtml.AppendHtml(
+                        await RenderToggleCell(
+                            context,
+                            "td",
+                            "table-cell",
+                            "sa-table-cell",
+                            all: false,
+                            expanded
+                        )
+                    );
+                }
+
                 bodyBuilder.InnerHtml.AppendHtml(rowBuilder);
+
+                if (rowDetail is not null)
+                {
+                    var detailRowBuilder = new TagBuilder("tr");
+                    foreach (
+                        var (name, value) in TableRowDetailRendering.GetRowAttributes(expanded)
+                    )
+                    {
+                        detailRowBuilder.Attributes.Add(name, value);
+                    }
+                    detailRowBuilder.Attributes.Add("class", "sa-table-row-detail");
+                    detailRowBuilder.InnerHtml.AppendHtml(
+                        TableRowDetailRendering.BuildCell(
+                            new HtmlString(currentRow.DetailHtml ?? ""),
+                            GetColumnCount(gridContext)
+                        )
+                    );
+                    bodyBuilder.InnerHtml.AppendHtml(detailRowBuilder);
+                }
             }
         }
         finally
@@ -331,6 +413,62 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         }
 
         return bodyBuilder;
+    }
+
+    /// <summary>
+    ///     The number of table columns: the data columns plus any generated selection and
+    ///     row details toggle columns.
+    /// </summary>
+    private static int GetColumnCount(DataGridContext gridContext) =>
+        gridContext.Columns.Count
+        + (gridContext.Selection is null ? 0 : 1)
+        + (gridContext.RowDetail is { Toggle: not DataGridRowDetailToggle.None } ? 1 : 0);
+
+    private static bool IsExpanded(DataGridRowDetail rowDetail, object? item)
+    {
+        if (rowDetail.KeyField is not { } keyField || item is null)
+        {
+            return false;
+        }
+
+        var key = Convert.ToString(
+            DataGridFieldGetters.GetValue(item, keyField),
+            CultureInfo.InvariantCulture
+        );
+        return key is not null && rowDetail.ExpandedKeys.Contains(key);
+    }
+
+    /// <summary>
+    ///     Renders a cell of the row details toggle column, holding a toggle rendered by the
+    ///     library toggle tag helper so it matches a hand-written
+    ///     <c>&lt;sa-table-row-detail-toggle&gt;</c>.
+    /// </summary>
+    private async Task<IHtmlContent> RenderToggleCell(
+        TagHelperContext context,
+        string tagName,
+        string slot,
+        string cssClass,
+        bool all,
+        bool expanded = false
+    )
+    {
+        var toggleOutput = new TagHelperOutput(
+            "sa-table-row-detail-toggle",
+            [],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+        await new TableRowDetailToggleTagHelper(Options.Create(_iconOptions))
+        {
+            All = all,
+        }.ProcessAsync(context, toggleOutput);
+        toggleOutput.Attributes.SetAttribute("aria-expanded", expanded ? "true" : "false");
+
+        var cellBuilder = new TagBuilder(tagName);
+        cellBuilder.Attributes.Add("data-slot", slot);
+        cellBuilder.Attributes.Add("class", cssClass);
+        cellBuilder.Attributes.Add("style", "width: 1px");
+        cellBuilder.InnerHtml.AppendHtml(toggleOutput);
+        return cellBuilder;
     }
 
     /// <summary>

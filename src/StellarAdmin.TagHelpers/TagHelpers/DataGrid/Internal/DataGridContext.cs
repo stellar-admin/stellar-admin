@@ -58,4 +58,7 @@ internal sealed class DataGridContext
 
     /// <summary>The row-selection declaration registered by <c>sa-data-grid-selection</c>.</summary>
     public DataGridSelection? Selection { get; set; }
+
+    /// <summary>The row details declaration registered by <c>sa-data-grid-row-detail</c>.</summary>
+    public DataGridRowDetail? RowDetail { get; set; }
 }

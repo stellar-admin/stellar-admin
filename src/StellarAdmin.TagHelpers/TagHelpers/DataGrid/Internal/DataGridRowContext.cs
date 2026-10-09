@@ -16,4 +16,7 @@ internal sealed class DataGridRowContext
 
     /// <summary>Cells deposited by the columns during this row pass, in document order.</summary>
     public List<DataGridCell> Cells { get; } = [];
+
+    /// <summary>The row details content rendered by <c>sa-data-grid-row-detail</c> during this row pass.</summary>
+    public string? DetailHtml { get; set; }
 }

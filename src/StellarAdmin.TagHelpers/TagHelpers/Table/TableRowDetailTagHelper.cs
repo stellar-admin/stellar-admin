@@ -1,5 +1,3 @@
-using System.Globalization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.TagHelpers;
@@ -37,11 +35,9 @@ public class TableRowDetailTagHelper : StellarAdminTagHelperBase
         output.TagName = "tr";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.SetAttribute("data-slot", "table-row-detail");
-        output.Attributes.SetAttribute("data-state", expanded ? "open" : "closed");
-        if (!expanded)
+        foreach (var (name, value) in TableRowDetailRendering.GetRowAttributes(expanded))
         {
-            output.Attributes.SetAttribute("hidden", "hidden");
+            output.Attributes.SetAttribute(name, value);
         }
 
         output.Attributes.SetAttribute(
@@ -49,32 +45,10 @@ public class TableRowDetailTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-table-row-detail", output.GetUserSuppliedClass())
         );
 
-        // The reveal wrapper animates grid-template-rows to the content's height, the clip
-        // hides the content while it collapses, and the content box stays pinned to the
-        // visible width when the table scrolls sideways.
-        var contentBuilder = new TagBuilder("div");
-        contentBuilder.Attributes.Add("data-slot", "table-row-detail-content");
-        contentBuilder.Attributes.Add("class", "sa-table-row-detail-content");
-        contentBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
-
-        var clipBuilder = new TagBuilder("div");
-        clipBuilder.Attributes.Add("class", "sa-table-row-detail-clip");
-        clipBuilder.InnerHtml.AppendHtml(contentBuilder);
-
-        var revealBuilder = new TagBuilder("div");
-        revealBuilder.Attributes.Add("class", "sa-table-row-detail-reveal");
-        revealBuilder.InnerHtml.AppendHtml(clipBuilder);
-
-        var cellBuilder = new TagBuilder("td");
-        cellBuilder.Attributes.Add("data-slot", "table-row-detail-cell");
-        cellBuilder.Attributes.Add("class", "sa-table-row-detail-cell");
-        if (Colspan is { } colspan)
-        {
-            cellBuilder.Attributes.Add("colspan", colspan.ToString(CultureInfo.InvariantCulture));
-        }
-
-        cellBuilder.InnerHtml.AppendHtml(revealBuilder);
-
+        var cellBuilder = TableRowDetailRendering.BuildCell(
+            await output.GetChildContentAsync(),
+            Colspan
+        );
         output.Content.SetHtmlContent(cellBuilder);
     }
 }

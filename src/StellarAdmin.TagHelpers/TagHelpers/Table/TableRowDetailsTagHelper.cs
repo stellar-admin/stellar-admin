@@ -66,21 +66,18 @@ public class TableRowDetailsTagHelper : StellarAdminTagHelperBase
         output.TagName = "sel-table-row-details";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Attributes.SetAttribute("data-slot", "table-row-details");
-        output.Attributes.SetAttribute(
-            "data-expand-mode",
-            (ExpandMode ?? TableRowDetailExpandMode.Multiple).GetDataAttributeText()
+        var settings = new TableRowDetailSettings(
+            RowClick ?? false,
+            ExpandMode ?? TableRowDetailExpandMode.Multiple,
+            Emphasis ?? TableRowDetailEmphasis.Band,
+            Inset ?? TableRowDetailInset.Aligned,
+            Animate ?? true
         );
-        output.Attributes.SetAttribute(
-            "data-emphasis",
-            (Emphasis ?? TableRowDetailEmphasis.Band).GetDataAttributeText()
-        );
-        output.Attributes.SetAttribute(
-            "data-inset",
-            (Inset ?? TableRowDetailInset.Aligned).GetDataAttributeText()
-        );
-        output.Attributes.SetAttribute("data-animate", (Animate ?? true) ? "true" : "false");
-        output.Attributes.SetAttribute("data-row-click", (RowClick ?? false) ? "true" : "false");
+        foreach (var (name, value) in TableRowDetailRendering.GetWrapperAttributes(settings))
+        {
+            output.Attributes.SetAttribute(name, value);
+        }
+
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-table-row-details", output.GetUserSuppliedClass())
