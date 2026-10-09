@@ -1,0 +1,286 @@
+/* Field: a control with its label, description and error, stacked or side by side; field groups and
+   field sets that space fields; and choice cards, a field label drawn around a horizontal field (the
+   card variant of CheckboxGroup, RadioGroup and ChoiceGroup, or written by hand). CheckboxGroup and
+   RadioGroup render field groups (data-slot checkbox-group or radio-group) with field parts, so they
+   are styled here too. Field labels are also labels (label.css).
+   Vertical and responsive fields force their children's widths with utility classes the tag helper
+   emits ([&>*]:w-full, components.css), so a child component's own width cannot win; the responsive
+   field's switch to a row uses the field group's container query, so the group stays a container
+   named field-group.
+   Replaces: .sa-field, .sa-field-content, .sa-field-description, .sa-field-error, .sa-field-group,
+   .sa-field-label, .sa-field-legend, .sa-field-separator, .sa-field-separator-content,
+   .sa-field-separator-line, .sa-field-set, .sa-field-title */
+
+@layer sa.tokens {
+  .sa-field {
+    --sa-field-gap: calc(2 * var(--sa-unit));
+    --sa-field-invalid-fg: var(--sa-color-danger-text);
+  }
+  .sa-field-set {
+    --sa-field-set-gap: calc(4 * var(--sa-unit));
+    --sa-field-set-gap-sm: calc(3 * var(--sa-unit)); /* around a checkbox or radio list */
+  }
+  .sa-field-legend {
+    --sa-field-legend-mb: calc(1.5 * var(--sa-unit));
+    --sa-field-legend-text: var(--sa-text-base);
+    --sa-field-legend-text-sm: var(--sa-text-sm); /* the label variant */
+    --sa-field-legend-weight: var(--sa-weight-control);
+    --sa-field-legend-font: inherit;
+  }
+  .sa-field-group {
+    --sa-field-group-gap: calc(5 * var(--sa-unit));
+    --sa-field-group-gap-sm: calc(4 * var(--sa-unit)); /* nested groups */
+    --sa-field-group-list-gap: calc(3 * var(--sa-unit)); /* checkbox and radio lists */
+  }
+  .sa-field-content {
+    --sa-field-content-gap: calc(0.5 * var(--sa-unit));
+  }
+  .sa-field-label {
+    --sa-field-label-gap: calc(2 * var(--sa-unit));
+    --sa-field-label-text: var(--sa-text-sm);
+    --sa-field-label-leading: 1.375;
+    /* Choice cards */
+    --sa-field-card-p: calc(2.5 * var(--sa-unit));
+    --sa-field-card-radius: var(--sa-radius-control);
+    --sa-field-card-bg: var(--sa-color-field);
+    --sa-field-card-bg-hover: var(--sa-color-hover);
+    --sa-field-card-border: var(--sa-color-line-control);
+    --sa-field-card-border-hover: var(--sa-color-line-control-hover);
+    --sa-field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 6%, var(--sa-color-field));
+    --sa-field-card-selected-border: color-mix(in oklab, var(--sa-color-accent) 45%, var(--sa-color-line-control));
+    --sa-field-card-shadow: var(--sa-shadow-control);
+  }
+  .dark .sa-field-label {
+    --sa-field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
+  }
+  .sa-field-title {
+    --sa-field-title-gap: calc(2 * var(--sa-unit));
+    --sa-field-title-text: var(--sa-text-sm);
+    --sa-field-title-weight: var(--sa-weight-control);
+    --sa-field-title-leading: 1.375;
+  }
+  .sa-field-description {
+    --sa-field-description-fg: var(--sa-color-ink-muted);
+    --sa-field-description-text: var(--sa-text-sm);
+    --sa-field-description-leading: 1.5;
+    --sa-field-description-link-hover-fg: var(--sa-color-accent-text);
+  }
+  .sa-field-error {
+    --sa-field-error-fg: var(--sa-color-danger-text);
+    --sa-field-error-text: var(--sa-text-sm);
+  }
+  .sa-field-separator {
+    --sa-field-separator-h: calc(5 * var(--sa-unit));
+    --sa-field-separator-my: calc(-2 * var(--sa-unit));
+    --sa-field-separator-gap: calc(2 * var(--sa-unit));
+    --sa-field-separator-fg: var(--sa-color-ink-muted);
+    --sa-field-separator-text: var(--sa-text-sm);
+    --sa-field-separator-line: var(--sa-color-line);
+  }
+}
+
+@layer sa.components {
+  /* --- Field set, legend and group --------------------------------------------------------- */
+  .sa-field-set {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-field-set-gap);
+    &:has(> [data-slot="checkbox-group"], > [data-slot="radio-group"]) {
+      gap: var(--sa-field-set-gap-sm);
+    }
+  }
+  .sa-field-legend {
+    margin-bottom: var(--sa-field-legend-mb);
+    font-family: var(--sa-field-legend-font);
+    font-size: var(--sa-field-legend-text);
+    font-weight: var(--sa-field-legend-weight);
+    &[data-variant="label"] {
+      font-size: var(--sa-field-legend-text-sm);
+    }
+  }
+  .sa-field-group {
+    container: field-group / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-field-group-gap);
+    width: 100%;
+    &:is([data-slot="checkbox-group"], [data-slot="radio-group"]) {
+      gap: var(--sa-field-group-list-gap);
+    }
+    & > .sa-field-group[data-slot="field-group"] {
+      gap: var(--sa-field-group-gap-sm);
+    }
+  }
+
+  /* --- Field -------------------------------------------------------------------------------- */
+  .sa-field {
+    display: flex;
+    gap: var(--sa-field-gap);
+    width: 100%;
+    &[data-invalid="true"] {
+      color: var(--sa-field-invalid-fg);
+    }
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+    }
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      align-items: center;
+      & > [data-slot="field-label"] {
+        flex: auto;
+      }
+      &:has(> [data-slot="field-content"]) {
+        align-items: flex-start;
+      }
+    }
+    &[data-orientation="responsive"] {
+      flex-direction: column;
+    }
+  }
+  @container field-group (min-width: 28rem) {
+    .sa-field[data-orientation="responsive"] {
+      flex-direction: row;
+      align-items: center;
+      & > [data-slot="field-label"] {
+        flex: auto;
+      }
+      &:has(> [data-slot="field-content"]) {
+        align-items: flex-start;
+      }
+    }
+  }
+  .sa-field-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--sa-field-content-gap);
+    line-height: 1.375;
+  }
+
+  /* --- Label, title, description, error ------------------------------------------------------ */
+  .sa-field-label {
+    display: flex;
+    gap: var(--sa-field-label-gap);
+    width: fit-content;
+    font-size: var(--sa-field-label-text);
+    line-height: var(--sa-field-label-leading);
+  }
+  .sa-field-title {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-field-title-gap);
+    width: fit-content;
+    font-size: var(--sa-field-title-text);
+    font-weight: var(--sa-field-title-weight);
+    line-height: var(--sa-field-title-leading);
+  }
+  .sa-field[data-disabled="true"] :is(.sa-field-label, .sa-field-title) {
+    opacity: var(--sa-disabled-opacity);
+  }
+  .sa-field-description {
+    color: var(--sa-field-description-fg);
+    font-size: var(--sa-field-description-text);
+    font-weight: 400;
+    line-height: var(--sa-field-description-leading);
+    text-align: start;
+    [data-variant="legend"] + & {
+      margin-top: calc(-1.5 * var(--sa-unit));
+    }
+    &:nth-last-child(2) {
+      margin-top: calc(-1 * var(--sa-unit));
+    }
+    &:last-child {
+      margin-top: 0;
+    }
+    & > a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      &:hover {
+        color: var(--sa-field-description-link-hover-fg);
+      }
+    }
+  }
+  .sa-field:has([data-orientation="horizontal"]) .sa-field-description {
+    text-wrap: balance;
+  }
+  .sa-field-error {
+    display: none;
+    color: var(--sa-field-error-fg);
+    font-size: var(--sa-field-error-text);
+    font-weight: 400;
+    line-height: var(--sa-leading-ui);
+    &.field-validation-error {
+      display: block;
+    }
+  }
+
+  /* --- Choice card: a field label around a horizontal field --------------------------------- */
+  .sa-field-label:has(> [data-slot="field"]) {
+    flex-direction: column;
+    width: 100%;
+    border: var(--sa-border-width) solid var(--sa-field-card-border);
+    border-radius: var(--sa-field-card-radius);
+    background: var(--sa-field-card-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-field-card-shadow);
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+    & > [data-slot="field"] {
+      padding: var(--sa-field-card-p);
+    }
+    &:hover:not(:has(:disabled, [data-disabled])) {
+      border-color: var(--sa-field-card-border-hover);
+      background: var(--sa-field-card-bg-hover);
+    }
+    &:has(:checked) {
+      border-color: var(--sa-field-card-selected-border);
+      background: var(--sa-field-card-selected-bg);
+    }
+    &:has(:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-field-card-shadow), var(--sa-focus-shadow-field);
+    }
+  }
+
+  /* --- Separator: a rule, with optional text in a gap in the middle --------------------------- */
+  .sa-field-separator {
+    position: relative;
+    height: var(--sa-field-separator-h);
+    margin-block: var(--sa-field-separator-my);
+    font-size: var(--sa-field-separator-text);
+    line-height: var(--sa-leading-ui);
+    &[data-content="true"] {
+      display: flex;
+      align-items: center;
+      gap: var(--sa-field-separator-gap);
+      &::before,
+      &::after {
+        content: "";
+        flex: 1;
+        border-top: var(--sa-border-width) solid var(--sa-field-separator-line);
+      }
+    }
+  }
+  /* The rule is a separator (separator.css); this out-ranks its rules by selector. With text, the
+     field separator draws the rule itself on either side, so no background has to hide it. */
+  .sa-field-separator > .sa-separator.sa-field-separator-line {
+    position: absolute;
+    inset: 50% 0 auto;
+    [data-content="true"] > & {
+      display: none;
+    }
+  }
+  .sa-field-separator-content {
+    position: relative;
+    display: block;
+    width: fit-content;
+    color: var(--sa-field-separator-fg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-field-label {
+      transition-duration: 0s;
+    }
+  }
+}

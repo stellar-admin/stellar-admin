@@ -1,0 +1,93 @@
+/* Form section: a titled group of fields, stacked, split (header beside the fields once wide enough)
+   or in a card. Consecutive plain sections are divided by a rule.
+   Replaces: .sa-form-section, .sa-form-section-inner, .sa-form-section-header, .sa-form-section-title,
+   .sa-form-section-description, .sa-form-section-content */
+
+@layer sa.tokens {
+  .sa-form-section {
+    --sa-form-section-gap: calc(5 * var(--sa-unit)); /* header to fields, and between fields */
+    --sa-form-section-split-gap: calc(8 * var(--sa-unit)); /* header beside fields */
+    --sa-form-section-mt: calc(8 * var(--sa-unit)); /* between sections */
+    --sa-form-section-border: var(--sa-color-line);
+    --sa-form-section-header-gap: calc(2 * var(--sa-unit));
+    --sa-form-section-title-text: var(--sa-text-base);
+    --sa-form-section-title-weight: var(--sa-weight-heading);
+    --sa-form-section-title-font: var(--sa-font-heading);
+    --sa-form-section-description-fg: var(--sa-color-ink-muted);
+    --sa-form-section-description-text: var(--sa-text-sm);
+    /* The card layout */
+    --sa-form-section-card-p: calc(5 * var(--sa-unit));
+    --sa-form-section-card-bg: var(--sa-color-surface);
+    --sa-form-section-card-fg: var(--sa-color-ink);
+    --sa-form-section-card-edge: var(--sa-color-line);
+    --sa-form-section-card-radius: var(--sa-radius-container);
+    --sa-form-section-card-shadow: var(--sa-shadow-container);
+  }
+}
+
+@layer sa.components {
+  .sa-form-section {
+    container: form-section / inline-size;
+    width: 100%;
+    min-width: 0;
+    & + & {
+      margin-top: var(--sa-form-section-mt);
+    }
+    & + &:not([data-layout="card"]) {
+      padding-top: var(--sa-form-section-mt);
+      border-top: var(--sa-border-width) solid var(--sa-form-section-border);
+    }
+  }
+  .sa-form-section-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--sa-form-section-gap) var(--sa-form-section-split-gap);
+    min-width: 0;
+  }
+  .sa-form-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-form-section-header-gap);
+    min-width: 0;
+  }
+  .sa-form-section-title {
+    font-family: var(--sa-form-section-title-font);
+    font-size: var(--sa-form-section-title-text);
+    font-weight: var(--sa-form-section-title-weight);
+    line-height: 1.375;
+  }
+  .sa-form-section-description {
+    color: var(--sa-form-section-description-fg);
+    font-size: var(--sa-form-section-description-text);
+    line-height: 1.625;
+  }
+  .sa-form-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-form-section-gap);
+    min-width: 0;
+  }
+  .sa-form-section[data-layout="card"] {
+    border: var(--sa-border-width) solid var(--sa-form-section-card-edge);
+    border-radius: var(--sa-form-section-card-radius);
+    background: var(--sa-form-section-card-bg);
+    box-shadow: var(--sa-form-section-card-shadow);
+    color: var(--sa-form-section-card-fg);
+    & > .sa-form-section-inner {
+      gap: 0;
+      & > .sa-form-section-header {
+        padding: var(--sa-form-section-card-p);
+        border-bottom: var(--sa-border-width) solid var(--sa-form-section-card-edge);
+      }
+      & > .sa-form-section-content {
+        padding: var(--sa-form-section-card-p);
+      }
+    }
+  }
+  @container form-section (min-width: 48rem) {
+    .sa-form-section[data-layout="split"] > .sa-form-section-inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr);
+    }
+  }
+}

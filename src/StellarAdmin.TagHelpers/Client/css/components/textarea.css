@@ -1,0 +1,76 @@
+/* Textarea: a multi-line field drawn like the input, growing with its content from a minimum height.
+   Replaces: .sa-textarea */
+
+@layer sa.tokens {
+  .sa-textarea {
+    --sa-textarea-min-h: calc(16 * var(--sa-unit));
+    --sa-textarea-px: var(--sa-control-px);
+    --sa-textarea-py: calc(2 * var(--sa-unit));
+    --sa-textarea-radius: var(--sa-radius-control);
+    --sa-textarea-text: var(--sa-text-control);
+    --sa-textarea-bg: var(--sa-color-field);
+    --sa-textarea-bg-disabled: var(--sa-color-field-disabled);
+    --sa-textarea-border: var(--sa-color-line-control);
+    --sa-textarea-border-hover: var(--sa-color-line-control-hover);
+    --sa-textarea-fg: var(--sa-color-ink);
+    --sa-textarea-placeholder-fg: var(--sa-color-ink-placeholder);
+    /* Recessed when tactile (--sa-relief 2), as the input; dark mode weights the inset more. */
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;
+    --sa-textarea-shadow: var(--sa-shadow-control),
+      inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
+  }
+  .dark .sa-textarea {
+    --_relief-k: 4;
+  }
+}
+
+@layer sa.components {
+  .sa-textarea {
+    display: flex;
+    width: 100%;
+    min-height: var(--sa-textarea-min-h);
+    field-sizing: content;
+    padding: var(--sa-textarea-py) var(--sa-textarea-px);
+    border: var(--sa-border-width) solid var(--sa-textarea-border);
+    border-radius: var(--sa-textarea-radius);
+    background: var(--sa-textarea-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-textarea-shadow);
+    color: var(--sa-textarea-fg);
+    font-size: var(--sa-textarea-text);
+    line-height: var(--sa-leading-ui);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &::placeholder {
+      color: var(--sa-textarea-placeholder-fg);
+    }
+    &:hover:not(:disabled, :focus-visible) {
+      border-color: var(--sa-textarea-border-hover);
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-textarea-shadow), var(--sa-focus-shadow-field);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-textarea-shadow), var(--sa-invalid-shadow);
+      &:focus-visible {
+        box-shadow: var(--sa-textarea-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:disabled {
+      background: var(--sa-textarea-bg-disabled);
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-textarea {
+      transition-duration: 0s;
+    }
+  }
+}

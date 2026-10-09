@@ -1,0 +1,139 @@
+/* Checkbox: <sa-input type="checkbox">, a native checkbox drawn as a small field, with a sibling check
+   icon, in a wrapper (shared with the radio, radio.css) that centres the icon over it. The tokens sit
+   on the wrapper, as the switch's do, so the icon reads them too. The indeterminate dash is drawn in
+   CSS, since scripts set that state as a DOM property.
+   Replaces: .sa-checkbox, .sa-checkbox-indicator, .sa-checkbox-indicator-icon, .sa-input-control-wrapper */
+
+@layer sa.tokens {
+  .sa-input-control-wrapper {
+    --sa-checkbox-size: calc(4 * var(--sa-unit));
+    --sa-checkbox-icon: calc(3.5 * var(--sa-unit));
+    --sa-checkbox-radius: min(var(--sa-radius-control-sm), 5px); /* square-ish even with pill controls */
+    --sa-checkbox-bg: var(--sa-color-field);
+    --sa-checkbox-border: var(--sa-color-line-control);
+    --sa-checkbox-border-hover: var(--sa-color-line-control-hover);
+    --sa-checkbox-on-bg: var(--sa-color-accent-fill);
+    --sa-checkbox-on-border: var(--sa-color-accent-fill);
+    --sa-checkbox-on-fg: var(--sa-color-on-accent);
+    /* Recessed when tactile (--sa-relief 2), as the input; dark mode weights the inset more. */
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;
+    --sa-checkbox-shadow: var(--sa-shadow-control),
+      inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
+  }
+  .dark .sa-input-control-wrapper {
+    --_relief-k: 4;
+  }
+}
+
+@layer sa.components {
+  /* inline-flex so the wrapper shrink-wraps the control in any container: the icon centres on it. */
+  .sa-input-control-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .sa-checkbox {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-checkbox-size);
+    height: var(--sa-checkbox-size);
+    margin: 0;
+    appearance: none;
+    border: var(--sa-border-width) solid var(--sa-checkbox-border);
+    border-radius: var(--sa-checkbox-radius);
+    background: var(--sa-checkbox-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-checkbox-shadow);
+    cursor: pointer;
+    outline: none;
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    /* A larger hit area around the small box. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: calc(-2 * var(--sa-unit)) calc(-3 * var(--sa-unit));
+    }
+    /* The indeterminate dash. */
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: none;
+      width: calc(2 * var(--sa-unit));
+      height: 2px;
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-checkbox-on-fg);
+      translate: -50% -50%;
+    }
+    &:hover:not(:disabled, :focus-visible, :checked, :indeterminate) {
+      border-color: var(--sa-checkbox-border-hover);
+    }
+    &:is(:checked, :indeterminate) {
+      border-color: var(--sa-checkbox-on-border);
+      background: var(--sa-checkbox-on-bg);
+    }
+    &:indeterminate::before {
+      display: block;
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-checkbox-shadow), var(--sa-focus-shadow-field);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-checkbox-shadow), var(--sa-invalid-shadow);
+      &:is(:checked, :indeterminate) {
+        border-color: var(--sa-checkbox-on-border);
+      }
+      &:focus-visible {
+        box-shadow: var(--sa-checkbox-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: var(--sa-disabled-opacity);
+    }
+  }
+  .sa-checkbox-indicator {
+    visibility: hidden;
+    & > svg {
+      width: var(--sa-checkbox-icon);
+      height: var(--sa-checkbox-icon);
+    }
+  }
+  .sa-checkbox:checked ~ .sa-checkbox-indicator {
+    visibility: visible;
+  }
+  .sa-checkbox-indicator-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: var(--sa-checkbox-on-fg);
+    pointer-events: none;
+    translate: -50% -50%;
+  }
+  /* In a choice card (a field label around the field), the card shows focus instead. */
+  [data-slot="field-label"] .sa-checkbox:focus-visible {
+    border-color: var(--sa-checkbox-border);
+    box-shadow: var(--sa-checkbox-shadow);
+    &:is(:checked, :indeterminate) {
+      border-color: var(--sa-checkbox-on-border);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-checkbox {
+      transition-duration: 0s;
+    }
+  }
+}

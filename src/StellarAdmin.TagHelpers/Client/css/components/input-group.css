@@ -207,13 +207,9 @@
     width: var(--_h);
     padding: 0;
   }
-}
 
-/* Transitional: the in-group textarea is still drawn by the unconverted Textarea rules in Tailwind's
-   components layer, which sits above sa.components, so the group's adjustments to it live there
-   too, after those rules. They move into sa.components when Textarea converts. */
-@layer components {
-  .sa-input-group-textarea {
+  /* The in-group textarea is a textarea (textarea.css); these out-rank its rules by selector. */
+  .sa-input-group .sa-textarea.sa-input-group-textarea {
     flex: 1;
     padding-block: calc(2 * var(--sa-unit));
     resize: none;
@@ -221,11 +217,12 @@
     border-radius: 0;
     background: transparent;
     box-shadow: none;
-    &:is(:focus-visible, [aria-invalid="true"], .input-validation-error) {
+    &:is(:focus-visible, [aria-invalid="true"], .input-validation-error, :disabled) {
+      background: transparent;
       box-shadow: none;
     }
     &:disabled {
-      background: transparent;
+      opacity: 1;
     }
   }
 }

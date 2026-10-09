@@ -1,0 +1,33 @@
+/* Label: a control's caption. Field labels are labels too (field.css), and refine these rules: the
+   label's rules sit at zero specificity under :where() so a field label's own rules win.
+   --sa-label-text, -weight, -font, -transform and -tracking are the section label knobs (tokens.md),
+   not this component's, so its size and weight read the foundation tokens directly.
+   Replaces: .sa-label */
+
+@layer sa.tokens {
+  .sa-label {
+    --sa-label-gap: calc(2 * var(--sa-unit));
+    --sa-label-leading: 1;
+  }
+}
+
+@layer sa.components {
+  :where(.sa-label) {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-label-gap);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-label-leading);
+    user-select: none;
+  }
+  /* A disabled control just before the label, or a field marked disabled. */
+  :where(:disabled ~ .sa-label) {
+    cursor: not-allowed;
+    opacity: var(--sa-disabled-opacity);
+  }
+  :where([data-disabled="true"] .sa-label) {
+    pointer-events: none;
+    opacity: var(--sa-disabled-opacity);
+  }
+}

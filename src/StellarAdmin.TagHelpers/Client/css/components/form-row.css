@@ -1,0 +1,33 @@
+/* Form row: fields side by side in equal columns once the row is wide enough, stacked below that.
+   Replaces: .sa-form-row, .sa-form-row-content */
+
+@layer sa.tokens {
+  .sa-form-row {
+    --sa-form-row-gap: calc(4 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-form-row {
+    container: form-row / inline-size;
+    width: 100%;
+    min-width: 0;
+    gap: var(--sa-form-row-gap);
+  }
+  .sa-form-row-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: inherit;
+    & > * {
+      min-width: 0;
+    }
+  }
+  @container form-row (min-width: 40rem) {
+    .sa-form-row > .sa-form-row-content {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+  }
+}
