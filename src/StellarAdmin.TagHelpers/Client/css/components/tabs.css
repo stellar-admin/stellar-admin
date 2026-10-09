@@ -1,0 +1,170 @@
+/* Tabs: <sa-tab-list> (a tab list of links, default or line variant, horizontal or vertical).
+   Replaces: .sa-tabs, .sa-tabs-list, .sa-tabs-list-variant-default, .sa-tabs-list-variant-line,
+   .sa-tabs-trigger */
+
+@layer sa.tokens {
+  .sa-tabs {
+    --sa-tabs-gap: calc(2 * var(--sa-unit));
+    --sa-tabs-list-h: var(--sa-control-h);
+    --sa-tabs-list-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);   /* a tint, so it separates on any band */
+    --sa-tabs-list-border: transparent;
+    --sa-tabs-list-radius: var(--sa-radius-control);
+    --sa-tabs-list-p: 3px;
+    --sa-tabs-list-gap: 0px;
+    --sa-tabs-trigger-px: calc(1.5 * var(--sa-unit));
+    --sa-tabs-trigger-py: calc(0.5 * var(--sa-unit));
+    --sa-tabs-trigger-gap: calc(1.5 * var(--sa-unit));
+    --sa-tabs-trigger-border: var(--sa-border-width);
+    --sa-tabs-trigger-leading: var(--sa-leading-ui);
+    --sa-tabs-trigger-radius: var(--sa-radius-item);
+    --sa-tabs-trigger-text: var(--sa-text-control);
+    --sa-tabs-trigger-weight: var(--sa-weight-control);
+    --sa-tabs-trigger-icon: var(--sa-control-icon);
+    --sa-tabs-trigger-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --sa-tabs-trigger-fg-hover: var(--sa-color-ink);
+    --sa-tabs-trigger-bg-hover: transparent;
+    --sa-tabs-selected-bg: var(--sa-color-surface);
+    --sa-tabs-selected-fg: var(--sa-color-ink);
+    --sa-tabs-selected-border: transparent;
+    --sa-tabs-selected-shadow: var(--sa-shadow-raised);
+    --sa-tabs-line-gap: calc(1 * var(--sa-unit));
+    --sa-tabs-line-trigger-px: var(--sa-tabs-trigger-px);
+    --sa-tabs-line-trigger-pt: var(--sa-tabs-trigger-py);
+    --sa-tabs-line-trigger-pb: var(--sa-tabs-trigger-py);
+    --sa-tabs-line-trigger-text: var(--sa-tabs-trigger-text);
+    --sa-tabs-line-trigger-weight: var(--sa-tabs-trigger-weight);
+    --sa-tabs-line-trigger-border: var(--sa-tabs-trigger-border);
+    --sa-tabs-line-selected-fg: var(--sa-tabs-selected-fg);
+    --sa-tabs-line-selected-weight: var(--sa-tabs-trigger-weight);
+    --sa-tabs-line-border: transparent;                    /* baseline under a line tab list */
+    --sa-tabs-indicator-bg: var(--sa-color-ink);
+    --sa-tabs-indicator-size: 2px;
+    --sa-tabs-indicator-offset: -5px;                      /* below a horizontal list */
+    --sa-tabs-indicator-offset-vertical: calc(-1 * var(--sa-unit));   /* beside a vertical list */
+  }
+  .dark .sa-tabs {
+    --sa-tabs-trigger-fg: var(--sa-color-ink-muted);
+    --sa-tabs-selected-bg: var(--sa-color-field);
+    --sa-tabs-selected-border: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-tabs {
+    display: flex;
+    gap: var(--sa-tabs-gap);
+    &[data-orientation="horizontal"] { flex-direction: column; }
+  }
+
+  .sa-tabs-list {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-tabs-list-gap);
+    width: fit-content;
+    /* The padding is measured from the outer edge, so a list border does not shrink the triggers' inset. */
+    padding: max(0px, calc(var(--sa-tabs-list-p) - var(--sa-border-width)));
+    border: var(--sa-border-width) solid var(--sa-tabs-list-border);
+    border-radius: var(--sa-tabs-list-radius);
+    background: var(--sa-tabs-list-bg);
+    color: var(--sa-tabs-trigger-fg);
+    .sa-tabs[data-orientation="horizontal"] > & { height: var(--sa-tabs-list-h); }
+    .sa-tabs[data-orientation="vertical"] > & { flex-direction: column; height: fit-content; }
+  }
+
+  .sa-tabs-trigger {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-tabs-trigger-gap);
+    height: calc(100% - 1px);
+    padding: var(--sa-tabs-trigger-py) var(--sa-tabs-trigger-px);
+    border: var(--sa-tabs-trigger-border) solid transparent;
+    border-radius: var(--sa-tabs-trigger-radius);
+    color: var(--sa-tabs-trigger-fg);
+    font-size: var(--sa-tabs-trigger-text);
+    font-weight: var(--sa-tabs-trigger-weight);
+    line-height: var(--sa-tabs-trigger-leading);
+    white-space: nowrap;
+    outline: none;
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--sa-tabs-trigger-icon); height: var(--sa-tabs-trigger-icon); }
+    &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
+    &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
+    &:hover { color: var(--sa-tabs-trigger-fg-hover); background: var(--sa-tabs-trigger-bg-hover); }
+    &[data-active] {
+      border-color: var(--sa-tabs-selected-border);
+      background: var(--sa-tabs-selected-bg);
+      box-shadow: var(--sa-tabs-selected-shadow);
+      color: var(--sa-tabs-selected-fg);
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &[aria-disabled="true"], &:disabled { opacity: var(--sa-disabled-opacity); pointer-events: none; }
+    &[data-disabled] { cursor: not-allowed; }
+    .sa-tabs[data-orientation="vertical"] & { justify-content: flex-start; width: 100%; }
+
+    /* The line variant's indicator. */
+    &::after {
+      content: "";
+      position: absolute;
+      background: var(--sa-tabs-indicator-bg);
+      opacity: 0;
+      transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+  }
+  /* Not nested in ::after: a nested rule cannot follow a pseudo-element. */
+  .sa-tabs[data-orientation="horizontal"] .sa-tabs-trigger::after {
+    inset-inline: 0;
+    bottom: var(--sa-tabs-indicator-offset);
+    height: var(--sa-tabs-indicator-size);
+  }
+  .sa-tabs[data-orientation="vertical"] .sa-tabs-trigger::after {
+    inset-block: 0;
+    right: var(--sa-tabs-indicator-offset-vertical);
+    width: var(--sa-tabs-indicator-size);
+  }
+
+  .sa-tabs-list-variant-line {
+    gap: var(--sa-tabs-line-gap);
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+    .sa-tabs[data-orientation="horizontal"] > & { border-bottom-color: var(--sa-tabs-line-border); }
+    .sa-tabs[data-orientation="vertical"] > & { border-inline-end-color: var(--sa-tabs-line-border); }
+
+    & .sa-tabs-trigger {
+      padding: var(--sa-tabs-line-trigger-pt) var(--sa-tabs-line-trigger-px) var(--sa-tabs-line-trigger-pb);
+      border-width: var(--sa-tabs-line-trigger-border);
+      background: transparent;
+      font-size: var(--sa-tabs-line-trigger-text);
+      font-weight: var(--sa-tabs-line-trigger-weight);
+      &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
+      &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
+    }
+    & .sa-tabs-trigger[data-active] {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      color: var(--sa-tabs-line-selected-fg);
+      font-weight: var(--sa-tabs-line-selected-weight);
+      &::after { opacity: 1; }
+    }
+    & .sa-tabs-trigger:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-tabs-trigger, .sa-tabs-trigger::after { transition-duration: 0s; }
+  }
+}

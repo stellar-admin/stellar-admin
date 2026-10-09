@@ -1,0 +1,37 @@
+/* Group: <sa-group>, a row of items with a gap from a five-step scale, alignment and justification.
+   Replaces: .sa-group, .sa-group-align-baseline, .sa-group-align-center, .sa-group-align-end,
+   .sa-group-align-start, .sa-group-align-stretch, .sa-group-gap-xs, .sa-group-gap-sm, .sa-group-gap-md,
+   .sa-group-gap-lg, .sa-group-gap-xl, .sa-group-justify-around, .sa-group-justify-between,
+   .sa-group-justify-center, .sa-group-justify-end, .sa-group-justify-start */
+
+@layer sa.tokens {
+  .sa-group {
+    --sa-group-gap-xs: calc(1 * var(--sa-unit));
+    --sa-group-gap-sm: calc(2 * var(--sa-unit));
+    --sa-group-gap: calc(4 * var(--sa-unit));   /* GroupGap.Default */
+    --sa-group-gap-lg: calc(5 * var(--sa-unit));
+    --sa-group-gap-xl: calc(8 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-group {
+    display: flex;
+    flex-direction: row;
+  }
+  .sa-group-gap-xs { column-gap: var(--sa-group-gap-xs); }
+  .sa-group-gap-sm { column-gap: var(--sa-group-gap-sm); }
+  .sa-group-gap-md { column-gap: var(--sa-group-gap); }
+  .sa-group-gap-lg { column-gap: var(--sa-group-gap-lg); }
+  .sa-group-gap-xl { column-gap: var(--sa-group-gap-xl); }
+  .sa-group-align-start { align-items: flex-start; }
+  .sa-group-align-center { align-items: center; }
+  .sa-group-align-end { align-items: flex-end; }
+  .sa-group-align-baseline { align-items: baseline; }
+  .sa-group-align-stretch { align-items: stretch; }
+  .sa-group-justify-start { justify-content: flex-start; }
+  .sa-group-justify-center { justify-content: center; }
+  .sa-group-justify-end { justify-content: flex-end; }
+  .sa-group-justify-between { justify-content: space-between; }
+  .sa-group-justify-around { justify-content: space-around; }
+}

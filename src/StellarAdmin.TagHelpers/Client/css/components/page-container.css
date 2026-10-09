@@ -1,0 +1,30 @@
+/* Page container: <sa-page-container>, the padded, centred column a page's content sits in, full width
+   or capped at one of three widths.
+   Replaces: .sa-page-container, .sa-page-container-width-large, .sa-page-container-width-medium,
+   .sa-page-container-width-small */
+
+@layer sa.tokens {
+  .sa-page-container {
+    --sa-page-container-gap: calc(5 * var(--sa-unit));
+    --sa-page-container-p: calc(5 * var(--sa-unit));
+    --sa-page-container-p-lg: calc(8 * var(--sa-unit));   /* from 48rem wide */
+    --sa-page-container-max-w-sm: 42rem;
+    --sa-page-container-max-w-md: 56rem;
+    --sa-page-container-max-w-lg: 72rem;
+  }
+}
+
+@layer sa.components {
+  .sa-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-page-container-gap);
+    width: 100%;
+    margin-inline: auto;
+    padding: var(--sa-page-container-p);
+    @media (width >= 48rem) { padding: var(--sa-page-container-p-lg); }
+  }
+  .sa-page-container-width-small { max-width: var(--sa-page-container-max-w-sm); }
+  .sa-page-container-width-medium { max-width: var(--sa-page-container-max-w-md); }
+  .sa-page-container-width-large { max-width: var(--sa-page-container-max-w-lg); }
+}

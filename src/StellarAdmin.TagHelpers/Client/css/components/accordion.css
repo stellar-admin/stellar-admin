@@ -1,0 +1,90 @@
+/* Accordion: <sa-accordion>, a column of <details> items whose summary is the trigger.
+   Replaces: .sa-accordion, .sa-accordion-item, .sa-accordion-trigger, .sa-accordion-trigger-icon,
+   .sa-accordion-content, .sa-accordion-content-inner */
+
+@layer sa.tokens {
+  .sa-accordion {
+    --sa-accordion-border: var(--sa-color-line);
+    --sa-accordion-trigger-py: calc(2.5 * var(--sa-unit));
+    --sa-accordion-trigger-radius: var(--sa-radius-control);
+    --sa-accordion-trigger-text: var(--sa-text-sm);
+    --sa-accordion-trigger-weight: var(--sa-weight-control);
+    --sa-accordion-trigger-decoration-hover: underline;
+    --sa-accordion-trigger-icon: var(--sa-control-icon);
+    --sa-accordion-trigger-icon-fg: var(--sa-color-ink-muted);
+    --sa-accordion-content-text: var(--sa-text-sm);
+    --sa-accordion-content-pb: calc(2.5 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-accordion {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .sa-accordion-item:not(:last-child) {
+    border-bottom: var(--sa-border-width) solid var(--sa-accordion-border);
+  }
+
+  .sa-accordion-trigger {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-block: var(--sa-accordion-trigger-py);
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-accordion-trigger-radius);
+    font-size: var(--sa-accordion-trigger-text);
+    line-height: var(--sa-leading-ui);
+    font-weight: var(--sa-accordion-trigger-weight);
+    text-align: left;
+    list-style: none;
+    cursor: default;
+    outline: none;
+    transition-property: color, border-color, box-shadow;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+    &::-webkit-details-marker { display: none; }
+    &:hover { text-decoration: var(--sa-accordion-trigger-decoration-hover); }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    details[disabled] > & {
+      opacity: var(--sa-disabled-opacity);
+      pointer-events: none;
+    }
+  }
+  .sa-accordion-trigger-icon {
+    color: var(--sa-accordion-trigger-icon-fg);
+    & > svg {
+      display: block;
+      width: var(--sa-accordion-trigger-icon);
+      height: var(--sa-accordion-trigger-icon);
+      transition: rotate 300ms var(--sa-motion-ease);
+      details[open] > .sa-accordion-trigger & { rotate: 180deg; }
+    }
+  }
+
+  .sa-accordion-content {
+    overflow: hidden;
+    font-size: var(--sa-accordion-content-text);
+    line-height: var(--sa-leading-ui);
+    details[disabled]:not([open]) > summary + & { display: none; }
+  }
+  .sa-accordion-content-inner {
+    padding-bottom: var(--sa-accordion-content-pb);
+    & a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      &:hover { color: var(--sa-color-ink); }
+    }
+    & p:not(:last-child) { margin-bottom: calc(4 * var(--sa-unit)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-accordion-trigger, .sa-accordion-trigger-icon > svg { transition-duration: 0s; }
+  }
+}
