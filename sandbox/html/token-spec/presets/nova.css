@@ -1,0 +1,16 @@
+/* Knob preset: Nova-like. Neutral greys, a near-black accent, 10px corners, Geist. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.205 0 0);
+    --sa-accent-dark: oklch(0.87 0 0);
+    --sa-neutral-chroma: 0;
+    --sa-accent-tint: 0;
+    --sa-surface-depth: 0;
+    --sa-nav-tint: 0.4;
+    --sa-radius: 0.625rem;
+    --sa-radius-outer: 0.875rem;
+    --sa-elevation: 1;
+    --sa-font-sans: "Geist", system-ui, sans-serif;
+    --sa-weight-heading: 500;
+  }
+}

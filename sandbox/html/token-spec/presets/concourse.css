@@ -1,0 +1,34 @@
+/* Knob preset: Concourse. In the spirit of the shipped Concourse theme: cool grey, steel blue, 4px
+   corners, bold uppercase labels on banded table heads, an offset focus ring, outlined parts, raised
+   buttons, a solid destructive and a bordered secondary. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.5 0.14 245);
+    --sa-danger: oklch(0.52 0.19 27);
+    --sa-neutral-hue: 250;
+    --sa-neutral-chroma: 0.006;
+    --sa-accent-tint: 0;
+    --sa-radius: 4px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-elevation: 1;
+    --sa-density: 1.06;
+    --sa-font-sans: "Source Sans 3", system-ui, sans-serif;
+    --sa-weight-control: 600;
+    --sa-weight-heading: 700;
+    --sa-label-transform: uppercase;
+    --sa-label-tracking: 0.07em;
+    --sa-footer-fill: 0;
+    --sa-col-head-label: 1;
+    --sa-col-head-fill: 1;
+    --sa-col-head-case: var(--sa-label-transform);
+    --sa-relief: 1;
+    --sa-press-offset: 0px;
+    --sa-danger-fill: 1;
+    --sa-secondary-fill: 0;
+    --sa-link-decoration: underline;
+    --sa-focus-width: 2px;
+    --sa-focus-offset: 1px;
+    --sa-focus-color: var(--sa-color-accent);
+  }
+}

@@ -1,0 +1,27 @@
+/* Knob preset: Terminal. Square, monospaced, dense, green. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.62 0.17 150);
+    --sa-neutral-hue: 150;
+    --sa-neutral-chroma: 0.01;
+    --sa-accent-tint: 0.5;
+    --sa-surface-depth: 0.3;
+    --sa-line-strength: 1.3;
+    --sa-radius: 0px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-elevation: 0;
+    --sa-density: 0.85;
+    --sa-type-scale: 0.86;
+    --sa-focus-width: 1px;
+    --sa-focus-offset: 1px;
+    --sa-font-sans: "JetBrains Mono", ui-monospace, monospace;
+    --sa-label-transform: uppercase;
+    --sa-label-tracking: 0.08em;
+    --sa-footer-fill: 0;
+    --sa-col-head-label: 1;
+    --sa-col-head-fill: 1;
+    --sa-col-head-case: var(--sa-label-transform);
+    --sa-current-fill: 1;
+  }
+}

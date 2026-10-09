@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token spec concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@400;500;600&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&family=Lexend:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // ?frame=1[&preset=name]&mode=light|dark[&sample=index] renders one specimen from the token engine
+  // (tokens.css + components.css + an optional preset), or, with sample=index, the Dashboard's resource
+  // index page instead of the component specimen; ?frame=1&engine=bundle&preset=name renders the
+  // shipped bundle for a preset that reproduces one. Without ?frame the page is the comparison shell.
+  const params = new URLSearchParams(location.search);
+  // Presets, with the shipped bundle each reproduces (if any).
+  const PRESETS = { base: null, nova: "shadcn.nova", concourse: "concourse", ledger: "ledger",
+    editorial: null, ops: null, soft: null, terminal: null, workshop: null };
+  const FRAME = params.has("frame");
+  const preset = params.get("preset") in PRESETS ? params.get("preset") : "base";
+  const engine = params.get("engine") === "bundle" && PRESETS[preset] ? "bundle" : "tokens";
+  const mode = params.get("mode") === "dark" ? "dark" : "light";
+  if (FRAME) {
+    document.documentElement.classList.toggle("dark", mode === "dark");
+    const sheets = engine === "bundle"
+      ? [`../../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${PRESETS[preset]}.css`]
+      : ["tokens.css", "components.css", preset !== "base" && `presets/${preset}.css`].filter(Boolean);
+    for (const href of sheets) document.write(`<link rel="stylesheet" href="${href}">`);
+  }
+</script>
+<style>
+  /* Page chrome only. Unlayered, and it styles only .demo-* classes, so it never competes with
+     either engine. Colours come from the tier 1 tokens; the bundle pane only shows components. */
+  .demo-specimen { display: grid; gap: 28px; padding: 24px; max-width: 760px; margin: 0 auto; }
+  .demo-section { display: grid; gap: 12px; }
+  .demo-h { font: 500 11px/1 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--sa-color-ink-muted); }
+  .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .demo-fields { display: grid; gap: 14px; }
+  .demo-field { display: grid; gap: 6px; }
+  .demo-label { font-size: 13px; font-weight: 500; }
+  .demo-hint { font-size: 12px; color: var(--sa-color-ink-muted); }
+  .demo-error { font-size: 12px; color: var(--sa-color-danger-text); }
+  .demo-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .demo-scope { padding: 16px; background: var(--sa-color-canvas); color: var(--sa-color-ink); border-radius: 4px; }
+  .demo-footer-end { margin-left: auto; display: flex; gap: 8px; }
+  .demo-right { text-align: right !important; font-variant-numeric: tabular-nums; }
+  .demo-mono { font-family: ui-monospace, monospace; font-size: 0.92em; }
+  @media (max-width: 560px) { .demo-grid-2 { grid-template-columns: 1fr; } }
+  /* Overlays shown in place: menus as open popovers, the dialog without its modal positioning. */
+  .demo-menus { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .demo-menu[popover] { display: block; position: relative; inset: auto; margin: 0; width: 14rem; opacity: 1; }
+  /* Toasts shown in place: the stack's absolute positioning and transforms reset. */
+  .demo-toasts { display: grid; gap: 12px; max-width: 24rem; }
+  .demo-toast.sa-toast { position: relative; inset: auto; height: auto; transform: none; z-index: auto; }
+  .demo-switches { gap: 20px; }
+  .demo-switch-label { font-size: 14px; gap: 8px; }
+  .demo-stage { padding: 32px 16px; background: color-mix(in oklab, var(--sa-color-ink) 6%, var(--sa-color-canvas)); border-radius: 4px; }
+  .demo-dialog[open] { position: relative; inset: auto; margin: 0 auto; }
+  .demo-sidebar-frame { position: relative; height: 560px; overflow: hidden; transform: translateZ(0); box-shadow: 0 0 0 1px var(--sa-color-line); }
+  .demo-sidebar-frame .sa-sidebar-wrapper { min-height: 0; height: 100%; }
+  .demo-sidebar-frame :is(.sa-sidebar-container, .sa-sidebar-gap) { height: 100%; }
+  .demo-brand { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 6px; background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); }
+  .demo-brand svg { width: 1rem; height: 1rem; }
+  .demo-avatar { background: var(--sa-color-surface-sunken); color: var(--sa-color-ink); }
+  .demo-two-line { display: grid; flex: 1; min-width: 0; line-height: 1.25; text-align: left; }
+  .demo-two-line b { font-weight: 600; font-size: 0.875rem; }
+  .demo-two-line small { font-size: 0.75rem; color: var(--sa-color-ink-muted); }
+  .demo-between { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .demo-search { width: 16rem; max-width: 100%; }
+  .demo-actions { width: 1px; white-space: nowrap; }
+  .demo-actions .sa-button + .sa-button { margin-inline-start: 4px; }
+  .demo-main { padding: 16px; font-size: 13px; color: var(--sa-color-ink-muted); }
+
+  /* Shell */
+  body.demo-shell { margin: 0; font: 14px/1.5 system-ui, sans-serif; background: #f4f4f5; color: #18181b; }
+  .demo-bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 12px 16px; background: #fff; border-bottom: 1px solid #e4e4e7; }
+  .demo-bar strong { font-weight: 600; margin-right: 8px; }
+  .demo-seg { display: inline-flex; border: 1px solid #d4d4d8; border-radius: 6px; overflow: hidden; }
+  .demo-seg button { font: inherit; font-size: 13px; padding: 4px 10px; border: 0; background: #fff; color: inherit; cursor: pointer; }
+  .demo-seg button + button { border-left: 1px solid #d4d4d8; }
+  .demo-seg button[aria-pressed="true"] { background: #18181b; color: #fff; }
+  .demo-panes { display: grid; grid-template-columns: repeat(var(--panes, 2), minmax(0, 1fr)); gap: 1px; background: #d4d4d8; }
+  .demo-pane { background: #fff; min-width: 0; }
+  .demo-pane header { padding: 8px 16px; font-size: 12px; color: #52525b; border-bottom: 1px solid #e4e4e7; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .demo-pane header b { color: #18181b; font-weight: 600; }
+  .demo-pane iframe { display: block; width: 100%; border: 0; height: 2400px; }
+  @media (max-width: 900px) { .demo-panes { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script>
+const ICONS = {
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+  plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  bag: '<path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2"/><path d="M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/><path d="M10 20h4"/><circle cx="16" cy="20" r="2"/><circle cx="8" cy="20" r="2"/>',
+  cog: '<circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+  logout: '<path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  chevron: '<path d="m9 18 6-6-6-6"/>',
+  chevrons: '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>',
+  home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  ticket: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  hotel: '<path d="M10 22v-6.57"/><path d="M12 11h.01"/><path d="M12 7h.01"/><path d="M14 15.43V22"/><path d="M15 16a5 5 0 0 0-6 0"/><path d="M16 11h.01"/><path d="M16 7h.01"/><path d="M8 11h.01"/><path d="M8 7h.01"/><rect x="4" y="2" width="16" height="20" rx="2"/>',
+  chart: '<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  first: '<path d="m17 18-6-6 6-6"/><path d="M7 6v12"/>',
+  prev: '<path d="m15 18-6-6 6-6"/>',
+  last: '<path d="m7 18 6-6-6-6"/><path d="M17 6v12"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
+  sort: '<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>',
+  up: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+  pin: '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  success: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  warning: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  error: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+};
+const icon = (name, slot = "") =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${slot ? ` data-icon="${slot}"` : ""}>${ICONS[name]}</svg>`;
+
+// Markup mirrors what the tag helpers emit.
+const button = (label, { variant = "default", size = "default", ic, slot = "inline-start", attrs = "" } = {}) =>
+  `<button type="button" data-slot="button" class="sa-button group/button sa-button-variant-${variant} sa-button-size-${size}"${attrs}>${ic ? icon(ic, label ? slot : "") : ""}${label}</button>`;
+const chip = (label, { code, ic, remove, disabled } = {}) =>
+  `<span data-slot="chip" class="sa-chip"${disabled ? " data-disabled" : ""}>${ic ? icon(ic) : ""}${code ? `<code>${code}</code>` : ""}${label}${remove ? `<button type="button" aria-label="Remove ${label}" data-slot="chip-remove" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-xs sa-chip-remove"${disabled ? " disabled" : ""}>${icon("x")}</button>` : ""}</span>`;
+const badge = (label, { variant = "default", ic, href } = {}) => {
+  const tag = href ? "a" : "span";
+  return `<${tag}${href ? ' href="#"' : ""} data-slot="badge" class="sa-badge group/badge sa-badge-variant-${variant}">${ic ? icon(ic, "inline-start") : ""}${label}</${tag}>`;
+};
+const switchEl = (label, { checked, size = "default", disabled, invalid } = {}) =>
+  `<label class="demo-row demo-switch-label"><span data-slot="switch" data-size="${size}" class="sa-switch-wrapper group/switch"><input type="checkbox" role="switch" data-slot="switch-input" class="sa-switch peer"${checked ? " checked" : ""}${disabled ? " disabled" : ""}${invalid ? ' aria-invalid="true"' : ""}><span data-slot="switch-thumb" class="sa-switch-thumb"></span></span>${label}</label>`;
+// A toast as sel-toaster fills the template: only the icon for its type is kept.
+const toast = (title, description, { type = "default", action } = {}) => `
+  <div data-slot="toast" tabindex="0" role="dialog" aria-modal="false" class="sa-toast demo-toast" data-type="${type}">
+    <div data-slot="toast-content" class="sa-toast-content">
+      ${type === "default" ? "" : `<span data-slot="toast-icon" class="sa-toast-icon">${icon(type).replace("<svg ", `<svg data-toast-icon="${type}" `)}</span>`}
+      <div data-slot="toast-text" class="sa-toast-text"><div data-slot="toast-title" class="sa-toast-title">${title}</div>${description ? `<div data-slot="toast-description" class="sa-toast-description">${description}</div>` : ""}</div>
+      ${action ? `<a href="#" data-slot="toast-action" class="sa-toast-action sa-button group/button sa-button-variant-outline sa-button-size-sm">${action}</a>` : ""}
+      <button type="button" data-slot="toast-close" aria-label="Close toast" class="sa-toast-close sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">${icon("x")}</button>
+    </div>
+  </div>`;
+const card = ({ title, description, content, footer, size = "default", attrs = "" }) => `
+  <div class="sa-card group/card" data-slot="card" data-size="${size}"${attrs}>
+    <div class="sa-card-header" data-slot="card-header">
+      <div class="sa-card-title" data-slot="card-title">${title}</div>
+      ${description ? `<div class="sa-card-description" data-slot="card-description">${description}</div>` : ""}
+    </div>
+    <div class="sa-card-content" data-slot="card-content">${content}</div>
+    ${footer ? `<div class="sa-card-footer" data-slot="card-footer">${footer}</div>` : ""}
+  </div>`;
+
+const item = (label, { ic, shortcut, variant = "default", attrs = "" } = {}) =>
+  `<div role="menuitem" tabindex="-1" data-slot="dropdown-menu-item" data-variant="${variant}" class="sa-dropdown-menu-item group/dropdown-menu-item"${attrs}>${ic ? icon(ic) : ""}${label}${shortcut ? `<span data-slot="dropdown-menu-shortcut" class="sa-dropdown-menu-shortcut">${shortcut}</span>` : ""}</div>`;
+const checkItem = (label, checked) =>
+  `<div role="menuitemcheckbox" tabindex="-1" aria-checked="${checked}" data-slot="dropdown-menu-checkbox-item" data-state="${checked ? "checked" : "unchecked"}" class="sa-dropdown-menu-checkbox-item"><span class="sa-dropdown-menu-item-indicator" data-slot="dropdown-menu-checkbox-item-indicator">${icon("check")}</span>${label}</div>`;
+const sep = `<div role="separator" aria-orientation="horizontal" data-slot="dropdown-menu-separator" class="sa-dropdown-menu-separator"></div>`;
+const menu = (extra = "") => `
+  <sel-dropdown-menu class="sa-dropdown-menu-content sa-dropdown-menu-content-logical anchored-bottom-span-right w-56 demo-menu${extra}" popover="" role="menu" data-slot="dropdown-menu-content" data-side="bottom">
+    <div data-slot="dropdown-menu-label" class="sa-dropdown-menu-label">My account</div>
+    ${sep}
+    <div role="group" data-slot="dropdown-menu-group">
+      ${item("Profile", { ic: "user", shortcut: "⇧⌘P" })}
+      ${item("My bookings", { ic: "bag", shortcut: "⌘B" })}
+      <div role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded="true" data-open="" data-slot="dropdown-menu-sub-trigger" class="sa-dropdown-menu-sub-trigger">${icon("pin")}Add destination${icon("chevron")}</div>
+      ${item("Settings", { ic: "cog", shortcut: "⌘," })}
+    </div>
+    ${sep}
+    <div data-slot="dropdown-menu-label" class="sa-dropdown-menu-label">Show</div>
+    ${checkItem("Flights", true)}${checkItem("Car rental", false)}
+    ${sep}
+    ${item("Log out", { ic: "logout", variant: "destructive", shortcut: "⇧⌘Q" })}
+  </sel-dropdown-menu>`;
+
+const tab = (label, { active, ic } = {}) =>
+  `<a href="#" role="tab" data-slot="tabs-trigger" aria-selected="${!!active}"${active ? ' data-active=""' : ""} aria-disabled="false" class="sa-tabs-trigger">${ic ? icon(ic) : ""}${label}</a>`;
+const tabs = (variant, withIcons) => `
+  <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs"><div class="sa-tabs-list group/tabs-list sa-tabs-list-variant-${variant}" data-slot="tabs-list" data-variant="${variant}">
+    ${tab("Flights", { ic: withIcons && "plane" })}${tab("Accommodation", { active: true, ic: withIcons && "hotel" })}${tab("Car rental", { ic: withIcons && "ticket" })}
+  </div></div>`;
+
+const dialog = `
+  <div class="demo-stage">
+    <dialog open data-open="" data-slot="dialog-content" class="sa-dialog-content demo-dialog">
+      <div data-slot="dialog-header" class="sa-dialog-header">
+        <h2 data-slot="dialog-title" class="sa-dialog-title sa-font-heading font-heading">Edit traveller</h2>
+        <p data-slot="dialog-description" class="sa-dialog-description">Update the lead traveller for VY-2049. Click save when you're done.</p>
+      </div>
+      <div class="demo-fields">
+        <div class="demo-field"><label class="demo-label">Name</label><input class="sa-input" data-slot="input" value="Ibn Battuta"></div>
+        <div class="demo-field"><label class="demo-label">Username</label><input class="sa-input" data-slot="input" value="@ibnbattuta"></div>
+      </div>
+      <div data-slot="dialog-footer" class="sa-dialog-footer">${button("Cancel", { variant: "outline" })}${button("Save changes")}</div>
+    </dialog>
+  </div>`;
+
+const navButton = (label, { ic, active, size = "default", badge, sub } = {}) => `
+  <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item">
+    <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="${size}"${active ? ' data-active="true"' : ""} class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-${size} sa-sidebar-menu-button-variant-default">${icon(ic)}<span>${label}</span></a>
+    ${badge ? `<div data-slot="sidebar-menu-badge" data-sidebar="menu-badge" class="sa-sidebar-menu-badge">${badge}</div>` : ""}
+    ${sub ? `<ul data-slot="sidebar-menu-sub" data-sidebar="menu-sub" class="sa-sidebar-menu-sub">${sub.map(x => `<li data-slot="sidebar-menu-sub-item" data-sidebar="menu-sub-item" class="sa-sidebar-menu-sub-item group/menu-sub-item"><a href="#" data-slot="sidebar-menu-sub-button" data-sidebar="menu-sub-button" data-size="md" class="sa-sidebar-menu-sub-button"><span>${x}</span></a></li>`).join("")}</ul>` : ""}
+  </li>`;
+const navGroup = (label, items) => `
+  <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+    <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">${label}</div>
+    <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content"><ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">${items}</ul></div>
+  </div>`;
+const lgButton = (inner) => `<ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu"><li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">${inner}</a></li></ul>`;
+const sidebar = `
+  <div class="demo-sidebar-frame">
+    <sel-sidebar data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper group/sidebar-wrapper">
+      <div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar group peer"><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+        <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">${lgButton(`<div class="demo-brand">${icon("plane")}</div><div class="demo-two-line"><b>Voyager Travel</b><small>Admin console</small></div>`)}</div>
+        <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content">
+          ${navGroup("Platform", navButton("Dashboard", { ic: "home" }) + navButton("Bookings", { ic: "ticket", active: true, badge: 12 }) + navButton("Destinations", { ic: "globe", sub: ["Europe", "Asia Pacific", "The Americas"] }) + navButton("Customers", { ic: "users" }))}
+          <div data-slot="separator" data-sidebar="separator" class="sa-separator sa-separator-horizontal sa-sidebar-separator" role="separator" aria-orientation="horizontal" data-orientation="horizontal"></div>
+          ${navGroup("Operations", navButton("Flights", { ic: "plane", badge: 3 }) + navButton("Hotels", { ic: "hotel" }) + navButton("Reports", { ic: "chart" }))}
+        </div>
+        <div data-slot="sidebar-footer" data-sidebar="footer" class="sa-sidebar-footer">${lgButton(`<div class="demo-brand demo-avatar">${icon("user")}</div><div class="demo-two-line"><b>Amelia Hart</b><small>amelia@voyager.travel</small></div>${icon("chevrons")}`)}</div>
+      </div></div></div>
+      <main data-slot="sidebar-inset" class="sa-sidebar-inset"><div class="demo-main">Bookings · 12 awaiting confirmation</div></main>
+    </sel-sidebar>
+  </div>`;
+
+// Pagination markup as sa-pagination and the data grid pager emit it.
+const pageLink = (label, { active, size = "default", cls = "", attrs = "" } = {}) =>
+  `<li data-slot="pagination-item"><a href="#"${active ? ' aria-current="page"' : ""} data-slot="pagination-link" data-active="${!!active}" class="sa-button group/button sa-button-variant-${active ? "outline" : "ghost"} sa-button-size-${size} sa-pagination-link${cls}"${attrs}>${label}</a></li>`;
+const ellipsis = `<li data-slot="pagination-item"><span aria-hidden="true" data-slot="pagination-ellipsis" class="sa-pagination-ellipsis">${icon("more")}</span></li>`;
+const pager = `
+  <nav role="navigation" aria-label="pagination" data-slot="pagination" class="sa-pagination"><ul data-slot="pagination-content" class="sa-pagination-content">
+    ${pageLink(`${icon("first")}<span class="sa-pagination-link-label">First</span>`, { cls: " sa-pagination-previous" })}
+    ${pageLink(`${icon("prev")}<span class="sa-pagination-link-label">Previous</span>`, { cls: " sa-pagination-previous" })}
+    ${pageLink("1")}${pageLink("2", { active: true })}${pageLink("3")}${ellipsis}${pageLink("10")}${pageLink("11")}
+    ${pageLink(`<span class="sa-pagination-link-label">Next</span>${icon("chevron")}`, { cls: " sa-pagination-next" })}
+    ${pageLink(`<span class="sa-pagination-link-label">Last</span>${icon("last")}`, { cls: " sa-pagination-next" })}
+  </ul></nav>`;
+const gridPager = `
+  <nav role="navigation" aria-label="pagination" data-slot="data-grid-pager" class="sa-pagination" style="width:auto;margin:0"><ul data-slot="pagination-content" class="sa-pagination-content">
+    ${pageLink(icon("prev"), { size: "icon-sm", cls: " sa-pagination-previous", attrs: ' aria-label="Go to previous page"' })}
+    ${pageLink("1", { size: "icon-sm" })}${pageLink("2", { size: "icon-sm", active: true })}${pageLink("3", { size: "icon-sm" })}${ellipsis}${pageLink("12", { size: "icon-sm" })}
+    ${pageLink(icon("chevron"), { size: "icon-sm", cls: " sa-pagination-next", attrs: ' aria-label="Go to next page"' })}
+  </ul></nav>`;
+
+const BOOKINGS = [
+  { id: "VY-2049", who: "Amara Okafor", route: ["LIS", "Lisbon"], status: "Confirmed", total: "€2,480.00" },
+  { id: "VY-2051", who: "Kenji Watanabe", route: ["KIX", "Kyoto"], status: "Awaiting payment", total: "€3,915.50", selected: true },
+  { id: "VY-2058", who: "Lena Fischer", route: ["CPT", "Cape Town"], status: "Confirmed", total: "€1,760.00" },
+  { id: "VY-2063", who: "Mateo Rossi", route: ["REK", "Reykjavík"], status: "Cancelled", total: "€0.00" },
+];
+const table = (rows) => `
+  <div class="sa-table-container" data-slot="table-container">
+    <table class="sa-table" data-slot="table">
+      <thead class="sa-table-header" data-slot="table-header">
+        <tr class="sa-table-row" data-slot="table-row">
+          <th class="sa-table-head" data-slot="table-head">Booking</th>
+          <th class="sa-table-head" data-slot="table-head">Traveller</th>
+          <th class="sa-table-head" data-slot="table-head">Destination</th>
+          <th class="sa-table-head" data-slot="table-head">Status</th>
+          <th class="sa-table-head demo-right" data-slot="table-head">Total</th>
+          <th class="sa-table-head" data-slot="table-head"><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="sa-table-body" data-slot="table-body">
+        ${rows.map(b => `
+        <tr class="sa-table-row" data-slot="table-row"${b.selected ? ' data-state="selected"' : ""}>
+          <td class="sa-table-cell demo-mono" data-slot="table-cell">${b.id}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${b.who}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${chip(b.route[1], { code: b.route[0] })}</td>
+          <td class="sa-table-cell" data-slot="table-cell">${b.status}</td>
+          <td class="sa-table-cell demo-right" data-slot="table-cell">${b.total}</td>
+          <td class="sa-table-cell" data-slot="table-cell" style="width:1px">${button("", { variant: "ghost", size: "icon-sm", ic: "more", attrs: ' aria-label="Actions"' })}</td>
+        </tr>`).join("")}
+      </tbody>
+      <tfoot class="sa-table-footer" data-slot="table-footer">
+        <tr class="sa-table-row" data-slot="table-row">
+          <td class="sa-table-cell" data-slot="table-cell" colspan="4">${rows.length} bookings</td>
+          <td class="sa-table-cell demo-right" data-slot="table-cell">€8,155.50</td>
+          <td class="sa-table-cell" data-slot="table-cell"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>`;
+
+const formCard = (title = "Lead traveller") => card({
+  title,
+  description: "Contact details for booking VY-2049, Lisbon city break.",
+  content: `
+    <div class="demo-fields">
+      <div class="demo-grid-2">
+        <div class="demo-field"><label class="demo-label" for="n-${title.length}">Full name</label><input class="sa-input" data-slot="input" id="n-${title.length}" value="Amara Okafor"></div>
+        <div class="demo-field"><label class="demo-label">Email</label><input class="sa-input" data-slot="input" type="email" placeholder="name@example.com"></div>
+      </div>
+      <div class="demo-grid-2">
+        <div class="demo-field"><label class="demo-label">Passport number</label><input class="sa-input" data-slot="input" value="X12" aria-invalid="true"><span class="demo-error">Enter all 9 characters.</span></div>
+        <div class="demo-field"><label class="demo-label">Loyalty tier</label><input class="sa-input" data-slot="input" value="Voyager Gold" disabled></div>
+      </div>
+      <div class="demo-field">
+        <label class="demo-label">Wish-list destinations</label>
+        <div data-slot="chip-group" class="sa-chip-group" data-appearance="input">
+          ${chip("Lisbon", { remove: true })}${chip("Kyoto", { remove: true })}${chip("Cape Town", { remove: true })}
+          <input placeholder="Add a city…" aria-label="Add a city">
+        </div>
+      </div>
+    </div>`,
+  footer: `<span class="demo-hint">Saved 2 minutes ago</span><div class="demo-footer-end">${button("Cancel", { variant: "outline" })}${button("Save traveller")}</div>`,
+});
+
+// The Dashboard's resource index page (_IndexPage + _IndexDataGrid), as the tag helpers emit it.
+const PRODUCTS = [
+  [7, "STA-007", 14, "0.5 mm Mechanical Pencils", "4.99"], [147, "TRV-012", 1, "10 L Dry Bag", "24.99"],
+  [67, "KIT-007", 5, "20 cm Chef Knife", "54.99"], [143, "TRV-008", 10, "20 L Hiking Daypack", "69.99"],
+  [27, "DSK-012", 2, "30 cm Aluminum Ruler", "8.99"], [94, "ELE-004", 7, "65 W USB-C GaN Charger", "49.99"],
+  [68, "KIT-008", 5, "9 cm Paring Knife", "19.99"], [14, "STA-014", 1, "A4 Copy Paper, 500 Sheets", "11.99"],
+  [2, "STA-002", 1, "A4 Dot Grid Notebook, 160 Pages", "10.99"], [1, "STA-001", 1, "A5 Ruled Notebook, 192 Pages", "8.99"],
+];
+const sortHead = (label, dir) =>
+  `<th class="sa-table-head" data-slot="table-head"><a href="#" data-slot="data-grid-sort-link" data-active="${!!dir}" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm">${label}${icon(dir ? "up" : "sort")}</a></th>`;
+const indexPage = () => `
+  <div data-slot="page-container" class="sa-page-container">
+    <header data-slot="page-header" class="sa-page-header">
+      <h1 data-slot="page-header-title" class="sa-page-header-title">Products</h1>
+      <div data-slot="page-header-actions" class="sa-page-header-actions"><a href="#" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Create</a></div>
+      <nav aria-label="Page sections" data-slot="page-header-nav" class="sa-page-header-nav"><div class="demo-between">
+        <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs"><div class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default" data-slot="tabs-list" data-variant="default">
+          ${tab("All products", { active: true })}${tab("Under 50")}${tab("50 and over")}
+        </div></div>
+        <div role="group" data-slot="input-group" class="sa-input-group group/input-group demo-search">
+          <input placeholder="Search products..." aria-label="Search products..." name="search" data-slot="input-group-control" class="sa-input sa-input-group-input">
+          <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">${icon("search")}</div>
+        </div>
+      </div></nav>
+    </header>
+    <div data-slot="data-grid" class="sa-data-grid sa-card group/card">
+      <div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table">
+        <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">
+          <th class="sa-table-head" data-slot="table-head">ID</th>${sortHead("SKU")}${sortHead("Category ID")}${sortHead("Name", "asc")}${sortHead("Unit price")}
+          <th class="sa-table-head demo-actions" data-slot="table-head"></th>
+        </tr></thead>
+        <tbody class="sa-table-body" data-slot="table-body">${PRODUCTS.map(([id, sku, cat, name, price]) => `
+          <tr class="sa-table-row" data-slot="table-row">
+            <td class="sa-table-cell" data-slot="table-cell">${id}</td><td class="sa-table-cell" data-slot="table-cell">${sku}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${cat}</td><td class="sa-table-cell" data-slot="table-cell">${name}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${price}</td>
+            <td class="sa-table-cell demo-actions" data-slot="table-cell">${button("", { variant: "outline", size: "icon-sm", ic: "pen", attrs: ' aria-label="Edit"' })}${button("", { variant: "outline", size: "icon-sm", ic: "trash", attrs: ' aria-label="Delete"' })}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table></div>
+      <div class="sa-card-footer sa-data-grid-footer" data-slot="card-footer">
+        <div class="sa-data-grid-page-size" data-slot="data-grid-page-size"><span class="sa-data-grid-page-size-label" data-slot="data-grid-page-size-label" id="page-size-label">Rows per page</span>
+          <div class="sa-tabs group/tabs" data-orientation="horizontal" data-slot="tabs"><div aria-labelledby="page-size-label" class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default" data-slot="tabs-list" data-variant="default">${tab("10", { active: true })}${tab("25")}${tab("50")}</div></div>
+        </div>
+        <span class="sa-data-grid-range" data-slot="data-grid-range"><span class="sa-data-grid-range-value">1–10</span> of 150</span>
+        <nav aria-label="pagination" class="sa-pagination" data-slot="data-grid-pager" role="navigation"><ul class="sa-pagination-content" data-slot="pagination-content">
+          ${pageLink(icon("prev"), { size: "icon-sm", cls: " sa-pagination-previous", attrs: ' aria-label="Go to previous page" aria-disabled="true"' })}
+          ${pageLink("1", { size: "icon-sm", active: true })}${pageLink("2", { size: "icon-sm" })}${ellipsis}${pageLink("15", { size: "icon-sm" })}
+          ${pageLink(icon("chevron"), { size: "icon-sm", cls: " sa-pagination-next", attrs: ' aria-label="Go to next page"' })}
+        </ul></nav>
+      </div>
+    </div>
+  </div>`;
+
+function specimen() {
+  return `
+  <main class="demo-specimen">
+    <section class="demo-section">
+      <h2 class="demo-h">Button · variants</h2>
+      <div class="demo-row">
+        ${button("Book trip", { ic: "plane" })}
+        ${button("Save draft", { variant: "secondary" })}
+        ${button("Export", { variant: "outline", ic: "download" })}
+        ${button("Skip", { variant: "ghost" })}
+        ${button("Cancel booking", { variant: "destructive", ic: "trash" })}
+        ${button("Fare rules", { variant: "link" })}
+      </div>
+      <h2 class="demo-h">Button · sizes and states</h2>
+      <div class="demo-row">
+        ${button("Extra small", { size: "xs", variant: "outline" })}
+        ${button("Small", { size: "sm", variant: "outline" })}
+        ${button("Default", { variant: "outline" })}
+        ${button("Large", { size: "lg", variant: "outline" })}
+        ${button("", { size: "icon-sm", variant: "outline", ic: "plus", attrs: ' aria-label="Add"' })}
+        ${button("", { size: "icon", variant: "outline", ic: "plus", attrs: ' aria-label="Add"' })}
+        ${button("Disabled", { attrs: " disabled" })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Card · input · chip group</h2>
+      ${formCard()}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Card · table · chip</h2>
+      ${card({ title: "Upcoming departures", description: "Bookings leaving in the next 14 days.", content: table(BOOKINGS) })}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Pagination · standalone, and in a card footer</h2>
+      ${pager}
+      ${card({ title: "All bookings", description: "Page 2 of 12.", content: table(BOOKINGS.slice(0, 2)),
+        footer: `<span class="demo-hint"><b>5–8</b> of 48</span><div class="demo-footer-end">${gridPager}</div>` })}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Chip</h2>
+      <div data-slot="chip-group" class="sa-chip-group">
+        ${chip("Lisbon", { ic: "pin" })}${chip("Kyoto", { code: "KIX" })}${chip("Window seat", { remove: true })}${chip("Sold out", { disabled: true })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Badge · default, secondary, destructive, outline, ghost, link; as links</h2>
+      <div class="demo-row">
+        ${badge("Confirmed")}${badge("Draft", { variant: "secondary" })}${badge("Cancelled", { variant: "destructive", ic: "x" })}${badge("Economy", { variant: "outline", ic: "plane" })}${badge("Ghost", { variant: "ghost" })}${badge("Details", { variant: "link" })}
+      </div>
+      <div class="demo-row">
+        ${badge("Confirmed", { href: true })}${badge("Draft", { variant: "secondary", href: true })}${badge("Economy", { variant: "outline", href: true })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Switch · off, on, small, disabled, invalid</h2>
+      <div class="demo-row demo-switches">
+        ${switchEl("Email alerts")}${switchEl("Auto-renew", { checked: true })}${switchEl("Small", { size: "sm" })}${switchEl("Small on", { size: "sm", checked: true })}${switchEl("Disabled", { disabled: true, checked: true })}${switchEl("Invalid", { invalid: true })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Toast · default with action, success, info, warning, error</h2>
+      <div class="demo-toasts">
+        ${toast("Booking saved", "Lisbon, 12–19 May. We emailed the itinerary.", { action: "Undo" })}
+        ${toast("Payment received", "Booking VT-2291 is confirmed.", { type: "success" })}
+        ${toast("Fares update at midnight", "", { type: "info" })}
+        ${toast("Passport expires soon", "Renew before 3 June to travel.", { type: "warning" })}
+        ${toast("Couldn’t cancel the booking", "The airline did not respond. Try again.", { type: "error", action: "Retry" })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Dropdown menu · default, bold accent, inverted (dark) with bold accent</h2>
+      <div class="demo-menus">${menu()}${menu(" sa-menu-accent-bold")}${menu(" dark sa-menu-accent-bold")}</div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Tabs · default with icons, line</h2>
+      ${tabs("default", true)}
+      ${tabs("line", false)}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Dialog</h2>
+      ${dialog}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Sidebar</h2>
+      ${sidebar}
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">Nested .dark scope (re-scoping test)</h2>
+      <div class="demo-scope ${mode === "dark" ? "" : "dark"}">
+        ${card({ title: "Inverted panel", description: "Tokens must re-derive inside a nested scope.", size: "sm",
+          content: `<div class="demo-row">${button("Confirm")}${button("Details", { variant: "outline" })}${chip("Kyoto", { code: "KIX" })}</div><div style="margin-top:12px"><input class="sa-input" data-slot="input" placeholder="Search bookings"></div>` })}
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-h">data-density="compact" (token engine only)</h2>
+      <div data-density="compact">
+        ${card({ title: "Compact departures", size: "sm", content: table(BOOKINGS.slice(0, 3)) })}
+      </div>
+    </section>
+  </main>`;
+}
+
+if (FRAME) {
+  document.body.innerHTML = engine === "tokens" && params.get("sample") === "index" ? indexPage() : specimen();
+  const report = () => parent.postMessage({ tokenSpecHeight: document.documentElement.scrollHeight, engine }, "*");
+  addEventListener("load", report);
+  new ResizeObserver(report).observe(document.body);
+} else {
+  document.body.className = "demo-shell";
+  const state = { preset, mode, view: params.get("view") || "both" };
+  const seg = (key, values) => `<span class="demo-seg" data-key="${key}">${values.map(v => `<button type="button" data-value="${v}">${v}</button>`).join("")}</span>`;
+  document.body.innerHTML = `
+    <div class="demo-bar">
+      <strong>Token spec concept</strong>
+      <a href="builder.html" style="font-size:13px">Theme builder →</a>
+      ${seg("preset", Object.keys(PRESETS))}
+      ${seg("mode", ["light", "dark"])}
+      ${seg("view", ["both", "bundle", "tokens"])}
+    </div>
+    <div class="demo-panes"></div>`;
+  const lines = async (url) => { try { return (await (await fetch(url)).text()).split("\n").length; } catch { return "?"; } };
+  const render = async () => {
+    const bundle = PRESETS[state.preset];
+    document.querySelector('[data-key="view"]').hidden = !bundle;
+    for (const s of document.querySelectorAll(".demo-seg"))
+      for (const b of s.children) b.setAttribute("aria-pressed", String(state[s.dataset.key] === b.dataset.value));
+    history.replaceState(null, "", `?preset=${state.preset}&mode=${state.mode}&view=${state.view}`);
+    const engines = !bundle ? ["tokens"] : state.view === "both" ? ["bundle", "tokens"] : [state.view];
+    const panes = document.querySelector(".demo-panes");
+    panes.style.setProperty("--panes", engines.length);
+    const presetFile = state.preset === "base" ? null : `presets/${state.preset}.css`;
+    panes.innerHTML = engines.map(e => `
+      <div class="demo-pane" data-engine="${e}">
+        <header>${e === "bundle"
+          ? `<span><b>Current</b> · stellar-admin.${bundle}.css</span><span data-count="../../../src/StellarAdmin.TagHelpers/Client/css/themes/${bundle}.css">themes/${bundle}.css: … lines</span>`
+          : `<span><b>Token engine</b> · tokens + components${presetFile ? ` + ${presetFile}` : ""}</span>${presetFile ? `<span data-count="${presetFile}">${presetFile}: … lines</span>` : ""}`}</header>
+        <iframe title="${e}" src="?frame=1&engine=${e}&preset=${state.preset}&mode=${state.mode}"></iframe>
+      </div>`).join("");
+    for (const el of panes.querySelectorAll("[data-count]")) {
+      const n = await lines(el.dataset.count);
+      el.textContent = el.textContent.replace("…", n);
+    }
+  };
+  document.body.addEventListener("click", (e) => {
+    const b = e.target.closest(".demo-seg button");
+    if (!b) return;
+    state[b.parentElement.dataset.key] = b.dataset.value;
+    render();
+  });
+  addEventListener("message", (e) => {
+    if (!e.data?.tokenSpecHeight) return;
+    const frame = document.querySelector(`.demo-pane[data-engine="${e.data.engine}"] iframe`);
+    if (frame) frame.style.height = `${e.data.tokenSpecHeight}px`;
+  });
+  render();
+}
+</script>
+</body>
+</html>

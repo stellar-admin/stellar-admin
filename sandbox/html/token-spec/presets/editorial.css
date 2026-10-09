@@ -1,0 +1,23 @@
+/* Knob preset: Editorial. Warm paper, serif headings, hairline borders, deep green. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.42 0.09 160);
+    --sa-neutral-hue: 75;
+    --sa-neutral-chroma: 0.014;
+    --sa-accent-tint: 0.25;
+    --sa-surface-depth: 1;
+    --sa-nav-tint: 0.8;
+    --sa-radius: 3px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-elevation: 0.3;
+    --sa-font-sans: "Source Sans 3", system-ui, sans-serif;
+    --sa-font-heading: "Fraunces", Georgia, serif;
+    --sa-weight-heading: 600;
+    --sa-label-transform: uppercase;
+    --sa-label-tracking: 0.06em;
+    --sa-footer-fill: 0;
+    --sa-col-head-label: 1;
+    --sa-col-head-case: var(--sa-label-transform);
+  }
+}

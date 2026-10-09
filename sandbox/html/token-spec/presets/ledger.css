@@ -1,0 +1,32 @@
+/* Knob preset: Ledger. In the spirit of the shipped Ledger theme: warm paper that turns indigo in dark
+   mode, an indigo accent, 6px corners, roomier controls, uppercase labels on banded table heads, a soft
+   focus halo, outlined parts, tactile buttons and a solid destructive. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.48 0.18 262);
+    --sa-danger: oklch(0.55 0.2 27);
+    --sa-neutral-hue: 80;
+    --sa-neutral-chroma: 0.012;
+    --sa-neutral-hue-dark: 262;
+    --sa-neutral-chroma-dark: 0.022;
+    --sa-accent-tint: 0;
+    --sa-radius: 6px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-elevation: 1;
+    --sa-density: 1.125;
+    --sa-font-sans: "Lexend", system-ui, sans-serif;
+    --sa-weight-heading: 600;
+    --sa-label-transform: uppercase;
+    --sa-label-tracking: 0.07em;
+    --sa-footer-fill: 0;
+    --sa-col-head-label: 1;
+    --sa-col-head-fill: 1;
+    --sa-col-head-case: var(--sa-label-transform);
+    --sa-relief: 2;
+    --sa-danger-fill: 1;
+    --sa-link-decoration: underline;
+    --sa-focus-width: 3px;
+    --sa-focus-color: color-mix(in oklab, var(--sa-color-accent) 35%, transparent);
+  }
+}

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme builder</title>
+<style>
+  /* Builder chrome only; the preview iframe is the token engine (tokens + components). */
+  :root { --line: #e4e4e7; --ink: #18181b; --muted: #71717a; --bg: #fafafa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 13px/1.4 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  .app { display: grid; grid-template-columns: 330px minmax(0, 1fr); height: 100svh; }
+  .panel { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); background: #fff; }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .bar h1 { font-size: 14px; margin: 0 auto 0 0; }
+  .bar a { font-size: 12px; color: var(--muted); }
+  .tools { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  select, button, input[type="text"] { font: inherit; font-size: 12px; border: 1px solid #d4d4d8; border-radius: 6px; background: #fff; color: inherit; padding: 4px 8px; }
+  button { cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .controls { overflow: auto; padding: 4px 16px 24px; flex: 1; }
+  .group { margin-top: 14px; }
+  .group h2 { font: 600 11px/1 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+  .row { display: grid; grid-template-columns: 112px minmax(0, 1fr) 64px; gap: 8px; align-items: center; padding: 4px 0; }
+  .row label { font-size: 12px; }
+  .row label small { display: block; color: var(--muted); font: 10px ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row output { font: 11px ui-monospace, monospace; color: var(--muted); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row input[type="range"] { width: 100%; }
+  .row input[type="color"] { width: 100%; height: 26px; padding: 0 2px; border: 1px solid #d4d4d8; border-radius: 6px; background: #fff; }
+  .row select { width: 100%; }
+  .row .auto { font-size: 11px; color: var(--muted); display: flex; gap: 4px; align-items: center; justify-content: flex-end; }
+  .row.is-auto :is(input[type="range"], input[type="color"]) { opacity: .35; }
+  .export { border-top: 1px solid var(--line); padding: 10px 16px 14px; }
+  .export header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; color: var(--muted); font-size: 12px; }
+  .export pre { margin: 0; max-height: 180px; overflow: auto; font: 11px/1.5 ui-monospace, monospace; background: #f4f4f5; border-radius: 6px; padding: 8px 10px; white-space: pre; }
+  .preview { min-width: 0; min-height: 0; }
+  .preview iframe { display: block; width: 100%; height: 100%; border: 0; }
+  @media (max-width: 800px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 70svh; height: auto; }
+    .panel { border-right: 0; border-bottom: 1px solid var(--line); }
+    .controls { max-height: 50svh; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <div class="bar"><h1>Theme builder</h1><a href="index.html">Theme comparison →</a></div>
+    <div class="tools">
+      <select id="preset" aria-label="Preset"></select>
+      <span id="mode"><button type="button" data-mode="light">Light</button> <button type="button" data-mode="dark">Dark</button></span>
+      <span id="sample"><button type="button" data-sample="components">Components</button> <button type="button" data-sample="index">Resource index</button></span>
+      <button type="button" id="random">Randomise</button>
+    </div>
+    <div class="controls" id="controls"></div>
+    <div class="export">
+      <header><span id="export-count">Your theme</span><button type="button" id="copy">Copy CSS</button></header>
+      <pre id="css"></pre>
+    </div>
+  </aside>
+  <main class="preview"><iframe id="frame" title="Preview"></iframe></main>
+</div>
+<script>
+const FONTS = {
+  Inter: '"Inter", ui-sans-serif, system-ui, sans-serif',
+  Geist: '"Geist", system-ui, sans-serif',
+  "IBM Plex Sans": '"IBM Plex Sans", system-ui, sans-serif',
+  Figtree: '"Figtree", system-ui, sans-serif',
+  "Source Sans 3": '"Source Sans 3", system-ui, sans-serif',
+  "Space Grotesk": '"Space Grotesk", system-ui, sans-serif',
+  Lexend: '"Lexend", system-ui, sans-serif',
+  Archivo: '"Archivo", system-ui, sans-serif',
+  "JetBrains Mono": '"JetBrains Mono", ui-monospace, monospace',
+  System: 'ui-sans-serif, system-ui, sans-serif',
+};
+const HEADINGS = { "Same as body": "var(--sa-font-sans)", Fraunces: '"Fraunces", Georgia, serif', "Space Grotesk": FONTS["Space Grotesk"], Lexend: FONTS.Lexend, "JetBrains Mono": FONTS["JetBrains Mono"] };
+const PRESETS = ["base", "nova", "terminal", "soft", "editorial", "ops", "workshop", "concourse", "ledger"];
+const PILL = 26; // radius slider position that means 9999px
+
+// Every knob the builder exposes. `def` mirrors tokens.css; `optional` knobs are unset by default
+// and derive from other knobs in the stylesheet ("auto").
+const CONTROLS = [
+  ["Colour", [
+    { k: "--sa-accent", label: "Accent", type: "color", def: "oklch(0.55 0.18 262)" },
+    { k: "--sa-accent-dark", label: "Accent (dark)", type: "color", optional: true, def: "#7aa2ff" },
+    { k: "--sa-danger", label: "Danger", type: "color", def: "oklch(0.58 0.22 27)" },
+    { k: "--sa-success", label: "Success", type: "color", def: "oklch(0.6 0.15 150)" },
+    { k: "--sa-warning", label: "Warning", type: "color", def: "oklch(0.72 0.16 70)" },
+    { k: "--sa-info", label: "Info", type: "color", def: "oklch(0.6 0.14 240)" },
+    { k: "--sa-neutral-hue", label: "Neutral hue", type: "range", min: 0, max: 360, step: 1, def: "262" },
+    { k: "--sa-neutral-chroma", label: "Neutral tint", type: "range", min: 0, max: 0.04, step: 0.001, def: "0.008" },
+    { k: "--sa-neutral-hue-dark", label: "Neutral hue (dark)", type: "range", min: 0, max: 360, step: 1, optional: true, def: "262" },
+    { k: "--sa-neutral-chroma-dark", label: "Neutral tint (dark)", type: "range", min: 0, max: 0.04, step: 0.001, optional: true, def: "0.008" },
+    { k: "--sa-accent-tint", label: "Accent in washes", type: "range", min: 0, max: 1, step: 0.05, def: "0.35" },
+    { k: "--sa-surface-depth", label: "Surface depth", type: "range", min: 0, max: 1, step: 0.05, def: "0.6" },
+    { k: "--sa-nav-tint", label: "Sidebar tint", type: "range", min: 0, max: 1, step: 0.05, def: "0.5" },
+    { k: "--sa-line-strength", label: "Line strength", type: "range", min: 0.4, max: 2, step: 0.05, def: "1" },
+  ]],
+  ["Shape and depth", [
+    { k: "--sa-radius", label: "Radius", type: "radius", def: "0.5rem" },
+    { k: "--sa-radius-outer", label: "Container radius", type: "range", unit: "px", min: 0, max: 32, step: 1, optional: true, def: "12px" },
+    { k: "--sa-pills", label: "Tags", type: "select", options: { Pills: "1", "Follow radius": "0" }, def: "1" },
+    { k: "--sa-outlines", label: "Outlines", type: "select", options: { "Outline parts only": "0", "Everything": "1" }, def: "0" },
+    { k: "--sa-relief", label: "Relief", type: "select", options: { Flat: "0", Raised: "1", Tactile: "2" }, def: "0" },
+    { k: "--sa-stroke", label: "Stroke", type: "range", unit: "px", min: 0, max: 3, step: 0.5, def: "1px" },
+    { k: "--sa-elevation", label: "Elevation", type: "range", min: 0, max: 3, step: 0.1, def: "1" },
+  ]],
+  ["Space and type", [
+    { k: "--sa-density", label: "Density", type: "range", min: 0.7, max: 1.4, step: 0.01, def: "1" },
+    { k: "--sa-type-scale", label: "Type scale", type: "range", min: 0.8, max: 1.2, step: 0.01, def: "1" },
+    { k: "--sa-font-sans", label: "Font", type: "select", options: FONTS, def: FONTS.Inter },
+    { k: "--sa-font-heading", label: "Heading font", type: "select", options: HEADINGS, def: "var(--sa-font-sans)" },
+    { k: "--sa-weight-control", label: "Control weight", type: "select", options: { 400: "400", 500: "500", 600: "600" }, def: "500" },
+    { k: "--sa-weight-heading", label: "Heading weight", type: "select", options: { 400: "400", 500: "500", 600: "600", 700: "700" }, def: "600" },
+    { k: "--sa-label-transform", label: "Section labels", type: "select", options: { "As written": "none", Uppercase: "uppercase" }, def: "none" },
+    { k: "--sa-label-tracking", label: "Label tracking", type: "range", unit: "em", min: 0, max: 0.15, step: 0.01, def: "0em" },
+  ]],
+  ["Structure", [
+    { id: "footer", label: "Card footer", type: "multi", def: "Band", options: {
+      Band: { "--sa-footer-fill": "1", "--sa-footer-rule": "1" },
+      "Rule only": { "--sa-footer-fill": "0", "--sa-footer-rule": "1" },
+      "Tint only": { "--sa-footer-fill": "1", "--sa-footer-rule": "0" },
+      Flush: { "--sa-footer-fill": "0", "--sa-footer-rule": "0" } } },
+    { id: "dialogfooter", label: "Dialog footer", type: "multi", def: "Same as card", options: {
+      "Same as card": { "--sa-dialog-footer-fill": undefined, "--sa-dialog-footer-rule": undefined },
+      Band: { "--sa-dialog-footer-fill": "1", "--sa-dialog-footer-rule": "1" },
+      "Rule only": { "--sa-dialog-footer-fill": "0", "--sa-dialog-footer-rule": "1" },
+      "Tint only": { "--sa-dialog-footer-fill": "1", "--sa-dialog-footer-rule": "0" },
+      Flush: { "--sa-dialog-footer-fill": "0", "--sa-dialog-footer-rule": "0" } } },
+    { id: "colhead", label: "Column heads", type: "multi", def: "Plain", options: {
+      Plain: { "--sa-col-head-label": "0", "--sa-col-head-fill": "0", "--sa-col-head-case": "none" },
+      "Section label": { "--sa-col-head-label": "1", "--sa-col-head-fill": "0", "--sa-col-head-case": "var(--sa-label-transform)" },
+      Band: { "--sa-col-head-label": "0", "--sa-col-head-fill": "1", "--sa-col-head-case": "none" },
+      "Label on band": { "--sa-col-head-label": "1", "--sa-col-head-fill": "1", "--sa-col-head-case": "var(--sa-label-transform)" } } },
+    { k: "--sa-col-head-font", label: "Column head font", type: "select", options: { "Body font": "inherit", Monospace: "var(--sa-font-mono)" }, def: "inherit" },
+    { k: "--sa-current-fill", label: "Current page", type: "select", options: { Outline: "0", Soft: "0.15", Solid: "1" }, def: "0" },
+  ]],
+  ["Buttons", [
+    { k: "--sa-press-offset", label: "Press nudge", type: "range", unit: "px", min: 0, max: 2, step: 0.5, def: "1px" },
+    { k: "--sa-danger-fill", label: "Destructive", type: "select", options: { Soft: "0", Solid: "1" }, def: "0" },
+    { k: "--sa-secondary-fill", label: "Secondary", type: "select", options: { "Neutral fill": "1", "Bordered surface": "0" }, def: "1" },
+    { k: "--sa-link-decoration", label: "Link buttons", type: "select", options: { "No underline": "none", Underline: "underline" }, def: "none" },
+  ]],
+  ["Focus", [
+    { k: "--sa-focus-width", label: "Ring width", type: "range", unit: "px", min: 1, max: 4, step: 0.5, def: "3px" },
+    { k: "--sa-focus-offset", label: "Ring offset", type: "range", unit: "px", min: 0, max: 4, step: 0.5, def: "0px" },
+  ]],
+];
+const ALL = CONTROLS.flatMap(([, cs]) => cs);
+// A "multi" control sets several tokens at once (e.g. both footer switches); its options are token maps.
+const keysOf = (c) => c.type === "multi" ? Object.keys(Object.values(c.options)[0]) : [c.k];
+const DEFAULTS = Object.fromEntries(ALL.filter(c => !c.optional).flatMap(c => c.type === "multi" ? Object.entries(c.options[c.def]) : [[c.k, c.def]]));
+
+let values = { ...DEFAULTS };
+let mode = new URLSearchParams(location.search).get("mode") === "dark" ? "dark" : "light";
+let sample = new URLSearchParams(location.search).get("sample") === "index" ? "index" : "components";
+const frame = document.getElementById("frame");
+
+// Colour inputs need hex; knob values may be any CSS colour. Resolve through a 1px canvas.
+const ctx = Object.assign(document.createElement("canvas"), { width: 1, height: 1 }).getContext("2d", { willReadFrequently: true });
+const toHex = (css) => { ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = "#000"; ctx.fillStyle = css; ctx.fillRect(0, 0, 1, 1); const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data; return "#" + [r, g, b].map(n => n.toString(16).padStart(2, "0")).join(""); };
+const toRem = (v) => v.endsWith("rem") ? parseFloat(v) * 16 : parseFloat(v);
+const firstFamily = (stack) => (stack.split(",")[0] || "").replace(/["']/g, "").trim();
+
+function rowHtml(c) {
+  const id = `c${ALL.indexOf(c)}`;
+  let input;
+  if (c.type === "color") input = `<input type="color" id="${id}">`;
+  else if (c.type === "multi") input = `<select id="${id}">${Object.keys(c.options).map(n => `<option>${n}</option>`).join("")}</select>`;
+  else if (c.type === "select") input = `<select id="${id}">${Object.entries(c.options).map(([n, v]) => `<option value='${v}'>${n}</option>`).join("")}</select>`;
+  else if (c.type === "radius") input = `<input type="range" id="${id}" min="0" max="${PILL}" step="1">`;
+  else input = `<input type="range" id="${id}" min="${c.min}" max="${c.max}" step="${c.step}">`;
+  const out = c.optional ? `<span class="auto"><input type="checkbox" data-auto="${c.k}" id="${id}a"><label for="${id}a">auto</label></span>` : `<output></output>`;
+  return `<div class="row" data-k="${c.k || c.id}"><label for="${id}">${c.label}<small>${keysOf(c).join(" ")}</small></label>${input}${out}</div>`;
+}
+document.getElementById("controls").innerHTML = CONTROLS.map(([g, cs]) => `<section class="group"><h2>${g}</h2>${cs.map(rowHtml).join("")}</section>`).join("");
+
+function sync() {
+  for (const c of ALL) {
+    const row = document.querySelector(`.row[data-k="${c.k || c.id}"]`);
+    const input = row.querySelector("input:not([type=checkbox]), select");
+    if (c.type === "multi") {
+      const match = Object.entries(c.options).find(([, map]) => Object.entries(map).every(([k, v]) => (values[k] ?? DEFAULTS[k]) === v));
+      if (!match && !input.querySelector("[data-custom]")) { const o = new Option("Custom"); o.dataset.custom = ""; input.add(o); }
+      input.value = match ? match[0] : "Custom";
+      row.querySelector("output").textContent = "";
+      continue;
+    }
+    const v = values[c.k];
+    const auto = c.optional && v === undefined;
+    row.classList.toggle("is-auto", auto);
+    if (c.optional) row.querySelector("[data-auto]").checked = auto;
+    const shown = v ?? c.def;
+    if (c.type === "color") input.value = toHex(shown);
+    else if (c.type === "select") {
+      let match = [...input.options].find(o => o.value === shown) || [...input.options].find(o => o.value && firstFamily(o.value) === firstFamily(shown));
+      if (!match) { match = new Option(firstFamily(shown) || shown, shown); input.add(match); }
+      input.value = match.value;
+    } else if (c.type === "radius") input.value = toRem(shown) >= 999 ? PILL : Math.round(toRem(shown));
+    else input.value = shown === "normal" ? 0 : (c.unit === "px" ? toRem(shown) : parseFloat(shown));
+    const out = row.querySelector("output");
+    if (out) out.textContent = c.type === "radius" ? (toRem(shown) >= 999 ? "pill" : `${Math.round(toRem(shown))}px`) : c.type === "select" ? "" : c.type === "color" ? "" : shown;
+  }
+  for (const b of document.querySelectorAll("[data-mode]")) b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
+  for (const b of document.querySelectorAll("[data-sample]")) b.setAttribute("aria-pressed", String(b.dataset.sample === sample));
+  apply();
+}
+
+function apply() {
+  const root = frame.contentDocument?.documentElement;
+  if (root) {
+    for (const c of ALL) for (const k of keysOf(c)) root.style.removeProperty(k);
+    for (const [k, v] of Object.entries(values)) if (v !== undefined) root.style.setProperty(k, v);
+  }
+  const changed = Object.entries(values).filter(([k, v]) => v !== undefined && v !== "" && v !== DEFAULTS[k]);
+  document.getElementById("css").textContent = changed.length
+    ? `:root {\n${changed.map(([k, v]) => `  ${k}: ${v};`).join("\n")}\n}`
+    : "/* The base theme: no knobs changed. */";
+  document.getElementById("export-count").textContent = `Your theme · ${changed.length} knob${changed.length === 1 ? "" : "s"}`;
+}
+
+document.getElementById("controls").addEventListener("input", (e) => {
+  const row = e.target.closest(".row"); if (!row) return;
+  const c = ALL.find(x => (x.k || x.id) === row.dataset.k);
+  if (e.target.dataset.auto) { values[c.k] = e.target.checked ? undefined : (values[c.k] ?? c.def); sync(); return; }
+  const raw = e.target.value;
+  if (c.type === "multi") { if (c.options[raw]) Object.assign(values, c.options[raw]); sync(); return; }
+  if (c.type === "radius") values[c.k] = +raw >= PILL ? "9999px" : `${raw}px`;
+  else if (c.type === "range" && c.unit) values[c.k] = `${raw}${c.unit}`;
+  else values[c.k] = raw;
+  if (c.k === "--sa-label-transform" && raw === "uppercase" && (values["--sa-label-tracking"] ?? "normal") === "normal") values["--sa-label-tracking"] = "0.06em";
+  sync();
+});
+
+async function loadPreset(name) {
+  values = { ...DEFAULTS };
+  if (name !== "base") {
+    const css = await (await fetch(`presets/${name}.css`)).text();
+    for (const [, k, v] of css.matchAll(/(--sa-[a-z-]+)\s*:\s*([^;]+);/g)) values[k] = v.trim();
+  }
+  sync();
+}
+const presetSel = document.getElementById("preset");
+presetSel.innerHTML = PRESETS.map(p => `<option value="${p}">Preset: ${p}</option>`).join("");
+presetSel.addEventListener("change", () => loadPreset(presetSel.value));
+
+function load() { frame.src = `index.html?frame=1&mode=${mode}${sample === "index" ? "&sample=index" : ""}`; }
+frame.addEventListener("load", apply);
+document.getElementById("mode").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-mode]"); if (!b || b.dataset.mode === mode) return;
+  mode = b.dataset.mode; sync(); load();
+});
+document.getElementById("sample").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-sample]"); if (!b || b.dataset.sample === sample) return;
+  sample = b.dataset.sample; sync(); load();
+});
+
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const rnd = (lo, hi, dp = 2) => +(lo + Math.random() * (hi - lo)).toFixed(dp);
+document.getElementById("random").addEventListener("click", () => {
+  const hue = Math.round(Math.random() * 360);
+  const upper = Math.random() < 0.35;
+  values = {
+    ...DEFAULTS,
+    "--sa-accent": `oklch(${rnd(0.45, 0.68)} ${rnd(0.08, 0.22)} ${hue})`,
+    "--sa-neutral-hue": String(Math.random() < 0.6 ? hue : Math.round(Math.random() * 360)),
+    "--sa-neutral-chroma": String(rnd(0, 0.025, 3)),
+    "--sa-accent-tint": String(rnd(0, 0.8)),
+    "--sa-surface-depth": String(rnd(0, 1)),
+    "--sa-nav-tint": String(rnd(0, 1)),
+    "--sa-line-strength": String(rnd(0.6, 1.5)),
+    "--sa-radius": pick(["0px", "2px", "4px", "6px", "8px", "10px", "12px", "9999px"]),
+    "--sa-outlines": pick(["0", "1"]),
+    "--sa-pills": pick(["0", "1"]),
+    "--sa-elevation": String(rnd(0, 2, 1)),
+    "--sa-density": String(rnd(0.78, 1.2)),
+    "--sa-type-scale": String(rnd(0.9, 1.05)),
+    "--sa-font-sans": pick(Object.values(FONTS)),
+    "--sa-font-heading": Math.random() < 0.3 ? pick(Object.values(HEADINGS).slice(1)) : "var(--sa-font-sans)",
+    "--sa-weight-heading": pick(["500", "600", "700"]),
+    "--sa-label-transform": upper ? "uppercase" : "none",
+    "--sa-label-tracking": upper ? "0.07em" : "normal",
+    "--sa-focus-width": pick(["2px", "3px"]),
+    "--sa-focus-offset": pick(["0px", "0px", "2px"]),
+    "--sa-current-fill": pick(["0", "0.15", "1"]),
+    "--sa-relief": pick(["0", "0", "1", "2"]),
+    "--sa-danger-fill": pick(["0", "1"]),
+    "--sa-secondary-fill": pick(["0", "1"]),
+  };
+  for (const c of ALL.filter(x => x.type === "multi")) Object.assign(values, pick(Object.values(c.options)));
+  presetSel.value = "base";
+  sync();
+});
+
+document.getElementById("copy").addEventListener("click", async (e) => {
+  try { await navigator.clipboard.writeText(document.getElementById("css").textContent); e.target.textContent = "Copied"; }
+  catch { e.target.textContent = "Select and copy"; }
+  setTimeout(() => (e.target.textContent = "Copy CSS"), 1500);
+});
+
+load();
+sync();
+</script>
+</body>
+</html>

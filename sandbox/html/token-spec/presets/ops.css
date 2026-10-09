@@ -1,0 +1,23 @@
+/* Knob preset: Ops. Dense, sharp, high-contrast lines, safety orange, offset focus ring. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.66 0.18 48);
+    --sa-neutral-hue: 250;
+    --sa-neutral-chroma: 0.015;
+    --sa-accent-tint: 0.2;
+    --sa-surface-depth: 0.8;
+    --sa-line-strength: 1.4;
+    --sa-radius: 3px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-radius-outer: 4px;
+    --sa-elevation: 0.5;
+    --sa-density: 0.78;
+    --sa-focus-width: 2px;
+    --sa-focus-offset: 2px;
+    --sa-font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --sa-col-head-label: 1;
+    --sa-col-head-fill: 1;
+    --sa-current-fill: 1;
+  }
+}
