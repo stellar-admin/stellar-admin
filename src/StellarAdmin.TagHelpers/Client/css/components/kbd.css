@@ -1,0 +1,72 @@
+/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips.
+   Replaces: .sa-kbd, .sa-kbd-group */
+
+@layer sa.tokens {
+  .sa-kbd,
+  .sa-kbd-group {
+    --sa-kbd-h: calc(5 * var(--sa-unit));
+    --sa-kbd-min-w: var(--sa-kbd-h);
+    --sa-kbd-px: var(--sa-unit);
+    --sa-kbd-gap: var(--sa-unit);
+    --sa-kbd-radius: var(--sa-radius-inner);
+    --sa-kbd-font: var(--sa-font-sans);
+    --sa-kbd-text: var(--sa-text-xs);
+    --sa-kbd-weight: var(--sa-weight-control);
+    --sa-kbd-icon: 0.75rem;
+    /* A translucent ink tint: a step from whatever it sits on (field, sunken band, sidebar). */
+    --sa-kbd-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);
+    /* Between muted and full ink, so it keeps 4.5:1 on its own tint over a sunken band. */
+    --sa-kbd-fg: color-mix(in oklab, var(--sa-color-ink-muted) 65%, var(--sa-color-ink));
+    --sa-kbd-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
+    /* Inside a tooltip, which is drawn inverted (ink fill, surface text). */
+    --sa-kbd-tooltip-bg: color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
+    --sa-kbd-tooltip-fg: var(--sa-color-surface);
+    --sa-kbd-tooltip-border: transparent;
+    --sa-kbd-group-gap: var(--sa-unit);
+  }
+  .dark :is(.sa-kbd, .sa-kbd-group) {
+    --sa-kbd-tooltip-bg: color-mix(in oklab, var(--sa-color-surface) 12%, transparent);
+  }
+}
+
+@layer sa.components {
+  .sa-kbd {
+    --_bg: var(--sa-kbd-bg);
+    --_fg: var(--sa-kbd-fg);
+    --_border: var(--sa-kbd-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-kbd-gap);
+    width: fit-content;
+    min-width: var(--sa-kbd-min-w);
+    height: var(--sa-kbd-h);
+    padding-inline: var(--sa-kbd-px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--sa-kbd-radius);
+    background: var(--_bg);
+    background-clip: padding-box;
+    color: var(--_fg);
+    font-family: var(--sa-kbd-font);
+    font-size: var(--sa-kbd-text);
+    font-weight: var(--sa-kbd-weight);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+
+    & svg:not([class*="size-"]) {
+      width: var(--sa-kbd-icon);
+      height: var(--sa-kbd-icon);
+    }
+  }
+  [data-slot="tooltip-content"] .sa-kbd {
+    --_bg: var(--sa-kbd-tooltip-bg);
+    --_fg: var(--sa-kbd-tooltip-fg);
+    --_border: var(--sa-kbd-tooltip-border);
+  }
+  .sa-kbd-group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sa-kbd-group-gap);
+  }
+}

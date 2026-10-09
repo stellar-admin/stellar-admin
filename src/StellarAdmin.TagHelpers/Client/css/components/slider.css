@@ -1,0 +1,208 @@
+/* Slider: <sel-slider> with a track, a filled range, one or more thumbs, optional marks (ticks and
+   labels) and a value readout. The script positions the thumbs, range and marks inline and publishes
+   the measured thumb size as --sa-slider-thumb-size on the host, which marks use to inset their ends.
+   Replaces: .sa-slider, .sa-slider-mark, .sa-slider-mark-label, .sa-slider-mark-tick, .sa-slider-marks,
+   .sa-slider-range, .sa-slider-thumb, .sa-slider-track, .sa-slider-value */
+
+@layer sa.tokens {
+  .sa-slider,
+  .sa-slider-value {
+    --sa-slider-track-size: var(--sa-unit);
+    --sa-slider-track-bg: var(--sa-color-surface-sunken);
+    --sa-slider-track-radius: var(--sa-radius-round);
+    --sa-slider-range-bg: var(--sa-color-accent-fill);
+    --sa-slider-thumb-size: calc(3 * var(--sa-unit));
+    --sa-slider-thumb-bg: var(--sa-color-surface);
+    --sa-slider-thumb-border: var(--sa-color-accent-fill);
+    --sa-slider-thumb-radius: var(--sa-radius-round);
+    --sa-slider-thumb-shadow: var(--sa-shadow-control);
+    --sa-slider-min-h: calc(40 * var(--sa-unit));         /* vertical */
+    --sa-slider-mark-w: 2px;
+    --sa-slider-mark-h: calc(2.5 * var(--sa-unit));
+    --sa-slider-mark-bg: color-mix(in oklab, var(--sa-color-ink-muted) 35%, transparent);
+    --sa-slider-mark-bg-in-range: color-mix(in oklab, var(--sa-color-on-accent) 70%, transparent);
+    --sa-slider-mark-label-fg: var(--sa-color-ink-muted);
+    --sa-slider-mark-label-text: var(--sa-text-xs);
+    --sa-slider-value-fg: var(--sa-color-ink-muted);
+    --sa-slider-value-text: var(--sa-text-sm);
+  }
+  .dark :is(.sa-slider, .sa-slider-value) {
+    --sa-slider-thumb-bg: var(--sa-color-ink);
+  }
+}
+
+@layer sa.components {
+  .sa-slider {
+    --_thumb: var(--sa-slider-thumb-size, 1rem);
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    touch-action: none;
+    user-select: none;
+
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      width: auto;
+      height: 100%;
+      min-height: var(--sa-slider-min-h);
+    }
+    &:is([data-disabled]:not([data-disabled="false"])) {
+      opacity: var(--sa-disabled-opacity);
+    }
+    /* Mark labels hang outside the host, which stays as tight as the track; reserve their room. */
+    &[data-orientation="horizontal"]:has([data-slot="slider-mark-label"]) {
+      margin-bottom: calc(var(--_thumb) / 2 + 1.25rem);
+    }
+    &[data-orientation="vertical"]:has([data-slot="slider-mark-label"]) {
+      margin-inline-end: calc(var(--_thumb) / 2 + 3rem);
+    }
+  }
+
+  .sa-slider-track {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+    border-radius: var(--sa-slider-track-radius);
+    background: var(--sa-slider-track-bg);
+    user-select: none;
+
+    &[data-orientation="horizontal"] {
+      width: 100%;
+      height: var(--sa-slider-track-size);
+    }
+    &[data-orientation="vertical"] {
+      width: var(--sa-slider-track-size);
+      height: 100%;
+    }
+  }
+
+  .sa-slider-range {
+    position: absolute;
+    background: var(--sa-slider-range-bg);
+    user-select: none;
+
+    &[data-orientation="horizontal"] {
+      height: 100%;
+    }
+    &[data-orientation="vertical"] {
+      width: 100%;
+    }
+  }
+
+  .sa-slider-thumb {
+    position: absolute;
+    display: block;
+    flex-shrink: 0;
+    width: var(--sa-slider-thumb-size);
+    height: var(--sa-slider-thumb-size);
+    border: var(--sa-border-width) solid var(--sa-slider-thumb-border);
+    border-radius: var(--sa-slider-thumb-radius);
+    background: var(--sa-slider-thumb-bg);
+    box-shadow: var(--sa-slider-thumb-shadow);
+    outline: none;
+    user-select: none;
+    transition:
+      color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    /* A larger hit area than the thumb draws. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: calc(-2 * var(--sa-unit));
+    }
+    &:is(:hover, :focus-visible, :active) {
+      box-shadow: var(--sa-slider-thumb-shadow), var(--sa-focus-shadow);
+    }
+  }
+
+  .sa-slider-marks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .sa-slider-mark {
+    position: absolute;
+    width: 0;
+    height: 0;
+    &[data-orientation="horizontal"] {
+      top: 50%;
+    }
+    &[data-orientation="vertical"] {
+      left: 50%;
+    }
+  }
+  .sa-slider-mark-tick {
+    position: absolute;
+    width: var(--sa-slider-mark-w);
+    height: var(--sa-slider-mark-h);
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-slider-mark-bg);
+    translate: -50% -50%;
+
+    [data-orientation="vertical"] > & {
+      width: var(--sa-slider-mark-h);
+      height: var(--sa-slider-mark-w);
+    }
+    [data-state="in-range"] > & {
+      background: var(--sa-slider-mark-bg-in-range);
+    }
+  }
+  /* Keyed to the mark, its parent: a field around the slider also carries data-orientation. */
+  .sa-slider-mark-label {
+    position: absolute;
+    color: var(--sa-slider-mark-label-fg);
+    font-size: var(--sa-slider-mark-label-text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3333;
+    white-space: nowrap;
+
+    [data-orientation="horizontal"] > & {
+      top: calc(var(--_thumb) / 2 + 0.25rem);
+      translate: -50% 0;
+    }
+    [data-orientation="vertical"] > & {
+      left: calc(var(--_thumb) / 2 + 0.5rem);
+      translate: 0 -50%;
+    }
+    /* Labels at the bounds align to the track's ends; edge-aligned thumbs inset the end marks by half
+       a thumb. */
+    [data-orientation="horizontal"][data-bound="min"] > & {
+      translate: 0 0;
+    }
+    [data-orientation="horizontal"][data-bound="max"] > & {
+      translate: -100% 0;
+    }
+    [data-orientation="vertical"][data-bound="min"] > & {
+      translate: 0 -100%;
+    }
+    [data-orientation="vertical"][data-bound="max"] > & {
+      translate: 0 0;
+    }
+    [data-thumb-alignment="edge"] [data-orientation="horizontal"][data-bound="min"] > & {
+      margin-inline-start: calc(var(--_thumb) / -2);
+    }
+    [data-thumb-alignment="edge"] [data-orientation="horizontal"][data-bound="max"] > & {
+      margin-inline-start: calc(var(--_thumb) / 2);
+    }
+    [data-thumb-alignment="edge"] [data-orientation="vertical"][data-bound="min"] > & {
+      margin-top: calc(var(--_thumb) / 2);
+    }
+    [data-thumb-alignment="edge"] [data-orientation="vertical"][data-bound="max"] > & {
+      margin-top: calc(var(--_thumb) / -2);
+    }
+  }
+
+  .sa-slider-value {
+    color: var(--sa-slider-value-fg);
+    font-size: var(--sa-slider-value-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-slider-thumb {
+      transition-duration: 0s;
+    }
+  }
+}

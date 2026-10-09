@@ -1,0 +1,139 @@
+/* Button group: buttons, inputs, selects and text joined into one row or column, with shared edges
+   and only the outer corners rounded. Nested groups sit apart.
+   Replaces: .sa-button-group, .sa-button-group-orientation-horizontal,
+   .sa-button-group-orientation-vertical, .sa-button-group-separator, .sa-button-group-text */
+
+@layer sa.tokens {
+  .sa-button-group {
+    --sa-button-group-gap: calc(2 * var(--sa-unit));      /* between nested groups */
+    --sa-button-group-text-bg: var(--sa-color-surface-sunken);
+    --sa-button-group-text-fg: var(--sa-color-ink);
+    --sa-button-group-text-border: var(--sa-color-line);
+    --sa-button-group-text-radius: var(--sa-radius-control);
+    --sa-button-group-text-px: var(--sa-control-px);
+    --sa-button-group-text-gap: calc(2 * var(--sa-unit));
+    --sa-button-group-text-text: var(--sa-text-control);
+    --sa-button-group-text-weight: var(--sa-weight-control);
+    --sa-button-group-text-icon: var(--sa-control-icon);
+    --sa-button-group-separator-bg: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-button-group {
+    display: flex;
+    align-items: stretch;
+    width: fit-content;
+
+    &:has(> [data-slot="button-group"]) {
+      gap: var(--sa-button-group-gap);
+    }
+    & > *:focus-visible,
+    & > :has(:focus-visible) {
+      position: relative;
+      z-index: 10;
+    }
+    & > [data-slot="select-trigger"]:not([class*="w-"]) {
+      width: fit-content;
+    }
+    & > input {
+      flex: 1;
+    }
+  }
+
+  /* Every part but the last gives up its end corners; every part but the first its start corners and
+     its start edge, so neighbours share one line. Small buttons keep the group's radius (button.css). */
+  .sa-button-group-orientation-horizontal {
+    & > [data-slot]:has(~ [data-slot]) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot] {
+      border-inline-start-width: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+  }
+  .sa-button-group-orientation-vertical {
+    flex-direction: column;
+
+    & > [data-slot]:has(~ [data-slot]) {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot] {
+      border-top-width: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+  }
+
+  .sa-button-group-text {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-button-group-text-gap);
+    padding-inline: var(--sa-button-group-text-px);
+    border: var(--sa-border-width) solid var(--sa-button-group-text-border);
+    border-radius: var(--sa-button-group-text-radius);
+    background: var(--sa-button-group-text-bg);
+    background-clip: padding-box;
+    color: var(--sa-button-group-text-fg);
+    font-size: var(--sa-button-group-text-text);
+    font-weight: var(--sa-button-group-text-weight);
+    white-space: nowrap;
+
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-button-group-text-icon);
+      height: var(--sa-button-group-text-icon);
+    }
+  }
+}
+
+/* Transitional: parts still drawn by unconverted rules in Tailwind's components layer, which sits above
+   sa.components, so the group's adjustments to them live there too. The separator is a Separator (its
+   own width, height and colour) and the selects are Select and NativeSelect, whose old rules set their
+   own corners and edges. Each block moves into sa.components when that component converts. */
+@layer components {
+  .sa-button-group-orientation-horizontal {
+    & > :is([data-slot="select-trigger"], [data-slot="textarea"]):has(~ [data-slot]),
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ :is([data-slot="select-trigger"], [data-slot="textarea"]),
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-inline-start-width: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+  }
+  .sa-button-group-orientation-vertical {
+    & > :is([data-slot="select-trigger"], [data-slot="textarea"]):has(~ [data-slot]),
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ :is([data-slot="select-trigger"], [data-slot="textarea"]),
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-top-width: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+  }
+  .sa-separator.sa-button-group-separator {
+    position: relative;
+    align-self: stretch;
+    background: var(--sa-button-group-separator-bg);
+    &[data-orientation="horizontal"] {
+      width: auto;
+      margin-inline: 1px;
+    }
+    &[data-orientation="vertical"] {
+      height: auto;
+      margin-block: 1px;
+    }
+  }
+}

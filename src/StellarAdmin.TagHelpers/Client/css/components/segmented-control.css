@@ -1,0 +1,128 @@
+/* Segmented control: a radio group drawn as a track of segments, like the tabs list. Each segment is a
+   label around a visually hidden radio, so its states come from the radio (:checked, :focus-visible,
+   :disabled).
+   Replaces: .sa-segmented-control, .sa-segmented-control-input, .sa-segmented-control-item */
+
+@layer sa.tokens {
+  .sa-segmented-control {
+    --sa-segmented-control-h: var(--sa-control-h);
+    /* A translucent ink tint (about the sunken band on a card), so the track also steps from a tinted
+       backdrop such as the sidebar. */
+    --sa-segmented-control-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);
+    --sa-segmented-control-border: transparent;
+    --sa-segmented-control-radius: var(--sa-radius-control);
+    --sa-segmented-control-p: 3px;
+    --sa-segmented-control-item-px: calc(1.5 * var(--sa-unit));
+    --sa-segmented-control-item-py: calc(0.5 * var(--sa-unit));
+    --sa-segmented-control-item-gap: calc(1.5 * var(--sa-unit));
+    --sa-segmented-control-item-radius: var(--sa-radius-item);
+    --sa-segmented-control-item-text: var(--sa-text-control);
+    --sa-segmented-control-item-weight: var(--sa-weight-control);
+    --sa-segmented-control-item-icon: var(--sa-control-icon);
+    --sa-segmented-control-item-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --sa-segmented-control-item-fg-hover: var(--sa-color-ink);
+    --sa-segmented-control-selected-bg: var(--sa-color-surface);
+    --sa-segmented-control-selected-fg: var(--sa-color-ink);
+    --sa-segmented-control-selected-border: transparent;
+    --sa-segmented-control-selected-shadow: var(--sa-shadow-raised);
+  }
+  .dark .sa-segmented-control {
+    --sa-segmented-control-item-fg: var(--sa-color-ink-muted);
+    --sa-segmented-control-selected-bg: var(--sa-color-field);
+    --sa-segmented-control-selected-border: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-segmented-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    height: var(--sa-segmented-control-h);
+    padding: var(--sa-segmented-control-p);
+    border: var(--sa-border-width) solid var(--sa-segmented-control-border);
+    border-radius: var(--sa-segmented-control-radius);
+    background: var(--sa-segmented-control-bg);
+    color: var(--sa-segmented-control-item-fg);
+
+    &[aria-invalid="true"] {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-invalid-shadow);
+    }
+  }
+
+  .sa-segmented-control-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sa-segmented-control-item {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-segmented-control-item-gap);
+    height: 100%;
+    padding: var(--sa-segmented-control-item-py) var(--sa-segmented-control-item-px);
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-segmented-control-item-radius);
+    color: var(--sa-segmented-control-item-fg);
+    font-size: var(--sa-segmented-control-item-text);
+    font-weight: var(--sa-segmented-control-item-weight);
+    line-height: var(--sa-leading-ui);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color var(--sa-motion-fast) var(--sa-motion-ease),
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    & svg {
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-segmented-control-item-icon);
+      height: var(--sa-segmented-control-item-icon);
+    }
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: var(--sa-unit);
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: var(--sa-unit);
+    }
+    &:hover {
+      color: var(--sa-segmented-control-item-fg-hover);
+    }
+    &:has(:checked) {
+      border-color: var(--sa-segmented-control-selected-border);
+      background: var(--sa-segmented-control-selected-bg);
+      box-shadow: var(--sa-segmented-control-selected-shadow);
+      color: var(--sa-segmented-control-selected-fg);
+    }
+    &:has(:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &:has(:disabled) {
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-segmented-control-item {
+      transition-duration: 0s;
+    }
+  }
+}

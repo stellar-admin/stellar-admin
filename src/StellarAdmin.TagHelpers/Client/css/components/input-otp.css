@@ -1,0 +1,125 @@
+/* Input OTP: <sel-input-otp>, a row of character slots over one transparent native input (styled
+   inline by the script), in groups with separators. The active slot shows focus and a blinking caret.
+   Replaces: .sa-input-otp, .sa-input-otp-caret, .sa-input-otp-caret-line, .sa-input-otp-group,
+   .sa-input-otp-input, .sa-input-otp-separator, .sa-input-otp-slot */
+
+@layer sa.tokens {
+  .sa-input-otp {
+    --sa-input-otp-gap: calc(2 * var(--sa-unit));
+    --sa-input-otp-radius: var(--sa-radius-control);
+    --sa-input-otp-shadow: var(--sa-shadow-control);
+    --sa-input-otp-slot-size: var(--sa-control-h);
+    --sa-input-otp-slot-bg: var(--sa-color-field);
+    --sa-input-otp-slot-border: var(--sa-color-line-control);
+    --sa-input-otp-slot-fg: var(--sa-color-ink);
+    --sa-input-otp-slot-text: var(--sa-text-control);
+    --sa-input-otp-separator-fg: var(--sa-color-ink);
+    --sa-input-otp-separator-icon: var(--sa-control-icon);
+    --sa-input-otp-caret-bg: var(--sa-color-ink);
+    --sa-input-otp-caret-h: 1rem;
+  }
+}
+
+@layer sa.components {
+  .sa-input-otp {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-input-otp-gap);
+    &:has(:disabled) {
+      opacity: var(--sa-disabled-opacity);
+    }
+  }
+
+  .sa-input-otp-group {
+    display: flex;
+    align-items: center;
+    border-radius: var(--sa-input-otp-radius);
+    box-shadow: var(--sa-input-otp-shadow);
+    &:has([aria-invalid="true"], .input-validation-error) {
+      box-shadow: var(--sa-input-otp-shadow), var(--sa-invalid-shadow);
+    }
+  }
+
+  .sa-input-otp-slot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-input-otp-slot-size);
+    height: var(--sa-input-otp-slot-size);
+    border: var(--sa-border-width) solid var(--sa-input-otp-slot-border);
+    border-inline-start-width: 0;
+    background: var(--sa-input-otp-slot-bg);
+    background-clip: padding-box;
+    color: var(--sa-input-otp-slot-fg);
+    font-size: var(--sa-input-otp-slot-text);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:first-child {
+      border-inline-start-width: var(--sa-border-width);
+      border-start-start-radius: var(--sa-input-otp-radius);
+      border-end-start-radius: var(--sa-input-otp-radius);
+    }
+    &:last-child {
+      border-start-end-radius: var(--sa-input-otp-radius);
+      border-end-end-radius: var(--sa-input-otp-radius);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+    }
+    &[data-active="true"] {
+      z-index: 10;
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow-field);
+      &:is([aria-invalid="true"], .input-validation-error) {
+        border-color: var(--sa-color-danger);
+        box-shadow: var(--sa-invalid-focus-shadow);
+      }
+    }
+  }
+
+  .sa-input-otp-separator {
+    display: flex;
+    align-items: center;
+    color: var(--sa-input-otp-separator-fg);
+    & svg:not([class*="size-"]) {
+      width: var(--sa-input-otp-separator-icon);
+      height: var(--sa-input-otp-separator-icon);
+    }
+  }
+
+  .sa-input-otp-caret {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .sa-input-otp-caret-line {
+    width: 1px;
+    height: var(--sa-input-otp-caret-h);
+    background: var(--sa-input-otp-caret-bg);
+    animation: sa-input-otp-caret-blink 1s ease-out infinite;
+  }
+  .sa-input-otp-input:disabled {
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-input-otp-slot {
+      transition-duration: 0s;
+    }
+    .sa-input-otp-caret-line {
+      animation: none;
+    }
+  }
+}
+
+@keyframes sa-input-otp-caret-blink {
+  0%, 70%, 100% { opacity: 1; }
+  20%, 50% { opacity: 0; }
+}

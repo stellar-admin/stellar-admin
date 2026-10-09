@@ -1,0 +1,71 @@
+/* Toggle group: toggles (toggle.css) in a row or column, spaced by the group's --gap (in density units)
+   or, at spacing 0, joined with shared edges and only the outer corners rounded.
+   Replaces: .sa-toggle-group, .sa-toggle-group-item */
+
+@layer sa.tokens {
+  .sa-toggle-group {
+    --sa-toggle-group-radius: var(--sa-radius-control);
+    --sa-toggle-group-item-px: calc(2 * var(--sa-unit));   /* joined items */
+  }
+}
+
+@layer sa.components {
+  .sa-toggle-group {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: var(--sa-toggle-group-radius);
+
+    &[data-orientation="horizontal"] {
+      align-items: center;
+    }
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    &:not([data-spacing="0"]) {
+      gap: calc(var(--gap, 0) * var(--sa-unit));
+    }
+  }
+
+  .sa-toggle.sa-toggle-group-item {
+    position: relative;
+    &:has(> input:checked) {
+      z-index: 1;
+    }
+    &:has(> input:focus-visible) {
+      z-index: 10;
+    }
+  }
+
+  /* Joined: neighbours overlap by one border, so they share a line. */
+  .sa-toggle-group[data-spacing="0"] > .sa-toggle.sa-toggle-group-item {
+    --_px: var(--sa-toggle-group-item-px);
+    border-radius: 0;
+  }
+  .sa-toggle-group[data-spacing="0"][data-orientation="horizontal"] > .sa-toggle-group-item {
+    & + .sa-toggle-group-item {
+      margin-inline-start: calc(-1 * var(--sa-border-width));
+    }
+    &:first-of-type {
+      border-start-start-radius: var(--sa-toggle-group-radius);
+      border-end-start-radius: var(--sa-toggle-group-radius);
+    }
+    &:last-of-type {
+      border-start-end-radius: var(--sa-toggle-group-radius);
+      border-end-end-radius: var(--sa-toggle-group-radius);
+    }
+  }
+  .sa-toggle-group[data-spacing="0"][data-orientation="vertical"] > .sa-toggle-group-item {
+    & + .sa-toggle-group-item {
+      margin-top: calc(-1 * var(--sa-border-width));
+    }
+    &:first-of-type {
+      border-start-start-radius: var(--sa-toggle-group-radius);
+      border-start-end-radius: var(--sa-toggle-group-radius);
+    }
+    &:last-of-type {
+      border-end-start-radius: var(--sa-toggle-group-radius);
+      border-end-end-radius: var(--sa-toggle-group-radius);
+    }
+  }
+}

@@ -1,0 +1,155 @@
+/* Toggle: a two-state button, a label around a visually hidden checkbox (or radio, in a toggle group),
+   so its states come from the input (:checked, :focus-visible, :disabled, aria-invalid).
+   Replaces: .sa-toggle, .sa-toggle-variant-default, .sa-toggle-variant-outline,
+   .sa-toggle-size-default, .sa-toggle-size-sm, .sa-toggle-size-lg */
+
+@layer sa.tokens {
+  .sa-toggle {
+    --sa-toggle-h: var(--sa-control-h);
+    --sa-toggle-h-sm: var(--sa-control-h-sm);
+    --sa-toggle-h-lg: var(--sa-control-h-lg);
+    --sa-toggle-px: var(--sa-control-px);
+    --sa-toggle-px-sm: var(--sa-control-px);
+    --sa-toggle-px-lg: var(--sa-control-px);
+    --sa-toggle-gap: var(--sa-unit);
+    --sa-toggle-radius: var(--sa-radius-control);
+    --sa-toggle-radius-sm: var(--sa-radius-control-sm);
+    --sa-toggle-text: var(--sa-text-control);
+    --sa-toggle-text-sm: min(var(--sa-text-control), 0.8rem);
+    --sa-toggle-weight: var(--sa-weight-control);
+    --sa-toggle-icon: var(--sa-control-icon);
+    --sa-toggle-icon-sm: 0.875rem;
+    --sa-toggle-fg: var(--sa-color-ink);
+    --sa-toggle-bg-hover: var(--sa-color-hover);
+    /* On: the selection wash, as a selected row or menu item. */
+    --sa-toggle-on-bg: var(--sa-color-selected);
+    --sa-toggle-on-fg: var(--sa-color-ink);
+    --sa-toggle-on-bg-hover: color-mix(in oklab, var(--sa-color-selected), var(--sa-color-ink) 5%);
+
+    --sa-toggle-outline-bg: var(--sa-color-surface);
+    --sa-toggle-outline-border: var(--sa-color-line);
+    --sa-toggle-outline-shadow: var(--sa-shadow-control);
+    --sa-toggle-outline-on-border: var(--sa-color-line-control);
+  }
+  .dark .sa-toggle {
+    --sa-toggle-outline-bg: var(--sa-color-field);
+    --sa-toggle-outline-border: var(--sa-color-line-control);
+    --sa-toggle-outline-on-border: var(--sa-color-line-control-hover);
+  }
+}
+
+@layer sa.components {
+  .sa-toggle {
+    --_h: var(--sa-toggle-h);
+    --_px: var(--sa-toggle-px);
+    --_radius: var(--sa-toggle-radius);
+    --_text: var(--sa-toggle-text);
+    --_icon: var(--sa-toggle-icon);
+    --_bg: transparent;
+    --_border: transparent;
+    --_shadow: 0 0 #0000;
+    --_on-border: transparent;
+
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-toggle-gap);
+    min-width: var(--_h);
+    height: var(--_h);
+    padding-inline: var(--_px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--_radius);
+    background: var(--_bg);
+    background-clip: padding-box;
+    box-shadow: var(--_shadow);
+    color: var(--sa-toggle-fg);
+    font-size: var(--_text);
+    font-weight: var(--sa-toggle-weight);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg {
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--_icon);
+      height: var(--_icon);
+    }
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: calc(var(--_px) - 0.5 * var(--sa-unit));
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: calc(var(--_px) - 0.5 * var(--sa-unit));
+    }
+    &:hover {
+      background-color: var(--sa-toggle-bg-hover);
+    }
+    &:has(> input:checked) {
+      border-color: var(--_on-border);
+      background-color: var(--sa-toggle-on-bg);
+      color: var(--sa-toggle-on-fg);
+      &:hover {
+        background-color: var(--sa-toggle-on-bg-hover);
+      }
+    }
+    &:has(> input:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--_shadow), var(--sa-focus-shadow);
+    }
+    &:has(> input:is([aria-invalid="true"], .input-validation-error)) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_shadow), var(--sa-invalid-shadow);
+      &:has(> input:focus-visible) {
+        box-shadow: var(--_shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:has(> input:disabled) {
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* The plain toggle draws no edge, so it is as wide as its content (Nova's sizes). */
+  .sa-toggle-variant-default {
+    border-width: 0;
+  }
+  .sa-toggle-variant-outline {
+    --_bg: var(--sa-toggle-outline-bg);
+    --_border: var(--sa-toggle-outline-border);
+    --_shadow: var(--sa-toggle-outline-shadow);
+    --_on-border: var(--sa-toggle-outline-on-border);
+  }
+
+  .sa-toggle-size-sm {
+    --_h: var(--sa-toggle-h-sm);
+    --_px: var(--sa-toggle-px-sm);
+    --_radius: var(--sa-toggle-radius-sm);
+    --_text: var(--sa-toggle-text-sm);
+    --_icon: var(--sa-toggle-icon-sm);
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: calc(var(--_px) - var(--sa-unit));
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: calc(var(--_px) - var(--sa-unit));
+    }
+  }
+  .sa-toggle-size-lg {
+    --_h: var(--sa-toggle-h-lg);
+    --_px: var(--sa-toggle-px-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-toggle {
+      transition-duration: 0s;
+    }
+  }
+}
