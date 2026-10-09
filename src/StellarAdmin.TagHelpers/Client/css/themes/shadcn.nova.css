@@ -1217,20 +1217,9 @@
 /* Chip: upstream's combobox chip (height, padding, radius, type size, and its fill as the fill inside
    the input-styled group), with the muted fill on other surfaces. The input-styled group is upstream's
    combobox chips box; the group carries aria-invalid itself. */
-:root {
-  --sa-chip-h: --spacing(5.25);
-  --sa-chip-px: --spacing(1.5);
-  --sa-chip-radius: --theme(--radius-sm);
-  --sa-chip-font-size: --theme(--text-xs);
-  --sa-chip-bg: var(--muted);
-  --sa-chip-fg: var(--foreground);
-  --sa-chip-border: transparent;
-  --sa-chip-remove-fg: var(--muted-foreground);
-  --sa-chip-input-bg: var(--muted);
-  --sa-chip-input-border: transparent;
-}
-/* Again on the chip and the group, so the colours follow a nested dark scope. */
-.sa-chip, .sa-chip-group {
+:root,
+.sa-chip,
+.sa-chip-group {
   --sa-chip-h: --spacing(5.25);
   --sa-chip-px: --spacing(1.5);
   --sa-chip-radius: --theme(--radius-sm);

@@ -247,7 +247,8 @@
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .sa-carousel-previous, .sa-carousel-next {
+  .sa-carousel-previous,
+  .sa-carousel-next {
     @apply absolute touch-manipulation;
     grid-area: 1 / 1;
     top: 50%;
@@ -287,7 +288,9 @@
       @apply bg-foreground;
     }
   }
-  .sa-carousel:not([data-ready]) > .sa-carousel-previous, .sa-carousel:not([data-ready]) > .sa-carousel-next, .sa-carousel:not([data-ready]) > .sa-carousel-indicators {
+  .sa-carousel:not([data-ready]) > .sa-carousel-previous,
+  .sa-carousel:not([data-ready]) > .sa-carousel-next,
+  .sa-carousel:not([data-ready]) > .sa-carousel-indicators {
     visibility: hidden;
   }
   .sa-checkbox {
@@ -338,17 +341,18 @@
     height: 0.875rem;
     flex-shrink: 0;
   }
-  .sa-chip > [data-slot="avatar"], .sa-chip > img, .sa-chip > code {
+  .sa-chip > :is([data-slot="avatar"], img, code) {
     flex-shrink: 0;
     margin-inline-start: calc(var(--chip-inset) - var(--sa-chip-px));
     border-radius: var(--chip-media-radius);
   }
-  .sa-chip > [data-slot="avatar"], .sa-chip > img {
+  .sa-chip > :is([data-slot="avatar"], img) {
     width: var(--chip-media);
     height: var(--chip-media);
     object-fit: cover;
   }
-  .sa-chip > [data-slot="avatar"] > *, .sa-chip > [data-slot="avatar"]::after {
+  .sa-chip > [data-slot="avatar"] > *,
+  .sa-chip > [data-slot="avatar"]::after {
     border-radius: inherit;
   }
   .sa-chip > [data-slot="avatar"] > [data-slot="avatar-fallback"] {

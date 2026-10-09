@@ -42,25 +42,79 @@ function buildTheme(theme) {
   return buildBundle(theme, entry, `../wwwroot/stellar-admin.${theme}.css`);
 }
 
-// Removes each rule whose selectors all start with a replaced class (`.sa-switch:checked ~ …` starts
-// with .sa-switch). Rules are matched on a line of their own (`  .sa-x, .sa-y {`), as the generated
-// theme files and components.css write them; anything else is kept.
+// Removes replaced selectors (`.sa-switch:checked ~ …` starts with .sa-switch) from every selector
+// list, wherever the list is written and however it wraps, and drops a rule once none of its
+// selectors is left. It walks the statements of the file, of grouping at-rules (@layer, @media,
+// @supports, @container) and of style rules (nested rules); other at-rules are copied as they are.
 function withoutRules(css, replaced) {
-  const lines = css.split("\n");
-  const kept = [];
-  for (let i = 0; i < lines.length; i++) {
-    const match = /^\s*([^{}@/]+?)\s*\{\s*$/.exec(lines[i]);
-    const selectors = match?.[1].split(",").map((selector) => selector.trim());
-    if (selectors?.every((selector) => replaced.has(/^\.[\w-]+/.exec(selector)?.[0]))) {
-      for (let depth = 0; i < lines.length; i++) {
-        depth += (lines[i].match(/\{/g) ?? []).length - (lines[i].match(/\}/g) ?? []).length;
-        if (depth === 0) break;
-      }
-      continue;
+  const skipTo = (text, from) => {
+    const at = css.indexOf(text, from);
+    return at === -1 ? css.length : at;
+  };
+  // The index of the next `stop` character outside comments, strings, parentheses and brackets.
+  function scan(from, stops) {
+    let depth = 0;
+    for (let i = from; i < css.length; i++) {
+      const c = css[i];
+      if (c === "/" && css[i + 1] === "*") i = skipTo("*/", i + 2) + 1;
+      else if (c === '"' || c === "'") i = skipTo(c, i + 1);
+      else if (c === "(" || c === "[") depth++;
+      else if (c === ")" || c === "]") depth--;
+      else if (depth === 0 && stops.includes(c)) return i;
     }
-    kept.push(lines[i]);
+    return css.length;
   }
-  return kept.join("\n");
+  function closingBrace(open) {
+    for (let i = open + 1, depth = 1; i < css.length; i++) {
+      i = scan(i, "{}");
+      if (css[i] === "{") depth++;
+      else if (--depth === 0) return i;
+    }
+    return css.length;
+  }
+  function selectors(prelude) {
+    const list = [];
+    for (let i = 0, depth = 0, from = 0; i <= prelude.length; i++) {
+      const c = prelude[i];
+      if (c === "(" || c === "[") depth++;
+      else if (c === ")" || c === "]") depth--;
+      else if (i === prelude.length || (c === "," && depth === 0)) {
+        list.push(prelude.slice(from, i));
+        from = i + 1;
+      }
+    }
+    return list;
+  }
+  function statements(from, to) {
+    let out = "";
+    for (let i = from; i < to; ) {
+      const stop = Math.min(scan(i, "{;}"), to);
+      if (stop >= to || css[stop] !== "{") {
+        out += css.slice(i, stop + (stop < to ? 1 : 0));
+        i = stop + 1;
+        continue;
+      }
+      const close = closingBrace(stop);
+      const prelude = css.slice(i, stop);
+      // Comments and whitespace before the prelude stay with it.
+      const lead = /^(\s|\/\*[\s\S]*?\*\/)*/.exec(prelude)[0];
+      const head = prelude.slice(lead.length);
+      if (head.startsWith("@")) {
+        out += /^@(layer|media|supports|container)\b/.test(head)
+          ? `${prelude}{${statements(stop + 1, close)}}`
+          : css.slice(i, close + 1);
+      } else {
+        const kept = selectors(head).filter(
+          (selector) => !replaced.has(/^\s*(\.[\w-]+)/.exec(selector)?.[1]),
+        );
+        if (kept.length)
+          out += `${lead}${kept.join(",").replace(/^\s*\n/, "")}{${statements(stop + 1, close)}}`;
+      }
+      i = close + 1;
+    }
+    return out;
+  }
+  return statements(0, css.length);
 }
 
 function buildTokensBundle() {
