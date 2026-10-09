@@ -1,0 +1,52 @@
+<div class="w-full overflow-hidden rounded-md border">
+    <sa-table-row-details>
+        <sa-table>
+            <sa-table-header>
+                <sa-table-row>
+                    <sa-table-head class="w-px">
+                        <sa-table-row-detail-toggle all="true"/>
+                    </sa-table-head>
+                    <sa-table-head>Booking #</sa-table-head>
+                    <sa-table-head>Status</sa-table-head>
+                    <sa-table-head>Destination</sa-table-head>
+                    <sa-table-head class="text-right">Amount</sa-table-head>
+                </sa-table-row>
+            </sa-table-header>
+            <sa-table-body>
+                @foreach (var booking in StaticData.Bookings)
+                {
+                    var details = StaticData.DetailsFor(booking.Id);
+                    <sa-table-row>
+                        <sa-table-cell class="w-px">
+                            <sa-table-row-detail-toggle aria-label="Show details for @booking.Id"/>
+                        </sa-table-cell>
+                        <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                        <sa-table-cell>@booking.Status</sa-table-cell>
+                        <sa-table-cell>@booking.Destination</sa-table-cell>
+                        <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
+                    </sa-table-row>
+                    <sa-table-row-detail expanded="@(booking.Id == "TRP-4822")">
+                        <dl class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3">
+                            <div class="flex flex-col gap-0.5">
+                                <dt class="text-muted-foreground text-xs">Lead traveller</dt>
+                                <dd>@details.Traveller</dd>
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <dt class="text-muted-foreground text-xs">Email</dt>
+                                <dd>@details.Email</dd>
+                            </div>
+                            <div class="flex flex-col gap-0.5">
+                                <dt class="text-muted-foreground text-xs">Party</dt>
+                                <dd>@details.Party</dd>
+                            </div>
+                            <div class="col-span-full flex flex-col gap-0.5">
+                                <dt class="text-muted-foreground text-xs">Notes</dt>
+                                <dd>@details.Notes</dd>
+                            </div>
+                        </dl>
+                    </sa-table-row-detail>
+                }
+            </sa-table-body>
+        </sa-table>
+    </sa-table-row-details>
+</div>

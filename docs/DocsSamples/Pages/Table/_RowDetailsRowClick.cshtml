@@ -1,0 +1,48 @@
+<div class="w-full overflow-hidden rounded-md border">
+    <sa-table-row-details row-click="true"
+                          expand-mode="TableRowDetailExpandMode.Single"
+                          emphasis="TableRowDetailEmphasis.Rail"
+                          inset="TableRowDetailInset.Bleed">
+        <sa-table>
+            <sa-table-header>
+                <sa-table-row>
+                    <sa-table-head>Booking #</sa-table-head>
+                    <sa-table-head>Destination</sa-table-head>
+                    <sa-table-head class="text-right">Amount</sa-table-head>
+                    <sa-table-head class="w-px"><span class="sr-only">Actions</span></sa-table-head>
+                </sa-table-row>
+            </sa-table-header>
+            <sa-table-body>
+                @foreach (var booking in StaticData.Bookings.Take(4))
+                {
+                    <sa-table-row>
+                        <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                        <sa-table-cell>@booking.Destination</sa-table-cell>
+                        <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
+                        <sa-table-cell class="w-px whitespace-nowrap">
+                            <sa-linkbutton href="#" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                                           aria-label="Edit @booking.Id">
+                                <sa-icon name="square-pen"/>
+                            </sa-linkbutton>
+                            <sa-table-row-detail-toggle aria-label="Show itinerary for @booking.Id"/>
+                        </sa-table-cell>
+                    </sa-table-row>
+                    <sa-table-row-detail>
+                        <ul class="flex flex-col divide-y">
+                            @foreach (var segment in StaticData.DetailsFor(booking.Id).Itinerary)
+                            {
+                                <li class="flex items-center gap-4 py-2">
+                                    <span class="text-muted-foreground w-16">@segment.Date</span>
+                                    <span class="flex-1">
+                                        <span class="font-medium">@segment.Type</span> · @segment.Description
+                                    </span>
+                                    <span class="tabular-nums">@segment.Amount</span>
+                                </li>
+                            }
+                        </ul>
+                    </sa-table-row-detail>
+                }
+            </sa-table-body>
+        </sa-table>
+    </sa-table-row-details>
+</div>

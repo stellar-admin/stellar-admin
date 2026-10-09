@@ -188,8 +188,9 @@ To replace Lucide completely, configure `IconOptions` with `ClearIcons()` follow
 | `ScrollToEnd` | `arrow-down` |
 | `Search` | `search` |
 | `OtpSeparator` | `minus` |
+| `RowDetailIndicator` | `chevron-right` |
 
-Supply glyphs compatible with component styling: the accordion indicator points down when closed and rotates 180 degrees when open, loading icons rotate continuously, carousel navigation adapts to orientation and text direction, and `ScrollToEnd` rotates for scrolling to the start. Dashboard view icons and application-selected icon names are outside this semantic mapping.
+Supply glyphs compatible with component styling: the accordion indicator points down when closed and rotates 180 degrees when open, the row detail indicator points right when collapsed and rotates 90 degrees when expanded, loading icons rotate continuously, carousel navigation adapts to orientation and text direction, and `ScrollToEnd` rotates for scrolling to the start. Dashboard view icons and application-selected icon names are outside this semantic mapping.
 
 ## API reference
 

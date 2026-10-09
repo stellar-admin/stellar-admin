@@ -1,6 +1,6 @@
 # Table row details
 
-Status: phases 1 and 2 implemented; phase 2 awaiting review (2026-10-09). Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
+Status: phases 1–3 implemented; phase 3 awaiting review (2026-10-09). Dashboard integration remains a separate, unplanned piece of work. Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
 
 ## Goal
 
@@ -125,6 +125,13 @@ Known limits: details stay hidden without JavaScript. A nested `sa-table-row-det
 - `sel-table-selection` now ignores checkboxes inside nested selection tables and inside its own detail rows (both for row checkboxes and select-all).
 - The ComponentPlayground demo files disappeared before the phase 1 commit (only the navigation entry was committed). Jerrie confirmed restoring them, so they were recreated with two grid sections added.
 
+## Phase 3 implementation notes (2026-10-09)
+
+- DocsSamples demos: `Table/_RowDetails` (leading toggle, expand-all, one row expanded), `Table/_RowDetailsRowClick` (toggle in an actions cell, row click, single, rail, bleed), `DataGrid/_RowDetails` (`expanded-keys`, a nested itinerary grid). They use `StaticData.DetailsFor(bookingId)` (new `BookingDetails` and `ItinerarySegment` records). The exported demos are static, so the htmx loading pattern is documented as code, not shown live.
+- Website: Row details, Row details with row click, and Loading row details with htmx sections plus three API reference entries in `table.mdx`, and a Row details section with an `<sa-data-grid-row-detail>` TypeTable in `data-grid.mdx`. The htmx section documents the on-row pattern and the htmx 2 and htmx 4 `from:` syntax for the child-element pattern.
+- Skills: `skills.examples.json` adds the three demos. `references/icons.md` (handwritten) gains the `RowDetailIndicator` row and its rotation note.
+- Generator quirk, not fixed: both exporters drop leading `@` lines as directives, which also removes a leading `@{` block. The grid demo avoids it with a single-quoted `expanded-keys='new[] { "TRP-4821" }'`. The existing `DataGrid/_Intro` snippet already starts mid-block for this reason.
+
 ## Verification log
 
 2026-10-09, phase 1:
@@ -156,3 +163,10 @@ Known limits: details stay hidden without JavaScript. A nested `sa-table-row-det
   - bleed fallback for an end-of-row toggle;
   - mobile pinning.
 - The 18 phase 1 checks were re-run and still pass. Screenshots reviewed (vega, desktop).
+
+2026-10-09, phase 3:
+
+- DocsSamples built, and the three partials rendered with no unresolved `sa-*` elements. Screenshots reviewed in observatory dark (the default), parallax dark, and at 390px.
+- `dotnet run --project docs/DocsSamplesGenerator` regenerated 448 demos. Website HTML diffs are the expected bundle-hash and SVG attribute-order churn. Theme CSS diffs are limited to the row-details rules and the grid padding selector. New: three demo HTML files, three `_include` snippets, new hashed `site` and `stellar-admin.js` assets.
+- Website: `pnpm lint` and `pnpm types:check` passed, and `pnpm build` exited 0. The built Table and Data Grid docs pages were screenshotted through `vite preview`. The grid demo needed `class="w-full"` so the nested grid does not scroll inside the demo frame.
+- `util/SkillsGenerator` regenerated `table.md` and `data-grid.md`, and `--check` reported no drift. `dotnet build src/StellarAdmin.TagHelpers --no-incremental`: 0 warnings.
