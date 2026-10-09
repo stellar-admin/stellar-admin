@@ -1175,6 +1175,99 @@
   .sa-segmented-control-item {
     @apply has-[:focus-visible]:border-ring has-[:focus-visible]:ring-[var(--sa-control-focus-ring-color,color-mix(in_oklab,var(--ring)_50%,transparent))] has-[:focus-visible]:outline-ring text-foreground/60 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap transition-all has-[:focus-visible]:ring-[length:var(--sa-control-focus-ring-width,3px)] has-[:focus-visible]:outline-[length:var(--sa-control-focus-outline-width,1px)] has-[:disabled]:pointer-events-none has-[:disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 has-[:checked]:bg-[var(--sa-segmented-control-active-background,var(--background))] dark:has-[:checked]:text-[var(--sa-segmented-control-active-foreground,var(--foreground))] dark:has-[:checked]:border-[var(--sa-segmented-control-active-border,var(--input))] dark:has-[:checked]:bg-[var(--sa-segmented-control-active-background,color-mix(in_oklab,var(--input)_30%,transparent))] has-[:checked]:text-[var(--sa-segmented-control-active-foreground,var(--foreground))] cursor-pointer has-[:disabled]:cursor-not-allowed;
   }
+  .sa-table-row-details {
+    /* sel-table-row-details publishes --sa-table-row-detail-width (the table container's
+       visible width) and --sa-table-row-detail-inset-start/-end (measured from the row's
+       cells, so the content follows each theme's cell padding). The fallbacks apply until
+       the script runs. */
+    display: block;
+
+    /* An expanded row and its details read as one unit: no divider between them. */
+    & tr:has(+ .sa-table-row-detail[data-state="open"]) {
+      border-bottom-color: transparent;
+    }
+    /* A collapsed last detail row leaves its row as the visual last row. */
+    & tbody > tr:has(+ .sa-table-row-detail[hidden]:last-child) {
+      border-bottom-width: 0;
+    }
+    &[data-row-click="true"] tbody > tr:has(+ .sa-table-row-detail) {
+      cursor: pointer;
+    }
+    &[data-emphasis="band"]
+      :is(tr:has(+ .sa-table-row-detail[data-state="open"]), .sa-table-row-detail) {
+      background: color-mix(in oklab, var(--muted) 50%, transparent);
+    }
+    &[data-emphasis="rail"]
+      :is(
+        tr:has(+ .sa-table-row-detail[data-state="open"]) > :first-child,
+        .sa-table-row-detail > .sa-table-row-detail-cell
+      ) {
+      box-shadow: inset 2px 0 0 var(--primary);
+    }
+  }
+  .sa-table-row-detail {
+    border-bottom: 1px solid var(--border);
+    &:last-child {
+      border-bottom-width: 0;
+    }
+  }
+  .sa-table-row-detail-cell {
+    padding: 0;
+  }
+  .sa-table-row-detail-reveal {
+    /* Animating grid-template-rows from 0fr to 1fr reveals the content at its natural
+       height, including content that htmx swaps in after the row opens. */
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 200ms ease-out;
+
+    .sa-table-row-detail[data-state="open"] > .sa-table-row-detail-cell > & {
+      grid-template-rows: 1fr;
+    }
+    .sa-table-row-details[data-animate="false"] & {
+      transition: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  .sa-table-row-detail-clip {
+    /* clip, not hidden: hidden would make this box the sticky content's scroll container,
+       so the content would no longer stay pinned while the table scrolls sideways. */
+    min-height: 0;
+    overflow: clip;
+  }
+  .sa-table-row-detail-content {
+    /* Pinned to the visible width so the details stay in view when the table scrolls
+       sideways. */
+    position: sticky;
+    inset-inline-start: 0;
+    width: var(--sa-table-row-detail-width, 100%);
+    padding-block: var(--sa-gap-sm, 0.5rem) var(--sa-gap-lg, 1.25rem);
+    padding-inline: var(--sa-table-row-detail-inset-start, 0.5rem)
+      var(--sa-table-row-detail-inset-end, 0.5rem);
+    white-space: normal;
+  }
+  .sa-table-row-detail-toggle {
+    & > svg {
+      transition: rotate 150ms ease;
+    }
+    &[aria-expanded="true"] > svg {
+      rotate: 90deg;
+    }
+    /* The rotated chevron shows the state; drop the fill ghost buttons get when expanded. */
+    &[aria-expanded="true"]:not(:hover) {
+      background-color: transparent;
+    }
+    .sa-table-row-details[data-animate="false"] & > svg {
+      transition: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      & > svg {
+        transition: none;
+      }
+    }
+  }
   .sa-tabs {
     @apply flex data-[orientation=horizontal]:flex-col;
   }

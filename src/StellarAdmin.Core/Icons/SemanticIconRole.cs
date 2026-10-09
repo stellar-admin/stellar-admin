@@ -149,4 +149,9 @@ public enum SemanticIconRole
     ///     A failed operation.
     /// </summary>
     Error,
+
+    /// <summary>
+    ///     An indicator that a table row can expand to show its details.
+    /// </summary>
+    RowDetailIndicator,
 }

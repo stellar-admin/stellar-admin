@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Expandable rows prototype — resource index detail concepts</title>
+
+    <!-- Geist + the Parallax fonts (the DashboardPlayground default theme) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lexend:wght@400;500;600&display=swap"
+    />
+
+    <!--
+      Real built library assets. The theme <link> is swappable from the control bar.
+      The Dashboard stylesheet is included so the index page chrome matches the real
+      resource index exactly (sa-resource-index-grid footer rules etc.).
+    -->
+    <link
+      id="theme-css"
+      rel="stylesheet"
+      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.parallax.css"
+    />
+    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
+    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+
+    <!-- Tailwind v4 browser build — ONLY for prototype-authored utilities. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      /* Token vocabulary (copy of Client/css/theme-tokens.css). --font-sans is left to
+         the linked theme bundle so each theme keeps its own typeface. */
+      @theme inline {
+        --color-sidebar-ring: var(--sidebar-ring);
+        --color-sidebar-border: var(--sidebar-border);
+        --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+        --color-sidebar-accent: var(--sidebar-accent);
+        --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+        --color-sidebar-primary: var(--sidebar-primary);
+        --color-sidebar-foreground: var(--sidebar-foreground);
+        --color-sidebar: var(--sidebar);
+        --color-ring: var(--ring);
+        --color-input: var(--input);
+        --color-border: var(--border);
+        --color-destructive: var(--destructive);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-accent: var(--accent);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-muted: var(--muted);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-secondary: var(--secondary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-primary: var(--primary);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-popover: var(--popover);
+        --color-card-foreground: var(--card-foreground);
+        --color-card: var(--card);
+        --color-foreground: var(--foreground);
+        --color-background: var(--background);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --radius-xl: calc(var(--radius) + 4px);
+      }
+      /* The browser build's preflight lands after the bundle's base layer and
+         would reset border-color to currentColor; restore the library default. */
+      @layer base {
+        *,
+        ::after,
+        ::before,
+        ::backdrop,
+        ::file-selector-button {
+          border-color: var(--color-border);
+        }
+      }
+    </style>
+
+    <!--
+      Prototype mechanics that would become structural rules on extraction
+      (plain CSS so the browser build doesn't have to see dynamically-built classes).
+    -->
+    <style>
+      /* Disclosure chevron: rotates on the expanded parent row. */
+      [data-slot="table-row"] [data-slot="row-expander"] svg { transition: rotate 150ms ease; }
+      [data-slot="table-row"][data-expanded] [data-slot="row-expander"] svg { rotate: 90deg; }
+      [data-slot="table-row"][data-expanded] [data-slot="row-expander"][data-trailing] svg { rotate: 180deg; }
+
+      /* Detail row reveal: grid-template-rows 0fr → 1fr animates to the content height. */
+      [data-slot="table-row-detail"] > td > .proto-reveal {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 200ms ease-out;
+      }
+      [data-slot="table-row-detail"][data-open] > td > .proto-reveal { grid-template-rows: 1fr; }
+      [data-slot="table-row-detail"] > td > .proto-reveal > div { overflow: hidden; min-height: 0; }
+      [data-motion="off"] [data-slot="table-row-detail"] > td > .proto-reveal { transition: none; }
+
+      /* Keep the detail pinned to the visible width when the table scrolls sideways
+         (narrow screens / many columns): width tracks the container via a JS var. */
+      [data-slot="table-row-detail"] .proto-pin {
+        position: sticky;
+        left: 0;
+        width: var(--proto-container-w, 100%);
+      }
+
+      /* Expanded parent + detail read as one unit: drop the divider between them. */
+      [data-slot="table-row"][data-expanded] { border-bottom-color: transparent; }
+
+      /* Emphasis: band (both rows tinted) */
+      [data-emphasis="band"] [data-slot="table-row"][data-expanded],
+      [data-emphasis="band"] [data-slot="table-row-detail"] {
+        background: color-mix(in oklab, var(--muted) 50%, transparent);
+      }
+      /* Emphasis: rail (primary accent down the left edge of the pair) */
+      [data-emphasis="rail"] [data-slot="table-row"][data-expanded] > :first-child,
+      [data-emphasis="rail"] [data-slot="table-row-detail"] > td {
+        box-shadow: inset 2px 0 0 var(--primary);
+      }
+
+      /* Row-click trigger */
+      [data-trigger="row"] tbody > [data-slot="table-row"]:not([data-child]) { cursor: pointer; }
+
+      /* Concept D child rows */
+      [data-child][hidden] { display: none; }
+      .proto-tree::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        border-left: 1px solid var(--border);
+      }
+      [data-child][data-last] .proto-tree::before { bottom: 50%; }
+      .proto-tree::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0.625rem;
+        border-top: 1px solid var(--border);
+      }
+
+      /* Tabs inside concept C are prototype-wired; hide inactive panels. */
+      [data-proto-tabpanel]:not([data-active]) { display: none; }
+
+      /* Control bar segmented buttons */
+      .proto-seg { display: inline-flex; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); overflow: hidden; }
+      .proto-seg button { padding: 0.125rem 0.5rem; font-size: 0.75rem; line-height: 1.25rem; color: var(--muted-foreground); }
+      .proto-seg button + button { border-left: 1px solid var(--border); }
+      .proto-seg button[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
+    </style>
+  </head>
+
+  <body>
+    <sel-sidebar id="--sa-sidebar-proto" data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem; --sidebar-width-mobile: 18rem" class="sa-sidebar-wrapper group/sidebar-wrapper">
+      <div data-slot="sidebar" data-variant="sidebar" data-side="left" data-state="expanded" data-mobile="closed" data-collapsible="" data-collapsible-config="offcanvas" class="sa-sidebar group peer"><button aria-label="Close sidebar" class="sa-sidebar-backdrop" data-slot="sidebar-backdrop" type="button"></button><div class="sa-sidebar-gap" data-slot="sidebar-gap"></div><div class="sa-sidebar-container" data-slot="sidebar-container"><div class="sa-sidebar-inner" data-sidebar="sidebar" data-slot="sidebar-inner">
+        <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+          <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+            <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item">
+              <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+                <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <svg class="size-4" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>
+                </div>
+                <div class="grid flex-1 text-left text-sm leading-tight">
+                  <span class="truncate font-semibold">Voyager Travel</span>
+                  <span class="truncate text-xs text-muted-foreground">Admin Console</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content">
+          <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+            <div data-slot="sidebar-group-label" data-sidebar="group-label" class="sa-sidebar-group-label">Operations</div>
+            <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+              <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" data-active="" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default"><span>Bookings</span></a></li>
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default"><span>Travellers</span></a></li>
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default"><span>Destinations</span></a></li>
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item group/menu-item"><a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button peer/menu-button group/menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default"><span>Suppliers</span></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+
+      <main data-slot="sidebar-inset" class="sa-sidebar-inset">
+        <header data-slot="app-header" class="sa-app-header">
+          <button type="button" data-slot="sidebar-trigger" aria-label="Toggle Sidebar" command="--toggle-sidebar" commandfor="--sa-sidebar-proto" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm"><svg class="size-4" width="24" stroke-linejoin="round" stroke-width="2" stroke-linecap="round" fill="none" stroke="currentColor" viewBox="0 0 24 24" height="24"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 3v18"></path></svg></button>
+          <div data-slot="separator" class="sa-separator sa-separator-vertical sa-app-header-separator" role="separator" aria-orientation="vertical" data-orientation="vertical"></div>
+          <span class="text-sm font-medium">StellarAdmin</span>
+        </header>
+
+        <div data-slot="page-container" data-width="full" class="sa-page-container sa-page-container-width-full pb-48">
+          <header data-slot="page-header" class="sa-page-header">
+            <h1 data-slot="page-header-title" class="sa-page-header-title sa-font-heading font-heading">Bookings</h1>
+            <div data-slot="page-header-actions" class="sa-page-header-actions">
+              <a href="#" data-slot="button" class="sa-button group/button sa-button-variant-default sa-button-size-default">Create</a>
+            </div>
+            <nav aria-label="Page sections" data-slot="page-header-nav" class="sa-page-header-nav">
+              <div class="sa-group sa-group-align-start sa-group-gap-md sa-group-justify-between my-2 mr-2">
+                <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs"><div class="sa-tabs-list group/tabs-list sa-tabs-list-variant-default" data-slot="tabs-list" data-variant="default">
+                  <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="true" data-active="" aria-disabled="false" class="sa-tabs-trigger">All bookings</a>
+                  <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Departing soon</a>
+                  <a href="#" role="tab" data-slot="tabs-trigger" aria-selected="false" aria-disabled="false" class="sa-tabs-trigger">Needs attention</a>
+                </div></div>
+                <div class="sa-input-group group/input-group w-full sm:w-64" role="group" data-slot="input-group">
+                  <input placeholder="Search bookings..." aria-label="Search bookings..." name="search" data-slot="input-group-control" class="sa-input sa-input-group-input">
+                  <div role="group" data-slot="input-group-addon" data-align="inline-start" class="sa-input-group-addon sa-input-group-addon-align-inline-start">
+                    <svg width="24" stroke-linejoin="round" stroke-width="2" stroke-linecap="round" fill="none" stroke="currentColor" viewBox="0 0 24 24" height="24"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </header>
+
+          <!--
+            ====================================================================
+            LIVE CANDIDATE — the real resource index grid with an expandable row.
+            Concept + knobs come from the control bar (bottom right). Each concept
+            is a different kind of "more information":
+              A Fields       — extra fields of the same resource (description list)
+              B Related      — rows of another resource in a nested table
+              C Tabbed panel — fields + related lists behind tabs, lazy-loaded
+              D Child rows   — related rows rendered *as table rows* (tree grid)
+              E Split        — fields and a compact related list side by side
+            ====================================================================
+          -->
+          <div id="live-grid"></div>
+
+          <!-- ================================================================ -->
+          <section class="mt-16 flex flex-col gap-3">
+            <div>
+              <h2 class="text-lg font-semibold">Concepts side by side</h2>
+              <p class="text-sm text-muted-foreground">Same grid, first row expanded, each concept with the current knob settings from the control bar.</p>
+            </div>
+            <div id="concept-strip" class="flex flex-col gap-8"></div>
+          </section>
+
+          <section class="mt-16 flex flex-col gap-3">
+            <div>
+              <h2 class="text-lg font-semibold">Trigger</h2>
+              <p class="text-sm text-muted-foreground">Where the expand control lives. Leading chevron column vs. trailing in the actions column vs. whole-row click (leading chevron kept as the visible + keyboard affordance).</p>
+            </div>
+            <div id="trigger-strip" class="flex flex-col gap-8"></div>
+          </section>
+
+          <section class="mt-16 flex flex-col gap-3">
+            <div>
+              <h2 class="text-lg font-semibold">Emphasis</h2>
+              <p class="text-sm text-muted-foreground">How the expanded parent + detail read as one unit. In every option the divider between parent and detail is removed.</p>
+            </div>
+            <div id="emphasis-strip" class="flex flex-col gap-8"></div>
+          </section>
+
+          <section class="mt-16 flex flex-col gap-3">
+            <div>
+              <h2 class="text-lg font-semibold">Detail inset</h2>
+              <p class="text-sm text-muted-foreground">Where the detail content starts. Bleed = card edge padding; Aligned = lines up with the first data column (past the chevron); Card = inset bordered surface (reads as "a thing inside the row").</p>
+            </div>
+            <div id="inset-strip" class="flex flex-col gap-8"></div>
+          </section>
+        </div>
+      </main>
+    </sel-sidebar>
+
+    <!-- ================================================================== -->
+    <!-- Control bar                                                         -->
+    <!-- ================================================================== -->
+    <div id="controls" class="fixed right-4 bottom-4 z-50 flex w-[22rem] max-w-[calc(100vw-2rem)] flex-col gap-2 rounded-xl border bg-popover p-3 text-popover-foreground shadow-lg">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wide uppercase text-muted-foreground">Prototype controls</span>
+        <button type="button" id="controls-toggle" class="text-xs text-muted-foreground underline">hide</button>
+      </div>
+      <div id="controls-body" class="grid grid-cols-[5.5rem_1fr] items-center gap-x-2 gap-y-1.5 text-xs"></div>
+    </div>
+
+    <script>
+      // ---------------------------------------------------------------------------
+      // Icons (lucide)
+      // ---------------------------------------------------------------------------
+      const svg = (paths, cls = "") =>
+        `<svg${cls ? ` class="${cls}"` : ""} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+      const icons = {
+        chevronRight: '<path d="m9 18 6-6-6-6"></path>',
+        chevronDown: '<path d="m6 9 6 6 6-6"></path>',
+        chevronsUpDown: '<path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path>',
+        chevronsDownUp: '<path d="m7 20 5-5 5 5"></path><path d="m7 4 5 5 5-5"></path>',
+        arrowUp: '<path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path>',
+        arrowRight: '<path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>',
+        pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>',
+        trash: '<path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>',
+        plus: '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+        plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>',
+        bed: '<path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path>',
+        car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle>',
+        ticket: '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path>',
+        user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
+      };
+      const segIcon = { Flight: icons.plane, Hotel: icons.bed, Transfer: icons.car, Activity: icons.ticket };
+
+      // ---------------------------------------------------------------------------
+      // Voyager Travel data
+      // ---------------------------------------------------------------------------
+      const bookings = [
+        {
+          id: 24817, ref: "VG-24817", lead: "Sofia Marín", destination: "Kyoto, Japan", departs: "4 Nov 2026", status: "Ticketed", total: "$6,482.00",
+          email: "sofia.marin@example.com", phone: "+34 612 448 901", party: "2 adults", bookedOn: "12 Aug 2026", channel: "Website", payment: "Paid in full · Visa •• 4417", agent: "Amelia Hart",
+          notes: "Celebrating 10th anniversary — request a ryokan room with garden view; vegetarian meals on both long-haul flights.",
+          travellers: [["Sofia Marín", "Lead · Passport ES ••8812"], ["Daniel Ortega", "Adult · Passport ES ••3301"]],
+          payments: [["12 Aug 2026", "Deposit", "$1,500.00"], ["2 Sep 2026", "Balance", "$4,982.00"]],
+          segments: [
+            ["Flight", "4 Nov", "MAD → KIX, connecting via DOH", "Qatar Airways", "QR8F2K", "$2,140.00"],
+            ["Hotel", "5 Nov", "Hoshinoya Kyoto · 4 nights", "Hoshino Resorts", "HK-77120", "$3,120.00"],
+            ["Activity", "7 Nov", "Private tea ceremony, Uji", "Kyoto Tea Guild", "KTG-0419", "$342.00"],
+            ["Transfer", "9 Nov", "Hotel → Kyoto Station", "MK Taxi", "MK-55831", "$60.00"],
+          ],
+        },
+        {
+          id: 24822, ref: "VG-24822", lead: "Liam O’Connell", destination: "Reykjavík, Iceland", departs: "18 Nov 2026", status: "Confirmed", total: "$3,215.50",
+          email: "liam.oc@example.com", phone: "+353 87 210 4471", party: "1 adult", bookedOn: "30 Aug 2026", channel: "Agent", payment: "Deposit paid · balance due 18 Oct", agent: "Noah Patel",
+          notes: "Northern lights tour may be rescheduled for weather; traveller has opted into SMS alerts.",
+          travellers: [["Liam O’Connell", "Lead · Passport IE ••0921"]],
+          payments: [["30 Aug 2026", "Deposit", "$800.00"]],
+          segments: [
+            ["Flight", "18 Nov", "DUB → KEF", "Icelandair", "FI7QW1", "$410.50"],
+            ["Hotel", "18 Nov", "Hotel Borg · 5 nights", "Keahotels", "KH-20914", "$1,905.00"],
+            ["Activity", "20 Nov", "Northern lights super-jeep tour", "Arctic Adventures", "AA-6672", "$900.00"],
+          ],
+        },
+        {
+          id: 24830, ref: "VG-24830", lead: "Aisha Rahman", destination: "Cape Town, South Africa", departs: "2 Dec 2026", status: "Pending", total: "$8,940.00",
+          email: "aisha.r@example.com", phone: "+44 7700 900 312", party: "2 adults, 2 children", bookedOn: "3 Oct 2026", channel: "Phone", payment: "Awaiting deposit", agent: "Amelia Hart",
+          notes: "Hold expires 10 Oct. Family room with interconnecting door requested.",
+          travellers: [["Aisha Rahman", "Lead · Passport GB ••5518"], ["Omar Rahman", "Adult · Passport GB ••5519"], ["Zara Rahman", "Child (9)"], ["Yusuf Rahman", "Child (6)"]],
+          payments: [],
+          segments: [
+            ["Flight", "2 Dec", "LHR → CPT", "British Airways", "BA2HL9", "$4,880.00"],
+            ["Hotel", "3 Dec", "The Silo Hotel · 7 nights", "The Royal Portfolio", "RP-1182", "$3,600.00"],
+            ["Transfer", "3 Dec", "CPT → V&A Waterfront", "Cape Shuttles", "CS-3390", "$120.00"],
+            ["Activity", "6 Dec", "Table Mountain cableway (family)", "TMACC", "TM-88421", "$340.00"],
+          ],
+        },
+        {
+          id: 24834, ref: "VG-24834", lead: "Mateo Rossi", destination: "Lisbon, Portugal", departs: "9 Dec 2026", status: "Cancelled", total: "$1,120.00",
+          email: "mateo.rossi@example.com", phone: "+39 333 210 8844", party: "1 adult", bookedOn: "1 Sep 2026", channel: "Website", payment: "Refunded · 22 Sep 2026", agent: "—",
+          notes: "Cancelled by traveller; full refund issued within the 30-day window.",
+          travellers: [["Mateo Rossi", "Lead · ID IT ••4410"]],
+          payments: [["1 Sep 2026", "Payment", "$1,120.00"], ["22 Sep 2026", "Refund", "−$1,120.00"]],
+          segments: [
+            ["Flight", "9 Dec", "FCO → LIS", "TAP Air Portugal", "TP4K8M", "$280.00"],
+            ["Hotel", "9 Dec", "Memmo Alfama · 3 nights", "Memmo Hotels", "MA-7731", "$840.00"],
+          ],
+        },
+        {
+          id: 24841, ref: "VG-24841", lead: "Hannah Becker", destination: "Queenstown, New Zealand", departs: "14 Jan 2027", status: "Confirmed", total: "$11,305.00",
+          email: "h.becker@example.com", phone: "+49 151 2204 7781", party: "2 adults", bookedOn: "19 Sep 2026", channel: "Agent", payment: "Paid in full · bank transfer", agent: "Noah Patel",
+          notes: "Self-drive itinerary; confirm international driving permits before departure.",
+          travellers: [["Hannah Becker", "Lead · Passport DE ••1176"], ["Jonas Becker", "Adult · Passport DE ••1177"]],
+          payments: [["19 Sep 2026", "Payment", "$11,305.00"]],
+          segments: [
+            ["Flight", "14 Jan", "FRA → ZQN via SIN, AKL", "Singapore Airlines", "SQ9X3D", "$5,410.00"],
+            ["Transfer", "16 Jan", "Campervan pick-up, 10 days", "Britz", "BZ-55102", "$2,195.00"],
+            ["Activity", "18 Jan", "Milford Sound scenic flight", "Glenorchy Air", "GA-3021", "$1,100.00"],
+            ["Hotel", "24 Jan", "Eichardt’s Private Hotel · 3 nights", "Eichardt’s", "EP-0471", "$2,600.00"],
+          ],
+        },
+      ];
+      const statusVariant = { Ticketed: "default", Confirmed: "secondary", Pending: "outline", Cancelled: "destructive" };
+
+      // ---------------------------------------------------------------------------
+      // State (control bar)
+      // ---------------------------------------------------------------------------
+      const state = {
+        concept: "A",
+        trigger: "leading",
+        emphasis: "band",
+        inset: "aligned",
+        motion: "on",
+        mode: "multi",
+        theme: "parallax",
+        dark: "off",
+      };
+      const options = {
+        concept: [["A", "A Fields"], ["B", "B Related"], ["C", "C Tabs"], ["D", "D Child rows"], ["E", "E Split"]],
+        trigger: [["leading", "Leading"], ["trailing", "Trailing"], ["row", "Row click"]],
+        emphasis: [["none", "None"], ["band", "Band"], ["rail", "Rail"]],
+        inset: [["bleed", "Bleed"], ["aligned", "Aligned"], ["card", "Card"]],
+        motion: [["on", "On"], ["off", "Off"]],
+        mode: [["multi", "Many open"], ["single", "One open"]],
+        theme: [["parallax", "parallax"], ["shadcn.nova", "nova"], ["shadcn.vega", "vega"], ["ledger", "ledger"], ["meridian", "meridian"]],
+        dark: [["off", "Light"], ["on", "Dark"]],
+      };
+      const conceptNames = {
+        A: "A — Fields: more columns of the same resource as a description list",
+        B: "B — Related: another resource's rows in a nested table",
+        C: "C — Tabbed panel: fields and related lists behind tabs, lazy-loaded",
+        D: "D — Child rows: related rows rendered as rows of the parent table (tree grid)",
+        E: "E — Split: fields beside a compact related list",
+      };
+
+      // ---------------------------------------------------------------------------
+      // Detail content per concept
+      // ---------------------------------------------------------------------------
+      const badge = (text, variant) => `<span data-slot="badge" class="sa-badge sa-badge-variant-${variant}">${text}</span>`;
+      const field = (label, value, cls = "") =>
+        `<div class="flex min-w-0 flex-col gap-0.5 [overflow-wrap:anywhere] ${cls}"><dt class="text-[0.85em] text-muted-foreground">${label}</dt><dd>${value}</dd></div>`;
+      const openLink = (b) =>
+        `<a href="#" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-sm">Open ${b.ref}${svg(icons.arrowRight)}</a>`;
+
+      function fieldsList(b, cols = "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4") {
+        return `<dl class="grid ${cols} gap-x-8 gap-y-3">
+          ${field("Email", b.email)}
+          ${field("Phone", b.phone)}
+          ${field("Party", b.party)}
+          ${field("Booked on", b.bookedOn)}
+          ${field("Channel", b.channel)}
+          ${field("Payment", b.payment)}
+          ${field("Agent", b.agent)}
+          ${field("Notes", b.notes, "col-span-full")}
+        </dl>`;
+      }
+
+      function segmentsTable(b) {
+        // A nested sa-table. The outer grid's edge-cell padding rule ([&_tr>*:first-child])
+        // also hits these descendant rows, so the nested table resets it.
+        return `<div class="overflow-hidden rounded-lg border bg-card">
+          <div class="sa-table-container" data-slot="table-container">
+            <table class="sa-table [&_tr>*:first-child]:pl-3 [&_tr>*:last-child]:pr-3" data-slot="table">
+              <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">
+                <th class="sa-table-head" data-slot="table-head">Type</th>
+                <th class="sa-table-head" data-slot="table-head">Date</th>
+                <th class="sa-table-head" data-slot="table-head">Description</th>
+                <th class="sa-table-head" data-slot="table-head">Supplier</th>
+                <th class="sa-table-head" data-slot="table-head">Confirmation</th>
+                <th class="sa-table-head text-right" data-slot="table-head">Amount</th>
+              </tr></thead>
+              <tbody class="sa-table-body" data-slot="table-body">
+                ${b.segments.map(([type, date, desc, supplier, conf, amount]) => `<tr class="sa-table-row" data-slot="table-row">
+                  <td class="sa-table-cell" data-slot="table-cell"><span class="inline-flex items-center gap-2">${svg(segIcon[type], "size-4 text-muted-foreground")}${type}</span></td>
+                  <td class="sa-table-cell" data-slot="table-cell">${date}</td>
+                  <td class="sa-table-cell" data-slot="table-cell">${desc}</td>
+                  <td class="sa-table-cell" data-slot="table-cell">${supplier}</td>
+                  <td class="sa-table-cell font-mono text-xs" data-slot="table-cell">${conf}</td>
+                  <td class="sa-table-cell text-right tabular-nums" data-slot="table-cell">${amount}</td>
+                </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+      }
+
+      function relatedHeader(title, count, action) {
+        return `<div class="flex items-center gap-2">
+          <h3 class="font-medium">${title}</h3>
+          <span class="text-[0.85em] text-muted-foreground tabular-nums">${count}</span>
+          <div class="ml-auto flex gap-2">${action}</div>
+        </div>`;
+      }
+
+      function conceptA(b) {
+        return `<div class="flex flex-col gap-4">${fieldsList(b)}<div>${openLink(b)}</div></div>`;
+      }
+
+      function conceptB(b) {
+        return `<div class="flex flex-col gap-3">
+          ${relatedHeader("Itinerary", `${b.segments.length} segments`,
+            `<button type="button" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-sm">${svg(icons.plus)}Add segment</button>`)}
+          ${segmentsTable(b)}
+        </div>`;
+      }
+
+      function conceptC(b, uid) {
+        const tabs = [["overview", "Overview"], ["itinerary", `Itinerary <span class="text-muted-foreground tabular-nums">${b.segments.length}</span>`], ["travellers", `Travellers <span class="text-muted-foreground tabular-nums">${b.travellers.length}</span>`], ["payments", `Payments <span class="text-muted-foreground tabular-nums">${b.payments.length}</span>`]];
+        const people = b.travellers.map(([name, meta]) => `<div class="flex items-center gap-3 py-2">
+            <div class="flex size-8 items-center justify-center rounded-full bg-muted">${svg(icons.user, "size-4")}</div>
+            <div class="flex flex-col"><span class="font-medium">${name}</span><span class="text-[0.85em] text-muted-foreground">${meta}</span></div>
+          </div>`).join(`<div data-slot="separator" class="sa-separator sa-separator-horizontal" role="separator" data-orientation="horizontal"></div>`);
+        const pays = b.payments.length
+          ? `<dl class="grid max-w-md grid-cols-[auto_1fr_auto] gap-x-6 gap-y-2">${b.payments.map(([d, k, a]) => `<dt class="text-muted-foreground">${d}</dt><dd>${k}</dd><dd class="text-right tabular-nums">${a}</dd>`).join("")}</dl>`
+          : `<p class="text-muted-foreground">No payments recorded yet.</p>`;
+        return `<div class="flex flex-col gap-4" data-lazy>
+          <div data-slot="tabs" data-orientation="horizontal" class="sa-tabs group/tabs">
+            <div class="sa-tabs-list group/tabs-list sa-tabs-list-variant-line" data-slot="tabs-list" data-variant="line" role="tablist">
+              ${tabs.map(([k, label], i) => `<button type="button" role="tab" data-slot="tabs-trigger" data-proto-tab="${uid}-${k}" aria-selected="${i === 0}" ${i === 0 ? "data-active" : ""} class="sa-tabs-trigger">${label}</button>`).join("")}
+            </div>
+          </div>
+          <div data-proto-tabpanel="${uid}-overview" data-active>${fieldsList(b)}</div>
+          <div data-proto-tabpanel="${uid}-itinerary">${segmentsTable(b)}</div>
+          <div data-proto-tabpanel="${uid}-travellers"><div class="flex max-w-md flex-col">${people}</div></div>
+          <div data-proto-tabpanel="${uid}-payments">${pays}</div>
+        </div>`;
+      }
+
+      function conceptE(b) {
+        const items = b.segments.map(([type, date, desc, supplier, conf, amount]) => `<li class="flex items-center gap-3 py-2">
+            <div class="flex size-8 shrink-0 items-center justify-center rounded-md border bg-background">${svg(segIcon[type], "size-4 text-muted-foreground")}</div>
+            <div class="flex min-w-0 flex-1 flex-col"><span class="truncate font-medium">${desc}</span><span class="truncate text-[0.85em] text-muted-foreground">${date} · ${supplier} · <span class="font-mono">${conf}</span></span></div>
+            <span class="tabular-nums">${amount}</span>
+          </li>`).join("");
+        return `<div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+          <div class="flex flex-col gap-4">
+            ${fieldsList(b, "grid-cols-2")}
+            <div>${openLink(b)}</div>
+          </div>
+          <div class="flex flex-col gap-1 md:border-l md:pl-6">
+            ${relatedHeader("Itinerary", `${b.segments.length} segments`, `<a href="#" class="text-xs text-muted-foreground underline-offset-4 hover:underline">View all</a>`)}
+            <ul class="flex flex-col divide-y">${items}</ul>
+          </div>
+        </div>`;
+      }
+
+      function skeleton() {
+        return `<div class="flex flex-col gap-4" aria-hidden="true">
+          <div class="flex gap-4">${'<div class="sa-skeleton h-6 w-20" data-slot="skeleton"></div>'.repeat(4)}</div>
+          <div class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">${'<div class="flex flex-col gap-1.5"><div class="sa-skeleton h-3 w-16" data-slot="skeleton"></div><div class="sa-skeleton h-4 w-32" data-slot="skeleton"></div></div>'.repeat(8)}</div>
+        </div>`;
+      }
+
+      // ---------------------------------------------------------------------------
+      // Grid renderer — mirrors the markup _IndexDataGrid.cshtml emits today
+      // (sa-data-grid sa-card + sa-table + footer pager), plus the expand pieces.
+      // ---------------------------------------------------------------------------
+      let uidCounter = 0;
+
+      function renderGrid(host, s, { rows = bookings, expanded = [], caption = "", footer = true } = {}) {
+        const gid = `g${++uidCounter}`;
+        const leading = s.trigger === "leading" || s.trigger === "row";
+        const dataCols = 6;
+        const colCount = dataCols + 1 + (leading ? 1 : 0);
+
+        const head = (label, sortable = true, active = false) =>
+          `<th class="sa-table-head" data-slot="table-head"${active ? ' aria-sort="ascending"' : ""}>${sortable
+            ? `<a href="#" data-slot="data-grid-sort-link" data-active="${active}" class="sa-button group/button sa-button-variant-ghost sa-button-size-sm" style="margin-left: -0.625rem">${label}${svg(active ? icons.arrowUp : icons.chevronsUpDown)}</a>`
+            : label}</th>`;
+
+        const expander = (b, trailing) =>
+          `<button type="button" data-slot="row-expander" ${trailing ? "data-trailing" : ""} aria-expanded="false" aria-controls="${gid}-d-${b.id}" aria-label="Show details for ${b.ref}" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">${svg(trailing ? icons.chevronDown : icons.chevronRight)}</button>`;
+
+        const actions = (b) => `<td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell">
+            <a href="#" aria-label="Edit Booking" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm">${svg(icons.pen)}</a>
+            <form class="inline-block" onsubmit="return false"><button type="submit" aria-label="Delete Booking" data-slot="button" class="sa-button group/button sa-button-variant-outline sa-button-size-icon-sm">${svg(icons.trash)}</button></form>
+            ${s.trigger === "trailing" ? expander(b, true) : ""}
+          </td>`;
+
+        // Detail inset → padding on the detail's inner content box.
+        //   bleed   = card edge padding only
+        //   aligned = edge padding + chevron column (first data column's text start)
+        //   card    = edge padding, content inside a bordered inset surface
+        const insetPad = s.inset === "aligned" && leading
+          ? "pl-(--proto-aligned) pr-(--card-spacing)"
+          : "px-(--card-spacing)";
+
+        const detailBody = (b) => {
+          const uid = `${gid}-${b.id}`;
+          const content = { A: conceptA, B: conceptB, C: conceptC, E: conceptE }[s.concept](b, uid);
+          const wrapped = s.inset === "card"
+            ? `<div class="rounded-lg border bg-background p-4 shadow-xs">${content}</div>`
+            : content;
+          return `<tr id="${gid}-d-${b.id}" data-slot="table-row-detail" class="border-b" hidden>
+              <td colspan="${colCount}" class="p-0">
+                <div class="proto-reveal"><div>
+                  <div class="proto-pin ${insetPad} pt-2 pb-5" data-detail-body>${wrapped}</div>
+                </div></div>
+              </td>
+            </tr>`;
+        };
+
+        // Concept D: child rows reuse the parent's columns.
+        const childRows = (b) => b.segments.map(([type, date, desc, supplier, conf, amount], i, all) => `<tr class="sa-table-row text-muted-foreground hover:bg-transparent" data-slot="table-row" data-child="${gid}-${b.id}" ${i === all.length - 1 ? "data-last" : ""} hidden>
+            ${leading ? `<td class="sa-table-cell relative w-px" data-slot="table-cell"><div class="proto-tree mx-auto h-full w-7 absolute inset-y-0 left-[calc(var(--card-spacing))]"></div></td>` : ""}
+            <td class="sa-table-cell" data-slot="table-cell"><span class="inline-flex items-center gap-2 ${leading ? "" : "pl-4"}">${svg(segIcon[type], "size-4")}<span class="text-foreground">${type}</span></span></td>
+            <td class="sa-table-cell" data-slot="table-cell">${desc}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${supplier}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${date}</td>
+            <td class="sa-table-cell font-mono text-xs" data-slot="table-cell">${conf}</td>
+            <td class="sa-table-cell tabular-nums" data-slot="table-cell">${amount}</td>
+            <td class="sa-table-cell" data-slot="table-cell"></td>
+          </tr>`).join("");
+
+        const body = rows.map((b) => `<tr class="sa-table-row" data-slot="table-row" data-row="${b.id}">
+            ${leading ? `<td class="sa-table-cell w-px pr-0" data-slot="table-cell">${expander(b, false)}</td>` : ""}
+            <td class="sa-table-cell font-medium" data-slot="table-cell">${b.ref}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${b.lead}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${b.destination}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${b.departs}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${badge(b.status, statusVariant[b.status])}</td>
+            <td class="sa-table-cell tabular-nums" data-slot="table-cell">${b.total}</td>
+            ${actions(b)}
+          </tr>${s.concept === "D" ? childRows(b) : detailBody(b)}`).join("");
+
+        const expandAll = leading
+          ? `<button type="button" data-slot="row-expand-all" aria-label="Expand all rows" class="sa-button group/button sa-button-variant-ghost sa-button-size-icon-sm">${svg(icons.chevronsUpDown)}</button>`
+          : "";
+
+        const footerHtml = footer ? `<div class="sa-card-footer sa-data-grid-footer" data-slot="card-footer">
+            <span class="sa-data-grid-range" data-slot="data-grid-range"><span class="sa-data-grid-range-value">1–${rows.length}</span> of 248</span>
+          </div>` : "";
+
+        host.innerHTML = `<figure class="flex flex-col gap-2">
+            ${caption ? `<figcaption class="font-mono text-xs text-muted-foreground">${caption}</figcaption>` : ""}
+            <div class="sa-data-grid sa-card group/card sa-resource-index-grid" data-slot="data-grid"
+                 data-trigger="${s.trigger}" data-emphasis="${s.emphasis}" data-motion="${s.motion}" data-mode="${s.mode}" data-concept="${s.concept}">
+              <div class="sa-table-container" data-slot="table-container">
+                <table class="sa-table" data-slot="table">
+                  <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">
+                    ${leading ? `<th class="sa-table-head w-px pr-0" data-slot="table-head">${expandAll}</th>` : ""}
+                    ${head("Reference", true, true)}${head("Lead traveller")}${head("Destination")}${head("Departs")}${head("Status")}${head("Total")}
+                    <th class="sa-table-head w-px whitespace-nowrap" data-slot="table-head"></th>
+                  </tr></thead>
+                  <tbody class="sa-table-body" data-slot="table-body">${body}</tbody>
+                </table>
+              </div>
+              ${footerHtml}
+            </div>
+          </figure>`;
+
+        const grid = host.querySelector("[data-slot=data-grid]");
+        wireGrid(grid, s);
+        expanded.forEach((id) => toggleRow(grid, s, id, true, true));
+        return grid;
+      }
+
+      // ---------------------------------------------------------------------------
+      // Behaviour
+      // ---------------------------------------------------------------------------
+      function setPinnedWidth(grid) {
+        const container = grid.querySelector("[data-slot=table-container]");
+        grid.style.setProperty("--proto-container-w", `${container.clientWidth}px`);
+        // "Aligned" inset: where the first data column's text starts.
+        const cell = grid.querySelector("tr[data-row] > td:nth-child(2)");
+        if (cell) grid.style.setProperty("--proto-aligned", `${cell.offsetLeft + parseFloat(getComputedStyle(cell).paddingLeft)}px`);
+      }
+
+      const loaded = new WeakSet();
+
+      function toggleRow(grid, s, id, open, instant = false) {
+        const row = grid.querySelector(`tr[data-row="${id}"]`);
+        if (!row) return;
+        open ??= !row.hasAttribute("data-expanded");
+
+        if (open && s.mode === "single") {
+          grid.querySelectorAll("tr[data-row][data-expanded]").forEach((r) => {
+            if (r !== row) toggleRow(grid, s, r.dataset.row, false);
+          });
+        }
+
+        row.toggleAttribute("data-expanded", open);
+        row.querySelectorAll("[data-slot=row-expander]").forEach((b) => b.setAttribute("aria-expanded", String(open)));
+
+        if (s.concept === "D") {
+          grid.querySelectorAll(`[data-child$="-${id}"]`).forEach((c) => (c.hidden = !open));
+          return;
+        }
+
+        const detail = row.nextElementSibling;
+        const animate = s.motion === "on" && !instant;
+
+        if (open) {
+          detail.hidden = false;
+          // Concept C: simulate the hx-get lazy load on first open.
+          const lazy = detail.querySelector("[data-lazy]");
+          if (lazy && !instant && !loaded.has(lazy)) {
+            const real = lazy.outerHTML;
+            lazy.outerHTML = skeleton();
+            setTimeout(() => {
+              const target = detail.querySelector("[data-detail-body]");
+              const inner = target.firstElementChild.classList.contains("rounded-lg") ? target.firstElementChild : target;
+              inner.innerHTML = real;
+              loaded.add(inner.firstElementChild);
+            }, 700);
+          } else if (lazy) {
+            loaded.add(lazy);
+          }
+          if (animate) {
+            requestAnimationFrame(() => requestAnimationFrame(() => detail.setAttribute("data-open", "")));
+          } else {
+            detail.setAttribute("data-open", "");
+          }
+        } else {
+          detail.removeAttribute("data-open");
+          if (animate) {
+            const reveal = detail.querySelector(".proto-reveal");
+            reveal.addEventListener("transitionend", () => {
+              if (!detail.hasAttribute("data-open")) detail.hidden = true;
+            }, { once: true });
+          } else {
+            detail.hidden = true;
+          }
+        }
+      }
+
+      function wireGrid(grid, s) {
+        setPinnedWidth(grid);
+        new ResizeObserver(() => setPinnedWidth(grid)).observe(grid.querySelector("[data-slot=table-container]"));
+
+        grid.addEventListener("click", (e) => {
+          const tab = e.target.closest("[data-proto-tab]");
+          if (tab) {
+            const list = tab.parentElement;
+            list.querySelectorAll("[data-proto-tab]").forEach((t) => {
+              const on = t === tab;
+              t.toggleAttribute("data-active", on);
+              t.setAttribute("aria-selected", String(on));
+              const panel = grid.querySelector(`[data-proto-tabpanel="${t.dataset.protoTab}"]`);
+              panel?.toggleAttribute("data-active", on);
+            });
+            return;
+          }
+
+          const all = e.target.closest("[data-slot=row-expand-all]");
+          if (all) {
+            const rows = [...grid.querySelectorAll("tr[data-row]")];
+            const anyClosed = rows.some((r) => !r.hasAttribute("data-expanded"));
+            const single = s.mode === "single";
+            rows.forEach((r) => toggleRow(grid, { ...s, mode: "multi" }, r.dataset.row, anyClosed && !single ? true : false));
+            all.innerHTML = svg(anyClosed && !single ? icons.chevronsDownUp : icons.chevronsUpDown);
+            all.setAttribute("aria-label", anyClosed && !single ? "Collapse all rows" : "Expand all rows");
+            return;
+          }
+
+          const btn = e.target.closest("[data-slot=row-expander]");
+          if (btn) {
+            toggleRow(grid, s, btn.closest("tr").dataset.row);
+            return;
+          }
+
+          if (s.trigger === "row") {
+            const row = e.target.closest("tr[data-row]");
+            if (row && !e.target.closest("a, button, input, form")) toggleRow(grid, s, row.dataset.row);
+          }
+        });
+      }
+
+      // ---------------------------------------------------------------------------
+      // Render everything from state
+      // ---------------------------------------------------------------------------
+      function renderStrip(id, key, values, extra = {}) {
+        const host = document.getElementById(id);
+        host.innerHTML = "";
+        values.forEach(([value, label]) => {
+          const slot = document.createElement("div");
+          host.appendChild(slot);
+          const s = { ...state, [key]: value, ...extra };
+          renderGrid(slot, s, { rows: bookings.slice(0, 3), expanded: [bookings[0].id], footer: false, caption: `${key}=${value} — ${label}` });
+        });
+      }
+
+      function renderAll() {
+        renderGrid(document.getElementById("live-grid"), state, { expanded: [bookings[0].id], caption: `LIVE — ${conceptNames[state.concept]}` });
+
+        const conceptHost = document.getElementById("concept-strip");
+        conceptHost.innerHTML = "";
+        options.concept.forEach(([c]) => {
+          const slot = document.createElement("div");
+          conceptHost.appendChild(slot);
+          renderGrid(slot, { ...state, concept: c }, { rows: bookings.slice(0, 3), expanded: [bookings[0].id], footer: false, caption: conceptNames[c] });
+        });
+
+        renderStrip("trigger-strip", "trigger", options.trigger);
+        renderStrip("emphasis-strip", "emphasis", options.emphasis);
+        renderStrip("inset-strip", "inset", options.inset, state.trigger === "trailing" ? { trigger: "leading" } : {});
+      }
+
+      function applyTheme() {
+        document.getElementById("theme-css").href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${state.theme}.css`;
+        document.documentElement.classList.toggle("dark", state.dark === "on");
+      }
+
+      // ---------------------------------------------------------------------------
+      // Control bar
+      // ---------------------------------------------------------------------------
+      function renderControls() {
+        const body = document.getElementById("controls-body");
+        body.innerHTML = Object.entries(options).map(([key, vals]) => `
+          <span class="text-muted-foreground">${key}</span>
+          <div class="proto-seg flex-wrap" data-key="${key}">
+            ${vals.map(([v, label]) => `<button type="button" data-value="${v}" aria-pressed="${state[key] === v}">${label}</button>`).join("")}
+          </div>`).join("");
+      }
+
+      document.getElementById("controls-body").addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-value]");
+        if (!btn) return;
+        const key = btn.parentElement.dataset.key;
+        state[key] = btn.dataset.value;
+        renderControls();
+        if (key === "theme" || key === "dark") applyTheme();
+        else renderAll();
+        try { localStorage.setItem("expandable-rows-proto", JSON.stringify(state)); } catch {}
+      });
+
+      document.getElementById("controls-toggle").addEventListener("click", (e) => {
+        const body = document.getElementById("controls-body");
+        body.hidden = !body.hidden;
+        e.target.textContent = body.hidden ? "show" : "hide";
+      });
+
+      // URL params override saved state, so screenshots can be driven: ?concept=B&dark=on
+      try { Object.assign(state, JSON.parse(localStorage.getItem("expandable-rows-proto") || "{}")); } catch {}
+      new URLSearchParams(location.search).forEach((v, k) => { if (k in state) state[k] = v; });
+
+      applyTheme();
+      renderControls();
+      renderAll();
+    </script>
+  </body>
+</html>

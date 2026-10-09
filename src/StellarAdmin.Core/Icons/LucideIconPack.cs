@@ -34,6 +34,7 @@ public class LucideIconPack : IIconPack
             [SemanticIconRole.PaginationNext] = "chevron-right",
             [SemanticIconRole.PaginationPrevious] = "chevron-left",
             [SemanticIconRole.RadioSelected] = "circle",
+            [SemanticIconRole.RowDetailIndicator] = "chevron-right",
             [SemanticIconRole.ScrollToEnd] = "arrow-down",
             [SemanticIconRole.Search] = "search",
             [SemanticIconRole.SortAscending] = "arrow-up",

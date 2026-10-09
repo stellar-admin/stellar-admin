@@ -1,6 +1,6 @@
 # Table row details
 
-Status: proposed (2026-10-09). Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
+Status: phase 1 implemented, awaiting review (2026-10-09). Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
 
 ## Goal
 
@@ -98,6 +98,36 @@ Chevron rotation. Reveal transition, disabled by `data-animate="false"` and `pre
 - Toggle chevron direction for manually placed toggles.
 - What happens without JS: details stay hidden (no fallback planned).
 
+## Phase 1 implementation notes (2026-10-09)
+
+Changes from the design above:
+
+- The parent row gets no `data-expanded`. The parent-row styles use `tr:has(+ .sa-table-row-detail[data-state="open"])`, so server-rendered state styles correctly before the script runs, and the toggle reflects state through `aria-expanded`.
+- The toggle has no `for` attribute. An author-supplied `aria-controls` targets a detail row by id. Otherwise the component pairs the toggle with the row after its own row and assigns `aria-controls`.
+- One chevron for every toggle (new `SemanticIconRole.RowDetailIndicator`, appended, `chevron-right` in all three packs). It rotates 90° when expanded, including the expand-all toggle. That settles the chevron-direction question.
+- Insets and the pinned width are measured by the component (`--sa-table-row-detail-inset-start/-end`, `--sa-table-row-detail-width`), not CSS container units. Measuring follows each theme's cell padding and any edge padding a container adds, and avoids inline-size containment collapsing shrink-wrapped tables. Bleed lines up with the first cell's padding.
+- `.sa-table-row-detail-clip` uses `overflow: clip`. `hidden` made it the sticky content's scroll container, so the content did not stay pinned.
+- Ghost buttons fill when `aria-expanded="true"`. The toggle drops that fill (not on hover) because the rotated chevron shows the state, matching the prototype.
+- htmx 4 (the version in the repo) parses `from:closest tr` as `from:closest` followed by a stray `tr`. It needs `from:<closest tr/>` or a quoted value. The version-independent pattern puts the htmx attributes on `sa-table-row-detail` itself, where the event fires: `hx-get="…" hx-trigger="row-detail-expand once" hx-target="find [data-slot=table-row-detail-content]"`. Note for docs: under htmx 2's implicit inheritance, `hx-target` on the row is inherited by htmx elements inside the details.
+- Bug found and fixed in the browser check: the MutationObserver watched `hidden` across the subtree, so hiding expand-all in single mode re-triggered sync forever. It now reacts only to child-list changes and to `hidden` on detail rows, and never rewrites an unchanged attribute.
+
+Files: `src/StellarAdmin.TagHelpers/TagHelpers/Table/TableRowDetail*.cs` (three tag helpers, three enums), `Client/js/web-components/sel-table-row-details.ts`, the `.sa-table-row-detail*` rules in `Client/css/components.css`, Core semantic icon role and pack mappings, `util/theme-coverage/coverage.json` Table tags and hooks, tests in `tests/StellarAdmin.TagHelpers.Tests/TagHelpers/Table/`, and the ComponentPlayground page `Demo/TableRowDetails` (query string sets the options).
+
+Known limits: details stay hidden without JavaScript. A nested `sa-table-row-details` inside another inherits the outer wrapper's emphasis and row-click selectors where its own settings differ. `sel-table-selection` treats every `tbody` checkbox as a row checkbox, so checkboxes inside details would join the selection. Fix that in phase 2, where grids combine both.
+
 ## Verification log
 
-None yet.
+2026-10-09, phase 1:
+
+- `dotnet run --project tests/StellarAdmin.TagHelpers.Tests`: 261 passed (10 new). `tests/StellarAdmin.Core.Tests`: 72 passed.
+- `node util/theme-coverage/check.mjs` passed. `npm run build` (JS and all theme bundles) succeeded.
+- Headless Chromium over CDP against ComponentPlayground (port 5208, htmx 4.0.0), 18 checks passed:
+  - server-expanded row, aria and colspan sync;
+  - aligned and bleed insets;
+  - expand, collapse and expand-all with their events;
+  - htmx loading once from a child element and from the detail row;
+  - htmx `innerHTML` replace and `beforeend` append;
+  - row click ignoring links, single mode, trailing toggle;
+  - `animate=false`, and the pinned content while scrolling sideways at 390px.
+- Screenshots reviewed in vega (light and dark), parallax, nova (rail), observatory, and ledger dark (rail), at desktop width plus 390px.
+- Not run: DocsSamples (phase 3), the Dashboard and EF integration suites (not affected), visual-regression scripts.

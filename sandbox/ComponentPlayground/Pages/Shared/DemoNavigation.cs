@@ -18,6 +18,7 @@ internal static class DemoNavigation
                 new DemoItem("Separator", "/Demo/Separator"),
                 new DemoItem("Skeleton", "/Demo/Skeleton"),
                 new DemoItem("Table", "/Demo/Table"),
+                new DemoItem("Table Row Details", "/Demo/TableRowDetails"),
             ]
         ),
         new DemoGroup("Chat Interfaces", [new DemoItem("Activity Feed", "/Demo/ActivityFeed")]),

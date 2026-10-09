@@ -8859,6 +8859,9 @@
         "sa-table-head",
         "sa-table-header",
         "sa-table-row",
+        "sa-table-row-detail",
+        "sa-table-row-detail-toggle",
+        "sa-table-row-details",
         "sa-table-selection"
       ],
       "hooks": [
@@ -8870,7 +8873,14 @@
         "sa-table-footer",
         "sa-table-head",
         "sa-table-header",
-        "sa-table-row"
+        "sa-table-row",
+        "sa-table-row-detail",
+        "sa-table-row-detail-cell",
+        "sa-table-row-detail-clip",
+        "sa-table-row-detail-content",
+        "sa-table-row-detail-reveal",
+        "sa-table-row-detail-toggle",
+        "sa-table-row-details"
       ],
       "example": "docs/DocsSamples/Pages/Table/Index.cshtml",
       "themes": {
