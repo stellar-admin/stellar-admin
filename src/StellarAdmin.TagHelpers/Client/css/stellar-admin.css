@@ -2,14 +2,22 @@
    scripts/build-theme-bundles.mjs. During the theme token migration it still compiles with Tailwind:
    the foundation tokens drive the components that are not converted yet through shadcn-mapping.css,
    over the Nova theme file's component styles. Converted components move to plain CSS, and in phase 3
-   this becomes a plain build with reset.css in place of preflight. */
+   this becomes a plain build with reset.css in place of preflight.
 
+   Converted components (components/*.css) list the old selectors they replace; the build removes
+   those rules from components.css and the theme file, so only the converted rules style them. */
+
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
+@import "./reset.css";
 @import "./tokens.css";
 @import "./shadcn-mapping.css";
 @import "./shadcn-tailwind.css";
 @import "./anchors.css";
 @import "./components.css";
 @import "./themes/shadcn.nova.css";
+@import "./components/input.css";
+@import "./components/input-group.css";
+@import "./components/switch.css";
 @custom-variant dark (&:is(.dark *));

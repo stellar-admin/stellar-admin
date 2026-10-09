@@ -33,7 +33,11 @@
  * the modified state without the theme layer overriding the modifier.
  */
 
-@layer sa.reset, sa.tokens, sa.components, sa.theme, sa.overrides;
+/* Layer order. Tailwind's layers are named too, so that a page that also loads Tailwind CSS keeps an
+   author's utilities above the components, and the reset above preflight. A stylesheet that declares
+   layers first fixes the order for the page, so a Tailwind build loaded before this one starts with
+   the same statement. */
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 
 @layer sa.tokens {
   /* --- Knobs, with the base theme's values ---------------------------------------------------- */

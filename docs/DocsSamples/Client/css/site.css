@@ -1,3 +1,5 @@
+/* The token-driven stylesheet's layer order (stellar-admin.css), declared first so the samples' utilities stay above its components. */
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 @import "tailwindcss";
 @import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
 

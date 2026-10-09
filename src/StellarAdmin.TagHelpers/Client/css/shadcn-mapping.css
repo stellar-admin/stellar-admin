@@ -4,64 +4,62 @@
    these names; the file goes when the last one has (phase 3).
 
    The variables are declared on every scope the tokens resolve on, so a .dark, [data-density] or
-   [data-sa-scope] subtree re-maps from its own tokens. They live in sa.tokens, above the theme files'
-   components.theme layer, so a theme file's own :root values (fonts, the radius) give way to the
-   tokens. */
+   [data-sa-scope] subtree re-maps from its own tokens. They are unlayered, so the theme file's own
+   :root values (fonts) give way to the tokens; they only name shadcn and Tailwind variables, which
+   no preset sets. */
 
 @import "./theme-tokens.css";
 
 @custom-variant details-disabled ( details[disabled] & );
 @custom-variant details-disabled-closed-content ( details[disabled]:not([open]) > summary + & );
 
-@layer sa.tokens {
-  :root,
-  .dark,
-  [data-density],
-  [data-sa-scope] {
-    --background: var(--sa-color-canvas);
-    --foreground: var(--sa-color-ink);
-    --card: var(--sa-color-surface);
-    --card-foreground: var(--sa-color-ink);
-    --popover: var(--sa-color-surface-raised);
-    --popover-foreground: var(--sa-color-ink);
-    --primary: var(--sa-color-accent-fill);
-    --primary-foreground: var(--sa-color-on-accent);
-    --secondary: var(--sa-color-surface-sunken);
-    --secondary-foreground: var(--sa-color-ink);
-    --muted: var(--sa-color-surface-sunken);
-    --muted-foreground: var(--sa-color-ink-muted);
-    --accent: var(--sa-color-hover);
-    --accent-foreground: var(--sa-color-ink);
-    --destructive: var(--sa-color-danger-text);
-    --border: var(--sa-color-line);
-    --input: var(--sa-color-line-control);
-    --ring: var(--sa-color-accent);
-    --sidebar: var(--sa-color-nav-surface);
-    --sidebar-foreground: var(--sa-color-nav-ink);
-    --sidebar-primary: var(--sa-color-nav-accent);
-    --sidebar-primary-foreground: var(--sa-color-on-accent);
-    --sidebar-accent: var(--sa-color-nav-highlight);
-    --sidebar-accent-foreground: var(--sa-color-on-nav-highlight);
-    --sidebar-border: var(--sa-color-nav-line);
-    --sidebar-ring: var(--sa-color-accent);
+:root,
+.dark,
+[data-density],
+[data-sa-scope] {
+  --background: var(--sa-color-canvas);
+  --foreground: var(--sa-color-ink);
+  --card: var(--sa-color-surface);
+  --card-foreground: var(--sa-color-ink);
+  --popover: var(--sa-color-surface-raised);
+  --popover-foreground: var(--sa-color-ink);
+  --primary: var(--sa-color-accent-fill);
+  --primary-foreground: var(--sa-color-on-accent);
+  --secondary: var(--sa-color-surface-sunken);
+  --secondary-foreground: var(--sa-color-ink);
+  --muted: var(--sa-color-surface-sunken);
+  --muted-foreground: var(--sa-color-ink-muted);
+  --accent: var(--sa-color-hover);
+  --accent-foreground: var(--sa-color-ink);
+  --destructive: var(--sa-color-danger-text);
+  --border: var(--sa-color-line);
+  --input: var(--sa-color-line-control);
+  --ring: var(--sa-color-accent);
+  --sidebar: var(--sa-color-nav-surface);
+  --sidebar-foreground: var(--sa-color-nav-ink);
+  --sidebar-primary: var(--sa-color-nav-accent);
+  --sidebar-primary-foreground: var(--sa-color-on-accent);
+  --sidebar-accent: var(--sa-color-nav-highlight);
+  --sidebar-accent-foreground: var(--sa-color-on-nav-highlight);
+  --sidebar-border: var(--sa-color-nav-line);
+  --sidebar-ring: var(--sa-color-accent);
 
-    --radius: var(--sa-radius-control);
-    --spacing: var(--sa-unit);
-    --text-xs: var(--sa-text-xs);
-    --text-sm: var(--sa-text-sm);
-    --text-base: var(--sa-text-base);
-    --font-sans: var(--sa-font-sans);
-    --font-mono: var(--sa-font-mono);
-  }
+  --radius: var(--sa-radius-control);
+  --spacing: var(--sa-unit);
+  --text-xs: var(--sa-text-xs);
+  --text-sm: var(--sa-text-sm);
+  --text-base: var(--sa-text-base);
+  --font-sans: var(--sa-font-sans);
+  --font-mono: var(--sa-font-mono);
+}
 
-  /* Charts have no tokens yet; shadcn's defaults. */
-  :root {
-    --chart-1: oklch(0.809 0.105 251.813);
-    --chart-2: oklch(0.623 0.214 259.815);
-    --chart-3: oklch(0.546 0.245 262.881);
-    --chart-4: oklch(0.488 0.243 264.376);
-    --chart-5: oklch(0.424 0.199 265.638);
-  }
+/* Charts have no tokens yet; shadcn's defaults. */
+:root {
+  --chart-1: oklch(0.809 0.105 251.813);
+  --chart-2: oklch(0.623 0.214 259.815);
+  --chart-3: oklch(0.546 0.245 262.881);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.424 0.199 265.638);
 }
 
 @theme inline {

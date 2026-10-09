@@ -4,13 +4,15 @@
 // there are no checked-in entry files. Generate upstream themes with
 // util/ThemeGenerator; author custom themes directly. Register each theme in
 // ClientOutput and util/theme-coverage/coverage.json. It also builds the token-driven
-// ../wwwroot/stellar-admin.css from its checked-in entry, css/stellar-admin.css.
+// ../wwwroot/stellar-admin.css from its checked-in entry, css/stellar-admin.css: converted
+// components (css/components/*.css) name the selectors they replace in a "Replaces:" header, and
+// that bundle gets copies of components.css and the theme file without those rules.
 //
 //   node ./scripts/build-theme-bundles.mjs
 
 import { check } from "../../../../util/theme-coverage/check.mjs";
 import { spawn } from "node:child_process";
-import { mkdtempSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 
 const clientRoot = resolve(import.meta.dirname, "..");
@@ -37,6 +39,51 @@ function buildTheme(theme) {
   const entry = resolve(entriesFolder, `${theme}.css`);
   writeFileSync(entry, `@import "../css/base.css";\n@import "../css/themes/${theme}.css";\n`);
   return buildBundle(theme, entry, `../wwwroot/stellar-admin.${theme}.css`);
+}
+
+// Removes each rule whose selectors all start with a replaced class (`.sa-switch:checked ~ …` starts
+// with .sa-switch). Rules are matched on a line of their own (`  .sa-x, .sa-y {`), as the generated
+// theme files and components.css write them; anything else is kept.
+function withoutRules(css, replaced) {
+  const lines = css.split("\n");
+  const kept = [];
+  for (let i = 0; i < lines.length; i++) {
+    const match = /^\s*([^{}@/]+?)\s*\{\s*$/.exec(lines[i]);
+    const selectors = match?.[1].split(",").map((selector) => selector.trim());
+    if (selectors?.every((selector) => replaced.has(/^\.[\w-]+/.exec(selector)?.[0]))) {
+      for (let depth = 0; i < lines.length; i++) {
+        depth += (lines[i].match(/\{/g) ?? []).length - (lines[i].match(/\}/g) ?? []).length;
+        if (depth === 0) break;
+      }
+      continue;
+    }
+    kept.push(lines[i]);
+  }
+  return kept.join("\n");
+}
+
+function buildTokensBundle() {
+  const css = resolve(clientRoot, "css");
+  const replaced = new Set(
+    readdirSync(resolve(css, "components"))
+      .filter((file) => file.endsWith(".css"))
+      .flatMap((file) => {
+        const header = /Replaces:([^*]*)\*\//.exec(readFileSync(resolve(css, "components", file), "utf8"));
+        return header ? header[1].split(/[\s,]+/).filter(Boolean) : [];
+      }),
+  );
+  const legacy = { "components.css": "components.css", "themes/shadcn.nova.css": "nova.css" };
+  for (const [source, copy] of Object.entries(legacy))
+    writeFileSync(
+      resolve(entriesFolder, copy),
+      withoutRules(readFileSync(resolve(css, source), "utf8"), replaced),
+    );
+  const entry = readFileSync(resolve(css, "stellar-admin.css"), "utf8").replace(
+    /@import "\.\/([^"]+)";/g,
+    (_, path) => `@import "${legacy[path] ? `./${legacy[path]}` : `../css/${path}`}";`,
+  );
+  writeFileSync(resolve(entriesFolder, "stellar-admin.css"), entry);
+  return buildBundle("tokens", resolve(entriesFolder, "stellar-admin.css"), "../wwwroot/stellar-admin.css");
 }
 
 function buildBundle(name, entry, outputPath) {
@@ -70,7 +117,7 @@ try {
       await buildTheme(theme);
       console.log(`theme-bundles: ${theme} -> wwwroot/stellar-admin.${theme}.css`);
     }),
-    buildBundle("tokens", "css/stellar-admin.css", "../wwwroot/stellar-admin.css").then(() =>
+    buildTokensBundle().then(() =>
       console.log("theme-bundles: tokens -> wwwroot/stellar-admin.css"),
     ),
   ]);

@@ -117,7 +117,7 @@ export function pageCheck(minSeparation) {
         continue;
     }
     const track = element.matches(".sa-switch-thumb")
-      ? parent.querySelector(".sa-switch, [data-slot=switch]")
+      ? parent.querySelector(".sa-switch")
       : null;
     const backdrop = track
       ? over(rgba(getComputedStyle(track).backgroundColor), backgroundOf(parent))

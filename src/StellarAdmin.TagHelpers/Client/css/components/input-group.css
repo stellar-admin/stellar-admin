@@ -1,0 +1,233 @@
+/* Input group: one field drawn around an input or textarea, with addons (icons, text, kbd, buttons)
+   inline or above and below. The group draws the field; the control inside gives up its own edge.
+   Reads the input's tokens (input.css).
+   Replaces: .sa-input-group, .sa-input-group-addon, .sa-input-group-addon-align-inline-start,
+   .sa-input-group-addon-align-inline-end, .sa-input-group-addon-align-block-start,
+   .sa-input-group-addon-align-block-end, .sa-input-group-button, .sa-input-group-button-size-xs,
+   .sa-input-group-button-size-icon-xs, .sa-input-group-button-size-icon-sm, .sa-input-group-text,
+   .sa-input-group-input, .sa-input-group-textarea */
+
+@layer sa.tokens {
+  .sa-input-group {
+    --sa-input-group-addon-gap: calc(2 * var(--sa-unit));
+    --sa-input-group-addon-px: calc(2 * var(--sa-unit));
+    --sa-input-group-addon-py: calc(1.5 * var(--sa-unit));
+    --sa-input-group-addon-fg: var(--sa-color-ink-muted);
+    --sa-input-group-addon-text: var(--sa-text-sm);
+    --sa-input-group-addon-weight: var(--sa-weight-control);
+    --sa-input-group-addon-icon: var(--sa-control-icon);
+    --sa-input-group-button-h-xs: calc(6 * var(--sa-unit));
+    --sa-input-group-button-h-sm: calc(8 * var(--sa-unit));
+    --sa-input-group-button-radius: var(--sa-radius-inner);
+  }
+}
+
+@layer sa.components {
+  .sa-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: var(--sa-input-h);
+    border: var(--sa-border-width) solid var(--sa-input-border);
+    border-radius: var(--sa-input-radius);
+    background: var(--sa-input-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-input-shadow);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:hover:not(:has([data-slot="input-group-control"]:is(:disabled, :focus-visible))) {
+      border-color: var(--sa-input-border-hover);
+    }
+    &:has([data-slot="input-group-control"]:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-input-shadow), var(--sa-focus-shadow-field);
+    }
+    &:has([data-slot][aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-input-shadow), var(--sa-invalid-shadow);
+      &:has([data-slot="input-group-control"]:focus-visible) {
+        box-shadow: var(--sa-input-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:has(:disabled),
+    &[data-disabled] {
+      background: var(--sa-input-bg-disabled);
+      opacity: var(--sa-disabled-opacity);
+    }
+    &:has(> textarea),
+    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+      height: auto;
+    }
+    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+      flex-direction: column;
+    }
+
+    /* The control fills the group and draws nothing itself; addons set the padding beside it. */
+    & > .sa-input-group-input {
+      flex: 1;
+      height: 100%;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      &:is(:focus-visible, [aria-invalid="true"], .input-validation-error) {
+        box-shadow: none;
+      }
+      &:disabled {
+        background: transparent;
+        opacity: 1;
+      }
+    }
+    &:has(> [data-align="inline-start"]) > .sa-input-group-input {
+      padding-inline-start: calc(1.5 * var(--sa-unit));
+    }
+    &:has(> [data-align="inline-end"]) > .sa-input-group-input {
+      padding-inline-end: calc(1.5 * var(--sa-unit));
+    }
+    &:has(> [data-align="block-start"]) > .sa-input-group-input {
+      padding-bottom: calc(3 * var(--sa-unit));
+    }
+    &:has(> [data-align="block-end"]) > .sa-input-group-input {
+      padding-top: calc(3 * var(--sa-unit));
+    }
+  }
+
+  .sa-input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-input-group-addon-gap);
+    height: auto;
+    padding-block: var(--sa-input-group-addon-py);
+    color: var(--sa-input-group-addon-fg);
+    font-size: var(--sa-input-group-addon-text);
+    font-weight: var(--sa-input-group-addon-weight);
+    cursor: text;
+    user-select: none;
+
+    & > svg:not([class*="size-"]) {
+      width: var(--sa-input-group-addon-icon);
+      height: var(--sa-input-group-addon-icon);
+    }
+    & > kbd {
+      border-radius: var(--sa-radius-inner);
+    }
+  }
+  .sa-input-group-addon-align-inline-start {
+    order: -1;
+    padding-inline-start: var(--sa-input-group-addon-px);
+    &:has(> button) {
+      margin-inline-start: calc(-1.2 * var(--sa-unit));
+    }
+    &:has(> kbd) {
+      margin-inline-start: calc(-0.6 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-inline-end {
+    order: 1;
+    padding-inline-end: var(--sa-input-group-addon-px);
+    &:has(> button) {
+      margin-inline-end: calc(-1.2 * var(--sa-unit));
+    }
+    &:has(> kbd) {
+      margin-inline-end: calc(-0.6 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-block-start,
+  .sa-input-group-addon-align-block-end {
+    justify-content: flex-start;
+    width: 100%;
+    padding-inline: var(--sa-input-px);
+  }
+  .sa-input-group-addon-align-block-start {
+    order: -1;
+    padding-top: calc(2 * var(--sa-unit));
+    &.border-b {
+      padding-bottom: calc(2 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-block-end {
+    order: 1;
+    padding-bottom: calc(2 * var(--sa-unit));
+    &.border-t {
+      padding-top: calc(2 * var(--sa-unit));
+    }
+  }
+  .sa-input-group[data-disabled] .sa-input-group-addon {
+    opacity: var(--sa-disabled-opacity);
+  }
+
+  .sa-input-group-text {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-input-group-addon-gap);
+    color: var(--sa-input-group-addon-fg);
+    font-size: var(--sa-input-group-addon-text);
+
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-input-group-addon-icon);
+      height: var(--sa-input-group-addon-icon);
+    }
+  }
+}
+
+/* Transitional: in-group buttons and the textarea are still drawn by the unconverted Button and
+   Textarea rules in Tailwind's components layer, which sits above sa.components, so the group's
+   adjustments to them live there too, after those rules. They move into sa.components when Button
+   and Textarea convert. */
+@layer components {
+  .sa-input-group-button {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    box-shadow: none;
+    font-size: var(--sa-text-sm);
+  }
+  .sa-input-group-button-size-xs {
+    gap: var(--sa-unit);
+    height: var(--sa-input-group-button-h-xs);
+    padding-inline: calc(1.5 * var(--sa-unit));
+    border-radius: var(--sa-input-group-button-radius);
+    & > svg:not([class*="size-"]) {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+  .sa-input-group-button-size-sm {
+    height: var(--sa-input-group-button-h-sm);
+  }
+  .sa-input-group-button-size-icon-xs {
+    width: var(--sa-input-group-button-h-xs);
+    height: var(--sa-input-group-button-h-xs);
+    padding: 0;
+    border-radius: var(--sa-input-group-button-radius);
+  }
+  .sa-input-group-button-size-icon-sm {
+    width: var(--sa-input-group-button-h-sm);
+    height: var(--sa-input-group-button-h-sm);
+    padding: 0;
+  }
+  .sa-input-group-textarea {
+    flex: 1;
+    padding-block: calc(2 * var(--sa-unit));
+    resize: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    &:is(:focus-visible, [aria-invalid="true"], .input-validation-error) {
+      box-shadow: none;
+    }
+    &:disabled {
+      background: transparent;
+    }
+  }
+}

@@ -11,7 +11,7 @@ The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the
 | 2 | Component tokens, defaulting to tier 1 (`--sa-button-*`, `--sa-card-*`, …) | Themes, for one component's exception, on the component's selector |
 | 3 | Raw rules in `@layer sa.overrides` | Escape hatch; each rule points to a missing token |
 
-Layer order: `sa.reset, sa.tokens, sa.components, sa.theme, sa.overrides`. Themes and presets go in `sa.theme`.
+Layer order: `theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities`. Tailwind's layers are named so that an author's utilities stay above the components on a page that also loads Tailwind CSS; the first stylesheet that declares layers fixes the order, so a Tailwind build loaded before `stellar-admin.css` starts with the same statement. Themes and presets go in `sa.theme`.
 
 ## Scopes
 
