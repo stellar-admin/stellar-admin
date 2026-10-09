@@ -173,24 +173,7 @@
     display: none;
   }
 
-  /* In a command dialog the command fills the dialog, a third of the way down the viewport. Written
-     for the converted dialog's rules; the same adjustments sit in the components layer below until
-     Dialog converts. */
-  dialog.sa-dialog-content.sa-command-dialog {
-    top: 33.333%;
-    bottom: auto;
-    margin-top: 0;
-    padding: 0;
-    gap: 0;
-    overflow: hidden;
-    translate: none;
-  }
-}
-
-/* Transitional: the command dialog is still drawn by the unconverted Dialog rules in Tailwind's
-   components layer, which sits above sa.components, so its adjustments repeat there. Dialog's
-   conversion retires this block. */
-@layer components {
+  /* In a command dialog the command fills the dialog, a third of the way down the viewport. */
   dialog.sa-dialog-content.sa-command-dialog {
     top: 33.333%;
     bottom: auto;

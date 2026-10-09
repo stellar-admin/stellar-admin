@@ -68,6 +68,30 @@
     }
   }
 
+  /* A native select draws its edge on the select inside its wrapper. */
+  .sa-button-group-orientation-horizontal {
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-inline-start-width: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+  }
+  .sa-button-group-orientation-vertical {
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-top-width: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+  }
+
   .sa-button-group-text {
     display: flex;
     align-items: center;
@@ -90,39 +114,8 @@
       height: var(--sa-button-group-text-icon);
     }
   }
-}
 
-/* Transitional: parts still drawn by unconverted rules in Tailwind's components layer, which sits above
-   sa.components, so the group's adjustments to them live there too. The separator is a Separator (its
-   own width, height and colour) and the selects are Select and NativeSelect, whose old rules set their
-   own corners and edges. Each block moves into sa.components when that component converts. */
-@layer components {
-  .sa-button-group-orientation-horizontal {
-    & > :is([data-slot="select-trigger"], [data-slot="textarea"]):has(~ [data-slot]),
-    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
-      border-start-end-radius: 0;
-      border-end-end-radius: 0;
-    }
-    & > [data-slot] ~ :is([data-slot="select-trigger"], [data-slot="textarea"]),
-    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
-      border-inline-start-width: 0;
-      border-start-start-radius: 0;
-      border-end-start-radius: 0;
-    }
-  }
-  .sa-button-group-orientation-vertical {
-    & > :is([data-slot="select-trigger"], [data-slot="textarea"]):has(~ [data-slot]),
-    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
-      border-end-start-radius: 0;
-      border-end-end-radius: 0;
-    }
-    & > [data-slot] ~ :is([data-slot="select-trigger"], [data-slot="textarea"]),
-    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
-      border-top-width: 0;
-      border-start-start-radius: 0;
-      border-start-end-radius: 0;
-    }
-  }
+  /* The separator is a Separator (separator.css); this out-ranks its rules by selector. */
   .sa-separator.sa-button-group-separator {
     position: relative;
     align-self: stretch;

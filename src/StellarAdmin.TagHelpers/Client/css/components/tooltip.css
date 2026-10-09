@@ -58,9 +58,10 @@
       position: relative;
       isolation: isolate;
       z-index: 50;
+      --_bg: var(--sa-tooltip-kbd-bg);
+      --_fg: var(--sa-tooltip-kbd-fg);
+      --_border: transparent;
       border-radius: var(--sa-tooltip-kbd-radius);
-      background: var(--sa-tooltip-kbd-bg);
-      color: var(--sa-tooltip-kbd-fg);
     }
   }
 }

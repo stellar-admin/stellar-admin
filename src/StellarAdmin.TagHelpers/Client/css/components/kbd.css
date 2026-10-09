@@ -1,4 +1,4 @@
-/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips.
+/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips (tooltip.css sets its colours there).
    Replaces: .sa-kbd, .sa-kbd-group */
 
 @layer sa.tokens {
@@ -18,14 +18,7 @@
     /* Between muted and full ink, so it keeps 4.5:1 on its own tint over a sunken band. */
     --sa-kbd-fg: color-mix(in oklab, var(--sa-color-ink-muted) 65%, var(--sa-color-ink));
     --sa-kbd-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
-    /* Inside a tooltip, which is drawn inverted (ink fill, surface text). */
-    --sa-kbd-tooltip-bg: color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
-    --sa-kbd-tooltip-fg: var(--sa-color-surface);
-    --sa-kbd-tooltip-border: transparent;
     --sa-kbd-group-gap: var(--sa-unit);
-  }
-  .dark :is(.sa-kbd, .sa-kbd-group) {
-    --sa-kbd-tooltip-bg: color-mix(in oklab, var(--sa-color-surface) 12%, transparent);
   }
 }
 
@@ -58,11 +51,6 @@
       width: var(--sa-kbd-icon);
       height: var(--sa-kbd-icon);
     }
-  }
-  [data-slot="tooltip-content"] .sa-kbd {
-    --_bg: var(--sa-kbd-tooltip-bg);
-    --_fg: var(--sa-kbd-tooltip-fg);
-    --_border: var(--sa-kbd-tooltip-border);
   }
   .sa-kbd-group {
     display: inline-flex;
