@@ -1,0 +1,170 @@
+/* Table: rows divided by lines, column heads on a band, an optional footer and caption, selected
+   rows (sel-table-selection) and expandable row details (sel-table-row-details).
+   Replaces: .sa-table-container, .sa-table, .sa-table-header, .sa-table-body, .sa-table-footer,
+   .sa-table-row, .sa-table-head, .sa-table-cell, .sa-table-caption, .sa-table-row-details,
+   .sa-table-row-detail, .sa-table-row-detail-cell, .sa-table-row-detail-reveal,
+   .sa-table-row-detail-clip, .sa-table-row-detail-content, .sa-table-row-detail-toggle */
+
+@layer sa.tokens {
+  .sa-table-container,
+  .sa-table {
+    --sa-table-bg: transparent;
+    --sa-table-text: var(--sa-text-body);
+    --sa-table-leading: var(--sa-leading-ui);
+    --sa-table-row-border: var(--sa-color-line);
+    --sa-table-row-bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken) 50%, transparent);
+    --sa-table-row-selected-bg: var(--sa-color-selected);
+    --sa-table-head-h: calc(10 * var(--sa-unit));
+    --sa-table-head-py: 0px;
+    --sa-table-head-px: var(--sa-space-cell-x);
+    /* The two switches blend between plain heads and section labels on a band. */
+    --_label: var(--sa-column-head-label);
+    --sa-table-head-bg: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-column-head-fill) * 100%), transparent);
+    --sa-table-head-fg: color-mix(in oklab, var(--sa-color-ink-muted) calc(var(--_label) * 100%), var(--sa-color-ink));
+    --sa-table-head-font: var(--sa-column-head-font);
+    --sa-table-head-text: calc(var(--sa-label-text) * var(--_label) + var(--sa-table-text) * (1 - var(--_label)));
+    --sa-table-head-weight: calc(var(--sa-label-weight) * var(--_label) + var(--sa-weight-control) * (1 - var(--_label)));
+    --sa-table-head-transform: var(--sa-column-head-case);
+    --sa-table-head-tracking: calc(var(--sa-label-tracking) * var(--_label));
+    --sa-table-cell-px: var(--sa-space-cell-x);
+    --sa-table-cell-py: var(--sa-space-cell-y);
+    --sa-table-footer-bg: var(--sa-color-surface-subtle);
+    --sa-table-footer-weight: var(--sa-weight-control);
+    --sa-table-caption-fg: var(--sa-color-ink-muted);
+    --sa-table-caption-text: var(--sa-text-sm);
+    --sa-table-caption-mt: calc(4 * var(--sa-unit));
+    /* Row details: the band and rail emphasis, and the space above and below the details. */
+    --sa-table-detail-band-bg: var(--sa-color-surface-sunken);
+    --sa-table-detail-rail-mark: var(--sa-color-accent-fill);
+    --sa-table-detail-rail-w: 2px;
+    --sa-table-detail-pt: calc(2 * var(--sa-unit));
+    --sa-table-detail-pb: calc(5 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-table-container {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    background: var(--sa-table-bg);
+  }
+  .sa-table {
+    width: 100%;
+    caption-side: bottom;
+    font-size: var(--sa-table-text);
+    line-height: var(--sa-table-leading);
+  }
+  .sa-table-header { background: var(--sa-table-head-bg); }
+  .sa-table-row {
+    border-bottom: var(--sa-border-width) solid var(--sa-table-row-border);
+    transition: background-color var(--sa-motion-fast) var(--sa-motion-ease);
+  }
+  .sa-table-body > .sa-table-row {
+    &:last-child { border-bottom-width: 0; }
+    &:hover { background: var(--sa-table-row-bg-hover); }
+    &[data-state="selected"] { background: var(--sa-table-row-selected-bg); }
+  }
+  .sa-table-head {
+    height: var(--sa-table-head-h);
+    padding: var(--sa-table-head-py) var(--sa-table-head-px);
+    color: var(--sa-table-head-fg);
+    font-family: var(--sa-table-head-font);
+    font-size: var(--sa-table-head-text);
+    font-weight: var(--sa-table-head-weight);
+    letter-spacing: var(--sa-table-head-tracking);
+    text-align: left;
+    text-transform: var(--sa-table-head-transform);
+    vertical-align: middle;
+    white-space: nowrap;
+    &:has([role="checkbox"]) { padding-inline-end: 0; }
+  }
+  .sa-table-cell {
+    padding: var(--sa-table-cell-py) var(--sa-table-cell-px);
+    vertical-align: middle;
+    white-space: nowrap;
+    &:has([role="checkbox"]) { padding-inline-end: 0; }
+  }
+  .sa-table-footer {
+    border-top: var(--sa-border-width) solid var(--sa-table-row-border);
+    background: var(--sa-table-footer-bg);
+    font-weight: var(--sa-table-footer-weight);
+    & > .sa-table-row:last-child { border-bottom-width: 0; }
+  }
+  .sa-table-caption {
+    margin-top: var(--sa-table-caption-mt);
+    color: var(--sa-table-caption-fg);
+    font-size: var(--sa-table-caption-text);
+  }
+
+  /* Row details. sel-table-row-details publishes --sa-table-row-detail-width (the container's
+     visible width) and --sa-table-row-detail-inset-start/-end (measured from the row's cells, so the
+     content lines up with the cell padding); the fallbacks apply until the script runs. */
+  .sa-table-row-details {
+    display: block;
+
+    /* An expanded row and its details read as one unit: no divider between them. */
+    & tr:has(+ .sa-table-row-detail[data-state="open"]) {
+      border-bottom-color: transparent;
+    }
+    /* A collapsed last detail row leaves its row as the visual last row. */
+    & tbody > tr:has(+ .sa-table-row-detail[hidden]:last-child) {
+      border-bottom-width: 0;
+    }
+    &[data-row-click="true"] tbody > tr:has(+ .sa-table-row-detail) {
+      cursor: pointer;
+    }
+    &[data-emphasis="band"] :is(tr:has(+ .sa-table-row-detail[data-state="open"]), .sa-table-row-detail) {
+      background: var(--sa-table-detail-band-bg);
+    }
+    &[data-emphasis="rail"] :is(
+      tr:has(+ .sa-table-row-detail[data-state="open"]) > :first-child,
+      .sa-table-row-detail > .sa-table-row-detail-cell
+    ) {
+      box-shadow: inset var(--sa-table-detail-rail-w) 0 0 var(--sa-table-detail-rail-mark);
+    }
+  }
+  .sa-table-row-detail {
+    border-bottom: var(--sa-border-width) solid var(--sa-table-row-border);
+    &:last-child { border-bottom-width: 0; }
+  }
+  .sa-table-row-detail-cell { padding: 0; }
+  .sa-table-row-detail-reveal {
+    /* Animating grid-template-rows from 0fr to 1fr reveals the content at its natural height,
+       including content that htmx swaps in after the row opens. */
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows calc(var(--sa-motion-fast) * 4 / 3) ease-out;
+
+    .sa-table-row-detail[data-state="open"] > .sa-table-row-detail-cell > & { grid-template-rows: 1fr; }
+    .sa-table-row-details[data-animate="false"] & { transition: none; }
+    @media (prefers-reduced-motion: reduce) { transition: none; }
+  }
+  .sa-table-row-detail-clip {
+    /* clip, not hidden: hidden would make this box the sticky content's scroll container, so the
+       content would no longer stay pinned while the table scrolls sideways. */
+    min-height: 0;
+    overflow: clip;
+  }
+  .sa-table-row-detail-content {
+    /* Pinned to the visible width so the details stay in view when the table scrolls sideways. */
+    position: sticky;
+    inset-inline-start: 0;
+    width: var(--sa-table-row-detail-width, 100%);
+    padding-block: var(--sa-table-detail-pt) var(--sa-table-detail-pb);
+    padding-inline: var(--sa-table-row-detail-inset-start, var(--sa-table-cell-px))
+      var(--sa-table-row-detail-inset-end, var(--sa-table-cell-px));
+    white-space: normal;
+  }
+  /* The toggle is a ghost button (button.css); these out-rank its rules by selector. */
+  .sa-button.sa-table-row-detail-toggle {
+    & > svg { transition: rotate var(--sa-motion-fast) var(--sa-motion-ease); }
+    &[aria-expanded="true"] > svg { rotate: 90deg; }
+    /* The rotated chevron shows the state; drop the fill ghost buttons get when expanded. */
+    &[aria-expanded="true"]:not(:hover) { background-color: transparent; }
+    .sa-table-row-details[data-animate="false"] & > svg { transition: none; }
+    @media (prefers-reduced-motion: reduce) {
+      & > svg { transition: none; }
+    }
+  }
+}

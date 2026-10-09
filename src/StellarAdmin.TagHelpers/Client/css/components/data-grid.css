@@ -1,0 +1,75 @@
+/* Data grid: a table on the card chassis (the markup also carries sa-card and sa-card-footer), with a
+   footer holding the page size tabs, the range and the pager. The table bleeds to the card's edges
+   and its outer cells take the card's spacing, so they line up with the footer. Reads the card's
+   (card.css) and table's (table.css) tokens; the tabs, checkboxes and pager style themselves.
+   Replaces: .sa-data-grid, .sa-data-grid-footer, .sa-data-grid-page-size,
+   .sa-data-grid-page-size-label, .sa-data-grid-range, .sa-data-grid-range-value */
+
+@layer sa.tokens {
+  .sa-data-grid {
+    --sa-data-grid-footer-py: calc(2 * var(--sa-unit));
+    --sa-data-grid-footer-gap: calc(4 * var(--sa-unit));
+    --sa-data-grid-footer-border: var(--sa-color-line);   /* always ruled: it closes the table */
+    --sa-data-grid-page-size-gap: calc(2.5 * var(--sa-unit));
+    --sa-data-grid-meta-fg: var(--sa-color-ink-muted);
+    --sa-data-grid-meta-text: var(--sa-text-sm);
+    --sa-data-grid-range-value-fg: var(--sa-color-ink);
+    --sa-data-grid-range-value-weight: var(--sa-weight-control);
+    --sa-data-grid-sort-icon-fg: var(--sa-color-ink-muted);
+  }
+}
+
+@layer sa.components {
+  /* Out-ranks the card's own gap and padding. */
+  .sa-card.sa-data-grid {
+    gap: 0;
+    padding-block: 0;
+
+    /* Only the grid's own rows: rows of a table nested in a cell (such as a row's details) keep their
+       padding, and the detail cell stays unpadded since its content measures its insets from the row. */
+    & tr:not(td tr) > :first-child:not(.sa-table-row-detail-cell) { padding-inline-start: var(--_card-p); }
+    & tr:not(td tr) > :last-child:not(.sa-table-row-detail-cell) { padding-inline-end: var(--_card-p); }
+  }
+  .sa-card-footer.sa-data-grid-footer {
+    justify-content: flex-end;
+    gap: var(--sa-data-grid-footer-gap);
+    padding-block: var(--sa-data-grid-footer-py);
+    border-top: var(--sa-border-width) solid var(--sa-data-grid-footer-border);
+
+    /* The pager centres itself standalone; here it shrinks and sits in flow. */
+    & > [data-slot="data-grid-pager"] {
+      width: auto;
+      margin: 0;
+    }
+  }
+  /* A leading child (the page size selector) claims the left; the rest stay right-aligned. */
+  .sa-data-grid-page-size {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-data-grid-page-size-gap);
+    margin-inline-end: auto;
+  }
+  .sa-data-grid-page-size-label,
+  .sa-data-grid-range {
+    color: var(--sa-data-grid-meta-fg);
+    font-size: var(--sa-data-grid-meta-text);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-data-grid-range { font-variant-numeric: tabular-nums; }
+  .sa-data-grid-range-value {
+    color: var(--sa-data-grid-range-value-fg);
+    font-weight: var(--sa-data-grid-range-value-weight);
+  }
+
+  /* A sort link is a small ghost button (button.css) that takes on the column head's type. */
+  .sa-table-head > .sa-button[data-slot="data-grid-sort-link"] {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    & svg { color: var(--sa-data-grid-sort-icon-fg); }
+    &[data-active="true"] svg { color: currentColor; }
+  }
+}

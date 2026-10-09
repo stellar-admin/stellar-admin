@@ -1,0 +1,71 @@
+/* Pagination: a row of page links. Links are buttons (button.css): ghost, with the current page an
+   outline button by default (--sa-current-page-fill blends it toward a solid accent).
+   Replaces: .sa-pagination, .sa-pagination-content, .sa-pagination-ellipsis, .sa-pagination-previous,
+   .sa-pagination-next, .sa-pagination-link-label */
+
+@layer sa.tokens {
+  .sa-pagination {
+    --sa-pagination-gap: calc(0.5 * var(--sa-unit));
+    --sa-pagination-edge-px: calc(1.5 * var(--sa-unit));     /* inside padding next to the chevrons */
+    --sa-pagination-ellipsis-fg: var(--sa-color-ink-muted);
+    --sa-pagination-ellipsis-size: var(--sa-control-h);
+  }
+  /* On the link, because they blend with the button's own outline tokens. */
+  .sa-pagination-link {
+    --sa-pagination-current-bg: color-mix(in oklab, var(--sa-color-accent-fill) calc(var(--sa-current-page-fill) * 100%), var(--sa-button-outline-bg));
+    --sa-pagination-current-bg-hover: color-mix(in oklab, var(--sa-color-accent-hover) calc(var(--sa-current-page-fill) * 100%), var(--sa-button-outline-bg-hover));
+    --sa-pagination-current-fg: color-mix(in oklab, var(--sa-color-on-accent) calc(var(--sa-current-page-fill) * 100%), var(--sa-button-outline-fg));
+    --sa-pagination-current-border: color-mix(in oklab, var(--sa-color-accent-fill) calc(var(--sa-current-page-fill) * 100%), var(--sa-button-outline-border));
+  }
+}
+
+@layer sa.components {
+  .sa-pagination {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .sa-pagination-content {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-pagination-gap);
+    list-style: none;
+  }
+  .sa-button.sa-pagination-link {
+    min-width: var(--_h);
+    &[data-active="true"] {
+      --_bg: var(--sa-pagination-current-bg);
+      --_bg-hover: var(--sa-pagination-current-bg-hover);
+      --_bg-active: var(--sa-pagination-current-bg-hover);
+      --_fg: var(--sa-pagination-current-fg);
+      --_border: var(--sa-pagination-current-border);
+    }
+  }
+  /* First and Previous carry .sa-pagination-previous, Next and Last .sa-pagination-next. */
+  .sa-button.sa-pagination-previous:not([class*="size-icon"]) { padding-inline-start: var(--sa-pagination-edge-px); }
+  .sa-button.sa-pagination-next:not([class*="size-icon"]) { padding-inline-end: var(--sa-pagination-edge-px); }
+  .sa-pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-pagination-ellipsis-size);
+    height: var(--sa-pagination-ellipsis-size);
+    color: var(--sa-pagination-ellipsis-fg);
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+  }
+  /* The Previous/Next words hide below the sm breakpoint, leaving the chevrons. */
+  @media (width < 40rem) {
+    .sa-pagination-link-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  }
+}
