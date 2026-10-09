@@ -1,0 +1,243 @@
+/* Toaster: the toast viewport, the stacked toasts and their contents. sel-toaster reproduces Base UI's
+   Toast state contract, so the stacking, swipe and enter/exit rules follow upstream: data-expanded,
+   data-behind, data-limited, data-starting-style, data-ending-style and data-swipe-direction on the
+   elements, and --toast-index, --toast-height, --toast-offset-y, --toast-swipe-movement-x/-y and (on
+   the viewport) --toast-frontmost-height as inputs. Upstream only anchors to the bottom; top positions
+   mirror the stack.
+   Replaces: .sa-toast-viewport, .sa-toast, .sa-toast-content, .sa-toast-icon, .sa-toast-text,
+   .sa-toast-title, .sa-toast-description, .sa-toast-action, .sa-toast-close */
+
+@layer sa.tokens {
+  /* On the viewport too, which reads the width and the edge inset. */
+  .sa-toast-viewport,
+  .sa-toast {
+    --sa-toast-w: 24rem;
+    --sa-toast-viewport-inset: calc(4 * var(--sa-unit));
+    --sa-toast-bg: var(--sa-color-surface-raised);
+    --sa-toast-fg: var(--sa-color-ink);
+    --sa-toast-edge: var(--sa-color-line);
+    --sa-toast-radius: var(--sa-radius-container);
+    --sa-toast-shadow: var(--sa-shadow-overlay);
+    --sa-toast-p: calc(4 * var(--sa-unit));
+    --sa-toast-gap: calc(3 * var(--sa-unit));
+    --sa-toast-title-text: var(--sa-text-body);
+    --sa-toast-title-weight: 500;
+    --sa-toast-description-text: var(--sa-text-body);
+    --sa-toast-description-fg: var(--sa-color-ink-muted);
+    --sa-toast-icon: 1rem;
+    --sa-toast-icon-success-fg: var(--sa-color-success);
+    --sa-toast-icon-info-fg: var(--sa-color-info);
+    --sa-toast-icon-warning-fg: var(--sa-color-warning);
+    --sa-toast-icon-error-fg: var(--sa-color-danger);
+    --sa-toast-icon-loading-fg: var(--sa-color-ink-muted);
+    --sa-toast-close-fg: var(--sa-color-ink-muted);
+    --sa-toast-close-fg-hover: var(--sa-color-ink);
+  }
+}
+
+@layer sa.components {
+  /* A manual popover: reset the popover's UA inset, margin, border, padding, background and overflow. */
+  .sa-toast-viewport {
+    --_inset: var(--sa-toast-viewport-inset);
+    position: fixed;
+    inset: auto var(--_inset);
+    z-index: 50;
+    width: auto;
+    max-width: var(--sa-toast-w);
+    margin: 0 auto;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    outline: none;
+    pointer-events: none;
+    &[data-position^="bottom"] { top: auto; bottom: var(--_inset); }
+    &[data-position^="top"] { top: var(--_inset); bottom: auto; }
+    @media (width >= 40rem) {
+      width: 100%;
+      &[data-position$="left"] { right: auto; left: var(--_inset); margin-inline: 0; }
+      &[data-position$="right"] { right: var(--_inset); left: auto; margin-inline: 0; }
+    }
+  }
+
+  .sa-toast {
+    --_stack-gap: calc(3 * var(--sa-unit));
+    --_peek: calc(3 * var(--sa-unit));
+    --_height: var(--toast-frontmost-height, var(--toast-height));
+    --_offset-y: calc(var(--toast-offset-y) * -1 - var(--toast-index) * var(--_stack-gap) + var(--toast-swipe-movement-y));
+    --_scale: max(0, 1 - var(--toast-index) * 0.1);
+    --_shrink: calc(1 - var(--_scale));
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: calc(1000 - var(--toast-index));
+    width: 100%;
+    max-width: var(--sa-toast-w);
+    height: var(--_height);
+    border: var(--sa-border-width) solid var(--sa-toast-edge);
+    border-radius: var(--sa-toast-radius);
+    background: var(--sa-toast-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-toast-shadow);
+    color: var(--sa-toast-fg);
+    outline: none;
+    pointer-events: auto;
+    user-select: none;
+    transform-origin: bottom;
+    will-change: transform;
+    transform: translateX(var(--toast-swipe-movement-x))
+      translateY(calc(var(--toast-swipe-movement-y) - var(--toast-index) * var(--_peek) - var(--_shrink) * var(--_height)))
+      scale(var(--_scale));
+    transition:
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 500ms,
+      height var(--sa-motion-fast);
+
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-toast-shadow), var(--sa-focus-shadow);
+    }
+    /* Bridges the gap between expanded toasts, so moving the pointer across it keeps the stack
+       expanded. */
+    &::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: calc(var(--_stack-gap) + 1px);
+    }
+    &[data-expanded] {
+      height: var(--toast-height);
+      transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--_offset-y));
+    }
+    &[data-limited] {
+      opacity: 0;
+    }
+    &[data-starting-style],
+    &[data-ending-style]:not([data-limited]):not([data-swipe-direction]) {
+      transform: translateY(150%);
+    }
+    &[data-ending-style][data-swipe-direction="down"] {
+      transform: translateY(calc(var(--toast-swipe-movement-y) + 150%));
+    }
+    &[data-ending-style][data-swipe-direction="up"] {
+      transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+    }
+    &[data-ending-style][data-swipe-direction="left"] {
+      transform: translateX(calc(var(--toast-swipe-movement-x) - 150%)) translateY(var(--_offset-y));
+    }
+    &[data-ending-style][data-swipe-direction="right"] {
+      transform: translateX(calc(var(--toast-swipe-movement-x) + 150%)) translateY(var(--_offset-y));
+    }
+
+    .sa-toast-viewport[data-position^="top"] & {
+      --_offset-y: calc(var(--toast-offset-y) + var(--toast-index) * var(--_stack-gap) + var(--toast-swipe-movement-y));
+      top: 0;
+      bottom: auto;
+      transform-origin: top;
+      transform: translateX(var(--toast-swipe-movement-x))
+        translateY(calc(var(--toast-swipe-movement-y) + var(--toast-index) * var(--_peek) + var(--_shrink) * var(--_height)))
+        scale(var(--_scale));
+
+      &::after {
+        top: auto;
+        bottom: 100%;
+      }
+      &[data-expanded] {
+        transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--_offset-y));
+      }
+      &[data-starting-style],
+      &[data-ending-style]:not([data-limited]):not([data-swipe-direction]) {
+        transform: translateY(-150%);
+      }
+      &[data-ending-style][data-swipe-direction="up"] {
+        transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+      }
+      &[data-ending-style][data-swipe-direction="left"] {
+        transform: translateX(calc(var(--toast-swipe-movement-x) - 150%)) translateY(var(--_offset-y));
+      }
+      &[data-ending-style][data-swipe-direction="right"] {
+        transform: translateX(calc(var(--toast-swipe-movement-x) + 150%)) translateY(var(--_offset-y));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-property: opacity;
+    }
+  }
+
+  .sa-toast-content {
+    display: flex;
+    align-items: center;
+    gap: var(--sa-toast-gap);
+    height: 100%;
+    padding: var(--sa-toast-p);
+    overflow: hidden;
+    transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1);
+    &[data-behind] { opacity: 0; }
+    &[data-expanded] { opacity: 1; }
+  }
+  .sa-toast-icon {
+    display: flex;
+    flex-shrink: 0;
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-toast-icon);
+      height: var(--sa-toast-icon);
+    }
+    & > [data-toast-icon="success"] { color: var(--sa-toast-icon-success-fg); }
+    & > [data-toast-icon="info"] { color: var(--sa-toast-icon-info-fg); }
+    & > [data-toast-icon="warning"] { color: var(--sa-toast-icon-warning-fg); }
+    & > [data-toast-icon="error"] { color: var(--sa-toast-icon-error-fg); }
+    & > [data-toast-icon="loading"] {
+      color: var(--sa-toast-icon-loading-fg);
+      animation: sa-toast-spin 1s linear infinite;
+    }
+  }
+  .sa-toast-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--sa-unit);
+    min-width: 0;
+  }
+  .sa-toast-title {
+    font-size: var(--sa-toast-title-text);
+    font-weight: var(--sa-toast-title-weight);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-toast-description {
+    color: var(--sa-toast-description-fg);
+    font-size: var(--sa-toast-description-text);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-toast-action {
+    flex-shrink: 0;
+  }
+  /* A ghost button: out-ranks the variant to set its private colours. */
+  .sa-button.sa-toast-close {
+    --_fg: var(--sa-toast-close-fg);
+    --_fg-hover: var(--sa-toast-close-fg-hover);
+    position: relative;
+    flex-shrink: 0;
+    /* A larger hit area than the icon button. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: calc(-2 * var(--sa-unit));
+    }
+  }
+
+  @keyframes sa-toast-spin {
+    to { rotate: 360deg; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-toast-icon > [data-toast-icon="loading"] {
+      animation-duration: 3s;
+    }
+  }
+}

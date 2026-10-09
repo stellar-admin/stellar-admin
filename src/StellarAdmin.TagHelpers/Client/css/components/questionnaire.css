@@ -1,0 +1,363 @@
+/* Questionnaire: questions with choice cards, free-text answers, progress and step actions. Each choice
+   card holds a native radio or checkbox stretched over it, so the card styles itself from the input's
+   checked, disabled, focus and validation state, with no script.
+   Replaces: .sa-questionnaire, .sa-questionnaire-progress, .sa-questionnaire-item,
+   .sa-questionnaire-title, .sa-questionnaire-description, .sa-questionnaire-choices,
+   .sa-questionnaire-choice, .sa-questionnaire-choice-input, .sa-questionnaire-choice-indicator,
+   .sa-questionnaire-choice-indicator-dot, .sa-questionnaire-choice-indicator-check,
+   .sa-questionnaire-choice-label, .sa-questionnaire-choice-content,
+   .sa-questionnaire-choice-description, .sa-questionnaire-choice-shortcut, .sa-questionnaire-shortcut,
+   .sa-questionnaire-input-wrapper, .sa-questionnaire-input, .sa-questionnaire-error,
+   .sa-questionnaire-actions, .sa-questionnaire-previous, .sa-questionnaire-skip,
+   .sa-questionnaire-next, .sa-questionnaire-submit */
+
+@layer sa.tokens {
+  .sa-questionnaire {
+    --sa-questionnaire-gap: calc(4 * var(--sa-unit));
+    --sa-questionnaire-progress-text: var(--sa-text-xs);
+    --sa-questionnaire-progress-weight: var(--sa-weight-control);
+    --sa-questionnaire-progress-fg: var(--sa-color-ink-muted);
+    --sa-questionnaire-title-text: var(--sa-text-base);
+    --sa-questionnaire-title-weight: var(--sa-weight-heading);
+    --sa-questionnaire-title-leading: 1.375;
+    --sa-questionnaire-description-text: var(--sa-text-body);
+    --sa-questionnaire-description-fg: var(--sa-color-ink-muted);
+    --sa-questionnaire-choices-gap: calc(2 * var(--sa-unit));
+
+    /* Choice cards: a field-coloured card with control lines, washed on hover and when chosen. */
+    --sa-questionnaire-choice-px: calc(3 * var(--sa-unit));
+    --sa-questionnaire-choice-py: calc(2.5 * var(--sa-unit));
+    --sa-questionnaire-choice-gap: calc(2.5 * var(--sa-unit));
+    --sa-questionnaire-choice-radius: var(--sa-radius-control);
+    --sa-questionnaire-choice-text: var(--sa-text-body);
+    --sa-questionnaire-choice-bg: var(--sa-color-field);
+    --sa-questionnaire-choice-bg-hover: var(--sa-color-hover);
+    --sa-questionnaire-choice-border: var(--sa-color-line-control);
+    --sa-questionnaire-choice-border-hover: var(--sa-color-line-control-hover);
+    --sa-questionnaire-choice-selected-bg: var(--sa-color-selected);
+    --sa-questionnaire-choice-selected-border: color-mix(in oklab, var(--sa-color-accent) 55%, var(--sa-color-line-control));
+    --sa-questionnaire-choice-description-fg: var(--sa-color-ink-muted);
+    --sa-questionnaire-choice-leading: 1.375;
+
+    /* The radio or checkbox mark. */
+    --sa-questionnaire-indicator-size: calc(4 * var(--sa-unit));
+    --sa-questionnaire-indicator-radius: var(--sa-radius-control-sm);   /* checkbox; the radio is round */
+    --sa-questionnaire-indicator-bg: var(--sa-color-field);
+    --sa-questionnaire-indicator-border: var(--sa-color-line-control);
+    --sa-questionnaire-indicator-selected-bg: var(--sa-color-accent-fill);
+    --sa-questionnaire-indicator-selected-fg: var(--sa-color-on-accent);
+    --sa-questionnaire-indicator-mark: calc(2 * var(--sa-unit));         /* the radio's dot */
+    --sa-questionnaire-indicator-icon: calc(3.5 * var(--sa-unit));   /* the checkbox's tick */
+
+    /* The keyboard shortcut badge. */
+    --sa-questionnaire-shortcut-size: calc(5 * var(--sa-unit));
+    --sa-questionnaire-shortcut-radius: var(--sa-radius-control-sm);
+    --sa-questionnaire-shortcut-bg: var(--sa-color-surface);
+    --sa-questionnaire-shortcut-fg: var(--sa-color-ink-muted);
+    --sa-questionnaire-shortcut-border: var(--sa-color-line-control);
+    --sa-questionnaire-shortcut-text: calc(0.625rem * var(--sa-type-scale));
+    --sa-questionnaire-shortcut-font: var(--sa-font-mono);
+
+    /* The free-text answer, drawn like an input. */
+    --sa-questionnaire-input-h: var(--sa-control-h);
+    --sa-questionnaire-input-px: var(--sa-control-px);
+    --sa-questionnaire-input-radius: var(--sa-radius-control);
+    --sa-questionnaire-input-text: var(--sa-text-control);
+    --sa-questionnaire-input-bg: var(--sa-color-field);
+    --sa-questionnaire-input-bg-disabled: var(--sa-color-field-disabled);
+    --sa-questionnaire-input-border: var(--sa-color-line-control);
+    --sa-questionnaire-input-border-hover: var(--sa-color-line-control-hover);
+    --sa-questionnaire-input-fg: var(--sa-color-ink);
+    --sa-questionnaire-input-placeholder-fg: var(--sa-color-ink-placeholder);
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;
+    --sa-questionnaire-input-shadow: var(--sa-shadow-control),
+      inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
+
+    --sa-questionnaire-error-fg: var(--sa-color-danger-text);
+    --sa-questionnaire-error-text: var(--sa-text-body);
+    --sa-questionnaire-actions-gap: calc(2 * var(--sa-unit));
+    --sa-questionnaire-actions-min-h: calc(11 * var(--sa-unit));
+  }
+  .dark .sa-questionnaire {
+    --_relief-k: 4;
+  }
+}
+
+@layer sa.components {
+  .sa-questionnaire {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-questionnaire-gap);
+    width: 100%;
+    min-width: 0;
+  }
+  .sa-questionnaire-progress {
+    width: fit-content;
+    min-width: 14ch;
+    min-height: 1lh;
+    color: var(--sa-questionnaire-progress-fg);
+    font-size: var(--sa-questionnaire-progress-text);
+    line-height: calc(4 / 3);
+    font-weight: var(--sa-questionnaire-progress-weight);
+    font-variant-numeric: tabular-nums;
+  }
+  /* A fieldset: the title is its legend, which sits outside the flex flow, so the description
+     follows it directly. */
+  .sa-questionnaire-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-questionnaire-gap);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+  }
+  .sa-questionnaire-title {
+    padding: 0;
+    font-family: var(--sa-font-heading);
+    font-size: var(--sa-questionnaire-title-text);
+    font-weight: var(--sa-questionnaire-title-weight);
+    line-height: var(--sa-questionnaire-title-leading);
+    text-wrap: pretty;
+    &:not(:has(~ [data-slot="questionnaire-description"])) {
+      margin-bottom: var(--sa-questionnaire-gap);
+    }
+  }
+  .sa-questionnaire-description {
+    color: var(--sa-questionnaire-description-fg);
+    font-size: var(--sa-questionnaire-description-text);
+    text-wrap: pretty;
+  }
+  .sa-questionnaire-choices {
+    display: grid;
+    gap: var(--sa-questionnaire-choices-gap);
+    min-width: 0;
+  }
+
+  .sa-questionnaire-choice {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sa-questionnaire-choice-gap);
+    min-height: 2.75rem;
+    padding: var(--sa-questionnaire-choice-py) var(--sa-questionnaire-choice-px);
+    border: var(--sa-border-width) solid var(--sa-questionnaire-choice-border);
+    border-radius: var(--sa-questionnaire-choice-radius);
+    background: var(--sa-questionnaire-choice-bg);
+    background-clip: padding-box;
+    font-size: var(--sa-questionnaire-choice-text);
+    line-height: var(--sa-leading-ui);
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+    &:hover:not(:has(> input:checked)) {
+      border-color: var(--sa-questionnaire-choice-border-hover);
+      background-color: var(--sa-questionnaire-choice-bg-hover);
+    }
+    &:has(> input:checked) {
+      border-color: var(--sa-questionnaire-choice-selected-border);
+      background-color: var(--sa-questionnaire-choice-selected-bg);
+    }
+    &:has(> input:is([aria-invalid="true"], .input-validation-error)) {
+      border-color: var(--sa-color-danger);
+    }
+    &:has(> input:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow-field);
+    }
+    &:has(> input:disabled) {
+      cursor: not-allowed;
+      opacity: var(--sa-disabled-opacity);
+      pointer-events: none;
+    }
+  }
+  .sa-questionnaire-choice-input {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+  .sa-questionnaire-choice-indicator {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-questionnaire-indicator-size);
+    height: var(--sa-questionnaire-indicator-size);
+    border: var(--sa-border-width) solid var(--sa-questionnaire-indicator-border);
+    border-radius: var(--sa-questionnaire-indicator-radius);
+    background: var(--sa-questionnaire-indicator-bg);
+    pointer-events: none;
+    /* Centred on the first line of the label. */
+    translate: 0 calc((var(--sa-leading-ui) - var(--sa-questionnaire-indicator-size)) / 2);
+    .sa-questionnaire-choice[data-type="radio"] > & {
+      border-radius: var(--sa-radius-round);
+    }
+    .sa-questionnaire-choice:has(> input:checked) > & {
+      border-color: var(--sa-questionnaire-indicator-selected-bg);
+      background: var(--sa-questionnaire-indicator-selected-bg);
+      color: var(--sa-questionnaire-indicator-selected-fg);
+    }
+  }
+  .sa-questionnaire-choice-indicator-dot,
+  .sa-questionnaire-choice-indicator-check {
+    display: none;
+    .sa-questionnaire-choice:has(> input:checked) & {
+      display: block;
+    }
+  }
+  .sa-questionnaire-choice-indicator-dot {
+    width: var(--sa-questionnaire-indicator-mark);
+    height: var(--sa-questionnaire-indicator-mark);
+    border-radius: var(--sa-radius-round);
+    background: currentColor;
+  }
+  .sa-questionnaire-choice-indicator-check {
+    width: var(--sa-questionnaire-indicator-icon);
+    height: var(--sa-questionnaire-indicator-icon);
+  }
+  .sa-questionnaire-choice-label {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: calc(0.5 * var(--sa-unit));
+    min-width: 0;
+    line-height: var(--sa-questionnaire-choice-leading);
+  }
+  .sa-questionnaire-choice-description {
+    color: var(--sa-questionnaire-choice-description-fg);
+  }
+  .sa-questionnaire-choice-shortcut {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-questionnaire-shortcut-size);
+    height: var(--sa-questionnaire-shortcut-size);
+    margin-inline-start: auto;
+    border: var(--sa-border-width) solid var(--sa-questionnaire-shortcut-border);
+    border-radius: var(--sa-questionnaire-shortcut-radius);
+    background: var(--sa-questionnaire-shortcut-bg);
+    color: var(--sa-questionnaire-shortcut-fg);
+    font-family: var(--sa-questionnaire-shortcut-font);
+    font-size: var(--sa-questionnaire-shortcut-text);
+    font-weight: var(--sa-weight-control);
+    line-height: 1;
+    pointer-events: none;
+    translate: 0 calc((var(--sa-leading-ui) - var(--sa-questionnaire-shortcut-size)) / 2);
+  }
+
+  .sa-questionnaire-input-wrapper {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+  .sa-questionnaire-input {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    height: var(--sa-questionnaire-input-h);
+    padding: 0.25rem var(--sa-questionnaire-input-px);
+    border: var(--sa-border-width) solid var(--sa-questionnaire-input-border);
+    border-radius: var(--sa-questionnaire-input-radius);
+    background: var(--sa-questionnaire-input-bg);
+    background-clip: padding-box;
+    box-shadow: var(--sa-questionnaire-input-shadow);
+    color: var(--sa-questionnaire-input-fg);
+    font-size: var(--sa-text-base);   /* 16px on small screens keeps mobile browsers from zooming in */
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+    @media (width >= 40rem) {
+      min-height: 0;
+    }
+    @media (width >= 48rem) {
+      font-size: var(--sa-questionnaire-input-text);
+    }
+
+    &::placeholder {
+      color: var(--sa-questionnaire-input-placeholder-fg);
+    }
+    &::selection {
+      background: var(--sa-color-accent-fill);
+      color: var(--sa-color-on-accent);
+    }
+    &:hover:not(:disabled, :focus-visible) {
+      border-color: var(--sa-questionnaire-input-border-hover);
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-questionnaire-input-shadow), var(--sa-focus-shadow-field);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-questionnaire-input-shadow), var(--sa-invalid-shadow);
+      &:focus-visible {
+        box-shadow: var(--sa-questionnaire-input-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:disabled {
+      background: var(--sa-questionnaire-input-bg-disabled);
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  .sa-questionnaire-error {
+    margin-top: calc(2 * var(--sa-unit));
+    color: var(--sa-questionnaire-error-fg);
+    font-size: var(--sa-questionnaire-error-text);
+    /* A bound answer renders its message even while it is valid, so unobtrusive validation has
+       somewhere to write into. Hidden until it says something, or it takes a gap in the item. */
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* Back on the left; skip, then next or submit, on the right. */
+  .sa-questionnaire-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--sa-questionnaire-actions-gap);
+    width: 100%;
+    min-height: var(--sa-questionnaire-actions-min-h);
+  }
+  .sa-questionnaire-previous,
+  .sa-questionnaire-skip,
+  .sa-questionnaire-next,
+  .sa-questionnaire-submit {
+    grid-row-start: 1;
+    min-height: 2.75rem;   /* touch targets on small screens */
+    @media (width >= 40rem) {
+      min-height: 0;
+    }
+  }
+  .sa-questionnaire-previous {
+    grid-column-start: 1;
+    justify-self: start;
+  }
+  .sa-questionnaire-skip {
+    grid-column-start: 2;
+    justify-self: end;
+  }
+  .sa-questionnaire-next,
+  .sa-questionnaire-submit {
+    grid-column-start: 3;
+    justify-self: end;
+  }
+}

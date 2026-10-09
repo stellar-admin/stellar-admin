@@ -1,0 +1,120 @@
+/* Dialog: a modal window over a native <dialog>, with a header, title, description and footer.
+   Replaces: .sa-dialog-content, .sa-dialog-overlay, .sa-dialog-close, .sa-dialog-header,
+   .sa-dialog-footer, .sa-dialog-title, .sa-dialog-description */
+
+@layer sa.tokens {
+  .sa-dialog-content {
+    --sa-dialog-bg: var(--sa-color-surface-raised);
+    --sa-dialog-fg: var(--sa-color-ink);
+    --sa-dialog-radius: var(--sa-radius-container);
+    --sa-dialog-edge: var(--sa-color-line);
+    --sa-dialog-shadow: var(--sa-shadow-dialog);
+    --sa-dialog-p: var(--sa-space-container);
+    --sa-dialog-gap: var(--sa-dialog-p);
+    --sa-dialog-max-w: 24rem;
+    --sa-dialog-text: var(--sa-text-body);
+    --sa-dialog-leading: calc(1.25 / 0.875);
+    --sa-dialog-backdrop-bg: var(--sa-color-scrim);
+    --sa-dialog-header-gap: calc(2 * var(--sa-unit));
+    --sa-dialog-title-text: var(--sa-text-base);
+    --sa-dialog-title-weight: var(--sa-weight-heading);
+    --sa-dialog-title-leading: 1;
+    --sa-dialog-description-text: var(--sa-dialog-text);
+    --sa-dialog-description-fg: var(--sa-color-ink-muted);
+    --sa-dialog-close-inset: calc(2 * var(--sa-unit));
+    /* The footer switches default to the card's; a theme sets --sa-dialog-footer-fill/-rule only
+       when its dialogs should differ (e.g. plain card footers but a banded dialog footer). */
+    --_footer-fill: var(--sa-dialog-footer-fill, var(--sa-footer-fill));
+    --_footer-rule: var(--sa-dialog-footer-rule, var(--sa-footer-rule));
+    --sa-dialog-footer-bg: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
+    --sa-dialog-footer-border: color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
+    --sa-dialog-footer-bleed: var(--sa-dialog-p);  /* 0 keeps the footer inside the padding */
+    --sa-dialog-footer-py: var(--sa-dialog-p);
+    --sa-dialog-footer-pt: calc(var(--sa-dialog-footer-py) * max(var(--_footer-fill), var(--_footer-rule))); /* flush: no band, no gap */
+    --sa-dialog-footer-gap: calc(2 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-dialog-content {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: 100%;
+    max-width: min(var(--sa-dialog-max-w), calc(100% - 2rem));
+    height: fit-content;
+    padding: var(--sa-dialog-p);
+    border: var(--sa-border-width) solid var(--sa-dialog-edge);
+    border-radius: var(--sa-dialog-radius);
+    background: var(--sa-dialog-bg);
+    box-shadow: var(--sa-dialog-shadow);
+    color: var(--sa-dialog-fg);
+    font-size: var(--sa-dialog-text);
+    line-height: var(--sa-dialog-leading);
+    outline: none;
+    &[open] {
+      display: grid;
+      gap: var(--sa-dialog-gap);
+      animation: sa-dialog-in var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+    &::backdrop {
+      background: var(--sa-dialog-backdrop-bg);
+    }
+    &[open]::backdrop {
+      animation: sa-dialog-backdrop-in var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+  }
+  .sa-dialog-close {
+    position: absolute;
+    top: var(--sa-dialog-close-inset);
+    right: var(--sa-dialog-close-inset);
+  }
+  .sa-dialog-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-dialog-header-gap);
+  }
+  .sa-dialog-title {
+    font-family: var(--sa-font-heading);
+    font-size: var(--sa-dialog-title-text);
+    font-weight: var(--sa-dialog-title-weight);
+    line-height: var(--sa-dialog-title-leading);
+  }
+  .sa-dialog-description {
+    color: var(--sa-dialog-description-fg);
+    font-size: var(--sa-dialog-description-text);
+    & a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      &:hover { color: var(--sa-dialog-fg); }
+    }
+  }
+  /* Stacked, primary action on top, until there is room for a row. */
+  .sa-dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--sa-dialog-footer-gap);
+    margin: 0 calc(-1 * var(--sa-dialog-footer-bleed)) calc(-1 * var(--sa-dialog-footer-bleed));
+    padding: var(--sa-dialog-footer-pt) var(--sa-dialog-footer-bleed) var(--sa-dialog-footer-py);
+    border-top: var(--sa-border-width) solid var(--sa-dialog-footer-border);
+    border-radius: 0 0 var(--sa-dialog-radius) var(--sa-dialog-radius);
+    background: var(--sa-dialog-footer-bg);
+    @media (width >= 40rem) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+
+  @keyframes sa-dialog-in {
+    from { opacity: 0; scale: 0.95; }
+  }
+  @keyframes sa-dialog-backdrop-in {
+    from { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-dialog-content[open],
+    .sa-dialog-content[open]::backdrop {
+      animation: none;
+    }
+  }
+}
