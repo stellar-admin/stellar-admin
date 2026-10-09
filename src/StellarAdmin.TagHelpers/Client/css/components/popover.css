@@ -1,0 +1,67 @@
+/* Popover: a panel of content anchored to its trigger, with an optional header (title and description).
+   Replaces: .sa-popover-content, .sa-popover-content-logical, .sa-popover-header, .sa-popover-title,
+   .sa-popover-description */
+
+@layer sa.tokens {
+  .sa-popover-content {
+    --sa-popover-bg: var(--sa-color-surface-raised);
+    --sa-popover-fg: var(--sa-color-ink);
+    --sa-popover-radius: var(--sa-radius-overlay);
+    --sa-popover-edge: var(--sa-color-line);
+    --sa-popover-shadow: var(--sa-shadow-overlay);
+    --sa-popover-p: calc(2.5 * var(--sa-unit));
+    --sa-popover-w: 18rem;
+    --sa-popover-text: var(--sa-text-body);
+    --sa-popover-leading: var(--sa-leading-ui);
+    --sa-popover-header-gap: calc(0.5 * var(--sa-unit));
+    --sa-popover-title-font: var(--sa-font-heading);
+    --sa-popover-title-weight: var(--sa-weight-heading);
+    --sa-popover-description-fg: var(--sa-color-ink-muted);
+  }
+}
+
+@layer sa.components {
+  /* Anchored to its trigger (anchors.css places it; the gap comes from the [data-anchor-side]
+     rules in components.css). */
+  .sa-popover-content {
+    inset: auto;
+    width: var(--sa-popover-w);
+    margin: 0;
+    padding: var(--sa-popover-p);
+    border: var(--sa-border-width) solid var(--sa-popover-edge);
+    border-radius: var(--sa-popover-radius);
+    background: var(--sa-popover-bg);
+    box-shadow: var(--sa-popover-shadow);
+    color: var(--sa-popover-fg);
+    font-size: var(--sa-popover-text);
+    line-height: var(--sa-popover-leading);
+    outline: none;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    opacity: 1;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+    transition-behavior: allow-discrete;
+
+    &:not(:popover-open) { opacity: 0; }
+    @starting-style {
+      &:popover-open { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  .sa-popover-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-popover-header-gap);
+    font-size: var(--sa-popover-text);
+  }
+  .sa-popover-title {
+    font-family: var(--sa-popover-title-font);
+    font-weight: var(--sa-popover-title-weight);
+  }
+  .sa-popover-description {
+    color: var(--sa-popover-description-fg);
+  }
+}

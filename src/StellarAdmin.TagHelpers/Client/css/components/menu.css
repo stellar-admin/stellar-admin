@@ -1,0 +1,84 @@
+/* Menu: the tokens every floating menu shares (the dropdown menu now; context menus and menubars
+   when they ship), and the surface modifiers MenuAppearance and MenuAccent emit. MenuColor.Inverted
+   is the dark class itself, which re-derives the tokens for the menu and everything in it.
+   Replaces: .sa-menu-translucent, .sa-menu-accent-bold */
+
+@layer sa.tokens {
+  .sa-dropdown-menu-content,
+  .sa-dropdown-menu-sub-content {
+    --sa-menu-bg: var(--sa-color-surface-raised);
+    --sa-menu-fg: var(--sa-color-ink);
+    --sa-menu-radius: var(--sa-radius-overlay);
+    --sa-menu-edge: var(--sa-color-line);
+    --sa-menu-shadow: var(--sa-shadow-overlay);
+    --sa-menu-px: var(--sa-space-overlay);
+    --sa-menu-py: var(--sa-space-overlay);
+    --sa-menu-min-w: 8rem;
+    --sa-menu-sub-min-w: 6rem;
+    --sa-menu-item-px: var(--sa-space-item-x);
+    --sa-menu-item-py: var(--sa-space-item-y);
+    --sa-menu-item-gap: var(--sa-space-item-gap);
+    --sa-menu-item-radius: var(--sa-radius-item);
+    --sa-menu-item-text: var(--sa-text-body);
+    --sa-menu-item-icon: var(--sa-control-icon);
+    --sa-menu-item-leading: var(--sa-leading-ui);
+    /* Inset rows line their text up with the text of rows that have an icon. */
+    --sa-menu-item-inset: calc(var(--sa-menu-item-px) + var(--sa-menu-item-icon) + var(--sa-menu-item-gap));
+    --sa-menu-item-highlight-bg: var(--sa-color-highlight);
+    --sa-menu-item-highlight-fg: var(--sa-color-on-highlight);
+    --sa-menu-item-danger-fg: var(--sa-color-danger-text);
+    --sa-menu-item-danger-highlight-bg: var(--sa-color-danger-soft);
+    --sa-menu-bold-highlight-bg: var(--sa-color-accent-fill);
+    --sa-menu-bold-highlight-fg: var(--sa-color-on-accent);
+    --sa-menu-label-font: var(--sa-label-font);
+    --sa-menu-label-text: var(--sa-label-text);
+    --sa-menu-label-weight: var(--sa-label-weight);
+    --sa-menu-label-transform: var(--sa-label-transform);
+    --sa-menu-label-tracking: var(--sa-label-tracking);
+    --sa-menu-label-fg: var(--sa-color-ink-muted);
+    --sa-menu-label-leading: 1rem;
+    --sa-menu-label-pt: var(--sa-menu-item-py);
+    --sa-menu-label-pb: var(--sa-menu-item-py);
+    --sa-menu-separator-border: var(--sa-color-line);
+    --sa-menu-separator-my: var(--sa-unit);
+    --sa-menu-separator-mx: calc(-1 * var(--sa-menu-px));
+    --sa-menu-shortcut-font: inherit;
+    --sa-menu-shortcut-text: var(--sa-text-xs);
+    --sa-menu-shortcut-tracking: 0.1em;
+    --sa-menu-shortcut-fg: var(--sa-color-ink-muted);
+    --sa-menu-indicator-fg: currentColor;
+    /* MenuAppearance.Translucent: a frosted surface over the page. */
+    --sa-menu-translucent-bg: color-mix(in oklab, var(--sa-menu-bg) 70%, transparent);
+    --sa-menu-translucent-highlight-bg: color-mix(in oklab, var(--sa-color-ink) 10%, transparent);
+    --sa-menu-translucent-separator-border: color-mix(in oklab, var(--sa-color-ink) 10%, transparent);
+  }
+}
+
+@layer sa.components {
+  /* MenuAccent.Bold: the highlighted row takes the solid accent. */
+  .sa-menu-accent-bold {
+    --_highlight-bg: var(--sa-menu-bold-highlight-bg);
+    --_highlight-fg: var(--sa-menu-bold-highlight-fg);
+  }
+
+  /* MenuAppearance.Translucent. The blur sits on a layer behind the rows rather than on the menu
+     itself, so the menu stays an ordinary box for its rows and nested menus. */
+  .sa-menu-translucent {
+    --_bg: var(--sa-menu-translucent-bg);
+    --_highlight-bg: var(--sa-menu-translucent-highlight-bg);
+    --_separator-border: var(--sa-menu-translucent-separator-border);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      backdrop-filter: blur(40px) saturate(1.5);
+      pointer-events: none;
+    }
+    &.sa-menu-accent-bold {
+      --_highlight-bg: var(--sa-menu-bold-highlight-bg);
+    }
+  }
+}

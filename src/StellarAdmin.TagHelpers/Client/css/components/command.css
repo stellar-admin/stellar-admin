@@ -1,0 +1,203 @@
+/* Command: a search field over a filtered list of commands, inline or in a command dialog.
+   Replaces: .sa-command, .sa-command-dialog, .sa-command-input-wrapper, .sa-command-input-group,
+   .sa-command-input-icon, .sa-command-input, .sa-command-list, .sa-command-empty, .sa-command-group,
+   .sa-command-separator, .sa-command-item, .sa-command-item-indicator, .sa-command-shortcut */
+
+@layer sa.tokens {
+  .sa-command {
+    --sa-command-bg: var(--sa-color-surface-raised);
+    --sa-command-fg: var(--sa-color-ink);
+    --sa-command-radius: var(--sa-radius-overlay);
+    --sa-command-p: var(--sa-space-overlay);
+    --sa-command-input-h: var(--sa-control-h);
+    --sa-command-input-bg: var(--sa-color-field);
+    --sa-command-input-border: var(--sa-color-line-control);
+    --sa-command-input-radius: max(0px, calc(var(--sa-command-radius) - var(--sa-command-p)));
+    --sa-command-input-text: var(--sa-text-control);
+    --sa-command-input-icon: var(--sa-control-icon);
+    --sa-command-input-fg: var(--sa-color-ink);
+    --sa-command-input-placeholder-fg: var(--sa-color-ink-placeholder);
+    --sa-command-list-max-h: 18rem;
+    --sa-command-empty-py: calc(6 * var(--sa-unit));
+    --sa-command-empty-text: var(--sa-text-body);
+    --sa-command-heading-font: var(--sa-label-font);
+    --sa-command-heading-text: var(--sa-label-text);
+    --sa-command-heading-weight: var(--sa-label-weight);
+    --sa-command-heading-transform: var(--sa-label-transform);
+    --sa-command-heading-tracking: var(--sa-label-tracking);
+    --sa-command-heading-leading: 1rem;
+    --sa-command-heading-fg: var(--sa-color-ink-muted);
+    --sa-command-heading-px: calc(2 * var(--sa-unit));
+    --sa-command-heading-py: calc(1.5 * var(--sa-unit));
+    --sa-command-separator-border: var(--sa-color-line);
+    --sa-command-item-px: calc(2 * var(--sa-unit));
+    --sa-command-item-py: calc(1.5 * var(--sa-unit));
+    --sa-command-item-gap: calc(2 * var(--sa-unit));
+    --sa-command-item-radius: var(--sa-radius-item);
+    --sa-command-item-text: var(--sa-text-body);
+    --sa-command-item-leading: var(--sa-leading-ui);
+    --sa-command-item-icon: var(--sa-control-icon);
+    --sa-command-item-selected-bg: var(--sa-color-highlight);
+    --sa-command-item-selected-fg: var(--sa-color-on-highlight);
+    --sa-command-shortcut-font: inherit;
+    --sa-command-shortcut-text: var(--sa-text-xs);
+    --sa-command-shortcut-tracking: 0.1em;
+    --sa-command-shortcut-fg: var(--sa-color-ink-muted);
+  }
+}
+
+@layer sa.components {
+  .sa-command {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: var(--sa-command-p);
+    overflow: hidden;
+    border-radius: var(--sa-command-radius);
+    background: var(--sa-command-bg);
+    color: var(--sa-command-fg);
+  }
+
+  .sa-command-input-wrapper {
+    padding: var(--sa-command-p) var(--sa-command-p) 0;
+  }
+  /* The search field is an input group (input-group.css), out-ranked by selector. */
+  .sa-input-group.sa-command-input-group {
+    height: var(--sa-command-input-h);
+    border-color: var(--sa-command-input-border);
+    border-radius: var(--sa-command-input-radius);
+    background: var(--sa-command-input-bg);
+    box-shadow: none;
+
+    & > .sa-input-group-addon { padding-inline-start: calc(2 * var(--sa-unit)); }
+  }
+  .sa-command-input-icon {
+    flex-shrink: 0;
+    width: var(--sa-command-input-icon);
+    height: var(--sa-command-input-icon);
+  }
+  .sa-command-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0 calc(2 * var(--sa-unit)) 0 calc(1.5 * var(--sa-unit));
+    border: 0;
+    background: transparent;
+    color: var(--sa-command-input-fg);
+    font-size: var(--sa-command-input-text);
+    outline: none;
+
+    &::placeholder { color: var(--sa-command-input-placeholder-fg); }
+    &:disabled { opacity: var(--sa-disabled-opacity); cursor: not-allowed; }
+  }
+
+  .sa-command-list {
+    max-height: var(--sa-command-list-max-h);
+    overflow: hidden auto;
+    scroll-padding-block: var(--sa-command-p);
+    outline: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+  .sa-command-empty {
+    padding-block: var(--sa-command-empty-py);
+    font-size: var(--sa-command-empty-text);
+    text-align: center;
+  }
+  .sa-command-group {
+    padding: var(--sa-command-p);
+    overflow: hidden;
+    color: var(--sa-command-fg);
+
+    & [data-slot="command-group-heading"] {
+      padding: var(--sa-command-heading-py) var(--sa-command-heading-px);
+      color: var(--sa-command-heading-fg);
+      font-family: var(--sa-command-heading-font);
+      font-size: var(--sa-command-heading-text);
+      font-weight: var(--sa-command-heading-weight);
+      letter-spacing: var(--sa-command-heading-tracking);
+      line-height: var(--sa-command-heading-leading);
+      text-transform: var(--sa-command-heading-transform);
+    }
+  }
+  .sa-command-separator {
+    height: 1px;
+    margin-inline: calc(-1 * var(--sa-command-p));
+    background: var(--sa-command-separator-border);
+  }
+  .sa-command-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sa-command-item-gap);
+    padding: var(--sa-command-item-py) var(--sa-command-item-px);
+    border-radius: var(--sa-command-item-radius);
+    color: inherit;
+    font-size: var(--sa-command-item-text);
+    line-height: var(--sa-command-item-leading);
+    text-decoration: none;
+    cursor: default;
+    outline: none;
+    user-select: none;
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--sa-command-item-icon); height: var(--sa-command-item-icon); }
+    &[data-selected="true"] {
+      background: var(--sa-command-item-selected-bg);
+      color: var(--sa-command-item-selected-fg);
+    }
+    &[data-disabled="true"] { opacity: var(--sa-disabled-opacity); pointer-events: none; }
+  }
+  /* The check of a checked item; a shortcut takes its place. */
+  .sa-command-item-indicator {
+    margin-inline-start: auto;
+    opacity: 0;
+
+    [data-checked="true"] > & { opacity: 1; }
+    :has(> [data-slot="command-shortcut"]) > & { display: none; }
+  }
+  .sa-command-shortcut {
+    margin-inline-start: auto;
+    color: var(--sa-command-shortcut-fg);
+    font-family: var(--sa-command-shortcut-font);
+    font-size: var(--sa-command-shortcut-text);
+    letter-spacing: var(--sa-command-shortcut-tracking);
+    line-height: calc(4 / 3);
+
+    [data-selected="true"] > & { color: inherit; }
+  }
+  .sa-command :is(.sa-command-item, .sa-command-group, .sa-command-empty, .sa-command-separator)[hidden] {
+    display: none;
+  }
+
+  /* In a command dialog the command fills the dialog, a third of the way down the viewport. Written
+     for the converted dialog's rules; the same adjustments sit in the components layer below until
+     Dialog converts. */
+  dialog.sa-dialog-content.sa-command-dialog {
+    top: 33.333%;
+    bottom: auto;
+    margin-top: 0;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    translate: none;
+  }
+}
+
+/* Transitional: the command dialog is still drawn by the unconverted Dialog rules in Tailwind's
+   components layer, which sits above sa.components, so its adjustments repeat there. Dialog's
+   conversion retires this block. */
+@layer components {
+  dialog.sa-dialog-content.sa-command-dialog {
+    top: 33.333%;
+    bottom: auto;
+    margin-top: 0;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    translate: none;
+  }
+}
