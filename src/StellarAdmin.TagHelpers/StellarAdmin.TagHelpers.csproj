@@ -61,6 +61,7 @@
   <Target Name="ClientItems">
     <ItemGroup>
       <ClientOutput Include="wwwroot/stellar-admin.js" />
+      <ClientOutput Include="wwwroot/stellar-admin.css" />
 
       <ClientOutput Include="wwwroot/stellar-admin.aurora.css" />
       <ClientOutput Include="wwwroot/stellar-admin.parallax.css" />

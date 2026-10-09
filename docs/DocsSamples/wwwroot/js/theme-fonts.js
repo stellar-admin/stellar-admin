@@ -17,6 +17,7 @@
     meridian: "Instrument+Sans:wght@600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
     observatory: "IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
     parallax: "Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
+    tokens: "Inter:wght@400..700",
   };
 
   window.saLoadThemeFonts = (theme) => {

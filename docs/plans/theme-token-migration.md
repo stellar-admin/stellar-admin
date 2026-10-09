@@ -54,12 +54,12 @@ Each phase ends with a checkpoint for review before the next starts.
 ### Phase 1: foundation and API
 
 - Settle the public token list and the tier 2 naming grammar; rename prototype tokens that do not fit.
-- Design pass on the default theme (it becomes the product's face): accent, neutral tint, font, radius, density, depth. Pick two or three curated presets to ship first. Approve visually in the prototype before anything moves.
+- Design pass on the default theme (it becomes the product's face): accent, neutral tint, font, radius, density, depth. Approve visually in the prototype before anything moves. Curated presets wait until every component is converted (phase 3), since conversion may add or change knobs; until then the eight prototype presets serve as stress tests.
 - Move `tokens.css`, the reset and the structural CSS into the library source. Add the new build alongside the old one, so both bundles exist during migration.
 - Add a temporary mapping file that sets the shadcn names (`--background`, `--primary`, …) and Tailwind's `--color-*` from the tokens, so unconverted components keep working on the new foundation.
 - Port the verification tools into `util/theme-check/`: the contrast checker (CDP, system Chromium, as the concept's `contrast.mjs`) and the random-theme screenshot pass.
 
-Checkpoint: default theme and presets approved; public token list approved; DocsSamples renders on the new foundation with every component still on old CSS through the mapping.
+Checkpoint: default theme approved; public token list approved; DocsSamples renders on the new foundation with every component still on old CSS through the mapping.
 
 Progress (2026-10-09):
 
@@ -73,7 +73,14 @@ Progress (2026-10-09):
 - soft danger tints mix a danger capped at lightness 0.58, so a light danger still tints;
 - muted text darkens slightly with depth (`0.5 − 0.02 × depth`) and unselected tab text is 66% ink, so both keep 4.5:1 on the darkest bands.
 
-The base theme's visible changes: muted text 0.52 to 0.48, the sunken surface (table head band, tab track, secondary fills) 0.962 to 0.932, chips a translucent tint, unselected tab text slightly darker. Verified with seeds 7, 11, 23 and 41: 0 text failures; faint parts down to 2 for seed 7 and about 20 per 132 pages for the others, all in extreme random themes at 1.09–1.1, plus Nova's page-size control on its footer band (1.06). Next: the first curated presets.
+The base theme's visible changes: muted text 0.52 to 0.48, the sunken surface (table head band, tab track, secondary fills) 0.962 to 0.932, chips a translucent tint, unselected tab text slightly darker. Verified with seeds 7, 11, 23 and 41: 0 text failures; faint parts down to 2 for seed 7 and about 20 per 132 pages for the others, all in extreme random themes at 1.09–1.1, plus Nova's page-size control on its footer band (1.06). Curated presets moved to phase 3, after conversion. 
+- Foundation in the library: `tokens.css` is now `src/StellarAdmin.TagHelpers/Client/css/tokens.css`, and the prototype loads it from there (its copy is gone, so the two cannot drift). `reset.css` is added for the plain build; the transitional bundle keeps Tailwind's preflight instead, because DocsSamples and the Dashboard load their own Tailwind CSS first, which puts `sa.reset` above Tailwind's layers, where its element rules would beat the old components. Phase 3 must state the layer order for consumers who also use Tailwind (`@layer theme, base, sa.reset, …` or the adapter declaring it). No `structure.css` yet: the structural CSS (`anchors.css`, popovers, keyframes) is still Tailwind utilities that tag helpers emit, so it moves as components convert.
+- New bundle alongside the old ones: `css/stellar-admin.css` builds `wwwroot/stellar-admin.css` (Tailwind for now): tokens, `shadcn-mapping.css`, the shared structure and the Nova theme file's component styles. `shadcn-mapping.css` (temporary) replaces `theme.css` there: it sets the shadcn variables, `--spacing`, `--text-xs`/`-sm`/`-base`, the fonts and the radius steps from the tokens, on every token scope and in `sa.tokens`, above the theme file's own values. The radius steps map onto the token roles (`-lg` control, `-xl` container, …) rather than adding to `--radius`, so pill controls do not round containers into circles. Built by `build-theme-bundles.mjs`, registered in `ClientOutput`. DocsSamples' theme picker has it as "Tokens" (`?theme=tokens`).
+- Verification tools in `util/theme-check/` (README there): `contrast.mjs` (text contrast and parts' separation) and `screenshots.mjs`, for any page URLs, over the base theme, a presets folder and seeded random themes, light and dark, on `util/visual-regression/browser.mjs`. The random themes now use the renamed switch knobs; the scratchpad version still used the old names, so its random runs never varied the current-page, destructive, secondary and column-head switches.
+
+Verified (2026-10-09): `dotnet build docs/DocsSamples` builds every bundle including `stellar-admin.css`; Tailwind keeps the relative colour syntax intact. DocsSamples renders on the new bundle in light and dark (theme showcase screenshots against Nova): the token accent, Inter, the canvas tint and every component through the mapping. On a DocsSamples primary button, a `data-density="compact"` parent shrinks it from 32px to 25.6px, a nested `.dark` recolours it and a `data-sa-scope` with its own `--sa-accent` turns it green. `contrast.mjs` on the prototype (base, 8 presets, 12 random themes, seed 7, specimen and resource index): 0 text failures of 13,104, 2 faint parts of 5,904 (Nova's tabs list on its footer band 1.06; one extreme random sidebar item 1.09), as before the port. On DocsSamples (theme showcase, Table, DataGrid, Tabs; base, 8 presets, 3 random): 5 text failures of 16,656, all the destructive badge in dark mode (4.0–4.4), and 244 faint parts of 5,328 (sidebar, kbd, data grid card, segmented control, table rows, tabs list): unconverted components read through the mapping, inputs to phase 2 batch 1. Not run: tag helper tests (no C# changed).
+
+Checkpoint: review the default theme on the token bundle in DocsSamples, the mapping file and the checker. Next: phase 2, batch 1.
 
 ### Phase 2: convert components in batches
 
@@ -86,10 +93,11 @@ Batches by dependency, each a reviewable unit:
 
 For each component: tier 2 tokens and plain CSS in `components/<component>.css`; remove its rules from the old `components.css` and the theme files; replace emitted Tailwind hooks (`group/*`, `peer`, utility classes) with component classes, `:has()` or sibling selectors, updating the tag helpers and their tests; check DocsSamples and ComponentPlayground in the default theme and every preset, light and dark. Alert and status-like components get the status colours; anything needing new knobs is raised at the batch checkpoint rather than added silently.
 
-Checkpoint after each batch: screenshots and the contrast check across presets and random themes; tag helper tests green.
+Checkpoint after each batch: screenshots and the contrast check across the default, the eight prototype presets and random themes; tag helper tests green.
 
 ### Phase 3: switch over and remove the old machinery
 
+- Curated presets: choose two or three that differ clearly from the default and each other (proposed: warm tactile, dense, roomy pill), tune them in the builder against every converted component, and pass the contrast check. They ship as `presets/<name>.css` and populate `DashboardThemePreset`.
 - Dashboard: replace `DashboardTheme` with the preset API above; link the new files; add the Tailwind adapter to the Dashboard's build so its utilities follow the tokens.
 - Remove the mapping file, the old bundles, generators, coverage and visual-regression scripts listed under End state, and Tailwind from TagHelpers.
 - Samples: DocsSamples and ComponentPlayground get a preset picker (swaps the preset stylesheet) in place of the theme bundle picker. Update `DashboardThemeTests`.

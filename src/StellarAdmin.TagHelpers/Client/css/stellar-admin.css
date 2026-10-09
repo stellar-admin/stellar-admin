@@ -1,0 +1,15 @@
+/* StellarAdmin.TagHelpers: the token-driven bundle, built into wwwroot/stellar-admin.css by
+   scripts/build-theme-bundles.mjs. During the theme token migration it still compiles with Tailwind:
+   the foundation tokens drive the components that are not converted yet through shadcn-mapping.css,
+   over the Nova theme file's component styles. Converted components move to plain CSS, and in phase 3
+   this becomes a plain build with reset.css in place of preflight. */
+
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@import "./tokens.css";
+@import "./shadcn-mapping.css";
+@import "./shadcn-tailwind.css";
+@import "./anchors.css";
+@import "./components.css";
+@import "./themes/shadcn.nova.css";
+@custom-variant dark (&:is(.dark *));

@@ -3,7 +3,8 @@
 // per-theme entry (css/base.css + the theme file) is synthesized in a temporary directory;
 // there are no checked-in entry files. Generate upstream themes with
 // util/ThemeGenerator; author custom themes directly. Register each theme in
-// ClientOutput and util/theme-coverage/coverage.json.
+// ClientOutput and util/theme-coverage/coverage.json. It also builds the token-driven
+// ../wwwroot/stellar-admin.css from its checked-in entry, css/stellar-admin.css.
 //
 //   node ./scripts/build-theme-bundles.mjs
 
@@ -35,38 +36,44 @@ function buildTheme(theme) {
   // relative to this temporary directory, which is removed after all builds finish.
   const entry = resolve(entriesFolder, `${theme}.css`);
   writeFileSync(entry, `@import "../css/base.css";\n@import "../css/themes/${theme}.css";\n`);
+  return buildBundle(theme, entry, `../wwwroot/stellar-admin.${theme}.css`);
+}
 
+function buildBundle(name, entry, outputPath) {
   return new Promise((resolvePromise, rejectPromise) => {
     const child = spawn(
       process.platform === "win32" ? "npx.cmd" : "npx",
-      ["@tailwindcss/cli", "-i", entry, "-o", `../wwwroot/stellar-admin.${theme}.css`],
+      ["@tailwindcss/cli", "-i", entry, "-o", outputPath],
       { cwd: clientRoot, stdio: "inherit" },
     );
     child.on("error", rejectPromise);
     child.on("close", (code) => {
       if (code === 0) {
-        const output = resolve(clientRoot, `../wwwroot/stellar-admin.${theme}.css`);
+        const output = resolve(clientRoot, outputPath);
         if (!statSync(output, { throwIfNoEntry: false })?.size) {
           rejectPromise(
-            new Error(`theme-bundles: ${theme} produced an empty or missing stylesheet`),
+            new Error(`theme-bundles: ${name} produced an empty or missing stylesheet`),
           );
           return;
         }
         resolvePromise();
       } else {
-        rejectPromise(new Error(`theme-bundles: ${theme} failed with exit code ${code}`));
+        rejectPromise(new Error(`theme-bundles: ${name} failed with exit code ${code}`));
       }
     });
   });
 }
 
 try {
-  const results = await Promise.allSettled(
-    themes.map(async (theme) => {
+  const results = await Promise.allSettled([
+    ...themes.map(async (theme) => {
       await buildTheme(theme);
       console.log(`theme-bundles: ${theme} -> wwwroot/stellar-admin.${theme}.css`);
     }),
-  );
+    buildBundle("tokens", "css/stellar-admin.css", "../wwwroot/stellar-admin.css").then(() =>
+      console.log("theme-bundles: tokens -> wwwroot/stellar-admin.css"),
+    ),
+  ]);
   const failures = results.filter((result) => result.status === "rejected");
   if (failures.length)
     throw new AggregateError(

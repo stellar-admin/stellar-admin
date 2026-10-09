@@ -1,0 +1,20 @@
+/* StellarAdmin reset: the small base that replaces Tailwind's preflight once the tag helpers' CSS no
+   longer needs Tailwind (theme token migration, phase 3). Until then the bundles keep preflight and do
+   not import this file: sa.reset would sit above Tailwind's layers in any page whose own Tailwind
+   build declares them first, and its element rules would beat the old components. */
+
+@layer sa.reset {
+  *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+  html { font-family: var(--sa-font-sans); -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--sa-color-canvas);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-body);
+  }
+  button, input { font: inherit; color: inherit; background: transparent; }
+  button { cursor: pointer; }
+  a { color: inherit; text-decoration: inherit; }
+  table { border-collapse: collapse; }
+  svg { display: block; }
+}

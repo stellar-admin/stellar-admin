@@ -25,7 +25,8 @@
   function apply() {
     window.saLoadThemeFonts(theme);
     const url = new URL(stylesheet.href);
-    const pathname = `/_content/StellarAdmin.TagHelpers/stellar-admin.${theme}.css`;
+    // "tokens" is the token-driven bundle of the theme token migration.
+    const pathname = `/_content/StellarAdmin.TagHelpers/stellar-admin.${theme === "tokens" ? "" : `${theme}.`}css`;
     if (url.pathname !== pathname) {
       url.pathname = pathname;
       url.search = "";

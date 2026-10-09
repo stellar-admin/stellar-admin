@@ -1,7 +1,8 @@
-/* StellarAdmin token spec — concept, foundation (tiers 0 and 1).
+/* StellarAdmin foundation: knobs (tier 0) and foundation tokens (tier 1).
  *
- * The one source of theme values. Knobs (tier 0) generate the foundation tokens (tier 1); component
- * tokens (tier 2, components.css) default to tier 1; components read only tokens and never name a value.
+ * The one source of theme values. Knobs generate the foundation tokens; component tokens (tier 2)
+ * default to tier 1; components read only tokens and never name a value. The public names are
+ * documented in docs/design/tokens.md; anything starting --_ is internal.
  *
  *   Tier 0  knobs        --sa-accent, --sa-danger, --sa-neutral-*, --sa-radius, --sa-density, … and the
  *                        tier 1 tokens that need no formula (fonts, weights, label case, switches).
@@ -9,8 +10,9 @@
  *                          :root { --sa-accent: #0f766e; --sa-radius: 2px; --sa-density: 0.85; }
  *   Tier 1  foundation   --sa-color-*, --sa-text-*, --sa-radius-*, --sa-control-*, --sa-space-*,
  *                        --sa-focus-*, --sa-shadow-*: derived here. A theme may still set one directly.
- *   Tier 2  component    --sa-button-*, --sa-input-*, --sa-card-*, … (components.css). A theme sets one
- *                        only where a component should differ from what the foundation implies.
+ *   Tier 2  component    --sa-button-*, --sa-input-*, --sa-card-*, … declared on each component's
+ *                        selector. A theme sets one only where a component should differ from what the
+ *                        foundation implies.
  *   Tier 3  overrides    Raw .sa-* rules in sa.overrides. The escape hatch; every rule there is a sign
  *                        the vocabulary is missing something.
  *
@@ -25,7 +27,6 @@
  * and descendants inherit the resolved value. So formulas are declared on every element that can change
  * a knob: :root, a .dark scope, a [data-density] scope and a [data-sa-scope] (any element that sets its
  * own knobs, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
- * Tier 2 tokens are declared on the component's own selector, so they re-derive inside any scope.
  *
  * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It picks
  * between tier 2 tokens through a private --_* variable, so a theme can restyle both the default and
@@ -48,7 +49,7 @@
     --sa-accent-tint: 0.15;              /* 0–1: how much the accent tints hover, selection, highlight */
     --sa-surface-depth: 0.8;             /* 0–1: canvas vs card separation (0 = one flat surface) */
     --sa-nav-tint: 0.5;                  /* 0–1: sidebar from canvas to sunken */
-    --sa-line-strength: 1;               /* 0.5–2: dividers and control borders */
+    --sa-line-strength: 1;               /* 0.75–2: dividers and control borders */
 
     /* Shape and depth: one decision each, applied to every component */
     --sa-radius: 6px;                    /* controls; 9999px for pill controls */
