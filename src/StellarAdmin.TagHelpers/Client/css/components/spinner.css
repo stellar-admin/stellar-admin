@@ -1,0 +1,30 @@
+/* Spinner: the loading icon, turning. Its colour is the text colour; authors size it with size-*.
+   Replaces: .sa-spinner */
+
+@layer sa.tokens {
+  .sa-spinner {
+    --sa-spinner-size: var(--sa-control-icon);
+    --sa-spinner-duration: 1s;
+  }
+}
+
+@layer sa.components {
+  .sa-spinner {
+    flex-shrink: 0;
+    width: var(--sa-spinner-size);
+    height: var(--sa-spinner-size);
+    animation: sa-spinner-spin var(--sa-spinner-duration) linear infinite;
+  }
+  /* A spinner still has to show that something is happening, so reduced motion slows it down. */
+  @media (prefers-reduced-motion: reduce) {
+    .sa-spinner {
+      animation-duration: calc(var(--sa-spinner-duration) * 3);
+    }
+  }
+}
+
+@keyframes sa-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

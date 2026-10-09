@@ -1,0 +1,112 @@
+/* Alert: a bordered message box with an optional leading icon, title, description and action.
+   Replaces: .sa-alert, .sa-alert-variant-default, .sa-alert-variant-destructive, .sa-alert-title,
+   .sa-alert-description, .sa-alert-action */
+
+@layer sa.tokens {
+  .sa-alert {
+    --sa-alert-px: calc(2.5 * var(--sa-unit));
+    --sa-alert-py: calc(2 * var(--sa-unit));
+    --sa-alert-gap: calc(0.5 * var(--sa-unit));
+    --sa-alert-icon-gap: calc(2 * var(--sa-unit));
+    --sa-alert-pe: calc(18 * var(--sa-unit));                 /* room for an action */
+    --sa-alert-action-inset: calc(2 * var(--sa-unit));
+    --sa-alert-radius: var(--sa-radius-control);
+    --sa-alert-text: var(--sa-text-sm);
+    --sa-alert-leading: var(--sa-leading-ui);
+    --sa-alert-icon: var(--sa-control-icon);
+    --sa-alert-title-weight: var(--sa-weight-control);
+    --sa-alert-link-offset: 3px;
+
+    --sa-alert-bg: var(--sa-color-surface);
+    --sa-alert-fg: var(--sa-color-ink);
+    --sa-alert-border: var(--sa-color-line);
+    --sa-alert-description-fg: var(--sa-color-ink-muted);
+    --sa-alert-link-fg-hover: var(--sa-color-ink);
+    /* Danger: the danger tint over the surface, made opaque (danger-soft is translucent), so the text
+       is measured against a known colour. Danger text passes 4.5:1 on its tint in both modes. */
+    --sa-alert-danger-bg: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 6%, var(--sa-color-surface));
+    --sa-alert-danger-fg: var(--sa-color-danger-text);
+    --sa-alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 35%, var(--sa-color-surface));
+    --sa-alert-danger-description-fg: var(--sa-color-danger-text);
+  }
+  .dark .sa-alert {
+    --sa-alert-danger-bg: color-mix(in oklab, var(--sa-color-danger) 12%, var(--sa-color-surface));
+    --sa-alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 40%, var(--sa-color-surface));
+  }
+}
+
+@layer sa.components {
+  .sa-alert {
+    --_bg: var(--sa-alert-bg);
+    --_fg: var(--sa-alert-fg);
+    --_border: var(--sa-alert-border);
+    --_description-fg: var(--sa-alert-description-fg);
+    position: relative;
+    display: grid;
+    gap: var(--sa-alert-gap);
+    width: 100%;
+    padding: var(--sa-alert-py) var(--sa-alert-px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--sa-alert-radius);
+    background: var(--_bg);
+    color: var(--_fg);
+    font-size: var(--sa-alert-text);
+    line-height: var(--sa-alert-leading);
+    text-align: start;
+
+    &:has(> [data-slot="alert-action"]) {
+      padding-inline-end: var(--sa-alert-pe);
+    }
+    &:has(> svg) {
+      grid-template-columns: auto 1fr;
+      column-gap: var(--sa-alert-icon-gap);
+    }
+    & > svg {
+      grid-row: span 2;
+      translate: 0 calc((var(--sa-alert-leading) - var(--sa-alert-icon)) / 2);
+      color: currentColor;
+      &:not([class*="size-"]) {
+        width: var(--sa-alert-icon);
+        height: var(--sa-alert-icon);
+      }
+    }
+  }
+  .sa-alert-variant-destructive {
+    --_bg: var(--sa-alert-danger-bg);
+    --_fg: var(--sa-alert-danger-fg);
+    --_border: var(--sa-alert-danger-border);
+    --_description-fg: var(--sa-alert-danger-description-fg);
+  }
+  .sa-alert-title {
+    font-weight: var(--sa-alert-title-weight);
+    .sa-alert:has(> svg) > & {
+      grid-column-start: 2;
+    }
+  }
+  .sa-alert-description {
+    color: var(--_description-fg);
+    font-size: var(--sa-alert-text);
+    text-wrap: pretty;
+    & p:not(:last-child) {
+      margin-bottom: calc(4 * var(--sa-unit));
+    }
+    .sa-alert:has(> svg) > & {
+      grid-column-start: 2;
+    }
+  }
+  :is(.sa-alert-title, .sa-alert-description) a {
+    text-decoration: underline;
+    text-underline-offset: var(--sa-alert-link-offset);
+    &:hover {
+      color: var(--sa-alert-link-fg-hover);
+    }
+  }
+  .sa-alert-variant-destructive :is(.sa-alert-title, .sa-alert-description) a:hover {
+    color: inherit;
+  }
+  .sa-alert-action {
+    position: absolute;
+    top: var(--sa-alert-action-inset);
+    right: var(--sa-alert-action-inset);
+  }
+}

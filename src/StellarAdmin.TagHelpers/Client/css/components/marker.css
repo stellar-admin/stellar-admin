@@ -1,0 +1,85 @@
+/* Marker: a muted inline note in a transcript or list (a status line, a date separator), as a div,
+   a link or a button.
+   Replaces: .sa-marker, .sa-marker-variant-separator, .sa-marker-variant-border, .sa-marker-icon,
+   .sa-marker-content */
+
+@layer sa.tokens {
+  .sa-marker {
+    --sa-marker-gap: calc(2 * var(--sa-unit));
+    --sa-marker-min-h: calc(4 * var(--sa-unit));
+    --sa-marker-text: var(--sa-text-sm);
+    --sa-marker-fg: var(--sa-color-ink-muted);
+    --sa-marker-fg-hover: var(--sa-color-ink);
+    --sa-marker-icon: var(--sa-control-icon);
+    --sa-marker-line: var(--sa-color-line);                    /* the separator rules and the border */
+    --sa-marker-pb: calc(2 * var(--sa-unit));                  /* above the border */
+    --sa-marker-link-offset: 3px;
+  }
+}
+
+@layer sa.components {
+  .sa-marker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sa-marker-gap);
+    width: 100%;
+    min-height: var(--sa-marker-min-h);
+    color: var(--sa-marker-fg);
+    font-size: var(--sa-marker-text);
+    line-height: var(--sa-leading-ui);
+    text-align: start;
+
+    & svg:not([class*="size-"]) {
+      width: var(--sa-marker-icon);
+      height: var(--sa-marker-icon);
+    }
+    &:is(a) {
+      text-decoration: underline;
+      text-underline-offset: var(--sa-marker-link-offset);
+    }
+    &:is(a, button):hover {
+      color: var(--sa-marker-fg-hover);
+    }
+    &:is(a, button):focus-visible {
+      border-radius: var(--sa-radius-control-sm);
+      outline: none;
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+  .sa-marker-variant-separator {
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      min-width: 0;
+      height: var(--sa-border-width);
+      background: var(--sa-marker-line);
+    }
+    &::before { margin-inline-end: var(--sa-unit); }
+    &::after { margin-inline-start: var(--sa-unit); }
+  }
+  .sa-marker-variant-border {
+    padding-bottom: var(--sa-marker-pb);
+    border-bottom: var(--sa-border-width) solid var(--sa-marker-line);
+  }
+  .sa-marker-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: var(--sa-marker-icon);
+    height: var(--sa-marker-icon);
+  }
+  .sa-marker-content {
+    min-width: 0;
+    overflow-wrap: break-word;
+    & > a {
+      text-decoration: underline;
+      text-underline-offset: var(--sa-marker-link-offset);
+      &:hover { color: var(--sa-marker-fg-hover); }
+    }
+    .sa-marker-variant-separator > & {
+      flex: none;
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,144 @@
+/* Avatar: a round image or initials, with an optional status badge, alone or in an overlapping group.
+   Replaces: .sa-avatar, .sa-avatar-image, .sa-avatar-fallback, .sa-avatar-badge, .sa-avatar-group,
+   .sa-avatar-group-count */
+
+@layer sa.tokens {
+  .sa-avatar,
+  .sa-avatar-group {
+    --sa-avatar-size: calc(8 * var(--sa-unit));
+    --sa-avatar-size-sm: calc(6 * var(--sa-unit));
+    --sa-avatar-size-lg: calc(10 * var(--sa-unit));
+    --sa-avatar-radius: var(--sa-radius-round);
+    --sa-avatar-text: var(--sa-text-sm);
+    --sa-avatar-text-sm: var(--sa-text-xs);
+    --sa-avatar-bg: var(--sa-color-surface-sunken);
+    --sa-avatar-fg: var(--sa-color-ink-muted);
+    --sa-avatar-edge: var(--sa-color-line);                 /* a hairline over the image */
+    --sa-avatar-ring: var(--sa-color-surface);              /* separates overlapping avatars and the badge */
+    --sa-avatar-ring-width: 2px;
+    --sa-avatar-badge-size: calc(2.5 * var(--sa-unit));
+    --sa-avatar-badge-size-sm: calc(2 * var(--sa-unit));
+    --sa-avatar-badge-size-lg: calc(3 * var(--sa-unit));
+    --sa-avatar-badge-icon: calc(2 * var(--sa-unit));
+    --sa-avatar-badge-bg: var(--sa-color-accent-fill);
+    --sa-avatar-badge-fg: var(--sa-color-on-accent);
+    --sa-avatar-group-overlap: calc(2 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-avatar {
+    --_size: var(--sa-avatar-size);
+    --_text: var(--sa-avatar-text);
+    --_badge: var(--sa-avatar-badge-size);
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    width: var(--_size);
+    height: var(--_size);
+    border-radius: var(--sa-avatar-radius);
+    user-select: none;
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: var(--sa-border-width) solid var(--sa-avatar-edge);
+      border-radius: inherit;
+      mix-blend-mode: darken;
+      pointer-events: none;
+    }
+    &[data-size="sm"] {
+      --_size: var(--sa-avatar-size-sm);
+      --_text: var(--sa-avatar-text-sm);
+      --_badge: var(--sa-avatar-badge-size-sm);
+    }
+    &[data-size="lg"] {
+      --_size: var(--sa-avatar-size-lg);
+      --_badge: var(--sa-avatar-badge-size-lg);
+    }
+  }
+  .dark .sa-avatar::after {
+    mix-blend-mode: lighten;
+  }
+  .sa-avatar-image {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+  .sa-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--sa-avatar-bg);
+    color: var(--sa-avatar-fg);
+    font-size: var(--_text);
+    line-height: 1;
+  }
+  .sa-avatar-badge {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--_badge);
+    height: var(--_badge);
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-avatar-badge-bg);
+    box-shadow: 0 0 0 var(--sa-avatar-ring-width) var(--sa-avatar-ring);
+    color: var(--sa-avatar-badge-fg);
+    user-select: none;
+    & > svg {
+      width: var(--sa-avatar-badge-icon);
+      height: var(--sa-avatar-badge-icon);
+    }
+    [data-size="sm"] > & > svg {
+      display: none;
+    }
+  }
+
+  .sa-avatar-group {
+    display: flex;
+    & > :not(:last-child) {
+      margin-inline-end: calc(-1 * var(--sa-avatar-group-overlap));
+    }
+    & > [data-slot="avatar"] {
+      box-shadow: 0 0 0 var(--sa-avatar-ring-width) var(--sa-avatar-ring);
+    }
+  }
+  .sa-avatar-group-count {
+    --_size: var(--sa-avatar-size);
+    --_icon: var(--sa-control-icon);
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--_size);
+    height: var(--_size);
+    border-radius: var(--sa-avatar-radius);
+    background: var(--sa-avatar-bg);
+    box-shadow: 0 0 0 var(--sa-avatar-ring-width) var(--sa-avatar-ring);
+    color: var(--sa-avatar-fg);
+    font-size: var(--sa-avatar-text);
+    line-height: 1;
+    & > svg {
+      width: var(--_icon);
+      height: var(--_icon);
+    }
+    .sa-avatar-group:has([data-size="sm"]) > & {
+      --_size: var(--sa-avatar-size-sm);
+      --_icon: 0.75rem;
+    }
+    .sa-avatar-group:has([data-size="lg"]) > & {
+      --_size: var(--sa-avatar-size-lg);
+      --_icon: 1.25rem;
+    }
+  }
+}

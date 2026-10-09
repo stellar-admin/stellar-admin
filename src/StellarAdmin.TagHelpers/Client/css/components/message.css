@@ -1,0 +1,89 @@
+/* Message: one entry in a conversation: an avatar beside a column of bubbles, with an optional header
+   and footer, aligned to the start or the end.
+   Replaces: .sa-message, .sa-message-avatar, .sa-message-content, .sa-message-header,
+   .sa-message-footer, .sa-message-group */
+
+@layer sa.tokens {
+  .sa-message,
+  .sa-message-group {
+    --sa-message-gap: calc(2 * var(--sa-unit));
+    --sa-message-text: var(--sa-text-sm);
+    --sa-message-content-gap: calc(2.5 * var(--sa-unit));
+    --sa-message-avatar-min-w: calc(8 * var(--sa-unit));
+    --sa-message-avatar-radius: var(--sa-radius-round);
+    --sa-message-avatar-bg: var(--sa-color-surface-sunken);
+    --sa-message-avatar-offset: calc(8 * var(--sa-unit));     /* lifts the avatar to the bubble above a footer */
+    --sa-message-header-px: calc(3 * var(--sa-unit));         /* lines the text up with the bubble's */
+    --sa-message-header-text: var(--sa-text-xs);
+    --sa-message-header-weight: var(--sa-weight-control);
+    --sa-message-header-fg: var(--sa-color-ink-muted);
+    --sa-message-group-gap: calc(2 * var(--sa-unit));
+  }
+}
+
+@layer sa.components {
+  .sa-message {
+    position: relative;
+    display: flex;
+    gap: var(--sa-message-gap);
+    width: 100%;
+    min-width: 0;
+    font-size: var(--sa-message-text);
+    line-height: var(--sa-leading-ui);
+    &[data-align="end"] {
+      flex-direction: row-reverse;
+    }
+  }
+  .sa-message-avatar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    align-self: flex-end;
+    justify-content: center;
+    width: fit-content;
+    min-width: var(--sa-message-avatar-min-w);
+    overflow: hidden;
+    border-radius: var(--sa-message-avatar-radius);
+    background: var(--sa-message-avatar-bg);
+    .sa-message:has([data-slot="message-footer"]) > & {
+      translate: 0 calc(-1 * var(--sa-message-avatar-offset));
+    }
+  }
+  .sa-message-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-message-content-gap);
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
+    .sa-message[data-align="end"] > & > [data-slot] {
+      align-self: flex-end;
+    }
+  }
+  .sa-message-header,
+  .sa-message-footer {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: var(--sa-message-header-px);
+    color: var(--sa-message-header-fg);
+    font-size: var(--sa-message-header-text);
+    font-weight: var(--sa-message-header-weight);
+    line-height: calc(var(--sa-message-header-text) * 1.3333);
+    .sa-message:has([data-variant="ghost"]) & {
+      padding-inline: 0;
+    }
+  }
+  .sa-message-footer {
+    .sa-message[data-align="end"] & {
+      justify-content: flex-end;
+    }
+  }
+  .sa-message-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sa-message-group-gap);
+    min-width: 0;
+  }
+}

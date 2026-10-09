@@ -1,0 +1,119 @@
+/* Badge: a short label on a tag-shaped fill (<sa-badge>, also as a link).
+   Replaces: .sa-badge, .sa-badge-variant-default, .sa-badge-variant-secondary,
+   .sa-badge-variant-outline, .sa-badge-variant-destructive, .sa-badge-variant-ghost,
+   .sa-badge-variant-link */
+
+@layer sa.tokens {
+  .sa-badge {
+    --sa-badge-h: calc(5 * var(--sa-unit));
+    --sa-badge-px: calc(2 * var(--sa-unit));
+    --sa-badge-gap: var(--sa-unit);
+    --sa-badge-radius: var(--sa-radius-tag);
+    --sa-badge-text: var(--sa-text-xs);
+    --sa-badge-weight: var(--sa-weight-control);
+    --sa-badge-icon: 0.75rem;
+
+    --sa-badge-primary-bg: var(--sa-color-accent-fill);
+    --sa-badge-primary-bg-hover: var(--sa-color-accent-hover);
+    --sa-badge-primary-fg: var(--sa-color-on-accent);
+    /* A darker edge of whatever the fill is, so an author's own fill colour keeps a matching edge. */
+    --sa-badge-primary-border: oklch(0.2 0 0 / calc(var(--sa-outlines) * 0.2));
+    --sa-badge-secondary-bg: var(--sa-color-surface-sunken);
+    --sa-badge-secondary-bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%);
+    --sa-badge-secondary-fg: var(--sa-color-ink);
+    --sa-badge-secondary-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
+    --sa-badge-outline-fg: var(--sa-color-ink);
+    --sa-badge-outline-border: var(--sa-color-line);
+    --sa-badge-outline-bg-hover: var(--sa-color-hover);
+    --sa-badge-danger-bg: var(--sa-color-danger-soft);
+    --sa-badge-danger-bg-hover: var(--sa-color-danger-soft-hover);
+    --sa-badge-danger-fg: var(--sa-color-danger-text);
+    --sa-badge-danger-border: color-mix(in oklab, var(--sa-color-danger) calc(var(--sa-outlines) * 45%), transparent);
+    --sa-badge-ghost-fg: var(--sa-color-ink);
+    --sa-badge-ghost-bg-hover: var(--sa-color-hover);
+    --sa-badge-link-fg: var(--sa-color-accent-text);
+  }
+}
+
+@layer sa.components {
+  .sa-badge {
+    --_bg: transparent;
+    --_bg-hover: var(--_bg);
+    --_fg: inherit;
+    --_border: transparent;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-badge-gap);
+    width: fit-content;
+    height: var(--sa-badge-h);
+    padding-inline: var(--sa-badge-px);
+    overflow: hidden;
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--sa-badge-radius);
+    background: var(--_bg);
+    color: var(--_fg);
+    font-size: var(--sa-badge-text);
+    font-weight: var(--sa-badge-weight);
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    outline: none;
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      color var(--sa-motion-fast) var(--sa-motion-ease);
+
+    & > svg {
+      flex-shrink: 0;
+      width: var(--sa-badge-icon);
+      height: var(--sa-badge-icon);
+      pointer-events: none;
+    }
+    &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(var(--sa-badge-px) - 0.125rem); }
+    &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(var(--sa-badge-px) - 0.125rem); }
+    &:is(a):hover { background-color: var(--_bg-hover); }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &[aria-invalid="true"] {
+      border-color: var(--sa-color-danger);
+      &:focus-visible { box-shadow: var(--sa-invalid-focus-shadow); }
+    }
+  }
+  .sa-badge-variant-default {
+    --_bg: var(--sa-badge-primary-bg);
+    --_bg-hover: var(--sa-badge-primary-bg-hover);
+    --_fg: var(--sa-badge-primary-fg);
+    --_border: var(--sa-badge-primary-border);
+  }
+  .sa-badge-variant-secondary {
+    --_bg: var(--sa-badge-secondary-bg);
+    --_bg-hover: var(--sa-badge-secondary-bg-hover);
+    --_fg: var(--sa-badge-secondary-fg);
+    --_border: var(--sa-badge-secondary-border);
+  }
+  .sa-badge-variant-outline {
+    --_bg-hover: var(--sa-badge-outline-bg-hover);
+    --_fg: var(--sa-badge-outline-fg);
+    --_border: var(--sa-badge-outline-border);
+  }
+  .sa-badge-variant-destructive {
+    --_bg: var(--sa-badge-danger-bg);
+    --_bg-hover: var(--sa-badge-danger-bg-hover);
+    --_fg: var(--sa-badge-danger-fg);
+    --_border: var(--sa-badge-danger-border);
+    --sa-focus-border: var(--sa-color-danger);
+    --sa-focus-shadow: var(--sa-invalid-focus-shadow);
+  }
+  .sa-badge-variant-ghost {
+    --_fg: var(--sa-badge-ghost-fg);
+    &:hover { background-color: var(--sa-badge-ghost-bg-hover); }
+  }
+  .sa-badge-variant-link {
+    --_fg: var(--sa-badge-link-fg);
+    text-underline-offset: 4px;
+    &:hover { text-decoration: underline; }
+  }
+}

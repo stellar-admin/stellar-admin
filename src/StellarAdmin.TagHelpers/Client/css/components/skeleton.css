@@ -1,0 +1,28 @@
+/* Skeleton: a pulsing placeholder block, sized by the author.
+   Replaces: .sa-skeleton */
+
+@layer sa.tokens {
+  .sa-skeleton {
+    --sa-skeleton-bg: color-mix(in oklab, var(--sa-color-ink) 8%, transparent);   /* a step from whatever it sits on */
+    --sa-skeleton-radius: var(--sa-radius-control-sm);
+  }
+}
+
+@layer sa.components {
+  .sa-skeleton {
+    border-radius: var(--sa-skeleton-radius);
+    background: var(--sa-skeleton-bg);
+    animation: sa-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-skeleton {
+      animation: none;
+    }
+  }
+}
+
+@keyframes sa-skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}

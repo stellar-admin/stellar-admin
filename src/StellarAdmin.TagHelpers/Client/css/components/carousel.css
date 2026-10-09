@@ -1,0 +1,117 @@
+/* Carousel: a scroll-snapping row (or column) of items, with previous and next buttons (sa-button)
+   beside it and optional indicator dots below. sel-carousel sets data-ready and builds the dots.
+   Replaces: .sa-carousel, .sa-carousel-content, .sa-carousel-item, .sa-carousel-previous,
+   .sa-carousel-next, .sa-carousel-indicators, .sa-carousel-indicator */
+
+@layer sa.tokens {
+  .sa-carousel {
+    --sa-carousel-gap: calc(4 * var(--sa-unit));             /* --carousel-spacing on the root still wins */
+    --sa-carousel-button-offset: 3rem;                         /* buttons sit this far outside the content */
+    --sa-carousel-button-radius: var(--sa-radius-round);
+    --sa-carousel-indicators-gap: var(--sa-unit);
+    --sa-carousel-indicators-pt: calc(3 * var(--sa-unit));
+    --sa-carousel-indicator-size: calc(6 * var(--sa-unit));   /* the hit area */
+    --sa-carousel-indicator-mark: calc(2 * var(--sa-unit));   /* the dot */
+    --sa-carousel-indicator-bg: color-mix(in oklab, var(--sa-color-ink-muted) 40%, transparent);
+    --sa-carousel-indicator-current-bg: var(--sa-color-ink);
+  }
+}
+
+@layer sa.components {
+  .sa-carousel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    &:not([data-ready]) > :is(.sa-carousel-previous, .sa-carousel-next, .sa-carousel-indicators) {
+      visibility: hidden;
+    }
+    &[data-ready]:has(> .sa-carousel-previous):has(> .sa-carousel-next) > .sa-carousel-content {
+      scrollbar-width: none;
+    }
+  }
+  .sa-carousel-content {
+    display: flex;
+    grid-area: 1 / 1;
+    gap: var(--carousel-spacing, var(--sa-carousel-gap));
+    min-width: 0;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    &:focus-visible {
+      outline: var(--sa-focus-ring-width) solid var(--sa-focus-ring-color);
+      outline-offset: 4px;
+    }
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior-y: contain;
+    }
+  }
+  .sa-carousel-item {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: 1px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* The buttons are sa-button: placed with translate, so the button's pressed transform still applies. */
+  .sa-button:is(.sa-carousel-previous, .sa-carousel-next) {
+    --_radius: var(--sa-carousel-button-radius);
+    position: absolute;
+    grid-area: 1 / 1;
+    top: 50%;
+    translate: 0 -50%;
+    touch-action: manipulation;
+    &[data-orientation="vertical"] {
+      top: auto;
+      left: 50%;
+      translate: -50% 0;
+      rotate: 90deg;
+    }
+    &:dir(rtl):not([data-orientation="vertical"]) > svg {
+      transform: rotate(180deg);
+    }
+  }
+  .sa-button.sa-carousel-previous {
+    &[data-orientation="horizontal"] { inset-inline-start: calc(-1 * var(--sa-carousel-button-offset)); }
+    &[data-orientation="vertical"] { top: calc(-1 * var(--sa-carousel-button-offset)); }
+  }
+  .sa-button.sa-carousel-next {
+    &[data-orientation="horizontal"] { inset-inline-end: calc(-1 * var(--sa-carousel-button-offset)); }
+    &[data-orientation="vertical"] { bottom: calc(-1 * var(--sa-carousel-button-offset)); }
+  }
+
+  .sa-carousel-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: 2 / 1;
+    justify-content: center;
+    gap: var(--sa-carousel-indicators-gap);
+    padding-top: var(--sa-carousel-indicators-pt);
+  }
+  .sa-carousel-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-carousel-indicator-size);
+    height: var(--sa-carousel-indicator-size);
+    border-radius: var(--sa-radius-round);
+    outline: none;
+    &::before {
+      content: "";
+      width: var(--sa-carousel-indicator-mark);
+      height: var(--sa-carousel-indicator-mark);
+      border-radius: var(--sa-radius-round);
+      background: var(--sa-carousel-indicator-bg);
+      transition: background-color var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+    &[aria-current="true"]::before {
+      background: var(--sa-carousel-indicator-current-bg);
+    }
+    &:focus-visible {
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+}

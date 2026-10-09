@@ -1,0 +1,57 @@
+/* Progress: a thin track with a filled indicator, and an optional label and value above it.
+   Replaces: .sa-progress, .sa-progress-root, .sa-progress-track, .sa-progress-indicator,
+   .sa-progress-label, .sa-progress-value */
+
+@layer sa.tokens {
+  .sa-progress-root {
+    --sa-progress-gap: calc(3 * var(--sa-unit));
+    --sa-progress-h: var(--sa-unit);
+    --sa-progress-radius: var(--sa-radius-tag);
+    --sa-progress-track-bg: color-mix(in oklab, var(--sa-color-ink) 10%, transparent);   /* a step from whatever it sits on */
+    --sa-progress-indicator-bg: var(--sa-color-accent-fill);
+    --sa-progress-label-text: var(--sa-text-sm);
+    --sa-progress-label-weight: var(--sa-weight-control);
+    --sa-progress-value-text: var(--sa-text-sm);
+    --sa-progress-value-fg: var(--sa-color-ink-muted);
+  }
+}
+
+@layer sa.components {
+  .sa-progress-root {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sa-progress-gap);
+  }
+  .sa-progress-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--sa-progress-h);
+    overflow-x: hidden;
+    border-radius: var(--sa-progress-radius);
+    background: var(--sa-progress-track-bg);
+  }
+  .sa-progress-indicator {
+    height: 100%;
+    background: var(--sa-progress-indicator-bg);
+    transition: width var(--sa-motion-fast) var(--sa-motion-ease);
+  }
+  .sa-progress-label {
+    font-size: var(--sa-progress-label-text);
+    font-weight: var(--sa-progress-label-weight);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-progress-value {
+    margin-inline-start: auto;
+    color: var(--sa-progress-value-fg);
+    font-size: var(--sa-progress-value-text);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--sa-leading-ui);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-progress-indicator {
+      transition-duration: 0s;
+    }
+  }
+}
