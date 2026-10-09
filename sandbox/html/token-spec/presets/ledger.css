@@ -20,13 +20,15 @@
     --sa-label-transform: uppercase;
     --sa-label-tracking: 0.07em;
     --sa-footer-fill: 0;
-    --sa-col-head-label: 1;
-    --sa-col-head-fill: 1;
-    --sa-col-head-case: var(--sa-label-transform);
+    --sa-column-head-label: 1;
+    --sa-column-head-fill: 1;
+    --sa-column-head-case: var(--sa-label-transform);
     --sa-relief: 2;
-    --sa-danger-fill: 1;
+    --sa-solid-destructive: 1;
     --sa-link-decoration: underline;
     --sa-focus-width: 3px;
     --sa-focus-color: color-mix(in oklab, var(--sa-color-accent) 35%, transparent);
+    --sa-surface-depth: 0.6;
+    --sa-label-text: var(--sa-text-xs);
   }
 }

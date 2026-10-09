@@ -19,16 +19,18 @@
     --sa-label-transform: uppercase;
     --sa-label-tracking: 0.07em;
     --sa-footer-fill: 0;
-    --sa-col-head-label: 1;
-    --sa-col-head-fill: 1;
-    --sa-col-head-case: var(--sa-label-transform);
+    --sa-column-head-label: 1;
+    --sa-column-head-fill: 1;
+    --sa-column-head-case: var(--sa-label-transform);
     --sa-relief: 1;
     --sa-press-offset: 0px;
-    --sa-danger-fill: 1;
-    --sa-secondary-fill: 0;
+    --sa-solid-destructive: 1;
+    --sa-filled-secondary: 0;
     --sa-link-decoration: underline;
     --sa-focus-width: 2px;
     --sa-focus-offset: 1px;
     --sa-focus-color: var(--sa-color-accent);
+    --sa-surface-depth: 0.6;
+    --sa-label-text: var(--sa-text-xs);
   }
 }

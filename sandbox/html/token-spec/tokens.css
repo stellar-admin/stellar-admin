@@ -38,27 +38,27 @@
   /* --- Knobs, with the base theme's values ---------------------------------------------------- */
   :root {
     /* Colour */
-    --sa-accent: oklch(0.55 0.18 262);   /* brand colour: primary buttons, focus, bold highlights */
+    --sa-accent: oklch(0.5 0.16 258);    /* brand colour: primary buttons, focus, bold highlights */
     --sa-danger: oklch(0.58 0.22 27);
     --sa-success: oklch(0.6 0.15 150);   /* status colours: toast icons (later alerts, status badges) */
     --sa-warning: oklch(0.72 0.16 70);
     --sa-info: oklch(0.6 0.14 240);
-    --sa-neutral-hue: 262;               /* greys lean toward this hue … */
-    --sa-neutral-chroma: 0.008;          /* … by this much (0 = pure grey) */
-    --sa-accent-tint: 0.35;              /* 0–1: how much the accent tints hover, selection, highlight */
-    --sa-surface-depth: 0.6;             /* 0–1: canvas vs card separation (0 = one flat surface) */
+    --sa-neutral-hue: 255;               /* greys lean toward this hue … */
+    --sa-neutral-chroma: 0.006;          /* … by this much (0 = pure grey) */
+    --sa-accent-tint: 0.15;              /* 0–1: how much the accent tints hover, selection, highlight */
+    --sa-surface-depth: 0.8;             /* 0–1: canvas vs card separation (0 = one flat surface) */
     --sa-nav-tint: 0.5;                  /* 0–1: sidebar from canvas to sunken */
     --sa-line-strength: 1;               /* 0.5–2: dividers and control borders */
 
     /* Shape and depth: one decision each, applied to every component */
-    --sa-radius: 0.5rem;                 /* controls; 9999px for pill controls */
-    --sa-pills: 1;                       /* 0 or 1: tags (badges, chips, the switch) are pills, or follow --sa-radius */
-    --sa-outlines: 0;                    /* 0 or 1: filled parts draw an outline too (buttons, badges, chips,
+    --sa-radius: 6px;                    /* controls; 9999px for pill controls */
+    --sa-pills: 0;                       /* 0 or 1: tags (badges, chips, the switch) are pills, or follow --sa-radius */
+    --sa-outlines: 1;                    /* 0 or 1: filled parts draw an outline too (buttons, badges, chips,
                                             the switch track); 0 leaves outlines to outline-style parts */
-    --sa-relief: 0;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
+    --sa-relief: 1;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
                                             bottom edge, a hover lift, a pressed state and recessed fields) */
     --sa-stroke: 1px;
-    --sa-elevation: 1;                   /* 0 = flat, 1 = soft, 2+ = floating */
+    --sa-elevation: 0.7;                 /* 0 = flat, 1 = soft, 2+ = floating */
 
     /* Space and type */
     --sa-density: 1;                     /* 0.75 dense … 1.25 roomy; spacing only, not type */
@@ -76,23 +76,23 @@
     --sa-weight-heading: 600;
     --sa-leading-body: 1.5;
 
-    /* Section labels: menu labels, sidebar group labels (and column heads, see --sa-col-head-label) */
+    /* Section labels: menu labels, sidebar group labels (and column heads, see --sa-column-head-label) */
     --sa-label-font: inherit;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-label-text: calc(0.71875rem * var(--sa-type-scale));   /* 11.5px, between the 2xs and xs steps */
     --sa-label-weight: 500;
     --sa-label-transform: none;
     --sa-label-tracking: 0em;            /* a length, so switches can scale it */
 
     /* Structural switches: 0 or 1 (some blend in between), read by tier 2 */
-    --sa-footer-fill: 1;                 /* card footer: tinted band */
+    --sa-footer-fill: 0;                 /* card footer: tinted band */
     --sa-footer-rule: 1;                 /* card footer: divider above it */
-    --sa-col-head-label: 0;              /* column heads take the section label role */
-    --sa-col-head-fill: 0;               /* column heads sit on a sunken band */
-    --sa-col-head-case: none;            /* keyword: switches cannot scale it */
-    --sa-col-head-font: inherit;         /* keyword too: e.g. var(--sa-font-mono) */
-    --sa-current-fill: 0;                /* current page: 0 outline … 1 solid accent */
-    --sa-danger-fill: 0;                 /* destructive button: 0 soft tint … 1 solid */
-    --sa-secondary-fill: 1;              /* secondary button: 0 bordered surface … 1 sunken fill */
+    --sa-column-head-label: 0;           /* column heads take the section label role */
+    --sa-column-head-fill: 1;            /* column heads sit on a sunken band */
+    --sa-column-head-case: none;         /* keyword: switches cannot scale it */
+    --sa-column-head-font: inherit;      /* keyword too: e.g. var(--sa-font-mono) */
+    --sa-current-page-fill: 0;           /* current page: 0 outline … 1 solid accent */
+    --sa-solid-destructive: 0;           /* destructive button: 0 soft tint … 1 solid */
+    --sa-filled-secondary: 1;            /* secondary button: 0 bordered surface … 1 sunken fill */
     --sa-link-decoration: none;          /* keyword: link buttons at rest (underline or none) */
 
     /* Fixed tokens */
@@ -142,7 +142,7 @@
     --sa-space-overlay: calc(1 * var(--sa-unit));
     --sa-space-item-x: calc(1.5 * var(--sa-unit));
     --sa-space-item-y: calc(1 * var(--sa-unit));
-    --sa-item-gap: calc(1.5 * var(--sa-unit));
+    --sa-space-item-gap: calc(1.5 * var(--sa-unit));
 
     --sa-border-width: var(--sa-stroke);
     --sa-focus-ring-width: var(--sa-focus-width);
@@ -154,24 +154,26 @@
     --_h: var(--sa-neutral-hue);
     --_c: var(--sa-neutral-chroma);
     --_d: var(--sa-surface-depth);
-    --_s: var(--sa-line-strength);
+    --_s: max(0.75, var(--sa-line-strength));  /* below 0.75 lines stop separating anything */
     --_e: var(--sa-elevation);
 
     --sa-color-canvas: oklch(calc(1 - 0.035 * var(--_d)) calc(var(--_c) * 0.6) var(--_h));
     --sa-color-surface: oklch(0.999 calc(var(--_c) * 0.2) var(--_h));
     --sa-color-surface-subtle: oklch(0.982 calc(var(--_c) * 0.6) var(--_h));
-    --sa-color-surface-sunken: oklch(0.962 var(--_c) var(--_h));
+    --sa-color-surface-sunken: oklch(calc(0.96 - 0.035 * var(--_d)) var(--_c) var(--_h));   /* always 0.04 below the page */
     --sa-color-surface-raised: var(--sa-color-surface);
     --sa-color-field: var(--sa-color-surface);
     --sa-color-field-disabled: color-mix(in oklab, var(--sa-color-surface-sunken) 70%, transparent);
 
     --sa-color-ink: oklch(0.18 calc(var(--_c) * 2) var(--_h));
-    --sa-color-ink-muted: oklch(0.52 calc(var(--_c) * 1.5) var(--_h));
+    --sa-color-ink-muted: oklch(calc(0.5 - 0.02 * var(--_d)) calc(var(--_c) * 1.5) var(--_h));   /* 4.5:1 on the sunken band too */
     --sa-color-ink-placeholder: oklch(0.62 var(--_c) var(--_h));
 
-    --sa-color-line: oklch(calc(1 - 0.08 * var(--_s)) var(--_c) var(--_h));
-    --sa-color-line-control: oklch(calc(1 - 0.12 * var(--_s)) var(--_c) var(--_h));
-    --sa-color-line-control-hover: oklch(calc(1 - 0.2 * var(--_s)) var(--_c) var(--_h));
+    /* Lines darken with the page, so surface depth cannot fade them into it. */
+    --sa-color-line: oklch(min(1 - 0.08 * var(--_s), 1 - 0.035 * var(--_d) - 0.052 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-line-control: oklch(min(1 - 0.12 * var(--_s), 1 - 0.035 * var(--_d) - 0.092 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-line-control-hover: oklch(min(1 - 0.2 * var(--_s), 1 - 0.035 * var(--_d) - 0.172 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-nav-line: oklch(from var(--sa-color-nav-surface) calc(l - 0.06 * var(--_s)) c h);   /* a step below the sidebar */
 
     --sa-color-accent: var(--sa-accent);
     --sa-color-accent-text: oklch(from var(--sa-accent) min(l, 0.5) min(c, 0.2) h);   /* 4.5:1 on light surfaces, whatever the hue */
@@ -180,8 +182,8 @@
     --sa-color-success: var(--sa-success);
     --sa-color-warning: var(--sa-warning);
     --sa-color-info: var(--sa-info);
-    --sa-color-danger-soft: color-mix(in oklab, var(--sa-color-danger) 10%, transparent);
-    --sa-color-danger-soft-hover: color-mix(in oklab, var(--sa-color-danger) 18%, transparent);
+    --sa-color-danger-soft: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 10%, transparent);   /* a light danger would give no tint */
+    --sa-color-danger-soft-hover: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 18%, transparent);
     --sa-invalid-ring-color: color-mix(in oklab, var(--sa-color-danger) 22%, transparent);
 
     --_shadow-a: var(--_e);
@@ -207,6 +209,7 @@
     --sa-color-line: oklch(0.9 var(--_c) var(--_h) / calc(0.11 * var(--_s)));
     --sa-color-line-control: oklch(0.9 var(--_c) var(--_h) / calc(0.16 * var(--_s)));
     --sa-color-line-control-hover: oklch(0.9 var(--_c) var(--_h) / calc(0.26 * var(--_s)));
+    --sa-color-nav-line: var(--sa-color-line);
 
     --sa-color-accent: var(--sa-accent-dark, oklch(from var(--sa-accent) max(l, 0.72) c h));
     --sa-color-accent-text: oklch(from var(--sa-color-accent) max(l, 0.75) c h);
@@ -256,8 +259,6 @@
       color-mix(in oklab, var(--sa-color-ink) 6%, var(--sa-color-nav-surface)));
     --sa-color-on-nav-highlight: var(--sa-color-ink);
     --sa-color-nav-accent: var(--sa-color-accent-fill);
-    --sa-color-nav-line: var(--sa-color-line);
-    --sa-container-edge: var(--sa-color-line);
 
     --sa-focus-border: var(--sa-color-accent);
     --sa-focus-ring-color: var(--sa-focus-color, color-mix(in oklab, var(--sa-color-accent) 40%, transparent));

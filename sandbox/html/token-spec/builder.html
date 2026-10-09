@@ -81,29 +81,29 @@ const PILL = 26; // radius slider position that means 9999px
 // and derive from other knobs in the stylesheet ("auto").
 const CONTROLS = [
   ["Colour", [
-    { k: "--sa-accent", label: "Accent", type: "color", def: "oklch(0.55 0.18 262)" },
+    { k: "--sa-accent", label: "Accent", type: "color", def: "oklch(0.5 0.16 258)" },
     { k: "--sa-accent-dark", label: "Accent (dark)", type: "color", optional: true, def: "#7aa2ff" },
     { k: "--sa-danger", label: "Danger", type: "color", def: "oklch(0.58 0.22 27)" },
     { k: "--sa-success", label: "Success", type: "color", def: "oklch(0.6 0.15 150)" },
     { k: "--sa-warning", label: "Warning", type: "color", def: "oklch(0.72 0.16 70)" },
     { k: "--sa-info", label: "Info", type: "color", def: "oklch(0.6 0.14 240)" },
-    { k: "--sa-neutral-hue", label: "Neutral hue", type: "range", min: 0, max: 360, step: 1, def: "262" },
-    { k: "--sa-neutral-chroma", label: "Neutral tint", type: "range", min: 0, max: 0.04, step: 0.001, def: "0.008" },
+    { k: "--sa-neutral-hue", label: "Neutral hue", type: "range", min: 0, max: 360, step: 1, def: "255" },
+    { k: "--sa-neutral-chroma", label: "Neutral tint", type: "range", min: 0, max: 0.04, step: 0.001, def: "0.006" },
     { k: "--sa-neutral-hue-dark", label: "Neutral hue (dark)", type: "range", min: 0, max: 360, step: 1, optional: true, def: "262" },
     { k: "--sa-neutral-chroma-dark", label: "Neutral tint (dark)", type: "range", min: 0, max: 0.04, step: 0.001, optional: true, def: "0.008" },
-    { k: "--sa-accent-tint", label: "Accent in washes", type: "range", min: 0, max: 1, step: 0.05, def: "0.35" },
-    { k: "--sa-surface-depth", label: "Surface depth", type: "range", min: 0, max: 1, step: 0.05, def: "0.6" },
+    { k: "--sa-accent-tint", label: "Accent in washes", type: "range", min: 0, max: 1, step: 0.05, def: "0.15" },
+    { k: "--sa-surface-depth", label: "Surface depth", type: "range", min: 0, max: 1, step: 0.05, def: "0.8" },
     { k: "--sa-nav-tint", label: "Sidebar tint", type: "range", min: 0, max: 1, step: 0.05, def: "0.5" },
-    { k: "--sa-line-strength", label: "Line strength", type: "range", min: 0.4, max: 2, step: 0.05, def: "1" },
+    { k: "--sa-line-strength", label: "Line strength", type: "range", min: 0.75, max: 2, step: 0.05, def: "1" },
   ]],
   ["Shape and depth", [
-    { k: "--sa-radius", label: "Radius", type: "radius", def: "0.5rem" },
+    { k: "--sa-radius", label: "Radius", type: "radius", def: "6px" },
     { k: "--sa-radius-outer", label: "Container radius", type: "range", unit: "px", min: 0, max: 32, step: 1, optional: true, def: "12px" },
-    { k: "--sa-pills", label: "Tags", type: "select", options: { Pills: "1", "Follow radius": "0" }, def: "1" },
-    { k: "--sa-outlines", label: "Outlines", type: "select", options: { "Outline parts only": "0", "Everything": "1" }, def: "0" },
-    { k: "--sa-relief", label: "Relief", type: "select", options: { Flat: "0", Raised: "1", Tactile: "2" }, def: "0" },
+    { k: "--sa-pills", label: "Tags", type: "select", options: { Pills: "1", "Follow radius": "0" }, def: "0" },
+    { k: "--sa-outlines", label: "Outlines", type: "select", options: { "Outline parts only": "0", "Everything": "1" }, def: "1" },
+    { k: "--sa-relief", label: "Relief", type: "select", options: { Flat: "0", Raised: "1", Tactile: "2" }, def: "1" },
     { k: "--sa-stroke", label: "Stroke", type: "range", unit: "px", min: 0, max: 3, step: 0.5, def: "1px" },
-    { k: "--sa-elevation", label: "Elevation", type: "range", min: 0, max: 3, step: 0.1, def: "1" },
+    { k: "--sa-elevation", label: "Elevation", type: "range", min: 0, max: 3, step: 0.1, def: "0.7" },
   ]],
   ["Space and type", [
     { k: "--sa-density", label: "Density", type: "range", min: 0.7, max: 1.4, step: 0.01, def: "1" },
@@ -116,7 +116,7 @@ const CONTROLS = [
     { k: "--sa-label-tracking", label: "Label tracking", type: "range", unit: "em", min: 0, max: 0.15, step: 0.01, def: "0em" },
   ]],
   ["Structure", [
-    { id: "footer", label: "Card footer", type: "multi", def: "Band", options: {
+    { id: "footer", label: "Card footer", type: "multi", def: "Rule only", options: {
       Band: { "--sa-footer-fill": "1", "--sa-footer-rule": "1" },
       "Rule only": { "--sa-footer-fill": "0", "--sa-footer-rule": "1" },
       "Tint only": { "--sa-footer-fill": "1", "--sa-footer-rule": "0" },
@@ -127,18 +127,18 @@ const CONTROLS = [
       "Rule only": { "--sa-dialog-footer-fill": "0", "--sa-dialog-footer-rule": "1" },
       "Tint only": { "--sa-dialog-footer-fill": "1", "--sa-dialog-footer-rule": "0" },
       Flush: { "--sa-dialog-footer-fill": "0", "--sa-dialog-footer-rule": "0" } } },
-    { id: "colhead", label: "Column heads", type: "multi", def: "Plain", options: {
-      Plain: { "--sa-col-head-label": "0", "--sa-col-head-fill": "0", "--sa-col-head-case": "none" },
-      "Section label": { "--sa-col-head-label": "1", "--sa-col-head-fill": "0", "--sa-col-head-case": "var(--sa-label-transform)" },
-      Band: { "--sa-col-head-label": "0", "--sa-col-head-fill": "1", "--sa-col-head-case": "none" },
-      "Label on band": { "--sa-col-head-label": "1", "--sa-col-head-fill": "1", "--sa-col-head-case": "var(--sa-label-transform)" } } },
-    { k: "--sa-col-head-font", label: "Column head font", type: "select", options: { "Body font": "inherit", Monospace: "var(--sa-font-mono)" }, def: "inherit" },
-    { k: "--sa-current-fill", label: "Current page", type: "select", options: { Outline: "0", Soft: "0.15", Solid: "1" }, def: "0" },
+    { id: "colhead", label: "Column heads", type: "multi", def: "Band", options: {
+      Plain: { "--sa-column-head-label": "0", "--sa-column-head-fill": "0", "--sa-column-head-case": "none" },
+      "Section label": { "--sa-column-head-label": "1", "--sa-column-head-fill": "0", "--sa-column-head-case": "var(--sa-label-transform)" },
+      Band: { "--sa-column-head-label": "0", "--sa-column-head-fill": "1", "--sa-column-head-case": "none" },
+      "Label on band": { "--sa-column-head-label": "1", "--sa-column-head-fill": "1", "--sa-column-head-case": "var(--sa-label-transform)" } } },
+    { k: "--sa-column-head-font", label: "Column head font", type: "select", options: { "Body font": "inherit", Monospace: "var(--sa-font-mono)" }, def: "inherit" },
+    { k: "--sa-current-page-fill", label: "Current page", type: "select", options: { Outline: "0", Soft: "0.15", Solid: "1" }, def: "0" },
   ]],
   ["Buttons", [
     { k: "--sa-press-offset", label: "Press nudge", type: "range", unit: "px", min: 0, max: 2, step: 0.5, def: "1px" },
-    { k: "--sa-danger-fill", label: "Destructive", type: "select", options: { Soft: "0", Solid: "1" }, def: "0" },
-    { k: "--sa-secondary-fill", label: "Secondary", type: "select", options: { "Neutral fill": "1", "Bordered surface": "0" }, def: "1" },
+    { k: "--sa-solid-destructive", label: "Destructive", type: "select", options: { Soft: "0", Solid: "1" }, def: "0" },
+    { k: "--sa-filled-secondary", label: "Secondary", type: "select", options: { "Neutral fill": "1", "Bordered surface": "0" }, def: "1" },
     { k: "--sa-link-decoration", label: "Link buttons", type: "select", options: { "No underline": "none", Underline: "underline" }, def: "none" },
   ]],
   ["Focus", [
@@ -282,10 +282,10 @@ document.getElementById("random").addEventListener("click", () => {
     "--sa-label-tracking": upper ? "0.07em" : "normal",
     "--sa-focus-width": pick(["2px", "3px"]),
     "--sa-focus-offset": pick(["0px", "0px", "2px"]),
-    "--sa-current-fill": pick(["0", "0.15", "1"]),
+    "--sa-current-page-fill": pick(["0", "0.15", "1"]),
     "--sa-relief": pick(["0", "0", "1", "2"]),
-    "--sa-danger-fill": pick(["0", "1"]),
-    "--sa-secondary-fill": pick(["0", "1"]),
+    "--sa-solid-destructive": pick(["0", "1"]),
+    "--sa-filled-secondary": pick(["0", "1"]),
   };
   for (const c of ALL.filter(x => x.type === "multi")) Object.assign(values, pick(Object.values(c.options)));
   presetSel.value = "base";

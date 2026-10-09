@@ -17,10 +17,12 @@
     --sa-label-transform: uppercase;
     --sa-label-tracking: 0.1em;
     --sa-footer-fill: 0;
-    --sa-col-head-label: 1;
-    --sa-col-head-fill: 1;
-    --sa-col-head-case: var(--sa-label-transform);
-    --sa-col-head-font: var(--sa-font-mono);
-    --sa-current-fill: 1;
+    --sa-column-head-label: 1;
+    --sa-column-head-fill: 1;
+    --sa-column-head-case: var(--sa-label-transform);
+    --sa-column-head-font: var(--sa-font-mono);
+    --sa-current-page-fill: 1;
+    --sa-relief: 0;
+    --sa-label-text: var(--sa-text-xs);
   }
 }

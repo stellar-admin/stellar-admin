@@ -15,6 +15,11 @@
     --sa-font-sans: "Figtree", system-ui, sans-serif;
     --sa-footer-fill: 0;
     --sa-footer-rule: 0;
-    --sa-current-fill: 0.15;
+    --sa-current-page-fill: 0.15;
+    --sa-pills: 1;
+    --sa-outlines: 0;
+    --sa-relief: 0;
+    --sa-label-text: var(--sa-text-xs);
+    --sa-column-head-fill: 0;
   }
 }

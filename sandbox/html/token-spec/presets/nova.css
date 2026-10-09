@@ -12,5 +12,12 @@
     --sa-elevation: 1;
     --sa-font-sans: "Geist", system-ui, sans-serif;
     --sa-weight-heading: 500;
+    --sa-neutral-hue: 262;
+    --sa-pills: 1;
+    --sa-outlines: 0;
+    --sa-relief: 0;
+    --sa-label-text: var(--sa-text-xs);
+    --sa-footer-fill: 1;
+    --sa-column-head-fill: 0;
   }
 }
