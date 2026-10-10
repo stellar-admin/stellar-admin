@@ -21,12 +21,6 @@ public static class StellarAdminBuilderExtensions
                     typeof(LowercaseParameterTransformer)
             );
             builder.AddTagHelpers();
-            builder
-                .Services.AddOptions<DashboardThemeOptions>()
-                .Validate(
-                    options => Enum.IsDefined(options.Preset),
-                    "The Dashboard theme preset must be one of the shipped presets."
-                );
 
             var dashboard = new StellarAdminDashboardBuilder(
                 builder.Services,

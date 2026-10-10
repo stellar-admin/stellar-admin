@@ -9,22 +9,6 @@ namespace StellarAdmin.Dashboard.Tests;
 public class StellarAdminDashboardBuilderExtensionsTests
 {
     [Test]
-    public async Task ConfigureTheme_WithUnknownPreset_RejectsConfiguration()
-    {
-        // Arrange
-        var services = new ServiceCollection();
-        var sut = services.AddStellarAdmin().AddDashboard();
-        sut.ConfigureTheme(theme => theme.Preset = (DashboardThemePreset)int.MaxValue);
-        using var provider = services.BuildServiceProvider();
-
-        // Act
-        Action act = () => _ = provider.GetRequiredService<IOptions<DashboardThemeOptions>>().Value;
-
-        // Assert
-        await Assert.That(act).Throws<OptionsValidationException>();
-    }
-
-    [Test]
     [Arguments("")]
     [Arguments(" ")]
     public async Task AddResource_WithBlankPluralLabel_RejectsConfiguration(string value)

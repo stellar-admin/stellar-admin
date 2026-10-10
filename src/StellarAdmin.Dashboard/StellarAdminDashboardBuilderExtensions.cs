@@ -201,19 +201,6 @@ public static partial class StellarAdminDashboardBuilderExtensions
 
             return builder;
         }
-
-        /// <summary>
-        ///     Configures the Dashboard theme: its preset, an optional knob stylesheet and its suggested fonts.
-        /// </summary>
-        public StellarAdminDashboardBuilder ConfigureTheme(Action<DashboardThemeBuilder> configure)
-        {
-            ArgumentNullException.ThrowIfNull(builder);
-            ArgumentNullException.ThrowIfNull(configure);
-
-            configure(new(builder.Services));
-
-            return builder;
-        }
     }
 
     private static string DefaultSlug<TResource>() =>
