@@ -100,8 +100,8 @@ internal static class SliderMarkRenderer
     }
 
     // A mark sits where its thumb's centre would. Edge-aligned thumbs travel a track shortened by
-    // their own size, so the centre is offset by half a thumb; the client measures the thumb into
-    // --sa-slider-thumb-size, and 1rem approximates it before hydration.
+    // their own size, so the centre is offset by half a thumb. slider.css sets the thumb size as
+    // --_slider-thumb (the client's measurement once it has one); 1rem stands in without the CSS.
     private static string PositionStyle(SliderContext slider, int value)
     {
         var fraction = (double)(value - slider.Min) / (slider.Max - slider.Min);
@@ -113,6 +113,6 @@ internal static class SliderMarkRenderer
 
         var factor = fraction.ToString("0.######", CultureInfo.InvariantCulture);
 
-        return $"{side}: calc({factor} * (100% - var(--sa-slider-thumb-size, 1rem)) + var(--sa-slider-thumb-size, 1rem) / 2);";
+        return $"{side}: calc({factor} * (100% - var(--_slider-thumb, 1rem)) + var(--_slider-thumb, 1rem) / 2);";
     }
 }

@@ -9,12 +9,12 @@ namespace StellarAdmin.Dashboard.Tests;
 public class StellarAdminDashboardBuilderExtensionsTests
 {
     [Test]
-    public async Task ConfigureTheme_WithUnknownTheme_RejectsConfiguration()
+    public async Task ConfigureTheme_WithUnknownPreset_RejectsConfiguration()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddDashboard();
-        sut.ConfigureTheme(theme => theme.Name = (DashboardTheme)int.MaxValue);
+        sut.ConfigureTheme(theme => theme.Preset = (DashboardThemePreset)int.MaxValue);
         using var provider = services.BuildServiceProvider();
 
         // Act

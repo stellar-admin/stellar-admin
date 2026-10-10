@@ -1,0 +1,74 @@
+/* Structure no theme touches: the few plain classes the tag helpers emit for anchor positioning, hidden
+   text and icon size, and the field's child widths. The rules are in sa.components, so an author's own
+   classes (sa.overrides, or Tailwind's utilities) still win. */
+
+@layer sa.reset {
+  /* The UA's popover defaults (centred, canvas colours); each overlay sets its own inset, margin and
+     colours. */
+  [popover] {
+    inset: 0;
+    margin: auto;
+    background-color: canvas;
+    color: canvastext;
+  }
+}
+
+@layer sa.components {
+  /* Anchor positioning: anchored-* mirrors the PositionArea enum (TagHelpers/PositionArea.cs). */
+  .anchored-top { position-area: top; }
+  .anchored-top-center { position-area: top center; }
+  .anchored-top-span-left { position-area: top span-left; }
+  .anchored-top-span-right { position-area: top span-right; }
+  .anchored-top-left { position-area: top left; }
+  .anchored-top-right { position-area: top right; }
+  .anchored-bottom { position-area: bottom; }
+  .anchored-bottom-center { position-area: bottom center; }
+  .anchored-bottom-span-left { position-area: bottom span-left; }
+  .anchored-bottom-span-right { position-area: bottom span-right; }
+  .anchored-bottom-left { position-area: bottom left; }
+  .anchored-bottom-right { position-area: bottom right; }
+  .anchored-left { position-area: left; }
+  .anchored-left-center { position-area: left center; }
+  .anchored-left-span-top { position-area: left span-top; }
+  .anchored-left-span-bottom { position-area: left span-bottom; }
+  .anchored-right { position-area: right; }
+  .anchored-right-center { position-area: right center; }
+  .anchored-right-span-top { position-area: right span-top; }
+  .anchored-right-span-bottom { position-area: right span-bottom; }
+
+  /* The gap between an anchored panel and its trigger, from the data-anchor-side attribute the
+     overlay tag helpers emit. [popover] out-ranks the panels' own margin: 0. */
+  [popover][data-anchor-side="top"] { margin-bottom: calc(2 * var(--sa-unit)); }
+  [popover][data-anchor-side="bottom"] { margin-top: calc(2 * var(--sa-unit)); }
+  [popover][data-anchor-side="left"] { margin-inline-end: calc(2 * var(--sa-unit)); }
+  [popover][data-anchor-side="right"] { margin-inline-start: calc(2 * var(--sa-unit)); }
+
+  /* Text for screen readers only. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Icons the tag helpers size in markup; components size an icon only when its class names no
+     size (svg:not([class*="size-"])). */
+  .size-4 {
+    width: calc(4 * var(--sa-unit));
+    height: calc(4 * var(--sa-unit));
+  }
+
+  /* A vertical or responsive field stretches its children, over their own widths (a toggle group's
+     fit-content); a responsive field stops once its field group is wide enough for a row. */
+  .sa-field.sa-field:is([data-orientation="vertical"], [data-orientation="responsive"]) > :not(.sr-only) {
+    width: 100%;
+  }
+  @container field-group (width >= 28rem) {
+    .sa-field.sa-field[data-orientation="responsive"] > :not(.sr-only) { width: auto; }
+  }
+}

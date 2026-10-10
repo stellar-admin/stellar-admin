@@ -111,7 +111,7 @@ cat > "$APP/Pages/Shared/_Layout.cshtml" <<'RAZOR'
 <head>
     <meta charset="utf-8" />
     <title>Smoke</title>
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.shadcn.nova.css" />
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" />
     <link rel="stylesheet" href="/_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css" />
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js"></script>
 </head>
@@ -183,7 +183,8 @@ assert_asset() {
   fi
   echo "ok $path ($(wc -c <"$file") bytes)"
 }
-assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.shadcn.nova.css "--color-"
+assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.css "--sa-color-"
+assert_asset /_content/StellarAdmin.TagHelpers/presets/ledger.css "--sa-accent"
 assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.js "function"
 assert_asset /_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css "sa-resource-form"
 assert_asset /_content/StellarAdmin.Dashboard/htmx.min.js "htmx"

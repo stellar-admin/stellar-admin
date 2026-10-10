@@ -11,14 +11,14 @@ namespace StellarAdmin.TagHelpers;
 /// </summary>
 internal static class DropdownMenuInternals
 {
-    // The shared popover-surface styling (positioning, overflow, open/close transition —
-    // including the justified divergences from shadcn documented there) lives in
-    // Client/css/components.css under .sa-dropdown-menu-content / .sa-dropdown-menu-sub-content.
+    // The shared popover-surface styling (positioning, overflow, open/close transition) lives in
+    // Client/css/components/dropdown-menu.css under .sa-dropdown-menu-content /
+    // .sa-dropdown-menu-sub-content.
 
     /// <summary>
     ///     Best-effort <c>data-side</c> from the requested placement. On viewport-collision
-    ///     flip (<c>try-flip-all</c>) the rendered side can differ — acceptable, since the
-    ///     directional slide animation is not used (see the surface rules in Client/css/components.css).
+    ///     flip (<c>position-try-fallbacks</c>) the rendered side can differ — acceptable, since
+    ///     the directional slide animation is not used (see Client/css/components/dropdown-menu.css).
     /// </summary>
     public static string GetSideDataAttribute(PositionArea area) =>
         area switch

@@ -39,7 +39,6 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-badge",
-                "group/badge",
                 BadgeVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()
             )

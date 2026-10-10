@@ -44,7 +44,7 @@ builder
 
         dashboard.ConfigureTheme(theme =>
         {
-            theme.Name = DashboardTheme.Parallax;
+            theme.Preset = DashboardThemePreset.Default;
             theme.IncludeSuggestedFonts = true;
         });
 

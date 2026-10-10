@@ -52,7 +52,6 @@ public class BubbleTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-bubble",
-                "group/bubble",
                 BubbleVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()
             )

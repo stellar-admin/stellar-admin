@@ -1,0 +1,70 @@
+/* StellarAdmin Tailwind adapter (wwwroot/stellar-admin.tailwind.css), for an app that writes Tailwind
+   utilities beside the components. In the app's Tailwind entry, declare the layer order first, so the
+   components sit above Tailwind's preflight and below its utilities (an author's classes win), and
+   import the adapter after Tailwind, so its theme values replace Tailwind's defaults:
+
+     @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
+     @import "tailwindcss";
+     @import "<path>/stellar-admin.tailwind.css";
+
+   It maps Tailwind's theme onto the tokens: spacing follows --sa-unit (density), and the small text
+   sizes, the fonts, the radius steps and the colours (by their shadcn names: bg-primary,
+   text-muted-foreground, border-border, …) follow the theme. The variables are inline, so utilities
+   read the tokens where they are used and follow .dark, [data-density] and [data-sa-scope]
+   sections. stellar-admin.css is still linked as usual; this file adds no rules. */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --spacing: var(--sa-unit);
+  --text-xs: var(--sa-text-xs);
+  --text-sm: var(--sa-text-sm);
+  --text-base: var(--sa-text-base);
+  --font-sans: var(--sa-font-sans);
+  --font-mono: var(--sa-font-mono);
+  --font-heading: var(--sa-font-heading);
+
+  /* The steps follow the token roles rather than adding to one radius, so pill controls
+     (--sa-pills: 1) keep containers' corners capped. */
+  --radius-sm: var(--sa-radius-inner);
+  --radius-md: var(--sa-radius-control-sm);
+  --radius-lg: var(--sa-radius-control);
+  --radius-xl: var(--sa-radius-container);
+  --radius-2xl: calc(var(--sa-radius-container) + 4px);
+  --radius-3xl: calc(var(--sa-radius-container) + 8px);
+  --radius-4xl: calc(var(--sa-radius-container) + 12px);
+
+  --color-background: var(--sa-color-canvas);
+  --color-foreground: var(--sa-color-ink);
+  --color-card: var(--sa-color-surface);
+  --color-card-foreground: var(--sa-color-ink);
+  --color-popover: var(--sa-color-surface-raised);
+  --color-popover-foreground: var(--sa-color-ink);
+  --color-primary: var(--sa-color-accent-fill);
+  --color-primary-foreground: var(--sa-color-on-accent);
+  --color-secondary: var(--sa-color-surface-sunken);
+  --color-secondary-foreground: var(--sa-color-ink);
+  --color-muted: var(--sa-color-surface-sunken);
+  --color-muted-foreground: var(--sa-color-ink-muted);
+  --color-accent: var(--sa-color-hover);
+  --color-accent-foreground: var(--sa-color-ink);
+  --color-destructive: var(--sa-color-danger-text);
+  --color-border: var(--sa-color-line);
+  --color-input: var(--sa-color-line-control);
+  --color-ring: var(--sa-color-accent);
+  --color-sidebar: var(--sa-color-nav-surface);
+  --color-sidebar-foreground: var(--sa-color-nav-ink);
+  --color-sidebar-primary: var(--sa-color-nav-accent);
+  --color-sidebar-primary-foreground: var(--sa-color-on-accent);
+  --color-sidebar-accent: var(--sa-color-nav-highlight);
+  --color-sidebar-accent-foreground: var(--sa-color-on-nav-highlight);
+  --color-sidebar-border: var(--sa-color-nav-line);
+  --color-sidebar-ring: var(--sa-color-accent);
+
+  /* Charts have no tokens yet: shadcn's defaults. */
+  --color-chart-1: oklch(0.809 0.105 251.813);
+  --color-chart-2: oklch(0.623 0.214 259.815);
+  --color-chart-3: oklch(0.546 0.245 262.881);
+  --color-chart-4: oklch(0.488 0.243 264.376);
+  --color-chart-5: oklch(0.424 0.199 265.638);
+}

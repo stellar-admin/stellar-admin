@@ -46,11 +46,7 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-sidebar-wrapper",
-                "group/sidebar-wrapper",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-sidebar-wrapper", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

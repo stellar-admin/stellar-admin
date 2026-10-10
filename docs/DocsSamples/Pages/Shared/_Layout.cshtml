@@ -1,7 +1,7 @@
 ﻿@{
     var theme = Context.Request.Query["theme"].ToString();
-    string[] themes = ["aurora", "concourse", "ice", "ledger", "shadcn.luma", "shadcn.lyra", "shadcn.maia", "meridian", "shadcn.mira", "shadcn.nova", "observatory", "parallax", "shadcn.rhea", "shadcn.sera", "shadcn.vega", "tokens"];
-    if (!themes.Contains(theme)) { theme = "observatory"; }
+    string[] themes = ["default", "ledger", "ops", "soft"];
+    if (!themes.Contains(theme)) { theme = "default"; }
     var dark = Context.Request.Query["mode"] == "dark";
 }
 <!DOCTYPE html>
@@ -13,7 +13,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <script src="/js/theme-fonts.js" asp-append-version="true"></script>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
-    <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@(theme == "tokens" ? "/_content/StellarAdmin.TagHelpers/stellar-admin.css" : $"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme}.css")" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    @* The theme picker's preset; the default theme has none. *@
+    @if (theme == "default")
+    {
+        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet"/>
+    }
+    else
+    {
+        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/_content/StellarAdmin.TagHelpers/presets/{theme}.css")" asp-append-version="true"/>
+    }
     <script src="/js/appearance.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Styles", false)
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>

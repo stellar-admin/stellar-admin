@@ -47,7 +47,6 @@ internal static class ButtonRenderingHelper
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-button",
-                "group/button",
                 ButtonVariantClasses[variant],
                 ButtonSizeClasses[size],
                 output.GetUserSuppliedClass()

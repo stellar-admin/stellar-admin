@@ -367,7 +367,7 @@ if (command === "capture") {
     (theme && !/^(?:shadcn\.)?[a-z][a-z0-9-]*$/.test(theme)) ||
     (mode && !["light", "dark"].includes(mode))
   ) {
-    console.error("Use a lowercase theme name (for example shadcn.nova) and --mode light|dark");
+    console.error("Use a lowercase preset name (for example ledger) and --mode light|dark");
     process.exit(2);
   }
   await capture(

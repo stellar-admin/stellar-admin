@@ -41,29 +41,15 @@
             <sa-dropdown-menu>
                 <sa-dropdown-menu-trigger id="docs-sample-theme-trigger" variant="ButtonVariant.Outline"
                                           class="w-full justify-between">
-                    <span id="docs-sample-theme-label">Observatory</span>
+                    <span id="docs-sample-theme-label">Default</span>
                     <sa-icon name="chevrons-up-down" aria-hidden="true"/>
                 </sa-dropdown-menu-trigger>
                 <sa-dropdown-menu-content class="w-56">
-                    <sa-dropdown-menu-radio-group id="docs-sample-theme-options" value="observatory" aria-label="Theme">
-                        @foreach (var group in new Dictionary<string, string[]>
-                                      {
-                                          [""] = ["aurora", "concourse", "ice", "ledger", "meridian", "observatory", "parallax"],
-                                          ["Shadcn Themes"] = ["shadcn.luma", "shadcn.lyra", "shadcn.maia", "shadcn.mira", "shadcn.nova", "shadcn.rhea", "shadcn.sera", "shadcn.vega"],
-                                          ["Token Foundation"] = ["tokens"]
-                                      })
+                    <sa-dropdown-menu-radio-group id="docs-sample-theme-options" value="default" aria-label="Theme">
+                        @foreach (var theme in new[] { "default", "ledger", "ops", "soft" })
                         {
-                            if (!string.IsNullOrEmpty(group.Key))
-                            {
-                                <sa-dropdown-menu-separator/>
-                                <sa-dropdown-menu-label>@group.Key</sa-dropdown-menu-label>
-                            }
-                            foreach (var theme in group.Value)
-                            {
-                                var label = theme.StartsWith("shadcn.") ? theme[7..] : theme;
-                                <sa-dropdown-menu-radio-item value="@theme"
-                                                             close-on-click="true">@(char.ToUpperInvariant(label[0]) + label[1..])</sa-dropdown-menu-radio-item>
-                            }
+                            <sa-dropdown-menu-radio-item value="@theme"
+                                                         close-on-click="true">@(char.ToUpperInvariant(theme[0]) + theme[1..])</sa-dropdown-menu-radio-item>
                         }
                     </sa-dropdown-menu-radio-group>
                 </sa-dropdown-menu-content>

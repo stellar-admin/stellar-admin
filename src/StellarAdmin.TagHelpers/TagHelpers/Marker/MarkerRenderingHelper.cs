@@ -19,7 +19,6 @@ internal static class MarkerRenderingHelper
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-marker",
-                "group/marker",
                 MarkerVariantClasses[variant],
                 output.GetUserSuppliedClass()
             )

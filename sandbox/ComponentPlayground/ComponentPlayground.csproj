@@ -11,9 +11,9 @@
     <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
   <!--
-    Two-bundle mode: the layout links the prebuilt _content/StellarAdmin.TagHelpers bundle (vega), and
-    this Tailwind build covers only the app's own markup — importing theme-tokens.css so
-    token-named utilities (bg-primary, …) resolve to the bundle's runtime variables.
+    The layout links _content/StellarAdmin.TagHelpers/stellar-admin.css (and a preset), and this
+    Tailwind build covers only the app's own markup, importing the StellarAdmin Tailwind adapter so
+    token-named utilities (bg-primary, …) resolve to the tokens.
   -->
   <Target Name="Tailwind" BeforeTargets="Build">
     <Exec

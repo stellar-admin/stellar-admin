@@ -16,12 +16,7 @@ public class QuestionnaireTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "questionnaire-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-questionnaire-title",
-                "sa-font-heading",
-                "font-heading",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-questionnaire-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

@@ -203,7 +203,7 @@ public static partial class StellarAdminDashboardBuilderExtensions
         }
 
         /// <summary>
-        ///     Configures the Dashboard theme and its suggested fonts.
+        ///     Configures the Dashboard theme: its preset, an optional knob stylesheet and its suggested fonts.
         /// </summary>
         public StellarAdminDashboardBuilder ConfigureTheme(Action<DashboardThemeBuilder> configure)
         {

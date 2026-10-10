@@ -54,8 +54,8 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
         /*
          * Render the native checkbox that acts as the switch track. A switch is a
          * checkbox under the hood so the value posts back and model-binds like any
-         * other checkbox, and the on/off visuals are driven purely by CSS (:checked /
-         * peer-checked) — no JavaScript required.
+         * other checkbox, and the on/off visuals are driven purely by CSS (:checked) — no
+         * JavaScript required.
          */
         var inputOutput = new TagHelperOutput(
             "input",
@@ -102,7 +102,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
             inputOutput.Attributes.SetAttribute("data-slot", "switch-input");
         }
 
-        string?[] classNames = ["sa-switch", "peer"];
+        string?[] classNames = ["sa-switch"];
 
         inputOutput.Attributes.SetAttribute(
             "class",
@@ -125,7 +125,7 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-switch-wrapper", "group/switch", ClassNames?.Control)
+            JoinCssClasses("sa-switch-wrapper", ClassNames?.Control)
         );
 
         var thumb = new TagBuilder("span");

@@ -141,7 +141,7 @@ public class SliderMarksTagHelperTests
     [Arguments(SliderThumbAlignment.Center, "left: 25%;")]
     [Arguments(
         SliderThumbAlignment.Edge,
-        "left: calc(0.25 * (100% - var(--sa-slider-thumb-size, 1rem)) + var(--sa-slider-thumb-size, 1rem) / 2);"
+        "left: calc(0.25 * (100% - var(--_slider-thumb, 1rem)) + var(--_slider-thumb, 1rem) / 2);"
     )]
     public async Task ProcessAsync_PositionsMarksAtThumbCentres(
         SliderThumbAlignment alignment,

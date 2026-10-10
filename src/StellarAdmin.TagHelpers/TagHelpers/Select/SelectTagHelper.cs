@@ -129,12 +129,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-native-select-wrapper",
-                "group/native-select",
-                ClassNames?.Control,
-                userSuppliedClass
-            )
+            JoinCssClasses("sa-native-select-wrapper", ClassNames?.Control, userSuppliedClass)
         );
 
         return FieldLayout.Stacked;

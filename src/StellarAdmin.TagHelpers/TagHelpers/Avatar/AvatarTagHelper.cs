@@ -49,7 +49,7 @@ public class AvatarTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveAvatarSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-avatar", "group/avatar", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-avatar", output.GetUserSuppliedClass())
         );
 
         if (Source != null)

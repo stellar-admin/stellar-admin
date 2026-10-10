@@ -67,7 +67,6 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-sidebar-menu-button",
-                "peer/menu-button group/menu-button",
                 SizeClasses[effectiveSize],
                 VariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

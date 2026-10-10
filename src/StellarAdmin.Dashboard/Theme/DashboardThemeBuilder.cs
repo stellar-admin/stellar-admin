@@ -10,7 +10,7 @@ public sealed class DashboardThemeBuilder
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     Whether to load the selected theme's suggested web fonts.
+    ///     Whether to load the preset's suggested web fonts.
     /// </summary>
     public bool IncludeSuggestedFonts
     {
@@ -21,11 +21,19 @@ public sealed class DashboardThemeBuilder
     }
 
     /// <summary>
-    ///     The theme used by Dashboard pages.
+    ///     The theme preset used by Dashboard pages.
     /// </summary>
-    public DashboardTheme Name
+    public DashboardThemePreset Preset
     {
-        set => _services.Configure<DashboardThemeOptions>(options => options.Name = value);
+        set => _services.Configure<DashboardThemeOptions>(options => options.Preset = value);
+    }
+
+    /// <summary>
+    ///     An optional stylesheet of theme knobs, such as <c>~/css/theme.css</c>, loaded after the preset.
+    /// </summary>
+    public string? Stylesheet
+    {
+        set => _services.Configure<DashboardThemeOptions>(options => options.Stylesheet = value);
     }
 
     internal DashboardThemeBuilder(IServiceCollection services) => _services = services;

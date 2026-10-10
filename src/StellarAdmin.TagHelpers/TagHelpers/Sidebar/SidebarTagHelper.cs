@@ -46,7 +46,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
         var isFloatingOrInset = effectiveVariant is SidebarVariant.Floating or SidebarVariant.Inset;
 
         // Capture before the wrapper's own class is set below, otherwise the container
-        // would inherit "sa-sidebar group peer" instead of the author's class.
+        // would inherit "sa-sidebar" instead of the author's class.
         var userSuppliedClass = output.GetUserSuppliedClass();
 
         output.TagName = "div";
@@ -83,7 +83,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
             "data-collapsible-config",
             effectiveCollapsible.GetDataAttributeText()
         );
-        output.Attributes.SetAttribute("class", "sa-sidebar group peer");
+        output.Attributes.SetAttribute("class", "sa-sidebar");
 
         /* Backdrop — mobile only. Fades in behind the drawer and closes it on click.
            A <button> so the native command API fires; targets the parent sel-sidebar. */

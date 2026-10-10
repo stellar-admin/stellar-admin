@@ -44,7 +44,6 @@ public class AlertDialogTagHelper : StellarAdminTagHelperBase
             JoinCssClasses(
                 "sa-alert-dialog-content",
                 // Establishes the named group the header/title/media tokens react to.
-                "group/alert-dialog-content",
                 output.GetUserSuppliedClass()
             )
         );

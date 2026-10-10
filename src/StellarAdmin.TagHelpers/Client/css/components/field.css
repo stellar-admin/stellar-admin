@@ -116,6 +116,11 @@
     font-weight: var(--sa-weight-control);
     line-height: 1.375;
   }
+  /* A CheckboxGroup's option labels are regular weight (choice cards keep their title's). Its role
+     tells it from a field group an author marks as a checkbox group, whose labels keep theirs. */
+  [data-slot="checkbox-group"][role="group"] > .sa-field [data-slot="field-label"] {
+    font-weight: 400;
+  }
   .sa-field[data-disabled="true"] :is(.sa-field-label, .sa-field-title) {
     opacity: var(--sa-disabled-opacity);
   }

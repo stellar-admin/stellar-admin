@@ -29,7 +29,7 @@ public class CardTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-card", "group/card", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-card", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

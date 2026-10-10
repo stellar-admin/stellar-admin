@@ -1,6 +1,6 @@
 # Theme tokens
 
-The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/theme-token-migration.md); the prototype in `sandbox/html/token-spec/` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal.
+The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/theme-token-migration.md); `src/StellarAdmin.TagHelpers/Client/css/tokens.css` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal.
 
 ## Tiers
 
@@ -11,6 +11,12 @@ The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the
 | 2 | Raw rules in `@layer sa.overrides` | Escape hatch; each rule points to a missing knob |
 
 Layer order: `theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities`. Tailwind's layers are named so that an author's utilities stay above the components on a page that also loads Tailwind CSS; the first stylesheet that declares layers fixes the order, so a Tailwind build loaded before `stellar-admin.css` starts with the same statement. Themes and presets go in `sa.theme`.
+
+## Presets and the Tailwind adapter
+
+The default theme needs no file. The shipped presets are knob files linked after `stellar-admin.css`: `presets/ledger.css` (warm paper, indigo, roomier, tactile buttons; Lexend), `presets/ops.css` (dense, sharp, strong lines, orange; IBM Plex Sans) and `presets/soft.css` (pills, roomy, violet; Figtree). An app's own theme file is the same shape and goes after the preset.
+
+`stellar-admin.tailwind.css` is an `@theme inline` file for an app's own Tailwind build: spacing, small text sizes, fonts, radius steps and the shadcn colour names (`--color-primary`, `--color-muted-foreground`, …) map onto the tokens. Import it after `@import "tailwindcss"`, with the layer order declared first.
 
 ## Scopes
 
@@ -131,4 +137,4 @@ A theme that needs one component to differ writes a rule in `sa.overrides`. A ne
 
 ## Private variables
 
-`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes, `sa-menu-accent-bold`) and dark mode set them to pick a component's values. Scripts also publish measured values on components (`--sa-slider-thumb-size`, `--sa-table-row-detail-width`, `-inset-start`, `-inset-end`); these are internal too.
+`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes, `sa-menu-accent-bold`) and dark mode set them to pick a component's values. Scripts also publish measured values on components (`--_slider-thumb-measured`, `--sa-table-row-detail-width`, `-inset-start`, `-inset-end`); these are internal too.

@@ -71,7 +71,6 @@ public class AlertTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-alert",
-                "group/alert",
                 AlertVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()
             )

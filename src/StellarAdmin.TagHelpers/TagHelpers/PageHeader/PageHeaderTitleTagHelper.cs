@@ -18,12 +18,7 @@ public class PageHeaderTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "page-header-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-page-header-title",
-                "sa-font-heading",
-                "font-heading",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-page-header-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

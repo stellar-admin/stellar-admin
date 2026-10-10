@@ -1,0 +1,29 @@
+/* StellarAdmin preset: Ops. Dense and sharp, with strong lines, a safety-orange accent, banded table
+   heads and an offset focus ring. Suggested font: IBM Plex Sans. Link it after stellar-admin.css. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.66 0.18 48);
+    --sa-neutral-hue: 250;
+    --sa-neutral-chroma: 0.015;
+    --sa-accent-tint: 0.2;
+    --sa-surface-depth: 0.8;
+    --sa-line-strength: 1.4;
+    --sa-radius: 3px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-radius-outer: 4px;
+    --sa-elevation: 0.5;
+    --sa-density: 0.78;
+    --sa-focus-width: 2px;
+    --sa-focus-offset: 2px;
+    --sa-font-sans: "IBM Plex Sans", system-ui, sans-serif;
+    --sa-column-head-label: 1;
+    --sa-column-head-fill: 1;
+    --sa-current-page-fill: 1;
+    --sa-relief: 0;
+    --sa-sheen: 0;
+    --sa-solid-destructive: 0;
+    --sa-section-label-text: var(--sa-text-xs);
+    --sa-footer-fill: 1;
+  }
+}

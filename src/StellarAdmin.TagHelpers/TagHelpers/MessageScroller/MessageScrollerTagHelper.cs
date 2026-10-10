@@ -64,11 +64,7 @@ public class MessageScrollerTagHelper : StellarAdminTagHelperBase
         );
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-message-scroller",
-                "group/message-scroller",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-message-scroller", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

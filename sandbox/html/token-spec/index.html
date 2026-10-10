@@ -13,8 +13,9 @@
   // index page instead of the component specimen; ?frame=1&engine=bundle&preset=name renders the
   // shipped bundle for a preset that reproduces one. Without ?frame the page is the comparison shell.
   const params = new URLSearchParams(location.search);
-  // Presets, with the shipped bundle each reproduces (if any).
-  const PRESETS = { base: null, nova: "shadcn.nova", concourse: "concourse", ledger: "ledger",
+  // Presets, with the shipped bundle each reproduces (if any). The per-theme bundles were removed in
+  // phase 3 of the migration, so none has one now and the page shows the token engine only.
+  const PRESETS = { base: null, nova: null, concourse: null, ledger: null,
     editorial: null, ops: null, soft: null, terminal: null, workshop: null };
   const FRAME = params.has("frame");
   const preset = params.get("preset") in PRESETS ? params.get("preset") : "base";

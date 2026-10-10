@@ -39,7 +39,7 @@ public class PopoverTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-popover-content",
-                effectivePositionArea.GetTailwindClassName(),
+                effectivePositionArea.GetClassName(),
                 output.GetUserSuppliedClass()
             )
         );

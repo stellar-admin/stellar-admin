@@ -6,7 +6,7 @@ namespace StellarAdmin.Dashboard;
 public sealed class DashboardThemeOptions
 {
     /// <summary>
-    ///     Whether to load the selected theme's suggested web fonts.
+    ///     Whether to load the preset's suggested web fonts.
     /// </summary>
     /// <remarks>
     ///     Defaults to false.
@@ -14,10 +14,15 @@ public sealed class DashboardThemeOptions
     public bool IncludeSuggestedFonts { get; set; }
 
     /// <summary>
-    ///     The theme used by Dashboard pages.
+    ///     The theme preset used by Dashboard pages.
     /// </summary>
     /// <remarks>
-    ///     Defaults to shadcn Nova.
+    ///     Defaults to <see cref="DashboardThemePreset.Default" />.
     /// </remarks>
-    public DashboardTheme Name { get; set; } = DashboardTheme.ShadcnNova;
+    public DashboardThemePreset Preset { get; set; } = DashboardThemePreset.Default;
+
+    /// <summary>
+    ///     An optional stylesheet of theme knobs, such as <c>~/css/theme.css</c>, loaded after the preset.
+    /// </summary>
+    public string? Stylesheet { get; set; }
 }

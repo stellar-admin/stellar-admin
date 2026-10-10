@@ -73,7 +73,7 @@ internal static class PositionAreaExtensions
         /// <summary>
         ///     The side of the anchor the panel sits on, as the <c>data-anchor-side</c>
         ///     attribute value. Drives the trigger-to-panel gap via the
-        ///     <c>[data-anchor-side=...]</c> rules in Client/css/components.css.
+        ///     <c>[data-anchor-side=...]</c> rules in Client/css/structure.css.
         /// </summary>
         public string GetAnchorSideDataAttributeText()
         {
@@ -97,7 +97,7 @@ internal static class PositionAreaExtensions
             };
         }
 
-        public string GetTailwindClassName()
+        public string GetClassName()
         {
             return area switch
             {

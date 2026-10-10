@@ -79,11 +79,7 @@ public class CommandDialogTagHelper : StellarAdminTagHelperBase
         var title = new TagBuilder("h2");
         title.Attributes["id"] = titleId;
         title.Attributes["data-slot"] = "dialog-title";
-        title.Attributes["class"] = JoinCssClasses(
-            "sa-dialog-title",
-            "sa-font-heading",
-            "font-heading"
-        );
+        title.Attributes["class"] = JoinCssClasses("sa-dialog-title");
         title.InnerHtml.Append(effectiveTitle);
 
         var description = new TagBuilder("p");

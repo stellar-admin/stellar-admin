@@ -1,7 +1,7 @@
 /* The token-driven stylesheet's layer order (stellar-admin.css), declared first so the samples' utilities stay above its components. */
 @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 @import "tailwindcss";
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css";
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css";
 
 @source "../../Pages/";
 @source "../../TagHelpers/";
@@ -25,7 +25,7 @@
 .account-input {
     border: 2px solid var(--account-accent);
     border-radius: 0.5rem;
-    background: var(--background);
+    background: var(--sa-color-canvas);
 }
 
 .account-label {
@@ -78,16 +78,16 @@
 }
 
 .travel-checkbox-control {
-    --primary: var(--travel-accent);
-    --primary-foreground: var(--background);
+    --sa-color-accent-fill: var(--travel-accent);
+    --sa-color-on-accent: var(--sa-color-canvas);
     outline: 2px solid var(--travel-accent);
     outline-offset: 4px;
     border-radius: 0.25rem;
 }
 
 .travel-radio-control {
-    --primary: var(--travel-accent);
-    --primary-foreground: var(--background);
+    --sa-color-accent-fill: var(--travel-accent);
+    --sa-color-on-accent: var(--sa-color-canvas);
     outline: 2px solid var(--travel-accent);
     outline-offset: 4px;
     border-radius: 50%;
@@ -100,15 +100,15 @@
 }
 
 .travel-switch-control {
-    --primary: var(--travel-accent);
-    --primary-foreground: var(--background);
+    --sa-color-accent-fill: var(--travel-accent);
+    --sa-color-on-accent: var(--sa-color-canvas);
     outline: 2px solid var(--travel-accent);
     outline-offset: 4px;
     border-radius: 999px;
 }
 
 .travel-switch-control .sa-switch:checked {
-    background-color: var(--primary);
+    background-color: var(--sa-color-accent-fill);
 }
 
 .travel-slider-control {
@@ -161,7 +161,7 @@
 
 .travel-toggle-group-item:has(input:checked) {
     background: var(--travel-accent);
-    color: var(--background);
+    color: var(--sa-color-canvas);
 }
 
 /* Container-sized masonry: keep each study intact and read down each column. */
@@ -195,7 +195,7 @@
 .showcase-spectrum-tile {
     flex: 1 1 220px;
     min-width: 0;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--sa-color-line);
     padding-top: 16px;
 }
 

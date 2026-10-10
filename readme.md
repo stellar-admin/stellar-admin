@@ -42,16 +42,17 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 @addTagHelper *, StellarAdmin.TagHelpers
 ```
 
-### 4. Link a theme stylesheet and JavaScript file
+### 4. Link the stylesheet and JavaScript file
 
-You must add the stylesheet for the [theme](https://www.stellaradmin.com/docs/tag-helpers/theming) you want to use, as well as the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The example below demonstrates how to include the script and the stylesheet for the Observatory theme.
+Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The stylesheet carries the default theme; to use a preset, link it after the stylesheet (`ledger`, `ops` or `soft`), and set your own theme knobs in a stylesheet of your own after that.
 
 ```razor
 <!DOCTYPE html>
 <html lang="en">
 <head>
     ...
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.observatory.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/presets/ledger.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
@@ -60,8 +61,24 @@ You must add the stylesheet for the [theme](https://www.stellaradmin.com/docs/ta
 </html>
 ```
 
+A theme file sets knobs in the `sa.theme` layer:
+
+```css
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.5 0.14 245);
+    --sa-radius: 4px;
+    --sa-density: 0.9;
+  }
+}
+```
+
 > [!TIP]
-> You can find more information and see the available themes on the [Theming](https://www.stellaradmin.com/docs/tag-helpers/theming) page.
+> You can find more information on the [Theming](https://www.stellaradmin.com/docs/tag-helpers/theming) page.
+
+#### Browser support
+
+The stylesheet uses CSS relative colour syntax, `color-mix()`, cascade layers, native nesting and `:has()`, without fallbacks: Chrome and Edge 119, Safari 18 and Firefox 128 or later. In older browsers colours fail silently, leaving components unstyled in places.
 
 ### 5. Start using the Tag Helpers
 

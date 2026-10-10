@@ -17,7 +17,7 @@ public class AccordionItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "accordion-item");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-accordion-item", "group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-accordion-item", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

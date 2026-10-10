@@ -44,7 +44,7 @@ Canonical development skills live in `.agents/skills/`; `.claude/skills/` contai
 - [port-shadcn-component](.agents/skills/port-shadcn-component/SKILL.md): port upstream components through library, samples, website, and consumer references.
 - [embed-website-components](.agents/skills/embed-website-components/SKILL.md): shared workflow for generated inline website examples.
 
-See [agent setup](docs/agents.md) for discovery and handoffs. Maintained theme specifications live in [docs/design/themes](docs/design/themes/).
+See [agent setup](docs/agents.md) for discovery and handoffs. Theme knobs and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
 
 ## Separate website and release transition
 

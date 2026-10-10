@@ -13,6 +13,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
 {
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        var userClass = output.GetUserSuppliedClass();
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
@@ -21,10 +22,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
 
         var tableTagBuilder = new TagBuilder("table");
         tableTagBuilder.Attributes.Add("data-slot", "table");
-        tableTagBuilder.Attributes.Add(
-            "class",
-            JoinCssClasses("sa-table", output.GetUserSuppliedClass())
-        );
+        tableTagBuilder.Attributes.Add("class", JoinCssClasses("sa-table", userClass));
         tableTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 
         output.Content.AppendHtml(tableTagBuilder);

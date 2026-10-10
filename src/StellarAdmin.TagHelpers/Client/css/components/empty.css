@@ -15,7 +15,6 @@
     min-width: 0;
     padding: calc(6 * var(--sa-unit));
     border-style: dashed;
-    --tw-border-style: dashed;   /* Tailwind's border utilities set the style from this */
     border-color: var(--sa-color-line);
     border-radius: var(--sa-radius-container);
     text-align: center;

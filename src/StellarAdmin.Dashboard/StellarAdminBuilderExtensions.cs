@@ -24,8 +24,8 @@ public static class StellarAdminBuilderExtensions
             builder
                 .Services.AddOptions<DashboardThemeOptions>()
                 .Validate(
-                    options => Enum.IsDefined(options.Name),
-                    "The Dashboard theme must be one of the shipped themes."
+                    options => Enum.IsDefined(options.Preset),
+                    "The Dashboard theme preset must be one of the shipped presets."
                 );
 
             var dashboard = new StellarAdminDashboardBuilder(

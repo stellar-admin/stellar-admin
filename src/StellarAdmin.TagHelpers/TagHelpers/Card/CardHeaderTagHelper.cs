@@ -16,7 +16,7 @@ public class CardHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "card-header");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-card-header", "group/card-header", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-card-header", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

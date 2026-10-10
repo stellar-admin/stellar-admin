@@ -57,7 +57,7 @@ public class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
         var heading = new TagBuilder("h2");
         heading.Attributes["id"] = headingId;
         heading.Attributes["data-slot"] = "form-section-title";
-        heading.AddCssClass("sa-form-section-title sa-font-heading font-heading");
+        heading.AddCssClass("sa-form-section-title");
         heading.InnerHtml.Append(Title);
 
         var header = new TagBuilder("div");

@@ -1,13 +1,13 @@
 /* Slider: <sel-slider> with a track, a filled range, one or more thumbs, optional marks (ticks and
    labels) and a value readout. The script positions the thumbs, range and marks inline and publishes
-   the measured thumb size as --sa-slider-thumb-size on the host, which marks use to inset their ends.
+   the measured thumb size as --_slider-thumb-measured on the host, which marks use to inset their ends.
    Replaces: .sa-slider, .sa-slider-mark, .sa-slider-mark-label, .sa-slider-mark-tick, .sa-slider-marks,
    .sa-slider-range, .sa-slider-thumb, .sa-slider-track, .sa-slider-value */
 
 @layer sa.tokens {
   .sa-slider,
   .sa-slider-value {
-    --sa-slider-thumb-size: calc(3 * var(--sa-unit));
+    --_slider-thumb-size: calc(3 * var(--sa-unit));
     --_slider-thumb-bg: var(--sa-color-surface);
   }
   .dark :is(.sa-slider, .sa-slider-value) {
@@ -17,7 +17,7 @@
 
 @layer sa.components {
   .sa-slider {
-    --_thumb: var(--sa-slider-thumb-size, 1rem);
+    --_slider-thumb: var(--_slider-thumb-measured, var(--_slider-thumb-size));
     position: relative;
     display: flex;
     align-items: center;
@@ -36,10 +36,10 @@
     }
     /* Mark labels hang outside the host, which stays as tight as the track; reserve their room. */
     &[data-orientation="horizontal"]:has([data-slot="slider-mark-label"]) {
-      margin-bottom: calc(var(--_thumb) / 2 + 1.25rem);
+      margin-bottom: calc(var(--_slider-thumb) / 2 + 1.25rem);
     }
     &[data-orientation="vertical"]:has([data-slot="slider-mark-label"]) {
-      margin-inline-end: calc(var(--_thumb) / 2 + 3rem);
+      margin-inline-end: calc(var(--_slider-thumb) / 2 + 3rem);
     }
   }
 
@@ -78,8 +78,8 @@
     position: absolute;
     display: block;
     flex-shrink: 0;
-    width: var(--sa-slider-thumb-size);
-    height: var(--sa-slider-thumb-size);
+    width: var(--_slider-thumb-size);
+    height: var(--_slider-thumb-size);
     border: var(--sa-border-width) solid var(--sa-color-accent-fill);
     border-radius: var(--sa-radius-round);
     background: var(--_slider-thumb-bg);
@@ -143,11 +143,11 @@
     white-space: nowrap;
 
     [data-orientation="horizontal"] > & {
-      top: calc(var(--_thumb) / 2 + 0.25rem);
+      top: calc(var(--_slider-thumb) / 2 + 0.25rem);
       translate: -50% 0;
     }
     [data-orientation="vertical"] > & {
-      left: calc(var(--_thumb) / 2 + 0.5rem);
+      left: calc(var(--_slider-thumb) / 2 + 0.5rem);
       translate: 0 -50%;
     }
     /* Labels at the bounds align to the track's ends; edge-aligned thumbs inset the end marks by half
@@ -165,16 +165,16 @@
       translate: 0 0;
     }
     [data-thumb-alignment="edge"] [data-orientation="horizontal"][data-bound="min"] > & {
-      margin-inline-start: calc(var(--_thumb) / -2);
+      margin-inline-start: calc(var(--_slider-thumb) / -2);
     }
     [data-thumb-alignment="edge"] [data-orientation="horizontal"][data-bound="max"] > & {
-      margin-inline-start: calc(var(--_thumb) / 2);
+      margin-inline-start: calc(var(--_slider-thumb) / 2);
     }
     [data-thumb-alignment="edge"] [data-orientation="vertical"][data-bound="min"] > & {
-      margin-top: calc(var(--_thumb) / 2);
+      margin-top: calc(var(--_slider-thumb) / 2);
     }
     [data-thumb-alignment="edge"] [data-orientation="vertical"][data-bound="max"] > & {
-      margin-top: calc(var(--_thumb) / -2);
+      margin-top: calc(var(--_slider-thumb) / -2);
     }
   }
 
@@ -182,6 +182,13 @@
     color: var(--sa-color-ink-muted);
     font-size: var(--sa-text-sm);
     font-variant-numeric: tabular-nums;
+  }
+  /* The value inside running text takes the text's font. */
+  :where(p, [data-slot="field-description"]) .sa-slider-value {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
   }
 
   @media (prefers-reduced-motion: reduce) {
