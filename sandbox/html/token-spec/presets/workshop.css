@@ -14,15 +14,15 @@
     --sa-elevation: 0.4;
     --sa-font-sans: "Space Grotesk", system-ui, sans-serif;
     --sa-font-mono: "IBM Plex Mono", ui-monospace, monospace;
-    --sa-label-transform: uppercase;
-    --sa-label-tracking: 0.1em;
+    --sa-section-label-transform: uppercase;
+    --sa-section-label-tracking: 0.1em;
     --sa-footer-fill: 0;
     --sa-column-head-label: 1;
     --sa-column-head-fill: 1;
-    --sa-column-head-case: var(--sa-label-transform);
+    --sa-column-head-case: var(--sa-section-label-transform);
     --sa-column-head-font: var(--sa-font-mono);
     --sa-current-page-fill: 1;
     --sa-relief: 0;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
   }
 }

@@ -82,11 +82,11 @@
     --sa-leading-body: 1.5;
 
     /* Section labels: menu labels, sidebar group labels (and column heads, see --sa-column-head-label) */
-    --sa-label-font: inherit;
-    --sa-label-text: calc(0.71875rem * var(--sa-type-scale));   /* 11.5px, between the 2xs and xs steps */
-    --sa-label-weight: 500;
-    --sa-label-transform: none;
-    --sa-label-tracking: 0em;            /* a length, so switches can scale it */
+    --sa-section-label-font: inherit;
+    --sa-section-label-text: calc(0.71875rem * var(--sa-type-scale));   /* 11.5px, between the 2xs and xs steps */
+    --sa-section-label-weight: 500;
+    --sa-section-label-transform: none;
+    --sa-section-label-tracking: 0em;            /* a length, so switches can scale it */
 
     /* Structural switches: 0 or 1 (some blend in between), read by tier 2 */
     --sa-footer-fill: 0;                 /* card footer: tinted band */
@@ -257,6 +257,7 @@
     --sa-color-selected: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 14%), var(--sa-color-surface-sunken));
     --sa-color-highlight: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 16%), var(--sa-color-surface-sunken));
     --sa-color-on-highlight: var(--sa-color-ink);
+    --sa-color-tint: color-mix(in oklab, var(--sa-color-ink) 8%, transparent);   /* translucent, so it steps from whatever it sits on: tracks, keys, chips, skeletons */
 
     --sa-color-nav-surface: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-nav-tint) * 100%), var(--sa-color-canvas));
     --sa-color-nav-ink: var(--sa-color-ink);

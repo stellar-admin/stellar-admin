@@ -20,11 +20,11 @@
     --sa-command-list-max-h: 18rem;
     --sa-command-empty-py: calc(6 * var(--sa-unit));
     --sa-command-empty-text: var(--sa-text-body);
-    --sa-command-heading-font: var(--sa-label-font);
-    --sa-command-heading-text: var(--sa-label-text);
-    --sa-command-heading-weight: var(--sa-label-weight);
-    --sa-command-heading-transform: var(--sa-label-transform);
-    --sa-command-heading-tracking: var(--sa-label-tracking);
+    --sa-command-heading-font: var(--sa-section-label-font);
+    --sa-command-heading-text: var(--sa-section-label-text);
+    --sa-command-heading-weight: var(--sa-section-label-weight);
+    --sa-command-heading-transform: var(--sa-section-label-transform);
+    --sa-command-heading-tracking: var(--sa-section-label-tracking);
     --sa-command-heading-leading: 1rem;
     --sa-command-heading-fg: var(--sa-color-ink-muted);
     --sa-command-heading-px: calc(2 * var(--sa-unit));

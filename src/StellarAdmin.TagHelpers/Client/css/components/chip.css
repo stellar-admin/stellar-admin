@@ -14,7 +14,7 @@
     --sa-chip-weight: var(--sa-weight-control);
     --sa-chip-icon: 0.875rem;
     --sa-chip-inset: 2px;                                                      /* media to the chip's edge */
-    --sa-chip-bg: color-mix(in oklab, var(--sa-color-ink) 8%, transparent);   /* a step from whatever it sits on */
+    --sa-chip-bg: var(--sa-color-tint);
     --sa-chip-fg: var(--sa-color-ink);
     --sa-chip-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
     --sa-chip-remove-fg: var(--sa-color-ink-muted);

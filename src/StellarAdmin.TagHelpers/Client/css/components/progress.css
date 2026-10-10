@@ -7,7 +7,7 @@
     --sa-progress-gap: calc(3 * var(--sa-unit));
     --sa-progress-h: var(--sa-unit);
     --sa-progress-radius: var(--sa-radius-tag);
-    --sa-progress-track-bg: color-mix(in oklab, var(--sa-color-ink) 10%, transparent);   /* a step from whatever it sits on */
+    --sa-progress-track-bg: var(--sa-color-tint);
     --sa-progress-indicator-bg: var(--sa-color-accent-fill);
     --sa-progress-label-text: var(--sa-text-sm);
     --sa-progress-label-weight: var(--sa-weight-control);

@@ -14,7 +14,7 @@
     --sa-kbd-weight: var(--sa-weight-control);
     --sa-kbd-icon: 0.75rem;
     /* A translucent ink tint: a step from whatever it sits on (field, sunken band, sidebar). */
-    --sa-kbd-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);
+    --sa-kbd-bg: var(--sa-color-tint);
     /* Between muted and full ink, so it keeps 4.5:1 on its own tint over a sunken band. */
     --sa-kbd-fg: color-mix(in oklab, var(--sa-color-ink-muted) 65%, var(--sa-color-ink));
     --sa-kbd-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);

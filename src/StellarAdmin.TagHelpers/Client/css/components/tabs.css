@@ -6,7 +6,7 @@
   .sa-tabs {
     --sa-tabs-gap: calc(2 * var(--sa-unit));
     --sa-tabs-list-h: var(--sa-control-h);
-    --sa-tabs-list-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);   /* a tint, so it separates on any band */
+    --sa-tabs-list-bg: var(--sa-color-tint);
     --sa-tabs-list-border: transparent;
     --sa-tabs-list-radius: var(--sa-radius-control);
     --sa-tabs-list-p: 3px;

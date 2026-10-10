@@ -14,13 +14,13 @@
     --sa-font-sans: "Source Sans 3", system-ui, sans-serif;
     --sa-font-heading: "Fraunces", Georgia, serif;
     --sa-weight-heading: 600;
-    --sa-label-transform: uppercase;
-    --sa-label-tracking: 0.06em;
+    --sa-section-label-transform: uppercase;
+    --sa-section-label-tracking: 0.06em;
     --sa-footer-fill: 0;
     --sa-column-head-label: 1;
-    --sa-column-head-case: var(--sa-label-transform);
+    --sa-column-head-case: var(--sa-section-label-transform);
     --sa-relief: 0;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
     --sa-column-head-fill: 0;
   }
 }

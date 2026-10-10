@@ -3,7 +3,7 @@
 
 @layer sa.tokens {
   .sa-skeleton {
-    --sa-skeleton-bg: color-mix(in oklab, var(--sa-color-ink) 8%, transparent);   /* a step from whatever it sits on */
+    --sa-skeleton-bg: var(--sa-color-tint);
     --sa-skeleton-radius: var(--sa-radius-control-sm);
   }
 }

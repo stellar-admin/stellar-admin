@@ -112,8 +112,8 @@ const CONTROLS = [
     { k: "--sa-font-heading", label: "Heading font", type: "select", options: HEADINGS, def: "var(--sa-font-sans)" },
     { k: "--sa-weight-control", label: "Control weight", type: "select", options: { 400: "400", 500: "500", 600: "600" }, def: "500" },
     { k: "--sa-weight-heading", label: "Heading weight", type: "select", options: { 400: "400", 500: "500", 600: "600", 700: "700" }, def: "600" },
-    { k: "--sa-label-transform", label: "Section labels", type: "select", options: { "As written": "none", Uppercase: "uppercase" }, def: "none" },
-    { k: "--sa-label-tracking", label: "Label tracking", type: "range", unit: "em", min: 0, max: 0.15, step: 0.01, def: "0em" },
+    { k: "--sa-section-label-transform", label: "Section labels", type: "select", options: { "As written": "none", Uppercase: "uppercase" }, def: "none" },
+    { k: "--sa-section-label-tracking", label: "Label tracking", type: "range", unit: "em", min: 0, max: 0.15, step: 0.01, def: "0em" },
   ]],
   ["Structure", [
     { id: "footer", label: "Card footer", type: "multi", def: "Rule only", options: {
@@ -129,9 +129,9 @@ const CONTROLS = [
       Flush: { "--sa-dialog-footer-fill": "0", "--sa-dialog-footer-rule": "0" } } },
     { id: "colhead", label: "Column heads", type: "multi", def: "Band", options: {
       Plain: { "--sa-column-head-label": "0", "--sa-column-head-fill": "0", "--sa-column-head-case": "none" },
-      "Section label": { "--sa-column-head-label": "1", "--sa-column-head-fill": "0", "--sa-column-head-case": "var(--sa-label-transform)" },
+      "Section label": { "--sa-column-head-label": "1", "--sa-column-head-fill": "0", "--sa-column-head-case": "var(--sa-section-label-transform)" },
       Band: { "--sa-column-head-label": "0", "--sa-column-head-fill": "1", "--sa-column-head-case": "none" },
-      "Label on band": { "--sa-column-head-label": "1", "--sa-column-head-fill": "1", "--sa-column-head-case": "var(--sa-label-transform)" } } },
+      "Label on band": { "--sa-column-head-label": "1", "--sa-column-head-fill": "1", "--sa-column-head-case": "var(--sa-section-label-transform)" } } },
     { k: "--sa-column-head-font", label: "Column head font", type: "select", options: { "Body font": "inherit", Monospace: "var(--sa-font-mono)" }, def: "inherit" },
     { k: "--sa-current-page-fill", label: "Current page", type: "select", options: { Outline: "0", Soft: "0.15", Solid: "1" }, def: "0" },
   ]],
@@ -228,7 +228,7 @@ document.getElementById("controls").addEventListener("input", (e) => {
   if (c.type === "radius") values[c.k] = +raw >= PILL ? "9999px" : `${raw}px`;
   else if (c.type === "range" && c.unit) values[c.k] = `${raw}${c.unit}`;
   else values[c.k] = raw;
-  if (c.k === "--sa-label-transform" && raw === "uppercase" && (values["--sa-label-tracking"] ?? "normal") === "normal") values["--sa-label-tracking"] = "0.06em";
+  if (c.k === "--sa-section-label-transform" && raw === "uppercase" && (values["--sa-section-label-tracking"] ?? "normal") === "normal") values["--sa-section-label-tracking"] = "0.06em";
   sync();
 });
 
@@ -278,8 +278,8 @@ document.getElementById("random").addEventListener("click", () => {
     "--sa-font-sans": pick(Object.values(FONTS)),
     "--sa-font-heading": Math.random() < 0.3 ? pick(Object.values(HEADINGS).slice(1)) : "var(--sa-font-sans)",
     "--sa-weight-heading": pick(["500", "600", "700"]),
-    "--sa-label-transform": upper ? "uppercase" : "none",
-    "--sa-label-tracking": upper ? "0.07em" : "normal",
+    "--sa-section-label-transform": upper ? "uppercase" : "none",
+    "--sa-section-label-tracking": upper ? "0.07em" : "normal",
     "--sa-focus-width": pick(["2px", "3px"]),
     "--sa-focus-offset": pick(["0px", "0px", "2px"]),
     "--sa-current-page-fill": pick(["0", "0.15", "1"]),

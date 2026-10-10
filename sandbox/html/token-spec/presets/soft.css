@@ -19,7 +19,7 @@
     --sa-pills: 1;
     --sa-outlines: 0;
     --sa-relief: 0;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
     --sa-column-head-fill: 0;
   }
 }

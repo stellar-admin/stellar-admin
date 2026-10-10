@@ -31,11 +31,11 @@
     --sa-sidebar-menu-gap: 0px;
     --sa-sidebar-label-h: calc(8 * var(--sa-unit));
     --sa-sidebar-label-px: calc(2 * var(--sa-unit));
-    --sa-sidebar-label-font: var(--sa-label-font);
-    --sa-sidebar-label-text: var(--sa-label-text);
-    --sa-sidebar-label-weight: var(--sa-label-weight);
-    --sa-sidebar-label-transform: var(--sa-label-transform);
-    --sa-sidebar-label-tracking: var(--sa-label-tracking);
+    --sa-sidebar-label-font: var(--sa-section-label-font);
+    --sa-sidebar-label-text: var(--sa-section-label-text);
+    --sa-sidebar-label-weight: var(--sa-section-label-weight);
+    --sa-sidebar-label-transform: var(--sa-section-label-transform);
+    --sa-sidebar-label-tracking: var(--sa-section-label-tracking);
     --sa-sidebar-label-fg: color-mix(in oklab, var(--sa-sidebar-fg) 70%, transparent);
     --sa-sidebar-item-h: var(--sa-control-h);
     --sa-sidebar-item-h-sm: var(--sa-control-h-sm);

@@ -20,7 +20,7 @@
     --sa-column-head-fill: 1;
     --sa-current-page-fill: 1;
     --sa-relief: 0;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
     --sa-footer-fill: 1;
   }
 }

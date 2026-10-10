@@ -17,18 +17,18 @@
     --sa-density: 1.125;
     --sa-font-sans: "Lexend", system-ui, sans-serif;
     --sa-weight-heading: 600;
-    --sa-label-transform: uppercase;
-    --sa-label-tracking: 0.07em;
+    --sa-section-label-transform: uppercase;
+    --sa-section-label-tracking: 0.07em;
     --sa-footer-fill: 0;
     --sa-column-head-label: 1;
     --sa-column-head-fill: 1;
-    --sa-column-head-case: var(--sa-label-transform);
+    --sa-column-head-case: var(--sa-section-label-transform);
     --sa-relief: 2;
     --sa-solid-destructive: 1;
     --sa-link-decoration: underline;
     --sa-focus-width: 3px;
     --sa-focus-color: color-mix(in oklab, var(--sa-color-accent) 35%, transparent);
     --sa-surface-depth: 0.6;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
   }
 }

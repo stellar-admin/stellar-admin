@@ -65,7 +65,7 @@ Optional: `--sa-radius-outer` (container corners, otherwise derived from `--sa-r
 | `--sa-weight-control` | `500` | Buttons, tabs, menu items |
 | `--sa-weight-heading` | `600` | Titles |
 | `--sa-leading-body` | `1.5` | Line height of running text |
-| `--sa-label-font`, `--sa-label-text`, `--sa-label-weight`, `--sa-label-transform`, `--sa-label-tracking` | inherit, 11.5px, 500, none, 0em | Section labels: menu labels, sidebar group labels, and column heads when `--sa-column-head-label` is on |
+| `--sa-section-label-font`, `--sa-section-label-text`, `--sa-section-label-weight`, `--sa-section-label-transform`, `--sa-section-label-tracking` | inherit, 11.5px, 500, none, 0em | Section labels: menu labels, sidebar group labels, and column heads when `--sa-column-head-label` is on |
 
 ### Focus
 
@@ -107,7 +107,7 @@ Colour, all `--sa-color-*`:
 - Accent: `accent` (as set; focus, washes), `accent-fill` (solid fills, contrast-adjusted), `on-accent` (text on the fill), `accent-hover`, `accent-text` (accent as text, 4.5:1).
 - Danger: `danger`, `danger-fill`, `on-danger`, `danger-soft`, `danger-soft-hover`, `danger-text`.
 - Status: `success`, `warning`, `info`.
-- Washes: `hover`, `selected`, `highlight`, `on-highlight`.
+- Washes: `hover`, `selected`, `highlight`, `on-highlight`; `tint`, a translucent ink fill that steps from whatever it sits on (tab and segmented tracks, keys, chips, skeletons, the progress track).
 - Navigation region: `nav-surface`, `nav-ink`, `nav-highlight`, `on-nav-highlight`, `nav-accent`, `nav-line`.
 - `scrim` (dialog backdrop).
 

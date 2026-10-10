@@ -22,10 +22,10 @@
     --sa-table-head-bg: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-column-head-fill) * 100%), transparent);
     --sa-table-head-fg: color-mix(in oklab, var(--sa-color-ink-muted) calc(var(--_label) * 100%), var(--sa-color-ink));
     --sa-table-head-font: var(--sa-column-head-font);
-    --sa-table-head-text: calc(var(--sa-label-text) * var(--_label) + var(--sa-table-text) * (1 - var(--_label)));
-    --sa-table-head-weight: calc(var(--sa-label-weight) * var(--_label) + var(--sa-weight-control) * (1 - var(--_label)));
+    --sa-table-head-text: calc(var(--sa-section-label-text) * var(--_label) + var(--sa-table-text) * (1 - var(--_label)));
+    --sa-table-head-weight: calc(var(--sa-section-label-weight) * var(--_label) + var(--sa-weight-control) * (1 - var(--_label)));
     --sa-table-head-transform: var(--sa-column-head-case);
-    --sa-table-head-tracking: calc(var(--sa-label-tracking) * var(--_label));
+    --sa-table-head-tracking: calc(var(--sa-section-label-tracking) * var(--_label));
     --sa-table-cell-px: var(--sa-space-cell-x);
     --sa-table-cell-py: var(--sa-space-cell-y);
     --sa-table-footer-bg: var(--sa-color-surface-subtle);

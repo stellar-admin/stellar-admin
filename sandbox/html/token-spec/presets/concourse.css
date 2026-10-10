@@ -16,12 +16,12 @@
     --sa-font-sans: "Source Sans 3", system-ui, sans-serif;
     --sa-weight-control: 600;
     --sa-weight-heading: 700;
-    --sa-label-transform: uppercase;
-    --sa-label-tracking: 0.07em;
+    --sa-section-label-transform: uppercase;
+    --sa-section-label-tracking: 0.07em;
     --sa-footer-fill: 0;
     --sa-column-head-label: 1;
     --sa-column-head-fill: 1;
-    --sa-column-head-case: var(--sa-label-transform);
+    --sa-column-head-case: var(--sa-section-label-transform);
     --sa-relief: 1;
     --sa-press-offset: 0px;
     --sa-solid-destructive: 1;
@@ -31,6 +31,6 @@
     --sa-focus-offset: 1px;
     --sa-focus-color: var(--sa-color-accent);
     --sa-surface-depth: 0.6;
-    --sa-label-text: var(--sa-text-xs);
+    --sa-section-label-text: var(--sa-text-xs);
   }
 }

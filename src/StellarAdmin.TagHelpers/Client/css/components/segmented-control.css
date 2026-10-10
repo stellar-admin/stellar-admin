@@ -8,7 +8,7 @@
     --sa-segmented-control-h: var(--sa-control-h);
     /* A translucent ink tint (about the sunken band on a card), so the track also steps from a tinted
        backdrop such as the sidebar. */
-    --sa-segmented-control-bg: color-mix(in oklab, var(--sa-color-ink) 7%, transparent);
+    --sa-segmented-control-bg: var(--sa-color-tint);
     --sa-segmented-control-border: transparent;
     --sa-segmented-control-radius: var(--sa-radius-control);
     --sa-segmented-control-p: 3px;
