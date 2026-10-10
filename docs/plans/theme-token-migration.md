@@ -172,7 +172,7 @@ Dashboard stylesheets (2026-10-10, after review): `ConfigureTheme`, `DashboardTh
 
 ### Phase 4: tools
 
-- Theme builder on the website (website repository): the prototype builder, previewing real components through the generated inline examples, exporting a knob file and a shareable URL that encodes the knobs. Starts from any preset.
+- Theme builder on the website (website repository), now its own plan, [theme builder](theme-builder.md), done before the rest of this phase: the prototype builder, previewing real components through the generated inline examples, exporting a knob file and a shareable URL that encodes the knobs. Starts from any preset.
 - Consumer skill in `skills/`: turns a description ("warm, editorial, dense, green accent") into a knob file. Contents: the knob reference with each knob's meaning and range, the presets as worked examples, guidance on mapping adjectives to knobs, and a builder URL for the result. Contrast is guaranteed by the token formulas, so the skill does not need to check it.
 - Rework the development skills: `create-custom-theme` becomes "add a curated preset" (or is retired); `port-shadcn-component` translates upstream classes into tier 2 tokens instead of copying them; `prototype-component` builds against `stellar-admin.css`.
 

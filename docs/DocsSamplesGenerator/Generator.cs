@@ -17,9 +17,9 @@ internal sealed partial class Generator
     private static string GetRepoRootFolder([CallerFilePath] string sourceFilePath = "") =>
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
 
-    // Derived from the OSS repo's theme sources — the same folder the library's build:css derives its
-    // bundle list from — so new themes flow through the export automatically.
-    private static readonly string[] ThemeNames =
+    // The library's presets, from the same folder its CSS build copies them from, so new presets flow
+    // through the export automatically. "default" is the token stylesheet alone, with no preset.
+    private static readonly string[] PresetNames =
     [
         .. Directory
             .EnumerateFiles(
@@ -29,21 +29,25 @@ internal sealed partial class Generator
                     "StellarAdmin.TagHelpers",
                     "Client",
                     "css",
-                    "themes"
+                    "presets"
                 ),
                 "*.css"
             )
             .Select(Path.GetFileNameWithoutExtension)
+            .OfType<string>()
             .Order(),
     ];
+
+    private static readonly string[] ThemeNames = ["default", .. PresetNames];
 
     // Injected into the head of every exported demo page. Mirrors the docs website's state in
     // localStorage (shared because the demos are served same-origin) so demos follow the site's
     // light/dark selection ("theme", the next-themes key) and the reader's demo theme choice
     // ("demo-theme"), both in the inline iframe and the full-preview tab. The storage and matchMedia
-    // listeners keep already-open demos in sync with live toggles. saThemeInit is called by an inline
-    // script placed right after the theme stylesheet link (see ThemeStylesheetLinkRegex) so a
-    // non-default theme applies during parsing, before anything paints.
+    // listeners keep already-open demos in sync with live toggles. A theme is a preset stylesheet
+    // linked after stellar-admin.css, or none for the default. saThemeInit is called by an inline
+    // script placed right after the preset link (see PresetLinkRegex) so a preset applies during
+    // parsing, before anything paints.
     private static readonly string ThemeSyncScript = $$"""
             <script>
                 (function () {
@@ -59,26 +63,35 @@ internal sealed partial class Generator
                     function selectedTheme() {
                         var theme = null;
                         try { theme = localStorage.getItem('demo-theme'); } catch (e) { }
-                        if (themes.indexOf(theme) < 0) theme = 'observatory';
+                        if (themes.indexOf(theme) < 0) theme = 'default';
                         return theme;
                     }
-                    function themeHref() {
-                        return '/demo/tag-helpers/assets/stellar-admin.' + selectedTheme() + '.css';
+                    function presetHref() {
+                        var theme = selectedTheme();
+                        return theme === 'default' ? null : '/demo/tag-helpers/assets/presets/' + theme + '.css';
                     }
                     window.saThemeInit = function () {
                         window.saLoadThemeFonts(selectedTheme());
                         var link = document.querySelector('link[data-sa-theme]');
-                        if (link && link.getAttribute('href') !== themeHref()) link.setAttribute('href', themeHref());
+                        var href = presetHref();
+                        if (link && href) link.setAttribute('href', href);
                     };
                     function swapTheme() {
                         window.saLoadThemeFonts(selectedTheme());
                         var links = document.querySelectorAll('link[data-sa-theme]');
                         var current = links[links.length - 1];
-                        if (!current || current.getAttribute('href') === themeHref()) return;
+                        var href = presetHref();
+                        if (!current || current.getAttribute('href') === href) return;
+                        for (var i = 0; i < links.length - 1; i++) links[i].remove();
+                        if (!href || !current.getAttribute('href')) {
+                            if (href) current.setAttribute('href', href);
+                            else current.removeAttribute('href');
+                            return;
+                        }
                         var next = document.createElement('link');
                         next.rel = 'stylesheet';
                         next.setAttribute('data-sa-theme', '');
-                        next.href = themeHref();
+                        next.href = href;
                         next.addEventListener('load', function () {
                             if (!next.isConnected) return;
                             var all = document.querySelectorAll('link[data-sa-theme]');
@@ -201,10 +214,10 @@ internal sealed partial class Generator
         {
             var filename = Path.GetFileName(match.Groups["filename"].Value);
 
-            // Theme bundles are downloaded separately under stable names (the runtime theme switcher
-            // depends on them) — skip the fingerprinted copy the page links.
+            // Presets are downloaded separately under stable names (the runtime theme switcher
+            // depends on them), and the samples' own theme picker is not exported.
             if (
-                ThemeNames.Any(theme => filename.StartsWith($"stellar-admin.{theme}."))
+                match.Groups["url"].Value.Contains("/presets/")
                 || filename.StartsWith("appearance.")
             )
             {
@@ -221,21 +234,21 @@ internal sealed partial class Generator
         }
     }
 
-    /// <summary>Downloads every theme's stylesheet bundle under its stable, unfingerprinted name.</summary>
-    public async Task DownloadThemeStylesheetsAsync(HttpClient client)
+    /// <summary>Downloads every preset stylesheet under its stable, unfingerprinted name.</summary>
+    public async Task DownloadPresetStylesheetsAsync(HttpClient client)
     {
-        if (!Directory.Exists(DownloadedAssetsOutputFolder))
-            Directory.CreateDirectory(DownloadedAssetsOutputFolder);
+        var folder = Path.Combine(DownloadedAssetsOutputFolder, "presets");
+        Directory.CreateDirectory(folder);
 
-        foreach (var theme in ThemeNames)
+        foreach (var preset in PresetNames)
         {
             var response = await client.GetAsync(
-                $"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme}.css"
+                $"/_content/StellarAdmin.TagHelpers/presets/{preset}.css"
             );
             response.EnsureSuccessStatusCode();
 
             await File.WriteAllBytesAsync(
-                Path.Combine(DownloadedAssetsOutputFolder, $"stellar-admin.{theme}.css"),
+                Path.Combine(folder, $"{preset}.css"),
                 await response.Content.ReadAsByteArrayAsync()
             );
         }
@@ -375,16 +388,14 @@ internal sealed partial class Generator
             );
 
         // Sync the demo with the docs website's light/dark and theme selection. Injected here rather
-        // than in the DocsSamples layouts so it never affects the samples app itself. The theme
-        // stylesheet link loses its fingerprint (the runtime switcher needs the stable
-        // stellar-admin.<theme>.css naming), gains the data-sa-theme marker the script looks for, and
-        // is followed by the saThemeInit() call that applies a non-default theme before first paint.
+        // than in the DocsSamples layouts so it never affects the samples app itself. The samples'
+        // preset link becomes an empty link with the data-sa-theme marker the script looks for,
+        // followed by the saThemeInit() call that links a selected preset before first paint.
         input = input.Replace("<head>", "<head>\n" + ThemeSyncScript);
-        input = ThemeStylesheetLinkRegex()
+        input = PresetLinkRegex()
             .Replace(
                 input,
-                match =>
-                    $"""<link rel="stylesheet" data-sa-theme href="/demo/tag-helpers/assets/stellar-admin.{match.Groups["theme"].Value}.css" /><script>saThemeInit();</script>"""
+                """<link rel="stylesheet" data-sa-theme /><script>saThemeInit();</script>"""
             );
 
         return input;
@@ -417,18 +428,9 @@ internal sealed partial class Generator
     )]
     private static partial Regex SamplesAppearanceScriptRegex();
 
-    // Matches the (already asset-rewritten, possibly fingerprinted) theme stylesheet link so
-    // FixDemoContent can swap it for the stable-named, data-sa-theme-marked variant.
-    private static Regex ThemeStylesheetLinkRegex() =>
-        new(
-            @"<link[^>]*href=""/demo/tag-helpers/assets/stellar-admin\.(?<theme>"
-                + string.Join(
-                    "|",
-                    ThemeNames.OrderByDescending(name => name.Length).Select(Regex.Escape)
-                )
-                + @")(?:\.[a-z0-9]+)?\.css""[^>]*/?>",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
-        );
+    // Matches the samples layout's preset link (its theme picker's stylesheet), with or without an href.
+    [GeneratedRegex(@"<link[^>]*id=""docs-sample-theme""[^>]*/?>", RegexOptions.IgnoreCase)]
+    private static partial Regex PresetLinkRegex();
 
     /// <summary>The demo partials to render and emit source includes for.</summary>
     public static readonly DemoPartial[] DemoPartials =
