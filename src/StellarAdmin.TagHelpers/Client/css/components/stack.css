@@ -4,26 +4,16 @@
    .sa-stack-gap-xl, .sa-stack-justify-around, .sa-stack-justify-between, .sa-stack-justify-center,
    .sa-stack-justify-end, .sa-stack-justify-start */
 
-@layer sa.tokens {
-  .sa-stack {
-    --sa-stack-gap-xs: calc(1 * var(--sa-unit));
-    --sa-stack-gap-sm: calc(2 * var(--sa-unit));
-    --sa-stack-gap: calc(4 * var(--sa-unit));   /* StackGap.Default */
-    --sa-stack-gap-lg: calc(5 * var(--sa-unit));
-    --sa-stack-gap-xl: calc(8 * var(--sa-unit));
-  }
-}
-
 @layer sa.components {
   .sa-stack {
     display: flex;
     flex-direction: column;
   }
-  .sa-stack-gap-xs { row-gap: var(--sa-stack-gap-xs); }
-  .sa-stack-gap-sm { row-gap: var(--sa-stack-gap-sm); }
-  .sa-stack-gap-md { row-gap: var(--sa-stack-gap); }
-  .sa-stack-gap-lg { row-gap: var(--sa-stack-gap-lg); }
-  .sa-stack-gap-xl { row-gap: var(--sa-stack-gap-xl); }
+  .sa-stack-gap-xs { row-gap: calc(1 * var(--sa-unit)); }
+  .sa-stack-gap-sm { row-gap: calc(2 * var(--sa-unit)); }
+  .sa-stack-gap-md { row-gap: calc(4 * var(--sa-unit)); }
+  .sa-stack-gap-lg { row-gap: calc(5 * var(--sa-unit)); }
+  .sa-stack-gap-xl { row-gap: calc(8 * var(--sa-unit)); }
   .sa-stack-align-start { align-items: flex-start; }
   .sa-stack-align-center { align-items: center; }
   .sa-stack-align-end { align-items: flex-end; }

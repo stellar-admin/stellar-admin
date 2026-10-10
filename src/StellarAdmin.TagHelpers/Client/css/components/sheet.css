@@ -6,30 +6,9 @@
 
 @layer sa.tokens {
   .sa-sheet-content {
-    --sa-sheet-bg: var(--sa-color-surface-raised);
-    --sa-sheet-fg: var(--sa-color-ink);
-    --sa-sheet-edge: var(--sa-color-line);
-    --sa-sheet-shadow: var(--sa-shadow-dialog);
-    --sa-sheet-w: 75%;                    /* left and right sheets */
-    --sa-sheet-max-w: 24rem;              /* … from the small breakpoint */
-    --sa-sheet-text: var(--sa-text-body);
-    --sa-sheet-leading: calc(1.25 / 0.875);
-    --sa-sheet-backdrop-bg: var(--sa-color-scrim);
-    --sa-sheet-close-inset: calc(3 * var(--sa-unit));
-    --sa-sheet-header-p: var(--sa-space-container);
-    --sa-sheet-header-gap: calc(0.5 * var(--sa-unit));
-    --sa-sheet-title-text: var(--sa-text-base);
-    --sa-sheet-title-weight: var(--sa-weight-heading);
-    --sa-sheet-title-leading: 1.5;
-    --sa-sheet-description-text: var(--sa-sheet-text);
-    --sa-sheet-description-fg: var(--sa-color-ink-muted);
     /* The dialog's footer switches: banded or ruled like the dialog's footer. */
     --_footer-fill: var(--sa-dialog-footer-fill, var(--sa-footer-fill));
     --_footer-rule: var(--sa-dialog-footer-rule, var(--sa-footer-rule));
-    --sa-sheet-footer-bg: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
-    --sa-sheet-footer-border: color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
-    --sa-sheet-footer-p: var(--sa-space-container);
-    --sa-sheet-footer-gap: calc(2 * var(--sa-unit));
   }
 }
 
@@ -44,20 +23,20 @@
     max-height: 100%;
     margin: 0;
     padding: 0;
-    border: 0 solid var(--sa-sheet-edge);
+    border: 0 solid var(--sa-color-line);
     border-radius: 0;
-    background: var(--sa-sheet-bg);
+    background: var(--sa-color-surface-raised);
     background-clip: padding-box;
-    box-shadow: var(--sa-sheet-shadow);
-    color: var(--sa-sheet-fg);
-    font-size: var(--sa-sheet-text);
-    line-height: var(--sa-sheet-leading);
+    box-shadow: var(--sa-shadow-dialog);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: calc(1.25 / 0.875);
     outline: none;
     &[open] {
       animation: sa-sheet-in calc(2 * var(--sa-motion-fast)) var(--sa-motion-ease);
     }
     &::backdrop {
-      background: var(--sa-sheet-backdrop-bg);
+      background: var(--sa-color-scrim);
     }
     &[open]::backdrop {
       animation: sa-dialog-backdrop-in calc(2 * var(--sa-motion-fast)) var(--sa-motion-ease);   /* keyframes in dialog.css */
@@ -66,10 +45,10 @@
     &[data-side="right"],
     &[data-side="left"] {
       inset-block: 0;
-      width: var(--sa-sheet-w);
+      width: 75%;
       height: 100%;
       @media (width >= 40rem) {
-        max-width: var(--sa-sheet-max-w);
+        max-width: 24rem;
       }
     }
     &[data-side="right"] {
@@ -99,8 +78,8 @@
   }
   .sa-sheet-close {
     position: absolute;
-    top: var(--sa-sheet-close-inset);
-    right: var(--sa-sheet-close-inset);
+    top: calc(3 * var(--sa-unit));
+    right: calc(3 * var(--sa-unit));
   }
   .sa-sheet-body {
     display: flex;
@@ -110,28 +89,28 @@
   .sa-sheet-header {
     display: flex;
     flex-direction: column;
-    gap: var(--sa-sheet-header-gap);
-    padding: var(--sa-sheet-header-p);
+    gap: calc(0.5 * var(--sa-unit));
+    padding: var(--sa-space-container);
   }
   .sa-sheet-title {
-    color: var(--sa-sheet-fg);
+    color: var(--sa-color-ink);
     font-family: var(--sa-font-heading);
-    font-size: var(--sa-sheet-title-text);
-    font-weight: var(--sa-sheet-title-weight);
-    line-height: var(--sa-sheet-title-leading);
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.5;
   }
   .sa-sheet-description {
-    color: var(--sa-sheet-description-fg);
-    font-size: var(--sa-sheet-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
   }
   .sa-sheet-footer {
     display: flex;
     flex-direction: column;
-    gap: var(--sa-sheet-footer-gap);
+    gap: calc(2 * var(--sa-unit));
     margin-top: auto;
-    padding: var(--sa-sheet-footer-p);
-    border-top: var(--sa-border-width) solid var(--sa-sheet-footer-border);
-    background: var(--sa-sheet-footer-bg);
+    padding: var(--sa-space-container);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
   }
 
   @keyframes sa-sheet-in {

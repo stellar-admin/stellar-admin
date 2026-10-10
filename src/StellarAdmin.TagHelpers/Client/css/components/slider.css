@@ -7,27 +7,11 @@
 @layer sa.tokens {
   .sa-slider,
   .sa-slider-value {
-    --sa-slider-track-size: var(--sa-unit);
-    --sa-slider-track-bg: var(--sa-color-surface-sunken);
-    --sa-slider-track-radius: var(--sa-radius-round);
-    --sa-slider-range-bg: var(--sa-color-accent-fill);
     --sa-slider-thumb-size: calc(3 * var(--sa-unit));
-    --sa-slider-thumb-bg: var(--sa-color-surface);
-    --sa-slider-thumb-border: var(--sa-color-accent-fill);
-    --sa-slider-thumb-radius: var(--sa-radius-round);
-    --sa-slider-thumb-shadow: var(--sa-shadow-control);
-    --sa-slider-min-h: calc(40 * var(--sa-unit));         /* vertical */
-    --sa-slider-mark-w: 2px;
-    --sa-slider-mark-h: calc(2.5 * var(--sa-unit));
-    --sa-slider-mark-bg: color-mix(in oklab, var(--sa-color-ink-muted) 35%, transparent);
-    --sa-slider-mark-bg-in-range: color-mix(in oklab, var(--sa-color-on-accent) 70%, transparent);
-    --sa-slider-mark-label-fg: var(--sa-color-ink-muted);
-    --sa-slider-mark-label-text: var(--sa-text-xs);
-    --sa-slider-value-fg: var(--sa-color-ink-muted);
-    --sa-slider-value-text: var(--sa-text-sm);
+    --_slider-thumb-bg: var(--sa-color-surface);
   }
   .dark :is(.sa-slider, .sa-slider-value) {
-    --sa-slider-thumb-bg: var(--sa-color-ink);
+    --_slider-thumb-bg: var(--sa-color-ink);
   }
 }
 
@@ -45,7 +29,7 @@
       flex-direction: column;
       width: auto;
       height: 100%;
-      min-height: var(--sa-slider-min-h);
+      min-height: calc(40 * var(--sa-unit));
     }
     &:is([data-disabled]:not([data-disabled="false"])) {
       opacity: var(--sa-disabled-opacity);
@@ -63,23 +47,23 @@
     position: relative;
     flex-grow: 1;
     overflow: hidden;
-    border-radius: var(--sa-slider-track-radius);
-    background: var(--sa-slider-track-bg);
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-surface-sunken);
     user-select: none;
 
     &[data-orientation="horizontal"] {
       width: 100%;
-      height: var(--sa-slider-track-size);
+      height: var(--sa-unit);
     }
     &[data-orientation="vertical"] {
-      width: var(--sa-slider-track-size);
+      width: var(--sa-unit);
       height: 100%;
     }
   }
 
   .sa-slider-range {
     position: absolute;
-    background: var(--sa-slider-range-bg);
+    background: var(--sa-color-accent-fill);
     user-select: none;
 
     &[data-orientation="horizontal"] {
@@ -96,10 +80,10 @@
     flex-shrink: 0;
     width: var(--sa-slider-thumb-size);
     height: var(--sa-slider-thumb-size);
-    border: var(--sa-border-width) solid var(--sa-slider-thumb-border);
-    border-radius: var(--sa-slider-thumb-radius);
-    background: var(--sa-slider-thumb-bg);
-    box-shadow: var(--sa-slider-thumb-shadow);
+    border: var(--sa-border-width) solid var(--sa-color-accent-fill);
+    border-radius: var(--sa-radius-round);
+    background: var(--_slider-thumb-bg);
+    box-shadow: var(--sa-shadow-control);
     outline: none;
     user-select: none;
     transition:
@@ -113,7 +97,7 @@
       inset: calc(-2 * var(--sa-unit));
     }
     &:is(:hover, :focus-visible, :active) {
-      box-shadow: var(--sa-slider-thumb-shadow), var(--sa-focus-shadow);
+      box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow);
     }
   }
 
@@ -135,25 +119,25 @@
   }
   .sa-slider-mark-tick {
     position: absolute;
-    width: var(--sa-slider-mark-w);
-    height: var(--sa-slider-mark-h);
+    width: 2px;
+    height: calc(2.5 * var(--sa-unit));
     border-radius: var(--sa-radius-round);
-    background: var(--sa-slider-mark-bg);
+    background: color-mix(in oklab, var(--sa-color-ink-muted) 35%, transparent);
     translate: -50% -50%;
 
     [data-orientation="vertical"] > & {
-      width: var(--sa-slider-mark-h);
-      height: var(--sa-slider-mark-w);
+      width: calc(2.5 * var(--sa-unit));
+      height: 2px;
     }
     [data-state="in-range"] > & {
-      background: var(--sa-slider-mark-bg-in-range);
+      background: color-mix(in oklab, var(--sa-color-on-accent) 70%, transparent);
     }
   }
   /* Keyed to the mark, its parent: a field around the slider also carries data-orientation. */
   .sa-slider-mark-label {
     position: absolute;
-    color: var(--sa-slider-mark-label-fg);
-    font-size: var(--sa-slider-mark-label-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
     font-variant-numeric: tabular-nums;
     line-height: 1.3333;
     white-space: nowrap;
@@ -195,8 +179,8 @@
   }
 
   .sa-slider-value {
-    color: var(--sa-slider-value-fg);
-    font-size: var(--sa-slider-value-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
     font-variant-numeric: tabular-nums;
   }
 

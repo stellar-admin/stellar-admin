@@ -2,29 +2,14 @@
    Replaces: .sa-breadcrumb-list, .sa-breadcrumb-item, .sa-breadcrumb-link, .sa-breadcrumb-page,
    .sa-breadcrumb-separator, .sa-breadcrumb-ellipsis */
 
-@layer sa.tokens {
-  .sa-breadcrumb {
-    --sa-breadcrumb-gap: calc(1.5 * var(--sa-unit));
-    --sa-breadcrumb-item-gap: calc(1 * var(--sa-unit));
-    --sa-breadcrumb-text: var(--sa-text-sm);
-    --sa-breadcrumb-fg: var(--sa-color-ink-muted);
-    --sa-breadcrumb-link-fg-hover: var(--sa-color-ink);
-    --sa-breadcrumb-page-fg: var(--sa-color-ink);
-    --sa-breadcrumb-page-weight: 400;
-    --sa-breadcrumb-separator-icon: 0.875rem;
-    --sa-breadcrumb-ellipsis-size: calc(5 * var(--sa-unit));
-    --sa-breadcrumb-ellipsis-icon: var(--sa-control-icon);
-  }
-}
-
 @layer sa.components {
   .sa-breadcrumb-list {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--sa-breadcrumb-gap);
-    color: var(--sa-breadcrumb-fg);
-    font-size: var(--sa-breadcrumb-text);
+    gap: calc(1.5 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
     line-height: var(--sa-leading-ui);
     list-style: none;
     overflow-wrap: break-word;
@@ -32,29 +17,29 @@
   .sa-breadcrumb-item {
     display: inline-flex;
     align-items: center;
-    gap: var(--sa-breadcrumb-item-gap);
+    gap: calc(1 * var(--sa-unit));
   }
   .sa-breadcrumb-link {
     transition: color var(--sa-motion-fast) var(--sa-motion-ease);
-    &:hover { color: var(--sa-breadcrumb-link-fg-hover); }
+    &:hover { color: var(--sa-color-ink); }
   }
   .sa-breadcrumb-page {
-    color: var(--sa-breadcrumb-page-fg);
-    font-weight: var(--sa-breadcrumb-page-weight);
+    color: var(--sa-color-ink);
+    font-weight: 400;
   }
   .sa-breadcrumb-separator > svg:not([class*="size-"]) {
-    width: var(--sa-breadcrumb-separator-icon);
-    height: var(--sa-breadcrumb-separator-icon);
+    width: 0.875rem;
+    height: 0.875rem;
   }
   .sa-breadcrumb-ellipsis {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--sa-breadcrumb-ellipsis-size);
-    height: var(--sa-breadcrumb-ellipsis-size);
+    width: calc(5 * var(--sa-unit));
+    height: calc(5 * var(--sa-unit));
     & > svg:not([class*="size-"]) {
-      width: var(--sa-breadcrumb-ellipsis-icon);
-      height: var(--sa-breadcrumb-ellipsis-icon);
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
     }
   }
   @media (prefers-reduced-motion: reduce) {

@@ -2,23 +2,14 @@
    label's rules sit at zero specificity under :where() so a field label's own rules win.
    Replaces: .sa-label */
 
-@layer sa.tokens {
-  .sa-label {
-    --sa-label-gap: calc(2 * var(--sa-unit));
-    --sa-label-text: var(--sa-text-sm);
-    --sa-label-weight: var(--sa-weight-control);
-    --sa-label-leading: 1;
-  }
-}
-
 @layer sa.components {
   :where(.sa-label) {
     display: flex;
     align-items: center;
-    gap: var(--sa-label-gap);
-    font-size: var(--sa-label-text);
-    font-weight: var(--sa-label-weight);
-    line-height: var(--sa-label-leading);
+    gap: calc(2 * var(--sa-unit));
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: 1;
     user-select: none;
   }
   /* A disabled control just before the label, or a field marked disabled. */

@@ -4,20 +4,19 @@
 @layer sa.tokens {
   .sa-input,
   .sa-input-group {
-    --sa-input-h: var(--sa-control-h);
-    --sa-input-px: var(--sa-control-px);
-    --sa-input-radius: var(--sa-radius-control);
-    --sa-input-text: var(--sa-text-control);
-    --sa-input-bg: var(--sa-color-field);
-    --sa-input-bg-disabled: var(--sa-color-field-disabled);
-    --sa-input-border: var(--sa-color-line-control);
-    --sa-input-border-hover: var(--sa-color-line-control-hover);
-    --sa-input-fg: var(--sa-color-ink);
-    --sa-input-placeholder-fg: var(--sa-color-ink-placeholder);
+    --_input-h: var(--sa-control-h);
+    --_input-radius: var(--sa-radius-control);
+    --_input-text: var(--sa-text-control);
+    --_input-bg: var(--sa-color-field);
+    --_input-bg-disabled: var(--sa-color-field-disabled);
+    --_input-border: var(--sa-color-line-control);
+    --_input-border-hover: var(--sa-color-line-control-hover);
+    --_input-fg: var(--sa-color-ink);
+    --_input-placeholder-fg: var(--sa-color-ink-placeholder);
     /* Recessed when tactile (--sa-relief 2); dark mode weights the inset more. */
     --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
     --_relief-k: 1;
-    --sa-input-shadow: var(--sa-shadow-control),
+    --_input-shadow: var(--sa-shadow-control),
       inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
   }
   .dark :is(.sa-input, .sa-input-group) {
@@ -29,49 +28,49 @@
   .sa-input {
     width: 100%;
     min-width: 0;
-    height: var(--sa-input-h);
-    padding: 0.25rem var(--sa-input-px);
-    border: var(--sa-border-width) solid var(--sa-input-border);
-    border-radius: var(--sa-input-radius);
-    background: var(--sa-input-bg);
+    height: var(--_input-h);
+    padding: 0.25rem var(--sa-control-px);
+    border: var(--sa-border-width) solid var(--_input-border);
+    border-radius: var(--_input-radius);
+    background: var(--_input-bg);
     background-clip: padding-box;
-    box-shadow: var(--sa-input-shadow);
-    color: var(--sa-input-fg);
-    font-size: var(--sa-input-text);
+    box-shadow: var(--_input-shadow);
+    color: var(--_input-fg);
+    font-size: var(--_input-text);
     outline: none;
     transition:
       border-color var(--sa-motion-fast) var(--sa-motion-ease),
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
 
     &::placeholder {
-      color: var(--sa-input-placeholder-fg);
+      color: var(--_input-placeholder-fg);
     }
     &::file-selector-button {
       display: inline-flex;
-      height: calc(var(--sa-input-h) - 2 * var(--sa-unit));
+      height: calc(var(--_input-h) - 2 * var(--sa-unit));
       margin-inline-end: calc(2 * var(--sa-unit));
       border: 0;
       background: transparent;
-      color: var(--sa-input-fg);
+      color: var(--_input-fg);
       font-size: var(--sa-text-sm);
       font-weight: var(--sa-weight-control);
     }
     &:hover:not(:disabled, :focus-visible) {
-      border-color: var(--sa-input-border-hover);
+      border-color: var(--_input-border-hover);
     }
     &:focus-visible {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-input-shadow), var(--sa-focus-shadow-field);
+      box-shadow: var(--_input-shadow), var(--sa-focus-shadow-field);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--sa-color-danger);
-      box-shadow: var(--sa-input-shadow), var(--sa-invalid-shadow);
+      box-shadow: var(--_input-shadow), var(--sa-invalid-shadow);
       &:focus-visible {
-        box-shadow: var(--sa-input-shadow), var(--sa-invalid-focus-shadow);
+        box-shadow: var(--_input-shadow), var(--sa-invalid-focus-shadow);
       }
     }
     &:disabled {
-      background: var(--sa-input-bg-disabled);
+      background: var(--_input-bg-disabled);
       opacity: var(--sa-disabled-opacity);
       cursor: not-allowed;
       pointer-events: none;

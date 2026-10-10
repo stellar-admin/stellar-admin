@@ -1,4 +1,4 @@
-/* Dropdown menu: the menu and submenu popovers and their rows. Reads the shared menu tokens (menu.css).
+/* Dropdown menu: the menu and submenu popovers and their rows. The surface modifiers are in menu.css.
    Replaces: .sa-dropdown-menu-content, .sa-dropdown-menu-content-logical, .sa-dropdown-menu-sub-content,
    .sa-dropdown-menu-subcontent, .sa-dropdown-menu-item, .sa-dropdown-menu-checkbox-item,
    .sa-dropdown-menu-radio-item, .sa-dropdown-menu-item-indicator, .sa-dropdown-menu-sub-trigger,
@@ -7,10 +7,10 @@
 @layer sa.components {
   /* Defaults the surface modifiers (menu.css) replace; :where() keeps them below any modifier. */
   :where(.sa-dropdown-menu-content, .sa-dropdown-menu-sub-content) {
-    --_bg: var(--sa-menu-bg);
-    --_highlight-bg: var(--sa-menu-item-highlight-bg);
-    --_highlight-fg: var(--sa-menu-item-highlight-fg);
-    --_separator-border: var(--sa-menu-separator-border);
+    --_bg: var(--sa-color-surface-raised);
+    --_highlight-bg: var(--sa-color-highlight);
+    --_highlight-fg: var(--sa-color-on-highlight);
+    --_separator-border: var(--sa-color-line);
   }
 
   /* Popovers anchored to their trigger (anchors.css places them; the gap comes from the
@@ -20,14 +20,14 @@
     z-index: 50;
     inset: auto;
     margin: 0;
-    min-width: var(--sa-menu-min-w);
-    padding: var(--sa-menu-py) var(--sa-menu-px);
+    min-width: 8rem;
+    padding: var(--sa-space-overlay) var(--sa-space-overlay);
     overflow: hidden auto;
-    border: var(--sa-border-width) solid var(--sa-menu-edge);
-    border-radius: var(--sa-menu-radius);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-overlay);
     background: var(--_bg);
-    box-shadow: var(--sa-menu-shadow);
-    color: var(--sa-menu-fg);
+    box-shadow: var(--sa-shadow-overlay);
+    color: var(--sa-color-ink);
     outline: none;
     position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
     opacity: 1;
@@ -45,7 +45,7 @@
     }
   }
   .sa-dropdown-menu-sub-content {
-    min-width: var(--sa-menu-sub-min-w);
+    min-width: 6rem;
   }
 
   .sa-dropdown-menu-item,
@@ -55,24 +55,24 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--sa-menu-item-gap);
-    padding: var(--sa-menu-item-py) var(--sa-menu-item-px);
-    border-radius: var(--sa-menu-item-radius);
+    gap: var(--sa-space-item-gap);
+    padding: var(--sa-space-item-y) var(--sa-space-item-x);
+    border-radius: var(--sa-radius-item);
     color: inherit;
-    font-size: var(--sa-menu-item-text);
-    line-height: var(--sa-menu-item-leading);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
     text-decoration: none;
     cursor: default;
     outline: none;
     user-select: none;
 
     & svg { flex-shrink: 0; pointer-events: none; }
-    & svg:not([class*="size-"]) { width: var(--sa-menu-item-icon); height: var(--sa-menu-item-icon); }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
     &:is(:focus, [data-highlighted]) {
       background: var(--_highlight-bg);
       color: var(--_highlight-fg);
     }
-    &[data-inset] { padding-inline-start: var(--sa-menu-item-inset); }
+    &[data-inset] { padding-inline-start: calc(var(--sa-space-item-x) + var(--sa-control-icon) + var(--sa-space-item-gap)); }
     &[data-disabled] { opacity: var(--sa-disabled-opacity); pointer-events: none; }
   }
   .sa-dropdown-menu-sub-trigger {
@@ -83,15 +83,15 @@
     & > svg:last-child { margin-inline-start: auto; }
   }
   .sa-dropdown-menu-item[data-variant="destructive"] {
-    color: var(--sa-menu-item-danger-fg);
+    color: var(--sa-color-danger-text);
     &:is(:focus, [data-highlighted]) {
-      background: var(--sa-menu-item-danger-highlight-bg);
-      color: var(--sa-menu-item-danger-fg);
+      background: var(--sa-color-danger-soft);
+      color: var(--sa-color-danger-text);
     }
   }
   .sa-dropdown-menu-checkbox-item,
   .sa-dropdown-menu-radio-item {
-    padding-inline-end: calc(var(--sa-menu-item-icon) + 4 * var(--sa-unit));
+    padding-inline-end: calc(var(--sa-control-icon) + 4 * var(--sa-unit));
   }
   .sa-dropdown-menu-item-indicator {
     position: absolute;
@@ -99,35 +99,35 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--sa-menu-indicator-fg);
+    color: currentColor;
     pointer-events: none;
 
     [data-state="unchecked"] > & { display: none; }
   }
 
   .sa-dropdown-menu-label {
-    padding: var(--sa-menu-label-pt) var(--sa-menu-item-px) var(--sa-menu-label-pb);
-    color: var(--sa-menu-label-fg);
-    font-family: var(--sa-menu-label-font);
-    font-size: var(--sa-menu-label-text);
-    font-weight: var(--sa-menu-label-weight);
-    letter-spacing: var(--sa-menu-label-tracking);
-    line-height: var(--sa-menu-label-leading);
-    text-transform: var(--sa-menu-label-transform);
+    padding: var(--sa-space-item-y) var(--sa-space-item-x) var(--sa-space-item-y);
+    color: var(--sa-color-ink-muted);
+    font-family: var(--sa-section-label-font);
+    font-size: var(--sa-section-label-text);
+    font-weight: var(--sa-section-label-weight);
+    letter-spacing: var(--sa-section-label-tracking);
+    line-height: 1rem;
+    text-transform: var(--sa-section-label-transform);
 
-    &[data-inset] { padding-inline-start: var(--sa-menu-item-inset); }
+    &[data-inset] { padding-inline-start: calc(var(--sa-space-item-x) + var(--sa-control-icon) + var(--sa-space-item-gap)); }
   }
   .sa-dropdown-menu-separator {
     height: 1px;
-    margin: var(--sa-menu-separator-my) var(--sa-menu-separator-mx);
+    margin: var(--sa-unit) calc(-1 * var(--sa-space-overlay));
     background: var(--_separator-border);
   }
   .sa-dropdown-menu-shortcut {
     margin-inline-start: auto;
-    color: var(--sa-menu-shortcut-fg);
-    font-family: var(--sa-menu-shortcut-font);
-    font-size: var(--sa-menu-shortcut-text);
-    letter-spacing: var(--sa-menu-shortcut-tracking);
+    color: var(--sa-color-ink-muted);
+    font-family: inherit;
+    font-size: var(--sa-text-xs);
+    letter-spacing: 0.1em;
     line-height: calc(4 / 3);
 
     :is(:focus, [data-highlighted], [data-open]) > & { color: inherit; }

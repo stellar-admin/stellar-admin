@@ -3,32 +3,14 @@
    Replaces: .sa-message, .sa-message-avatar, .sa-message-content, .sa-message-header,
    .sa-message-footer, .sa-message-group */
 
-@layer sa.tokens {
-  .sa-message,
-  .sa-message-group {
-    --sa-message-gap: calc(2 * var(--sa-unit));
-    --sa-message-text: var(--sa-text-sm);
-    --sa-message-content-gap: calc(2.5 * var(--sa-unit));
-    --sa-message-avatar-min-w: calc(8 * var(--sa-unit));
-    --sa-message-avatar-radius: var(--sa-radius-round);
-    --sa-message-avatar-bg: var(--sa-color-surface-sunken);
-    --sa-message-avatar-offset: calc(8 * var(--sa-unit));     /* lifts the avatar to the bubble above a footer */
-    --sa-message-header-px: calc(3 * var(--sa-unit));         /* lines the text up with the bubble's */
-    --sa-message-header-text: var(--sa-text-xs);
-    --sa-message-header-weight: var(--sa-weight-control);
-    --sa-message-header-fg: var(--sa-color-ink-muted);
-    --sa-message-group-gap: calc(2 * var(--sa-unit));
-  }
-}
-
 @layer sa.components {
   .sa-message {
     position: relative;
     display: flex;
-    gap: var(--sa-message-gap);
+    gap: calc(2 * var(--sa-unit));
     width: 100%;
     min-width: 0;
-    font-size: var(--sa-message-text);
+    font-size: var(--sa-text-sm);
     line-height: var(--sa-leading-ui);
     &[data-align="end"] {
       flex-direction: row-reverse;
@@ -41,18 +23,18 @@
     align-self: flex-end;
     justify-content: center;
     width: fit-content;
-    min-width: var(--sa-message-avatar-min-w);
+    min-width: calc(8 * var(--sa-unit));
     overflow: hidden;
-    border-radius: var(--sa-message-avatar-radius);
-    background: var(--sa-message-avatar-bg);
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-surface-sunken);
     .sa-message:has([data-slot="message-footer"]) > & {
-      translate: 0 calc(-1 * var(--sa-message-avatar-offset));
+      translate: 0 calc(-1 * calc(8 * var(--sa-unit)));
     }
   }
   .sa-message-content {
     display: flex;
     flex-direction: column;
-    gap: var(--sa-message-content-gap);
+    gap: calc(2.5 * var(--sa-unit));
     width: 100%;
     min-width: 0;
     overflow-wrap: break-word;
@@ -66,11 +48,11 @@
     align-items: center;
     min-width: 0;
     max-width: 100%;
-    padding-inline: var(--sa-message-header-px);
-    color: var(--sa-message-header-fg);
-    font-size: var(--sa-message-header-text);
-    font-weight: var(--sa-message-header-weight);
-    line-height: calc(var(--sa-message-header-text) * 1.3333);
+    padding-inline: calc(3 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
+    line-height: calc(var(--sa-text-xs) * 1.3333);
     .sa-message:has([data-variant="ghost"]) & {
       padding-inline: 0;
     }
@@ -83,7 +65,7 @@
   .sa-message-group {
     display: flex;
     flex-direction: column;
-    gap: var(--sa-message-group-gap);
+    gap: calc(2 * var(--sa-unit));
     min-width: 0;
   }
 }

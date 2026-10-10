@@ -3,79 +3,36 @@
    .sa-command-input-icon, .sa-command-input, .sa-command-list, .sa-command-empty, .sa-command-group,
    .sa-command-separator, .sa-command-item, .sa-command-item-indicator, .sa-command-shortcut */
 
-@layer sa.tokens {
-  .sa-command {
-    --sa-command-bg: var(--sa-color-surface-raised);
-    --sa-command-fg: var(--sa-color-ink);
-    --sa-command-radius: var(--sa-radius-overlay);
-    --sa-command-p: var(--sa-space-overlay);
-    --sa-command-input-h: var(--sa-control-h);
-    --sa-command-input-bg: var(--sa-color-field);
-    --sa-command-input-border: var(--sa-color-line-control);
-    --sa-command-input-radius: max(0px, calc(var(--sa-command-radius) - var(--sa-command-p)));
-    --sa-command-input-text: var(--sa-text-control);
-    --sa-command-input-icon: var(--sa-control-icon);
-    --sa-command-input-fg: var(--sa-color-ink);
-    --sa-command-input-placeholder-fg: var(--sa-color-ink-placeholder);
-    --sa-command-list-max-h: 18rem;
-    --sa-command-empty-py: calc(6 * var(--sa-unit));
-    --sa-command-empty-text: var(--sa-text-body);
-    --sa-command-heading-font: var(--sa-section-label-font);
-    --sa-command-heading-text: var(--sa-section-label-text);
-    --sa-command-heading-weight: var(--sa-section-label-weight);
-    --sa-command-heading-transform: var(--sa-section-label-transform);
-    --sa-command-heading-tracking: var(--sa-section-label-tracking);
-    --sa-command-heading-leading: 1rem;
-    --sa-command-heading-fg: var(--sa-color-ink-muted);
-    --sa-command-heading-px: calc(2 * var(--sa-unit));
-    --sa-command-heading-py: calc(1.5 * var(--sa-unit));
-    --sa-command-separator-border: var(--sa-color-line);
-    --sa-command-item-px: calc(2 * var(--sa-unit));
-    --sa-command-item-py: calc(1.5 * var(--sa-unit));
-    --sa-command-item-gap: calc(2 * var(--sa-unit));
-    --sa-command-item-radius: var(--sa-radius-item);
-    --sa-command-item-text: var(--sa-text-body);
-    --sa-command-item-leading: var(--sa-leading-ui);
-    --sa-command-item-icon: var(--sa-control-icon);
-    --sa-command-item-selected-bg: var(--sa-color-highlight);
-    --sa-command-item-selected-fg: var(--sa-color-on-highlight);
-    --sa-command-shortcut-font: inherit;
-    --sa-command-shortcut-text: var(--sa-text-xs);
-    --sa-command-shortcut-tracking: 0.1em;
-    --sa-command-shortcut-fg: var(--sa-color-ink-muted);
-  }
-}
-
 @layer sa.components {
   .sa-command {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: var(--sa-command-p);
+    padding: var(--sa-space-overlay);
     overflow: hidden;
-    border-radius: var(--sa-command-radius);
-    background: var(--sa-command-bg);
-    color: var(--sa-command-fg);
+    border-radius: var(--sa-radius-overlay);
+    background: var(--sa-color-surface-raised);
+    color: var(--sa-color-ink);
   }
 
   .sa-command-input-wrapper {
-    padding: var(--sa-command-p) var(--sa-command-p) 0;
+    padding: var(--sa-space-overlay) var(--sa-space-overlay) 0;
   }
   /* The search field is an input group (input-group.css), out-ranked by selector. */
   .sa-input-group.sa-command-input-group {
-    height: var(--sa-command-input-h);
-    border-color: var(--sa-command-input-border);
-    border-radius: var(--sa-command-input-radius);
-    background: var(--sa-command-input-bg);
+    height: var(--sa-control-h);
+    border-color: var(--sa-color-line-control);
+    border-radius: max(0px, calc(var(--sa-radius-overlay) - var(--sa-space-overlay)));
+    background: var(--sa-color-field);
     box-shadow: none;
 
     & > .sa-input-group-addon { padding-inline-start: calc(2 * var(--sa-unit)); }
   }
   .sa-command-input-icon {
     flex-shrink: 0;
-    width: var(--sa-command-input-icon);
-    height: var(--sa-command-input-icon);
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
   }
   .sa-command-input {
     flex: 1;
@@ -85,69 +42,69 @@
     padding: 0 calc(2 * var(--sa-unit)) 0 calc(1.5 * var(--sa-unit));
     border: 0;
     background: transparent;
-    color: var(--sa-command-input-fg);
-    font-size: var(--sa-command-input-text);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
     outline: none;
 
-    &::placeholder { color: var(--sa-command-input-placeholder-fg); }
+    &::placeholder { color: var(--sa-color-ink-placeholder); }
     &:disabled { opacity: var(--sa-disabled-opacity); cursor: not-allowed; }
   }
 
   .sa-command-list {
-    max-height: var(--sa-command-list-max-h);
+    max-height: 18rem;
     overflow: hidden auto;
-    scroll-padding-block: var(--sa-command-p);
+    scroll-padding-block: var(--sa-space-overlay);
     outline: none;
     scrollbar-width: none;
 
     &::-webkit-scrollbar { display: none; }
   }
   .sa-command-empty {
-    padding-block: var(--sa-command-empty-py);
-    font-size: var(--sa-command-empty-text);
+    padding-block: calc(6 * var(--sa-unit));
+    font-size: var(--sa-text-body);
     text-align: center;
   }
   .sa-command-group {
-    padding: var(--sa-command-p);
+    padding: var(--sa-space-overlay);
     overflow: hidden;
-    color: var(--sa-command-fg);
+    color: var(--sa-color-ink);
 
     & [data-slot="command-group-heading"] {
-      padding: var(--sa-command-heading-py) var(--sa-command-heading-px);
-      color: var(--sa-command-heading-fg);
-      font-family: var(--sa-command-heading-font);
-      font-size: var(--sa-command-heading-text);
-      font-weight: var(--sa-command-heading-weight);
-      letter-spacing: var(--sa-command-heading-tracking);
-      line-height: var(--sa-command-heading-leading);
-      text-transform: var(--sa-command-heading-transform);
+      padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+      color: var(--sa-color-ink-muted);
+      font-family: var(--sa-section-label-font);
+      font-size: var(--sa-section-label-text);
+      font-weight: var(--sa-section-label-weight);
+      letter-spacing: var(--sa-section-label-tracking);
+      line-height: 1rem;
+      text-transform: var(--sa-section-label-transform);
     }
   }
   .sa-command-separator {
     height: 1px;
-    margin-inline: calc(-1 * var(--sa-command-p));
-    background: var(--sa-command-separator-border);
+    margin-inline: calc(-1 * var(--sa-space-overlay));
+    background: var(--sa-color-line);
   }
   .sa-command-item {
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--sa-command-item-gap);
-    padding: var(--sa-command-item-py) var(--sa-command-item-px);
-    border-radius: var(--sa-command-item-radius);
+    gap: calc(2 * var(--sa-unit));
+    padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-item);
     color: inherit;
-    font-size: var(--sa-command-item-text);
-    line-height: var(--sa-command-item-leading);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
     text-decoration: none;
     cursor: default;
     outline: none;
     user-select: none;
 
     & svg { flex-shrink: 0; pointer-events: none; }
-    & svg:not([class*="size-"]) { width: var(--sa-command-item-icon); height: var(--sa-command-item-icon); }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
     &[data-selected="true"] {
-      background: var(--sa-command-item-selected-bg);
-      color: var(--sa-command-item-selected-fg);
+      background: var(--sa-color-highlight);
+      color: var(--sa-color-on-highlight);
     }
     &[data-disabled="true"] { opacity: var(--sa-disabled-opacity); pointer-events: none; }
   }
@@ -161,10 +118,10 @@
   }
   .sa-command-shortcut {
     margin-inline-start: auto;
-    color: var(--sa-command-shortcut-fg);
-    font-family: var(--sa-command-shortcut-font);
-    font-size: var(--sa-command-shortcut-text);
-    letter-spacing: var(--sa-command-shortcut-tracking);
+    color: var(--sa-color-ink-muted);
+    font-family: inherit;
+    font-size: var(--sa-text-xs);
+    letter-spacing: 0.1em;
     line-height: calc(4 / 3);
 
     [data-selected="true"] > & { color: inherit; }

@@ -12,70 +12,12 @@
    .sa-field-separator-line, .sa-field-set, .sa-field-title */
 
 @layer sa.tokens {
-  .sa-field {
-    --sa-field-gap: calc(2 * var(--sa-unit));
-    --sa-field-invalid-fg: var(--sa-color-danger-text);
-  }
-  .sa-field-set {
-    --sa-field-set-gap: calc(4 * var(--sa-unit));
-    --sa-field-set-gap-sm: calc(3 * var(--sa-unit)); /* around a checkbox or radio list */
-  }
-  .sa-field-legend {
-    --sa-field-legend-mb: calc(1.5 * var(--sa-unit));
-    --sa-field-legend-text: var(--sa-text-base);
-    --sa-field-legend-text-sm: var(--sa-text-sm); /* the label variant */
-    --sa-field-legend-weight: var(--sa-weight-control);
-    --sa-field-legend-font: inherit;
-  }
-  .sa-field-group {
-    --sa-field-group-gap: calc(5 * var(--sa-unit));
-    --sa-field-group-gap-sm: calc(4 * var(--sa-unit)); /* nested groups */
-    --sa-field-group-list-gap: calc(3 * var(--sa-unit)); /* checkbox and radio lists */
-  }
-  .sa-field-content {
-    --sa-field-content-gap: calc(0.5 * var(--sa-unit));
-  }
   .sa-field-label {
-    --sa-field-label-gap: calc(2 * var(--sa-unit));
-    --sa-field-label-text: var(--sa-text-sm);
-    --sa-field-label-leading: 1.375;
-    /* Choice cards */
-    --sa-field-card-p: calc(2.5 * var(--sa-unit));
-    --sa-field-card-radius: var(--sa-radius-control);
-    --sa-field-card-bg: var(--sa-color-field);
-    --sa-field-card-bg-hover: var(--sa-color-hover);
-    --sa-field-card-border: var(--sa-color-line-control);
-    --sa-field-card-border-hover: var(--sa-color-line-control-hover);
-    --sa-field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 6%, var(--sa-color-field));
-    --sa-field-card-selected-border: color-mix(in oklab, var(--sa-color-accent) 45%, var(--sa-color-line-control));
-    --sa-field-card-shadow: var(--sa-shadow-control);
+    /* Choice cards: the selected card's accent wash. */
+    --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 6%, var(--sa-color-field));
   }
   .dark .sa-field-label {
-    --sa-field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
-  }
-  .sa-field-title {
-    --sa-field-title-gap: calc(2 * var(--sa-unit));
-    --sa-field-title-text: var(--sa-text-sm);
-    --sa-field-title-weight: var(--sa-weight-control);
-    --sa-field-title-leading: 1.375;
-  }
-  .sa-field-description {
-    --sa-field-description-fg: var(--sa-color-ink-muted);
-    --sa-field-description-text: var(--sa-text-sm);
-    --sa-field-description-leading: 1.5;
-    --sa-field-description-link-hover-fg: var(--sa-color-accent-text);
-  }
-  .sa-field-error {
-    --sa-field-error-fg: var(--sa-color-danger-text);
-    --sa-field-error-text: var(--sa-text-sm);
-  }
-  .sa-field-separator {
-    --sa-field-separator-h: calc(5 * var(--sa-unit));
-    --sa-field-separator-my: calc(-2 * var(--sa-unit));
-    --sa-field-separator-gap: calc(2 * var(--sa-unit));
-    --sa-field-separator-fg: var(--sa-color-ink-muted);
-    --sa-field-separator-text: var(--sa-text-sm);
-    --sa-field-separator-line: var(--sa-color-line);
+    --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
   }
 }
 
@@ -84,41 +26,41 @@
   .sa-field-set {
     display: flex;
     flex-direction: column;
-    gap: var(--sa-field-set-gap);
+    gap: calc(4 * var(--sa-unit));
     &:has(> [data-slot="checkbox-group"], > [data-slot="radio-group"]) {
-      gap: var(--sa-field-set-gap-sm);
+      gap: calc(3 * var(--sa-unit));
     }
   }
   .sa-field-legend {
-    margin-bottom: var(--sa-field-legend-mb);
-    font-family: var(--sa-field-legend-font);
-    font-size: var(--sa-field-legend-text);
-    font-weight: var(--sa-field-legend-weight);
+    margin-bottom: calc(1.5 * var(--sa-unit));
+    font-family: inherit;
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-control);
     &[data-variant="label"] {
-      font-size: var(--sa-field-legend-text-sm);
+      font-size: var(--sa-text-sm);
     }
   }
   .sa-field-group {
     container: field-group / inline-size;
     display: flex;
     flex-direction: column;
-    gap: var(--sa-field-group-gap);
+    gap: calc(5 * var(--sa-unit));
     width: 100%;
     &:is([data-slot="checkbox-group"], [data-slot="radio-group"]) {
-      gap: var(--sa-field-group-list-gap);
+      gap: calc(3 * var(--sa-unit));
     }
     & > .sa-field-group[data-slot="field-group"] {
-      gap: var(--sa-field-group-gap-sm);
+      gap: calc(4 * var(--sa-unit));
     }
   }
 
   /* --- Field -------------------------------------------------------------------------------- */
   .sa-field {
     display: flex;
-    gap: var(--sa-field-gap);
+    gap: calc(2 * var(--sa-unit));
     width: 100%;
     &[data-invalid="true"] {
-      color: var(--sa-field-invalid-fg);
+      color: var(--sa-color-danger-text);
     }
     &[data-orientation="vertical"] {
       flex-direction: column;
@@ -153,35 +95,35 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: var(--sa-field-content-gap);
+    gap: calc(0.5 * var(--sa-unit));
     line-height: 1.375;
   }
 
   /* --- Label, title, description, error ------------------------------------------------------ */
   .sa-field-label {
     display: flex;
-    gap: var(--sa-field-label-gap);
+    gap: calc(2 * var(--sa-unit));
     width: fit-content;
-    font-size: var(--sa-field-label-text);
-    line-height: var(--sa-field-label-leading);
+    font-size: var(--sa-text-sm);
+    line-height: 1.375;
   }
   .sa-field-title {
     display: flex;
     align-items: center;
-    gap: var(--sa-field-title-gap);
+    gap: calc(2 * var(--sa-unit));
     width: fit-content;
-    font-size: var(--sa-field-title-text);
-    font-weight: var(--sa-field-title-weight);
-    line-height: var(--sa-field-title-leading);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: 1.375;
   }
   .sa-field[data-disabled="true"] :is(.sa-field-label, .sa-field-title) {
     opacity: var(--sa-disabled-opacity);
   }
   .sa-field-description {
-    color: var(--sa-field-description-fg);
-    font-size: var(--sa-field-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
     font-weight: 400;
-    line-height: var(--sa-field-description-leading);
+    line-height: 1.5;
     text-align: start;
     [data-variant="legend"] + & {
       margin-top: calc(-1.5 * var(--sa-unit));
@@ -196,7 +138,7 @@
       text-decoration: underline;
       text-underline-offset: 4px;
       &:hover {
-        color: var(--sa-field-description-link-hover-fg);
+        color: var(--sa-color-accent-text);
       }
     }
   }
@@ -205,8 +147,8 @@
   }
   .sa-field-error {
     display: none;
-    color: var(--sa-field-error-fg);
-    font-size: var(--sa-field-error-text);
+    color: var(--sa-color-danger-text);
+    font-size: var(--sa-text-sm);
     font-weight: 400;
     line-height: var(--sa-leading-ui);
     &.field-validation-error {
@@ -218,48 +160,48 @@
   .sa-field-label:has(> [data-slot="field"]) {
     flex-direction: column;
     width: 100%;
-    border: var(--sa-border-width) solid var(--sa-field-card-border);
-    border-radius: var(--sa-field-card-radius);
-    background: var(--sa-field-card-bg);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-field);
     background-clip: padding-box;
-    box-shadow: var(--sa-field-card-shadow);
+    box-shadow: var(--sa-shadow-control);
     transition:
       background-color var(--sa-motion-fast) var(--sa-motion-ease),
       border-color var(--sa-motion-fast) var(--sa-motion-ease),
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
     & > [data-slot="field"] {
-      padding: var(--sa-field-card-p);
+      padding: calc(2.5 * var(--sa-unit));
     }
     &:hover:not(:has(:disabled, [data-disabled])) {
-      border-color: var(--sa-field-card-border-hover);
-      background: var(--sa-field-card-bg-hover);
+      border-color: var(--sa-color-line-control-hover);
+      background: var(--sa-color-hover);
     }
     &:has(:checked) {
-      border-color: var(--sa-field-card-selected-border);
-      background: var(--sa-field-card-selected-bg);
+      border-color: color-mix(in oklab, var(--sa-color-accent) 45%, var(--sa-color-line-control));
+      background: var(--_field-card-selected-bg);
     }
     &:has(:focus-visible) {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-field-card-shadow), var(--sa-focus-shadow-field);
+      box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
     }
   }
 
   /* --- Separator: a rule, with optional text in a gap in the middle --------------------------- */
   .sa-field-separator {
     position: relative;
-    height: var(--sa-field-separator-h);
-    margin-block: var(--sa-field-separator-my);
-    font-size: var(--sa-field-separator-text);
+    height: calc(5 * var(--sa-unit));
+    margin-block: calc(-2 * var(--sa-unit));
+    font-size: var(--sa-text-sm);
     line-height: var(--sa-leading-ui);
     &[data-content="true"] {
       display: flex;
       align-items: center;
-      gap: var(--sa-field-separator-gap);
+      gap: calc(2 * var(--sa-unit));
       &::before,
       &::after {
         content: "";
         flex: 1;
-        border-top: var(--sa-border-width) solid var(--sa-field-separator-line);
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
       }
     }
   }
@@ -276,7 +218,7 @@
     position: relative;
     display: block;
     width: fit-content;
-    color: var(--sa-field-separator-fg);
+    color: var(--sa-color-ink-muted);
   }
   @media (prefers-reduced-motion: reduce) {
     .sa-field-label {

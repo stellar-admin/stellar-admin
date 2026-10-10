@@ -3,58 +3,29 @@
    Replaces: .sa-card, .sa-card-header, .sa-card-title, .sa-card-description, .sa-card-action,
    .sa-card-content, .sa-card-footer */
 
-@layer sa.tokens {
-  .sa-card {
-    --sa-card-p: var(--sa-space-container);
-    --sa-card-p-sm: var(--sa-space-container-sm);
-    --sa-card-gap: var(--sa-card-p);
-    --sa-card-gap-sm: var(--sa-card-p-sm);
-    --sa-card-radius: var(--sa-radius-container);
-    --sa-card-bg: var(--sa-color-surface);
-    --sa-card-fg: var(--sa-color-ink);
-    --sa-card-edge: var(--sa-color-line);
-    --sa-card-shadow: var(--sa-shadow-container);
-    --sa-card-text: var(--sa-text-body);
-    --sa-card-leading: var(--sa-leading-ui);
-    --sa-card-header-gap: var(--sa-unit);
-    --sa-card-header-border: var(--sa-color-line);       /* the rule an author's border-b draws */
-    --sa-card-title-text: var(--sa-text-base);
-    --sa-card-title-text-sm: var(--sa-text-sm);
-    --sa-card-title-weight: var(--sa-weight-heading);
-    --sa-card-title-leading: 1.375;
-    --sa-card-description-text: var(--sa-text-body);
-    --sa-card-description-fg: var(--sa-color-ink-muted);
-    --sa-card-footer-bg: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--sa-footer-fill) * 100%), transparent);
-    --sa-card-footer-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-footer-rule) * 100%), transparent);
-    --sa-card-footer-gap: calc(2 * var(--sa-unit));
-    --sa-card-footer-text: inherit;
-    --sa-card-footer-fg: inherit;
-  }
-}
-
 @layer sa.components {
   .sa-card {
-    --_card-p: var(--sa-card-p);
-    --_card-gap: var(--sa-card-gap);
-    --_card-title-text: var(--sa-card-title-text);
+    --_card-p: var(--sa-space-container);
+    --_card-gap: var(--sa-space-container);
+    --_card-title-text: var(--sa-text-base);
 
     display: flex;
     flex-direction: column;
     gap: var(--_card-gap);
     padding-block: var(--_card-p);
     overflow: hidden;
-    border: var(--sa-border-width) solid var(--sa-card-edge);
-    border-radius: var(--sa-card-radius);
-    background: var(--sa-card-bg);
-    box-shadow: var(--sa-card-shadow);
-    color: var(--sa-card-fg);
-    font-size: var(--sa-card-text);
-    line-height: var(--sa-card-leading);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    box-shadow: var(--sa-shadow-container);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
 
     &[data-size="sm"] {
-      --_card-p: var(--sa-card-p-sm);
-      --_card-gap: var(--sa-card-gap-sm);
-      --_card-title-text: var(--sa-card-title-text-sm);
+      --_card-p: var(--sa-space-container-sm);
+      --_card-gap: var(--sa-space-container-sm);
+      --_card-title-text: var(--sa-text-sm);
     }
     &:has(> .sa-card-footer) { padding-bottom: 0; }
     &:has(> img:first-child) { padding-top: 0; }
@@ -64,9 +35,9 @@
     display: grid;
     grid-auto-rows: min-content;
     align-items: start;
-    gap: var(--sa-card-header-gap);
+    gap: var(--sa-unit);
     padding-inline: var(--_card-p);
-    border-bottom-color: var(--sa-card-header-border);
+    border-bottom-color: var(--sa-color-line);
 
     &:has(> [data-slot="card-description"]) { grid-template-rows: auto auto; }
     &:has(> [data-slot="card-action"]) { grid-template-columns: 1fr auto; }
@@ -75,12 +46,12 @@
   .sa-card-title {
     font-family: var(--sa-font-heading);
     font-size: var(--_card-title-text);
-    font-weight: var(--sa-card-title-weight);
-    line-height: var(--sa-card-title-leading);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.375;
   }
   .sa-card-description {
-    color: var(--sa-card-description-fg);
-    font-size: var(--sa-card-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
   }
   .sa-card-action {
     grid-column-start: 2;
@@ -92,12 +63,12 @@
   .sa-card-footer {
     display: flex;
     align-items: center;
-    gap: var(--sa-card-footer-gap);
+    gap: calc(2 * var(--sa-unit));
     /* With neither a band nor a rule, the footer sits flush: the card's gap already spaces it. */
     padding: calc(var(--_card-p) * max(var(--sa-footer-fill), var(--sa-footer-rule))) var(--_card-p) var(--_card-p);
-    border-top: var(--sa-border-width) solid var(--sa-card-footer-border);
-    background: var(--sa-card-footer-bg);
-    color: var(--sa-card-footer-fg);
-    font-size: var(--sa-card-footer-text);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--sa-footer-rule) * 100%), transparent);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--sa-footer-fill) * 100%), transparent);
+    color: inherit;
+    font-size: inherit;
   }
 }

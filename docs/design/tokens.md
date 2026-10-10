@@ -8,8 +8,7 @@ The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the
 | --- | --- | --- |
 | 0 | Knobs: design decisions (`--sa-accent`, `--sa-radius`, `--sa-density`, …) | Themes and presets, usually only these |
 | 1 | Foundation tokens, derived from the knobs (`--sa-color-*`, `--sa-radius-*`, `--sa-space-*`, …) | Themes, rarely, to override one derivation |
-| 2 | Component tokens, defaulting to tier 1 (`--sa-button-*`, `--sa-card-*`, …) | Themes, for one component's exception, on the component's selector |
-| 3 | Raw rules in `@layer sa.overrides` | Escape hatch; each rule points to a missing token |
+| 2 | Raw rules in `@layer sa.overrides` | Escape hatch; each rule points to a missing knob |
 
 Layer order: `theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities`. Tailwind's layers are named so that an author's utilities stay above the components on a page that also loads Tailwind CSS; the first stylesheet that declares layers fixes the order, so a Tailwind build loaded before `stellar-admin.css` starts with the same statement. Themes and presets go in `sa.theme`.
 
@@ -61,7 +60,7 @@ Optional: `--sa-radius-outer` (container corners, otherwise derived from `--sa-r
 | `--sa-type-scale` | `1` | Text sizes |
 | `--sa-font-sans` | Inter, system fallbacks | Body and control font |
 | `--sa-font-heading` | `var(--sa-font-sans)` | Titles |
-| `--sa-font-mono` | system monospace | Code (keyboard keys stay sans; a theme sets `--sa-kbd-font: var(--sa-font-mono)` for mono keys) |
+| `--sa-font-mono` | system monospace | Code (keyboard keys stay sans; a theme sets the optional `--sa-kbd-font: var(--sa-font-mono)` for mono keys) |
 | `--sa-weight-control` | `500` | Buttons, tabs, menu items |
 | `--sa-weight-heading` | `600` | Titles |
 | `--sa-leading-body` | `1.5` | Line height of running text |
@@ -91,7 +90,7 @@ Switches are 0 or 1 unless stated; keyword switches take a CSS keyword.
 | `--sa-filled-secondary` | `1` | Secondary buttons: 1 sunken fill, 0 bordered surface |
 | `--sa-link-decoration` | `none` | Keyword: link buttons underlined at rest |
 
-Optional: `--sa-dialog-footer-fill`, `--sa-dialog-footer-rule` (dialog footers, otherwise as card footers).
+Optional: `--sa-dialog-footer-fill`, `--sa-dialog-footer-rule` (dialog footers, otherwise as card footers); `--sa-kbd-font` (keyboard keys, otherwise sans).
 
 ### Fixed
 
@@ -123,27 +122,12 @@ Focus and validation: `--sa-focus-border`, `--sa-focus-ring-color`, `--sa-focus-
 
 Elevation: `--sa-shadow-control`, `-container`, `-raised` (selected tab), `-overlay` (menus, toasts), `-dialog`. Never `none`: they are composed into shadow lists.
 
-## Component tokens (tier 2)
+## Components
 
-Grammar: `--sa-<component>[-<variant or part>][-<selection>]-<property>[-<size>][-<interaction>]`.
+Components have no tokens of their own. Their rules read the knobs and foundation tokens directly (`var(--sa-color-surface)`, `var(--sa-radius-control)`, `calc(4 * var(--sa-unit))`), so a theme changes every component through the tiers above. The only per-component names are the optional knobs listed with the switches.
 
-- Component: the tag helper's name, kebab-case (`button`, `data-grid`, `page-header`, `pagination`). The dropdown, context and menubar menus share `menu`.
-- Variant or part: `primary`, `secondary`, `outline`, `ghost`, `link`, `danger` (variants, named for their role rather than the enum: `primary` is `ButtonVariant.Default`, `danger` is `Destructive`); `header`, `footer`, `title`, `description`, `item`, `label`, `trigger`, `list`, `thumb`, `track`, … (parts).
-- Selection: a persistent state, before the property: `selected` (tabs), `current` (sidebar item, pagination), `on` (switch).
-- Property: `bg`, `fg`, `border`, `edge` (a container's outline colour), `shadow`, `radius`, `h`, `w`, `min-w`, `max-w`, `p`, `px`, `py`, `pt`, `pb`, `ps`, `pe`, `mt`, `gap`, `text` (font size), `weight`, `leading`, `tracking`, `transform`, `font`, `icon` (icon size), `decoration`, `inset`, `indent`, `offset`, `size`, `bleed`, `border-width`, `border-mix`, `mark`.
-- Size: `xs`, `sm`, `lg`, after the property (`--sa-button-h-sm`).
-- Interaction: `hover`, `active` (pressed), `disabled`, last (`--sa-button-primary-bg-hover`).
-
-Tier 2 tokens are declared on the component's own selector, never on `:root`, so a theme sets them there too:
-
-```css
-@layer sa.theme {
-  .sa-badge { --sa-badge-weight: 600; }
-}
-```
-
-Each component's page documents its tokens. A tier 2 token not in a component's docs is internal.
+A theme that needs one component to differ writes a rule in `sa.overrides`. A need that recurs across themes becomes a new knob.
 
 ## Private variables
 
-`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes, `sa-menu-accent-bold`) pick between tier 2 tokens through them, so a theme can restyle both the default and the modified state.
+`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes, `sa-menu-accent-bold`) and dark mode set them to pick a component's values. Scripts also publish measured values on components (`--sa-slider-thumb-size`, `--sa-table-row-detail-width`, `-inset-start`, `-inset-end`); these are internal too.

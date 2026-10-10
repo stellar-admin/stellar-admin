@@ -1,17 +1,10 @@
 /* Skeleton: a pulsing placeholder block, sized by the author.
    Replaces: .sa-skeleton */
 
-@layer sa.tokens {
-  .sa-skeleton {
-    --sa-skeleton-bg: var(--sa-color-tint);
-    --sa-skeleton-radius: var(--sa-radius-control-sm);
-  }
-}
-
 @layer sa.components {
   .sa-skeleton {
-    border-radius: var(--sa-skeleton-radius);
-    background: var(--sa-skeleton-bg);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-tint);
     animation: sa-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   @media (prefers-reduced-motion: reduce) {

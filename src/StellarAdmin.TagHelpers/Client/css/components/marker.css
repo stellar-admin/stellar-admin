@@ -3,43 +3,29 @@
    Replaces: .sa-marker, .sa-marker-variant-separator, .sa-marker-variant-border, .sa-marker-icon,
    .sa-marker-content */
 
-@layer sa.tokens {
-  .sa-marker {
-    --sa-marker-gap: calc(2 * var(--sa-unit));
-    --sa-marker-min-h: calc(4 * var(--sa-unit));
-    --sa-marker-text: var(--sa-text-sm);
-    --sa-marker-fg: var(--sa-color-ink-muted);
-    --sa-marker-fg-hover: var(--sa-color-ink);
-    --sa-marker-icon: var(--sa-control-icon);
-    --sa-marker-line: var(--sa-color-line);                    /* the separator rules and the border */
-    --sa-marker-pb: calc(2 * var(--sa-unit));                  /* above the border */
-    --sa-marker-link-offset: 3px;
-  }
-}
-
 @layer sa.components {
   .sa-marker {
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--sa-marker-gap);
+    gap: calc(2 * var(--sa-unit));
     width: 100%;
-    min-height: var(--sa-marker-min-h);
-    color: var(--sa-marker-fg);
-    font-size: var(--sa-marker-text);
+    min-height: calc(4 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
     line-height: var(--sa-leading-ui);
     text-align: start;
 
     & svg:not([class*="size-"]) {
-      width: var(--sa-marker-icon);
-      height: var(--sa-marker-icon);
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
     }
     &:is(a) {
       text-decoration: underline;
-      text-underline-offset: var(--sa-marker-link-offset);
+      text-underline-offset: 3px;
     }
     &:is(a, button):hover {
-      color: var(--sa-marker-fg-hover);
+      color: var(--sa-color-ink);
     }
     &:is(a, button):focus-visible {
       border-radius: var(--sa-radius-control-sm);
@@ -54,28 +40,28 @@
       flex: 1;
       min-width: 0;
       height: var(--sa-border-width);
-      background: var(--sa-marker-line);
+      background: var(--sa-color-line);
     }
     &::before { margin-inline-end: var(--sa-unit); }
     &::after { margin-inline-start: var(--sa-unit); }
   }
   .sa-marker-variant-border {
-    padding-bottom: var(--sa-marker-pb);
-    border-bottom: var(--sa-border-width) solid var(--sa-marker-line);
+    padding-bottom: calc(2 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
   }
   .sa-marker-icon {
     display: inline-flex;
     flex-shrink: 0;
-    width: var(--sa-marker-icon);
-    height: var(--sa-marker-icon);
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
   }
   .sa-marker-content {
     min-width: 0;
     overflow-wrap: break-word;
     & > a {
       text-decoration: underline;
-      text-underline-offset: var(--sa-marker-link-offset);
-      &:hover { color: var(--sa-marker-fg-hover); }
+      text-underline-offset: 3px;
+      &:hover { color: var(--sa-color-ink); }
     }
     .sa-marker-variant-separator > & {
       flex: none;

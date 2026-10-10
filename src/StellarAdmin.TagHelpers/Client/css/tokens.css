@@ -1,7 +1,7 @@
 /* StellarAdmin foundation: knobs (tier 0) and foundation tokens (tier 1).
  *
- * The one source of theme values. Knobs generate the foundation tokens; component tokens (tier 2)
- * default to tier 1; components read only tokens and never name a value. The public names are
+ * The one source of theme values. Knobs generate the foundation tokens; components read the knobs
+ * and foundation tokens directly and have no public tokens of their own. The public names are
  * documented in docs/design/tokens.md; anything starting --_ is internal.
  *
  *   Tier 0  knobs        --sa-accent, --sa-danger, --sa-neutral-*, --sa-radius, --sa-density, … and the
@@ -10,17 +10,14 @@
  *                          :root { --sa-accent: #0f766e; --sa-radius: 2px; --sa-density: 0.85; }
  *   Tier 1  foundation   --sa-color-*, --sa-text-*, --sa-radius-*, --sa-control-*, --sa-space-*,
  *                        --sa-focus-*, --sa-shadow-*: derived here. A theme may still set one directly.
- *   Tier 2  component    --sa-button-*, --sa-input-*, --sa-card-*, … declared on each component's
- *                        selector. A theme sets one only where a component should differ from what the
- *                        foundation implies.
- *   Tier 3  overrides    Raw .sa-* rules in sa.overrides. The escape hatch; every rule there is a sign
+ *   Tier 2  overrides    Raw .sa-* rules in sa.overrides. The escape hatch; every rule there is a sign
  *                        the vocabulary is missing something.
  *
  * Kinds of knob:
  *   - required knobs have a default on :root;
  *   - optional knobs have no default and are read through a var() fallback (--sa-accent-dark,
  *     --sa-radius-outer, --sa-on-accent, --sa-focus-color, --sa-danger-dark, --sa-neutral-hue-dark,
- *     --sa-neutral-chroma-dark, and per-component ones such as --sa-dialog-footer-fill), so when unset
+ *     --sa-neutral-chroma-dark, and per-component ones: --sa-dialog-footer-fill/-rule, --sa-kbd-font), so when unset
  *     they re-derive in every scope from the knobs they would otherwise follow.
  *
  * Scoping. Custom properties that reference other custom properties resolve where they are declared,
@@ -28,9 +25,8 @@
  * a knob: :root, a .dark scope, a [data-density] scope and a [data-sa-scope] (any element that sets its
  * own knobs, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
  *
- * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It picks
- * between tier 2 tokens through a private --_* variable, so a theme can restyle both the default and
- * the modified state without the theme layer overriding the modifier.
+ * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It sets a
+ * private --_* variable that the component's rules read.
  */
 
 /* Layer order. Tailwind's layers are named too, so that a page that also loads Tailwind CSS keeps an
@@ -88,7 +84,7 @@
     --sa-section-label-transform: none;
     --sa-section-label-tracking: 0em;            /* a length, so switches can scale it */
 
-    /* Structural switches: 0 or 1 (some blend in between), read by tier 2 */
+    /* Structural switches: 0 or 1 (some blend in between), read by the components */
     --sa-footer-fill: 0;                 /* card footer: tinted band */
     --sa-footer-rule: 1;                 /* card footer: divider above it */
     --sa-column-head-label: 0;           /* column heads take the section label role */

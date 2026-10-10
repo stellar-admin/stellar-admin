@@ -3,21 +3,10 @@
 
 @layer sa.tokens {
   .sa-tooltip-content {
-    --sa-tooltip-bg: var(--sa-color-ink);
-    --sa-tooltip-fg: var(--sa-color-surface);
-    --sa-tooltip-radius: var(--sa-radius-control-sm);
-    --sa-tooltip-shadow: var(--sa-shadow-control);
-    --sa-tooltip-px: calc(3 * var(--sa-unit));
-    --sa-tooltip-py: calc(1.5 * var(--sa-unit));
-    --sa-tooltip-max-w: 20rem;
-    --sa-tooltip-text: var(--sa-text-xs);
-    --sa-tooltip-leading: calc(4 / 3);
-    --sa-tooltip-kbd-radius: var(--sa-radius-inner);
-    --sa-tooltip-kbd-bg: color-mix(in oklab, var(--sa-tooltip-fg) 20%, transparent);
-    --sa-tooltip-kbd-fg: var(--sa-tooltip-fg);
+    --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
   }
   .dark .sa-tooltip-content {
-    --sa-tooltip-kbd-bg: color-mix(in oklab, var(--sa-tooltip-fg) 10%, transparent);
+    --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 10%, transparent);
   }
 }
 
@@ -27,16 +16,16 @@
   .sa-tooltip-content {
     inset: auto;
     width: fit-content;
-    max-width: var(--sa-tooltip-max-w);
+    max-width: 20rem;
     margin: 0;
-    padding: var(--sa-tooltip-py) var(--sa-tooltip-px);
+    padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
     border: 0;
-    border-radius: var(--sa-tooltip-radius);
-    background: var(--sa-tooltip-bg);
-    box-shadow: var(--sa-tooltip-shadow);
-    color: var(--sa-tooltip-fg);
-    font-size: var(--sa-tooltip-text);
-    line-height: var(--sa-tooltip-leading);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-ink);
+    box-shadow: var(--sa-shadow-control);
+    color: var(--sa-color-surface);
+    font-size: var(--sa-text-xs);
+    line-height: calc(4 / 3);
     position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
     opacity: 1;
     transition-property: opacity, display, overlay;
@@ -58,10 +47,10 @@
       position: relative;
       isolation: isolate;
       z-index: 50;
-      --_bg: var(--sa-tooltip-kbd-bg);
-      --_fg: var(--sa-tooltip-kbd-fg);
+      --_bg: var(--_tooltip-kbd-bg);
+      --_fg: var(--sa-color-surface);
       --_border: transparent;
-      border-radius: var(--sa-tooltip-kbd-radius);
+      border-radius: var(--sa-radius-inner);
     }
   }
 }

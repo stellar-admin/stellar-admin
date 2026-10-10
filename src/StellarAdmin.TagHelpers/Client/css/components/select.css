@@ -3,25 +3,10 @@
 
 @layer sa.tokens {
   .sa-native-select-wrapper {
-    --sa-select-h: var(--sa-control-h);
-    --sa-select-h-sm: var(--sa-control-h-sm);
-    --sa-select-ps: var(--sa-control-px);
-    --sa-select-pe: calc(8 * var(--sa-unit)); /* room for the icon */
-    --sa-select-radius: var(--sa-radius-control);
-    --sa-select-radius-sm: var(--sa-radius-control-sm);
-    --sa-select-text: var(--sa-text-control);
-    --sa-select-bg: var(--sa-color-field);
-    --sa-select-bg-disabled: var(--sa-color-field-disabled);
-    --sa-select-border: var(--sa-color-line-control);
-    --sa-select-border-hover: var(--sa-color-line-control-hover);
-    --sa-select-fg: var(--sa-color-ink);
-    --sa-select-icon: var(--sa-control-icon);
-    --sa-select-icon-fg: var(--sa-color-ink-muted);
-    --sa-select-icon-inset: var(--sa-control-px); /* from the end edge */
     /* Recessed when tactile (--sa-relief 2), as the input; dark mode weights the inset more. */
     --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
     --_relief-k: 1;
-    --sa-select-shadow: var(--sa-shadow-control),
+    --_select-shadow: var(--sa-shadow-control),
       inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
   }
   .dark .sa-native-select-wrapper {
@@ -38,23 +23,23 @@
     }
   }
   .sa-native-select {
-    --_h: var(--sa-select-h);
-    --_radius: var(--sa-select-radius);
+    --_h: var(--sa-control-h);
+    --_radius: var(--sa-radius-control);
     --_py: var(--sa-unit);
     width: 100%;
     min-width: 0;
     height: var(--_h);
     padding-block: var(--_py);
-    padding-inline: var(--sa-select-ps) var(--sa-select-pe);
+    padding-inline: var(--sa-control-px) calc(8 * var(--sa-unit));
     appearance: none;
-    border: var(--sa-border-width) solid var(--sa-select-border);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
     border-radius: var(--_radius);
-    background: var(--sa-select-bg);
+    background: var(--sa-color-field);
     background-clip: padding-box;
-    box-shadow: var(--sa-select-shadow);
-    color: var(--sa-select-fg);
+    box-shadow: var(--_select-shadow);
+    color: var(--sa-color-ink);
     font: inherit;
-    font-size: var(--sa-select-text);
+    font-size: var(--sa-text-control);
     line-height: var(--sa-leading-ui);
     outline: none;
     user-select: none;
@@ -63,8 +48,8 @@
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
 
     &[data-size="sm"] {
-      --_h: var(--sa-select-h-sm);
-      --_radius: var(--sa-select-radius-sm);
+      --_h: var(--sa-control-h-sm);
+      --_radius: var(--sa-radius-control-sm);
       --_py: calc(0.5 * var(--sa-unit));
     }
     & option,
@@ -73,21 +58,21 @@
       color: var(--sa-color-ink);
     }
     &:hover:not(:disabled, :focus-visible) {
-      border-color: var(--sa-select-border-hover);
+      border-color: var(--sa-color-line-control-hover);
     }
     &:focus-visible {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-select-shadow), var(--sa-focus-shadow-field);
+      box-shadow: var(--_select-shadow), var(--sa-focus-shadow-field);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--sa-color-danger);
-      box-shadow: var(--sa-select-shadow), var(--sa-invalid-shadow);
+      box-shadow: var(--_select-shadow), var(--sa-invalid-shadow);
       &:focus-visible {
-        box-shadow: var(--sa-select-shadow), var(--sa-invalid-focus-shadow);
+        box-shadow: var(--_select-shadow), var(--sa-invalid-focus-shadow);
       }
     }
     &:disabled {
-      background: var(--sa-select-bg-disabled);
+      background: var(--sa-color-field-disabled);
       cursor: not-allowed;
       pointer-events: none;
     }
@@ -95,10 +80,10 @@
   .sa-native-select-icon {
     position: absolute;
     top: 50%;
-    right: var(--sa-select-icon-inset);
-    width: var(--sa-select-icon);
-    height: var(--sa-select-icon);
-    color: var(--sa-select-icon-fg);
+    right: var(--sa-control-px);
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
+    color: var(--sa-color-ink-muted);
     pointer-events: none;
     user-select: none;
     translate: 0 -50%;

@@ -5,46 +5,25 @@
 
 @layer sa.tokens {
   .sa-toggle {
-    --sa-toggle-h: var(--sa-control-h);
-    --sa-toggle-h-sm: var(--sa-control-h-sm);
-    --sa-toggle-h-lg: var(--sa-control-h-lg);
-    --sa-toggle-px: var(--sa-control-px);
-    --sa-toggle-px-sm: var(--sa-control-px);
-    --sa-toggle-px-lg: var(--sa-control-px);
-    --sa-toggle-gap: var(--sa-unit);
-    --sa-toggle-radius: var(--sa-radius-control);
-    --sa-toggle-radius-sm: var(--sa-radius-control-sm);
-    --sa-toggle-text: var(--sa-text-control);
-    --sa-toggle-text-sm: min(var(--sa-text-control), 0.8rem);
-    --sa-toggle-weight: var(--sa-weight-control);
-    --sa-toggle-icon: var(--sa-control-icon);
-    --sa-toggle-icon-sm: 0.875rem;
-    --sa-toggle-fg: var(--sa-color-ink);
-    --sa-toggle-bg-hover: var(--sa-color-hover);
-    /* On: the selection wash, as a selected row or menu item. */
-    --sa-toggle-on-bg: var(--sa-color-selected);
-    --sa-toggle-on-fg: var(--sa-color-ink);
-    --sa-toggle-on-bg-hover: color-mix(in oklab, var(--sa-color-selected), var(--sa-color-ink) 5%);
-
-    --sa-toggle-outline-bg: var(--sa-color-surface);
-    --sa-toggle-outline-border: var(--sa-color-line);
-    --sa-toggle-outline-shadow: var(--sa-shadow-control);
-    --sa-toggle-outline-on-border: var(--sa-color-line-control);
+    /* Outline: the field fill and control lines in dark mode. */
+    --_toggle-outline-bg: var(--sa-color-surface);
+    --_toggle-outline-border: var(--sa-color-line);
+    --_toggle-outline-on-border: var(--sa-color-line-control);
   }
   .dark .sa-toggle {
-    --sa-toggle-outline-bg: var(--sa-color-field);
-    --sa-toggle-outline-border: var(--sa-color-line-control);
-    --sa-toggle-outline-on-border: var(--sa-color-line-control-hover);
+    --_toggle-outline-bg: var(--sa-color-field);
+    --_toggle-outline-border: var(--sa-color-line-control);
+    --_toggle-outline-on-border: var(--sa-color-line-control-hover);
   }
 }
 
 @layer sa.components {
   .sa-toggle {
-    --_h: var(--sa-toggle-h);
-    --_px: var(--sa-toggle-px);
-    --_radius: var(--sa-toggle-radius);
-    --_text: var(--sa-toggle-text);
-    --_icon: var(--sa-toggle-icon);
+    --_h: var(--sa-control-h);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control);
+    --_text: var(--sa-text-control);
+    --_icon: var(--sa-control-icon);
     --_bg: transparent;
     --_border: transparent;
     --_shadow: 0 0 #0000;
@@ -54,7 +33,7 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-toggle-gap);
+    gap: var(--sa-unit);
     min-width: var(--_h);
     height: var(--_h);
     padding-inline: var(--_px);
@@ -63,9 +42,9 @@
     background: var(--_bg);
     background-clip: padding-box;
     box-shadow: var(--_shadow);
-    color: var(--sa-toggle-fg);
+    color: var(--sa-color-ink);
     font-size: var(--_text);
-    font-weight: var(--sa-toggle-weight);
+    font-weight: var(--sa-weight-control);
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
@@ -90,14 +69,14 @@
       padding-inline-end: calc(var(--_px) - 0.5 * var(--sa-unit));
     }
     &:hover {
-      background-color: var(--sa-toggle-bg-hover);
+      background-color: var(--sa-color-hover);
     }
     &:has(> input:checked) {
       border-color: var(--_on-border);
-      background-color: var(--sa-toggle-on-bg);
-      color: var(--sa-toggle-on-fg);
+      background-color: var(--sa-color-selected);
+      color: var(--sa-color-ink);
       &:hover {
-        background-color: var(--sa-toggle-on-bg-hover);
+        background-color: color-mix(in oklab, var(--sa-color-selected), var(--sa-color-ink) 5%);
       }
     }
     &:has(> input:focus-visible) {
@@ -123,18 +102,18 @@
     border-width: 0;
   }
   .sa-toggle-variant-outline {
-    --_bg: var(--sa-toggle-outline-bg);
-    --_border: var(--sa-toggle-outline-border);
-    --_shadow: var(--sa-toggle-outline-shadow);
-    --_on-border: var(--sa-toggle-outline-on-border);
+    --_bg: var(--_toggle-outline-bg);
+    --_border: var(--_toggle-outline-border);
+    --_shadow: var(--sa-shadow-control);
+    --_on-border: var(--_toggle-outline-on-border);
   }
 
   .sa-toggle-size-sm {
-    --_h: var(--sa-toggle-h-sm);
-    --_px: var(--sa-toggle-px-sm);
-    --_radius: var(--sa-toggle-radius-sm);
-    --_text: var(--sa-toggle-text-sm);
-    --_icon: var(--sa-toggle-icon-sm);
+    --_h: var(--sa-control-h-sm);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control-sm);
+    --_text: min(var(--sa-text-control), 0.8rem);
+    --_icon: 0.875rem;
     &:has(> [data-icon="inline-start"]) {
       padding-inline-start: calc(var(--_px) - var(--sa-unit));
     }
@@ -143,8 +122,8 @@
     }
   }
   .sa-toggle-size-lg {
-    --_h: var(--sa-toggle-h-lg);
-    --_px: var(--sa-toggle-px-lg);
+    --_h: var(--sa-control-h-lg);
+    --_px: var(--sa-control-px);
   }
 
   @media (prefers-reduced-motion: reduce) {

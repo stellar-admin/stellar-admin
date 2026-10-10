@@ -2,24 +2,17 @@
    (sidebar, app header, …) render it and adjust it by selector.
    Replaces: .sa-separator, .sa-separator-horizontal, .sa-separator-vertical */
 
-@layer sa.tokens {
-  .sa-separator {
-    --sa-separator-bg: var(--sa-color-line);
-    --sa-separator-size: var(--sa-border-width);
-  }
-}
-
 @layer sa.components {
   .sa-separator {
     flex-shrink: 0;
-    background: var(--sa-separator-bg);
+    background: var(--sa-color-line);
   }
   .sa-separator-horizontal {
     width: 100%;
-    height: var(--sa-separator-size);
+    height: var(--sa-border-width);
   }
   .sa-separator-vertical {
-    width: var(--sa-separator-size);
+    width: var(--sa-border-width);
     height: 100%;
   }
 }

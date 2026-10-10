@@ -3,22 +3,6 @@
    Replaces: .sa-button-group, .sa-button-group-orientation-horizontal,
    .sa-button-group-orientation-vertical, .sa-button-group-separator, .sa-button-group-text */
 
-@layer sa.tokens {
-  .sa-button-group {
-    --sa-button-group-gap: calc(2 * var(--sa-unit));      /* between nested groups */
-    --sa-button-group-text-bg: var(--sa-color-surface-sunken);
-    --sa-button-group-text-fg: var(--sa-color-ink);
-    --sa-button-group-text-border: var(--sa-color-line);
-    --sa-button-group-text-radius: var(--sa-radius-control);
-    --sa-button-group-text-px: var(--sa-control-px);
-    --sa-button-group-text-gap: calc(2 * var(--sa-unit));
-    --sa-button-group-text-text: var(--sa-text-control);
-    --sa-button-group-text-weight: var(--sa-weight-control);
-    --sa-button-group-text-icon: var(--sa-control-icon);
-    --sa-button-group-separator-bg: var(--sa-color-line-control);
-  }
-}
-
 @layer sa.components {
   .sa-button-group {
     display: flex;
@@ -26,7 +10,7 @@
     width: fit-content;
 
     &:has(> [data-slot="button-group"]) {
-      gap: var(--sa-button-group-gap);
+      gap: calc(2 * var(--sa-unit));
     }
     & > *:focus-visible,
     & > :has(:focus-visible) {
@@ -95,23 +79,23 @@
   .sa-button-group-text {
     display: flex;
     align-items: center;
-    gap: var(--sa-button-group-text-gap);
-    padding-inline: var(--sa-button-group-text-px);
-    border: var(--sa-border-width) solid var(--sa-button-group-text-border);
-    border-radius: var(--sa-button-group-text-radius);
-    background: var(--sa-button-group-text-bg);
+    gap: calc(2 * var(--sa-unit));
+    padding-inline: var(--sa-control-px);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-surface-sunken);
     background-clip: padding-box;
-    color: var(--sa-button-group-text-fg);
-    font-size: var(--sa-button-group-text-text);
-    font-weight: var(--sa-button-group-text-weight);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
     white-space: nowrap;
 
     & svg {
       pointer-events: none;
     }
     & svg:not([class*="size-"]) {
-      width: var(--sa-button-group-text-icon);
-      height: var(--sa-button-group-text-icon);
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
     }
   }
 
@@ -119,7 +103,7 @@
   .sa-separator.sa-button-group-separator {
     position: relative;
     align-self: stretch;
-    background: var(--sa-button-group-separator-bg);
+    background: var(--sa-color-line-control);
     &[data-orientation="horizontal"] {
       width: auto;
       margin-inline: 1px;

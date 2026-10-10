@@ -2,37 +2,25 @@
    vertical separators.
    Replaces: .sa-app-header, .sa-app-header-actions, .sa-app-header-separator */
 
-@layer sa.tokens {
-  .sa-app-header {
-    --sa-app-header-h: calc(14 * var(--sa-unit));
-    --sa-app-header-px: calc(4 * var(--sa-unit));
-    --sa-app-header-gap: calc(2 * var(--sa-unit));
-    --sa-app-header-bg: transparent;
-    --sa-app-header-border: var(--sa-color-line);
-    --sa-app-header-actions-gap: calc(1 * var(--sa-unit));
-    --sa-app-header-separator-h: calc(4 * var(--sa-unit));
-  }
-}
-
 @layer sa.components {
   .sa-app-header {
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    column-gap: var(--sa-app-header-gap);
-    height: var(--sa-app-header-h);
-    padding-inline: var(--sa-app-header-px);
-    border-bottom: var(--sa-border-width) solid var(--sa-app-header-border);
-    background: var(--sa-app-header-bg);
+    column-gap: calc(2 * var(--sa-unit));
+    height: calc(14 * var(--sa-unit));
+    padding-inline: calc(4 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: transparent;
   }
   .sa-app-header-actions {
     display: flex;
     align-items: center;
-    column-gap: var(--sa-app-header-actions-gap);
+    column-gap: calc(1 * var(--sa-unit));
     margin-left: auto;
   }
   .sa-separator.sa-app-header-separator {
-    height: var(--sa-app-header-separator-h);
+    height: calc(4 * var(--sa-unit));
     margin-inline: calc(1 * var(--sa-unit));
   }
 }

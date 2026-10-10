@@ -5,31 +5,14 @@
 
 @layer sa.tokens {
   .sa-segmented-control {
-    --sa-segmented-control-h: var(--sa-control-h);
-    /* A translucent ink tint (about the sunken band on a card), so the track also steps from a tinted
-       backdrop such as the sidebar. */
-    --sa-segmented-control-bg: var(--sa-color-tint);
-    --sa-segmented-control-border: transparent;
-    --sa-segmented-control-radius: var(--sa-radius-control);
-    --sa-segmented-control-p: 3px;
-    --sa-segmented-control-item-px: calc(1.5 * var(--sa-unit));
-    --sa-segmented-control-item-py: calc(0.5 * var(--sa-unit));
-    --sa-segmented-control-item-gap: calc(1.5 * var(--sa-unit));
-    --sa-segmented-control-item-radius: var(--sa-radius-item);
-    --sa-segmented-control-item-text: var(--sa-text-control);
-    --sa-segmented-control-item-weight: var(--sa-weight-control);
-    --sa-segmented-control-item-icon: var(--sa-control-icon);
-    --sa-segmented-control-item-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
-    --sa-segmented-control-item-fg-hover: var(--sa-color-ink);
-    --sa-segmented-control-selected-bg: var(--sa-color-surface);
-    --sa-segmented-control-selected-fg: var(--sa-color-ink);
-    --sa-segmented-control-selected-border: transparent;
-    --sa-segmented-control-selected-shadow: var(--sa-shadow-raised);
+    --_segmented-control-item-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --_segmented-control-selected-bg: var(--sa-color-surface);
+    --_segmented-control-selected-border: transparent;
   }
   .dark .sa-segmented-control {
-    --sa-segmented-control-item-fg: var(--sa-color-ink-muted);
-    --sa-segmented-control-selected-bg: var(--sa-color-field);
-    --sa-segmented-control-selected-border: var(--sa-color-line-control);
+    --_segmented-control-item-fg: var(--sa-color-ink-muted);
+    --_segmented-control-selected-bg: var(--sa-color-field);
+    --_segmented-control-selected-border: var(--sa-color-line-control);
   }
 }
 
@@ -40,12 +23,12 @@
     justify-content: center;
     width: fit-content;
     max-width: 100%;
-    height: var(--sa-segmented-control-h);
-    padding: var(--sa-segmented-control-p);
-    border: var(--sa-border-width) solid var(--sa-segmented-control-border);
-    border-radius: var(--sa-segmented-control-radius);
-    background: var(--sa-segmented-control-bg);
-    color: var(--sa-segmented-control-item-fg);
+    height: var(--sa-control-h);
+    padding: 3px;
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-tint);
+    color: var(--_segmented-control-item-fg);
 
     &[aria-invalid="true"] {
       border-color: var(--sa-color-danger);
@@ -71,14 +54,14 @@
     flex: 1;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-segmented-control-item-gap);
+    gap: calc(1.5 * var(--sa-unit));
     height: 100%;
-    padding: var(--sa-segmented-control-item-py) var(--sa-segmented-control-item-px);
+    padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
     border: var(--sa-border-width) solid transparent;
-    border-radius: var(--sa-segmented-control-item-radius);
-    color: var(--sa-segmented-control-item-fg);
-    font-size: var(--sa-segmented-control-item-text);
-    font-weight: var(--sa-segmented-control-item-weight);
+    border-radius: var(--sa-radius-item);
+    color: var(--_segmented-control-item-fg);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
     line-height: var(--sa-leading-ui);
     white-space: nowrap;
     cursor: pointer;
@@ -92,8 +75,8 @@
       pointer-events: none;
     }
     & svg:not([class*="size-"]) {
-      width: var(--sa-segmented-control-item-icon);
-      height: var(--sa-segmented-control-item-icon);
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
     }
     &:has(> [data-icon="inline-start"]) {
       padding-inline-start: var(--sa-unit);
@@ -102,13 +85,13 @@
       padding-inline-end: var(--sa-unit);
     }
     &:hover {
-      color: var(--sa-segmented-control-item-fg-hover);
+      color: var(--sa-color-ink);
     }
     &:has(:checked) {
-      border-color: var(--sa-segmented-control-selected-border);
-      background: var(--sa-segmented-control-selected-bg);
-      box-shadow: var(--sa-segmented-control-selected-shadow);
-      color: var(--sa-segmented-control-selected-fg);
+      border-color: var(--_segmented-control-selected-border);
+      background: var(--_segmented-control-selected-bg);
+      box-shadow: var(--sa-shadow-raised);
+      color: var(--sa-color-ink);
     }
     &:has(:focus-visible) {
       border-color: var(--sa-focus-border);

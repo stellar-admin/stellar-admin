@@ -7,43 +7,15 @@
    Replaces: .sa-toast-viewport, .sa-toast, .sa-toast-content, .sa-toast-icon, .sa-toast-text,
    .sa-toast-title, .sa-toast-description, .sa-toast-action, .sa-toast-close */
 
-@layer sa.tokens {
-  /* On the viewport too, which reads the width and the edge inset. */
-  .sa-toast-viewport,
-  .sa-toast {
-    --sa-toast-w: 24rem;
-    --sa-toast-viewport-inset: calc(4 * var(--sa-unit));
-    --sa-toast-bg: var(--sa-color-surface-raised);
-    --sa-toast-fg: var(--sa-color-ink);
-    --sa-toast-edge: var(--sa-color-line);
-    --sa-toast-radius: var(--sa-radius-container);
-    --sa-toast-shadow: var(--sa-shadow-overlay);
-    --sa-toast-p: calc(4 * var(--sa-unit));
-    --sa-toast-gap: calc(3 * var(--sa-unit));
-    --sa-toast-title-text: var(--sa-text-body);
-    --sa-toast-title-weight: 500;
-    --sa-toast-description-text: var(--sa-text-body);
-    --sa-toast-description-fg: var(--sa-color-ink-muted);
-    --sa-toast-icon: 1rem;
-    --sa-toast-icon-success-fg: var(--sa-color-success);
-    --sa-toast-icon-info-fg: var(--sa-color-info);
-    --sa-toast-icon-warning-fg: var(--sa-color-warning);
-    --sa-toast-icon-error-fg: var(--sa-color-danger);
-    --sa-toast-icon-loading-fg: var(--sa-color-ink-muted);
-    --sa-toast-close-fg: var(--sa-color-ink-muted);
-    --sa-toast-close-fg-hover: var(--sa-color-ink);
-  }
-}
-
 @layer sa.components {
   /* A manual popover: reset the popover's UA inset, margin, border, padding, background and overflow. */
   .sa-toast-viewport {
-    --_inset: var(--sa-toast-viewport-inset);
+    --_inset: calc(4 * var(--sa-unit));
     position: fixed;
     inset: auto var(--_inset);
     z-index: 50;
     width: auto;
-    max-width: var(--sa-toast-w);
+    max-width: 24rem;
     margin: 0 auto;
     padding: 0;
     overflow: visible;
@@ -73,14 +45,14 @@
     bottom: 0;
     z-index: calc(1000 - var(--toast-index));
     width: 100%;
-    max-width: var(--sa-toast-w);
+    max-width: 24rem;
     height: var(--_height);
-    border: var(--sa-border-width) solid var(--sa-toast-edge);
-    border-radius: var(--sa-toast-radius);
-    background: var(--sa-toast-bg);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface-raised);
     background-clip: padding-box;
-    box-shadow: var(--sa-toast-shadow);
-    color: var(--sa-toast-fg);
+    box-shadow: var(--sa-shadow-overlay);
+    color: var(--sa-color-ink);
     outline: none;
     pointer-events: auto;
     user-select: none;
@@ -96,7 +68,7 @@
 
     &:focus-visible {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-toast-shadow), var(--sa-focus-shadow);
+      box-shadow: var(--sa-shadow-overlay), var(--sa-focus-shadow);
     }
     /* Bridges the gap between expanded toasts, so moving the pointer across it keeps the stack
        expanded. */
@@ -171,9 +143,9 @@
   .sa-toast-content {
     display: flex;
     align-items: center;
-    gap: var(--sa-toast-gap);
+    gap: calc(3 * var(--sa-unit));
     height: 100%;
-    padding: var(--sa-toast-p);
+    padding: calc(4 * var(--sa-unit));
     overflow: hidden;
     transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1);
     &[data-behind] { opacity: 0; }
@@ -186,15 +158,15 @@
       pointer-events: none;
     }
     & svg:not([class*="size-"]) {
-      width: var(--sa-toast-icon);
-      height: var(--sa-toast-icon);
+      width: 1rem;
+      height: 1rem;
     }
-    & > [data-toast-icon="success"] { color: var(--sa-toast-icon-success-fg); }
-    & > [data-toast-icon="info"] { color: var(--sa-toast-icon-info-fg); }
-    & > [data-toast-icon="warning"] { color: var(--sa-toast-icon-warning-fg); }
-    & > [data-toast-icon="error"] { color: var(--sa-toast-icon-error-fg); }
+    & > [data-toast-icon="success"] { color: var(--sa-color-success); }
+    & > [data-toast-icon="info"] { color: var(--sa-color-info); }
+    & > [data-toast-icon="warning"] { color: var(--sa-color-warning); }
+    & > [data-toast-icon="error"] { color: var(--sa-color-danger); }
     & > [data-toast-icon="loading"] {
-      color: var(--sa-toast-icon-loading-fg);
+      color: var(--sa-color-ink-muted);
       animation: sa-toast-spin 1s linear infinite;
     }
   }
@@ -206,13 +178,13 @@
     min-width: 0;
   }
   .sa-toast-title {
-    font-size: var(--sa-toast-title-text);
-    font-weight: var(--sa-toast-title-weight);
+    font-size: var(--sa-text-body);
+    font-weight: 500;
     line-height: var(--sa-leading-ui);
   }
   .sa-toast-description {
-    color: var(--sa-toast-description-fg);
-    font-size: var(--sa-toast-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
     line-height: var(--sa-leading-ui);
   }
   .sa-toast-action {
@@ -220,8 +192,8 @@
   }
   /* A ghost button: out-ranks the variant to set its private colours. */
   .sa-button.sa-toast-close {
-    --_fg: var(--sa-toast-close-fg);
-    --_fg-hover: var(--sa-toast-close-fg-hover);
+    --_fg: var(--sa-color-ink-muted);
+    --_fg-hover: var(--sa-color-ink);
     position: relative;
     flex-shrink: 0;
     /* A larger hit area than the icon button. */

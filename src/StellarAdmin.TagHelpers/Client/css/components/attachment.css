@@ -6,76 +6,27 @@
    .sa-attachment-orientation-horizontal, .sa-attachment-orientation-vertical, .sa-attachment-size-default,
    .sa-attachment-size-sm, .sa-attachment-size-xs, .sa-attachment-title, .sa-attachment-trigger */
 
-@layer sa.tokens {
-  .sa-attachment,
-  .sa-attachment-group {
-    --sa-attachment-bg: var(--sa-color-surface);
-    --sa-attachment-bg-hover: color-mix(in oklab, var(--sa-color-hover) 60%, var(--sa-color-surface));
-    --sa-attachment-fg: var(--sa-color-ink);
-    --sa-attachment-edge: var(--sa-color-line);
-    --sa-attachment-radius: var(--sa-radius-container);
-    --sa-attachment-radius-xs: var(--sa-radius-control);
-    --sa-attachment-w-vertical: calc(24 * var(--sa-unit));
-    --sa-attachment-w-vertical-content: calc(30 * var(--sa-unit));
-    --sa-attachment-p: calc(2 * var(--sa-unit));                   /* around media */
-    --sa-attachment-p-sm: calc(1.5 * var(--sa-unit));
-    --sa-attachment-p-xs: var(--sa-unit);
-    --sa-attachment-px: calc(2.5 * var(--sa-unit));                /* text only */
-    --sa-attachment-px-sm: calc(2 * var(--sa-unit));
-    --sa-attachment-px-xs: calc(1.5 * var(--sa-unit));
-    --sa-attachment-py: calc(2 * var(--sa-unit));
-    --sa-attachment-py-sm: calc(1.5 * var(--sa-unit));
-    --sa-attachment-py-xs: var(--sa-unit);
-    --sa-attachment-gap: calc(2 * var(--sa-unit));
-    --sa-attachment-gap-sm: calc(2.5 * var(--sa-unit));
-    --sa-attachment-gap-xs: calc(1.5 * var(--sa-unit));
-    --sa-attachment-text: var(--sa-text-sm);
-    --sa-attachment-text-sm: var(--sa-text-xs);
-    --sa-attachment-text-xs: var(--sa-text-xs);
-    --sa-attachment-media-w: calc(10 * var(--sa-unit));
-    --sa-attachment-media-w-sm: calc(8 * var(--sa-unit));
-    --sa-attachment-media-w-xs: calc(7 * var(--sa-unit));
-    --sa-attachment-media-radius: var(--sa-radius-control);
-    --sa-attachment-media-radius-xs: var(--sa-radius-control-sm);
-    --sa-attachment-media-bg: var(--sa-color-surface-sunken);
-    --sa-attachment-media-fg: var(--sa-color-ink);
-    --sa-attachment-media-icon: 1rem;
-    --sa-attachment-media-icon-xs: 0.875rem;
-    --sa-attachment-media-icon-vertical: 1.5rem;
-    --sa-attachment-media-image-opacity: 0.6;                     /* while uploading or processing */
-    --sa-attachment-title-weight: var(--sa-weight-control);
-    --sa-attachment-description-fg: var(--sa-color-ink-muted);
-    --sa-attachment-description-text: var(--sa-text-xs);
-    --sa-attachment-danger-edge: color-mix(in oklab, var(--sa-color-danger) 45%, transparent);
-    --sa-attachment-danger-media-bg: var(--sa-color-danger-soft);
-    --sa-attachment-danger-media-fg: var(--sa-color-danger-text);
-    --sa-attachment-danger-description-fg: var(--sa-color-danger-text);
-    --sa-attachment-group-gap: calc(3 * var(--sa-unit));
-    --sa-attachment-group-fade: min(12%, calc(10 * var(--sa-unit)));
-  }
-}
-
 @layer sa.components {
   .sa-attachment {
-    --_p: var(--sa-attachment-p);
-    --_px: var(--sa-attachment-px);
-    --_py: var(--sa-attachment-py);
-    --_media-w: var(--sa-attachment-media-w);
-    --_media-radius: var(--sa-attachment-media-radius);
-    --_media-icon: var(--sa-attachment-media-icon);
+    --_p: calc(2 * var(--sa-unit));
+    --_px: calc(2.5 * var(--sa-unit));
+    --_py: calc(2 * var(--sa-unit));
+    --_media-w: calc(10 * var(--sa-unit));
+    --_media-radius: var(--sa-radius-control);
+    --_media-icon: 1rem;
     position: relative;
     display: flex;
     flex-wrap: wrap;
     flex-shrink: 0;
-    gap: var(--sa-attachment-gap);
+    gap: calc(2 * var(--sa-unit));
     width: fit-content;
     min-width: 0;
     max-width: 100%;
-    border: var(--sa-border-width) solid var(--sa-attachment-edge);
-    border-radius: var(--sa-attachment-radius);
-    background: var(--sa-attachment-bg);
-    color: var(--sa-attachment-fg);
-    font-size: var(--sa-attachment-text);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-sm);
     transition:
       background-color var(--sa-motion-fast) var(--sa-motion-ease),
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
@@ -87,7 +38,7 @@
       padding: var(--_p);
     }
     &:has(> a, > button):hover {
-      background-color: var(--sa-attachment-bg-hover);
+      background-color: color-mix(in oklab, var(--sa-color-hover) 60%, var(--sa-color-surface));
     }
     &:has(> [data-slot="attachment-trigger"]:focus-visible) {
       box-shadow: var(--sa-focus-shadow);
@@ -96,7 +47,7 @@
       border-style: dashed;
     }
     &[data-state="error"] {
-      border-color: var(--sa-attachment-danger-edge);
+      border-color: color-mix(in oklab, var(--sa-color-danger) 45%, transparent);
     }
   }
 
@@ -105,36 +56,36 @@
   }
   .sa-attachment-orientation-vertical {
     --_media-w: 100%;
-    --_media-icon: var(--sa-attachment-media-icon-vertical);
+    --_media-icon: 1.5rem;
     flex-direction: column;
-    width: var(--sa-attachment-w-vertical);
+    width: calc(24 * var(--sa-unit));
     &:has([data-slot="attachment-content"]) {
-      width: var(--sa-attachment-w-vertical-content);
+      width: calc(30 * var(--sa-unit));
     }
   }
 
   .sa-attachment-size-sm {
-    --_p: var(--sa-attachment-p-sm);
-    --_px: var(--sa-attachment-px-sm);
-    --_py: var(--sa-attachment-py-sm);
-    --_media-w: var(--sa-attachment-media-w-sm);
-    gap: var(--sa-attachment-gap-sm);
-    font-size: var(--sa-attachment-text-sm);
+    --_p: calc(1.5 * var(--sa-unit));
+    --_px: calc(2 * var(--sa-unit));
+    --_py: calc(1.5 * var(--sa-unit));
+    --_media-w: calc(8 * var(--sa-unit));
+    gap: calc(2.5 * var(--sa-unit));
+    font-size: var(--sa-text-xs);
   }
   .sa-attachment-size-xs {
-    --_p: var(--sa-attachment-p-xs);
-    --_px: var(--sa-attachment-px-xs);
-    --_py: var(--sa-attachment-py-xs);
-    --_media-w: var(--sa-attachment-media-w-xs);
-    --_media-radius: var(--sa-attachment-media-radius-xs);
-    --_media-icon: var(--sa-attachment-media-icon-xs);
-    gap: var(--sa-attachment-gap-xs);
-    border-radius: var(--sa-attachment-radius-xs);
-    font-size: var(--sa-attachment-text-xs);
+    --_p: var(--sa-unit);
+    --_px: calc(1.5 * var(--sa-unit));
+    --_py: var(--sa-unit);
+    --_media-w: calc(7 * var(--sa-unit));
+    --_media-radius: var(--sa-radius-control-sm);
+    --_media-icon: 0.875rem;
+    gap: calc(1.5 * var(--sa-unit));
+    border-radius: var(--sa-radius-control);
+    font-size: var(--sa-text-xs);
   }
   .sa-attachment-orientation-vertical:is(.sa-attachment-size-sm, .sa-attachment-size-xs) {
     --_media-w: 100%;
-    --_media-icon: var(--sa-attachment-media-icon-vertical);
+    --_media-icon: 1.5rem;
   }
 
   .sa-attachment-media {
@@ -147,8 +98,8 @@
     aspect-ratio: 1;
     overflow: hidden;
     border-radius: var(--_media-radius);
-    background: var(--sa-attachment-media-bg);
-    color: var(--sa-attachment-media-fg);
+    background: var(--sa-color-surface-sunken);
+    color: var(--sa-color-ink);
 
     & svg {
       pointer-events: none;
@@ -159,12 +110,12 @@
       height: var(--_media-icon);
     }
     [data-state="error"] > & {
-      background: var(--sa-attachment-danger-media-bg);
-      color: var(--sa-attachment-danger-media-fg);
+      background: var(--sa-color-danger-soft);
+      color: var(--sa-color-danger-text);
     }
   }
   .sa-attachment-media-variant-image {
-    opacity: var(--sa-attachment-media-image-opacity);
+    opacity: 0.6;
     & > img {
       width: 100%;
       aspect-ratio: 1;
@@ -189,7 +140,7 @@
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
-    font-weight: var(--sa-attachment-title-weight);
+    font-weight: var(--sa-weight-control);
     text-overflow: ellipsis;
     white-space: nowrap;
     :is([data-state="processing"], [data-state="uploading"]) > .sa-attachment-content > & {
@@ -219,13 +170,13 @@
     max-width: 100%;
     margin-top: calc(0.5 * var(--sa-unit));
     overflow: hidden;
-    color: var(--sa-attachment-description-fg);
-    font-size: var(--sa-attachment-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
     line-height: 1.3333;
     text-overflow: ellipsis;
     white-space: nowrap;
     [data-state="error"] > .sa-attachment-content > & {
-      color: var(--sa-attachment-danger-description-fg);
+      color: var(--sa-color-danger-text);
     }
   }
 
@@ -252,7 +203,7 @@
 
   .sa-attachment-group {
     display: flex;
-    gap: var(--sa-attachment-group-gap);
+    gap: calc(3 * var(--sa-unit));
     min-width: 0;
     padding-block: var(--sa-unit);
     overflow-x: auto;
@@ -292,8 +243,8 @@
       animation-fill-mode: both;
     }
     @supports not (animation-timeline: scroll()) {
-      --_sa-attachment-fade-s: var(--sa-attachment-group-fade);
-      --_sa-attachment-fade-e: var(--sa-attachment-group-fade);
+      --_sa-attachment-fade-s: min(12%, calc(10 * var(--sa-unit)));
+      --_sa-attachment-fade-e: min(12%, calc(10 * var(--sa-unit)));
     }
   }
 
@@ -319,10 +270,10 @@
 }
 @keyframes sa-attachment-fade-s {
   from { --_sa-attachment-fade-s: 0px; }
-  to { --_sa-attachment-fade-s: var(--sa-attachment-group-fade); }
+  to { --_sa-attachment-fade-s: min(12%, calc(10 * var(--sa-unit))); }
 }
 @keyframes sa-attachment-fade-e {
-  from { --_sa-attachment-fade-e: var(--sa-attachment-group-fade); }
+  from { --_sa-attachment-fade-e: min(12%, calc(10 * var(--sa-unit))); }
   to { --_sa-attachment-fade-e: 0px; }
 }
 @keyframes sa-attachment-shimmer {

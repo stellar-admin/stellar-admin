@@ -3,41 +3,20 @@
    Replaces: .sa-chip, .sa-chip-group */
 
 @layer sa.tokens {
-  /* On the group too, so a theme can restyle every chip in it, and the colours follow a nested dark scope. */
-  .sa-chip,
-  .sa-chip-group {
-    --sa-chip-h: calc(5.25 * var(--sa-unit));
-    --sa-chip-px: calc(1.5 * var(--sa-unit));
-    --sa-chip-gap: var(--sa-unit);
-    --sa-chip-radius: var(--sa-radius-tag);
-    --sa-chip-text: var(--sa-text-xs);
-    --sa-chip-weight: var(--sa-weight-control);
-    --sa-chip-icon: 0.875rem;
-    --sa-chip-inset: 2px;                                                      /* media to the chip's edge */
-    --sa-chip-bg: var(--sa-color-tint);
-    --sa-chip-fg: var(--sa-color-ink);
-    --sa-chip-border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
-    --sa-chip-remove-fg: var(--sa-color-ink-muted);
-    --sa-chip-remove-bg-hover: color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
-    --sa-chip-input-bg: var(--sa-chip-bg);
-    --sa-chip-input-border: transparent;
-    --sa-chip-group-gap: calc(1.5 * var(--sa-unit));
-    --sa-chip-group-input-gap: var(--sa-unit);
-  }
-  /* The input-styled group is a field: it reads the input's tokens, declared here as on .sa-input. */
+  /* The input-styled group is a field: it reads the input's variables, declared here as on .sa-input. */
   .sa-chip-group[data-appearance="input"] {
-    --sa-input-h: var(--sa-control-h);
-    --sa-input-radius: var(--sa-radius-control);
-    --sa-input-text: var(--sa-text-control);
-    --sa-input-bg: var(--sa-color-field);
-    --sa-input-bg-disabled: var(--sa-color-field-disabled);
-    --sa-input-border: var(--sa-color-line-control);
-    --sa-input-border-hover: var(--sa-color-line-control-hover);
-    --sa-input-fg: var(--sa-color-ink);
-    --sa-input-placeholder-fg: var(--sa-color-ink-placeholder);
+    --_input-h: var(--sa-control-h);
+    --_input-radius: var(--sa-radius-control);
+    --_input-text: var(--sa-text-control);
+    --_input-bg: var(--sa-color-field);
+    --_input-bg-disabled: var(--sa-color-field-disabled);
+    --_input-border: var(--sa-color-line-control);
+    --_input-border-hover: var(--sa-color-line-control-hover);
+    --_input-fg: var(--sa-color-ink);
+    --_input-placeholder-fg: var(--sa-color-ink-placeholder);
     --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
     --_relief-k: 1;
-    --sa-input-shadow: var(--sa-shadow-control),
+    --_input-shadow: var(--sa-shadow-control),
       inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
   }
   .dark .sa-chip-group[data-appearance="input"] {
@@ -47,22 +26,22 @@
 
 @layer sa.components {
   .sa-chip {
-    --_media: calc(var(--sa-chip-h) - 2 * var(--sa-border-width) - 2 * var(--sa-chip-inset));
-    --_media-radius: max(0px, calc(var(--sa-chip-radius) - var(--sa-border-width) - var(--sa-chip-inset)));
-    --_bg: var(--sa-chip-bg);
-    --_border: var(--sa-chip-border);
+    --_media: calc(calc(5.25 * var(--sa-unit)) - 2 * var(--sa-border-width) - 2 * 2px);
+    --_media-radius: max(0px, calc(var(--sa-radius-tag) - var(--sa-border-width) - 2px));
+    --_bg: var(--sa-color-tint);
+    --_border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
-    gap: var(--sa-chip-gap);
-    height: var(--sa-chip-h);
-    padding-inline: var(--sa-chip-px);
+    gap: var(--sa-unit);
+    height: calc(5.25 * var(--sa-unit));
+    padding-inline: calc(1.5 * var(--sa-unit));
     border: var(--sa-border-width) solid var(--_border);
-    border-radius: var(--sa-chip-radius);
+    border-radius: var(--sa-radius-tag);
     background: var(--_bg);
-    color: var(--sa-chip-fg);
-    font-size: var(--sa-chip-text);
-    font-weight: var(--sa-chip-weight);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
     line-height: 1;
     white-space: nowrap;
 
@@ -75,12 +54,12 @@
        the chip's edge, with corners that follow the chip's. */
     & > svg {
       flex-shrink: 0;
-      width: var(--sa-chip-icon);
-      height: var(--sa-chip-icon);
+      width: 0.875rem;
+      height: 0.875rem;
     }
     & > :is([data-slot="avatar"], img, code) {
       flex-shrink: 0;
-      margin-inline-start: calc(var(--sa-chip-inset) - var(--sa-chip-px));
+      margin-inline-start: calc(2px - calc(1.5 * var(--sa-unit)));
       border-radius: var(--_media-radius);
     }
     & > :is([data-slot="avatar"], img) {
@@ -117,12 +96,12 @@
   .sa-chip > .sa-chip-remove {
     --_h: var(--_media);
     --_radius: var(--_media-radius);
-    --_fg: var(--sa-chip-remove-fg);
-    --_fg-hover: var(--sa-chip-fg);
-    --_bg-hover: var(--sa-chip-remove-bg-hover);
-    --_bg-active: var(--sa-chip-remove-bg-hover);
+    --_fg: var(--sa-color-ink-muted);
+    --_fg-hover: var(--sa-color-ink);
+    --_bg-hover: color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
+    --_bg-active: color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
     min-width: 0;
-    margin-inline: -0.125rem calc(var(--sa-chip-inset) - var(--sa-chip-px));
+    margin-inline: -0.125rem calc(2px - calc(1.5 * var(--sa-unit)));
     border: 0;
     & svg {
       width: 0.75rem;
@@ -137,67 +116,67 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--sa-chip-group-gap);
+    gap: calc(1.5 * var(--sa-unit));
   }
   /* A button beside the chips (Add) takes the chip's height, padding, corners, type and icon size, so
      it lines up with them whatever its own size. */
   .sa-chip-group > .sa-button {
-    --_h: var(--sa-chip-h);
-    --_px: var(--sa-chip-px);
-    --_radius: var(--sa-chip-radius);
-    --_text: var(--sa-chip-text);
-    --_icon: var(--sa-chip-icon);
-    gap: var(--sa-chip-gap);
+    --_h: calc(5.25 * var(--sa-unit));
+    --_px: calc(1.5 * var(--sa-unit));
+    --_radius: var(--sa-radius-tag);
+    --_text: var(--sa-text-xs);
+    --_icon: 0.875rem;
+    gap: var(--sa-unit);
     min-height: 0;
   }
 
   .sa-chip-group[data-appearance="input"] {
-    gap: var(--sa-chip-group-input-gap);
-    min-height: var(--sa-input-h);
-    padding: max(2px, calc((var(--sa-input-h) - 2 * var(--sa-border-width) - var(--sa-chip-h)) / 2)) var(--sa-unit);
-    border: var(--sa-border-width) solid var(--sa-input-border);
-    border-radius: var(--sa-input-radius);
-    background: var(--sa-input-bg);
+    gap: var(--sa-unit);
+    min-height: var(--_input-h);
+    padding: max(2px, calc((var(--_input-h) - 2 * var(--sa-border-width) - calc(5.25 * var(--sa-unit))) / 2)) var(--sa-unit);
+    border: var(--sa-border-width) solid var(--_input-border);
+    border-radius: var(--_input-radius);
+    background: var(--_input-bg);
     background-clip: padding-box;
-    box-shadow: var(--sa-input-shadow);
-    color: var(--sa-input-fg);
-    font-size: var(--sa-input-text);
+    box-shadow: var(--_input-shadow);
+    color: var(--_input-fg);
+    font-size: var(--_input-text);
     transition:
       border-color var(--sa-motion-fast) var(--sa-motion-ease),
       box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
 
     /* Any chip in the group, so chips can sit in a display: contents wrapper that a script replaces. */
     & .sa-chip {
-      --_bg: var(--sa-chip-input-bg);
-      --_border: var(--sa-chip-input-border);
+      --_bg: var(--sa-color-tint);
+      --_border: transparent;
     }
     &:hover:not([data-disabled], :focus-within) {
-      border-color: var(--sa-input-border-hover);
+      border-color: var(--_input-border-hover);
     }
     &:focus-within {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-input-shadow), var(--sa-focus-shadow-field);
+      box-shadow: var(--_input-shadow), var(--sa-focus-shadow-field);
     }
     &[aria-invalid="true"] {
       border-color: var(--sa-color-danger);
-      box-shadow: var(--sa-input-shadow), var(--sa-invalid-shadow);
+      box-shadow: var(--_input-shadow), var(--sa-invalid-shadow);
       &:focus-within {
-        box-shadow: var(--sa-input-shadow), var(--sa-invalid-focus-shadow);
+        box-shadow: var(--_input-shadow), var(--sa-invalid-focus-shadow);
       }
     }
     &[data-disabled] {
-      background: var(--sa-input-bg-disabled);
+      background: var(--_input-bg-disabled);
     }
     & > input {
       flex: 1;
       min-width: 4rem;
-      height: var(--sa-chip-h);
+      height: calc(5.25 * var(--sa-unit));
       padding-inline: 0.25rem;
       border: 0;
       background: transparent;
       outline: none;
       &::placeholder {
-        color: var(--sa-input-placeholder-fg);
+        color: var(--_input-placeholder-fg);
       }
     }
   }

@@ -6,67 +6,37 @@
 
 @layer sa.tokens {
   .sa-alert-dialog-content {
-    --sa-alert-dialog-bg: var(--sa-color-surface-raised);
-    --sa-alert-dialog-fg: var(--sa-color-ink);
-    --sa-alert-dialog-radius: var(--sa-radius-container);
-    --sa-alert-dialog-edge: var(--sa-color-line);
-    --sa-alert-dialog-shadow: var(--sa-shadow-dialog);
-    --sa-alert-dialog-p: var(--sa-space-container);
-    --sa-alert-dialog-gap: var(--sa-alert-dialog-p);
-    --sa-alert-dialog-max-w: 24rem;
-    --sa-alert-dialog-max-w-sm: 20rem;
-    --sa-alert-dialog-text: var(--sa-text-body);
-    --sa-alert-dialog-leading: calc(1.25 / 0.875);
-    --sa-alert-dialog-backdrop-bg: var(--sa-color-scrim);
-    --sa-alert-dialog-header-gap: calc(1.5 * var(--sa-unit));
-    --sa-alert-dialog-media-gap: calc(4 * var(--sa-unit));   /* between the media and the text beside it */
-    --sa-alert-dialog-media-size: calc(10 * var(--sa-unit));
-    --sa-alert-dialog-media-bg: var(--sa-color-surface-sunken);
-    --sa-alert-dialog-media-fg: var(--sa-color-ink);
-    --sa-alert-dialog-media-radius: var(--sa-radius-control-sm);
-    --sa-alert-dialog-media-icon: 1.5rem;
-    --sa-alert-dialog-title-text: var(--sa-text-base);
-    --sa-alert-dialog-title-weight: var(--sa-weight-heading);
-    --sa-alert-dialog-title-leading: 1.5;
-    --sa-alert-dialog-description-text: var(--sa-alert-dialog-text);
-    --sa-alert-dialog-description-fg: var(--sa-color-ink-muted);
     /* The dialog's footer switches: banded or ruled like the dialog's footer. */
     --_footer-fill: var(--sa-dialog-footer-fill, var(--sa-footer-fill));
     --_footer-rule: var(--sa-dialog-footer-rule, var(--sa-footer-rule));
-    --sa-alert-dialog-footer-bg: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
-    --sa-alert-dialog-footer-border: color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
-    --sa-alert-dialog-footer-bleed: var(--sa-alert-dialog-p);
-    --sa-alert-dialog-footer-py: var(--sa-alert-dialog-p);
-    --sa-alert-dialog-footer-pt: calc(var(--sa-alert-dialog-footer-py) * max(var(--_footer-fill), var(--_footer-rule)));
-    --sa-alert-dialog-footer-gap: calc(2 * var(--sa-unit));
   }
 }
 
 @layer sa.components {
   .sa-alert-dialog-content {
-    --_max-w: var(--sa-alert-dialog-max-w-sm);
+    --_max-w: 20rem;
     position: fixed;
     inset: 0;
     margin: auto;
     width: 100%;
     max-width: min(var(--_max-w), calc(100% - 2rem));
     height: fit-content;
-    padding: var(--sa-alert-dialog-p);
-    border: var(--sa-border-width) solid var(--sa-alert-dialog-edge);
-    border-radius: var(--sa-alert-dialog-radius);
-    background: var(--sa-alert-dialog-bg);
-    box-shadow: var(--sa-alert-dialog-shadow);
-    color: var(--sa-alert-dialog-fg);
-    font-size: var(--sa-alert-dialog-text);
-    line-height: var(--sa-alert-dialog-leading);
+    padding: var(--sa-space-container);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-dialog);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: calc(1.25 / 0.875);
     outline: none;
     &[open] {
       display: grid;
-      gap: var(--sa-alert-dialog-gap);
+      gap: var(--sa-space-container);
       animation: sa-dialog-in var(--sa-motion-fast) var(--sa-motion-ease);   /* keyframes in dialog.css */
     }
     &::backdrop {
-      background: var(--sa-alert-dialog-backdrop-bg);
+      background: var(--sa-color-scrim);
     }
     &[open]::backdrop {
       animation: sa-dialog-backdrop-in var(--sa-motion-fast) var(--sa-motion-ease);
@@ -79,42 +49,42 @@
     display: grid;
     grid-template-rows: auto 1fr;
     place-items: center;
-    gap: var(--sa-alert-dialog-header-gap);
+    gap: calc(1.5 * var(--sa-unit));
     text-align: center;
     &:has(> [data-slot="alert-dialog-media"]) {
       grid-template-rows: auto auto 1fr;
-      column-gap: var(--sa-alert-dialog-media-gap);
+      column-gap: calc(4 * var(--sa-unit));
     }
   }
   .sa-alert-dialog-media {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--sa-alert-dialog-media-size);
-    height: var(--sa-alert-dialog-media-size);
+    width: calc(10 * var(--sa-unit));
+    height: calc(10 * var(--sa-unit));
     margin-bottom: calc(2 * var(--sa-unit));
-    border-radius: var(--sa-alert-dialog-media-radius);
-    background: var(--sa-alert-dialog-media-bg);
-    color: var(--sa-alert-dialog-media-fg);
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-surface-sunken);
+    color: var(--sa-color-ink);
     & > svg:not([class*="size-"]) {
-      width: var(--sa-alert-dialog-media-icon);
-      height: var(--sa-alert-dialog-media-icon);
+      width: 1.5rem;
+      height: 1.5rem;
     }
   }
   .sa-alert-dialog-title {
     font-family: var(--sa-font-heading);
-    font-size: var(--sa-alert-dialog-title-text);
-    font-weight: var(--sa-alert-dialog-title-weight);
-    line-height: var(--sa-alert-dialog-title-leading);
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.5;
   }
   .sa-alert-dialog-description {
-    color: var(--sa-alert-dialog-description-fg);
-    font-size: var(--sa-alert-dialog-description-text);
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
     text-wrap: balance;
     & a {
       text-decoration: underline;
       text-underline-offset: 3px;
-      &:hover { color: var(--sa-alert-dialog-fg); }
+      &:hover { color: var(--sa-color-ink); }
     }
     @media (width >= 48rem) {
       text-wrap: pretty;
@@ -123,12 +93,12 @@
   .sa-alert-dialog-footer {
     display: flex;
     flex-direction: column-reverse;
-    gap: var(--sa-alert-dialog-footer-gap);
-    margin: 0 calc(-1 * var(--sa-alert-dialog-footer-bleed)) calc(-1 * var(--sa-alert-dialog-footer-bleed));
-    padding: var(--sa-alert-dialog-footer-pt) var(--sa-alert-dialog-footer-bleed) var(--sa-alert-dialog-footer-py);
-    border-top: var(--sa-border-width) solid var(--sa-alert-dialog-footer-border);
-    border-radius: 0 0 var(--sa-alert-dialog-radius) var(--sa-alert-dialog-radius);
-    background: var(--sa-alert-dialog-footer-bg);
+    gap: calc(2 * var(--sa-unit));
+    margin: 0 calc(-1 * var(--sa-space-container)) calc(-1 * var(--sa-space-container));
+    padding: calc(var(--sa-space-container) * max(var(--_footer-fill), var(--_footer-rule))) var(--sa-space-container) var(--sa-space-container);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
+    border-radius: 0 0 var(--sa-radius-container) var(--sa-radius-container);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
   }
   /* Small: two equal buttons side by side. */
   .sa-alert-dialog-content[data-size="sm"] .sa-alert-dialog-footer {
@@ -138,7 +108,7 @@
 
   @media (width >= 40rem) {
     .sa-alert-dialog-content[data-size="default"] {
-      --_max-w: var(--sa-alert-dialog-max-w);
+      --_max-w: 24rem;
       & .sa-alert-dialog-header {
         place-items: start;
         text-align: start;

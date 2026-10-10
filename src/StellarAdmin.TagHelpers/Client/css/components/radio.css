@@ -1,20 +1,12 @@
 /* Radio: <sa-input type="radio">, a native radio drawn as a small round field with a sibling dot, in
-   the control wrapper (checkbox.css), which carries the tokens so the dot reads them too.
+   the control wrapper (checkbox.css), which carries the variables so the dot reads them too.
    Replaces: .sa-radiobutton, .sa-radiobutton-indicator, .sa-radiobutton-indicator-icon */
 
 @layer sa.tokens {
   .sa-input-control-wrapper {
-    --sa-radio-size: calc(4 * var(--sa-unit));
-    --sa-radio-dot-size: calc(2 * var(--sa-unit));
-    --sa-radio-bg: var(--sa-color-field);
-    --sa-radio-border: var(--sa-color-line-control);
-    --sa-radio-border-hover: var(--sa-color-line-control-hover);
-    --sa-radio-on-bg: var(--sa-color-accent-fill);
-    --sa-radio-on-border: var(--sa-color-accent-fill);
-    --sa-radio-on-fg: var(--sa-color-on-accent);
     --_radio-press: clamp(0, calc(var(--sa-relief) - 1), 1);
     --_radio-k: 1;
-    --sa-radio-shadow: var(--sa-shadow-control),
+    --_radio-shadow: var(--sa-shadow-control),
       inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_radio-press) * var(--_radio-k)));
   }
   .dark .sa-input-control-wrapper {
@@ -27,15 +19,15 @@
     position: relative;
     display: flex;
     flex-shrink: 0;
-    width: var(--sa-radio-size);
-    height: var(--sa-radio-size);
+    width: calc(4 * var(--sa-unit));
+    height: calc(4 * var(--sa-unit));
     margin: 0;
     appearance: none;
-    border: var(--sa-border-width) solid var(--sa-radio-border);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
     border-radius: var(--sa-radius-round);
-    background: var(--sa-radio-bg);
+    background: var(--sa-color-field);
     background-clip: padding-box;
-    box-shadow: var(--sa-radio-shadow);
+    box-shadow: var(--_radio-shadow);
     cursor: pointer;
     outline: none;
     transition:
@@ -50,24 +42,24 @@
       inset: calc(-2 * var(--sa-unit)) calc(-3 * var(--sa-unit));
     }
     &:hover:not(:disabled, :focus-visible, :checked) {
-      border-color: var(--sa-radio-border-hover);
+      border-color: var(--sa-color-line-control-hover);
     }
     &:checked {
-      border-color: var(--sa-radio-on-border);
-      background: var(--sa-radio-on-bg);
+      border-color: var(--sa-color-accent-fill);
+      background: var(--sa-color-accent-fill);
     }
     &:focus-visible {
       border-color: var(--sa-focus-border);
-      box-shadow: var(--sa-radio-shadow), var(--sa-focus-shadow-field);
+      box-shadow: var(--_radio-shadow), var(--sa-focus-shadow-field);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--sa-color-danger);
-      box-shadow: var(--sa-radio-shadow), var(--sa-invalid-shadow);
+      box-shadow: var(--_radio-shadow), var(--sa-invalid-shadow);
       &:checked {
-        border-color: var(--sa-radio-on-border);
+        border-color: var(--sa-color-accent-fill);
       }
       &:focus-visible {
-        box-shadow: var(--sa-radio-shadow), var(--sa-invalid-focus-shadow);
+        box-shadow: var(--_radio-shadow), var(--sa-invalid-focus-shadow);
       }
     }
     &:disabled {
@@ -87,20 +79,20 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: var(--sa-radio-dot-size);
-    height: var(--sa-radio-dot-size);
+    width: calc(2 * var(--sa-unit));
+    height: calc(2 * var(--sa-unit));
     border-radius: var(--sa-radius-round);
-    background: var(--sa-radio-on-fg);
+    background: var(--sa-color-on-accent);
     pointer-events: none;
     stroke: none;
     translate: -50% -50%;
   }
   /* In a choice card (a field label around the field), the card shows focus instead. */
   [data-slot="field-label"] .sa-radiobutton:focus-visible {
-    border-color: var(--sa-radio-border);
-    box-shadow: var(--sa-radio-shadow);
+    border-color: var(--sa-color-line-control);
+    box-shadow: var(--_radio-shadow);
     &:checked {
-      border-color: var(--sa-radio-on-border);
+      border-color: var(--sa-color-accent-fill);
     }
   }
   @media (prefers-reduced-motion: reduce) {

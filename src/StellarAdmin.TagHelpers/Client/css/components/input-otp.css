@@ -3,28 +3,11 @@
    Replaces: .sa-input-otp, .sa-input-otp-caret, .sa-input-otp-caret-line, .sa-input-otp-group,
    .sa-input-otp-input, .sa-input-otp-separator, .sa-input-otp-slot */
 
-@layer sa.tokens {
-  .sa-input-otp {
-    --sa-input-otp-gap: calc(2 * var(--sa-unit));
-    --sa-input-otp-radius: var(--sa-radius-control);
-    --sa-input-otp-shadow: var(--sa-shadow-control);
-    --sa-input-otp-slot-size: var(--sa-control-h);
-    --sa-input-otp-slot-bg: var(--sa-color-field);
-    --sa-input-otp-slot-border: var(--sa-color-line-control);
-    --sa-input-otp-slot-fg: var(--sa-color-ink);
-    --sa-input-otp-slot-text: var(--sa-text-control);
-    --sa-input-otp-separator-fg: var(--sa-color-ink);
-    --sa-input-otp-separator-icon: var(--sa-control-icon);
-    --sa-input-otp-caret-bg: var(--sa-color-ink);
-    --sa-input-otp-caret-h: 1rem;
-  }
-}
-
 @layer sa.components {
   .sa-input-otp {
     display: flex;
     align-items: center;
-    gap: var(--sa-input-otp-gap);
+    gap: calc(2 * var(--sa-unit));
     &:has(:disabled) {
       opacity: var(--sa-disabled-opacity);
     }
@@ -33,10 +16,10 @@
   .sa-input-otp-group {
     display: flex;
     align-items: center;
-    border-radius: var(--sa-input-otp-radius);
-    box-shadow: var(--sa-input-otp-shadow);
+    border-radius: var(--sa-radius-control);
+    box-shadow: var(--sa-shadow-control);
     &:has([aria-invalid="true"], .input-validation-error) {
-      box-shadow: var(--sa-input-otp-shadow), var(--sa-invalid-shadow);
+      box-shadow: var(--sa-shadow-control), var(--sa-invalid-shadow);
     }
   }
 
@@ -45,14 +28,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--sa-input-otp-slot-size);
-    height: var(--sa-input-otp-slot-size);
-    border: var(--sa-border-width) solid var(--sa-input-otp-slot-border);
+    width: var(--sa-control-h);
+    height: var(--sa-control-h);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
     border-inline-start-width: 0;
-    background: var(--sa-input-otp-slot-bg);
+    background: var(--sa-color-field);
     background-clip: padding-box;
-    color: var(--sa-input-otp-slot-fg);
-    font-size: var(--sa-input-otp-slot-text);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
     outline: none;
     transition:
       border-color var(--sa-motion-fast) var(--sa-motion-ease),
@@ -60,12 +43,12 @@
 
     &:first-child {
       border-inline-start-width: var(--sa-border-width);
-      border-start-start-radius: var(--sa-input-otp-radius);
-      border-end-start-radius: var(--sa-input-otp-radius);
+      border-start-start-radius: var(--sa-radius-control);
+      border-end-start-radius: var(--sa-radius-control);
     }
     &:last-child {
-      border-start-end-radius: var(--sa-input-otp-radius);
-      border-end-end-radius: var(--sa-input-otp-radius);
+      border-start-end-radius: var(--sa-radius-control);
+      border-end-end-radius: var(--sa-radius-control);
     }
     &:is([aria-invalid="true"], .input-validation-error) {
       border-color: var(--sa-color-danger);
@@ -84,10 +67,10 @@
   .sa-input-otp-separator {
     display: flex;
     align-items: center;
-    color: var(--sa-input-otp-separator-fg);
+    color: var(--sa-color-ink);
     & svg:not([class*="size-"]) {
-      width: var(--sa-input-otp-separator-icon);
-      height: var(--sa-input-otp-separator-icon);
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
     }
   }
 
@@ -101,8 +84,8 @@
   }
   .sa-input-otp-caret-line {
     width: 1px;
-    height: var(--sa-input-otp-caret-h);
-    background: var(--sa-input-otp-caret-bg);
+    height: 1rem;
+    background: var(--sa-color-ink);
     animation: sa-input-otp-caret-blink 1s ease-out infinite;
   }
   .sa-input-otp-input:disabled {

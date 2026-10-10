@@ -4,55 +4,21 @@
 
 @layer sa.tokens {
   .sa-tabs {
-    --sa-tabs-gap: calc(2 * var(--sa-unit));
-    --sa-tabs-list-h: var(--sa-control-h);
-    --sa-tabs-list-bg: var(--sa-color-tint);
-    --sa-tabs-list-border: transparent;
-    --sa-tabs-list-radius: var(--sa-radius-control);
-    --sa-tabs-list-p: 3px;
-    --sa-tabs-list-gap: 0px;
-    --sa-tabs-trigger-px: calc(1.5 * var(--sa-unit));
-    --sa-tabs-trigger-py: calc(0.5 * var(--sa-unit));
-    --sa-tabs-trigger-gap: calc(1.5 * var(--sa-unit));
-    --sa-tabs-trigger-border: var(--sa-border-width);
-    --sa-tabs-trigger-leading: var(--sa-leading-ui);
-    --sa-tabs-trigger-radius: var(--sa-radius-item);
-    --sa-tabs-trigger-text: var(--sa-text-control);
-    --sa-tabs-trigger-weight: var(--sa-weight-control);
-    --sa-tabs-trigger-icon: var(--sa-control-icon);
-    --sa-tabs-trigger-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
-    --sa-tabs-trigger-fg-hover: var(--sa-color-ink);
-    --sa-tabs-trigger-bg-hover: transparent;
-    --sa-tabs-selected-bg: var(--sa-color-surface);
-    --sa-tabs-selected-fg: var(--sa-color-ink);
-    --sa-tabs-selected-border: transparent;
-    --sa-tabs-selected-shadow: var(--sa-shadow-raised);
-    --sa-tabs-line-gap: calc(1 * var(--sa-unit));
-    --sa-tabs-line-trigger-px: var(--sa-tabs-trigger-px);
-    --sa-tabs-line-trigger-pt: var(--sa-tabs-trigger-py);
-    --sa-tabs-line-trigger-pb: var(--sa-tabs-trigger-py);
-    --sa-tabs-line-trigger-text: var(--sa-tabs-trigger-text);
-    --sa-tabs-line-trigger-weight: var(--sa-tabs-trigger-weight);
-    --sa-tabs-line-trigger-border: var(--sa-tabs-trigger-border);
-    --sa-tabs-line-selected-fg: var(--sa-tabs-selected-fg);
-    --sa-tabs-line-selected-weight: var(--sa-tabs-trigger-weight);
-    --sa-tabs-line-border: transparent;                    /* baseline under a line tab list */
-    --sa-tabs-indicator-bg: var(--sa-color-ink);
-    --sa-tabs-indicator-size: 2px;
-    --sa-tabs-indicator-offset: -5px;                      /* below a horizontal list */
-    --sa-tabs-indicator-offset-vertical: calc(-1 * var(--sa-unit));   /* beside a vertical list */
+    --_tabs-trigger-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --_tabs-selected-bg: var(--sa-color-surface);
+    --_tabs-selected-border: transparent;
   }
   .dark .sa-tabs {
-    --sa-tabs-trigger-fg: var(--sa-color-ink-muted);
-    --sa-tabs-selected-bg: var(--sa-color-field);
-    --sa-tabs-selected-border: var(--sa-color-line-control);
+    --_tabs-trigger-fg: var(--sa-color-ink-muted);
+    --_tabs-selected-bg: var(--sa-color-field);
+    --_tabs-selected-border: var(--sa-color-line-control);
   }
 }
 
 @layer sa.components {
   .sa-tabs {
     display: flex;
-    gap: var(--sa-tabs-gap);
+    gap: calc(2 * var(--sa-unit));
     &[data-orientation="horizontal"] { flex-direction: column; }
   }
 
@@ -60,15 +26,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-tabs-list-gap);
+    gap: 0px;
     width: fit-content;
     /* The padding is measured from the outer edge, so a list border does not shrink the triggers' inset. */
-    padding: max(0px, calc(var(--sa-tabs-list-p) - var(--sa-border-width)));
-    border: var(--sa-border-width) solid var(--sa-tabs-list-border);
-    border-radius: var(--sa-tabs-list-radius);
-    background: var(--sa-tabs-list-bg);
-    color: var(--sa-tabs-trigger-fg);
-    .sa-tabs[data-orientation="horizontal"] > & { height: var(--sa-tabs-list-h); }
+    padding: max(0px, calc(3px - var(--sa-border-width)));
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-tint);
+    color: var(--_tabs-trigger-fg);
+    .sa-tabs[data-orientation="horizontal"] > & { height: var(--sa-control-h); }
     .sa-tabs[data-orientation="vertical"] > & { flex-direction: column; height: fit-content; }
   }
 
@@ -78,15 +44,15 @@
     flex: 1;
     align-items: center;
     justify-content: center;
-    gap: var(--sa-tabs-trigger-gap);
+    gap: calc(1.5 * var(--sa-unit));
     height: calc(100% - 1px);
-    padding: var(--sa-tabs-trigger-py) var(--sa-tabs-trigger-px);
-    border: var(--sa-tabs-trigger-border) solid transparent;
-    border-radius: var(--sa-tabs-trigger-radius);
-    color: var(--sa-tabs-trigger-fg);
-    font-size: var(--sa-tabs-trigger-text);
-    font-weight: var(--sa-tabs-trigger-weight);
-    line-height: var(--sa-tabs-trigger-leading);
+    padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-item);
+    color: var(--_tabs-trigger-fg);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
     white-space: nowrap;
     outline: none;
     transition-property: color, background-color, border-color, box-shadow;
@@ -94,15 +60,15 @@
     transition-timing-function: var(--sa-motion-ease);
 
     & svg { flex-shrink: 0; pointer-events: none; }
-    & svg:not([class*="size-"]) { width: var(--sa-tabs-trigger-icon); height: var(--sa-tabs-trigger-icon); }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
     &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
     &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
-    &:hover { color: var(--sa-tabs-trigger-fg-hover); background: var(--sa-tabs-trigger-bg-hover); }
+    &:hover { color: var(--sa-color-ink); background: transparent; }
     &[data-active] {
-      border-color: var(--sa-tabs-selected-border);
-      background: var(--sa-tabs-selected-bg);
-      box-shadow: var(--sa-tabs-selected-shadow);
-      color: var(--sa-tabs-selected-fg);
+      border-color: var(--_tabs-selected-border);
+      background: var(--_tabs-selected-bg);
+      box-shadow: var(--sa-shadow-raised);
+      color: var(--sa-color-ink);
     }
     &:focus-visible {
       border-color: var(--sa-focus-border);
@@ -116,7 +82,7 @@
     &::after {
       content: "";
       position: absolute;
-      background: var(--sa-tabs-indicator-bg);
+      background: var(--sa-color-ink);
       opacity: 0;
       transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
     }
@@ -124,29 +90,29 @@
   /* Not nested in ::after: a nested rule cannot follow a pseudo-element. */
   .sa-tabs[data-orientation="horizontal"] .sa-tabs-trigger::after {
     inset-inline: 0;
-    bottom: var(--sa-tabs-indicator-offset);
-    height: var(--sa-tabs-indicator-size);
+    bottom: -5px;
+    height: 2px;
   }
   .sa-tabs[data-orientation="vertical"] .sa-tabs-trigger::after {
     inset-block: 0;
-    right: var(--sa-tabs-indicator-offset-vertical);
-    width: var(--sa-tabs-indicator-size);
+    right: calc(-1 * var(--sa-unit));
+    width: 2px;
   }
 
   .sa-tabs-list-variant-line {
-    gap: var(--sa-tabs-line-gap);
+    gap: calc(1 * var(--sa-unit));
     border-color: transparent;
     border-radius: 0;
     background: transparent;
-    .sa-tabs[data-orientation="horizontal"] > & { border-bottom-color: var(--sa-tabs-line-border); }
-    .sa-tabs[data-orientation="vertical"] > & { border-inline-end-color: var(--sa-tabs-line-border); }
+    .sa-tabs[data-orientation="horizontal"] > & { border-bottom-color: transparent; }
+    .sa-tabs[data-orientation="vertical"] > & { border-inline-end-color: transparent; }
 
     & .sa-tabs-trigger {
-      padding: var(--sa-tabs-line-trigger-pt) var(--sa-tabs-line-trigger-px) var(--sa-tabs-line-trigger-pb);
-      border-width: var(--sa-tabs-line-trigger-border);
+      padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(0.5 * var(--sa-unit));
+      border-width: var(--sa-border-width);
       background: transparent;
-      font-size: var(--sa-tabs-line-trigger-text);
-      font-weight: var(--sa-tabs-line-trigger-weight);
+      font-size: var(--sa-text-control);
+      font-weight: var(--sa-weight-control);
       &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
       &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
     }
@@ -154,8 +120,8 @@
       border-color: transparent;
       background: transparent;
       box-shadow: none;
-      color: var(--sa-tabs-line-selected-fg);
-      font-weight: var(--sa-tabs-line-selected-weight);
+      color: var(--sa-color-ink);
+      font-weight: var(--sa-weight-control);
       &::after { opacity: 1; }
     }
     & .sa-tabs-trigger:focus-visible {
