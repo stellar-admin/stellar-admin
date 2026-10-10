@@ -215,7 +215,7 @@
     --sa-color-accent: var(--sa-accent-dark, oklch(from var(--sa-accent) max(l, 0.72) c h));
     --sa-color-accent-text: oklch(from var(--sa-color-accent) max(l, 0.75) c h);
     --sa-color-danger: var(--sa-danger-dark, oklch(from var(--sa-danger) max(l, 0.68) c h));
-    --sa-color-danger-text: oklch(from var(--sa-color-danger) max(l, 0.75) c h);
+    --sa-color-danger-text: oklch(from var(--sa-color-danger) max(l, 0.8) c h);   /* 4.5:1 on its tint over raised surfaces too */
     --sa-color-success: oklch(from var(--sa-success) max(l, 0.72) c h);
     --sa-color-warning: oklch(from var(--sa-warning) max(l, 0.78) c h);
     --sa-color-info: oklch(from var(--sa-info) max(l, 0.72) c h);
