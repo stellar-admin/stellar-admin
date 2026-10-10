@@ -12,7 +12,7 @@
     --_px: calc(2.5 * var(--sa-unit));
     --_py: calc(2 * var(--sa-unit));
     --_media-w: calc(10 * var(--sa-unit));
-    --_media-radius: var(--sa-radius-control);
+    --_media-radius: var(--sa-radius-box);
     --_media-icon: 1rem;
     position: relative;
     display: flex;
@@ -77,10 +77,10 @@
     --_px: calc(1.5 * var(--sa-unit));
     --_py: var(--sa-unit);
     --_media-w: calc(7 * var(--sa-unit));
-    --_media-radius: var(--sa-radius-control-sm);
+    --_media-radius: max(0px, calc(var(--sa-radius-box) - 2px));
     --_media-icon: 0.875rem;
     gap: calc(1.5 * var(--sa-unit));
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     font-size: var(--sa-text-xs);
   }
   .sa-attachment-orientation-vertical:is(.sa-attachment-size-sm, .sa-attachment-size-xs) {

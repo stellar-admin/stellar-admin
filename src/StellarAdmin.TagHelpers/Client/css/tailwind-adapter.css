@@ -28,7 +28,7 @@
      (--sa-pills: 1) keep containers' corners capped. */
   --radius-sm: var(--sa-radius-inner);
   --radius-md: var(--sa-radius-control-sm);
-  --radius-lg: var(--sa-radius-control);
+  --radius-lg: var(--sa-radius-box);
   --radius-xl: var(--sa-radius-container);
   --radius-2xl: calc(var(--sa-radius-container) + 4px);
   --radius-3xl: calc(var(--sa-radius-container) + 8px);

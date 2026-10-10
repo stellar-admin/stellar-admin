@@ -47,6 +47,7 @@
     &:has(> textarea),
     &:has(> [data-align="block-start"], > [data-align="block-end"]) {
       height: auto;
+      border-radius: var(--sa-radius-box);
     }
     &:has(> [data-align="block-start"], > [data-align="block-end"]) {
       flex-direction: column;

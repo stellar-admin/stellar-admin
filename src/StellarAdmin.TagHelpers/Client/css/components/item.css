@@ -23,7 +23,7 @@
     width: 100%;
     padding: var(--_item-py) var(--_item-px);
     border: var(--sa-border-width) solid transparent;
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     font-size: var(--sa-text-sm);
     line-height: var(--sa-leading-ui);
     outline: none;

@@ -126,6 +126,7 @@
 
     --sa-radius-control: var(--sa-radius);
     --sa-radius-control-sm: max(0px, calc(var(--sa-radius) - 2px));
+    --sa-radius-box: min(var(--sa-radius), var(--sa-radius-container));  /* boxes taller than a control: textareas, alerts, items */
     --sa-radius-container: var(--sa-radius-outer, min(calc(var(--sa-radius) * 1.5), 1.25rem));
     --sa-radius-overlay: min(var(--sa-radius-container), calc(var(--sa-radius) * 1.25));
     --sa-radius-item: max(0px, calc(var(--sa-radius-overlay) - var(--sa-space-overlay)));  /* concentric */

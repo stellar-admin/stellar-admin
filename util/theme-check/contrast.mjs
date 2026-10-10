@@ -59,7 +59,7 @@ const faint = report.reduce((n, run) => n + run.faint.length, 0);
 
 for (const run of report)
   console.log(
-    `${run.theme.padEnd(18)} ${run.mode.padEnd(5)} ${run.url}: ${run.texts} texts, ${run.failures.length} below; ${run.parts} parts, ${run.faint.length} faint`,
+    `${run.theme.padEnd(18)} ${run.mode.padEnd(5)} ${run.url}: ${run.texts} texts, ${run.failures.length} below; ${run.parts} parts, ${run.faint.length} faint; ${run.pills.length} pill corners`,
   );
 console.log(`\nText below contrast: ${failures} of ${report.reduce((n, run) => n + run.texts, 0)}`);
 for (const [element, hits] of grouped("failures", (f) => `${f.contrast} "${f.text}"`).slice(0, 40))
@@ -68,6 +68,10 @@ console.log(
   `\nFaint parts (separation below ${options.minSeparation}): ${faint} of ${report.reduce((n, run) => n + run.parts, 0)}`,
 );
 for (const [element, hits] of grouped("faint", (f) => `${f.separation} "${f.text}"`).slice(0, 40))
+  console.log(`${String(hits.length).padStart(4)}  ${element}   e.g. ${hits.slice(0, 3).join(", ")}`);
+const pills = report.reduce((n, run) => n + run.pills.length, 0);
+console.log(`\nPill corners on tall boxes: ${pills}`);
+for (const [element, hits] of grouped("pills", (p) => `${p.height}px "${p.text}"`).slice(0, 40))
   console.log(`${String(hits.length).padStart(4)}  ${element}   e.g. ${hits.slice(0, 3).join(", ")}`);
 
 process.exit(failures ? 1 : 0);

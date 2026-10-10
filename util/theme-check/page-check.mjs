@@ -1,5 +1,5 @@
 // The in-page measurement, run in the browser by contrast.mjs. Returns the text elements below WCAG
-// contrast and the parts that barely separate from what is behind them.
+// contrast, the parts that barely separate from what is behind them, and pill corners on tall boxes.
 //
 // Text: every element with its own visible text, against its composited background; 4.5:1, or 3:1
 // for large text. Faded, hidden and disabled elements are skipped, as WCAG exempts them.
@@ -9,6 +9,10 @@
 // A fill within 1.02 of its backdrop and no border draws no edge on purpose (cells, plain rows) and is
 // skipped. The switch thumb is measured against its track, and a fill that fills a bordered parent
 // shares that parent's edge.
+//
+// Pill corners: a drawn box (fill, border or image) over 1.5 times a control's height and wider than
+// it is tall whose corner radius reaches 40% of its height, so it reads as an ellipse (a pill radius
+// meant for one-line controls on a textarea, an alert, an image).
 
 export function pageCheck(minSeparation) {
   const ctx = Object.assign(document.createElement("canvas"), { width: 1, height: 1 }).getContext(
@@ -149,5 +153,29 @@ export function pageCheck(minSeparation) {
       });
   }
 
-  return { texts, failures, parts, faint };
+  const probe = document.body.appendChild(document.createElement("div"));
+  probe.style.cssText = "position:absolute;visibility:hidden;height:var(--sa-control-h)";
+  const controlHeight = probe.getBoundingClientRect().height || 32;
+  probe.remove();
+  const pills = [];
+  for (const element of document.querySelectorAll("body *")) {
+    if (element.closest("svg")) continue;
+    const rect = element.getBoundingClientRect();
+    if (rect.height <= 1.5 * controlHeight || rect.width < rect.height * 1.2) continue;
+    if (exempt(element, false)) continue;
+    const style = getComputedStyle(element);
+    const drawn =
+      element.matches("img, video") ||
+      rgba(style.backgroundColor)[3] > 0.02 ||
+      sides.some((side) => parseFloat(style[`border${side}Width`]) >= 1);
+    const radius = Math.min(rect.height / 2, parseFloat(style.borderTopLeftRadius) || 0);
+    if (drawn && radius >= 0.4 * rect.height)
+      pills.push({
+        element: label(element),
+        text: element.textContent.trim().slice(0, 18),
+        height: Math.round(rect.height),
+      });
+  }
+
+  return { texts, failures, parts, faint, pills };
 }

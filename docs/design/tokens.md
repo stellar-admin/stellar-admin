@@ -121,7 +121,7 @@ Contrast guarantees: `on-accent` and `on-danger` are white or near-black by WCAG
 
 Type: `--sa-text-2xs`, `-xs`, `-sm`, `-base` (scaled by `--sa-type-scale`), `--sa-text-body`, `--sa-text-control`, `--sa-leading-ui`.
 
-Shape: `--sa-radius-control`, `-control-sm`, `-container`, `-overlay`, `-item` (rows in a menu, tabs, nav items; concentric with the overlay), `-inner` (things inside controls), `-tag`, `-round`. `--sa-border-width`.
+Shape: `--sa-radius-control`, `-control-sm`, `-box` (boxes that can grow taller than a control: textareas, multi-line input groups, alerts, items, attachment media; the control radius capped at the container's, so pill controls don't turn them into ellipses), `-container`, `-overlay`, `-item` (rows in a menu, tabs, nav items; concentric with the overlay), `-inner` (things inside controls), `-tag`, `-round`. `--sa-border-width`.
 
 Size and space (all multiples of `--sa-unit`, 0.25rem × density): `--sa-unit`, `--sa-control-h-xs`, `-h-sm`, `-h`, `-h-lg`, `--sa-control-px`, `--sa-control-gap`, `--sa-space-container`, `-container-sm`, `-cell-x`, `-cell-y`, `-overlay`, `-item-x`, `-item-y`, `-item-gap`.
 

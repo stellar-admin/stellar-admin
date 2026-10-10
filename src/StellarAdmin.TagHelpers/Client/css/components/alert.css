@@ -27,7 +27,7 @@
     width: 100%;
     padding: calc(2 * var(--sa-unit)) calc(2.5 * var(--sa-unit));
     border: var(--sa-border-width) solid var(--_border);
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     background: var(--_bg);
     color: var(--_fg);
     font-size: var(--sa-text-sm);

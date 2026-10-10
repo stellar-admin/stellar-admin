@@ -13,8 +13,9 @@ node util/theme-check/contrast.mjs "http://127.0.0.1:8321/sandbox/html/token-spe
 
 - Text: every element with its own visible text against its composited background, 4.5:1 or 3:1 for large text. Faded, hidden and disabled elements are skipped.
 - Parts: every element with its own fill or border must separate from what is behind it by a luminance contrast of at least `--min-separation` (1.1), through its fill or its border, whichever is stronger; a real drop shadow also counts. A fill within 1.02 of its backdrop and no border is skipped as deliberately edgeless, the switch thumb is measured against its track, and a fill that fills a bordered parent shares its edge.
+- Pill corners: a drawn box (fill, border or image) over 1.5 times a control's height and wider than it is tall, whose corner radius reaches 40% of its height, is reported: it reads as an ellipse, usually a control radius on a part that should use `--sa-radius-box`. Reported for review; the exit code is unchanged.
 
-It prints a line per page, then the failing text and faint parts grouped by element. It exits with 1 when any text fails; faint parts are reported for review. Options: `--presets <folder>` (default `sandbox/html/token-spec/presets`, the eight prototype presets as stress tests; `src/StellarAdmin.TagHelpers/Client/css/presets` for the shipped ones; `none` for the base theme alone), `--random <count>` (12), `--seed <n>` (7), `--modes light,dark`, `--min-separation <ratio>`, `--out <report.json>`.
+It prints a line per page, then the failing text, faint parts and pill corners grouped by element. It exits with 1 when any text fails; faint parts are reported for review. Options: `--presets <folder>` (default `sandbox/html/token-spec/presets`, the eight prototype presets as stress tests; `src/StellarAdmin.TagHelpers/Client/css/presets` for the shipped ones; `none` for the base theme alone), `--random <count>` (12), `--seed <n>` (7), `--modes light,dark`, `--min-separation <ratio>`, `--out <report.json>`.
 
 ## Screenshots
 

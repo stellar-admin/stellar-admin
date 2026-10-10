@@ -22,7 +22,7 @@
     field-sizing: content;
     padding: calc(2 * var(--sa-unit)) var(--sa-control-px);
     border: var(--sa-border-width) solid var(--sa-color-line-control);
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     background: var(--sa-color-field);
     background-clip: padding-box;
     box-shadow: var(--_textarea-shadow);
