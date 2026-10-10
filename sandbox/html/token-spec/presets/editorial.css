@@ -20,6 +20,8 @@
     --sa-column-head-label: 1;
     --sa-column-head-case: var(--sa-section-label-transform);
     --sa-relief: 0;
+    --sa-sheen: 0;
+    --sa-solid-destructive: 0;
     --sa-section-label-text: var(--sa-text-xs);
     --sa-column-head-fill: 0;
   }

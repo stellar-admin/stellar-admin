@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Button sheen</title>
+<!-- Prototype: the --sa-sheen knob, which gives solid buttons a gradient surface, a top highlight and a
+     darker edge (after Bootstrap 6's styled buttons), beside --sa-relief. The library now ships it;
+     this page compares it on and off. Uses the built library bundle; build it first (npm run
+     build:css in src/StellarAdmin.TagHelpers/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="preset">
+<style>
+  /* The library ships the sheen (button.css, --sa-sheen in tokens.css); the off panels set it to 0. */
+  [data-sheen="0"] { --sa-sheen: 0; }
+
+  /* Page chrome */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 16px; max-width: 80ch; }
+  .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: 0.875rem; margin-bottom: 24px; }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+  section { margin-top: 28px; }
+  h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  h2 + p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 10px; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 12px; }
+  .panel { padding: 16px; border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-surface); color: var(--sa-color-ink); display: flex; flex-direction: column; gap: 12px; }
+  .panel-title { color: var(--sa-color-ink-muted); font-size: 0.75rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Button sheen</h1>
+  <p class="lede">The <code>--sa-sheen</code> knob (on by default), after Bootstrap 6's styled buttons: solid buttons get a gradient over their colour (white at the top, black at the bottom), a 1px highlight along the top edge, a darker edge and a pressed shadow. It sets only the surface; <code>--sa-relief</code> still sets the shadow around the button, so each row pairs one relief with sheen off and on. Hover and press the buttons to see those states.</p>
+  <div class="controls">
+    <label>Preset
+      <select id="preset-select">
+        <option value="">Base</option>
+        <option value="nova">Nova</option>
+        <option value="terminal">Terminal</option>
+        <option value="soft">Soft</option>
+        <option value="ledger">Ledger</option>
+        <option value="editorial">Editorial</option>
+        <option value="workshop">Workshop</option>
+        <option value="concourse">Concourse</option>
+        <option value="ops">Ops</option>
+      </select>
+    </label>
+    <label>Sheen strength <input type="range" id="strength" min="0.25" max="2" step="0.25" value="1"> <output id="strength-out">1</output></label>
+    <label><input type="checkbox" id="soft-destructive"> Soft destructive</label>
+    <label><input type="checkbox" id="outlines-off"> Outlines off</label>
+  </div>
+  <div id="rows"></div>
+</div>
+<script>
+  const reliefs = [
+    [0, "Relief 0: flat", "No shadow around the button."],
+    [1, "Relief 1: raised", "A drop shadow under the button (the default)."],
+    [2, "Relief 2: tactile", "A heavier drop, a dark bottom edge and a pressed shadow."],
+  ];
+  const plus = `<svg data-icon="inline-start" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`;
+  const trash = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+  const btn = (variant, size, content, extra = "") =>
+    `<button type="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}"${extra}>${content}</button>`;
+  const variants = [["Book trip", "default"], ["Secondary", "secondary"], ["Outline", "outline"], ["Ghost", "ghost"], ["Cancel trip", "destructive"], ["Link", "link"]];
+  const panel = (dark, sheen) => `
+    <div class="panel${dark ? " dark" : ""}" data-sheen="${sheen ? 1 : 0}">
+      <div class="panel-title">${dark ? "Dark" : "Light"} · sheen ${sheen ? "on" : "off"}</div>
+      <div class="row">${variants.map(([label, v]) => btn(v, "default", label)).join("")}</div>
+      <div class="row">
+        ${btn("default", "xs", "Extra small")}
+        ${btn("default", "sm", "Small")}
+        ${btn("default", "lg", "Large")}
+        ${btn("default", "default", `${plus}New booking`)}
+        ${btn("default", "default", `Save<kbd class="sa-kbd" data-slot="kbd">⌘S</kbd>`)}
+        ${btn("destructive", "icon", trash, ` aria-label="Delete"`)}
+        ${btn("default", "default", "Disabled", " disabled")}
+      </div>
+    </div>`;
+  document.getElementById("rows").innerHTML = reliefs.map(([relief, title, note]) =>
+    `<section style="--sa-relief: ${relief}"><h2>${title}</h2><p>${note}</p>
+      <div class="modes">${panel(false, false)}${panel(false, true)}${panel(true, false)}${panel(true, true)}</div></section>`).join("");
+
+  const params = new URLSearchParams(location.search);
+  const select = document.getElementById("preset-select");
+  const applyPreset = () => {
+    const link = document.getElementById("preset");
+    if (select.value) link.href = `token-spec/presets/${select.value}.css`;
+    else link.removeAttribute("href");
+  };
+  select.value = params.get("preset") ?? "";
+  select.addEventListener("change", applyPreset);
+  applyPreset();
+
+  const strength = document.getElementById("strength");
+  strength.value = params.get("strength") ?? "1";
+  const applyStrength = () => {
+    document.getElementById("strength-out").value = strength.value;
+    document.querySelectorAll('[data-sheen="1"]').forEach(p => p.style.setProperty("--sa-sheen", strength.value));
+  };
+  strength.addEventListener("input", applyStrength);
+  applyStrength();
+
+  const knob = (id, apply) => {
+    const box = document.getElementById(id);
+    box.checked = params.get(id) === "1";
+    box.addEventListener("change", () => apply(box.checked));
+    apply(box.checked);
+  };
+  const rootVar = (name, value) => on => on
+    ? document.documentElement.style.setProperty(name, value)
+    : document.documentElement.style.removeProperty(name);
+  knob("soft-destructive", rootVar("--sa-solid-destructive", "0"));
+  knob("outlines-off", rootVar("--sa-outlines", "0"));
+</script>
+</body>
+</html>

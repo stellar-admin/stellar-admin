@@ -23,6 +23,8 @@
     --sa-column-head-font: var(--sa-font-mono);
     --sa-current-page-fill: 1;
     --sa-relief: 0;
+    --sa-sheen: 0;
+    --sa-solid-destructive: 0;
     --sa-section-label-text: var(--sa-text-xs);
   }
 }

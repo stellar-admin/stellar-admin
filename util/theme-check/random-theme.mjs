@@ -24,6 +24,7 @@ export function randomThemes(count, seed) {
       "--sa-pills": pick(["0", "1"]),
       "--sa-outlines": pick(["0", "1"]),
       "--sa-relief": pick(["0", "1", "2"]),
+      "--sa-sheen": pick(["0", "1"]),
       "--sa-elevation": String(ranged(0, 2, 0, 3)),
       "--sa-density": String(ranged(0.78, 1.2, 0.7, 1.4)),
       "--sa-current-page-fill": pick(["0", "0.15", "1"]),

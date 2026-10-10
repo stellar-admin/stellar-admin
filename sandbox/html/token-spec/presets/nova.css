@@ -16,6 +16,8 @@
     --sa-pills: 1;
     --sa-outlines: 0;
     --sa-relief: 0;
+    --sa-sheen: 0;
+    --sa-solid-destructive: 0;
     --sa-section-label-text: var(--sa-text-xs);
     --sa-footer-fill: 1;
     --sa-column-head-fill: 0;

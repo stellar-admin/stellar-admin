@@ -66,6 +66,7 @@
     --_bg-active: var(--sa-color-hover);
     --_fg: var(--sa-color-ink);
     --_border: var(--sa-color-line);
+    --_s: 0;                     /* no sheen: a surface, not a fill */
     --_x: -50%;
     --_y: 0;
     position: absolute;

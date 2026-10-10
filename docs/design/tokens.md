@@ -46,6 +46,7 @@ Optional (unset by default; when unset they follow the knob they refine): `--sa-
 | `--sa-pills` | `0` | 0 or 1: tags (badges, chips, the switch) are pills, or follow `--sa-radius` |
 | `--sa-outlines` | `1` | 0 or 1: filled parts (buttons, badges, chips, the switch track) also draw an outline |
 | `--sa-relief` | `1` | 0 flat, 1 raised (drop shadow under buttons), 2 tactile (also bottom edge, hover lift, pressed state, recessed fields) |
+| `--sa-sheen` | `1` | 0 flat, 1 a lit surface on solid buttons (default, secondary at 60%, solid destructive): a top-to-bottom gradient, a highlight along the top edge, a darker edge and a pressed shadow. Under a light label the fill darkens 10% so the lit top keeps its contrast |
 | `--sa-stroke` | `1px` | Border width |
 | `--sa-elevation` | `0.7` | Shadow strength: 0 flat, 1 soft, 2 or more floating |
 | `--sa-press-offset` | `1px` | How far a button moves when pressed |
@@ -86,7 +87,7 @@ Switches are 0 or 1 unless stated; keyword switches take a CSS keyword.
 | `--sa-column-head-case` | `none` | Keyword: column head text transform |
 | `--sa-column-head-font` | `inherit` | Keyword: column head font family |
 | `--sa-current-page-fill` | `0` | Current page in pagination: 0 outline, 0.15 soft, 1 solid accent |
-| `--sa-solid-destructive` | `0` | Destructive buttons: 0 soft tint, 1 solid |
+| `--sa-solid-destructive` | `1` | Destructive buttons: 0 soft tint, 1 solid |
 | `--sa-filled-secondary` | `1` | Secondary buttons: 1 sunken fill, 0 bordered surface |
 | `--sa-link-decoration` | `none` | Keyword: link buttons underlined at rest |
 

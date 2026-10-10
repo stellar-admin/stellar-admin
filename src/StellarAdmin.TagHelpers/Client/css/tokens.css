@@ -58,6 +58,8 @@
                                             the switch track); 0 leaves outlines to outline-style parts */
     --sa-relief: 1;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
                                             bottom edge, a hover lift, a pressed state and recessed fields) */
+    --sa-sheen: 1;                       /* 0 flat; 1 solid buttons get a lit surface: a top-to-bottom gradient, a
+                                            highlight along the top edge, a darker edge and a pressed shadow */
     --sa-stroke: 1px;
     --sa-elevation: 0.7;                 /* 0 = flat, 1 = soft, 2+ = floating */
 
@@ -92,7 +94,7 @@
     --sa-column-head-case: none;         /* keyword: switches cannot scale it */
     --sa-column-head-font: inherit;      /* keyword too: e.g. var(--sa-font-mono) */
     --sa-current-page-fill: 0;           /* current page: 0 outline … 1 solid accent */
-    --sa-solid-destructive: 0;           /* destructive button: 0 soft tint … 1 solid */
+    --sa-solid-destructive: 1;           /* destructive button: 0 soft tint … 1 solid */
     --sa-filled-secondary: 1;            /* secondary button: 0 bordered surface … 1 sunken fill */
     --sa-link-decoration: none;          /* keyword: link buttons at rest (underline or none) */
 
@@ -215,7 +217,7 @@
     --sa-color-accent: var(--sa-accent-dark, oklch(from var(--sa-accent) max(l, 0.72) c h));
     --sa-color-accent-text: oklch(from var(--sa-color-accent) max(l, 0.75) c h);
     --sa-color-danger: var(--sa-danger-dark, oklch(from var(--sa-danger) max(l, 0.68) c h));
-    --sa-color-danger-text: oklch(from var(--sa-color-danger) max(l, 0.8) c h);   /* 4.5:1 on its tint over raised surfaces too */
+    --sa-color-danger-text: oklch(from var(--sa-color-danger) max(l, 0.88) c h);   /* 4.5:1 on its hover tint over raised surfaces too */
     --sa-color-success: oklch(from var(--sa-success) max(l, 0.72) c h);
     --sa-color-warning: oklch(from var(--sa-warning) max(l, 0.78) c h);
     --sa-color-info: oklch(from var(--sa-info) max(l, 0.72) c h);
@@ -278,5 +280,12 @@
     --sa-shadow-raised: 0 1px 3px 0 var(--_shadow), 0 1px 2px -1px var(--_shadow);
     --sa-shadow-overlay: 0 10px 24px -6px var(--_shadow), 0 2px 6px -2px var(--_shadow-soft);
     --sa-shadow-dialog: 0 24px 56px -12px oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.22 * var(--_shadow-a)));
+  }
+
+  /* Dark mode: the hover fill moves away from the text on it (black under light text, white under
+     dark text), not toward the light ink, which cost white text its contrast (3.8:1). */
+  .dark,
+  .dark [data-sa-scope] {
+    --sa-color-accent-hover: color-mix(in oklab, var(--sa-color-accent-fill) 88%, oklch(from var(--sa-color-on-accent) clamp(0, (0.62 - l) * 1000, 1) 0 0));
   }
 }
