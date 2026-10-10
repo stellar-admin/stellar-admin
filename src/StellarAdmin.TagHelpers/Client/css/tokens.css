@@ -56,7 +56,7 @@
     --sa-pills: 0;                       /* 0 or 1: tags (badges, chips, the switch) are pills, or follow --sa-radius */
     --sa-outlines: 1;                    /* 0 or 1: filled parts draw an outline too (buttons, badges, chips,
                                             the switch track); 0 leaves outlines to outline-style parts */
-    --sa-relief: 1;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
+    --sa-relief: 0;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
                                             bottom edge, a hover lift, a pressed state and recessed fields) */
     --sa-sheen: 1;                       /* 0 flat; 1 solid buttons get a lit surface: a top-to-bottom gradient, a
                                             highlight along the top edge, a darker edge and a pressed shadow */

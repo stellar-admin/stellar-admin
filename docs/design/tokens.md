@@ -45,8 +45,8 @@ Optional (unset by default; when unset they follow the knob they refine): `--sa-
 | `--sa-radius` | `6px` | Control corners; `9999px` for pill controls |
 | `--sa-pills` | `0` | 0 or 1: tags (badges, chips, the switch) are pills, or follow `--sa-radius` |
 | `--sa-outlines` | `1` | 0 or 1: filled parts (buttons, badges, chips, the switch track) also draw an outline |
-| `--sa-relief` | `1` | 0 flat, 1 raised (drop shadow under buttons), 2 tactile (also bottom edge, hover lift, pressed state, recessed fields) |
-| `--sa-sheen` | `1` | 0 flat, 1 a lit surface on solid buttons (default, secondary at 60%, solid destructive): a top-to-bottom gradient, a highlight along the top edge, a darker edge and a pressed shadow. Under a light label the fill darkens 10% so the lit top keeps its contrast |
+| `--sa-relief` | `0` | 0 flat, 1 raised (drop shadow under buttons), 2 tactile (also bottom edge, hover lift, pressed state, recessed fields) |
+| `--sa-sheen` | `1` | 0 flat, 1 a lit surface on solid buttons (default, secondary, solid destructive; in light mode the secondary is white shading to grey with a full edge, in dark its grey at 60%): a top-to-bottom gradient, a highlight along the top edge, a darker edge and a pressed shadow. Under a light label the fill darkens 10% so the lit top keeps its contrast |
 | `--sa-stroke` | `1px` | Border width |
 | `--sa-elevation` | `0.7` | Shadow strength: 0 flat, 1 soft, 2 or more floating |
 | `--sa-press-offset` | `1px` | How far a button moves when pressed |

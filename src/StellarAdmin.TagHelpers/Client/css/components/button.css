@@ -16,6 +16,10 @@
     /* Sheen (see --sa-sheen): the solid variants set --_s, its strength for that button. */
     --_sheen-k: 1;                                       /* dark mode weakens the white highlight */
     --_s: 0;
+    /* With sheen on, the light-mode secondary is white shading to grey, as macOS push buttons; in dark
+       mode its grey fill is already lighter than the surface, so the sheen lights it as it is. */
+    --_secondary-lit: 1;
+    --_secondary-sheen: 1.2;
 
     --_button-outline-bg: var(--sa-color-surface);
     --_button-outline-border: var(--sa-color-line);
@@ -25,6 +29,8 @@
     --_relief-k: 1.45;
     --_relief-k-drop: 2.5;
     --_sheen-k: 0.7;
+    --_secondary-lit: 0;
+    --_secondary-sheen: 0.6;
     --_button-outline-bg: var(--sa-color-field);
     --_button-outline-border: var(--sa-color-line-control);
     /* Away from the label, as --sa-color-accent-hover in dark mode. */
@@ -122,12 +128,14 @@
     --_s: calc(var(--sa-sheen) * var(--_sheen-k));
   }
   .sa-button-variant-secondary {
-    --_bg: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-surface));
-    --_bg-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-hover));
-    --_bg-active: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-hover));
-    --_border: color-mix(in oklab, var(--sa-color-line) calc(max(var(--sa-outlines), 1 - var(--sa-filled-secondary), 0.5 * var(--sa-sheen)) * 100%), transparent);
+    --_lit: calc(clamp(0, var(--sa-sheen), 1) * var(--_secondary-lit) * 100%);
+    --_flat-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-hover));
+    --_bg: color-mix(in oklab, var(--sa-color-surface) var(--_lit), color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-surface)));
+    --_bg-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 4%) var(--_lit), var(--_flat-hover));
+    --_bg-active: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 6%) var(--_lit), var(--_flat-hover));
+    --_border: color-mix(in oklab, var(--sa-color-line-control) var(--_lit), color-mix(in oklab, var(--sa-color-line) calc(max(var(--sa-outlines), 1 - var(--sa-filled-secondary), 0.5 * var(--sa-sheen)) * 100%), transparent));
     --_fg: var(--sa-color-ink);
-    --_s: calc(0.6 * var(--sa-sheen) * var(--_sheen-k));   /* lighter: a full edge on grey reads as an outline button */
+    --_s: calc(var(--_secondary-sheen) * var(--sa-sheen) * var(--_sheen-k));   /* dark: lighter, as a full edge on the grey reads as an outline button */
   }
   .sa-button-variant-outline {
     --_bg: var(--_button-outline-bg);
