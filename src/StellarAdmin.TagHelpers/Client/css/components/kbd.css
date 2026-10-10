@@ -1,4 +1,4 @@
-/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips (tooltip.css sets its colours there).
+/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips (button.css and tooltip.css set its colours there).
    Replaces: .sa-kbd, .sa-kbd-group */
 
 @layer sa.components {

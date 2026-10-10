@@ -183,4 +183,32 @@
   [data-slot="button-group"] :is(.sa-button-size-xs, .sa-button-size-sm, .sa-button-size-icon-xs, .sa-button-size-icon-sm) {
     --_radius: var(--sa-radius-control);
   }
+
+  /* A keyboard key in a button takes the button's text colour for its text and border, so it follows
+     every variant, hover and dark mode; it is sized to the button. Its tint is white under dark
+     text (lightness below 0.62) and black under light text, so the key's background moves away
+     from its text and keeps the label's contrast. A link button has no fill to tint against. */
+  .sa-button .sa-kbd {
+    --_bg: oklch(from currentColor clamp(0, (0.62 - l) * 1000, 1) 0 h / 0.14);
+    --_border: color-mix(in oklab, currentColor 28%, transparent);
+    --_fg: currentColor;
+  }
+  .sa-button-variant-link .sa-kbd {
+    --_bg: transparent;
+  }
+  .sa-button-size-xs .sa-kbd {
+    height: calc(4 * var(--sa-unit));
+    min-width: calc(4 * var(--sa-unit));
+    padding-inline: calc(0.75 * var(--sa-unit));
+    font-size: 0.625rem;
+  }
+  .sa-button-size-sm .sa-kbd {
+    height: calc(4.5 * var(--sa-unit));
+    min-width: calc(4.5 * var(--sa-unit));
+    font-size: 0.6875rem;
+  }
+  .sa-button-size-lg .sa-kbd {
+    height: calc(5.5 * var(--sa-unit));
+    min-width: calc(5.5 * var(--sa-unit));
+  }
 }

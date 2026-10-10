@@ -108,6 +108,7 @@ Phase 2 completion (2026-10-09): every component the tag helpers render is conve
   - Overlays set `position-try-fallbacks` themselves, since `try-flip-all` was applied inside the replaced rules.
   - Disabled tabs are dimmed (Nova never dimmed them).
   - The tooltip sets the colours of a keyboard shortcut inside it, through the key's private variables.
+  - A keyboard key inside a button (2026-10-10, chosen in `sandbox/html/kbd-in-button.html`) takes the button's text colour for its text and a 28% border, with a 14% tint that is white under dark text and black under light text (none on link buttons), and is sized to the button (xs, sm, lg). A tint of the text colour itself cost the key its contrast on default and destructive buttons (3.5:1 at worst). Kbd docs sample: Button. Verified: the contrast check on the Kbd, Button and Command pages (base, 8 presets, 3 random themes, light and dark) has no key below 4.5:1; on the prototype's grid, keys fail only where the Destructive label itself already fails (Editorial, Soft and Workshop presets, 4.2–4.4); light and dark screenshots of the Kbd page.
 - Open questions for review:
   - Resolved (2026-10-10): keys stay sans by default; tokens.md now gives `--sa-font-mono` for code only, and a theme sets `--sa-kbd-font: var(--sa-font-mono)` for mono keys.
   - Resolved (2026-10-10): the section-label knobs are renamed `--sa-section-label-text`, `-weight`, `-font`, `-transform` and `-tracking`, freeing `--sa-label-*` for the Label component, which reads the foundation directly (component tokens removed, below).
