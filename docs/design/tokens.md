@@ -61,7 +61,7 @@ Optional: `--sa-radius-outer` (container corners, otherwise derived from `--sa-r
 | `--sa-type-scale` | `1` | Text sizes |
 | `--sa-font-sans` | Inter, system fallbacks | Body and control font |
 | `--sa-font-heading` | `var(--sa-font-sans)` | Titles |
-| `--sa-font-mono` | system monospace | Code, keyboard shortcuts |
+| `--sa-font-mono` | system monospace | Code (keyboard keys stay sans; a theme sets `--sa-kbd-font: var(--sa-font-mono)` for mono keys) |
 | `--sa-weight-control` | `500` | Buttons, tabs, menu items |
 | `--sa-weight-heading` | `600` | Titles |
 | `--sa-leading-body` | `1.5` | Line height of running text |

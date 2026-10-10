@@ -109,7 +109,7 @@ Phase 2 completion (2026-10-09): every component the tag helpers render is conve
   - Disabled tabs are dimmed (Nova never dimmed them).
   - The tooltip sets the colours of a keyboard shortcut inside it, through the key's private variables.
 - Open questions for review:
-  - Kbd uses `--sa-font-sans`, as Nova does, but tokens.md lists `--sa-font-mono` for keyboard shortcuts: change the doc or the default?
+  - Resolved (2026-10-10): keys stay sans by default; tokens.md now gives `--sa-font-mono` for code only, and a theme sets `--sa-kbd-font: var(--sa-font-mono)` for mono keys.
   - Resolved (2026-10-10): the section-label knobs are renamed `--sa-section-label-text`, `-weight`, `-font`, `-transform` and `-tracking`, freeing `--sa-label-*` for the Label component, which now has `--sa-label-text` and `--sa-label-weight`.
   - Names outside the grammar: `mb` (`--sa-empty-media-mb`), `md` as a size (`--sa-page-container-max-w-md`), and part names chosen where no tag helper owns the part (`--sa-field-card-*`). Add `mb`/`my` and `md` to the grammar, or rename?
   - Resolved (2026-10-10): of the candidate foundation tokens, only the translucent ink tint was worth a public name (seven components used it); it is `--sa-color-tint` (ink at 8%), used by the tab and segmented tracks, kbd, chips, skeletons and the progress track, which had 7–10%. The others (selected-field tint, opaque danger surface, layout gap scale, inverse pair) have one or two users and stay tier 2.
