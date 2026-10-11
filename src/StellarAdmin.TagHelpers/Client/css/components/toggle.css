@@ -1,0 +1,134 @@
+/* Toggle: a two-state button, a label around a visually hidden checkbox (or radio, in a toggle group),
+   so its states come from the input (:checked, :focus-visible, :disabled, aria-invalid).
+   Replaces: .sa-toggle, .sa-toggle-variant-default, .sa-toggle-variant-outline,
+   .sa-toggle-size-default, .sa-toggle-size-sm, .sa-toggle-size-lg */
+
+@layer sa.tokens {
+  .sa-toggle {
+    /* Outline: the field fill and control lines in dark mode. */
+    --_toggle-outline-bg: var(--sa-color-surface);
+    --_toggle-outline-border: var(--sa-color-line);
+    --_toggle-outline-on-border: var(--sa-color-line-control);
+  }
+  .dark .sa-toggle {
+    --_toggle-outline-bg: var(--sa-color-field);
+    --_toggle-outline-border: var(--sa-color-line-control);
+    --_toggle-outline-on-border: var(--sa-color-line-control-hover);
+  }
+}
+
+@layer sa.components {
+  .sa-toggle {
+    --_h: var(--sa-control-h);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control);
+    --_text: var(--sa-text-control);
+    --_icon: var(--sa-control-icon);
+    --_bg: transparent;
+    --_border: transparent;
+    --_shadow: 0 0 #0000;
+    --_on-border: transparent;
+
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-unit);
+    min-width: var(--_h);
+    height: var(--_h);
+    padding-inline: var(--_px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--_radius);
+    background: var(--_bg);
+    background-clip: padding-box;
+    box-shadow: var(--_shadow);
+    color: var(--sa-color-ink);
+    font-size: var(--_text);
+    font-weight: var(--sa-weight-control);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg {
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--_icon);
+      height: var(--_icon);
+    }
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: calc(var(--_px) - 0.5 * var(--sa-unit));
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: calc(var(--_px) - 0.5 * var(--sa-unit));
+    }
+    &:hover {
+      background-color: var(--sa-color-hover);
+    }
+    &:has(> input:checked) {
+      border-color: var(--_on-border);
+      background-color: var(--sa-color-selected);
+      color: var(--sa-color-ink);
+      &:hover {
+        background-color: color-mix(in oklab, var(--sa-color-selected), var(--sa-color-ink) 5%);
+      }
+    }
+    &:has(> input:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--_shadow), var(--sa-focus-shadow);
+    }
+    &:has(> input:is([aria-invalid="true"], .input-validation-error)) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_shadow), var(--sa-invalid-shadow);
+      &:has(> input:focus-visible) {
+        box-shadow: var(--_shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:has(> input:disabled) {
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* The plain toggle draws no edge, so it is as wide as its content (Nova's sizes). */
+  .sa-toggle-variant-default {
+    border-width: 0;
+  }
+  .sa-toggle-variant-outline {
+    --_bg: var(--_toggle-outline-bg);
+    --_border: var(--_toggle-outline-border);
+    --_shadow: var(--sa-shadow-control);
+    --_on-border: var(--_toggle-outline-on-border);
+  }
+
+  .sa-toggle-size-sm {
+    --_h: var(--sa-control-h-sm);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control-sm);
+    --_text: min(var(--sa-text-control), 0.8rem);
+    --_icon: 0.875rem;
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: calc(var(--_px) - var(--sa-unit));
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: calc(var(--_px) - var(--sa-unit));
+    }
+  }
+  .sa-toggle-size-lg {
+    --_h: var(--sa-control-h-lg);
+    --_px: var(--sa-control-px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-toggle {
+      transition-duration: 0s;
+    }
+  }
+}

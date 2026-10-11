@@ -19,7 +19,7 @@ public class InputGroupTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-input-group", "group/input-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-input-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

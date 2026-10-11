@@ -1,0 +1,26 @@
+/* App header: <sa-app-header>, the bar across the top of the main area, with actions at the end and
+   vertical separators.
+   Replaces: .sa-app-header, .sa-app-header-actions, .sa-app-header-separator */
+
+@layer sa.components {
+  .sa-app-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    column-gap: calc(2 * var(--sa-unit));
+    height: calc(14 * var(--sa-unit));
+    padding-inline: calc(4 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+    background: transparent;
+  }
+  .sa-app-header-actions {
+    display: flex;
+    align-items: center;
+    column-gap: calc(1 * var(--sa-unit));
+    margin-left: auto;
+  }
+  .sa-separator.sa-app-header-separator {
+    height: calc(4 * var(--sa-unit));
+    margin-inline: calc(1 * var(--sa-unit));
+  }
+}

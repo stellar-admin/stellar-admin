@@ -6,7 +6,7 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Theme;
 public class DashboardThemeTests
 {
     [Test]
-    public async Task DefaultConfiguration_RendersNovaWithoutWebFonts()
+    public async Task DefaultConfiguration_RendersTheStylesheetWithoutWebFonts()
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(new([]));
@@ -19,79 +19,46 @@ public class DashboardThemeTests
         await Assert
             .That(
                 document
-                    .RequiredElement("link[href*='StellarAdmin.TagHelpers/stellar-admin.']")
+                    .RequiredElement("link[href*='StellarAdmin.TagHelpers/stellar-admin.css']")
                     .GetAttribute("href")
             )
-            .Contains("stellar-admin.shadcn.nova.css");
+            .StartsWith("/_content/StellarAdmin.TagHelpers/stellar-admin.css");
         await Assert.That(document.QuerySelector("link[href*='fonts.googleapis.com']")).IsNull();
     }
 
     [Test]
-    [Arguments(DashboardTheme.Aurora, "aurora")]
-    [Arguments(DashboardTheme.Concourse, "concourse")]
-    [Arguments(DashboardTheme.Ice, "ice")]
-    [Arguments(DashboardTheme.Ledger, "ledger")]
-    [Arguments(DashboardTheme.Meridian, "meridian")]
-    [Arguments(DashboardTheme.Observatory, "observatory")]
-    [Arguments(DashboardTheme.Parallax, "parallax")]
-    [Arguments(DashboardTheme.ShadcnLuma, "shadcn.luma")]
-    [Arguments(DashboardTheme.ShadcnLyra, "shadcn.lyra")]
-    [Arguments(DashboardTheme.ShadcnMaia, "shadcn.maia")]
-    [Arguments(DashboardTheme.ShadcnMira, "shadcn.mira")]
-    [Arguments(DashboardTheme.ShadcnNova, "shadcn.nova")]
-    [Arguments(DashboardTheme.ShadcnRhea, "shadcn.rhea")]
-    [Arguments(DashboardTheme.ShadcnSera, "shadcn.sera")]
-    [Arguments(DashboardTheme.ShadcnVega, "shadcn.vega")]
-    public async Task SelectedTheme_RendersItsShippedStylesheet(
-        DashboardTheme selectedTheme,
-        string expectedName
-    )
+    public async Task ThemeAndFontStylesheets_RenderAfterTheBundleInRegistrationOrder()
     {
         // Arrange
+        const string Fonts =
+            "https://fonts.googleapis.com/css2?family=Lexend:wght@300..700&display=swap";
         await using var sut = await DashboardTestHost.CreateAsync(
             new([]),
             configureDashboard: dashboard =>
-                dashboard.ConfigureTheme(theme => theme.Name = selectedTheme)
+            {
+                dashboard.AddStylesheet(Fonts);
+                dashboard.AddStylesheet("~/css/theme.css");
+                dashboard.AddStylesheet("~/css/overrides.css");
+            }
         );
         using var client = sut.GetTestClient();
 
         // Act
         var document = await client.GetDocumentAsync("/stellaradmin/products");
+        var hrefs = document
+            .QuerySelectorAll("link[rel='stylesheet']")
+            .Select(link => link.GetAttribute("href") ?? "")
+            .ToList();
 
         // Assert
-        await Assert
-            .That(
-                document
-                    .RequiredElement("link[href*='StellarAdmin.TagHelpers/stellar-admin.']")
-                    .GetAttribute("href")
-            )
-            .Contains($"stellar-admin.{expectedName}.css");
-        await Assert.That(document.QuerySelector("link[href*='fonts.googleapis.com']")).IsNull();
-    }
-
-    [Test]
-    public async Task SuggestedFontsEnabled_RendersSelectedFamilies()
-    {
-        // Arrange
-        await using var sut = await DashboardTestHost.CreateAsync(
-            new([]),
-            configureDashboard: dashboard =>
-                dashboard.ConfigureTheme(theme =>
-                {
-                    theme.Name = DashboardTheme.ShadcnSera;
-                    theme.IncludeSuggestedFonts = true;
-                })
+        var bundle = hrefs.FindIndex(href =>
+            href.Contains("StellarAdmin.TagHelpers/stellar-admin.css")
         );
-        using var client = sut.GetTestClient();
-
-        // Act
-        var document = await client.GetDocumentAsync("/stellaradmin/products");
-        var fontLink = document.RequiredElement("link[href^='https://fonts.googleapis.com/css2']");
-
-        // Assert
-        await Assert.That(fontLink.GetAttribute("href")).Contains("Noto+Sans:wght@400..700");
-        await Assert.That(fontLink.GetAttribute("href")).Contains("Playfair+Display:wght@400..700");
-        await Assert.That(fontLink.GetAttribute("href")).Contains("display=swap");
-        await Assert.That(document.QuerySelectorAll("link[rel='preconnect']").Length).IsEqualTo(2);
+        var theme = hrefs.FindIndex(href => href.StartsWith("/css/theme.css"));
+        var overrides = hrefs.FindIndex(href => href.StartsWith("/css/overrides.css"));
+        await Assert.That(bundle).IsGreaterThanOrEqualTo(0);
+        await Assert.That(hrefs).Contains(Fonts);
+        await Assert.That(theme).IsGreaterThan(bundle);
+        await Assert.That(overrides).IsGreaterThan(theme);
     }
 }

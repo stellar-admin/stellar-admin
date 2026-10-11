@@ -124,8 +124,8 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 
         string?[] classNames = type switch
         {
-            "checkbox" => ["sa-checkbox", "peer"],
-            "radio" => ["sa-radiobutton", "peer"],
+            "checkbox" => ["sa-checkbox"],
+            "radio" => ["sa-radiobutton"],
             _ => ["sa-input"],
         };
 

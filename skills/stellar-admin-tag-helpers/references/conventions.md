@@ -51,12 +51,12 @@ Each component reference names the element a tag renders, so you know which nati
 renders
 
 ```html
-<div data-slot="card" class="sa-card group/card mx-auto w-full max-w-sm">...</div>
+<div data-slot="card" class="sa-card mx-auto w-full max-w-sm">...</div>
 ```
 
-**Whether an arbitrary utility actually exists depends on the app's setup.** If the project runs its own Tailwind build, utilities like `w-full` and `bg-primary` work as usual (and out-rank the component's own rules, because Tailwind's layer order puts utilities last). If it only links the prebuilt theme stylesheet, the *only* utility classes available are the small set that ships inside that bundle — `class="bg-primary"` will silently do nothing.
+**Whether an arbitrary utility actually exists depends on the app's setup.** If the project runs its own Tailwind build with StellarAdmin's adapter, utilities like `w-full` and `bg-primary` work as usual (and out-rank the component's own rules, because the declared layer order puts utilities last). `stellar-admin.css` itself contains no utility classes (only `sr-only`), so without such a build `class="bg-primary"` silently does nothing.
 
-So: use `class` to adjust a component rather than fighting its base styles, but if the app has no Tailwind build, add your own class and style it in your own stylesheet. See `setup.md` ("use StellarAdmin's design tokens in your own markup").
+So: use `class` to adjust a component rather than fighting its base styles, but if the app has no Tailwind build, add your own class and style it in your own stylesheet. Read the theme's tokens there (`var(--sa-color-surface)`, `var(--sa-space-container)`); see [theming](theming.md#use-the-tokens-in-your-own-css).
 
 ## 5. Model binding
 
@@ -151,4 +151,4 @@ The `<sel-*>` web components and the `data-state` / `data-side` / `data-open` / 
 
 ## 11. Theming, briefly
 
-Colors, radius and other design tokens come from the linked theme stylesheet (`stellar-admin.<theme>.css`) as CSS variables, exposed as Tailwind utilities like `bg-primary`, `text-muted-foreground`, `border`. Prefer these semantic tokens over hard-coded colors so components stay consistent in light and dark mode — subject to the Tailwind-build caveat in §4. Dark mode, theme customization and menu appearance are covered by the [theming](theming.md) guide.
+`stellar-admin.css` is the default theme; another theme is a file of CSS variables (`--sa-accent`, `--sa-radius`, `--sa-density`, …) linked after it. Colours, radii and spacing are CSS variables derived from them (`--sa-color-*`, `--sa-radius-*`, `--sa-space-*`), and with the Tailwind adapter also utilities like `bg-primary` and `text-muted-foreground` (subject to the Tailwind-build caveat in §4). Prefer these over hard-coded colours so your markup follows the theme and dark mode. Theme files, dark mode and menu appearance are covered by the [theming](theming.md) guide.

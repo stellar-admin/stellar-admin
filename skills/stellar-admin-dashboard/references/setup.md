@@ -8,20 +8,17 @@ The resource page helpers live in `StellarAdmin.Dashboard`, which is MIT license
 
 ## Dashboard theme
 
-Dashboard uses shadcn Nova by default. Choose any of the fifteen shipped themes and optionally load its suggested web fonts in `Program.cs`:
+Dashboard uses the default theme: its layout links `stellar-admin.css`. For another look, add a theme file of CSS variables (written by hand or downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)) and any web font it needs as stylesheets in `Program.cs`:
 
 ```csharp
 builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 {
-    dashboard.ConfigureTheme(theme =>
-    {
-        theme.Name = DashboardTheme.Ice;
-        theme.IncludeSuggestedFonts = true;
-    });
+    dashboard.AddStylesheet("https://fonts.googleapis.com/css2?family=Lexend:wght@400..700&display=swap");
+    dashboard.AddStylesheet("~/css/theme.css");
 });
 ```
 
-The `DashboardTheme` enum includes Aurora, Concourse, Ice, Ledger, Meridian, Observatory, Parallax, and the eight `Shadcn*` themes. Dashboard links exactly one matching `stellar-admin.<theme>.css` bundle. `IncludeSuggestedFonts` defaults to `false`; when `true`, Dashboard links the selected theme's suggested Google Fonts families with `display=swap`. With fonts excluded, it makes no Google Fonts requests and the theme's CSS font stacks use available local or system fallbacks. This setting applies to the whole Dashboard; it does not add a visitor theme picker. Applications using TagHelpers outside Dashboard still choose their stylesheet in their own layout.
+The layout links `stellar-admin.css` first, then the registered stylesheets in registration order. A theme file sets its variables in `@layer sa.theme`, so it outranks the Dashboard's own stylesheet whatever the order. Dashboard makes no font requests unless a font stylesheet is registered; without one, the theme's font stacks fall back to native fonts. The theme applies to the whole Dashboard; it does not add a visitor theme picker. The stellar-admin-theme skill writes theme files; the Tag Helpers skill's theming guide covers fonts and dark mode.
 
 ## Resource registration
 

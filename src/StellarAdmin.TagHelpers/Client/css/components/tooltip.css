@@ -1,0 +1,56 @@
+/* Tooltip: a short hint popover anchored to its trigger, drawn in the page's inverse colours.
+   Replaces: .sa-tooltip-content, .sa-tooltip-content-logical, .sa-tooltip-arrow, .sa-tooltip-arrow-logical */
+
+@layer sa.tokens {
+  .sa-tooltip-content {
+    --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
+  }
+  .dark .sa-tooltip-content {
+    --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 10%, transparent);
+  }
+}
+
+@layer sa.components {
+  /* Anchored to its trigger (anchors.css places it; the gap comes from the [data-anchor-side]
+     rules in components.css). */
+  .sa-tooltip-content {
+    inset: auto;
+    width: fit-content;
+    max-width: 20rem;
+    margin: 0;
+    padding: calc(1.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
+    border: 0;
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-ink);
+    box-shadow: var(--sa-shadow-control);
+    color: var(--sa-color-surface);
+    font-size: var(--sa-text-xs);
+    line-height: calc(4 / 3);
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    opacity: 1;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+    transition-behavior: allow-discrete;
+
+    &:not(:popover-open) { opacity: 0; }
+    @starting-style {
+      &:popover-open { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    /* A keyboard shortcut sits closer to the end. */
+    &:has([data-slot="kbd"]) { padding-inline-end: calc(1.5 * var(--sa-unit)); }
+    & [data-slot="kbd"] {
+      position: relative;
+      isolation: isolate;
+      z-index: 50;
+      --_bg: var(--_tooltip-kbd-bg);
+      --_fg: var(--sa-color-surface);
+      --_border: transparent;
+      border-radius: var(--sa-radius-inner);
+    }
+  }
+}

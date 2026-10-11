@@ -1,0 +1,13 @@
+<!-- code begin -->
+<div class="flex w-full flex-col gap-6">
+    @foreach (var density in new[] { "0.7", "1", "1.4" })
+    {
+        <div data-sa-scope style="--sa-density: @density;" class="flex flex-wrap items-center gap-2">
+            <sa-badge variant="BadgeVariant.Outline">--sa-density: @density</sa-badge>
+            <sa-input class="w-56" placeholder="Where to next?"/>
+            <sa-button variant="ButtonVariant.Outline">Flexible dates</sa-button>
+            <sa-button>Search trips</sa-button>
+        </div>
+    }
+</div>
+<!-- code end -->

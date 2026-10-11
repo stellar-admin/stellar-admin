@@ -1,0 +1,71 @@
+/* Form section: a titled group of fields, stacked, split (header beside the fields once wide enough)
+   or in a card. Consecutive plain sections are divided by a rule.
+   Replaces: .sa-form-section, .sa-form-section-inner, .sa-form-section-header, .sa-form-section-title,
+   .sa-form-section-description, .sa-form-section-content */
+
+@layer sa.components {
+  .sa-form-section {
+    container: form-section / inline-size;
+    width: 100%;
+    min-width: 0;
+    & + & {
+      margin-top: calc(8 * var(--sa-unit));
+    }
+    & + &:not([data-layout="card"]) {
+      padding-top: calc(8 * var(--sa-unit));
+      border-top: var(--sa-border-width) solid var(--sa-color-line);
+    }
+  }
+  .sa-form-section-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit));
+    min-width: 0;
+  }
+  .sa-form-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--sa-unit));
+    min-width: 0;
+  }
+  .sa-form-section-title {
+    font-family: var(--sa-font-heading);
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.375;
+  }
+  .sa-form-section-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: 1.625;
+  }
+  .sa-form-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: calc(5 * var(--sa-unit));
+    min-width: 0;
+  }
+  .sa-form-section[data-layout="card"] {
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    box-shadow: var(--sa-shadow-container);
+    color: var(--sa-color-ink);
+    & > .sa-form-section-inner {
+      gap: 0;
+      & > .sa-form-section-header {
+        padding: calc(5 * var(--sa-unit));
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+      }
+      & > .sa-form-section-content {
+        padding: calc(5 * var(--sa-unit));
+      }
+    }
+  }
+  @container form-section (min-width: 48rem) {
+    .sa-form-section[data-layout="split"] > .sa-form-section-inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2.3fr);
+    }
+  }
+}

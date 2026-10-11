@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kbd in button</title>
+<!-- Prototype: a keyboard key inside a button takes the button's colours. Uses the built library
+     bundle; build it first (npm run build:css in src/StellarAdmin.TagHelpers/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="preset">
+<style>
+  /* Current: the key's own colours, as before the library took treatment F. */
+  .t-current .sa-button .sa-kbd {
+    --_bg: var(--sa-color-tint);
+    --_fg: color-mix(in oklab, var(--sa-color-ink-muted) 65%, var(--sa-color-ink));
+    --_border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
+    height: calc(5 * var(--sa-unit));
+    min-width: calc(5 * var(--sa-unit));
+    padding-inline: var(--sa-unit);
+    font-size: var(--sa-text-xs);
+  }
+
+  /* The treatments. Each sets the key's private colours from the button's text colour, so it
+     follows every variant, hover and dark mode with no per-variant rule. */
+  .t-tint .sa-button .sa-kbd {
+    --_bg: color-mix(in oklab, currentColor 14%, transparent);
+    --_border: transparent;
+    --_fg: currentColor;
+  }
+  .t-outline .sa-button .sa-kbd {
+    --_bg: transparent;
+    --_border: color-mix(in oklab, currentColor 35%, transparent);
+    --_fg: currentColor;
+  }
+  .t-both .sa-button .sa-kbd {
+    --_bg: color-mix(in oklab, currentColor 12%, transparent);
+    --_border: color-mix(in oklab, currentColor 28%, transparent);
+    --_fg: currentColor;
+  }
+
+  /* C, with the border following --sa-outlines as the standalone key's does: a theme with outlines
+     off gets the tint alone (A). */
+  .t-both-outlines .sa-button .sa-kbd {
+    --_bg: color-mix(in oklab, currentColor 12%, transparent);
+    --_border: color-mix(in oklab, currentColor calc(28% * var(--sa-outlines)), transparent);
+    --_fg: currentColor;
+  }
+
+  /* E: C with half the tint, so the text loses less contrast. */
+  .t-both-light .sa-button .sa-kbd {
+    --_bg: color-mix(in oklab, currentColor 6%, transparent);
+    --_border: color-mix(in oklab, currentColor 28%, transparent);
+    --_fg: currentColor;
+  }
+  /* F: C with the tint inverted: black under light text, white under dark text, so the key's
+     background moves away from its text and contrast rises. */
+  .t-both-recessed .sa-button .sa-kbd {
+    --_bg: oklch(from currentColor clamp(0, (0.62 - l) * 1000, 1) 0 h / 0.14);
+    --_border: color-mix(in oklab, currentColor 28%, transparent);
+    --_fg: currentColor;
+  }
+  .t-both-recessed .sa-button-variant-link .sa-kbd { --_bg: transparent; }
+
+  /* Key size follows the button size (all treatments but Current). */
+  .sized .sa-button-size-xs .sa-kbd {
+    height: calc(4 * var(--sa-unit));
+    min-width: calc(4 * var(--sa-unit));
+    padding-inline: calc(0.75 * var(--sa-unit));
+    font-size: 0.625rem;
+  }
+  .sized .sa-button-size-sm .sa-kbd {
+    height: calc(4.5 * var(--sa-unit));
+    min-width: calc(4.5 * var(--sa-unit));
+    font-size: 0.6875rem;
+  }
+  .sized .sa-button-size-lg .sa-kbd {
+    height: calc(5.5 * var(--sa-unit));
+    min-width: calc(5.5 * var(--sa-unit));
+  }
+
+  /* Page chrome */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 16px; max-width: 70ch; }
+  .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: 0.875rem; margin-bottom: 24px; }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+  section { margin-top: 28px; }
+  h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  h2 + p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 10px; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 12px; }
+  .panel { padding: 16px; border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-surface); color: var(--sa-color-ink); display: flex; flex-direction: column; gap: 12px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .row-label { width: 2.5rem; color: var(--sa-color-ink-muted); font-size: 0.75rem; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Keyboard key inside a button</h1>
+  <p class="lede">Current is what ships today. A to D take the key's colours from the button's text colour; they also size the key to the button. C and D differ only when outlines are off: try the switch or the Nova preset. Hover the buttons to see the hover state.</p>
+  <div class="controls">
+    <label>Preset
+      <select id="preset-select">
+        <option value="">Base</option>
+        <option value="nova">Nova</option>
+        <option value="terminal">Terminal</option>
+        <option value="soft">Soft</option>
+        <option value="ledger">Ledger</option>
+      </select>
+    </label>
+    <label><input type="checkbox" id="solid-destructive"> Solid destructive</label>
+    <label><input type="checkbox" id="outlines-off"> Outlines off</label>
+  </div>
+  <div id="treatments"></div>
+</div>
+<template id="specimen">
+  <div class="panel"></div>
+</template>
+<script>
+  const treatments = [
+    ["Current", "t-current", "The key keeps its own grey tint, text and border (before the library took F)."],
+    ["A: tint", "t-tint sized", "Background: button text at 14%. No border. Text: the button's."],
+    ["B: outline", "t-outline sized", "Border: button text at 35%. No background. Text: the button's."],
+    ["C: tint and border", "t-both sized", "Background: button text at 12%. Border: button text at 28%. Text: the button's."],
+    ["D: C, border follows outlines", "t-both-outlines sized", "As C, but the border is 28% × --sa-outlines, as the standalone key's border: with outlines off (Nova, or the switch above) it is A."],
+    ["E: C, half the tint", "t-both-light sized", "As C, with the background at 6%."],
+    ["F: C, inverted tint", "t-both-recessed sized", "As C, but the background is white under dark text and black under light text, at 14%. Link buttons: no tint. This is what the library ships."],
+  ];
+  const sizes = [["xs", "sa-button-size-xs"], ["sm", "sa-button-size-sm"], ["default", "sa-button-size-default"], ["lg", "sa-button-size-lg"]];
+  const variants = [["Default", "default", "⌘S"], ["Secondary", "secondary", "⌘D"], ["Outline", "outline", "⌘E"],
+    ["Ghost", "ghost", "Esc"], ["Destructive", "destructive", "⌫"], ["Link", "link", "⌘L"]];
+  const panel = (dark) => {
+    const rows = sizes.map(([label, size]) =>
+      `<div class="row"><span class="row-label">${label}</span>` +
+      variants.map(([name, variant, key]) =>
+        `<button type="button" class="sa-button sa-button-variant-${variant} ${size}">${name}<kbd class="sa-kbd" data-slot="kbd">${key}</kbd></button>`).join("") +
+      `</div>`).join("");
+    return `<div class="panel${dark ? " dark" : ""}">${rows}</div>`;
+  };
+  const only = new URLSearchParams(location.search).get("only");
+  document.getElementById("treatments").innerHTML = treatments.filter(([, cls]) => !only || cls.split(" ")[0] === only).map(([title, cls, note]) =>
+    `<section class="${cls}"><h2>${title}</h2><p>${note}</p><div class="modes">${panel(false)}${panel(true)}</div></section>`).join("");
+
+  const params = new URLSearchParams(location.search);
+  const select = document.getElementById("preset-select");
+  const applyPreset = () => {
+    const link = document.getElementById("preset");
+    if (select.value) link.href = `token-spec/presets/${select.value}.css`;
+    else link.removeAttribute("href");
+  };
+  select.value = params.get("preset") ?? "";
+  select.addEventListener("change", applyPreset);
+  applyPreset();
+  const knob = (id, name, value) => {
+    const box = document.getElementById(id);
+    box.checked = params.get(id) === "1";
+    const apply = () => box.checked
+      ? document.documentElement.style.setProperty(name, value)
+      : document.documentElement.style.removeProperty(name);
+    box.addEventListener("change", apply);
+    apply();
+  };
+  knob("solid-destructive", "--sa-solid-destructive", "1");
+  knob("outlines-off", "--sa-outlines", "0");
+</script>
+</body>
+</html>

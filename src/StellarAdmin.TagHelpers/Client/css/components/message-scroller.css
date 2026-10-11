@@ -1,0 +1,114 @@
+/* MessageScroller: a scrolling transcript (sel-message-scroller) whose end fades out while there is
+   more below, with a floating button (sa-button) that jumps to the start or the end.
+   Replaces: .sa-message-scroller, .sa-message-scroller-viewport, .sa-message-scroller-content,
+   .sa-message-scroller-item, .sa-message-scroller-button */
+
+@property --_message-scroller-fade {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@layer sa.components {
+  .sa-message-scroller {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .sa-message-scroller-viewport {
+    --_message-scroller-fade: 0px;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    contain: content;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--_message-scroller-fade)), transparent 100%);
+    mask-repeat: no-repeat;
+    @supports (animation-timeline: scroll()) {
+      animation: sa-message-scroller-fade 1ms ease-in-out both;
+      animation-timeline: scroll(self y);
+      animation-range: calc(100% - calc(24 * var(--sa-unit))) 100%;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --_message-scroller-fade: min(12%, calc(10 * var(--sa-unit)));
+    }
+    &[data-pending-scroll] {
+      visibility: hidden;
+    }
+  }
+  .sa-message-scroller-content {
+    display: flex;
+    flex-direction: column;
+    gap: calc(6 * var(--sa-unit));
+    height: max-content;
+    min-height: 100%;
+  }
+  .sa-message-scroller-item {
+    flex-shrink: 0;
+    min-width: 0;
+    contain-intrinsic-size: auto 10rem;
+    content-visibility: auto;
+  }
+
+  /* The jump button is an sa-button, drawn as a bordered surface whatever its variant. It moves with
+     translate and scale, so the button's pressed transform still applies. */
+  .sa-button.sa-message-scroller-button {
+    --_bg: var(--sa-color-surface);
+    --_bg-hover: var(--sa-color-hover);
+    --_bg-active: var(--sa-color-hover);
+    --_fg: var(--sa-color-ink);
+    --_border: var(--sa-color-line);
+    --_s: 0;                     /* no sheen: a surface, not a fill */
+    --_x: -50%;
+    --_y: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    translate: var(--_x) var(--_y);
+    transition-property: background-color, border-color, color, box-shadow, transform, translate, scale, opacity;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    &:dir(rtl) {
+      --_x: 50%;
+    }
+    &[data-direction="end"] {
+      bottom: calc(4 * var(--sa-unit));
+    }
+    &[data-direction="start"] {
+      top: calc(4 * var(--sa-unit));
+      & svg {
+        rotate: 180deg;
+      }
+    }
+    &[data-active="false"] {
+      pointer-events: none;
+      opacity: 0;
+      scale: 0.95;
+      transition-duration: 400ms;
+      transition-timing-function: cubic-bezier(0.7, 0, 0.84, 0);
+      &[data-direction="end"] { --_y: 100%; }
+      &[data-direction="start"] { --_y: -100%; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-button.sa-message-scroller-button {
+      transition-duration: 0s;
+    }
+  }
+}
+
+@keyframes sa-message-scroller-fade {
+  from {
+    --_message-scroller-fade: min(12%, calc(10 * var(--sa-unit)));
+  }
+  to {
+    --_message-scroller-fade: 0px;
+  }
+}

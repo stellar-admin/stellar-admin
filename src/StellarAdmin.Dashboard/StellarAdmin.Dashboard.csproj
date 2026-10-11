@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="../StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" />
     <ClientInput Include="Client/js/**/*.js" />
     <ClientInput Include="Client/package.json" />
     <ClientInput Include="Client/scripts/**/*.mjs" />

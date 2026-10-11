@@ -323,7 +323,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         tabListBuilder.Attributes.Add("aria-labelledby", labelId);
         tabListBuilder.Attributes.Add(
             "class",
-            JoinCssClasses("sa-tabs-list", "group/tabs-list", "sa-tabs-list-variant-default")
+            JoinCssClasses("sa-tabs-list", "sa-tabs-list-variant-default")
         );
         foreach (var pageSizeOption in pageSizeOptions)
         {
@@ -333,7 +333,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
         var tabsBuilder = new TagBuilder("div");
         tabsBuilder.Attributes.Add("data-slot", "tabs");
         tabsBuilder.Attributes.Add("data-orientation", "horizontal");
-        tabsBuilder.Attributes.Add("class", JoinCssClasses("sa-tabs", "group/tabs"));
+        tabsBuilder.Attributes.Add("class", JoinCssClasses("sa-tabs"));
         tabsBuilder.InnerHtml.AppendHtml(tabListBuilder);
 
         var selectorBuilder = new TagBuilder("div");
@@ -556,7 +556,6 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
                 "class",
                 JoinCssClasses(
                     "sa-button",
-                    "group/button",
                     "sa-button-variant-ghost",
                     compact ? "sa-button-size-icon-sm" : "sa-button-size-default",
                     "sa-pagination-link",

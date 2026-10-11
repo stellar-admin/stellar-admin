@@ -99,11 +99,7 @@ public class DropdownMenuItemTagHelper : StellarAdminAnchorTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-dropdown-menu-item",
-                "group/dropdown-menu-item",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-dropdown-menu-item", output.GetUserSuppliedClass())
         );
     }
 }

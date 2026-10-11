@@ -17,7 +17,7 @@ public class FieldContentTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-content");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-field-content", "group/field-content", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-content", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

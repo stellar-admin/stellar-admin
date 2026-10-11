@@ -1,0 +1,71 @@
+/* Message: one entry in a conversation: an avatar beside a column of bubbles, with an optional header
+   and footer, aligned to the start or the end.
+   Replaces: .sa-message, .sa-message-avatar, .sa-message-content, .sa-message-header,
+   .sa-message-footer, .sa-message-group */
+
+@layer sa.components {
+  .sa-message {
+    position: relative;
+    display: flex;
+    gap: calc(2 * var(--sa-unit));
+    width: 100%;
+    min-width: 0;
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    &[data-align="end"] {
+      flex-direction: row-reverse;
+    }
+  }
+  .sa-message-avatar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    align-self: flex-end;
+    justify-content: center;
+    width: fit-content;
+    min-width: calc(8 * var(--sa-unit));
+    overflow: hidden;
+    border-radius: var(--sa-radius-round);
+    background: var(--sa-color-surface-sunken);
+    .sa-message:has([data-slot="message-footer"]) > & {
+      translate: 0 calc(-1 * calc(8 * var(--sa-unit)));
+    }
+  }
+  .sa-message-content {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2.5 * var(--sa-unit));
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
+    .sa-message[data-align="end"] > & > [data-slot] {
+      align-self: flex-end;
+    }
+  }
+  .sa-message-header,
+  .sa-message-footer {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: calc(3 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
+    line-height: calc(var(--sa-text-xs) * 1.3333);
+    .sa-message:has([data-variant="ghost"]) & {
+      padding-inline: 0;
+    }
+  }
+  .sa-message-footer {
+    .sa-message[data-align="end"] & {
+      justify-content: flex-end;
+    }
+  }
+  .sa-message-group {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--sa-unit));
+    min-width: 0;
+  }
+}

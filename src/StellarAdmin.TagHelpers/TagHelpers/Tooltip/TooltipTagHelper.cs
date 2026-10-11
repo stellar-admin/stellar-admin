@@ -52,7 +52,7 @@ public class TooltipTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-tooltip-content",
-                effectivePositionArea.GetTailwindClassName(),
+                effectivePositionArea.GetClassName(),
                 output.GetUserSuppliedClass()
             )
         );

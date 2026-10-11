@@ -69,7 +69,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         // the table bleeds to the panel edges.
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-data-grid", "sa-card", "group/card", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-data-grid", "sa-card", output.GetUserSuppliedClass())
         );
 
         var tableBuilder = new TagBuilder("table");

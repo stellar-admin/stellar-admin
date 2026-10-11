@@ -1,0 +1,136 @@
+/* Tabs: <sa-tab-list> (a tab list of links, default or line variant, horizontal or vertical).
+   Replaces: .sa-tabs, .sa-tabs-list, .sa-tabs-list-variant-default, .sa-tabs-list-variant-line,
+   .sa-tabs-trigger */
+
+@layer sa.tokens {
+  .sa-tabs {
+    --_tabs-trigger-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --_tabs-selected-bg: var(--sa-color-surface);
+    --_tabs-selected-border: transparent;
+  }
+  .dark .sa-tabs {
+    --_tabs-trigger-fg: var(--sa-color-ink-muted);
+    --_tabs-selected-bg: var(--sa-color-field);
+    --_tabs-selected-border: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-tabs {
+    display: flex;
+    gap: calc(2 * var(--sa-unit));
+    &[data-orientation="horizontal"] { flex-direction: column; }
+  }
+
+  .sa-tabs-list {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+    width: fit-content;
+    /* The padding is measured from the outer edge, so a list border does not shrink the triggers' inset. */
+    padding: max(0px, calc(3px - var(--sa-border-width)));
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-tint);
+    color: var(--_tabs-trigger-fg);
+    .sa-tabs[data-orientation="horizontal"] > & { height: var(--sa-control-h); }
+    .sa-tabs[data-orientation="vertical"] > & { flex-direction: column; height: fit-content; }
+  }
+
+  .sa-tabs-trigger {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: calc(1.5 * var(--sa-unit));
+    height: calc(100% - 1px);
+    padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-item);
+    color: var(--_tabs-trigger-fg);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
+    white-space: nowrap;
+    outline: none;
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+    &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
+    &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
+    &:hover { color: var(--sa-color-ink); background: transparent; }
+    &[data-active] {
+      border-color: var(--_tabs-selected-border);
+      background: var(--_tabs-selected-bg);
+      box-shadow: var(--sa-shadow-raised);
+      color: var(--sa-color-ink);
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &[aria-disabled="true"], &:disabled { opacity: var(--sa-disabled-opacity); pointer-events: none; }
+    &[data-disabled] { cursor: not-allowed; }
+    .sa-tabs[data-orientation="vertical"] & { justify-content: flex-start; width: 100%; }
+
+    /* The line variant's indicator. */
+    &::after {
+      content: "";
+      position: absolute;
+      background: var(--sa-color-ink);
+      opacity: 0;
+      transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+  }
+  /* Not nested in ::after: a nested rule cannot follow a pseudo-element. */
+  .sa-tabs[data-orientation="horizontal"] .sa-tabs-trigger::after {
+    inset-inline: 0;
+    bottom: -5px;
+    height: 2px;
+  }
+  .sa-tabs[data-orientation="vertical"] .sa-tabs-trigger::after {
+    inset-block: 0;
+    right: calc(-1 * var(--sa-unit));
+    width: 2px;
+  }
+
+  .sa-tabs-list-variant-line {
+    gap: calc(1 * var(--sa-unit));
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+    .sa-tabs[data-orientation="horizontal"] > & { border-bottom-color: transparent; }
+    .sa-tabs[data-orientation="vertical"] > & { border-inline-end-color: transparent; }
+
+    & .sa-tabs-trigger {
+      padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(0.5 * var(--sa-unit));
+      border-width: var(--sa-border-width);
+      background: transparent;
+      font-size: var(--sa-text-control);
+      font-weight: var(--sa-weight-control);
+      &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(1 * var(--sa-unit)); }
+      &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(1 * var(--sa-unit)); }
+    }
+    & .sa-tabs-trigger[data-active] {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      color: var(--sa-color-ink);
+      font-weight: var(--sa-weight-control);
+      &::after { opacity: 1; }
+    }
+    & .sa-tabs-trigger:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-tabs-trigger, .sa-tabs-trigger::after { transition-duration: 0s; }
+  }
+}

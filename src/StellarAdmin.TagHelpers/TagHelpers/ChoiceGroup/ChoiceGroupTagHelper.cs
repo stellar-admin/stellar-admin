@@ -182,11 +182,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("role", multiple ? "group" : "radiogroup");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-field-group group/field-group",
-                multiple && !card ? "[&_[data-slot=field-label]]:font-normal" : null,
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-field-group", output.GetUserSuppliedClass())
         );
         if (Disabled == true)
         {
@@ -323,7 +319,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         var label = Element(
             card ? "div" : "label",
             "field-label",
-            card ? "sa-field-title" : "sa-field-label group/field-label peer/field-label"
+            card ? "sa-field-title" : "sa-field-label"
         );
         if (!card)
         {
@@ -345,7 +341,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
 
         if (card || description != null)
         {
-            var content = Element("div", "field-content", "sa-field-content group/field-content");
+            var content = Element("div", "field-content", "sa-field-content");
             content.InnerHtml.AppendHtml(label);
             if (description != null)
             {
@@ -368,11 +364,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         }
 
         field.InnerHtml.AppendHtml(input);
-        var cardLabel = Element(
-            "label",
-            "field-label",
-            JoinCssClasses("sa-field-label group/field-label peer/field-label", css)
-        );
+        var cardLabel = Element("label", "field-label", JoinCssClasses("sa-field-label", css));
         cardLabel.Attributes["for"] = id;
         cardLabel.InnerHtml.AppendHtml(field);
         return cardLabel;

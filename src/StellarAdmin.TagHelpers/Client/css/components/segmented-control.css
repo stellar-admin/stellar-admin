@@ -1,0 +1,111 @@
+/* Segmented control: a radio group drawn as a track of segments, like the tabs list. Each segment is a
+   label around a visually hidden radio, so its states come from the radio (:checked, :focus-visible,
+   :disabled).
+   Replaces: .sa-segmented-control, .sa-segmented-control-input, .sa-segmented-control-item */
+
+@layer sa.tokens {
+  .sa-segmented-control {
+    --_segmented-control-item-fg: color-mix(in oklab, var(--sa-color-ink) 66%, transparent);   /* 4.5:1 on the darkest band */
+    --_segmented-control-selected-bg: var(--sa-color-surface);
+    --_segmented-control-selected-border: transparent;
+  }
+  .dark .sa-segmented-control {
+    --_segmented-control-item-fg: var(--sa-color-ink-muted);
+    --_segmented-control-selected-bg: var(--sa-color-field);
+    --_segmented-control-selected-border: var(--sa-color-line-control);
+  }
+}
+
+@layer sa.components {
+  .sa-segmented-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    height: var(--sa-control-h);
+    padding: 3px;
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-tint);
+    color: var(--_segmented-control-item-fg);
+
+    &[aria-invalid="true"] {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--sa-invalid-shadow);
+    }
+  }
+
+  .sa-segmented-control-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sa-segmented-control-item {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: calc(1.5 * var(--sa-unit));
+    height: 100%;
+    padding: calc(0.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid transparent;
+    border-radius: var(--sa-radius-item);
+    color: var(--_segmented-control-item-fg);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color var(--sa-motion-fast) var(--sa-motion-ease),
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    & svg {
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+    &:has(> [data-icon="inline-start"]) {
+      padding-inline-start: var(--sa-unit);
+    }
+    &:has(> [data-icon="inline-end"]) {
+      padding-inline-end: var(--sa-unit);
+    }
+    &:hover {
+      color: var(--sa-color-ink);
+    }
+    &:has(:checked) {
+      border-color: var(--_segmented-control-selected-border);
+      background: var(--_segmented-control-selected-bg);
+      box-shadow: var(--sa-shadow-raised);
+      color: var(--sa-color-ink);
+    }
+    &:has(:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &:has(:disabled) {
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-segmented-control-item {
+      transition-duration: 0s;
+    }
+  }
+}

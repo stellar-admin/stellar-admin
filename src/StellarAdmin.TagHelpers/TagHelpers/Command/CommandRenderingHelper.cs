@@ -47,7 +47,6 @@ internal static class CommandRenderingHelper
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-command-item",
-                "group/command-item",
                 output.GetUserSuppliedClass()
             )
         );

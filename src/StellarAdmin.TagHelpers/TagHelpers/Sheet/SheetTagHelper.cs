@@ -50,7 +50,7 @@ public class SheetTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "sheet-content");
         output.Attributes.SetAttribute("data-side", effectiveSide.GetDataAttributeText());
         // Structural styling (including the per-side placement, keyed off data-side) lives in
-        // Client/css/components.css.
+        // Client/css/components/sheet.css.
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-sheet-content", output.GetUserSuppliedClass())

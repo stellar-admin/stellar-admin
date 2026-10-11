@@ -1,0 +1,214 @@
+/* Input group: one field drawn around an input or textarea, with addons (icons, text, kbd, buttons)
+   inline or above and below. The group draws the field; the control inside gives up its own edge.
+   Reads the input's tokens (input.css).
+   Replaces: .sa-input-group, .sa-input-group-addon, .sa-input-group-addon-align-inline-start,
+   .sa-input-group-addon-align-inline-end, .sa-input-group-addon-align-block-start,
+   .sa-input-group-addon-align-block-end, .sa-input-group-button, .sa-input-group-button-size-xs,
+   .sa-input-group-button-size-icon-xs, .sa-input-group-button-size-icon-sm, .sa-input-group-text,
+   .sa-input-group-input, .sa-input-group-textarea */
+
+@layer sa.components {
+  .sa-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: var(--_input-h);
+    border: var(--sa-border-width) solid var(--_input-border);
+    border-radius: var(--_input-radius);
+    background: var(--_input-bg);
+    background-clip: padding-box;
+    box-shadow: var(--_input-shadow);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:hover:not(:has([data-slot="input-group-control"]:is(:disabled, :focus-visible))) {
+      border-color: var(--_input-border-hover);
+    }
+    &:has([data-slot="input-group-control"]:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--_input-shadow), var(--sa-focus-shadow-field);
+    }
+    &:has([data-slot][aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_input-shadow), var(--sa-invalid-shadow);
+      &:has([data-slot="input-group-control"]:focus-visible) {
+        box-shadow: var(--_input-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:has(:disabled),
+    &[data-disabled] {
+      background: var(--_input-bg-disabled);
+      opacity: var(--sa-disabled-opacity);
+    }
+    &:has(> textarea),
+    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+      height: auto;
+      border-radius: var(--sa-radius-box);
+    }
+    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+      flex-direction: column;
+    }
+
+    /* The control fills the group and draws nothing itself; addons set the padding beside it. */
+    & > .sa-input-group-input {
+      flex: 1;
+      height: 100%;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      &:is(:focus-visible, [aria-invalid="true"], .input-validation-error) {
+        box-shadow: none;
+      }
+      &:disabled {
+        background: transparent;
+        opacity: 1;
+      }
+    }
+    &:has(> [data-align="inline-start"]) > .sa-input-group-input {
+      padding-inline-start: calc(1.5 * var(--sa-unit));
+    }
+    &:has(> [data-align="inline-end"]) > .sa-input-group-input {
+      padding-inline-end: calc(1.5 * var(--sa-unit));
+    }
+    &:has(> [data-align="block-start"]) > .sa-input-group-input {
+      padding-bottom: calc(3 * var(--sa-unit));
+    }
+    &:has(> [data-align="block-end"]) > .sa-input-group-input {
+      padding-top: calc(3 * var(--sa-unit));
+    }
+  }
+
+  .sa-input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(2 * var(--sa-unit));
+    height: auto;
+    padding-block: calc(1.5 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    cursor: text;
+    user-select: none;
+
+    & > svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+    & > kbd {
+      border-radius: var(--sa-radius-inner);
+    }
+  }
+  .sa-input-group-addon-align-inline-start {
+    order: -1;
+    padding-inline-start: calc(2 * var(--sa-unit));
+    &:has(> button) {
+      margin-inline-start: calc(-1.2 * var(--sa-unit));
+    }
+    &:has(> kbd) {
+      margin-inline-start: calc(-0.6 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-inline-end {
+    order: 1;
+    padding-inline-end: calc(2 * var(--sa-unit));
+    &:has(> button) {
+      margin-inline-end: calc(-1.2 * var(--sa-unit));
+    }
+    &:has(> kbd) {
+      margin-inline-end: calc(-0.6 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-block-start,
+  .sa-input-group-addon-align-block-end {
+    justify-content: flex-start;
+    width: 100%;
+    padding-inline: var(--sa-control-px);
+  }
+  .sa-input-group-addon-align-block-start {
+    order: -1;
+    padding-top: calc(2 * var(--sa-unit));
+    &.border-b {
+      padding-bottom: calc(2 * var(--sa-unit));
+    }
+  }
+  .sa-input-group-addon-align-block-end {
+    order: 1;
+    padding-bottom: calc(2 * var(--sa-unit));
+    &.border-t {
+      padding-top: calc(2 * var(--sa-unit));
+    }
+  }
+  .sa-input-group[data-disabled] .sa-input-group-addon {
+    opacity: var(--sa-disabled-opacity);
+  }
+
+  .sa-input-group-text {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+  }
+
+  /* In-group buttons are buttons (button.css); these out-rank its rules by selector. */
+  .sa-button.sa-input-group-button {
+    --_shadow: 0 0 #0000;
+    --_shadow-hover: 0 0 #0000;
+    --_shadow-active: 0 0 #0000;
+    --_text: var(--sa-text-sm);
+    gap: calc(2 * var(--sa-unit));
+  }
+  .sa-button.sa-input-group-button-size-xs {
+    --_h: calc(6 * var(--sa-unit));
+    --_px: calc(1.5 * var(--sa-unit));
+    --_radius: var(--sa-radius-inner);
+    --_icon: 0.875rem;
+    gap: var(--sa-unit);
+  }
+  .sa-button.sa-input-group-button-size-sm {
+    --_h: calc(8 * var(--sa-unit));
+  }
+  .sa-button.sa-input-group-button-size-icon-xs {
+    --_h: calc(6 * var(--sa-unit));
+    --_radius: var(--sa-radius-inner);
+    width: var(--_h);
+    padding: 0;
+  }
+  .sa-button.sa-input-group-button-size-icon-sm {
+    --_h: calc(8 * var(--sa-unit));
+    width: var(--_h);
+    padding: 0;
+  }
+
+  /* The in-group textarea is a textarea (textarea.css); these out-rank its rules by selector. */
+  .sa-input-group .sa-textarea.sa-input-group-textarea {
+    flex: 1;
+    padding-block: calc(2 * var(--sa-unit));
+    resize: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    &:is(:focus-visible, [aria-invalid="true"], .input-validation-error, :disabled) {
+      background: transparent;
+      box-shadow: none;
+    }
+    &:disabled {
+      opacity: 1;
+    }
+  }
+}

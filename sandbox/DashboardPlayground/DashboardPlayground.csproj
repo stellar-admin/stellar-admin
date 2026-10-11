@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="../../src/StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" />
     <ClientInput Include="Client/package.json" />
     <ClientInput Include="Resources/**/*.cs" />
   </ItemGroup>

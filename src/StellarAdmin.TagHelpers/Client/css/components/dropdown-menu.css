@@ -1,0 +1,135 @@
+/* Dropdown menu: the menu and submenu popovers and their rows. The surface modifiers are in menu.css.
+   Replaces: .sa-dropdown-menu-content, .sa-dropdown-menu-content-logical, .sa-dropdown-menu-sub-content,
+   .sa-dropdown-menu-subcontent, .sa-dropdown-menu-item, .sa-dropdown-menu-checkbox-item,
+   .sa-dropdown-menu-radio-item, .sa-dropdown-menu-item-indicator, .sa-dropdown-menu-sub-trigger,
+   .sa-dropdown-menu-label, .sa-dropdown-menu-separator, .sa-dropdown-menu-shortcut */
+
+@layer sa.components {
+  /* Defaults the surface modifiers (menu.css) replace; :where() keeps them below any modifier. */
+  :where(.sa-dropdown-menu-content, .sa-dropdown-menu-sub-content) {
+    --_bg: var(--sa-color-surface-raised);
+    --_highlight-bg: var(--sa-color-highlight);
+    --_highlight-fg: var(--sa-color-on-highlight);
+    --_separator-border: var(--sa-color-line);
+  }
+
+  /* Popovers anchored to their trigger (anchors.css places them; the gap comes from the
+     [data-anchor-side] rules in components.css). */
+  .sa-dropdown-menu-content,
+  .sa-dropdown-menu-sub-content {
+    z-index: 50;
+    inset: auto;
+    margin: 0;
+    min-width: 8rem;
+    padding: var(--sa-space-overlay) var(--sa-space-overlay);
+    overflow: hidden auto;
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-overlay);
+    background: var(--_bg);
+    box-shadow: var(--sa-shadow-overlay);
+    color: var(--sa-color-ink);
+    outline: none;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    opacity: 1;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+    transition-behavior: allow-discrete;
+
+    &:not(:popover-open) { opacity: 0; }
+    @starting-style {
+      &:popover-open { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  .sa-dropdown-menu-sub-content {
+    min-width: 6rem;
+  }
+
+  .sa-dropdown-menu-item,
+  .sa-dropdown-menu-checkbox-item,
+  .sa-dropdown-menu-radio-item,
+  .sa-dropdown-menu-sub-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sa-space-item-gap);
+    padding: var(--sa-space-item-y) var(--sa-space-item-x);
+    border-radius: var(--sa-radius-item);
+    color: inherit;
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
+    text-decoration: none;
+    cursor: default;
+    outline: none;
+    user-select: none;
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+    &:is(:focus, [data-highlighted]) {
+      background: var(--_highlight-bg);
+      color: var(--_highlight-fg);
+    }
+    &[data-inset] { padding-inline-start: calc(var(--sa-space-item-x) + var(--sa-control-icon) + var(--sa-space-item-gap)); }
+    &[data-disabled] { opacity: var(--sa-disabled-opacity); pointer-events: none; }
+  }
+  .sa-dropdown-menu-sub-trigger {
+    &:is([data-open], [aria-expanded="true"]) {
+      background: var(--_highlight-bg);
+      color: var(--_highlight-fg);
+    }
+    & > svg:last-child { margin-inline-start: auto; }
+  }
+  .sa-dropdown-menu-item[data-variant="destructive"] {
+    color: var(--sa-color-danger-text);
+    &:is(:focus, [data-highlighted]) {
+      background: var(--sa-color-danger-soft);
+      color: var(--sa-color-danger-text);
+    }
+  }
+  .sa-dropdown-menu-checkbox-item,
+  .sa-dropdown-menu-radio-item {
+    padding-inline-end: calc(var(--sa-control-icon) + 4 * var(--sa-unit));
+  }
+  .sa-dropdown-menu-item-indicator {
+    position: absolute;
+    inset-inline-end: calc(2 * var(--sa-unit));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    pointer-events: none;
+
+    [data-state="unchecked"] > & { display: none; }
+  }
+
+  .sa-dropdown-menu-label {
+    padding: var(--sa-space-item-y) var(--sa-space-item-x) var(--sa-space-item-y);
+    color: var(--sa-color-ink-muted);
+    font-family: var(--sa-section-label-font);
+    font-size: var(--sa-section-label-text);
+    font-weight: var(--sa-section-label-weight);
+    letter-spacing: var(--sa-section-label-tracking);
+    line-height: 1rem;
+    text-transform: var(--sa-section-label-transform);
+
+    &[data-inset] { padding-inline-start: calc(var(--sa-space-item-x) + var(--sa-control-icon) + var(--sa-space-item-gap)); }
+  }
+  .sa-dropdown-menu-separator {
+    height: 1px;
+    margin: var(--sa-unit) calc(-1 * var(--sa-space-overlay));
+    background: var(--_separator-border);
+  }
+  .sa-dropdown-menu-shortcut {
+    margin-inline-start: auto;
+    color: var(--sa-color-ink-muted);
+    font-family: inherit;
+    font-size: var(--sa-text-xs);
+    letter-spacing: 0.1em;
+    line-height: calc(4 / 3);
+
+    :is(:focus, [data-highlighted], [data-open]) > & { color: inherit; }
+  }
+}

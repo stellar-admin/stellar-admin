@@ -283,8 +283,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
         {
             inputOutput.Attributes.SetAttribute("disabled", "disabled");
         }
-        // Inline styles (not utility classes) so the overlay is deterministic regardless of which
-        // utilities Tailwind generated. The text and caret are transparent because the slots draw
+        // Inline styles, so the overlay does not depend on any stylesheet. The text and caret are transparent because the slots draw
         // the value and the fake caret; the field exists only to capture native input. The
         // ::selection highlight (which inline styles can't reach) is hidden by the web component.
         inputOutput.Attributes.SetAttribute(

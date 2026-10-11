@@ -42,16 +42,17 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 @addTagHelper *, StellarAdmin.TagHelpers
 ```
 
-### 4. Link a theme stylesheet and JavaScript file
+### 4. Link the stylesheet and JavaScript file
 
-You must add the stylesheet for the [theme](https://www.stellaradmin.com/docs/tag-helpers/theming) you want to use, as well as the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The example below demonstrates how to include the script and the stylesheet for the Observatory theme.
+Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The stylesheet carries the default theme. For another look, make a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder), or write one yourself, and link it after the stylesheet.
 
 ```razor
 <!DOCTYPE html>
 <html lang="en">
 <head>
     ...
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.observatory.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
@@ -60,8 +61,24 @@ You must add the stylesheet for the [theme](https://www.stellaradmin.com/docs/ta
 </html>
 ```
 
+A theme file sets variables in the `sa.theme` layer:
+
+```css
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.5 0.14 245);
+    --sa-radius: 4px;
+    --sa-density: 0.9;
+  }
+}
+```
+
 > [!TIP]
-> You can find more information and see the available themes on the [Theming](https://www.stellaradmin.com/docs/tag-helpers/theming) page.
+> You can find more information on the [Theming](https://www.stellaradmin.com/docs/tag-helpers/theming) page.
+
+#### Browser support
+
+The stylesheet uses CSS relative colour syntax, `color-mix()`, cascade layers, native nesting and `:has()`, without fallbacks: Chrome and Edge 119, Safari 18 and Firefox 128 or later. In older browsers colours fail silently, leaving components unstyled in places.
 
 ### 5. Start using the Tag Helpers
 
@@ -79,7 +96,7 @@ Documentation and code examples for all the Tag Helpers [can be found online](ht
 
 ## Using StellarAdmin with AI agents
 
-The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
+The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours (`--skill stellar-admin-theme`). Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
 
 From your application's project directory, install the skill with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme):
 

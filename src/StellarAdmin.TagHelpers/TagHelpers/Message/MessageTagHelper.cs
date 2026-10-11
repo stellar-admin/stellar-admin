@@ -28,7 +28,7 @@ public class MessageTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-align", effectiveAlign.GetDataAttributeText());
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-message", "group/message", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-message", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

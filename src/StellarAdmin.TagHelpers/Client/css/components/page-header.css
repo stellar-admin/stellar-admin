@@ -1,0 +1,65 @@
+/* Page header: a title with an optional breadcrumb above, description below, actions beside (below on
+   narrow screens) and a nav row (usually line tabs) underneath.
+   Replaces: .sa-page-header, .sa-page-header-title, .sa-page-header-description,
+   .sa-page-header-actions, .sa-page-header-nav */
+
+@layer sa.components {
+  .sa-page-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: calc(1.5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+
+    & > [data-slot="breadcrumb"] {
+      grid-column: 1 / -1;
+      padding-bottom: var(--sa-unit);
+    }
+  }
+  .sa-page-header-title {
+    color: var(--sa-color-ink);
+    font-family: var(--sa-font-heading);
+    font-size: calc(var(--sa-text-base) * 1.25);
+    font-weight: var(--sa-weight-heading);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+  .sa-page-header-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    margin-top: calc(2 * var(--sa-unit));
+  }
+  .sa-page-header-nav {
+    grid-column: 1 / -1;
+    margin-top: calc(3 * var(--sa-unit));
+    padding-bottom: var(--sa-unit);
+    overflow-x: auto;
+  }
+
+  /* From the sm breakpoint the actions sit beside the title, spanning the description's row, or
+     beside the title's row when a breadcrumb leads. */
+  @media (width >= 40rem) {
+    .sa-page-header {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .sa-page-header-description { grid-column-start: 1; }
+    .sa-page-header-actions {
+      grid-column-start: 2;
+      grid-row: 1;
+      align-self: start;
+      justify-self: end;
+      margin-top: 0;
+    }
+    .sa-page-header:has(> [data-slot="page-header-description"]) > .sa-page-header-actions {
+      grid-row: 1 / span 2;
+    }
+    .sa-page-header:has(> [data-slot="breadcrumb"]) > .sa-page-header-actions {
+      grid-row-start: 2;
+    }
+  }
+}

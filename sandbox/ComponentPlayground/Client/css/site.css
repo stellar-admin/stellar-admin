@@ -1,20 +1,14 @@
-@layer theme, base, components, utilities;
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 
 /*
-  Two-bundle mode: the theme bundle supplies preflight, the component CSS and the runtime token variables,
-  so this build emits utilities only. The reference imports resolve token-named utilities (text-muted-foreground, ...)
-  and the custom utilities (scroll-fade-b, ...) in this app's markup without re-emitting preflight or Tailwind's
-  default theme variables over the bundle's.
+  stellar-admin.css supplies the reset, the tokens and the component CSS, so this build emits utilities only.
+  The reference imports resolve token-named utilities (text-muted-foreground, ...) through the StellarAdmin
+  Tailwind adapter, and shadcn-tailwind.css adds the custom utilities (scroll-fade-b, ...) this app's markup uses.
 */
 @import "tailwindcss/theme.css" layer(theme) theme(inline reference);
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css" theme(reference);
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/shadcn-tailwind.css";
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" theme(reference);
+@import "./shadcn-tailwind.css";
 @import "tailwindcss/utilities.css" layer(utilities);
-
-@theme reference {
-    --font-sans: sans-serif;
-    --font-mono: monospace;
-}
 
 @plugin "@tailwindcss/forms" {
     strategy: "class";

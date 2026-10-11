@@ -1,0 +1,42 @@
+<!-- code begin -->
+<div class="flex w-full flex-col gap-6">
+    <div class="flex flex-wrap items-end gap-3">
+        <sa-field class="w-64">
+            <sa-field-label for="booking-search">Search bookings</sa-field-label>
+            <sa-input id="booking-search" placeholder="Destination or booking number"/>
+        </sa-field>
+        <sa-button>
+            <sa-icon name="search"/>
+            Search
+        </sa-button>
+    </div>
+
+    <section data-sa-density="compact">
+        <sa-table>
+            <sa-table-header>
+                <sa-table-row>
+                    <sa-table-head>Booking #</sa-table-head>
+                    <sa-table-head>Status</sa-table-head>
+                    <sa-table-head>Destination</sa-table-head>
+                    <sa-table-head class="text-right">Amount</sa-table-head>
+                </sa-table-row>
+            </sa-table-header>
+            <sa-table-body>
+                @foreach (var booking in StaticData.Bookings)
+                {
+                    <sa-table-row>
+                        <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                        <sa-table-cell>
+                            <sa-badge variant="@(booking.Status == BookingStatus.Cancelled ? BadgeVariant.Destructive : BadgeVariant.Secondary)">
+                                @booking.Status.ToString()
+                            </sa-badge>
+                        </sa-table-cell>
+                        <sa-table-cell>@booking.Destination</sa-table-cell>
+                        <sa-table-cell class="text-right">@booking.Amount.ToString("N")</sa-table-cell>
+                    </sa-table-row>
+                }
+            </sa-table-body>
+        </sa-table>
+    </section>
+</div>
+<!-- code end -->

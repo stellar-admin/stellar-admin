@@ -1,0 +1,143 @@
+/* Command: a search field over a filtered list of commands, inline or in a command dialog.
+   Replaces: .sa-command, .sa-command-dialog, .sa-command-input-wrapper, .sa-command-input-group,
+   .sa-command-input-icon, .sa-command-input, .sa-command-list, .sa-command-empty, .sa-command-group,
+   .sa-command-separator, .sa-command-item, .sa-command-item-indicator, .sa-command-shortcut */
+
+@layer sa.components {
+  .sa-command {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: var(--sa-space-overlay);
+    overflow: hidden;
+    border-radius: var(--sa-radius-overlay);
+    background: var(--sa-color-surface-raised);
+    color: var(--sa-color-ink);
+  }
+
+  .sa-command-input-wrapper {
+    padding: var(--sa-space-overlay) var(--sa-space-overlay) 0;
+  }
+  /* The search field is an input group (input-group.css), out-ranked by selector. */
+  .sa-input-group.sa-command-input-group {
+    height: var(--sa-control-h);
+    border-color: var(--sa-color-line-control);
+    border-radius: max(0px, calc(var(--sa-radius-overlay) - var(--sa-space-overlay)));
+    background: var(--sa-color-field);
+    box-shadow: none;
+
+    & > .sa-input-group-addon { padding-inline-start: calc(2 * var(--sa-unit)); }
+  }
+  .sa-command-input-icon {
+    flex-shrink: 0;
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
+  }
+  .sa-command-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0 calc(2 * var(--sa-unit)) 0 calc(1.5 * var(--sa-unit));
+    border: 0;
+    background: transparent;
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
+    outline: none;
+
+    &::placeholder { color: var(--sa-color-ink-placeholder); }
+    &:disabled { opacity: var(--sa-disabled-opacity); cursor: not-allowed; }
+  }
+
+  .sa-command-list {
+    max-height: 18rem;
+    overflow: hidden auto;
+    scroll-padding-block: var(--sa-space-overlay);
+    outline: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+  .sa-command-empty {
+    padding-block: calc(6 * var(--sa-unit));
+    font-size: var(--sa-text-body);
+    text-align: center;
+  }
+  .sa-command-group {
+    padding: var(--sa-space-overlay);
+    overflow: hidden;
+    color: var(--sa-color-ink);
+
+    & [data-slot="command-group-heading"] {
+      padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+      color: var(--sa-color-ink-muted);
+      font-family: var(--sa-section-label-font);
+      font-size: var(--sa-section-label-text);
+      font-weight: var(--sa-section-label-weight);
+      letter-spacing: var(--sa-section-label-tracking);
+      line-height: 1rem;
+      text-transform: var(--sa-section-label-transform);
+    }
+  }
+  .sa-command-separator {
+    height: 1px;
+    margin-inline: calc(-1 * var(--sa-space-overlay));
+    background: var(--sa-color-line);
+  }
+  .sa-command-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    padding: calc(1.5 * var(--sa-unit)) calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-item);
+    color: inherit;
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
+    text-decoration: none;
+    cursor: default;
+    outline: none;
+    user-select: none;
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+    &[data-selected="true"] {
+      background: var(--sa-color-highlight);
+      color: var(--sa-color-on-highlight);
+    }
+    &[data-disabled="true"] { opacity: var(--sa-disabled-opacity); pointer-events: none; }
+  }
+  /* The check of a checked item; a shortcut takes its place. */
+  .sa-command-item-indicator {
+    margin-inline-start: auto;
+    opacity: 0;
+
+    [data-checked="true"] > & { opacity: 1; }
+    :has(> [data-slot="command-shortcut"]) > & { display: none; }
+  }
+  .sa-command-shortcut {
+    margin-inline-start: auto;
+    color: var(--sa-color-ink-muted);
+    font-family: inherit;
+    font-size: var(--sa-text-xs);
+    letter-spacing: 0.1em;
+    line-height: calc(4 / 3);
+
+    [data-selected="true"] > & { color: inherit; }
+  }
+  .sa-command :is(.sa-command-item, .sa-command-group, .sa-command-empty, .sa-command-separator)[hidden] {
+    display: none;
+  }
+
+  /* In a command dialog the command fills the dialog, a third of the way down the viewport. */
+  dialog.sa-dialog-content.sa-command-dialog {
+    top: 33.333%;
+    bottom: auto;
+    margin-top: 0;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    translate: none;
+  }
+}

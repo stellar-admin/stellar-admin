@@ -1,0 +1,65 @@
+/* Textarea: a multi-line field drawn like the input, growing with its content from a minimum height.
+   Replaces: .sa-textarea */
+
+@layer sa.tokens {
+  .sa-textarea {
+    /* Recessed when tactile (--sa-relief 2), as the input; dark mode weights the inset more. */
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;
+    --_textarea-shadow: var(--sa-shadow-control),
+      inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
+  }
+  .dark .sa-textarea {
+    --_relief-k: 4;
+  }
+}
+
+@layer sa.components {
+  .sa-textarea {
+    display: flex;
+    width: 100%;
+    min-height: calc(16 * var(--sa-unit));
+    field-sizing: content;
+    padding: calc(2 * var(--sa-unit)) var(--sa-control-px);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-box);
+    background: var(--sa-color-field);
+    background-clip: padding-box;
+    box-shadow: var(--_textarea-shadow);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
+    line-height: var(--sa-leading-ui);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &::placeholder {
+      color: var(--sa-color-ink-placeholder);
+    }
+    &:hover:not(:disabled, :focus-visible) {
+      border-color: var(--sa-color-line-control-hover);
+    }
+    &:focus-visible {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--_textarea-shadow), var(--sa-focus-shadow-field);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_textarea-shadow), var(--sa-invalid-shadow);
+      &:focus-visible {
+        box-shadow: var(--_textarea-shadow), var(--sa-invalid-focus-shadow);
+      }
+    }
+    &:disabled {
+      background: var(--sa-color-field-disabled);
+      opacity: var(--sa-disabled-opacity);
+      cursor: not-allowed;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-textarea {
+      transition-duration: 0s;
+    }
+  }
+}

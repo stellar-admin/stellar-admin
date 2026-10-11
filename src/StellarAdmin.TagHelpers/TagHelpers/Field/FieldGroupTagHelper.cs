@@ -20,7 +20,7 @@ public class FieldGroupTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-field-group", "group/field-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

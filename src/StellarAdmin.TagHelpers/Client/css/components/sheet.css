@@ -1,0 +1,125 @@
+/* Sheet: a panel over a native <dialog> that slides in from an edge of the screen (data-side), drawn
+   like the dialog (scrim, raised surface, footer switches), with a corner close button and a body
+   that stretches the footer to the bottom.
+   Replaces: .sa-sheet-content, .sa-sheet-overlay, .sa-sheet-close, .sa-sheet-body,
+   .sa-sheet-header, .sa-sheet-footer, .sa-sheet-title, .sa-sheet-description */
+
+@layer sa.tokens {
+  .sa-sheet-content {
+    /* The dialog's footer switches: banded or ruled like the dialog's footer. */
+    --_footer-fill: var(--sa-dialog-footer-fill, var(--sa-footer-fill));
+    --_footer-rule: var(--sa-dialog-footer-rule, var(--sa-footer-rule));
+  }
+}
+
+@layer sa.components {
+  .sa-sheet-content {
+    --_from: 100% 0;
+    position: fixed;
+    inset: auto;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0 solid var(--sa-color-line);
+    border-radius: 0;
+    background: var(--sa-color-surface-raised);
+    background-clip: padding-box;
+    box-shadow: var(--sa-shadow-dialog);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: calc(1.25 / 0.875);
+    outline: none;
+    &[open] {
+      animation: sa-sheet-in calc(2 * var(--sa-motion-fast)) var(--sa-motion-ease);
+    }
+    &::backdrop {
+      background: var(--sa-color-scrim);
+    }
+    &[open]::backdrop {
+      animation: sa-dialog-backdrop-in calc(2 * var(--sa-motion-fast)) var(--sa-motion-ease);   /* keyframes in dialog.css */
+    }
+
+    &[data-side="right"],
+    &[data-side="left"] {
+      inset-block: 0;
+      width: 75%;
+      height: 100%;
+      @media (width >= 40rem) {
+        max-width: 24rem;
+      }
+    }
+    &[data-side="right"] {
+      right: 0;
+      border-left-width: var(--sa-border-width);
+    }
+    &[data-side="left"] {
+      --_from: -100% 0;
+      left: 0;
+      border-right-width: var(--sa-border-width);
+    }
+    &[data-side="top"],
+    &[data-side="bottom"] {
+      inset-inline: 0;
+      width: 100%;
+    }
+    &[data-side="top"] {
+      --_from: 0 -100%;
+      top: 0;
+      border-bottom-width: var(--sa-border-width);
+    }
+    &[data-side="bottom"] {
+      --_from: 0 100%;
+      bottom: 0;
+      border-top-width: var(--sa-border-width);
+    }
+  }
+  .sa-sheet-close {
+    position: absolute;
+    top: calc(3 * var(--sa-unit));
+    right: calc(3 * var(--sa-unit));
+  }
+  .sa-sheet-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .sa-sheet-header {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.5 * var(--sa-unit));
+    padding: var(--sa-space-container);
+  }
+  .sa-sheet-title {
+    color: var(--sa-color-ink);
+    font-family: var(--sa-font-heading);
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.5;
+  }
+  .sa-sheet-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
+  }
+  .sa-sheet-footer {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--sa-unit));
+    margin-top: auto;
+    padding: var(--sa-space-container);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
+  }
+
+  @keyframes sa-sheet-in {
+    from { translate: var(--_from); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-sheet-content[open],
+    .sa-sheet-content[open]::backdrop {
+      animation: none;
+    }
+  }
+}

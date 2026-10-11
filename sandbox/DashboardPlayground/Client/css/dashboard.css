@@ -1,14 +1,14 @@
-/* DashboardPlayground — utilities for class names set in resource registrations, linked
-   after the theme bundle and the Dashboard stylesheet. Those already ship preflight, the
-   theme variables, and all component rules, so this file emits utilities only.
+/* DashboardPlayground: utilities for class names set in resource registrations, linked after
+   stellar-admin.css and the Dashboard stylesheet, which already ship the reset, the tokens and every
+   component rule, so this file emits utilities only.
 
-   Both theme imports are reference-only, so no variables are re-emitted here and the
-   generated utilities resolve against the linked theme bundle at runtime. */
+   Both theme imports are reference-only, so no variables are emitted here; the StellarAdmin Tailwind
+   adapter maps the colour names, spacing and radii onto the tokens. */
 
-@layer theme, base, components, utilities;
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 
 @import "tailwindcss/theme.css" layer(theme) theme(inline reference);
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css" theme(reference);
+@import "../../../../src/StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" theme(reference);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../Resources";

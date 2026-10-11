@@ -37,11 +37,7 @@ public class FieldLabelTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "field-label");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-field-label",
-                "group/field-label peer/field-label",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-field-label", output.GetUserSuppliedClass())
         );
 
         var labelTagHelper = new LabelTagHelper(_htmlGenerator)

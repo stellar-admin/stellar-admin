@@ -1,0 +1,49 @@
+/* Popover: a panel of content anchored to its trigger, with an optional header (title and description).
+   Replaces: .sa-popover-content, .sa-popover-content-logical, .sa-popover-header, .sa-popover-title,
+   .sa-popover-description */
+
+@layer sa.components {
+  /* Anchored to its trigger (anchors.css places it; the gap comes from the [data-anchor-side]
+     rules in components.css). */
+  .sa-popover-content {
+    inset: auto;
+    width: 18rem;
+    margin: 0;
+    padding: calc(2.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-overlay);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-overlay);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
+    outline: none;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    opacity: 1;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+    transition-behavior: allow-discrete;
+
+    &:not(:popover-open) { opacity: 0; }
+    @starting-style {
+      &:popover-open { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+  .sa-popover-header {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.5 * var(--sa-unit));
+    font-size: var(--sa-text-body);
+  }
+  .sa-popover-title {
+    font-family: var(--sa-font-heading);
+    font-weight: var(--sa-weight-heading);
+  }
+  .sa-popover-description {
+    color: var(--sa-color-ink-muted);
+  }
+}

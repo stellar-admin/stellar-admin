@@ -1,0 +1,48 @@
+/* Breadcrumb: <sa-breadcrumb>, a trail of links, separators and an optional ellipsis, ending at the page.
+   Replaces: .sa-breadcrumb-list, .sa-breadcrumb-item, .sa-breadcrumb-link, .sa-breadcrumb-page,
+   .sa-breadcrumb-separator, .sa-breadcrumb-ellipsis */
+
+@layer sa.components {
+  .sa-breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(1.5 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    list-style: none;
+    overflow-wrap: break-word;
+  }
+  .sa-breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(1 * var(--sa-unit));
+  }
+  .sa-breadcrumb-link {
+    transition: color var(--sa-motion-fast) var(--sa-motion-ease);
+    &:hover { color: var(--sa-color-ink); }
+  }
+  .sa-breadcrumb-page {
+    color: var(--sa-color-ink);
+    font-weight: 400;
+  }
+  .sa-breadcrumb-separator > svg:not([class*="size-"]) {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  .sa-breadcrumb-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(5 * var(--sa-unit));
+    height: calc(5 * var(--sa-unit));
+    & > svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-breadcrumb-link { transition-duration: 0s; }
+  }
+}

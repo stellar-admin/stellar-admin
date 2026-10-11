@@ -1,0 +1,71 @@
+/* Marker: a muted inline note in a transcript or list (a status line, a date separator), as a div,
+   a link or a button.
+   Replaces: .sa-marker, .sa-marker-variant-separator, .sa-marker-variant-border, .sa-marker-icon,
+   .sa-marker-content */
+
+@layer sa.components {
+  .sa-marker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    width: 100%;
+    min-height: calc(4 * var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    text-align: start;
+
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+    &:is(a) {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    &:is(a, button):hover {
+      color: var(--sa-color-ink);
+    }
+    &:is(a, button):focus-visible {
+      border-radius: var(--sa-radius-control-sm);
+      outline: none;
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+  .sa-marker-variant-separator {
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      min-width: 0;
+      height: var(--sa-border-width);
+      background: var(--sa-color-line);
+    }
+    &::before { margin-inline-end: var(--sa-unit); }
+    &::after { margin-inline-start: var(--sa-unit); }
+  }
+  .sa-marker-variant-border {
+    padding-bottom: calc(2 * var(--sa-unit));
+    border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+  }
+  .sa-marker-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: var(--sa-control-icon);
+    height: var(--sa-control-icon);
+  }
+  .sa-marker-content {
+    min-width: 0;
+    overflow-wrap: break-word;
+    & > a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      &:hover { color: var(--sa-color-ink); }
+    }
+    .sa-marker-variant-separator > & {
+      flex: none;
+      text-align: center;
+    }
+  }
+}

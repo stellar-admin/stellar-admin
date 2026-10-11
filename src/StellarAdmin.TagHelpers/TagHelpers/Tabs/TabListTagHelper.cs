@@ -44,7 +44,7 @@ public class TabListTagHelper : StellarAdminTagHelperBase
         // The author's class belongs to the host only; the inner list carries its own classes.
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-tabs", "group/tabs", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-tabs", output.GetUserSuppliedClass())
         );
 
         var tabListTagBuilder = new TagBuilder("div");
@@ -54,7 +54,6 @@ public class TabListTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-tabs-list",
-                "group/tabs-list",
                 effectiveVariant == TabListVariant.Default
                     ? "sa-tabs-list-variant-default"
                     : "sa-tabs-list-variant-line"

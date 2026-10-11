@@ -16,7 +16,7 @@ public class PopoverTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "popover-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-popover-title", "sa-font-heading", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-popover-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

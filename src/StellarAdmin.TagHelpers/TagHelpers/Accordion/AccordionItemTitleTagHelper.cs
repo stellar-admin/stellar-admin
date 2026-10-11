@@ -25,11 +25,7 @@ public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-accordion-trigger",
-                "group/accordion-trigger",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-accordion-trigger", output.GetUserSuppliedClass())
         );
 
         // Render the content

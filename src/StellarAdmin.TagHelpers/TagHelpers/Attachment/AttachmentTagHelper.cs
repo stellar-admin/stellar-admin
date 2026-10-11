@@ -69,7 +69,6 @@ public class AttachmentTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 "sa-attachment",
-                "group/attachment",
                 AttachmentSizeClasses[effectiveSize],
                 AttachmentOrientationClasses[effectiveOrientation],
                 output.GetUserSuppliedClass()

@@ -1,0 +1,162 @@
+# Theme builder
+
+Status: implemented, steps 1 to 5b done (2026-10-11); not released. The open decisions are settled. Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+
+## Goal
+
+A theme builder on the website: start from a preset, adjust the knobs against a live preview of real components, and download a knob file to link in an app. Once it exists, the library stops shipping presets: the package is `stellar-admin.css` (the default look) plus the Tailwind adapter, and every other look is a file the developer owns.
+
+Later, not in this plan: letting a reader make their builder theme the one the docs demos use.
+
+## Starting point
+
+- Prototype: `sandbox/html/token-spec/builder.html`. Its `CONTROLS` list (37 knobs with labels, types, ranges, defaults and auto/optional flags), `FONTS`/`HEADINGS` lists and the iframe preview that sets custom properties are the reference for behaviour.
+- Preview pages: `docs/DocsSamplesGenerator` already exports every DocsSamples page into the website's `public/demo/tag-helpers/`, including the theme showcase (`showcase-theme-showcase.html`, from `Showcase/_ThemeShowcase`). The website shows exports in an iframe with `DemoPreview` (`src/components/demo-preview.tsx`), same origin, resized to content.
+- Not reused: the inline-example POC (`src/components/inline-example`, `scripts/export-inline-example.mjs`). It scopes a compiled theme into the React page for homepage embeds; the builder needs a whole page isolated from the site's CSS, which the iframe gives for free.
+- Out of date: the generator still downloads the fifteen old bundles and injects a script that swaps `stellar-admin.<theme>.css` from `localStorage["demo-theme"]` (`Generator.cs` `ThemeNames`, `ThemeSyncScript`, `DownloadThemeStylesheetsAsync`, `ThemeStylesheetLinkRegex`). The website's picker (`src/lib/demo-theme.ts`, `demo-theme-select.tsx`) lists those fifteen names.
+
+## Steps
+
+### 1. Docs export for the token stylesheet (product, then website regeneration)
+
+- The generator downloads `stellar-admin.css` and the presets instead of the bundles, and the injected script links `stellar-admin.css` plus the selected preset file (none for the default). Storage key and fonts handling (`theme-fonts.js`) as today.
+- The script also accepts a knob set (a later step's hook): if `localStorage["demo-theme"]` is a custom theme, it writes the knobs onto the root instead of linking a preset. Shape decided in step 3; step 1 only keeps the script's theme lookup in one function so that is a small change.
+- Website: `demo-theme.ts` lists Default, Ledger, Ops, Soft; regenerate the exports and the inline-example outputs (`pnpm examples:export`; its adapter reads a bundle name and needs pointing at `stellar-admin.css`).
+- Verify: generator run, the website diff, website lint/typecheck/build, a few demo pages and the showcase in each preset, light and dark.
+
+This is the export half of migration phase 5, pulled forward because the builder depends on it. The website's theming pages stay for phase 5.
+
+### 2. Knob manifest (product)
+
+- `wwwroot/stellar-admin.knobs.json`, built from a checked-in source next to `tokens.css`. Per knob: name, group, label, one-line meaning, type (`color`, `number`, `length`, `choice`, `font`, `switch`), range/step or choices, default, and `optional` (unset by default, derives from another knob; name what it follows). Font choices carry a family stack and a Google Fonts family string.
+- Seeded from the prototype's `CONTROLS`, checked against `tokens.css`.
+- A test (TagHelpers tests or a `build-css.mjs` check) fails when a required knob in `tokens.css` has no manifest entry, a manifest entry names no knob, or a default differs.
+- The generator copies it into the website's demo assets with the stylesheet, so the builder reads the knobs of the exact library version its preview uses.
+- Later readers: the consumer skill (migration phase 4) and the docs knob reference (phase 5).
+- Done as: source `Client/css/knobs.json`, written to `wwwroot/stellar-admin.knobs.json` by `build-css.mjs`, whose check is the test (it fails the CSS build, and so `dotnet build`). 54 knobs, 10 optional, in seven groups (colour, shape, type, section labels, structure, buttons, focus). Every knob in the `tokens.css` knob block has an entry, the fixed tokens are left out except `--sa-press-offset` (a knob in `tokens.md`). The prototype's compound controls (card footer, column heads) are separate knobs here; the builder may group them again. `length` knobs carry a `unit` and `named` values (`Pill` = `9999px` for the radius); optional knobs carry `follows` and an `initial` value for when they are first set. The check also reads the presets: each name is a knob, and switch and choice values are ones the manifest offers.
+- For step 3: preset values the controls cannot show as they are: Soft's `--sa-radius-outer: 1.375rem` (the control is px) and `--sa-line-strength: 0.7` (below the range; acts as 0.75), Ledger's `--sa-focus-color: color-mix(…)` (not a plain colour). The builder keeps such a value as written until the user moves the control.
+
+### 3. Builder MVP (website)
+
+- Route `/theme-builder` (name to confirm on the website side). Left: controls generated from the manifest, by group; optional knobs show "auto" until set. Right: `DemoPreview` of the showcase export.
+- Seed: a preset picker (Default, Ledger, Ops, Soft). The website keeps the preset values as data (from step 4 on they live only there). Changing seed resets the knobs.
+- Preview: knobs written onto the iframe's root element (`contentDocument.documentElement.style`); light/dark toggle (`.dark` on the iframe root); density preview through `--sa-density`. Fonts: load the chosen Google Fonts family into the iframe.
+- State: knobs that differ from the default (not from the seed) in the URL hash, so a link reproduces the theme. Hash format: a short versioned encoding (`v1:` + name=value pairs), tolerant of unknown or removed knobs.
+- Export: a `theme.css` with only the changed knobs:
+
+  ```css
+  /* StellarAdmin theme. Link after stellar-admin.css. Builder: https://…/theme-builder#v1:… */
+  @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap"); /* only when a web font is chosen; opt out with a checkbox */
+  @layer sa.theme {
+    :root {
+      --sa-accent: oklch(0.56 0.2 295);
+      --sa-radius: 9999px;
+    }
+  }
+  ```
+
+  Copy and download buttons, and the include snippet for each consumer: `<link rel="stylesheet" href="~/css/theme.css">` after `stellar-admin.css` (TagHelpers) or `dashboard.AddStylesheet("~/css/theme.css")` (Dashboard).
+- Import: paste a `theme.css` (or open a builder URL) to keep editing.
+- No contrast checker in the UI: the token formulas carry contrast. The product keeps `util/theme-check` for the presets.
+- Verify: website lint/typecheck/build; in a browser, every control changes the preview, the URL round-trips, an exported file linked into DocsSamples reproduces the preview, mobile width usable.
+- Done as (website `src/routes/theme-builder.tsx`, `src/components/theme-builder/knob-control.tsx`, `src/lib/theme-builder/{knobs,seeds}.ts`; a "Theme builder" link in the top navigation):
+  - The page fetches the exported manifest at runtime and builds one control per knob by group: colour (swatch plus a text field for any CSS colour), number and length (slider plus text field; `named` values as buttons), switch (checkbox), choice and font (select; a value outside the choices shows as "Custom"). Optional knobs have an "Auto" checkbox; other knobs a "Reset" once changed. A value equal to the default is stored as no value.
+  - Seeds: Default, Ledger, Ops, Soft, their values copied from the presets into `seeds.ts`.
+  - Preview: its own fixed-height iframe of the showcase export, not `DemoPreview` (which sizes the frame to its content and exposes no load hook). Every knob is written onto the frame's root, unset optional knobs as `initial` (so their `var()` fallback applies), so a preset the reader picked for the docs demos, which the page links from storage, cannot show through. Light/dark is the builder's own and survives the page's own mode script. On narrow screens the preview sits above the controls, pinned to the top half of the screen.
+  - The hash and the export carry the knobs that differ from the default. The export's font `@import` covers the chosen web fonts only when a font knob changed (the default Inter is the app's to load, as without a theme), with a checkbox to leave it out. Import takes a pasted theme file or a builder link.
+
+### 3a. Simple and advanced controls (product manifest, website)
+
+The full list of 54 knobs is daunting for a first visit.
+
+- Manifest: `"essential": true` on the knobs a tool shows first: accent, neutral hue and tint, radius, pill tags, relief, elevation, density, font, heading font. In the manifest, not the website, so the consumer skill and the docs knob reference can start from the same set. The CSS build checks that only required knobs carry it, as `true`, and that at least one does.
+- Builder: a Simple / Advanced switch, Simple by default. Simple lists the essential knobs in one list without their explanations (still in the label tooltip); Advanced is the grouped list with everything. The switch is a view only: values, link and export always carry every knob. When the theme changes knobs Simple does not show (a seed, an import, a link), Simple says how many, with a link to Advanced. The choice is remembered in local storage, not in the URL.
+- Later, not now: compound controls in Simple (a "Style" choice setting relief, sheen and outlines together).
+
+### 4. More preview pages (product samples, website)
+
+- A page picker over a few exports: the showcase, a form-heavy page, overlays (dialog, menus, popovers open), a Dashboard-like shell (sidebar, header, table). Add DocsSamples pages where no existing one fits; they export like any other.
+- Done as: three DocsSamples pages under `Showcase/` (listed in the samples navigation and exported like the others): `_AdminShell` (sidebar with two groups and a current page, app header, page header with tabs, stat cards, a table card with pagination in its footer), `_Forms` (a settings page: form sections with a disabled and an invalid field, select, input group, radio group, checkbox, switch, a link button, a card with a destructive action) and `_Overlays` (a page under a modal dialog, with the dialog's menu and a tooltip open and a persistent toast of each status; a script opens them on load, passing each popover its trigger as `source` so it anchors). The builder's preview picker lists Showcase, Admin page, Forms, Overlays and Studies (the existing masonry); the page is not part of the theme or the URL.
+- Knobs no page shows at rest: `--sa-press-offset` and the focus knobs (`--sa-focus-width`, `--sa-focus-offset`, `--sa-focus-color`), which need a press or keyboard focus in the preview. Status colours show only on Overlays (toasts), `--sa-nav-tint` only on Admin page, `--sa-link-decoration` only on Forms, `--sa-font-mono` only on Studies.
+- Found, not fixed (library): an `id` on `<sa-dropdown-menu-content>` replaces the generated id while the trigger keeps `popovertarget` pointing at the generated one, so the trigger no longer opens the menu. Also, `Table/_Intro` (and its docs export) formats amounts with the server culture's `N` (`1,249.990` here); the admin page uses `N2` with the invariant culture.
+
+### 5. Remove the presets from the library (product, breaking)
+
+- Delete `Client/css/presets/`, their `ClientOutput` lines and the `wwwroot/presets/` outputs. The package ships `stellar-admin.css`, `stellar-admin.tailwind.css` and the knob manifest.
+- Keep the presets as test fixtures (for example `util/theme-check/presets/`), so DocsSamples' and ComponentPlayground's pickers and the contrast check still exercise non-default themes. DocsSamples serves them from its own static files; the generator exports them for the website docs picker until the website takes its preset values from its own data.
+- Update the readme, product guide, `tokens.md` and the release notes: presets come from the builder.
+- Done as: `Client/css/presets/` moved to `util/theme-check/presets/` (header comments say what they are now); `build-css.mjs` no longer copies presets and deletes a stale `wwwroot/presets/`; the `ClientOutput` lines are gone. The manifest check no longer reads the presets (the fixtures live outside the package; the website's seeds are its own data). DocsSamples and ComponentPlayground serve the fixture folder at `/presets/` with `UseStaticFiles` and a `PhysicalFileProvider` (linked `Content` items were tried first: static web assets registered them under the app's own `wwwroot`, and they were served as empty files), so their pickers link `/presets/<name>.css`; the generator lists and downloads them from there, so the website's docs picker and exported preset files are unchanged apart from the header comments. The Dashboard theme tests use plain stylesheet paths instead of a preset, and the release smoke test asserts the knob manifest instead of `presets/ledger.css`. Readme, product guide, `tokens.md` and the theme-check README updated; the repository has no release notes file, so that part has nothing to update. Website: the seed and docs-picker comments name the fixtures.
+
+### 5a. One source for the themes (product, website)
+
+After step 5 the same three themes lived in the fixtures, in a copy in the website's `seeds.ts`, and as hard-coded names and fonts in the DocsSamples layout and menu, ComponentPlayground's layout, `theme-fonts.js` and the website's `demo-theme.ts`; the theme checks defaulted to the eight prototype presets.
+
+- Done as: `util/theme-check/presets/` is the one source. Each file's header starts `Theme fixture: <label>` with a description paragraph under it; the font is the file's `--sa-font-sans`, matched against the manifest's Google Fonts choices. `docs/DocsSamples/ThemeFixtures.cs` reads them (default first), shared by DocsSamples, ComponentPlayground (linked `Compile`) and the generator. The DocsSamples layout writes the font map for `theme-fonts.js` (`window.saThemeFonts`), so the exported demos carry it too. The generator exports the files and `assets/presets/presets.json` (name, label, description), and fails on an empty download. The website's docs picker and the builder's seeds read `presets.json` and the files; `seeds.ts` and the hard-coded list are gone. The theme checks default to the fixtures; the prototype presets are an option.
+
+### 5b. No theme picker on the docs website (product generator, website)
+
+Decided: the website's docs show the default theme only, with no picker above each demo; the theme builder is where readers try the presets. DocsSamples and ComponentPlayground keep their pickers.
+
+- Done as: the generator's injected script follows only the site's light/dark mode (no `demo-theme`), and replaces the samples' preset link with a call that loads the default font; it still exports the fixtures and `presets.json` for the builder. Website: the `<Demo>` toolbar row and its theme select, `demo-theme-select.tsx` and `demo-theme.ts` are gone.
+
+## Decisions
+
+- Route: `/theme-builder` with its navigation link, as built.
+- Docs website: the default theme only, no per-demo picker (step 5b). DocsSamples and ComponentPlayground keep theirs.
+- Fonts: the manifest's font choices stay as they are, a few families for a feel of the result.
+
+## Verification record
+
+Step 5b (2026-10-11):
+
+- Generator builds and runs: 451 demos regenerated; the exported pages have no preset link or `demo-theme` handling. Website `lint` and `tsc --noEmit` pass; `build` not run.
+- In Chromium, an exported page (`button-intro.html`, served statically on port 3106, stopped after) with `demo-theme=ledger` and `theme=dark` stored: no preset stylesheet, the page is dark, Inter linked and loaded, no page errors. DocsSamples is unchanged and was not rerun.
+
+Step 5a (2026-10-11):
+
+- Builds of DocsSamples, the generator and ComponentPlayground succeed. Generator run: `presets.json` lists default, ledger, ops and soft with the fixtures' labels and descriptions; the three preset files have content; the exported pages carry the font map (Inter, Lexend, IBM Plex Sans, Figtree).
+- In Chromium: DocsSamples (port 5206) lists the four themes with descriptions; Soft gives `--sa-radius: 9999px` and loads Figtree, Default gives 6px and Inter. ComponentPlayground (port 5207) lists them with descriptions and links IBM Plex Sans for `?theme=ops`. Website (`pnpm dev`, port 3106): the docs picker lists the four and Ops gives a demo `3px`; the builder's seeds list the four, Soft sets its knobs and shows its description, Default empties the hash. All servers stopped after (a dev server left over from step 4 on port 3106 served this check, and was stopped too).
+- Website `lint`, `types:check` and `build` pass.
+- Not run: the theme checks themselves over the fixtures.
+
+Step 5 (2026-10-11):
+
+- `node scripts/build-css.mjs` writes `stellar-admin.css`, the Tailwind adapter and the manifest, and removes `wwwroot/presets/`. Solution build succeeds (existing warnings only). The Dashboard theme tests pass (2). `dotnet pack` of TagHelpers: the package's static assets are `stellar-admin.css`, `stellar-admin.js` (and map), `stellar-admin.knobs.json` and `stellar-admin.tailwind.css`, no presets.
+- Generator run: downloads the three fixtures from DocsSamples' `/presets/`; the website's exported preset files differ only in their header comments. The `theme-fonts.js` comment change gave it a new fingerprint, so every demo page changes to reference it.
+- ComponentPlayground on port 5207 (stopped after): `/presets/soft.css` 200, the old `_content/StellarAdmin.TagHelpers/presets/soft.css` 404, `?theme=soft` links the fingerprinted fixture after `stellar-admin.css`. The theme-check helper loads `util/theme-check/presets` (base, ledger, ops, soft).
+- Website `lint`, `types:check` and `build` pass.
+- Also in the diff: ComponentPlayground's built `wwwroot/css/site.css` caught up with the adapter's `rounded-lg` → `--sa-radius-box` change from an earlier commit, whose build output had not been committed.
+- Not run: the release smoke test (`build/smoke-test.sh`), the full test suite, the contrast check over the fixtures, DocsSamples in a browser.
+- Correction (reported the same day: the samples' theme picker did nothing): the fixture checks above looked at status codes only. With the linked `Content` items both apps answered `/presets/*.css` with 200 and an empty body, and the website commit carried empty preset files. Fixed by serving the folder from `Program.cs`. Rechecked: DocsSamples (port 5206, stopped after) and ComponentPlayground (port 5207, stopped after) serve the three fixtures with their content (997 to 1397 bytes, `text/css`); in Chromium the DocsSamples picker's Soft gives `--sa-radius: 9999px` and `?theme=ops` gives `3px`; the regenerated website preset files have the same knob lines as before step 5.
+
+Step 4 (2026-10-11):
+
+- Generator runs (three, as the pages changed); 451 exports. The website gets the three pages and their `_include` snippets; the DocsSamples site stylesheet gained `sm:mr-auto` and, on the run after the first, a new fingerprint (`site.urffqt6gbo.css`), so every demo page changes to reference it. The first run had written the new content under the old name: the fingerprint lags the samples' Tailwind build by one run.
+- Website `lint`, `types:check` and `build` pass. In Chromium against `pnpm dev` (port 3106, stopped after): switching the preview through all five pages keeps the theme applied (a Soft-like link: `--sa-radius: 9999px` on each page's root); on Overlays the dialog, the menu (anchored under "More") and the tooltip (anchored over "Save") are open, light and dark.
+- Knob coverage, against the exports served statically (port 4311, stopped after), transitions and animations off, every knob in light and dark: Showcase 42 knobs, Admin page 39, Forms 30, Overlays 40, Studies 43. Missed by the test values only and checked by hand: `--sa-section-label-font` (as monospace, changes the menu label) and `--sa-dialog-footer-rule` (0 clears the rule's colour). Not shown at rest: press offset and the three focus knobs.
+- Screenshots of the three new pages looked right after two fixes: the popovers were at the page's corner (opened without `source`), and the table amounts used three decimals.
+
+Step 3a (2026-10-11):
+
+- `build-css.mjs` passes with the ten flags; `essential` on an optional knob or with a non-`true` value fails, naming the knob (restored after).
+- Generator run; the website gets the new manifest. The run also rewrote 286 demo pages with per-run noise (antiforgery tokens, carousel ids, SVG attribute order), kept as generated per the website's rule against discarding generated changes.
+- Website `lint`, `types:check` and `build` pass. In Chromium against `pnpm dev` (port 3106, stopped after): a first visit shows Simple with 10 controls and no explanations; seeding Ledger shows "also changes 12 knobs that only the advanced controls show"; "Show all" switches to Advanced (54 controls, explanations) with the hash unchanged; Advanced survives a reload; back to Simple the hash is still unchanged. Found and fixed: a seed's values equal to the default (Ledger's radius and pill tags) showed as changed; seeds now drop them, checked again after.
+
+Step 3 (2026-10-11):
+
+- Website `lint`, `types:check` and `build` pass; the build prerenders `/theme-builder`.
+- In Chromium against `pnpm dev` (port 3106, stopped after): for each of the 54 knobs, changing its control (dark-only knobs in dark mode) set the value on the preview root and in the hash, changed the showcase's computed styles, and Reset or Auto returned it (the hash was empty after all of them). With `ops` stored as the docs theme, the builder at default showed `--sa-radius: 6px` and no `--sa-radius-outer`. Seeding Soft set its values and loaded Figtree; opening its builder link reproduced the same export; the exported file added to the bare showcase page at the preview's size gave the same computed styles for every element (bar a running spinner's rotation). Import of a theme file (unknown knob and plain property ignored) and of a builder link applied. Phone width (390px): no horizontal scroll, preview pinned above the controls. Screenshots looked right in light and dark.
+- Not run: the export linked into DocsSamples itself (checked on the exported showcase page instead), browsers other than Chromium, the production build in a browser.
+- Correction (found in step 4): the claim that every knob changed the showcase's computed styles was wrong. The comparison included a running spinner's rotation, so every before/after pair differed. Rechecked in step 4 with transitions and animations off; see step 4 for which knobs each page shows. The per-knob checks of the preview root, the hash and Reset/Auto stand.
+
+Step 2 (2026-10-11):
+
+- `node scripts/build-css.mjs` passes and writes the manifest. With the manifest broken on purpose (a changed default, a removed knob, an unknown knob, an optional knob nothing reads) and Soft given `--sa-pills: 2` and an unknown knob, it fails naming each of the seven problems; restored after.
+- Generator run (which built TagHelpers through the csproj): it downloads the manifest from `_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json` to the website's `public/demo/tag-helpers/assets/stellar-admin.knobs.json`. The run also rewrote 286 demo pages with per-run noise only (antiforgery tokens, carousel ids, SVG attribute order); those were discarded, so the website change is the one new file.
+- Not run: tests (no .NET code under test changed), website lint/build (the website only gains a static JSON file).
+
+Step 1 (2026-10-11):
+
+- Generator: `PresetNames` from `Client/css/presets/`, themes are `default` plus those; presets download to `assets/presets/<name>.css` (stable names); the page's `stellar-admin.css` exports fingerprinted like the other assets. The samples' `#docs-sample-theme` link becomes an empty `link[data-sa-theme]` plus `saThemeInit()`; the script links `presets/<theme>.css` or none, and an unknown stored value (an old `observatory`) falls back to `default`. `selectedTheme()` is the one lookup a custom theme will hook into.
+- Website (branch `theme-builder`): 448 demos regenerated; the fifteen bundles removed; three include snippets changed (the Empty samples' `border-dashed`, from migration phase 3). `demo-theme.ts` is Default, Ledger, Ops, Soft, default `default`; the picker is one flat list. Inline-example exporter reads the fingerprinted `stellar-admin.*.css`, writes `generated/stellar-admin.css` (was `observatory.css`), and scopes `.dark <component>` rules under the website's ancestor `.dark` (the token stylesheet writes dark rules that way; the bundles used `:is(.dark *)`). Its README, `docs/design/inline-website-examples.md` and the embed skill's one line updated.
+- Verified: generator run; website `lint`, `types:check` and `build` pass; `examples:export` reproducible. In Chromium, against the exported files served statically: card, button, theme showcase and textarea demos for default, ledger, ops, soft and a stale `observatory`, light and dark, link the expected preset (or none), take its accent, radius and font, and follow dark mode; a same-origin iframe swaps soft → ops → default → ledger live from a parent's storage change. Not run: the website's docs pages in a browser (the React picker itself), the inline examples rendered in a page (no route imports them).

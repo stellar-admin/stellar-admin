@@ -1,26 +1,13 @@
 // Shared by DocsSamples, DocsSamplesPro, and the exported website demos.
-// Font loading belongs to the demo application; theme bundles work without it.
+// Font loading belongs to the demo application; the theme files work without it.
 (() => {
-  const families = {
-    "shadcn.luma": "Inter:wght@400..700",
-    "shadcn.lyra": "JetBrains+Mono:wght@400..700",
-    "shadcn.maia": "Figtree:wght@400..700",
-    "shadcn.mira": "Inter:wght@400..700",
-    "shadcn.nova": "Geist:wght@400..700",
-    "shadcn.rhea": "Inter:wght@400..700",
-    "shadcn.sera": "Noto+Sans:wght@400..700&family=Playfair+Display:wght@400..700",
-    "shadcn.vega": "Inter:wght@400..700",
-    aurora: "Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
-    concourse: "Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500",
-    ice: "IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700",
-    ledger: "Lexend:wght@300..700&family=JetBrains+Mono:wght@400;500",
-    meridian: "Instrument+Sans:wght@600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
-    observatory: "IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500",
-    parallax: "Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500",
-  };
+  // Each theme's Google Fonts family, written by the layout from the theme fixtures; a theme without
+  // a web font has none.
+  const families = window.saThemeFonts ?? {};
 
   window.saLoadThemeFonts = (theme) => {
-    const family = families[theme] ?? "Geist:wght@100..900";
+    const family = theme in families ? families[theme] : families.default;
+    if (!family) return document.getElementById("docs-theme-fonts")?.remove();
     const href = `https://fonts.googleapis.com/css2?family=${family}&display=swap`;
     let link = document.getElementById("docs-theme-fonts");
     if (!link) {

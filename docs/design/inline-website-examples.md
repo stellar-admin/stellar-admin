@@ -4,7 +4,7 @@ Use generated StellarAdmin HTML for product demonstrations that should participa
 
 ## Retained implementation
 
-The reusable implementation is in `../website/src/components/inline-example/`. Its [README](https://github.com/stellar-admin/website/blob/master/src/components/inline-example/README.md) shows the React API and route stylesheet setup. It supports the `collapsible` and `dialog` examples, unique instance prefixes and one shared browser runtime. The scoped Observatory stylesheet, HTML fragments and runtime asset manifest are checked in under `generated/`.
+The reusable implementation is in `../website/src/components/inline-example/`. Its [README](https://github.com/stellar-admin/website/blob/master/src/components/inline-example/README.md) shows the React API and route stylesheet setup. It supports the `collapsible` and `dialog` examples, unique instance prefixes and one shared browser runtime. The scoped default stylesheet (`stellar-admin.css`), HTML fragments and runtime asset manifest are checked in under `generated/`.
 
 There is no example route or homepage import. The experimental `/examples/inline-components` route and standalone browser spike were removed after the experiment was accepted. Add a consumer only when implementing an authorized page. The browser runtime is loaded from an effect, so merely retaining these files does not execute it on the homepage.
 
@@ -12,7 +12,7 @@ There is no example route or homepage import. The experimental `/examples/inline
 
 `../website/scripts/export-inline-example.mjs` is a temporary adapter for the two existing docs exports. It reads `public/demo/tag-helpers/*-intro.html`, extracts the preview content with parse5, removes the outer sample wrapper, prefixes IDs and recognized references with an instance placeholder, adjusts the sample width and uses a local image. It records the exported JavaScript bundle's current filename in `assets.json`.
 
-The adapter parses the compiled Observatory CSS with PostCSS. It scopes document and component selectors to `.sa-inline-example`, adapts dark tokens to the website's ancestor `.dark`, namespaces keyframes and Tailwind internal properties, and leaves the surrounding card responsible for its background. Nested selectors retain their parent relationship. The full theme is retained; this is not CSS dead-code elimination. The website's own Tailwind scan supplies utility classes from the generated HTML, so retained snippets may contribute utilities even when no route imports the component. The wrapper and scoped theme themselves must remain absent from page bundles until imported.
+The adapter parses the exported `stellar-admin.css` with PostCSS. It scopes document and component selectors to `.sa-inline-example`, adapts dark tokens and `.dark` component rules to the website's ancestor `.dark`, namespaces keyframes and Tailwind internal properties, and leaves the surrounding card responsible for its background. Nested selectors retain their parent relationship. The full theme is retained; this is not CSS dead-code elimination. The website's own Tailwind scan supplies utility classes from the generated HTML, so retained snippets may contribute utilities even when no route imports the component. The wrapper and scoped theme themselves must remain absent from page bundles until imported.
 
 Run this from `../website/` after documentation exports change:
 

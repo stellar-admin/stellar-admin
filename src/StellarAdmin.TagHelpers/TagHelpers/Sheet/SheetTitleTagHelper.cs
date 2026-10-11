@@ -16,12 +16,7 @@ public class SheetTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "sheet-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-sheet-title",
-                "sa-font-heading",
-                "font-heading",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-sheet-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

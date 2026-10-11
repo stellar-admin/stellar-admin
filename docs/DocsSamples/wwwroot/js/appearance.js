@@ -18,18 +18,20 @@
     return values.includes(override) ? override : values.includes(saved) ? saved : fallback;
   }
 
-  let theme = resolve("theme", themes, "observatory");
+  let theme = resolve("theme", themes, "default");
   let mode = resolve("mode", ["system", "light", "dark"], "system");
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
   function apply() {
     window.saLoadThemeFonts(theme);
-    const url = new URL(stylesheet.href);
-    const pathname = `/_content/StellarAdmin.TagHelpers/stellar-admin.${theme}.css`;
-    if (url.pathname !== pathname) {
-      url.pathname = pathname;
-      url.search = "";
-      stylesheet.href = url.href;
+    // The theme is a theme fixture (util/theme-check/presets) linked after stellar-admin.css; the
+    // default theme has none.
+    if (theme === "default") {
+      stylesheet.removeAttribute("href");
+    } else {
+      const pathname = `/presets/${theme}.css`;
+      if (!stylesheet.getAttribute("href") || new URL(stylesheet.href).pathname !== pathname)
+        stylesheet.href = pathname;
     }
     const dark = mode === "dark" || (mode === "system" && systemDark.matches);
     document.documentElement.classList.toggle("dark", dark);

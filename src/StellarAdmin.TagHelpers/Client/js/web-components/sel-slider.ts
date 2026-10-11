@@ -323,7 +323,7 @@ export class Slider extends LitElement {
     if (this.#marks.length === 0 || !thumb) return;
     this.#thumbSizeObserver = new ResizeObserver(() => {
       const size = this.#vertical ? thumb.offsetHeight : thumb.offsetWidth;
-      if (size > 0) this.style.setProperty("--sa-slider-thumb-size", `${size}px`);
+      if (size > 0) this.style.setProperty("--_slider-thumb-measured", `${size}px`);
     });
     this.#thumbSizeObserver.observe(thumb);
   }

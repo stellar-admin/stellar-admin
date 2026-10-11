@@ -96,11 +96,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-questionnaire-choice",
-                "group/questionnaire-choice",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-questionnaire-choice", output.GetUserSuppliedClass())
         );
 
         output.Content.SetHtmlContent(input);

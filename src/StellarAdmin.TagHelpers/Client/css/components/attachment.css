@@ -1,0 +1,282 @@
+/* Attachment: a file card (media, title, description, actions, an optional whole-card trigger) in
+   three sizes, horizontal or vertical, with idle, uploading, processing, done and error states; and the
+   attachment group, a horizontally scrolling, snapping row with faded edges.
+   Replaces: .sa-attachment, .sa-attachment-actions, .sa-attachment-content, .sa-attachment-description,
+   .sa-attachment-group, .sa-attachment-media, .sa-attachment-media-variant-image,
+   .sa-attachment-orientation-horizontal, .sa-attachment-orientation-vertical, .sa-attachment-size-default,
+   .sa-attachment-size-sm, .sa-attachment-size-xs, .sa-attachment-title, .sa-attachment-trigger */
+
+@layer sa.components {
+  .sa-attachment {
+    --_p: calc(2 * var(--sa-unit));
+    --_px: calc(2.5 * var(--sa-unit));
+    --_py: calc(2 * var(--sa-unit));
+    --_media-w: calc(10 * var(--sa-unit));
+    --_media-radius: var(--sa-radius-box);
+    --_media-icon: 1rem;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: calc(2 * var(--sa-unit));
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-sm);
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:has(> [data-slot="attachment-content"]) {
+      padding: var(--_py) var(--_px);
+    }
+    &:has(> [data-slot="attachment-media"]) {
+      padding: var(--_p);
+    }
+    &:has(> a, > button):hover {
+      background-color: color-mix(in oklab, var(--sa-color-hover) 60%, var(--sa-color-surface));
+    }
+    &:has(> [data-slot="attachment-trigger"]:focus-visible) {
+      box-shadow: var(--sa-focus-shadow);
+    }
+    &[data-state="idle"] {
+      border-style: dashed;
+    }
+    &[data-state="error"] {
+      border-color: color-mix(in oklab, var(--sa-color-danger) 45%, transparent);
+    }
+  }
+
+  .sa-attachment-orientation-horizontal {
+    align-items: center;
+  }
+  .sa-attachment-orientation-vertical {
+    --_media-w: 100%;
+    --_media-icon: 1.5rem;
+    flex-direction: column;
+    width: calc(24 * var(--sa-unit));
+    &:has([data-slot="attachment-content"]) {
+      width: calc(30 * var(--sa-unit));
+    }
+  }
+
+  .sa-attachment-size-sm {
+    --_p: calc(1.5 * var(--sa-unit));
+    --_px: calc(2 * var(--sa-unit));
+    --_py: calc(1.5 * var(--sa-unit));
+    --_media-w: calc(8 * var(--sa-unit));
+    gap: calc(2.5 * var(--sa-unit));
+    font-size: var(--sa-text-xs);
+  }
+  .sa-attachment-size-xs {
+    --_p: var(--sa-unit);
+    --_px: calc(1.5 * var(--sa-unit));
+    --_py: var(--sa-unit);
+    --_media-w: calc(7 * var(--sa-unit));
+    --_media-radius: max(0px, calc(var(--sa-radius-box) - 2px));
+    --_media-icon: 0.875rem;
+    gap: calc(1.5 * var(--sa-unit));
+    border-radius: var(--sa-radius-box);
+    font-size: var(--sa-text-xs);
+  }
+  .sa-attachment-orientation-vertical:is(.sa-attachment-size-sm, .sa-attachment-size-xs) {
+    --_media-w: 100%;
+    --_media-icon: 1.5rem;
+  }
+
+  .sa-attachment-media {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--_media-w);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--_media-radius);
+    background: var(--sa-color-surface-sunken);
+    color: var(--sa-color-ink);
+
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]),
+    & > [data-slot="spinner"] {
+      width: var(--_media-icon);
+      height: var(--_media-icon);
+    }
+    [data-state="error"] > & {
+      background: var(--sa-color-danger-soft);
+      color: var(--sa-color-danger-text);
+    }
+  }
+  .sa-attachment-media-variant-image {
+    opacity: 0.6;
+    & > img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+    :is([data-state="idle"], [data-state="done"]) > & {
+      opacity: 1;
+    }
+  }
+
+  .sa-attachment-content {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    line-height: 1.25;
+    .sa-attachment-orientation-vertical > & {
+      padding-inline: var(--sa-unit);
+    }
+  }
+  .sa-attachment-title {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    font-weight: var(--sa-weight-control);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    :is([data-state="processing"], [data-state="uploading"]) > .sa-attachment-content > & {
+      --_spread: calc(3ch + 40px);
+      --_highlight: oklch(from currentColor l c h / calc(alpha * 0.2));
+      background-image: linear-gradient(
+        110deg,
+        currentColor calc(50% - var(--_spread)),
+        color-mix(in oklch, var(--_highlight), currentColor 50%) calc(50% - var(--_spread) * 0.5),
+        var(--_highlight) 50%,
+        color-mix(in oklch, var(--_highlight), currentColor 50%) calc(50% + var(--_spread) * 0.5),
+        currentColor calc(50% + var(--_spread))
+      );
+      background-repeat: no-repeat;
+      background-size: calc(200% + var(--_spread) * 2) 100%;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: sa-attachment-shimmer 2s linear infinite;
+    }
+    .dark :is([data-state="processing"], [data-state="uploading"]) > .sa-attachment-content > & {
+      --_highlight: oklch(from currentColor max(0.8, calc(l + 0.4)) c h / calc(alpha + 0.4));
+    }
+  }
+  .sa-attachment-description {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: calc(0.5 * var(--sa-unit));
+    overflow: hidden;
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-xs);
+    line-height: 1.3333;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    [data-state="error"] > .sa-attachment-content > & {
+      color: var(--sa-color-danger-text);
+    }
+  }
+
+  .sa-attachment-actions {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    .sa-attachment-orientation-vertical > & {
+      position: absolute;
+      top: calc(3 * var(--sa-unit));
+      right: calc(3 * var(--sa-unit));
+      gap: var(--sa-unit);
+    }
+  }
+
+  .sa-attachment-trigger {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    outline: none;
+  }
+
+  .sa-attachment-group {
+    display: flex;
+    gap: calc(3 * var(--sa-unit));
+    min-width: 0;
+    padding-block: var(--sa-unit);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--sa-unit);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* Edges fade where the row scrolls on, revealed by its scroll position. */
+    --_fade-dir: to right;
+    mask-image: linear-gradient(
+      var(--_fade-dir),
+      transparent 0,
+      #000 var(--_sa-attachment-fade-s),
+      #000 calc(100% - var(--_sa-attachment-fade-e)),
+      transparent 100%
+    );
+    mask-repeat: no-repeat;
+    &:where([dir="rtl"], [dir="rtl"] *) {
+      --_fade-dir: to left;
+    }
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    & > [data-slot="attachment"] {
+      flex: none;
+      scroll-snap-align: start;
+    }
+
+    @supports (animation-timeline: scroll()) {
+      animation:
+        sa-attachment-fade-s 1ms ease-in-out,
+        sa-attachment-fade-e 1ms ease-in-out;
+      animation-timeline: scroll(self inline), scroll(self inline);
+      animation-range:
+        0 calc(24 * var(--sa-unit)),
+        calc(100% - 24 * var(--sa-unit)) 100%;
+      animation-fill-mode: both;
+    }
+    @supports not (animation-timeline: scroll()) {
+      --_sa-attachment-fade-s: min(12%, calc(10 * var(--sa-unit)));
+      --_sa-attachment-fade-e: min(12%, calc(10 * var(--sa-unit)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-attachment {
+      transition-duration: 0s;
+    }
+    .sa-attachment-title {
+      animation-duration: 6s;
+    }
+  }
+}
+
+@property --_sa-attachment-fade-s {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --_sa-attachment-fade-e {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes sa-attachment-fade-s {
+  from { --_sa-attachment-fade-s: 0px; }
+  to { --_sa-attachment-fade-s: min(12%, calc(10 * var(--sa-unit))); }
+}
+@keyframes sa-attachment-fade-e {
+  from { --_sa-attachment-fade-e: min(12%, calc(10 * var(--sa-unit))); }
+  to { --_sa-attachment-fade-e: 0px; }
+}
+@keyframes sa-attachment-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}

@@ -6,19 +6,9 @@ internal class FieldTagBuilder : TagBuilder
 {
     private static readonly Dictionary<FieldOrientation, string?[]> OrientationClasses = new()
     {
-        [FieldOrientation.Vertical] =
-        [
-            "sa-field-orientation-vertical",
-            // Child-width forcing stays in the utilities layer: it must override the
-            // children's own component classes (e.g. a toggle group's w-fit).
-            "[&>*]:w-full [&>.sr-only]:w-auto",
-        ],
+        [FieldOrientation.Vertical] = ["sa-field-orientation-vertical"],
         [FieldOrientation.Horizontal] = ["sa-field-orientation-horizontal"],
-        [FieldOrientation.Responsive] =
-        [
-            "sa-field-orientation-responsive",
-            "[&>*]:w-full [&>.sr-only]:w-auto @md/field-group:[&>*]:w-auto",
-        ],
+        [FieldOrientation.Responsive] = ["sa-field-orientation-responsive"],
     };
 
     public FieldTagBuilder(FieldOrientation orientation, string? userSuppliedClass)
@@ -29,7 +19,7 @@ internal class FieldTagBuilder : TagBuilder
         Attributes.Add(
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
-                new string?[] { "sa-field", "group/field" }
+                new string?[] { "sa-field" }
                     .Union(OrientationClasses[orientation])
                     .Append(userSuppliedClass)
                     .ToArray()

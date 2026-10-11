@@ -64,7 +64,7 @@ public class DropdownMenuSubContentTagHelper(IOptions<StellarAdminTagHelpersOpti
                 MenuSurfaceInternals.ColorToken(menuOptions.Color),
                 MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
                 MenuSurfaceInternals.AccentToken(menuOptions.Accent),
-                effectivePosition.GetTailwindClassName(),
+                effectivePosition.GetClassName(),
                 output.GetUserSuppliedClass()
             )
         );

@@ -58,7 +58,7 @@ An empty-state container that communicates the absence of content, composed of a
 *From `Pages/Empty/_WithIcon.cshtml`*
 
 ```razor
-<sa-empty class="border">
+<sa-empty class="border border-dashed">
     <sa-empty-header>
         <sa-empty-media variant="EmptyMediaVariant.Icon">
             <sa-icon name="folder"/>

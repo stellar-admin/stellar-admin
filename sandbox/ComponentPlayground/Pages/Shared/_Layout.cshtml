@@ -1,7 +1,13 @@
-﻿@{
+﻿@using DocsSamples
+@inject IReadOnlyList<ThemeFixture> Themes
+@{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
     var pageTitle = DemoNavigation.Groups.SelectMany(group => group.Items).FirstOrDefault(item => item.Page == currentPage)?.Title
                     ?? ViewData["Title"] as string;
+    // The theme picker: a theme fixture (util/theme-check/presets) linked after stellar-admin.css
+    // (?theme=ledger); the default theme has none.
+    var theme = Themes.FirstOrDefault(t => t.Name == Context.Request.Query["theme"].ToString())
+                ?? Themes[0];
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +17,16 @@
     <title>@pageTitle - ComponentPlayground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap"/>
-    <!-- Two-bundle mode: the prebuilt theme bundle for the components, site.css for this app's own markup. -->
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.shadcn.vega.css" asp-append-version="true"/>
+    @if (theme.GoogleFonts is not null)
+    {
+        <link rel="stylesheet" href="@($"https://fonts.googleapis.com/css2?family={theme.GoogleFonts}&display=swap")"/>
+    }
+    <!-- stellar-admin.css and the theme for the components, site.css for this app's own markup. -->
+    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    @if (theme.Name != ThemeFixtures.DefaultName)
+    {
+        <link rel="stylesheet" href="@($"/presets/{theme.Name}.css")"/>
+    }
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
@@ -67,6 +80,28 @@
                 </sa-sidebar-group>
             }
         </sa-sidebar-content>
+        <sa-sidebar-footer>
+            <sa-sidebar-group>
+                <sa-sidebar-group-label>Theme</sa-sidebar-group-label>
+                <sa-sidebar-group-content>
+                    <sa-sidebar-menu>
+                        @foreach (var preset in Themes)
+                        {
+                            <sa-sidebar-menu-item>
+                                @if (preset == theme)
+                                {
+                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset.Name}")" data-active="" title="@preset.Description">@preset.Label</sa-sidebar-menu-link>
+                                }
+                                else
+                                {
+                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset.Name}")" title="@preset.Description">@preset.Label</sa-sidebar-menu-link>
+                                }
+                            </sa-sidebar-menu-item>
+                        }
+                    </sa-sidebar-menu>
+                </sa-sidebar-group-content>
+            </sa-sidebar-group>
+        </sa-sidebar-footer>
     </sa-sidebar>
     <sa-sidebar-inset>
         <sa-app-header>

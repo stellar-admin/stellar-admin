@@ -1,0 +1,30 @@
+/* Knob preset: Workshop. An approximation of the current Dashboard resource index screenshot:
+   cool grey canvas, orange accent, monospaced uppercase column heads on a band, solid current page. */
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.6 0.19 38);
+    --sa-neutral-hue: 260;
+    --sa-neutral-chroma: 0.006;
+    --sa-accent-tint: 0;
+    --sa-surface-depth: 1;
+    --sa-radius: 6px;
+    --sa-radius-outer: 6px;
+    --sa-outlines: 1;
+    --sa-pills: 0;
+    --sa-elevation: 0.4;
+    --sa-font-sans: "Space Grotesk", system-ui, sans-serif;
+    --sa-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --sa-section-label-transform: uppercase;
+    --sa-section-label-tracking: 0.1em;
+    --sa-footer-fill: 0;
+    --sa-column-head-label: 1;
+    --sa-column-head-fill: 1;
+    --sa-column-head-case: var(--sa-section-label-transform);
+    --sa-column-head-font: var(--sa-font-mono);
+    --sa-current-page-fill: 1;
+    --sa-relief: 0;
+    --sa-sheen: 0;
+    --sa-solid-destructive: 0;
+    --sa-section-label-text: var(--sa-text-xs);
+  }
+}

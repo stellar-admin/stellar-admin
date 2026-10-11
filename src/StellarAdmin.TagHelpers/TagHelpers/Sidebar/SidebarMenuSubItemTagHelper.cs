@@ -17,11 +17,7 @@ public class SidebarMenuSubItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-sidebar", "menu-sub-item");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-sidebar-menu-sub-item",
-                "group/menu-sub-item",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-sidebar-menu-sub-item", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

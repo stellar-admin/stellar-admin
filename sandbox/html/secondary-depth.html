@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secondary depth</title>
+<!-- Prototype: options for the secondary button's depth (and colour) with --sa-sheen on. Dark mode keeps
+     what ships unless an option says otherwise. Uses the built library bundle; build it first (npm run
+     build:css in src/StellarAdmin.TagHelpers/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="preset">
+<style>
+  /* Each option overrides the secondary's private variables. :not(.dark) keeps dark mode as it ships;
+     the colour options set both modes. The shared drop shadow follows --sa-relief as the library's does. */
+  .sa-button-variant-secondary {
+    --_x-drop: 0 1px 1px rgb(0 0 0 / calc((0.07 + 0.03 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_x-drop-hover: 0 calc(1px + 1px * var(--_relief-press)) calc(1px + 2px * var(--_relief-press)) rgb(0 0 0 / calc((0.07 + 0.05 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_x-bevel: inset 0 -1px 0 rgb(0 0 0 / calc(0.06 + 0.1 * var(--_relief-press)));
+    --_x-press: var(--sa-shadow-control), inset 0 1px 2px rgb(0 0 0 / 0.12);
+  }
+
+  /* A: what shipped before D: the grey fill with the gradient at 60% and a half-strength edge. */
+  .opt-a .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: calc(0.6 * var(--sa-sheen));
+    --_bg: var(--sa-color-surface-sunken);
+    --_bg-hover: color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%);
+    --_bg-active: var(--_bg-hover);
+    --_border: color-mix(in oklab, var(--sa-color-line) calc(max(var(--sa-outlines), 0.5 * var(--sa-sheen)) * 100%), transparent);
+  }
+
+  /* B: grey bevel. The grey fill without the gradient; the depth is a darker bottom edge. */
+  .opt-b .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: 0;
+    --_border: var(--sa-color-line-control);
+    --_shadow: var(--sa-shadow-control), var(--_x-bevel), var(--_x-drop);
+    --_shadow-hover: var(--sa-shadow-control), var(--_x-bevel), var(--_x-drop-hover);
+    --_shadow-active: var(--_x-press);
+  }
+
+  /* C: white key, as Polaris and GitHub: the surface colour, a full edge, a darker bottom edge and the drop. */
+  .opt-c .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: 0;
+    --_bg: var(--sa-color-surface);
+    --_bg-hover: color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 4%);
+    --_bg-active: color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 6%);
+    --_border: var(--sa-color-line-control);
+    --_shadow: var(--sa-shadow-control), inset 0 -1px 0 rgb(0 0 0 / calc(0.08 + 0.1 * var(--_relief-press))), var(--_x-drop);
+    --_shadow-hover: var(--sa-shadow-control), inset 0 -1px 0 rgb(0 0 0 / calc(0.08 + 0.1 * var(--_relief-press))), var(--_x-drop-hover);
+    --_shadow-active: var(--_x-press);
+  }
+
+  /* E: Bootstrap 6: the grey with the full gradient and a full darker edge. */
+  .opt-e .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: var(--sa-sheen);
+    --_border: var(--sa-color-line-control);
+    --_shadow-active: var(--_x-press);
+  }
+
+  /* F: a mid grey, dark enough for the white highlight to show, with the full gradient. */
+  .opt-f .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: var(--sa-sheen);
+    --_bg: oklch(from var(--sa-color-surface-sunken) calc(l - 0.05) c h);
+    --_bg-hover: oklch(from var(--sa-color-surface-sunken) calc(l - 0.08) c h);
+    --_bg-active: var(--_bg-hover);
+    --_border: oklch(from var(--sa-color-surface-sunken) calc(l - 0.17) c h);
+    --_shadow-active: var(--_x-press);
+  }
+
+  /* G: accent tint, both modes: the brand colour lightly over the surface, with accent text and edge. */
+  .opt-g .sa-button-variant-secondary {
+    --_s: calc(0.8 * var(--sa-sheen) * var(--_sheen-k));
+    --_bg: color-mix(in oklab, var(--sa-color-accent) 11%, var(--sa-color-surface));
+    --_bg-hover: color-mix(in oklab, var(--sa-color-accent) 17%, var(--sa-color-surface));
+    --_bg-active: var(--_bg-hover);
+    --_border: color-mix(in oklab, var(--sa-color-accent) 28%, var(--sa-color-surface));
+    --_fg: var(--sa-color-accent-text);
+    --_shadow-active: var(--_x-press);
+  }
+  .opt-g .dark .sa-button-variant-secondary {
+    --_bg: color-mix(in oklab, var(--sa-color-accent) 16%, var(--sa-color-surface));
+    --_bg-hover: color-mix(in oklab, var(--sa-color-accent) 22%, var(--sa-color-surface));
+    --_border: color-mix(in oklab, var(--sa-color-accent) 40%, var(--sa-color-surface));
+  }
+
+  /* H: charcoal: a dark neutral with a white label and the full sheen, so it pairs with the primary
+     as a second solid. Dark mode keeps its grey. */
+  .opt-h .panel:not(.dark) .sa-button-variant-secondary {
+    --_s: var(--sa-sheen);
+    --_bg: color-mix(in oklab, var(--sa-color-ink) 82%, var(--sa-color-surface));
+    --_bg-hover: color-mix(in oklab, var(--sa-color-ink) 72%, var(--sa-color-surface));
+    --_bg-active: var(--_bg-hover);
+    --_border: color-mix(in oklab, var(--sa-color-ink) 95%, black);
+    --_fg: var(--sa-color-surface);
+  }
+
+  /* Page chrome */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 16px; max-width: 80ch; }
+  .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: 0.875rem; margin-bottom: 24px; }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+  section { margin-top: 28px; }
+  h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  h2 + p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 10px; max-width: 90ch; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 12px; }
+  .panel { border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-canvas); color: var(--sa-color-ink); overflow: hidden; }
+  .strip { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .strip + .strip { border-top: 1px solid var(--sa-color-line); }
+  .on-surface { background: var(--sa-color-surface); }
+  .strip-title { color: var(--sa-color-ink-muted); font-size: 0.75rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .footer { justify-content: flex-end; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Secondary button depth</h1>
+  <p class="lede">Options for the secondary button with sheen on. In dark mode the grey fill is lighter than the surface, so the gradient reads as light on a raised button; in light mode the fill is darker than the surface, so the white highlight barely shows and the gradient mostly darkens. D is what ships now; A is what shipped before. B to F change light mode only; G and H change the colour. Each option shows the page (canvas) and a card (surface). Hover and press the buttons.</p>
+  <div class="controls">
+    <label>Preset
+      <select id="preset-select">
+        <option value="">Base</option>
+        <option value="concourse">Concourse</option>
+        <option value="ledger">Ledger</option>
+      </select>
+    </label>
+    <label>Relief
+      <select id="relief">
+        <option value="0" selected>0 flat (default)</option>
+        <option value="1">1 raised</option>
+        <option value="2">2 tactile</option>
+      </select>
+    </label>
+    <label>Accent <input type="color" id="accent"> <button type="button" id="accent-reset" class="sa-button sa-button-variant-ghost sa-button-size-xs">Reset</button></label>
+  </div>
+  <div id="rows"></div>
+</div>
+<script>
+  const options = [
+    ["opt-a", "A: before", "The grey fill with the gradient at 60% and a half-strength edge, as it shipped before D."],
+    ["opt-b", "B: grey bevel", "The grey fill without the gradient. The depth is a full edge with a darker line along the bottom, and the drop shadow."],
+    ["opt-c", "C: white key", "As Polaris and GitHub: a white button with a full edge, a darker bottom line and the drop shadow; no gradient. The page's grey sets it apart from the canvas; on a card it is close to an outline button."],
+    ["opt-d", "D: white with gradient (ships)", "As macOS push buttons and the old GitHub: white shading to light grey, a full edge and the top highlight. The library ships this; the option sets nothing."],
+    ["opt-e", "E: Bootstrap 6", "The grey fill with the full gradient and a full darker edge, as Bootstrap's styled secondary."],
+    ["opt-f", "F: mid grey", "A darker grey (0.05 below the current fill), so the top highlight shows, with the full gradient and a darker edge."],
+    ["opt-g", "G: accent tint", "Both modes: the accent at 11% over the surface (16% in dark), accent text and an accent edge, with the gradient at 80%. Try other accents with the picker."],
+    ["opt-h", "H: charcoal", "Light mode: a dark neutral with a white label and the full sheen, a second solid next to the primary. Dark mode keeps its grey."],
+  ];
+  const icon = d => `<svg data-icon="inline-start" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const filter = icon(`<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>`);
+  const download = icon(`<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>`);
+  const dots = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`;
+  const btn = (variant, size, content, extra = "") =>
+    `<button type="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}"${extra}>${content}</button>`;
+  const strip = (cls, title) => `
+    <div class="strip ${cls}">
+      <div class="strip-title">${title}</div>
+      <div class="row">${btn("default", "default", "Book trip")}${btn("secondary", "default", "Save draft")}${btn("outline", "default", "Outline")}${btn("ghost", "default", "Ghost")}${btn("destructive", "default", "Cancel trip")}</div>
+      <div class="row">
+        ${btn("secondary", "sm", `${filter}Filter`)}${btn("secondary", "sm", `${download}Export`)}${btn("secondary", "sm", `Search<kbd class="sa-kbd" data-slot="kbd">⌘K</kbd>`)}${btn("secondary", "icon-sm", dots, ` aria-label="More"`)}${btn("secondary", "xs", "Extra small")}${btn("secondary", "lg", "Large")}${btn("secondary", "default", "Disabled", " disabled")}
+      </div>
+      <div class="row footer">${btn("secondary", "default", "Back")}${btn("default", "default", "Confirm booking")}</div>
+    </div>`;
+  const panel = dark => `
+    <div class="panel${dark ? " dark" : ""}">
+      ${strip("", `${dark ? "Dark" : "Light"} · page`)}
+      ${strip("on-surface", `${dark ? "Dark" : "Light"} · card`)}
+    </div>`;
+  const params = new URLSearchParams(location.search);
+  const only = params.get("only");
+  document.getElementById("rows").innerHTML = options.filter(([cls]) => !only || cls === only).map(([cls, title, note]) =>
+    `<section class="${cls}"><h2>${title}</h2><p>${note}</p><div class="modes">${panel(false)}${panel(true)}</div></section>`).join("");
+
+  const root = document.documentElement.style;
+  const select = document.getElementById("preset-select");
+  const applyPreset = () => {
+    const link = document.getElementById("preset");
+    if (select.value) link.href = `token-spec/presets/${select.value}.css`;
+    else link.removeAttribute("href");
+  };
+  select.value = params.get("preset") ?? "";
+  select.addEventListener("change", applyPreset);
+  applyPreset();
+
+  const relief = document.getElementById("relief");
+  relief.value = params.get("relief") ?? "0";
+  const applyRelief = () => root.setProperty("--sa-relief", relief.value);
+  relief.addEventListener("change", applyRelief);
+  applyRelief();
+
+  const accent = document.getElementById("accent");
+  const setAccent = v => v ? root.setProperty("--sa-accent", v) : root.removeProperty("--sa-accent");
+  const showAccent = () => {
+    const probe = document.createElement("div");
+    probe.style.color = "var(--sa-accent)";
+    document.body.append(probe);
+    const ctx = document.createElement("canvas").getContext("2d");
+    ctx.fillStyle = getComputedStyle(probe).color;
+    accent.value = ctx.fillStyle.startsWith("#") ? ctx.fillStyle : "#2563eb";
+    probe.remove();
+  };
+  if (params.get("accent")) setAccent("#" + params.get("accent"));
+  accent.addEventListener("input", () => setAccent(accent.value));
+  document.getElementById("accent-reset").addEventListener("click", () => { setAccent(null); requestAnimationFrame(showAccent); });
+  requestAnimationFrame(showAccent);
+</script>
+</body>
+</html>

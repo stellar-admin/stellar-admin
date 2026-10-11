@@ -1,0 +1,39 @@
+/* Kbd: a keyboard key, alone or in a group; also inside input groups, buttons and tooltips (button.css and tooltip.css set its colours there).
+   Replaces: .sa-kbd, .sa-kbd-group */
+
+@layer sa.components {
+  .sa-kbd {
+    --_bg: var(--sa-color-tint);
+    --_fg: color-mix(in oklab, var(--sa-color-ink-muted) 65%, var(--sa-color-ink));
+    --_border: color-mix(in oklab, var(--sa-color-line) calc(var(--sa-outlines) * 100%), transparent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-unit);
+    width: fit-content;
+    min-width: calc(5 * var(--sa-unit));
+    height: calc(5 * var(--sa-unit));
+    padding-inline: var(--sa-unit);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--sa-radius-inner);
+    background: var(--_bg);
+    background-clip: padding-box;
+    color: var(--_fg);
+    font-family: var(--sa-kbd-font, var(--sa-font-sans));
+    font-size: var(--sa-text-xs);
+    font-weight: var(--sa-weight-control);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+
+    & svg:not([class*="size-"]) {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+  }
+  .sa-kbd-group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sa-unit);
+  }
+}

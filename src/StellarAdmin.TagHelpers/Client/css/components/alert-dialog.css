@@ -1,0 +1,138 @@
+/* Alert dialog: a confirmation over a native <dialog>, drawn like the dialog (scrim, raised surface,
+   footer switches), with optional media beside or above the title, and a small size.
+   Replaces: .sa-alert-dialog-content, .sa-alert-dialog-overlay, .sa-alert-dialog-header,
+   .sa-alert-dialog-media, .sa-alert-dialog-title, .sa-alert-dialog-description,
+   .sa-alert-dialog-footer */
+
+@layer sa.tokens {
+  .sa-alert-dialog-content {
+    /* The dialog's footer switches: banded or ruled like the dialog's footer. */
+    --_footer-fill: var(--sa-dialog-footer-fill, var(--sa-footer-fill));
+    --_footer-rule: var(--sa-dialog-footer-rule, var(--sa-footer-rule));
+  }
+}
+
+@layer sa.components {
+  .sa-alert-dialog-content {
+    --_max-w: 20rem;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: 100%;
+    max-width: min(var(--_max-w), calc(100% - 2rem));
+    height: fit-content;
+    padding: var(--sa-space-container);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-dialog);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: calc(1.25 / 0.875);
+    outline: none;
+    &[open] {
+      display: grid;
+      gap: var(--sa-space-container);
+      animation: sa-dialog-in var(--sa-motion-fast) var(--sa-motion-ease);   /* keyframes in dialog.css */
+    }
+    &::backdrop {
+      background: var(--sa-color-scrim);
+    }
+    &[open]::backdrop {
+      animation: sa-dialog-backdrop-in var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+  }
+
+  /* Centred, the media above the title; a default-size dialog with room aligns to the start and
+     puts the media beside the title and description. */
+  .sa-alert-dialog-header {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    place-items: center;
+    gap: calc(1.5 * var(--sa-unit));
+    text-align: center;
+    &:has(> [data-slot="alert-dialog-media"]) {
+      grid-template-rows: auto auto 1fr;
+      column-gap: calc(4 * var(--sa-unit));
+    }
+  }
+  .sa-alert-dialog-media {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(10 * var(--sa-unit));
+    height: calc(10 * var(--sa-unit));
+    margin-bottom: calc(2 * var(--sa-unit));
+    border-radius: var(--sa-radius-control-sm);
+    background: var(--sa-color-surface-sunken);
+    color: var(--sa-color-ink);
+    & > svg:not([class*="size-"]) {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+  .sa-alert-dialog-title {
+    font-family: var(--sa-font-heading);
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.5;
+  }
+  .sa-alert-dialog-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
+    text-wrap: balance;
+    & a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      &:hover { color: var(--sa-color-ink); }
+    }
+    @media (width >= 48rem) {
+      text-wrap: pretty;
+    }
+  }
+  .sa-alert-dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: calc(2 * var(--sa-unit));
+    margin: 0 calc(-1 * var(--sa-space-container)) calc(-1 * var(--sa-space-container));
+    padding: calc(var(--sa-space-container) * max(var(--_footer-fill), var(--_footer-rule))) var(--sa-space-container) var(--sa-space-container);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--_footer-rule) * 100%), transparent);
+    border-radius: 0 0 var(--sa-radius-container) var(--sa-radius-container);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--_footer-fill) * 100%), transparent);
+  }
+  /* Small: two equal buttons side by side. */
+  .sa-alert-dialog-content[data-size="sm"] .sa-alert-dialog-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (width >= 40rem) {
+    .sa-alert-dialog-content[data-size="default"] {
+      --_max-w: 24rem;
+      & .sa-alert-dialog-header {
+        place-items: start;
+        text-align: start;
+        &:has(> [data-slot="alert-dialog-media"]) {
+          grid-template-rows: auto 1fr;
+        }
+      }
+      & .sa-alert-dialog-media {
+        grid-row: span 2;
+      }
+      & .sa-alert-dialog-header:has(> [data-slot="alert-dialog-media"]) .sa-alert-dialog-title {
+        grid-column-start: 2;
+      }
+    }
+    .sa-alert-dialog-footer {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-alert-dialog-content[open],
+    .sa-alert-dialog-content[open]::backdrop {
+      animation: none;
+    }
+  }
+}

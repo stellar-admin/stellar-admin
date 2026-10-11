@@ -1,18 +1,16 @@
-/* StellarAdmin.Dashboard — components and utilities stylesheet, linked alongside the main
-   stellar-admin.<theme>.css bundle. That bundle already ships preflight, the theme
-   variables, and all component rules, so this file adds Dashboard component rules and the utilities its views use.
+/* StellarAdmin.Dashboard: the Dashboard's own component rules and the Tailwind utilities its views
+   use, linked after stellar-admin.css, which ships the reset, the tokens and every component.
 
-   Both theme imports are reference-only, so no variables are re-emitted here:
-   - The default Tailwind theme is additionally inlined, because the main bundle
-     tree-shakes default-theme variables to the ones its own rules use — a var()
-     reference from here could dangle at runtime.
-   - theme-tokens.css is already `@theme inline`, so token utilities compile straight
-     to var(--primary)/var(--muted)/... and resolve against the main bundle's theme. */
+   Both theme imports are reference-only, so no variables are emitted here:
+   - the default Tailwind theme is inlined, so utilities that the adapter does not map (colours by
+     palette name, larger text sizes) compile to literal values;
+   - the StellarAdmin Tailwind adapter maps spacing, small text, fonts, radii and the shadcn colour
+     names onto the tokens, inline, so those utilities follow density, dark mode and scoped sections. */
 
-@layer theme, base, components, utilities;
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 
 @import "tailwindcss/theme.css" layer(theme) theme(inline reference);
-@import "../../../StellarAdmin.TagHelpers/Client/css/theme-tokens.css" theme(reference);
+@import "../../../StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" theme(reference);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../Areas/StellarAdmin/Views";
@@ -101,20 +99,20 @@
     }
 
     .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) > .sa-resource-form-header {
-        border-bottom: 1px solid var(--border);
-        padding-bottom: var(--sa-gap-lg);
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+        padding-bottom: calc(5 * var(--sa-unit));
     }
 
     .sa-resource-form-footer {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--sa-gap-md);
+        gap: calc(4 * var(--sa-unit));
     }
 
     .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) .sa-resource-form-footer {
-        border-top: 1px solid var(--border);
-        padding-top: var(--sa-gap-lg);
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
+        padding-top: calc(5 * var(--sa-unit));
     }
 
     .sa-resource-form-actions {
@@ -122,7 +120,7 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
-        gap: var(--sa-gap-sm);
+        gap: calc(2 * var(--sa-unit));
         margin-inline-start: auto;
     }
 
@@ -236,11 +234,11 @@
     }
 
     .sa-toggle-group.sa-toggle-chips > .sa-toggle-group-item {
-        border-radius: var(--sa-chip-radius);
+        border-radius: var(--sa-radius-tag);
     }
 
     .sa-toggle-chips .sa-toggle-group-item > .sa-choice-media:is([data-media="avatar"], [data-media="image"], [data-media="code"]) {
-        border-radius: max(0px, calc(var(--sa-chip-radius) - 4px));
+        border-radius: max(0px, calc(var(--sa-radius-tag) - 4px));
 
         & > *,
         &::after {
@@ -350,7 +348,7 @@
     dialog.sa-sheet-stack-level[data-under] {
         translate: calc(var(--sa-sheet-shift) * -40px) 0;
         scale: calc(1 - var(--sa-sheet-shift) * 0.045);
-        border-radius: calc(var(--radius) + 4px);
+        border-radius: var(--sa-radius-container);
         overflow: hidden;
     }
 

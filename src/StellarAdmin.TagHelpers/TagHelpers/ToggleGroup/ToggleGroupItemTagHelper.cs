@@ -106,7 +106,7 @@ public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
         }
 
         // Visually hidden but still focusable so native keyboard selection drives has-* state.
-        inputOutput.Attributes.SetAttribute("class", "peer sr-only");
+        inputOutput.Attributes.SetAttribute("class", "sr-only");
 
         output.Attributes.Clear();
         output.TagName = "label";

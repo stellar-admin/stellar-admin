@@ -1,0 +1,19 @@
+/* Page container: <sa-page-container>, the padded, centred column a page's content sits in, full width
+   or capped at one of three widths.
+   Replaces: .sa-page-container, .sa-page-container-width-large, .sa-page-container-width-medium,
+   .sa-page-container-width-small */
+
+@layer sa.components {
+  .sa-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: calc(5 * var(--sa-unit));
+    width: 100%;
+    margin-inline: auto;
+    padding: calc(5 * var(--sa-unit));
+    @media (width >= 48rem) { padding: calc(8 * var(--sa-unit)); }
+  }
+  .sa-page-container-width-small { max-width: 42rem; }
+  .sa-page-container-width-medium { max-width: 56rem; }
+  .sa-page-container-width-large { max-width: 72rem; }
+}

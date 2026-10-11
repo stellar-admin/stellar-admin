@@ -1,5 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using DocsSamples;
 
 namespace DocsSamplesGenerator;
 
@@ -17,37 +20,23 @@ internal sealed partial class Generator
     private static string GetRepoRootFolder([CallerFilePath] string sourceFilePath = "") =>
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
 
-    // Derived from the OSS repo's theme sources — the same folder the library's build:css derives its
-    // bundle list from — so new themes flow through the export automatically.
-    private static readonly string[] ThemeNames =
+    // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
+    // theme builder's presets. "default" is the token stylesheet alone, with no preset.
+    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(RepoRootFolder);
+
+    private static readonly string[] PresetNames =
     [
-        .. Directory
-            .EnumerateFiles(
-                Path.Combine(
-                    RepoRootFolder,
-                    "src",
-                    "StellarAdmin.TagHelpers",
-                    "Client",
-                    "css",
-                    "themes"
-                ),
-                "*.css"
-            )
-            .Select(Path.GetFileNameWithoutExtension)
-            .Order(),
+        .. Themes.Select(theme => theme.Name).Where(name => name != ThemeFixtures.DefaultName),
     ];
 
-    // Injected into the head of every exported demo page. Mirrors the docs website's state in
-    // localStorage (shared because the demos are served same-origin) so demos follow the site's
-    // light/dark selection ("theme", the next-themes key) and the reader's demo theme choice
-    // ("demo-theme"), both in the inline iframe and the full-preview tab. The storage and matchMedia
-    // listeners keep already-open demos in sync with live toggles. saThemeInit is called by an inline
-    // script placed right after the theme stylesheet link (see ThemeStylesheetLinkRegex) so a
-    // non-default theme applies during parsing, before anything paints.
-    private static readonly string ThemeSyncScript = $$"""
+    // Injected into the head of every exported demo page. Mirrors the docs website's light/dark
+    // selection in localStorage ("theme", the next-themes key; shared because the demos are served
+    // same-origin), both in the inline iframe and the full-preview tab. The storage and matchMedia
+    // listeners keep already-open demos in sync with live toggles. The demos use the default theme;
+    // saThemeInit, called in place of the samples' preset link (see PresetLinkRegex), loads its font.
+    private const string ThemeSyncScript = """
             <script>
                 (function () {
-                    var themes = ['{{string.Join("', '", ThemeNames)}}'];
                     var media = window.matchMedia('(prefers-color-scheme: dark)');
                     function applyDark() {
                         var theme = null;
@@ -56,40 +45,12 @@ internal sealed partial class Generator
                         document.documentElement.classList.toggle('dark', dark);
                         document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
                     }
-                    function selectedTheme() {
-                        var theme = null;
-                        try { theme = localStorage.getItem('demo-theme'); } catch (e) { }
-                        if (themes.indexOf(theme) < 0) theme = 'observatory';
-                        return theme;
-                    }
-                    function themeHref() {
-                        return '/demo/tag-helpers/assets/stellar-admin.' + selectedTheme() + '.css';
-                    }
                     window.saThemeInit = function () {
-                        window.saLoadThemeFonts(selectedTheme());
-                        var link = document.querySelector('link[data-sa-theme]');
-                        if (link && link.getAttribute('href') !== themeHref()) link.setAttribute('href', themeHref());
+                        window.saLoadThemeFonts('default');
                     };
-                    function swapTheme() {
-                        window.saLoadThemeFonts(selectedTheme());
-                        var links = document.querySelectorAll('link[data-sa-theme]');
-                        var current = links[links.length - 1];
-                        if (!current || current.getAttribute('href') === themeHref()) return;
-                        var next = document.createElement('link');
-                        next.rel = 'stylesheet';
-                        next.setAttribute('data-sa-theme', '');
-                        next.href = themeHref();
-                        next.addEventListener('load', function () {
-                            if (!next.isConnected) return;
-                            var all = document.querySelectorAll('link[data-sa-theme]');
-                            for (var i = 0; i < all.length && all[i] !== next; i++) all[i].remove();
-                        });
-                        current.after(next);
-                    }
                     applyDark();
                     window.addEventListener('storage', function (e) {
                         if (e.key === null || e.key === 'theme') applyDark();
-                        if (e.key === null || e.key === 'demo-theme') swapTheme();
                     });
                     media.addEventListener('change', applyDark);
                 })();
@@ -201,10 +162,10 @@ internal sealed partial class Generator
         {
             var filename = Path.GetFileName(match.Groups["filename"].Value);
 
-            // Theme bundles are downloaded separately under stable names (the runtime theme switcher
-            // depends on them) — skip the fingerprinted copy the page links.
+            // Presets are downloaded separately under stable names (the theme builder reads them),
+            // and the samples' own theme picker is not exported.
             if (
-                ThemeNames.Any(theme => filename.StartsWith($"stellar-admin.{theme}."))
+                match.Groups["url"].Value.Contains("/presets/")
                 || filename.StartsWith("appearance.")
             )
             {
@@ -221,24 +182,58 @@ internal sealed partial class Generator
         }
     }
 
-    /// <summary>Downloads every theme's stylesheet bundle under its stable, unfingerprinted name.</summary>
-    public async Task DownloadThemeStylesheetsAsync(HttpClient client)
+    /// <summary>
+    /// Downloads every preset stylesheet under its stable, unfingerprinted name, and writes
+    /// presets.json beside them: each theme's name, label and description, default first, for the
+    /// website's theme builder.
+    /// </summary>
+    public async Task DownloadPresetStylesheetsAsync(HttpClient client)
     {
-        if (!Directory.Exists(DownloadedAssetsOutputFolder))
-            Directory.CreateDirectory(DownloadedAssetsOutputFolder);
+        var folder = Path.Combine(DownloadedAssetsOutputFolder, "presets");
+        Directory.CreateDirectory(folder);
 
-        foreach (var theme in ThemeNames)
+        foreach (var preset in PresetNames)
         {
-            var response = await client.GetAsync(
-                $"/_content/StellarAdmin.TagHelpers/stellar-admin.{theme}.css"
-            );
+            var response = await client.GetAsync($"/presets/{preset}.css");
             response.EnsureSuccessStatusCode();
 
-            await File.WriteAllBytesAsync(
-                Path.Combine(DownloadedAssetsOutputFolder, $"stellar-admin.{theme}.css"),
-                await response.Content.ReadAsByteArrayAsync()
-            );
+            var content = await response.Content.ReadAsByteArrayAsync();
+            if (content.Length == 0)
+                throw new InvalidOperationException($"/presets/{preset}.css was served empty.");
+
+            await File.WriteAllBytesAsync(Path.Combine(folder, $"{preset}.css"), content);
         }
+
+        await File.WriteAllTextAsync(
+            Path.Combine(folder, "presets.json"),
+            JsonSerializer.Serialize(
+                Themes.Select(theme => new
+                {
+                    name = theme.Name,
+                    label = theme.Label,
+                    description = theme.Description,
+                }),
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                }
+            ) + "\n"
+        );
+    }
+
+    /// <summary>Downloads the theme variable manifest under its stable name, for the website's theme builder.</summary>
+    public async Task DownloadThemeVariableManifestAsync(HttpClient client)
+    {
+        var response = await client.GetAsync(
+            "/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json"
+        );
+        response.EnsureSuccessStatusCode();
+
+        await File.WriteAllBytesAsync(
+            Path.Combine(DownloadedAssetsOutputFolder, "stellar-admin.theme-variables.json"),
+            await response.Content.ReadAsByteArrayAsync()
+        );
     }
 
     /// <summary>Reads a demo partial's source and writes a fenced Razor code-include (.mdx).</summary>
@@ -374,18 +369,11 @@ internal sealed partial class Generator
                     $"{match.Groups["tag"].Value}/demo/tag-helpers/assets/{match.Groups["filename"].Value}"
             );
 
-        // Sync the demo with the docs website's light/dark and theme selection. Injected here rather
-        // than in the DocsSamples layouts so it never affects the samples app itself. The theme
-        // stylesheet link loses its fingerprint (the runtime switcher needs the stable
-        // stellar-admin.<theme>.css naming), gains the data-sa-theme marker the script looks for, and
-        // is followed by the saThemeInit() call that applies a non-default theme before first paint.
+        // Sync the demo with the docs website's light/dark selection. Injected here rather than in the
+        // DocsSamples layouts so it never affects the samples app itself. The samples' preset link
+        // (their theme picker's) is replaced by the saThemeInit() call that loads the default font.
         input = input.Replace("<head>", "<head>\n" + ThemeSyncScript);
-        input = ThemeStylesheetLinkRegex()
-            .Replace(
-                input,
-                match =>
-                    $"""<link rel="stylesheet" data-sa-theme href="/demo/tag-helpers/assets/stellar-admin.{match.Groups["theme"].Value}.css" /><script>saThemeInit();</script>"""
-            );
+        input = PresetLinkRegex().Replace(input, "<script>saThemeInit();</script>");
 
         return input;
     }
@@ -417,18 +405,9 @@ internal sealed partial class Generator
     )]
     private static partial Regex SamplesAppearanceScriptRegex();
 
-    // Matches the (already asset-rewritten, possibly fingerprinted) theme stylesheet link so
-    // FixDemoContent can swap it for the stable-named, data-sa-theme-marked variant.
-    private static Regex ThemeStylesheetLinkRegex() =>
-        new(
-            @"<link[^>]*href=""/demo/tag-helpers/assets/stellar-admin\.(?<theme>"
-                + string.Join(
-                    "|",
-                    ThemeNames.OrderByDescending(name => name.Length).Select(Regex.Escape)
-                )
-                + @")(?:\.[a-z0-9]+)?\.css""[^>]*/?>",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
-        );
+    // Matches the samples layout's preset link (its theme picker's stylesheet), with or without an href.
+    [GeneratedRegex(@"<link[^>]*id=""docs-sample-theme""[^>]*/?>", RegexOptions.IgnoreCase)]
+    private static partial Regex PresetLinkRegex();
 
     /// <summary>The demo partials to render and emit source includes for.</summary>
     public static readonly DemoPartial[] DemoPartials =
@@ -783,7 +762,10 @@ internal sealed partial class Generator
         new("Sheet/_NoCloseButton"),
         new("Sheet/_ReturnFormValue"),
         new("Sheet/_Sides"),
+        new("Showcase/_AdminShell", "_CleanLayout"),
+        new("Showcase/_Forms", "_ShowcaseLayout"),
         new("Showcase/_Masonry", "_ShowcaseLayout"),
+        new("Showcase/_Overlays", "_ShowcaseLayout"),
         new("Showcase/_ThemeShowcase", "_ShowcaseLayout"),
         new("Sidebar/_AlternateTriggerIcon", "_CleanLayout"),
         new("Sidebar/_CollapsibleGroups", "_CleanLayout"),
@@ -859,6 +841,11 @@ internal sealed partial class Generator
             OutputFileName: "theme-override",
             Layout: "_ThemeOverrideDemoLayout"
         ),
+        new("Theming/_BrandedPanel"),
+        new("Theming/_CompactSection"),
+        new("Theming/_CustomDensity"),
+        new("Theming/_DarkSection"),
+        new("Theming/_DensityLevels"),
         new("Toast/_Action"),
         new("Toast/_Intro"),
         new("Toast/_Promise"),

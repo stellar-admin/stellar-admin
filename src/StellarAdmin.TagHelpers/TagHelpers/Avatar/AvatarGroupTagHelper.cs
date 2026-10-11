@@ -16,7 +16,7 @@ public class AvatarGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "avatar-group");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-avatar-group", "group/avatar-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-avatar-group", output.GetUserSuppliedClass())
         );
 
         await base.ProcessAsync(context, output);

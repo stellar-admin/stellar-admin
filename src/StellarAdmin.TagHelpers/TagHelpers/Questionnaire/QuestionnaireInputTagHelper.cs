@@ -143,10 +143,7 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Attributes.Clear();
         output.Attributes.SetAttribute("data-slot", "questionnaire-input-wrapper");
-        output.Attributes.SetAttribute(
-            "class",
-            JoinCssClasses("sa-questionnaire-input-wrapper", "group/questionnaire-input")
-        );
+        output.Attributes.SetAttribute("class", JoinCssClasses("sa-questionnaire-input-wrapper"));
         output.Content.SetHtmlContent(inputOutput);
 
         // The question's own message reports the choices; this one reports the property typed

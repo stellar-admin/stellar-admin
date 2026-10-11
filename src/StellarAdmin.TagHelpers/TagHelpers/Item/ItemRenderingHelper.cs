@@ -31,7 +31,6 @@ internal static class ItemRenderingHelper
             "class",
             StellarAdminTagHelperBase.JoinCssClasses(
                 "sa-item",
-                "group/item",
                 ItemSizeClasses[effectiveSize],
                 ItemVariantClasses[effectiveVariant],
                 output.GetUserSuppliedClass()

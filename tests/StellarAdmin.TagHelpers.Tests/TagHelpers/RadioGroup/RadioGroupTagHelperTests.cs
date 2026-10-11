@@ -44,7 +44,7 @@ public class RadioGroupTagHelperTests
         await Assert
             .That(
                 html.QuerySelectorAll(
-                    "[data-slot=radio-group] .sa-input-control-wrapper > input.sa-radiobutton.peer"
+                    "[data-slot=radio-group] .sa-input-control-wrapper > input.sa-radiobutton"
                 ).Length
             )
             .IsEqualTo(2);

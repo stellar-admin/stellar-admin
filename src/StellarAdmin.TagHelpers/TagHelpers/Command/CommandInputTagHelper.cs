@@ -68,11 +68,7 @@ public class CommandInputTagHelper : StellarAdminTagHelperBase
         var inputGroup = new TagBuilder("div");
         inputGroup.Attributes["role"] = "group";
         inputGroup.Attributes["data-slot"] = "input-group";
-        inputGroup.Attributes["class"] = JoinCssClasses(
-            "sa-input-group",
-            "group/input-group",
-            "sa-command-input-group"
-        );
+        inputGroup.Attributes["class"] = JoinCssClasses("sa-input-group", "sa-command-input-group");
 
         var addon = new TagBuilder("div");
         addon.Attributes["role"] = "group";

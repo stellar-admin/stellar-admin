@@ -1,0 +1,292 @@
+/* StellarAdmin foundation: theme variables (tier 0) and foundation tokens (tier 1).
+ *
+ * The one source of theme values. Theme variables generate the foundation tokens; components read the
+ * theme variables and foundation tokens directly and have no public tokens of their own. The public names are
+ * documented in docs/design/tokens.md; anything starting --_ is internal.
+ *
+ *   Tier 0  variables    --sa-accent, --sa-danger, --sa-neutral-*, --sa-radius, --sa-density, … and the
+ *                        tier 1 tokens that need no formula (fonts, weights, label case, switches).
+ *                        A theme is usually a few of these:
+ *                          :root { --sa-accent: #0f766e; --sa-radius: 2px; --sa-density: 0.85; }
+ *   Tier 1  foundation   --sa-color-*, --sa-text-*, --sa-radius-*, --sa-control-*, --sa-space-*,
+ *                        --sa-focus-*, --sa-shadow-*: derived here. A theme may still set one directly.
+ *   Tier 2  overrides    Raw .sa-* rules in sa.overrides. The escape hatch; every rule there is a sign
+ *                        the vocabulary is missing something.
+ *
+ * Kinds of theme variable:
+ *   - required theme variables have a default on :root;
+ *   - optional theme variables have no default and are read through a var() fallback (--sa-accent-dark,
+ *     --sa-radius-outer, --sa-on-accent, --sa-focus-color, --sa-danger-dark, --sa-neutral-hue-dark,
+ *     --sa-neutral-chroma-dark, and per-component ones: --sa-dialog-footer-fill/-rule, --sa-kbd-font), so when unset
+ *     they re-derive in every scope from the theme variables they would otherwise follow.
+ *
+ * Scoping. Custom properties that reference other custom properties resolve where they are declared,
+ * and descendants inherit the resolved value. So formulas are declared on every element that can change
+ * a theme variable: :root, a .dark scope, a [data-sa-density] scope and a [data-sa-scope] (any element that
+ * sets its own theme variables, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
+ *
+ * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It sets a
+ * private --_* variable that the component's rules read.
+ */
+
+/* Layer order. Tailwind's layers are named too, so that a page that also loads Tailwind CSS keeps an
+   author's utilities above the components, and the reset above preflight. A stylesheet that declares
+   layers first fixes the order for the page, so a Tailwind build loaded before this one starts with
+   the same statement. */
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
+
+@layer sa.tokens {
+  /* --- Theme variables, with the base theme's values ------------------------------------------ */
+  :root {
+    /* Colour */
+    --sa-accent: oklch(0.5 0.16 258);    /* brand colour: primary buttons, focus, bold highlights */
+    --sa-danger: oklch(0.58 0.22 27);
+    --sa-success: oklch(0.6 0.15 150);   /* status colours: toast icons (later alerts, status badges) */
+    --sa-warning: oklch(0.72 0.16 70);
+    --sa-info: oklch(0.6 0.14 240);
+    --sa-neutral-hue: 255;               /* greys lean toward this hue … */
+    --sa-neutral-chroma: 0.006;          /* … by this much (0 = pure grey) */
+    --sa-accent-tint: 0.15;              /* 0–1: how much the accent tints hover, selection, highlight */
+    --sa-surface-depth: 0.8;             /* 0–1: canvas vs card separation (0 = one flat surface) */
+    --sa-nav-tint: 0.5;                  /* 0–1: sidebar from canvas to sunken */
+    --sa-line-strength: 1;               /* 0.75–2: dividers and control borders */
+
+    /* Shape and depth: one decision each, applied to every component */
+    --sa-radius: 6px;                    /* controls; 9999px for pill controls */
+    --sa-pills: 0;                       /* 0 or 1: tags (badges, chips, the switch) are pills, or follow --sa-radius */
+    --sa-outlines: 1;                    /* 0 or 1: filled parts draw an outline too (buttons, badges, chips,
+                                            the switch track); 0 leaves outlines to outline-style parts */
+    --sa-relief: 0;                      /* 0 flat; 1 raised (a drop shadow under buttons); 2 tactile (also a
+                                            bottom edge, a hover lift, a pressed state and recessed fields) */
+    --sa-sheen: 1;                       /* 0 flat; 1 solid buttons get a lit surface: a top-to-bottom gradient, a
+                                            highlight along the top edge, a darker edge and a pressed shadow */
+    --sa-stroke: 1px;
+    --sa-elevation: 0.7;                 /* 0 = flat, 1 = soft, 2+ = floating */
+
+    /* Space and type */
+    --sa-density: 1;                     /* 0.75 dense … 1.25 roomy; spacing only, not type */
+    --sa-type-scale: 1;
+
+    /* Focus */
+    --sa-focus-width: 3px;
+    --sa-focus-offset: 0px;              /* > 0 draws a surface-coloured gap before the ring */
+
+    /* Type: tier 1 tokens that need no formula, so they act as theme variables as they are */
+    --sa-font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --sa-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    --sa-font-heading: var(--sa-font-sans);
+    --sa-weight-control: 500;
+    --sa-weight-heading: 600;
+    --sa-leading-body: 1.5;
+
+    /* Section labels: menu labels, sidebar group labels (and column heads, see --sa-column-head-label) */
+    --sa-section-label-font: inherit;
+    --sa-section-label-text: calc(0.71875rem * var(--sa-type-scale));   /* 11.5px, between the 2xs and xs steps */
+    --sa-section-label-weight: 500;
+    --sa-section-label-transform: none;
+    --sa-section-label-tracking: 0em;            /* a length, so switches can scale it */
+
+    /* Structural switches: 0 or 1 (some blend in between), read by the components */
+    --sa-footer-fill: 0;                 /* card footer: tinted band */
+    --sa-footer-rule: 1;                 /* card footer: divider above it */
+    --sa-column-head-label: 0;           /* column heads take the section label role */
+    --sa-column-head-fill: 1;            /* column heads sit on a sunken band */
+    --sa-column-head-case: none;         /* keyword: switches cannot scale it */
+    --sa-column-head-font: inherit;      /* keyword too: e.g. var(--sa-font-mono) */
+    --sa-current-page-fill: 0;           /* current page: 0 outline … 1 solid accent */
+    --sa-solid-destructive: 1;           /* destructive button: 0 soft tint … 1 solid */
+    --sa-filled-secondary: 1;            /* secondary button: 0 bordered surface … 1 sunken fill */
+    --sa-link-decoration: none;          /* keyword: link buttons at rest (underline or none) */
+
+    /* Fixed tokens */
+    --sa-radius-round: 9999px;           /* avatars, dots: meaning, not style */
+    --sa-control-icon: 1rem;
+    --sa-motion-fast: 150ms;
+    --sa-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --sa-press-offset: 1px;              /* button nudge on :active */
+    --sa-disabled-opacity: 0.5;
+  }
+
+  [data-sa-density="compact"] { --sa-density: 0.8; }
+  [data-sa-density="comfortable"] { --sa-density: 1.2; }
+
+  /* --- Geometry and type: re-derived wherever density or theme variables change -------------- */
+  :root,
+  [data-sa-density],
+  [data-sa-scope] {
+    --sa-unit: calc(0.25rem * var(--sa-density));
+
+    --sa-text-2xs: calc(0.6875rem * var(--sa-type-scale));
+    --sa-text-xs: calc(0.75rem * var(--sa-type-scale));
+    --sa-text-sm: calc(0.875rem * var(--sa-type-scale));
+    --sa-text-base: calc(1rem * var(--sa-type-scale));
+    --sa-text-body: var(--sa-text-sm);
+    --sa-text-control: var(--sa-text-sm);
+    --sa-leading-ui: calc(var(--sa-text-body) * 1.4286);
+
+    --sa-radius-control: var(--sa-radius);
+    --sa-radius-control-sm: max(0px, calc(var(--sa-radius) - 2px));
+    --sa-radius-box: min(var(--sa-radius), var(--sa-radius-container));  /* boxes taller than a control: textareas, alerts, items */
+    --sa-radius-container: var(--sa-radius-outer, min(calc(var(--sa-radius) * 1.5), 1.25rem));
+    --sa-radius-overlay: min(var(--sa-radius-container), calc(var(--sa-radius) * 1.25));
+    --sa-radius-item: max(0px, calc(var(--sa-radius-overlay) - var(--sa-space-overlay)));  /* concentric */
+    --sa-radius-inner: calc(var(--sa-radius) * 0.6);
+    --sa-radius-tag: calc(var(--sa-radius) + var(--sa-pills) * 9999px);                   /* badges, chips, switch */
+
+    --sa-control-h-xs: calc(6 * var(--sa-unit));
+    --sa-control-h-sm: calc(7 * var(--sa-unit));
+    --sa-control-h: calc(8 * var(--sa-unit));
+    --sa-control-h-lg: calc(9 * var(--sa-unit));
+    --sa-control-px: calc(2.5 * var(--sa-unit));
+    --sa-control-gap: calc(1.5 * var(--sa-unit));
+    --sa-space-container: calc(4 * var(--sa-unit));
+    --sa-space-container-sm: calc(3 * var(--sa-unit));
+    --sa-space-cell-x: calc(2 * var(--sa-unit));
+    --sa-space-cell-y: calc(2 * var(--sa-unit));
+    --sa-space-overlay: calc(1 * var(--sa-unit));
+    --sa-space-item-x: calc(1.5 * var(--sa-unit));
+    --sa-space-item-y: calc(1 * var(--sa-unit));
+    --sa-space-item-gap: calc(1.5 * var(--sa-unit));
+
+    --sa-border-width: var(--sa-stroke);
+    --sa-focus-ring-width: var(--sa-focus-width);
+  }
+
+  /* --- Colour ramps: the only mode-specific part ---------------------------------------------- */
+  :root,
+  [data-sa-scope] {
+    --_h: var(--sa-neutral-hue);
+    --_c: var(--sa-neutral-chroma);
+    --_d: var(--sa-surface-depth);
+    --_s: max(0.75, var(--sa-line-strength));  /* below 0.75 lines stop separating anything */
+    --_e: var(--sa-elevation);
+
+    --sa-color-canvas: oklch(calc(1 - 0.035 * var(--_d)) calc(var(--_c) * 0.6) var(--_h));
+    --sa-color-surface: oklch(0.999 calc(var(--_c) * 0.2) var(--_h));
+    --sa-color-surface-subtle: oklch(0.982 calc(var(--_c) * 0.6) var(--_h));
+    --sa-color-surface-sunken: oklch(calc(0.96 - 0.035 * var(--_d)) var(--_c) var(--_h));   /* always 0.04 below the page */
+    --sa-color-surface-raised: var(--sa-color-surface);
+    --sa-color-field: var(--sa-color-surface);
+    --sa-color-field-disabled: color-mix(in oklab, var(--sa-color-surface-sunken) 70%, transparent);
+
+    --sa-color-ink: oklch(0.18 calc(var(--_c) * 2) var(--_h));
+    --sa-color-ink-muted: oklch(calc(0.5 - 0.02 * var(--_d)) calc(var(--_c) * 1.5) var(--_h));   /* 4.5:1 on the sunken band too */
+    --sa-color-ink-placeholder: oklch(0.62 var(--_c) var(--_h));
+
+    /* Lines darken with the page, so surface depth cannot fade them into it. */
+    --sa-color-line: oklch(min(1 - 0.08 * var(--_s), 1 - 0.035 * var(--_d) - 0.052 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-line-control: oklch(min(1 - 0.12 * var(--_s), 1 - 0.035 * var(--_d) - 0.092 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-line-control-hover: oklch(min(1 - 0.2 * var(--_s), 1 - 0.035 * var(--_d) - 0.172 * var(--_s)) var(--_c) var(--_h));
+    --sa-color-nav-line: oklch(from var(--sa-color-nav-surface) calc(l - 0.06 * var(--_s)) c h);   /* a step below the sidebar */
+
+    --sa-color-accent: var(--sa-accent);
+    --sa-color-accent-text: oklch(from var(--sa-accent) min(l, 0.5) min(c, 0.2) h);   /* 4.5:1 on light surfaces, whatever the hue */
+    --sa-color-danger: var(--sa-danger);
+    --sa-color-danger-text: oklch(from var(--sa-danger) min(l, 0.48) c h);   /* danger as text: 4.5:1 on light surfaces and its tint */
+    --sa-color-success: var(--sa-success);
+    --sa-color-warning: var(--sa-warning);
+    --sa-color-info: var(--sa-info);
+    --sa-color-danger-soft: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 10%, transparent);   /* a light danger would give no tint */
+    --sa-color-danger-soft-hover: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 18%, transparent);
+    --sa-invalid-ring-color: color-mix(in oklab, var(--sa-color-danger) 22%, transparent);
+
+    --_shadow-a: var(--_e);
+    --sa-color-scrim: oklch(0.2 var(--_c) var(--_h) / 0.25);
+  }
+
+  .dark,
+  .dark [data-sa-scope] {
+    --_h: var(--sa-neutral-hue-dark, var(--sa-neutral-hue));
+    --_c: var(--sa-neutral-chroma-dark, var(--sa-neutral-chroma));
+    --sa-color-canvas: oklch(0.155 calc(var(--_c) * 1.2) var(--_h));
+    --sa-color-surface: oklch(calc(0.155 + 0.1 * var(--_d)) calc(var(--_c) * 1.2) var(--_h));
+    --sa-color-surface-subtle: oklch(calc(0.175 + 0.1 * var(--_d)) calc(var(--_c) * 1.2) var(--_h));
+    --sa-color-surface-sunken: oklch(calc(0.24 + 0.06 * var(--_d)) calc(var(--_c) * 1.2) var(--_h));
+    --sa-color-surface-raised: oklch(calc(0.17 + 0.1 * var(--_d)) calc(var(--_c) * 1.2) var(--_h));
+    --sa-color-field: oklch(1 0 0 / 0.04);
+    --sa-color-field-disabled: oklch(1 0 0 / 0.08);
+
+    --sa-color-ink: oklch(0.97 calc(var(--_c) * 0.5) var(--_h));
+    --sa-color-ink-muted: oklch(0.71 var(--_c) var(--_h));
+    --sa-color-ink-placeholder: oklch(0.6 var(--_c) var(--_h));
+
+    --sa-color-line: oklch(0.9 var(--_c) var(--_h) / calc(0.11 * var(--_s)));
+    --sa-color-line-control: oklch(0.9 var(--_c) var(--_h) / calc(0.16 * var(--_s)));
+    --sa-color-line-control-hover: oklch(0.9 var(--_c) var(--_h) / calc(0.26 * var(--_s)));
+    --sa-color-nav-line: var(--sa-color-line);
+
+    --sa-color-accent: var(--sa-accent-dark, oklch(from var(--sa-accent) max(l, 0.72) c h));
+    --sa-color-accent-text: oklch(from var(--sa-color-accent) max(l, 0.75) c h);
+    --sa-color-danger: var(--sa-danger-dark, oklch(from var(--sa-danger) max(l, 0.68) c h));
+    --sa-color-danger-text: oklch(from var(--sa-color-danger) max(l, 0.88) c h);   /* 4.5:1 on its hover tint over raised surfaces too */
+    --sa-color-success: oklch(from var(--sa-success) max(l, 0.72) c h);
+    --sa-color-warning: oklch(from var(--sa-warning) max(l, 0.78) c h);
+    --sa-color-info: oklch(from var(--sa-info) max(l, 0.72) c h);
+    --sa-color-danger-soft: color-mix(in oklab, var(--sa-color-danger) 20%, transparent);
+    --sa-color-danger-soft-hover: color-mix(in oklab, var(--sa-color-danger) 30%, transparent);
+    --sa-invalid-ring-color: color-mix(in oklab, var(--sa-color-danger) 40%, transparent);
+
+    --_shadow-a: calc(var(--_e) * 2.5);
+    --sa-color-scrim: oklch(0 0 0 / 0.5);
+  }
+
+  /* --- Relations: the same formula in every mode, so declared on every colour scope ---------- */
+  :root,
+  [data-sa-scope],
+  .dark,
+  .dark [data-sa-scope] {
+    /* Solid fills (primary buttons, badges, the switch, the current page, bold highlights) and the text on
+       them, computed from WCAG luminance (Y, from linear sRGB clipped to the sRGB gamut, as the screen shows it). Text is white on a fill below Y 0.18 and
+       near-black above it, whichever contrasts more. A fill between Y 0.18 and 0.37 (about lightness 0.57 to
+       0.72, depending on hue) reaches 4.5:1 with neither, and saturated oranges and reds read better with
+       white than the formula suggests, so it darkens, keeping its hue, to Y 0.175, where white passes.
+       Focus rings, washes and tints keep the colour as set. */
+    --sa-color-accent-fill: color(from var(--sa-color-accent) srgb-linear
+      calc(clamp(0, r, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)))))
+      calc(clamp(0, g, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)))))
+      calc(clamp(0, b, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))))));
+    --sa-color-danger-fill: color(from var(--sa-color-danger) srgb-linear
+      calc(clamp(0, r, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)))))
+      calc(clamp(0, g, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)))))
+      calc(clamp(0, b, 1) * (1 - clamp(0, ((0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1)) - 0.18) * 1e6, 1) * clamp(0, (0.37 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) * (1 - 0.175 / (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))))));
+    --sa-color-on-accent: var(--sa-on-accent, color(from var(--sa-color-accent-fill) srgb-linear clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1)));
+    --sa-color-on-danger: color(from var(--sa-color-danger-fill) srgb-linear clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1) clamp(0.0015, (0.18 - (0.2126 * clamp(0, r, 1) + 0.7152 * clamp(0, g, 1) + 0.0722 * clamp(0, b, 1))) * 1e6, 1));
+    --sa-color-accent-hover: color-mix(in oklab, var(--sa-color-accent-fill) 88%, var(--sa-color-ink));
+    --sa-color-hover: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 8%), var(--sa-color-surface-sunken));
+    --sa-color-selected: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 14%), var(--sa-color-surface-sunken));
+    --sa-color-highlight: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 16%), var(--sa-color-surface-sunken));
+    --sa-color-on-highlight: var(--sa-color-ink);
+    --sa-color-tint: color-mix(in oklab, var(--sa-color-ink) 8%, transparent);   /* translucent, so it steps from whatever it sits on: tracks, keys, chips, skeletons */
+
+    --sa-color-nav-surface: color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-nav-tint) * 100%), var(--sa-color-canvas));
+    --sa-color-nav-ink: var(--sa-color-ink);
+    --sa-color-nav-highlight: color-mix(in oklab, var(--sa-color-accent) calc(var(--sa-accent-tint) * 18%),
+      color-mix(in oklab, var(--sa-color-ink) 6%, var(--sa-color-nav-surface)));
+    --sa-color-on-nav-highlight: var(--sa-color-ink);
+    --sa-color-nav-accent: var(--sa-color-accent-fill);
+
+    --sa-focus-border: var(--sa-color-accent);
+    --sa-focus-ring-color: var(--sa-focus-color, color-mix(in oklab, var(--sa-color-accent) 40%, transparent));
+    --sa-focus-shadow: 0 0 0 var(--sa-focus-offset) var(--sa-color-surface),
+      0 0 0 calc(var(--sa-focus-offset) + var(--sa-focus-width)) var(--sa-focus-ring-color);
+    --sa-focus-shadow-field: var(--sa-focus-shadow);
+    --sa-invalid-shadow: 0 0 #0000;
+    --sa-invalid-focus-shadow: 0 0 0 var(--sa-focus-width) var(--sa-invalid-ring-color);
+
+    /* One elevation theme variable scales every shadow's opacity; dark mode needs about 2.5× to read. */
+    --_shadow: oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.07 * var(--_shadow-a)));
+    --_shadow-soft: oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.04 * var(--_shadow-a)));
+    --sa-shadow-control: 0 1px 2px 0 var(--_shadow-soft);
+    --sa-shadow-container: 0 1px 3px 0 var(--_shadow-soft), 0 1px 2px -1px var(--_shadow-soft);
+    --sa-shadow-raised: 0 1px 3px 0 var(--_shadow), 0 1px 2px -1px var(--_shadow);
+    --sa-shadow-overlay: 0 10px 24px -6px var(--_shadow), 0 2px 6px -2px var(--_shadow-soft);
+    --sa-shadow-dialog: 0 24px 56px -12px oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.22 * var(--_shadow-a)));
+  }
+
+  /* Dark mode: the hover fill moves away from the text on it (black under light text, white under
+     dark text), not toward the light ink, which cost white text its contrast (3.8:1). */
+  .dark,
+  .dark [data-sa-scope] {
+    --sa-color-accent-hover: color-mix(in oklab, var(--sa-color-accent-fill) 88%, oklch(from var(--sa-color-on-accent) clamp(0, (0.62 - l) * 1000, 1) 0 0));
+  }
+}

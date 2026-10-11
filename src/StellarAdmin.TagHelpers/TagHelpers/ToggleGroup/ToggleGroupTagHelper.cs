@@ -127,8 +127,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
             effectiveSpacing.ToString(CultureInfo.InvariantCulture)
         );
 
-        // The group-item token's orientation variants (group-data-horizontal/vertical) resolve
-        // to [data-orientation="..."] in Tailwind v4, so that is the attribute we set here.
+        // toggle-group.css keys the items' orientation styles off this attribute.
         output.Attributes.SetAttribute(
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()
@@ -151,7 +150,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-toggle-group", "group/toggle-group", ClassNames?.Control, userClass)
+            JoinCssClasses("sa-toggle-group", ClassNames?.Control, userClass)
         );
 
         output.Content.AppendHtml(childContent);

@@ -16,12 +16,7 @@ public class AlertDialogTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "alert-dialog-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-alert-dialog-title",
-                "sa-font-heading",
-                "font-heading",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-alert-dialog-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

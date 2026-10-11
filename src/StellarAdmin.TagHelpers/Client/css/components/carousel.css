@@ -1,0 +1,103 @@
+/* Carousel: a scroll-snapping row (or column) of items, with previous and next buttons (sa-button)
+   beside it and optional indicator dots below. sel-carousel sets data-ready and builds the dots.
+   Replaces: .sa-carousel, .sa-carousel-content, .sa-carousel-item, .sa-carousel-previous,
+   .sa-carousel-next, .sa-carousel-indicators, .sa-carousel-indicator */
+
+@layer sa.components {
+  .sa-carousel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    &:not([data-ready]) > :is(.sa-carousel-previous, .sa-carousel-next, .sa-carousel-indicators) {
+      visibility: hidden;
+    }
+    &[data-ready]:has(> .sa-carousel-previous):has(> .sa-carousel-next) > .sa-carousel-content {
+      scrollbar-width: none;
+    }
+  }
+  .sa-carousel-content {
+    display: flex;
+    grid-area: 1 / 1;
+    gap: var(--carousel-spacing, calc(4 * var(--sa-unit)));
+    min-width: 0;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    &:focus-visible {
+      outline: var(--sa-focus-ring-width) solid var(--sa-focus-ring-color);
+      outline-offset: 4px;
+    }
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior-y: contain;
+    }
+  }
+  .sa-carousel-item {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: 1px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* The buttons are sa-button: placed with translate, so the button's pressed transform still applies. */
+  .sa-button:is(.sa-carousel-previous, .sa-carousel-next) {
+    --_radius: var(--sa-radius-round);
+    position: absolute;
+    grid-area: 1 / 1;
+    top: 50%;
+    translate: 0 -50%;
+    touch-action: manipulation;
+    &[data-orientation="vertical"] {
+      top: auto;
+      left: 50%;
+      translate: -50% 0;
+      rotate: 90deg;
+    }
+    &:dir(rtl):not([data-orientation="vertical"]) > svg {
+      transform: rotate(180deg);
+    }
+  }
+  .sa-button.sa-carousel-previous {
+    &[data-orientation="horizontal"] { inset-inline-start: calc(-1 * 3rem); }
+    &[data-orientation="vertical"] { top: calc(-1 * 3rem); }
+  }
+  .sa-button.sa-carousel-next {
+    &[data-orientation="horizontal"] { inset-inline-end: calc(-1 * 3rem); }
+    &[data-orientation="vertical"] { bottom: calc(-1 * 3rem); }
+  }
+
+  .sa-carousel-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: 2 / 1;
+    justify-content: center;
+    gap: var(--sa-unit);
+    padding-top: calc(3 * var(--sa-unit));
+  }
+  .sa-carousel-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(6 * var(--sa-unit));
+    height: calc(6 * var(--sa-unit));
+    border-radius: var(--sa-radius-round);
+    outline: none;
+    &::before {
+      content: "";
+      width: calc(2 * var(--sa-unit));
+      height: calc(2 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+      background: color-mix(in oklab, var(--sa-color-ink-muted) 40%, transparent);
+      transition: background-color var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+    &[aria-current="true"]::before {
+      background: var(--sa-color-ink);
+    }
+    &:focus-visible {
+      box-shadow: var(--sa-focus-shadow);
+    }
+  }
+}

@@ -1,0 +1,92 @@
+/* Alert: a bordered message box with an optional leading icon, title, description and action.
+   Replaces: .sa-alert, .sa-alert-variant-default, .sa-alert-variant-destructive, .sa-alert-title,
+   .sa-alert-description, .sa-alert-action */
+
+@layer sa.tokens {
+  .sa-alert {
+    /* Danger: the danger tint over the surface, made opaque (danger-soft is translucent), so the text
+       is measured against a known colour. Danger text passes 4.5:1 on its tint in both modes. */
+    --_alert-danger-bg: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 6%, var(--sa-color-surface));
+    --_alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 35%, var(--sa-color-surface));
+  }
+  .dark .sa-alert {
+    --_alert-danger-bg: color-mix(in oklab, var(--sa-color-danger) 12%, var(--sa-color-surface));
+    --_alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 40%, var(--sa-color-surface));
+  }
+}
+
+@layer sa.components {
+  .sa-alert {
+    --_bg: var(--sa-color-surface);
+    --_fg: var(--sa-color-ink);
+    --_border: var(--sa-color-line);
+    --_description-fg: var(--sa-color-ink-muted);
+    position: relative;
+    display: grid;
+    gap: calc(0.5 * var(--sa-unit));
+    width: 100%;
+    padding: calc(2 * var(--sa-unit)) calc(2.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--sa-radius-box);
+    background: var(--_bg);
+    color: var(--_fg);
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    text-align: start;
+
+    &:has(> [data-slot="alert-action"]) {
+      padding-inline-end: calc(18 * var(--sa-unit));
+    }
+    &:has(> svg) {
+      grid-template-columns: auto 1fr;
+      column-gap: calc(2 * var(--sa-unit));
+    }
+    & > svg {
+      grid-row: span 2;
+      translate: 0 calc((var(--sa-leading-ui) - var(--sa-control-icon)) / 2);
+      color: currentColor;
+      &:not([class*="size-"]) {
+        width: var(--sa-control-icon);
+        height: var(--sa-control-icon);
+      }
+    }
+  }
+  .sa-alert-variant-destructive {
+    --_bg: var(--_alert-danger-bg);
+    --_fg: var(--sa-color-danger-text);
+    --_border: var(--_alert-danger-border);
+    --_description-fg: var(--sa-color-danger-text);
+  }
+  .sa-alert-title {
+    font-weight: var(--sa-weight-control);
+    .sa-alert:has(> svg) > & {
+      grid-column-start: 2;
+    }
+  }
+  .sa-alert-description {
+    color: var(--_description-fg);
+    font-size: var(--sa-text-sm);
+    text-wrap: pretty;
+    & p:not(:last-child) {
+      margin-bottom: calc(4 * var(--sa-unit));
+    }
+    .sa-alert:has(> svg) > & {
+      grid-column-start: 2;
+    }
+  }
+  :is(.sa-alert-title, .sa-alert-description) a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    &:hover {
+      color: var(--sa-color-ink);
+    }
+  }
+  .sa-alert-variant-destructive :is(.sa-alert-title, .sa-alert-description) a:hover {
+    color: inherit;
+  }
+  .sa-alert-action {
+    position: absolute;
+    top: calc(2 * var(--sa-unit));
+    right: calc(2 * var(--sa-unit));
+  }
+}

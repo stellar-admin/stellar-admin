@@ -1,0 +1,108 @@
+/* Input OTP: <sel-input-otp>, a row of character slots over one transparent native input (styled
+   inline by the script), in groups with separators. The active slot shows focus and a blinking caret.
+   Replaces: .sa-input-otp, .sa-input-otp-caret, .sa-input-otp-caret-line, .sa-input-otp-group,
+   .sa-input-otp-input, .sa-input-otp-separator, .sa-input-otp-slot */
+
+@layer sa.components {
+  .sa-input-otp {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    &:has(:disabled) {
+      opacity: var(--sa-disabled-opacity);
+    }
+  }
+
+  .sa-input-otp-group {
+    display: flex;
+    align-items: center;
+    border-radius: var(--sa-radius-control);
+    box-shadow: var(--sa-shadow-control);
+    &:has([aria-invalid="true"], .input-validation-error) {
+      box-shadow: var(--sa-shadow-control), var(--sa-invalid-shadow);
+    }
+  }
+
+  .sa-input-otp-slot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sa-control-h);
+    height: var(--sa-control-h);
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-inline-start-width: 0;
+    background: var(--sa-color-field);
+    background-clip: padding-box;
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
+    outline: none;
+    transition:
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+
+    &:first-child {
+      border-inline-start-width: var(--sa-border-width);
+      border-start-start-radius: var(--sa-radius-control);
+      border-end-start-radius: var(--sa-radius-control);
+    }
+    &:last-child {
+      border-start-end-radius: var(--sa-radius-control);
+      border-end-end-radius: var(--sa-radius-control);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+    }
+    &[data-active="true"] {
+      z-index: 10;
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-focus-shadow-field);
+      &:is([aria-invalid="true"], .input-validation-error) {
+        border-color: var(--sa-color-danger);
+        box-shadow: var(--sa-invalid-focus-shadow);
+      }
+    }
+  }
+
+  .sa-input-otp-separator {
+    display: flex;
+    align-items: center;
+    color: var(--sa-color-ink);
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+  }
+
+  .sa-input-otp-caret {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .sa-input-otp-caret-line {
+    width: 1px;
+    height: 1rem;
+    background: var(--sa-color-ink);
+    animation: sa-input-otp-caret-blink 1s ease-out infinite;
+  }
+  .sa-input-otp-input:disabled {
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa-input-otp-slot {
+      transition-duration: 0s;
+    }
+    .sa-input-otp-caret-line {
+      animation: none;
+    }
+  }
+}
+
+@keyframes sa-input-otp-caret-blink {
+  0%, 70%, 100% { opacity: 1; }
+  20%, 50% { opacity: 0; }
+}

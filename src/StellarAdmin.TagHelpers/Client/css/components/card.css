@@ -1,0 +1,74 @@
+/* Card: a surface with an edge, a header (title, description, action), content and a footer.
+   The data grid rides this chassis (data-grid.css).
+   Replaces: .sa-card, .sa-card-header, .sa-card-title, .sa-card-description, .sa-card-action,
+   .sa-card-content, .sa-card-footer */
+
+@layer sa.components {
+  .sa-card {
+    --_card-p: var(--sa-space-container);
+    --_card-gap: var(--sa-space-container);
+    --_card-title-text: var(--sa-text-base);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--_card-gap);
+    padding-block: var(--_card-p);
+    overflow: hidden;
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    background: var(--sa-color-surface);
+    box-shadow: var(--sa-shadow-container);
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-body);
+    line-height: var(--sa-leading-ui);
+
+    &[data-size="sm"] {
+      --_card-p: var(--sa-space-container-sm);
+      --_card-gap: var(--sa-space-container-sm);
+      --_card-title-text: var(--sa-text-sm);
+    }
+    &:has(> .sa-card-footer) { padding-bottom: 0; }
+    &:has(> img:first-child) { padding-top: 0; }
+  }
+  .sa-card-header {
+    container: card-header / inline-size;
+    display: grid;
+    grid-auto-rows: min-content;
+    align-items: start;
+    gap: var(--sa-unit);
+    padding-inline: var(--_card-p);
+    border-bottom-color: var(--sa-color-line);
+
+    &:has(> [data-slot="card-description"]) { grid-template-rows: auto auto; }
+    &:has(> [data-slot="card-action"]) { grid-template-columns: 1fr auto; }
+    &.border-b { padding-bottom: var(--_card-p); }
+  }
+  .sa-card-title {
+    font-family: var(--sa-font-heading);
+    font-size: var(--_card-title-text);
+    font-weight: var(--sa-weight-heading);
+    line-height: 1.375;
+  }
+  .sa-card-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-body);
+  }
+  .sa-card-action {
+    grid-column-start: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    justify-self: end;
+  }
+  .sa-card-content { padding-inline: var(--_card-p); }
+  .sa-card-footer {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    /* With neither a band nor a rule, the footer sits flush: the card's gap already spaces it. */
+    padding: calc(var(--_card-p) * max(var(--sa-footer-fill), var(--sa-footer-rule))) var(--_card-p) var(--_card-p);
+    border-top: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-line) calc(var(--sa-footer-rule) * 100%), transparent);
+    background: color-mix(in oklab, var(--sa-color-surface-subtle) calc(var(--sa-footer-fill) * 100%), transparent);
+    color: inherit;
+    font-size: inherit;
+  }
+}

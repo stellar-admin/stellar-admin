@@ -193,12 +193,7 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
         );
         linkOutput.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-button",
-                "group/button",
-                "sa-button-variant-ghost",
-                "sa-button-size-sm"
-            )
+            JoinCssClasses("sa-button", "sa-button-variant-ghost", "sa-button-size-sm")
         );
         // Align the button label with the unsorted columns' header text (sa-table-head pads
         // px-2, the small button px-2.5).

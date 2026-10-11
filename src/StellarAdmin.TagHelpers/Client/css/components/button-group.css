@@ -1,0 +1,116 @@
+/* Button group: buttons, inputs, selects and text joined into one row or column, with shared edges
+   and only the outer corners rounded. Nested groups sit apart.
+   Replaces: .sa-button-group, .sa-button-group-orientation-horizontal,
+   .sa-button-group-orientation-vertical, .sa-button-group-separator, .sa-button-group-text */
+
+@layer sa.components {
+  .sa-button-group {
+    display: flex;
+    align-items: stretch;
+    width: fit-content;
+
+    &:has(> [data-slot="button-group"]) {
+      gap: calc(2 * var(--sa-unit));
+    }
+    & > *:focus-visible,
+    & > :has(:focus-visible) {
+      position: relative;
+      z-index: 10;
+    }
+    & > [data-slot="select-trigger"]:not([class*="w-"]) {
+      width: fit-content;
+    }
+    & > input {
+      flex: 1;
+    }
+  }
+
+  /* Every part but the last gives up its end corners; every part but the first its start corners and
+     its start edge, so neighbours share one line. Small buttons keep the group's radius (button.css). */
+  .sa-button-group-orientation-horizontal {
+    & > [data-slot]:has(~ [data-slot]) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot] {
+      border-inline-start-width: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+  }
+  .sa-button-group-orientation-vertical {
+    flex-direction: column;
+
+    & > [data-slot]:has(~ [data-slot]) {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot] {
+      border-top-width: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+  }
+
+  /* A native select draws its edge on the select inside its wrapper. */
+  .sa-button-group-orientation-horizontal {
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-inline-start-width: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+  }
+  .sa-button-group-orientation-vertical {
+    & > [data-slot="native-select-wrapper"]:has(~ [data-slot]) > [data-slot="native-select"] {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+    & > [data-slot] ~ [data-slot="native-select-wrapper"] > [data-slot="native-select"] {
+      border-top-width: 0;
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+  }
+
+  .sa-button-group-text {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    padding-inline: var(--sa-control-px);
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-surface-sunken);
+    background-clip: padding-box;
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-control);
+    font-weight: var(--sa-weight-control);
+    white-space: nowrap;
+
+    & svg {
+      pointer-events: none;
+    }
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+  }
+
+  /* The separator is a Separator (separator.css); this out-ranks its rules by selector. */
+  .sa-separator.sa-button-group-separator {
+    position: relative;
+    align-self: stretch;
+    background: var(--sa-color-line-control);
+    &[data-orientation="horizontal"] {
+      width: auto;
+      margin-inline: 1px;
+    }
+    &[data-orientation="vertical"] {
+      height: auto;
+      margin-block: 1px;
+    }
+  }
+}

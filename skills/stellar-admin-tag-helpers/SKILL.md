@@ -3,11 +3,13 @@ name: stellar-admin-tag-helpers
 description: >-
   Build ASP.NET Core MVC and Razor Pages UIs with the StellarAdmin.TagHelpers
   UI library. Covers setup,
-  sa-* Tag Helpers, forms and validation, page layouts and navigation, themes,
-  dark mode, icons, and client interactivity. Use when building or editing
+  sa-* Tag Helpers, forms and validation, page layouts and navigation, linking a
+  theme file, dark mode, icons, and
+  client interactivity. Use when building or editing
   StellarAdmin UI markup, forms, layouts, or styling in .cshtml files, or when
   the user asks how to use StellarAdmin Tag Helpers. Does not cover Dashboard
-  admin-panel configuration or resource workflows.
+  admin-panel configuration or resource workflows. Creating or changing a
+  theme is the stellar-admin-theme skill.
 metadata:
   author: StellarAdmin
 ---
@@ -40,13 +42,13 @@ For focused tasks, read the relevant workflow guide:
 
 - **[Forms](references/forms.md)** — fields, validation, model binding, and input composition.
 - **[Layout](references/layout.md)** — app shells, navigation, page structure, and cards.
-- **[Theming](references/theming.md)** — theme selection, dark mode, design tokens, and menu appearance.
+- **[Theming](references/theming.md)** — the default theme, linking a theme file, fonts, dark mode, using the tokens in your own CSS, and menu appearance. Creating or changing a theme (choosing CSS variable values from a description, brand colours, a theme builder link) is the separate **stellar-admin-theme** skill; if it isn't installed, suggest `npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme`.
 
 ## The six things to get right (details in conventions.md)
 
 1. **Enums are written fully-qualified in Razor**, not as bare strings: `variant="ButtonVariant.Outline"`, not `variant="outline"`.
 2. **Unlisted attributes pass straight through.** Anything not in a component's attribute table — `id`, `style`, `data-*`, `aria-*`, `hx-*`, and the native attributes of the element it renders — is forwarded to the rendered element verbatim.
-3. **`class` is appended, not replaced.** Your classes join the component's own. Whether an arbitrary utility like `bg-primary` *exists* depends on the app having its own Tailwind build — see conventions.md §4 before reaching for one.
+3. **`class` is appended, not replaced.** Your classes join the component's own. Whether an arbitrary utility like `bg-primary` *exists* depends on the app having its own Tailwind build with StellarAdmin's adapter — see conventions.md §4 before reaching for one.
 4. **Overlays open declaratively — never with `onclick`** — but by two different mechanisms. Modals (`<sa-dialog>`, `<sa-alert-dialog>`, `<sa-sheet>`) use the Invoker Commands API: a trigger **button** carries `commandfor="<id>"` and `command="show-modal"` / `close`. Popovers (`<sa-popover>`, dropdown menu content) use the Popover API instead: the trigger carries `popovertarget="<id>"`, with no `command`. Don't mix them.
 5. **Kebab-case attributes.** A C# property `ShowCloseButton` binds to `show-close-button`.
 6. **Composite components have a required tag hierarchy** (sidebar, accordion, field, dropdown menu). Follow the nesting shown in the component's reference — children must sit inside their parent, in order.

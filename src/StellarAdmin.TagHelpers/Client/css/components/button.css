@@ -1,0 +1,239 @@
+/* Button: <sa-button> and the parts other components render as buttons (ButtonRenderingHelper).
+   Replaces: .sa-button, .sa-button-variant-default, .sa-button-variant-secondary,
+   .sa-button-variant-outline, .sa-button-variant-ghost, .sa-button-variant-destructive,
+   .sa-button-variant-link, .sa-button-size-default, .sa-button-size-xs, .sa-button-size-sm,
+   .sa-button-size-lg, .sa-button-size-icon, .sa-button-size-icon-xs, .sa-button-size-icon-sm,
+   .sa-button-size-icon-lg */
+
+@layer sa.tokens {
+  .sa-button {
+    /* Relief (see --sa-relief): raised from 1, tactile at 2. */
+    --_relief-lift: clamp(0, var(--sa-relief), 1);
+    --_relief-press: clamp(0, calc(var(--sa-relief) - 1), 1);
+    --_relief-k: 1;                                      /* dark mode weights the edges and the drop more */
+    --_relief-k-drop: 1;
+    --_relief-edge: rgb(0 0 0 / calc(0.25 * var(--_relief-press) * var(--_relief-k)));
+    /* Sheen (see --sa-sheen): the solid variants set --_s, its strength for that button. */
+    --_sheen-k: 1;                                       /* dark mode weakens the white highlight */
+    --_s: 0;
+    /* With sheen on, the light-mode secondary is white shading to grey, as macOS push buttons; in dark
+       mode its grey fill is already lighter than the surface, so the sheen lights it as it is. */
+    --_secondary-lit: 1;
+    --_secondary-sheen: 1.2;
+
+    --_button-outline-bg: var(--sa-color-surface);
+    --_button-outline-border: var(--sa-color-line);
+    --_danger-hover: color-mix(in oklab, var(--sa-color-danger-fill) 88%, var(--sa-color-ink));
+  }
+  .dark .sa-button {
+    --_relief-k: 1.45;
+    --_relief-k-drop: 2.5;
+    --_sheen-k: 0.7;
+    --_secondary-lit: 0;
+    --_secondary-sheen: 0.6;
+    --_button-outline-bg: var(--sa-color-field);
+    --_button-outline-border: var(--sa-color-line-control);
+    /* Away from the label, as --sa-color-accent-hover in dark mode. */
+    --_danger-hover: color-mix(in oklab, var(--sa-color-danger-fill) 88%, oklch(from var(--sa-color-on-danger) clamp(0, (0.62 - l) * 1000, 1) 0 0));
+  }
+}
+
+@layer sa.components {
+  .sa-button {
+    --_h: var(--sa-control-h);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control);
+    --_text: var(--sa-text-control);
+    --_icon: var(--sa-control-icon);
+    --_bg: transparent;
+    --_bg-hover: var(--_bg);
+    --_fg: inherit;
+    --_fg-hover: var(--_fg);
+    --_bg-active: var(--_bg-hover);
+    --_border: transparent;
+    --_border-hover: var(--_border);
+    --_sheen-highlight: inset 0 1px 0 rgb(255 255 255 / calc(0.14 * var(--_s)));
+    --_shadow: var(--sa-shadow-control), var(--_sheen-highlight), inset 0 -1px 0 var(--_relief-edge), 0 1px 1px rgb(0 0 0 / calc((0.07 + 0.03 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_shadow-hover: var(--sa-shadow-control), var(--_sheen-highlight), inset 0 -1px 0 var(--_relief-edge), 0 calc(1px + 1px * var(--_relief-press)) calc(1px + 2px * var(--_relief-press)) rgb(0 0 0 / calc((0.07 + 0.05 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_shadow-active: var(--sa-shadow-control), inset 0 1px 2px rgb(0 0 0 / calc(max(0.3 * var(--_relief-press) * var(--_relief-k), 0.15 * var(--_s))));
+
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sa-control-gap);
+    height: var(--_h);
+    padding-inline: var(--_px);
+    border: var(--sa-border-width) solid var(--_border);
+    border-radius: var(--_radius);
+    background: var(--_bg);
+    background-clip: padding-box;
+    /* The sheen: translucent white to black over the fill, so it shades every variant and state. Under
+       a light label (lightness above 0.62) a black layer first darkens the fill by 10%, so the lit top
+       keeps the label's contrast; a dark label has the headroom. */
+    background-image:
+      linear-gradient(rgb(255 255 255 / calc(0.125 * var(--_s))), rgb(0 0 0 / calc(0.075 * var(--_s)))),
+      linear-gradient(oklch(from currentColor 0 0 0 / calc(0.1 * var(--_s) * clamp(0, (l - 0.62) * 1000, 1))) 0 0);
+    box-shadow: var(--_shadow);
+    color: var(--_fg);
+    font-size: var(--_text);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);  /* a taller line box than the text, so a truncating child keeps its descenders */
+    white-space: nowrap;
+    outline: none;
+    user-select: none;
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: var(--sa-motion-fast);
+    transition-timing-function: var(--sa-motion-ease);
+
+    & svg { flex-shrink: 0; pointer-events: none; }
+    & svg:not([class*="size-"]) { width: var(--_icon); height: var(--_icon); }
+    &:has(> [data-icon="inline-start"]) { padding-inline-start: calc(var(--_px) - 0.125rem); }
+    &:has(> [data-icon="inline-end"]) { padding-inline-end: calc(var(--_px) - 0.125rem); }
+
+    &:hover:not(:disabled, [aria-disabled="true"]),
+    &[aria-expanded="true"] {
+      background-color: var(--_bg-hover);
+      border-color: var(--_border-hover);
+      box-shadow: var(--_shadow-hover);
+      color: var(--_fg-hover);
+    }
+    &:active:not(:disabled, [aria-disabled="true"], [aria-haspopup]) {
+      background-color: var(--_bg-active);
+      box-shadow: var(--_shadow-active);
+      transform: translateY(var(--sa-press-offset));
+    }
+    &:focus-visible {
+      border-color: color-mix(in oklab, var(--sa-focus-border) 100%, var(--_border));
+      box-shadow: var(--_shadow), var(--sa-focus-shadow);
+    }
+    &:is([aria-invalid="true"], .input-validation-error) {
+      border-color: var(--sa-color-danger);
+      box-shadow: var(--_shadow), var(--sa-invalid-shadow);
+      &:focus-visible { box-shadow: var(--_shadow), var(--sa-invalid-focus-shadow); }
+    }
+    &:disabled, &[aria-disabled="true"] {
+      box-shadow: none;
+      opacity: var(--sa-disabled-opacity);
+      pointer-events: none;
+    }
+  }
+
+  .sa-button-variant-default {
+    --_bg: var(--sa-color-accent-fill);
+    --_bg-hover: var(--sa-color-accent-hover);
+    --_bg-active: var(--sa-color-accent-hover);
+    --_border: color-mix(in oklab, oklch(from var(--sa-color-accent-fill) calc(l - 0.1) c h) calc(max(var(--sa-outlines), var(--sa-sheen)) * 100%), transparent);
+    --_fg: var(--sa-color-on-accent);
+    --_s: calc(var(--sa-sheen) * var(--_sheen-k));
+  }
+  .sa-button-variant-secondary {
+    --_lit: calc(clamp(0, var(--sa-sheen), 1) * var(--_secondary-lit) * 100%);
+    --_flat-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface-sunken), var(--sa-color-ink) 6%) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-hover));
+    --_bg: color-mix(in oklab, var(--sa-color-surface) var(--_lit), color-mix(in oklab, var(--sa-color-surface-sunken) calc(var(--sa-filled-secondary) * 100%), var(--sa-color-surface)));
+    --_bg-hover: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 4%) var(--_lit), var(--_flat-hover));
+    --_bg-active: color-mix(in oklab, color-mix(in oklab, var(--sa-color-surface), var(--sa-color-ink) 6%) var(--_lit), var(--_flat-hover));
+    --_border: color-mix(in oklab, var(--sa-color-line-control) var(--_lit), color-mix(in oklab, var(--sa-color-line) calc(max(var(--sa-outlines), 1 - var(--sa-filled-secondary), 0.5 * var(--sa-sheen)) * 100%), transparent));
+    --_fg: var(--sa-color-ink);
+    --_s: calc(var(--_secondary-sheen) * var(--sa-sheen) * var(--_sheen-k));   /* dark: lighter, as a full edge on the grey reads as an outline button */
+  }
+  .sa-button-variant-outline {
+    --_bg: var(--_button-outline-bg);
+    --_bg-hover: var(--sa-color-hover);
+    --_bg-active: var(--sa-color-hover);
+    --_border: var(--_button-outline-border);
+    --_border-hover: var(--_button-outline-border);
+    --_fg: var(--sa-color-ink);
+    --_shadow: var(--sa-shadow-control), inset 0 -1px 0 var(--_relief-edge), 0 1px 1px rgb(0 0 0 / calc((0.07 + 0.03 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_shadow-hover: var(--sa-shadow-control), inset 0 -1px 0 var(--_relief-edge), 0 calc(1px + 1px * var(--_relief-press)) calc(1px + 2px * var(--_relief-press)) rgb(0 0 0 / calc((0.07 + 0.05 * var(--_relief-press)) * var(--_relief-lift) * var(--_relief-k-drop)));
+    --_shadow-active: var(--sa-shadow-control), inset 0 1px 2px rgb(0 0 0 / calc(0.3 * var(--_relief-press) * var(--_relief-k)));
+  }
+  .sa-button-variant-ghost {
+    --_fg: var(--sa-color-ink);
+    --_fg-hover: var(--sa-color-ink);
+    --_bg-hover: var(--sa-color-hover);
+    --_bg-active: var(--sa-color-hover);
+  }
+  :is(.sa-button-variant-ghost, .sa-button-variant-link) {
+    --_shadow: 0 0 #0000;
+    --_shadow-hover: 0 0 #0000;
+    --_shadow-active: 0 0 #0000;
+  }
+  .sa-button-variant-destructive {
+    --_bg: color-mix(in oklab, var(--sa-color-danger-fill) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-soft));
+    --_bg-hover: color-mix(in oklab, var(--_danger-hover) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-soft-hover));
+    --_bg-active: color-mix(in oklab, var(--_danger-hover) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-soft-hover));
+    --_border: color-mix(in oklab, color-mix(in oklab, oklch(from var(--sa-color-danger-fill) calc(l - 0.1) c h) calc(var(--sa-solid-destructive) * 100%), color-mix(in oklab, var(--sa-color-danger) 45%, transparent)) calc(max(var(--sa-outlines), var(--sa-sheen) * var(--sa-solid-destructive)) * 100%), transparent);
+    --_fg: color-mix(in oklab, var(--sa-color-on-danger) calc(var(--sa-solid-destructive) * 100%), var(--sa-color-danger-text));
+    --_s: calc(var(--sa-sheen) * var(--_sheen-k) * var(--sa-solid-destructive));   /* the soft tint gets none */
+    --sa-focus-border: var(--sa-color-danger);
+    --sa-focus-shadow: var(--sa-invalid-focus-shadow);
+  }
+  .sa-button-variant-link {
+    --_fg: var(--sa-color-accent-text);
+    text-decoration: var(--sa-link-decoration);
+    text-underline-offset: 4px;
+    &:hover { text-decoration: underline; }
+  }
+
+  .sa-button-size-xs {
+    --_h: var(--sa-control-h-xs);
+    --_px: calc(2 * var(--sa-unit));
+    --_radius: var(--sa-radius-control-sm);
+    --_text: min(var(--sa-text-control), var(--sa-text-xs));
+    --_icon: 0.75rem;
+    gap: 0.25rem;
+  }
+  .sa-button-size-sm {
+    --_h: var(--sa-control-h-sm);
+    --_px: var(--sa-control-px);
+    --_radius: var(--sa-radius-control-sm);
+    --_text: min(var(--sa-text-control), 0.8rem);
+    --_icon: 0.875rem;
+    gap: 0.25rem;
+  }
+  .sa-button-size-lg {
+    --_h: var(--sa-control-h-lg);
+    --_px: var(--sa-control-px);
+    --_text: var(--sa-text-control);
+  }
+  .sa-button-size-icon-xs { --_h: var(--sa-control-h-xs); --_radius: var(--sa-radius-control-sm); --_icon: 0.75rem; }
+  .sa-button-size-icon-sm { --_h: var(--sa-control-h-sm); --_radius: var(--sa-radius-control-sm); }
+  .sa-button-size-icon-lg { --_h: var(--sa-control-h-lg); }
+  :is(.sa-button-size-icon, .sa-button-size-icon-xs, .sa-button-size-icon-sm, .sa-button-size-icon-lg) {
+    width: var(--_h);
+    padding: 0;
+  }
+  /* Small buttons in a button group keep the group's corners. */
+  [data-slot="button-group"] :is(.sa-button-size-xs, .sa-button-size-sm, .sa-button-size-icon-xs, .sa-button-size-icon-sm) {
+    --_radius: var(--sa-radius-control);
+  }
+
+  /* A keyboard key in a button takes the button's text colour for its text and border, so it follows
+     every variant, hover and dark mode; it is sized to the button. Its tint is white under dark
+     text (lightness below 0.62) and black under light text, so the key's background moves away
+     from its text and keeps the label's contrast. A link button has no fill to tint against. */
+  .sa-button .sa-kbd {
+    --_bg: oklch(from currentColor clamp(0, (0.62 - l) * 1000, 1) 0 h / 0.14);
+    --_border: color-mix(in oklab, currentColor 28%, transparent);
+    --_fg: currentColor;
+  }
+  .sa-button-variant-link .sa-kbd {
+    --_bg: transparent;
+  }
+  .sa-button-size-xs .sa-kbd {
+    height: calc(4 * var(--sa-unit));
+    min-width: calc(4 * var(--sa-unit));
+    padding-inline: calc(0.75 * var(--sa-unit));
+    font-size: 0.625rem;
+  }
+  .sa-button-size-sm .sa-kbd {
+    height: calc(4.5 * var(--sa-unit));
+    min-width: calc(4.5 * var(--sa-unit));
+    font-size: 0.6875rem;
+  }
+  .sa-button-size-lg .sa-kbd {
+    height: calc(5.5 * var(--sa-unit));
+    min-width: calc(5.5 * var(--sa-unit));
+  }
+}

@@ -1,0 +1,78 @@
+/* Empty: an empty state, centred: media (an icon on a tile), title, description and actions. Draws
+   no edge itself; an author's border utility gets a dashed line.
+   Replaces: .sa-empty, .sa-empty-header, .sa-empty-media, .sa-empty-media-default,
+   .sa-empty-media-icon, .sa-empty-title, .sa-empty-description, .sa-empty-content */
+
+@layer sa.components {
+  .sa-empty {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(4 * var(--sa-unit));
+    width: 100%;
+    min-width: 0;
+    padding: calc(6 * var(--sa-unit));
+    border-style: dashed;
+    border-color: var(--sa-color-line);
+    border-radius: var(--sa-radius-container);
+    text-align: center;
+    text-wrap: balance;
+  }
+  .sa-empty-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    max-width: 24rem;
+  }
+  .sa-empty-media {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: calc(2 * var(--sa-unit));
+    & svg { flex-shrink: 0; pointer-events: none; }
+  }
+  .sa-empty-media-default { background: transparent; }
+  .sa-empty-media-icon {
+    width: calc(8 * var(--sa-unit));
+    height: calc(8 * var(--sa-unit));
+    border-radius: var(--sa-radius-control);
+    background: var(--sa-color-surface-sunken);
+    color: var(--sa-color-ink);
+    & svg:not([class*="size-"]) {
+      width: var(--sa-control-icon);
+      height: var(--sa-control-icon);
+    }
+  }
+  .sa-empty-title {
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    font-weight: var(--sa-weight-control);
+    letter-spacing: -0.025em;
+  }
+  .sa-empty-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    line-height: 1.625;
+    & > a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      &:hover { color: var(--sa-color-accent-text); }
+    }
+  }
+  .sa-empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(2.5 * var(--sa-unit));
+    width: 100%;
+    max-width: 24rem;
+    min-width: 0;
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    text-wrap: balance;
+  }
+}

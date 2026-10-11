@@ -43,9 +43,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ClientInput Include="../../util/theme-coverage/*.mjs" />
-    <ClientInput Include="../../util/theme-coverage/*.json" />
     <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/css/theme-variables.json" />
     <ClientInput Include="Client/js/**/*.ts" />
     <ClientInput Include="Client/js/**/*.js" />
     <ClientInput Include="Client/scripts/*.mjs" />
@@ -61,22 +60,9 @@
   <Target Name="ClientItems">
     <ItemGroup>
       <ClientOutput Include="wwwroot/stellar-admin.js" />
-
-      <ClientOutput Include="wwwroot/stellar-admin.aurora.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.parallax.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.concourse.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.ice.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.ledger.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.luma.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.lyra.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.maia.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.meridian.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.mira.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.nova.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.observatory.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.rhea.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.sera.css" />
-      <ClientOutput Include="wwwroot/stellar-admin.shadcn.vega.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.tailwind.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.theme-variables.json" />
     </ItemGroup>
   </Target>
 
@@ -95,7 +81,7 @@
     />
     <Exec Command="npm run build" WorkingDirectory="Client" />
 
-    <!-- Tailwind and rolldown skip the write when output is unchanged, leaving it older than the
+    <!-- The CSS build and rolldown skip the write when output is unchanged, leaving it older than the
          inputs — without this the target never goes up-to-date and re-runs on every build. -->
     <Touch Files="@(ClientOutput)" />
 

@@ -35,9 +35,13 @@ public static class Program
                         await generator.DownloadDynamicStaticAssetsAsync(client);
                         AnsiConsole.MarkupLine("[green]✓[/] Downloaded dynamic static assets.");
 
-                        ctx.Status("Downloading theme stylesheets...");
-                        await generator.DownloadThemeStylesheetsAsync(client);
-                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded theme stylesheets.");
+                        ctx.Status("Downloading preset stylesheets...");
+                        await generator.DownloadPresetStylesheetsAsync(client);
+                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded preset stylesheets.");
+
+                        ctx.Status("Downloading theme variable manifest...");
+                        await generator.DownloadThemeVariableManifestAsync(client);
+                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded theme variable manifest.");
                     }
                 );
 

@@ -1,11 +1,15 @@
+using DocsSamples;
+using Microsoft.Extensions.FileProviders;
 using StellarAdmin;
 using StellarAdmin.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
+var repoRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", ".."));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddSingleton(ThemeFixtures.Load(repoRoot));
 
 var app = builder.Build();
 
@@ -18,6 +22,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// The theme fixtures for the theme picker, served from the repository (util/theme-check/presets).
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(ThemeFixtures.Folder(repoRoot)),
+        RequestPath = "/presets",
+    }
+);
 
 app.UseRouting();
 

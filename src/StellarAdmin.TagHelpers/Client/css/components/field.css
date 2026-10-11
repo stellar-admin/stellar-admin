@@ -1,0 +1,233 @@
+/* Field: a control with its label, description and error, stacked or side by side; field groups and
+   field sets that space fields; and choice cards, a field label drawn around a horizontal field (the
+   card variant of CheckboxGroup, RadioGroup and ChoiceGroup, or written by hand). CheckboxGroup and
+   RadioGroup render field groups (data-slot checkbox-group or radio-group) with field parts, so they
+   are styled here too. Field labels are also labels (label.css).
+   Vertical and responsive fields force their children's widths with utility classes the tag helper
+   emits ([&>*]:w-full, components.css), so a child component's own width cannot win; the responsive
+   field's switch to a row uses the field group's container query, so the group stays a container
+   named field-group.
+   Replaces: .sa-field, .sa-field-content, .sa-field-description, .sa-field-error, .sa-field-group,
+   .sa-field-label, .sa-field-legend, .sa-field-separator, .sa-field-separator-content,
+   .sa-field-separator-line, .sa-field-set, .sa-field-title */
+
+@layer sa.tokens {
+  .sa-field-label {
+    /* Choice cards: the selected card's accent wash. */
+    --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 6%, var(--sa-color-field));
+  }
+  .dark .sa-field-label {
+    --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
+  }
+}
+
+@layer sa.components {
+  /* --- Field set, legend and group --------------------------------------------------------- */
+  .sa-field-set {
+    display: flex;
+    flex-direction: column;
+    gap: calc(4 * var(--sa-unit));
+    &:has(> [data-slot="checkbox-group"], > [data-slot="radio-group"]) {
+      gap: calc(3 * var(--sa-unit));
+    }
+  }
+  .sa-field-legend {
+    margin-bottom: calc(1.5 * var(--sa-unit));
+    font-family: inherit;
+    font-size: var(--sa-text-base);
+    font-weight: var(--sa-weight-control);
+    &[data-variant="label"] {
+      font-size: var(--sa-text-sm);
+    }
+  }
+  .sa-field-group {
+    container: field-group / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: calc(5 * var(--sa-unit));
+    width: 100%;
+    &:is([data-slot="checkbox-group"], [data-slot="radio-group"]) {
+      gap: calc(3 * var(--sa-unit));
+    }
+    & > .sa-field-group[data-slot="field-group"] {
+      gap: calc(4 * var(--sa-unit));
+    }
+  }
+
+  /* --- Field -------------------------------------------------------------------------------- */
+  .sa-field {
+    display: flex;
+    gap: calc(2 * var(--sa-unit));
+    width: 100%;
+    &[data-invalid="true"] {
+      color: var(--sa-color-danger-text);
+    }
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+    }
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      align-items: center;
+      & > [data-slot="field-label"] {
+        flex: auto;
+      }
+      &:has(> [data-slot="field-content"]) {
+        align-items: flex-start;
+      }
+    }
+    &[data-orientation="responsive"] {
+      flex-direction: column;
+    }
+  }
+  @container field-group (min-width: 28rem) {
+    .sa-field[data-orientation="responsive"] {
+      flex-direction: row;
+      align-items: center;
+      & > [data-slot="field-label"] {
+        flex: auto;
+      }
+      &:has(> [data-slot="field-content"]) {
+        align-items: flex-start;
+      }
+    }
+  }
+  .sa-field-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: calc(0.5 * var(--sa-unit));
+    line-height: 1.375;
+  }
+
+  /* --- Label, title, description, error ------------------------------------------------------ */
+  .sa-field-label {
+    display: flex;
+    gap: calc(2 * var(--sa-unit));
+    width: fit-content;
+    font-size: var(--sa-text-sm);
+    line-height: 1.375;
+  }
+  .sa-field-title {
+    display: flex;
+    align-items: center;
+    gap: calc(2 * var(--sa-unit));
+    width: fit-content;
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: 1.375;
+  }
+  /* A CheckboxGroup's option labels are regular weight (choice cards keep their title's). Its role
+     tells it from a field group an author marks as a checkbox group, whose labels keep theirs. */
+  [data-slot="checkbox-group"][role="group"] > .sa-field [data-slot="field-label"] {
+    font-weight: 400;
+  }
+  .sa-field[data-disabled="true"] :is(.sa-field-label, .sa-field-title) {
+    opacity: var(--sa-disabled-opacity);
+  }
+  .sa-field-description {
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: start;
+    [data-variant="legend"] + & {
+      margin-top: calc(-1.5 * var(--sa-unit));
+    }
+    &:nth-last-child(2) {
+      margin-top: calc(-1 * var(--sa-unit));
+    }
+    &:last-child {
+      margin-top: 0;
+    }
+    & > a {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      &:hover {
+        color: var(--sa-color-accent-text);
+      }
+    }
+  }
+  .sa-field:has([data-orientation="horizontal"]) .sa-field-description {
+    text-wrap: balance;
+  }
+  .sa-field-error {
+    display: none;
+    color: var(--sa-color-danger-text);
+    font-size: var(--sa-text-sm);
+    font-weight: 400;
+    line-height: var(--sa-leading-ui);
+    &.field-validation-error {
+      display: block;
+    }
+  }
+
+  /* --- Choice card: a field label around a horizontal field --------------------------------- */
+  .sa-field-label:has(> [data-slot="field"]) {
+    flex-direction: column;
+    width: 100%;
+    border: var(--sa-border-width) solid var(--sa-color-line-control);
+    border-radius: var(--sa-radius-box);
+    background: var(--sa-color-field);
+    background-clip: padding-box;
+    box-shadow: var(--sa-shadow-control);
+    transition:
+      background-color var(--sa-motion-fast) var(--sa-motion-ease),
+      border-color var(--sa-motion-fast) var(--sa-motion-ease),
+      box-shadow var(--sa-motion-fast) var(--sa-motion-ease);
+    & > [data-slot="field"] {
+      padding: calc(2.5 * var(--sa-unit));
+    }
+    &:hover:not(:has(:disabled, [data-disabled])) {
+      border-color: var(--sa-color-line-control-hover);
+      background: var(--sa-color-hover);
+    }
+    &:has(:checked) {
+      border-color: color-mix(in oklab, var(--sa-color-accent) 45%, var(--sa-color-line-control));
+      background: var(--_field-card-selected-bg);
+    }
+    &:has(:focus-visible) {
+      border-color: var(--sa-focus-border);
+      box-shadow: var(--sa-shadow-control), var(--sa-focus-shadow-field);
+    }
+  }
+
+  /* --- Separator: a rule, with optional text in a gap in the middle --------------------------- */
+  .sa-field-separator {
+    position: relative;
+    height: calc(5 * var(--sa-unit));
+    margin-block: calc(-2 * var(--sa-unit));
+    font-size: var(--sa-text-sm);
+    line-height: var(--sa-leading-ui);
+    &[data-content="true"] {
+      display: flex;
+      align-items: center;
+      gap: calc(2 * var(--sa-unit));
+      &::before,
+      &::after {
+        content: "";
+        flex: 1;
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
+      }
+    }
+  }
+  /* The rule is a separator (separator.css); this out-ranks its rules by selector. With text, the
+     field separator draws the rule itself on either side, so no background has to hide it. */
+  .sa-field-separator > .sa-separator.sa-field-separator-line {
+    position: absolute;
+    inset: 50% 0 auto;
+    [data-content="true"] > & {
+      display: none;
+    }
+  }
+  .sa-field-separator-content {
+    position: relative;
+    display: block;
+    width: fit-content;
+    color: var(--sa-color-ink-muted);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-field-label {
+      transition-duration: 0s;
+    }
+  }
+}

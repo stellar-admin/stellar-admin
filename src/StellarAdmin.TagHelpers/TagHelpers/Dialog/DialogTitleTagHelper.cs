@@ -16,12 +16,7 @@ public class DialogTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "dialog-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses(
-                "sa-dialog-title",
-                "sa-font-heading",
-                "font-heading",
-                output.GetUserSuppliedClass()
-            )
+            JoinCssClasses("sa-dialog-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

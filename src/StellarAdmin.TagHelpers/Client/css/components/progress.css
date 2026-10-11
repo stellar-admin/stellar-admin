@@ -1,0 +1,43 @@
+/* Progress: a thin track with a filled indicator, and an optional label and value above it.
+   Replaces: .sa-progress, .sa-progress-root, .sa-progress-track, .sa-progress-indicator,
+   .sa-progress-label, .sa-progress-value */
+
+@layer sa.components {
+  .sa-progress-root {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(3 * var(--sa-unit));
+  }
+  .sa-progress-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--sa-unit);
+    overflow-x: hidden;
+    border-radius: var(--sa-radius-tag);
+    background: var(--sa-color-tint);
+  }
+  .sa-progress-indicator {
+    height: 100%;
+    background: var(--sa-color-accent-fill);
+    transition: width var(--sa-motion-fast) var(--sa-motion-ease);
+  }
+  .sa-progress-label {
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: var(--sa-leading-ui);
+  }
+  .sa-progress-value {
+    margin-inline-start: auto;
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--sa-leading-ui);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sa-progress-indicator {
+      transition-duration: 0s;
+    }
+  }
+}
