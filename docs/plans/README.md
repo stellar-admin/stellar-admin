@@ -10,9 +10,6 @@ The audit checks source, configuration, samples, generated website artifacts and
 | --- | --- | --- |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [table-row-details](oss/table-row-details.md) | implemented, awaiting review | Expandable table rows at the `sa-table-*` level with a `sa-data-grid` convenience layer, plus DocsSamples demos, website docs and skills references. Visuals approved in `sandbox/html/expandable-rows.html`. Dashboard integration is a later plan. |
-| [token-spec-concept](token-spec-concept.md) | concept | A three-tier token spec for nine components (button, input, card, table, chip, dropdown menu, tabs, dialog, sidebar), prototyped in `sandbox/html/token-spec/`; Nova, Lyra, Maia, Aurora, Concourse and Ledger expressed as 7–301 line token files and compared against the current bundles; a knob layer and theme builder for themes unlike any shipped one. Not in the library. |
-| [theme-token-migration](theme-token-migration.md) | implemented, not released | Replace the fifteen theme bundles with one token-driven `stellar-admin.css`, themes as short files of theme variables, Tailwind-free tag helper CSS (the Dashboard keeps Tailwind through an adapter), a website theme builder and a theme-writing consumer skill. |
-| [theme-builder](theme-builder.md) | implemented, not released | A website theme builder over the docs exports: preset seeds, simple and advanced controls from the knob manifest, a live preview over five showcase pages, knob-file export and import, a shareable URL. The library no longer ships presets; the former ones are theme fixtures in `util/theme-check/presets/`. Split out of the migration's phase 4. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
@@ -86,6 +83,9 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [toast](oss/archive/toast.md) | completed; `<sa-toaster>`, `window.stellarAdmin.toast` and the TempData-backed `IToastNotifier` with page-load, redirect and `SA-Toasts` header delivery, across all themes, with demos, website docs, skills reference and tests. Dashboard use is a separate task. |
 | [taghelper-test-migration](archive/taghelper-test-migration.md) | completed; solution-wide CI/release test discovery verified on 2026-09-18 |
 | [templated-view-slots](archive/templated-view-slots.md) | completed |
+| [theme-builder](archive/theme-builder.md) | completed; a website theme builder over the docs exports: preset seeds, simple and advanced controls from the theme variable manifest, a live preview, theme file export and import, a shareable URL. Not yet released. |
+| [theme-token-migration](archive/theme-token-migration.md) | completed; one token-driven `stellar-admin.css` with themes as short files of theme variables, Tailwind-free tag helper CSS, relative density levels and a `light` class. Merged 2026-10-11, not yet released. Open: a mobile-width sweep and ComponentPlayground dark mode. |
+| [token-spec-concept](archive/token-spec-concept.md) | completed; the three-tier token concept and its `sandbox/html/token-spec/` prototype, implemented by the theme token migration |
 | [upstream-references-cleanup](oss/archive/upstream-references-cleanup.md) | completed |
 | [workspace-retirement](archive/workspace-retirement.md) | completed |
 

@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: implemented, steps 1 to 5b done (2026-10-11); merged to master and pushed in both repositories the same day; not released. The open decisions are settled. Split out of phase 4 of the [theme token migration](theme-token-migration.md). The website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: completed, steps 1 to 5b done (2026-10-11); merged to master and pushed in both repositories the same day; archived 2026-10-12 with the [theme token migration](theme-token-migration.md). Not yet released. The open decisions are settled. Split out of phase 4 of the [theme token migration](theme-token-migration.md). The website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 

@@ -1,6 +1,6 @@
 # Token spec concept
 
-Status: concept, phase 7 of an experiment. Branch `token-spec-concept`. Nothing in the library has changed.
+Status: completed (2026-10-12). Implemented in the library by the [theme token migration](theme-token-migration.md); the `token-spec-concept` branch was merged to master on 2026-10-11 and deleted. The record below is the original concept, kept for rationale.
 
 ## Question
 
