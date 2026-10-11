@@ -11,7 +11,7 @@
     { "id": "focus", "label": "Focus" }
   ],
   "knobs": [
-    { "name": "--sa-accent", "group": "colour", "label": "Accent", "meaning": "Brand colour: primary actions, focus, selection, bold highlights.", "type": "color", "default": "oklch(0.5 0.16 258)" },
+    { "name": "--sa-accent", "group": "colour", "essential": true, "label": "Accent", "meaning": "Brand colour: primary actions, focus, selection, bold highlights.", "type": "color", "default": "oklch(0.5 0.16 258)" },
     { "name": "--sa-accent-dark", "group": "colour", "label": "Accent (dark)", "meaning": "The accent in dark mode.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#7aa2ff" },
     { "name": "--sa-on-accent", "group": "colour", "label": "Text on accent", "meaning": "Text on accent fills, instead of the automatic black or white.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#ffffff" },
     { "name": "--sa-danger", "group": "colour", "label": "Danger", "meaning": "Destructive actions and errors.", "type": "color", "default": "oklch(0.58 0.22 27)" },
@@ -19,8 +19,8 @@
     { "name": "--sa-success", "group": "colour", "label": "Success", "meaning": "Status colour for success.", "type": "color", "default": "oklch(0.6 0.15 150)" },
     { "name": "--sa-warning", "group": "colour", "label": "Warning", "meaning": "Status colour for warnings.", "type": "color", "default": "oklch(0.72 0.16 70)" },
     { "name": "--sa-info", "group": "colour", "label": "Info", "meaning": "Status colour for information.", "type": "color", "default": "oklch(0.6 0.14 240)" },
-    { "name": "--sa-neutral-hue", "group": "colour", "label": "Neutral hue", "meaning": "Hue the greys lean toward.", "type": "number", "min": 0, "max": 360, "step": 1, "default": "255" },
-    { "name": "--sa-neutral-chroma", "group": "colour", "label": "Neutral tint", "meaning": "How much the greys lean (0 is pure grey).", "type": "number", "min": 0, "max": 0.04, "step": 0.001, "default": "0.006" },
+    { "name": "--sa-neutral-hue", "group": "colour", "essential": true, "label": "Neutral hue", "meaning": "Hue the greys lean toward.", "type": "number", "min": 0, "max": 360, "step": 1, "default": "255" },
+    { "name": "--sa-neutral-chroma", "group": "colour", "essential": true, "label": "Neutral tint", "meaning": "How much the greys lean (0 is pure grey).", "type": "number", "min": 0, "max": 0.04, "step": 0.001, "default": "0.006" },
     { "name": "--sa-neutral-hue-dark", "group": "colour", "label": "Neutral hue (dark)", "meaning": "The neutral hue in dark mode.", "type": "number", "min": 0, "max": 360, "step": 1, "optional": true, "follows": "--sa-neutral-hue", "initial": "262" },
     { "name": "--sa-neutral-chroma-dark", "group": "colour", "label": "Neutral tint (dark)", "meaning": "The neutral tint in dark mode.", "type": "number", "min": 0, "max": 0.04, "step": 0.001, "optional": true, "follows": "--sa-neutral-chroma", "initial": "0.008" },
     { "name": "--sa-accent-tint", "group": "colour", "label": "Accent in washes", "meaning": "How much the accent tints hover, selection and highlight washes.", "type": "number", "min": 0, "max": 1, "step": 0.05, "default": "0.15" },
@@ -28,23 +28,23 @@
     { "name": "--sa-nav-tint", "group": "colour", "label": "Sidebar tint", "meaning": "The sidebar, from page colour to sunken.", "type": "number", "min": 0, "max": 1, "step": 0.05, "default": "0.5" },
     { "name": "--sa-line-strength", "group": "colour", "label": "Line strength", "meaning": "Dividers and control borders (below 0.75 acts as 0.75).", "type": "number", "min": 0.75, "max": 2, "step": 0.05, "default": "1" },
 
-    { "name": "--sa-radius", "group": "shape", "label": "Radius", "meaning": "Control corners.", "type": "length", "unit": "px", "min": 0, "max": 24, "step": 1, "named": [{ "label": "Pill", "value": "9999px" }], "default": "6px" },
+    { "name": "--sa-radius", "group": "shape", "essential": true, "label": "Radius", "meaning": "Control corners.", "type": "length", "unit": "px", "min": 0, "max": 24, "step": 1, "named": [{ "label": "Pill", "value": "9999px" }], "default": "6px" },
     { "name": "--sa-radius-outer", "group": "shape", "label": "Container radius", "meaning": "Card and dialog corners.", "type": "length", "unit": "px", "min": 0, "max": 32, "step": 1, "optional": true, "follows": "--sa-radius", "initial": "12px" },
-    { "name": "--sa-pills", "group": "shape", "label": "Pill tags", "meaning": "Tags (badges, chips, the switch) are pills instead of following the radius.", "type": "switch", "default": "0" },
+    { "name": "--sa-pills", "group": "shape", "essential": true, "label": "Pill tags", "meaning": "Tags (badges, chips, the switch) are pills instead of following the radius.", "type": "switch", "default": "0" },
     { "name": "--sa-outlines", "group": "shape", "label": "Outlines", "meaning": "Filled parts (buttons, badges, chips, the switch track) also draw an outline.", "type": "switch", "default": "1" },
     {
-      "name": "--sa-relief", "group": "shape", "label": "Relief", "meaning": "Raised adds a shadow under buttons; tactile also adds a bottom edge, a hover lift, a pressed state and recessed fields.", "type": "choice",
+      "name": "--sa-relief", "group": "shape", "essential": true, "label": "Relief", "meaning": "Raised adds a shadow under buttons; tactile also adds a bottom edge, a hover lift, a pressed state and recessed fields.", "type": "choice",
       "choices": [{ "label": "Flat", "value": "0" }, { "label": "Raised", "value": "1" }, { "label": "Tactile", "value": "2" }],
       "default": "0"
     },
     { "name": "--sa-sheen", "group": "shape", "label": "Sheen", "meaning": "Solid buttons get a lit surface: a gradient, a top highlight, a darker edge and a pressed shadow.", "type": "switch", "default": "1" },
     { "name": "--sa-stroke", "group": "shape", "label": "Stroke", "meaning": "Border width.", "type": "length", "unit": "px", "min": 0, "max": 3, "step": 0.5, "default": "1px" },
-    { "name": "--sa-elevation", "group": "shape", "label": "Elevation", "meaning": "Shadow strength: 0 flat, 1 soft, 2 or more floating.", "type": "number", "min": 0, "max": 3, "step": 0.1, "default": "0.7" },
+    { "name": "--sa-elevation", "group": "shape", "essential": true, "label": "Elevation", "meaning": "Shadow strength: 0 flat, 1 soft, 2 or more floating.", "type": "number", "min": 0, "max": 3, "step": 0.1, "default": "0.7" },
 
-    { "name": "--sa-density", "group": "type", "label": "Density", "meaning": "Spacing and control sizes, not type: 0.75 dense to 1.25 roomy.", "type": "number", "min": 0.7, "max": 1.4, "step": 0.01, "default": "1" },
+    { "name": "--sa-density", "group": "type", "essential": true, "label": "Density", "meaning": "Spacing and control sizes, not type: 0.75 dense to 1.25 roomy.", "type": "number", "min": 0.7, "max": 1.4, "step": 0.01, "default": "1" },
     { "name": "--sa-type-scale", "group": "type", "label": "Type scale", "meaning": "Text sizes.", "type": "number", "min": 0.8, "max": 1.2, "step": 0.01, "default": "1" },
     {
-      "name": "--sa-font-sans", "group": "type", "label": "Font", "meaning": "Body and control font.", "type": "font",
+      "name": "--sa-font-sans", "group": "type", "essential": true, "label": "Font", "meaning": "Body and control font.", "type": "font",
       "choices": [
         { "label": "Inter", "value": "\"Inter\", ui-sans-serif, system-ui, sans-serif", "google": "Inter:wght@400..700" },
         { "label": "Geist", "value": "\"Geist\", system-ui, sans-serif", "google": "Geist:wght@400..700" },
@@ -59,7 +59,7 @@
       "default": "\"Inter\", ui-sans-serif, system-ui, sans-serif"
     },
     {
-      "name": "--sa-font-heading", "group": "type", "label": "Heading font", "meaning": "Titles.", "type": "font",
+      "name": "--sa-font-heading", "group": "type", "essential": true, "label": "Heading font", "meaning": "Titles.", "type": "font",
       "choices": [
         { "label": "Same as body", "value": "var(--sa-font-sans)" },
         { "label": "Fraunces", "value": "\"Fraunces\", Georgia, serif", "google": "Fraunces:wght@400..700" },

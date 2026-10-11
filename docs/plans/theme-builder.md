@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: in progress, steps 1 to 3 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: in progress, steps 1 to 3a done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -65,6 +65,14 @@ This is the export half of migration phase 5, pulled forward because the builder
   - Preview: its own fixed-height iframe of the showcase export, not `DemoPreview` (which sizes the frame to its content and exposes no load hook). Every knob is written onto the frame's root, unset optional knobs as `initial` (so their `var()` fallback applies), so a preset the reader picked for the docs demos, which the page links from storage, cannot show through. Light/dark is the builder's own and survives the page's own mode script. On narrow screens the preview sits above the controls, pinned to the top half of the screen.
   - The hash and the export carry the knobs that differ from the default. The export's font `@import` covers the chosen web fonts only when a font knob changed (the default Inter is the app's to load, as without a theme), with a checkbox to leave it out. Import takes a pasted theme file or a builder link.
 
+### 3a. Simple and advanced controls (product manifest, website)
+
+The full list of 54 knobs is daunting for a first visit.
+
+- Manifest: `"essential": true` on the knobs a tool shows first: accent, neutral hue and tint, radius, pill tags, relief, elevation, density, font, heading font. In the manifest, not the website, so the consumer skill and the docs knob reference can start from the same set. The CSS build checks that only required knobs carry it, as `true`, and that at least one does.
+- Builder: a Simple / Advanced switch, Simple by default. Simple lists the essential knobs in one list without their explanations (still in the label tooltip); Advanced is the grouped list with everything. The switch is a view only: values, link and export always carry every knob. When the theme changes knobs Simple does not show (a seed, an import, a link), Simple says how many, with a link to Advanced. The choice is remembered in local storage, not in the URL.
+- Later, not now: compound controls in Simple (a "Style" choice setting relief, sheen and outlines together).
+
 ### 4. More preview pages (product samples, website)
 
 - A page picker over a few exports: the showcase, a form-heavy page, overlays (dialog, menus, popovers open), a Dashboard-like shell (sidebar, header, table). Add DocsSamples pages where no existing one fits; they export like any other.
@@ -82,6 +90,12 @@ This is the export half of migration phase 5, pulled forward because the builder
 - Font list: the prototype's ten families, or fewer.
 
 ## Verification record
+
+Step 3a (2026-10-11):
+
+- `build-css.mjs` passes with the ten flags; `essential` on an optional knob or with a non-`true` value fails, naming the knob (restored after).
+- Generator run; the website gets the new manifest. The run also rewrote 286 demo pages with per-run noise (antiforgery tokens, carousel ids, SVG attribute order), kept as generated per the website's rule against discarding generated changes.
+- Website `lint`, `types:check` and `build` pass. In Chromium against `pnpm dev` (port 3106, stopped after): a first visit shows Simple with 10 controls and no explanations; seeding Ledger shows "also changes 12 knobs that only the advanced controls show"; "Show all" switches to Advanced (54 controls, explanations) with the hash unchanged; Advanced survives a reload; back to Simple the hash is still unchanged. Found and fixed: a seed's values equal to the default (Ledger's radius and pill tags) showed as changed; seeds now drop them, checked again after.
 
 Step 3 (2026-10-11):
 

@@ -54,7 +54,8 @@ write("stellar-admin.knobs.json", JSON.stringify(checkKnobs(JSON.parse(read("kno
 // Fails the build when the manifest and the stylesheet disagree: every knob declared on the knob :root
 // block of tokens.css (above its fixed tokens) has an entry with the same default, every entry names a
 // knob, optional knobs are read through a var() fallback, and the presets set only knobs, with values a
-// choice offers.
+// choice offers. `essential` marks the few knobs a tool shows first (the builder's simple mode); only
+// required knobs can be essential.
 function checkKnobs(manifest) {
   const errors = [];
   const normalize = (value) => value.replace(/\s+/g, " ").trim();
@@ -80,6 +81,7 @@ function checkKnobs(manifest) {
     if (!groups.has(knob.group)) errors.push(`${knob.name}: unknown group ${knob.group}`);
     if (!["color", "number", "length", "choice", "font", "switch"].includes(knob.type)) errors.push(`${knob.name}: unknown type ${knob.type}`);
     if ((knob.type === "choice" || knob.type === "font") && !knob.choices?.length) errors.push(`${knob.name}: no choices`);
+    if ("essential" in knob && (knob.essential !== true || knob.optional)) errors.push(`${knob.name}: essential must be true, and only on a required knob`);
     if ((knob.type === "number" || knob.type === "length") && [knob.min, knob.max, knob.step].some((n) => typeof n !== "number"))
       errors.push(`${knob.name}: needs min, max and step`);
 
@@ -96,6 +98,7 @@ function checkKnobs(manifest) {
       if (knob.choices && !knob.choices.some((choice) => choice.value === knob.default)) errors.push(`${knob.name}: the default is not a choice`);
     }
   }
+  if (!manifest.knobs.some((knob) => knob.essential)) errors.push("no knob is essential");
   for (const name of knobs.keys()) if (!entries.has(name)) errors.push(`${name}: a knob in tokens.css without a manifest entry`);
 
   for (const file of cssFiles("presets")) {
