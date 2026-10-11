@@ -1,6 +1,6 @@
 # Theme token migration
 
-Status: implemented, not released (2026-10-11): all five phases done and the final migration check passed; not merged to master (the website's `theme-builder` branch neither). Branch `token-spec-concept`. Builds on the [token spec concept](token-spec-concept.md), whose prototype is in `sandbox/html/token-spec/`.
+Status: implemented, not released (2026-10-11): all five phases done and the final migration check passed; merged to master and pushed the same day, as was the website's `theme-builder` work. Builds on the [token spec concept](token-spec-concept.md), whose prototype is in `sandbox/html/token-spec/`.
 
 ## Goal
 
