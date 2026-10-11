@@ -1,10 +1,11 @@
 # StellarAdmin consumer skills
 
-StellarAdmin has two products, with a separate consumer skill planned for each:
+StellarAdmin has two products, with a separate consumer skill planned for each, plus a theme skill shared by both:
 
 | Product | Skill directory | Status |
 | --- | --- | --- |
 | Tag Helpers — UI library for ASP.NET Core MVC and Razor Pages | [stellar-admin-tag-helpers](stellar-admin-tag-helpers/SKILL.md) | Available: setup, components, forms, layout, and theming. |
+| Themes — theme files of knob values, for either product | [stellar-admin-theme](stellar-admin-theme/SKILL.md) | Available: writing a theme from a description or brand colours, the knob reference, worked examples, and theme builder links. |
 | Dashboard — integrated admin panel | `stellar-admin-dashboard/` | Planned: existing [component references](stellar-admin-dashboard/references/components-index.md) and [setup notes](stellar-admin-dashboard/references/setup.md) are preserved here, but there is no installable skill yet. |
 
 ## Install the Tag Helpers skill
@@ -21,6 +22,14 @@ To target a specific agent, append `--agent claude-code`, `--agent codex`, or an
 
 This installs agent guidance and its bundled references. Install and configure the NuGet package separately using the [Tag Helpers setup guide](stellar-admin-tag-helpers/references/setup.md).
 
+## Install the theme skill
+
+The theme skill creates and changes themes: ask for a look ("warm, editorial, dense, green accent") or invoke it by name. Install it the same way, alongside the Tag Helpers skill or on its own:
+
+```bash
+npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme
+```
+
 For an unpublished local checkout, use its absolute path instead of the GitHub source:
 
 ```bash
@@ -29,7 +38,7 @@ npx skills add /path/to/stellar-admin/skills/stellar-admin-tag-helpers --skill s
 
 ## Version compatibility
 
-The Tag Helpers skill is maintained alongside StellarAdmin. Its references follow the repository's default branch and may include changes newer than your installed NuGet package. The skill instructs the agent to check your installed version before applying API examples; this [version guidance](stellar-admin-tag-helpers/SKILL.md#version-compatibility) travels with the installed references.
+The Tag Helpers and theme skills are maintained alongside StellarAdmin. Its references follow the repository's default branch and may include changes newer than your installed NuGet package. The skill instructs the agent to check your installed version before applying API examples; this [version guidance](stellar-admin-tag-helpers/SKILL.md#version-compatibility) travels with the installed references.
 
 The installer does not select guidance based on your installed NuGet version or update your packages. Dashboard remains work in progress and has no installable skill yet.
 

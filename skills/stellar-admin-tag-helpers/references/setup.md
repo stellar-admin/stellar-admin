@@ -32,7 +32,7 @@ builder.Services.AddStellarAdmin().AddTagHelpers();
 
 `AddStellarAdmin()` (namespace `StellarAdmin`) comes from `StellarAdmin.Core`, which is installed transitively with `StellarAdmin.TagHelpers`. It creates the shared builder and registers `IconOptions`, with the **Lucide** icon pack as the default. `.AddTagHelpers()` (namespace `StellarAdmin.TagHelpers`) comes from `StellarAdmin.TagHelpers` and registers the tag helper options. Keep both calls in the registration chain.
 
-No separate Core package installation is needed. Theme selection is **not** part of registration: the theme is whichever stylesheet the layout links (step 4).
+No separate Core package installation is needed. Theme selection is **not** part of registration: the theme is whichever stylesheets the layout links (step 4).
 
 ## 3. Register the tag helpers (`_ViewImports.cshtml`)
 
@@ -48,63 +48,57 @@ Keep the framework's own line (`Microsoft.AspNetCore.Mvc.TagHelpers`) — the de
 
 ## 4. Reference the CSS and JS assets (your layout, e.g. `_Layout.cshtml`)
 
-The assets are served from the package as static web assets under `_content/StellarAdmin.TagHelpers/`. The CSS ships as one self-contained bundle per theme (Observatory is the documentation default; upstream-derived themes use the `shadcn.` prefix); link exactly one — switching themes is switching the `<link>`:
+The assets are served from the package as static web assets under `_content/StellarAdmin.TagHelpers/`. `stellar-admin.css` carries every component and the default theme:
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.observatory.css" asp-append-version="true"/>
+<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
 <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 ```
 
-- The **CSS** carries all component styling and the theme. Missing it → unstyled components.
+- The **CSS** carries all component styling and the default theme. Missing it → unstyled components. Another theme is an optional file of knob values linked after it; see [theming](theming.md).
 - The **JS** bundle carries the `<sel-*>` web components, the `interestfor` polyfill, and the `window.stellarAdmin` helpers. Missing it → static components still render, but the dropdown menu's keyboard handling, the slider, the OTP input, the sidebar toggle and the table selection stop working. See `javascript.md`.
 
 Both are **static web assets**, so the app must serve them — the default templates already call `app.MapStaticAssets()` (or `app.UseStaticFiles()` on older templates). If those two URLs 404, that's the missing piece rather than anything StellarAdmin-specific.
 
-The package targets **net10.0**, so the app must be on .NET 10 or later.
+The package targets **net10.0**, so the app must be on .NET 10 or later. The stylesheet needs Chrome and Edge 119, Safari 18 or Firefox 128 or later (it uses relative colour syntax, `color-mix()`, cascade layers, native nesting and `:has()` without fallbacks); in older browsers colours fail silently.
 
 ## Optional: convert the layout and remove Bootstrap
 
 Perform this only when the user selected layout conversion or explicitly requested it. Replace the default layout's Bootstrap-dependent markup with StellarAdmin components and appropriate application CSS. Check remaining pages and scripts for Bootstrap dependencies before removing its stylesheet, JavaScript references, or installed assets. If other pages still depend on Bootstrap, explain what remains and ask before expanding the conversion beyond the agreed layout scope. Do not remove unrelated stylesheets, scripts, or validation dependencies as cleanup.
 
-For basic installation, retain Bootstrap and explain that CSS resets and overlapping styles can affect rendering when the frameworks coexist. Check both a StellarAdmin component and the existing layout; report any observed conflicts and offer a separate layout conversion rather than silently removing the existing framework. Keeping the markup and assets does not guarantee an unchanged appearance after adding a theme stylesheet.
+For basic installation, retain Bootstrap and explain that CSS resets and overlapping styles can affect rendering when the frameworks coexist. Check both a StellarAdmin component and the existing layout; report any observed conflicts and offer a separate layout conversion rather than silently removing the existing framework. Keeping the markup and assets does not guarantee an unchanged appearance after adding the StellarAdmin stylesheet.
 
-## Optional: customize the theme
+## Optional: use another theme
 
-Every color and radius in the bundle is a CSS custom property. Redeclare the properties in the app's own CSS, *after* the theme stylesheet — no build tooling or imports required:
+The default theme needs nothing more. For another look, write a theme file of knob values (or download one from the [theme builder](https://www.stellaradmin.com/theme-builder)) and link it after `stellar-admin.css`:
+
+```razor
+<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
+```
 
 ```css
-:root {
-  --primary: oklch(0.55 0.2 260);
-  --radius: 0.5rem;
+@layer sa.theme {
+  :root {
+    --sa-accent: oklch(0.55 0.2 260);
+    --sa-radius: 4px;
+  }
 }
 ```
 
-Values live on `:root`, with dark-mode overrides under `.dark`; the compiled rules all reference `var(--…)`, so redeclared values take effect everywhere. The full list of variables is in the [theming](theming.md) guide.
+The [theming](theming.md) guide covers theme files, fonts, dark mode and using the tokens in the app's own CSS. Writing a theme is the **stellar-admin-theme** skill's job.
 
-## Optional: use StellarAdmin's design tokens in your own markup
+## Optional: Tailwind utilities in your own markup
 
-Steps 1–4 give you the prebuilt stylesheet, which styles the `<sa-*>` components. It does **not** let your own markup use the design system — write `class="bg-primary"` in your own Razor and nothing happens, because that utility only exists inside the prebuilt bundle.
-
-If the app runs its own Tailwind v4 build, copy [`theme-tokens.css`](https://github.com/stellar-admin/stellar-admin/blob/master/src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css) (`src/StellarAdmin.TagHelpers/Client/css/theme-tokens.css`) into the project and import it from the Tailwind entry stylesheet:
+Steps 1–4 style the `<sa-*>` components. `stellar-admin.css` contains no utility classes, so `class="bg-primary"` or `class="mt-4"` in your own Razor does nothing unless the app runs its own Tailwind v4 build. If it does, declare StellarAdmin's layer order first and import the package's Tailwind adapter after Tailwind:
 
 ```css
-@layer theme, base, components, utilities;
-
-@import "tailwindcss/theme.css" layer(theme) theme(inline reference);
-@import "./theme-tokens.css" theme(reference);
-@import "tailwindcss/utilities.css" layer(utilities);
-
-@theme reference {
-  --font-sans: sans-serif;
-  --font-mono: monospace;
-}
-
-@source "../../Pages/";
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
+@import "tailwindcss";
+@import "<path>/stellar-admin.tailwind.css";
 ```
 
-The theme bundle already ships preflight, the theme variables and every component rule, so this entry emits **utilities only**. A plain `@import "tailwindcss"` would re-emit preflight and Tailwind's default theme variables (such as `--font-sans`), which override the theme's values whenever the app's stylesheet is linked after the bundle. The reference imports avoid that, so link order doesn't matter. The `@theme reference` block makes `font-sans` and `font-mono` resolve to the theme's fonts rather than Tailwind's defaults.
-
-Then `bg-primary`, `text-muted-foreground`, `rounded-lg`, `dark:*` and the rest work in the app's own markup. The file carries only the token *vocabulary* — the generated utilities compile to `var(--…)` references whose values come from the linked theme bundle at runtime, so the `<link>` from step 4 stays in place, and any `:root` customizations apply to both stylesheets.
+The adapter maps Tailwind's spacing, fonts, small text sizes, radius steps and the shadcn colour names (`bg-primary`, `text-muted-foreground`, …) onto StellarAdmin's tokens, so those utilities follow the theme, density and dark mode. Keep the `<link>` from step 4; the adapter adds no rules. Without a Tailwind build, style your own markup with the tokens in plain CSS (see [theming](theming.md#use-the-tokens-in-your-own-css)).
 
 ## Quick smoke test
 

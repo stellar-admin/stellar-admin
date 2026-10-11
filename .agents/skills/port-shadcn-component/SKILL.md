@@ -2,7 +2,7 @@
 name: port-shadcn-component
 description: >-
   End-to-end workflow for porting a shadcn/ui component into StellarAdmin.TagHelpers: research the
-  upstream source, work out which half of the CSS is already shipped, write the tag helpers, add
+  upstream source, translate its classes into token-driven CSS, write the tag helpers, add
   DocsSamples demos, the website docs page and the generated skills reference. Use whenever adding
   or porting a component that already exists upstream — "port the X component", "add the X
   component", "add X from Base UI / shadcn / base ui", or a link to
@@ -12,7 +12,7 @@ description: >-
 
 # Porting a shadcn component
 
-Touches five repos. The upstream-derived visuals are settled upstream. Custom themes have their own maintained design specifications; infer their treatment from those rules and existing components without requiring a fresh design handoff.
+Touches the product repository and the website. Upstream settles the anatomy, the states and the default look; StellarAdmin restates that look in its tokens, so every theme follows from the knobs without per-theme work.
 
 For an authorized end-to-end port, carry the work through CSS, tag helpers, DocsSamples demos, website docs, and consumer references. Make routine Phase 0 decisions using the defaults below and report them. Respect a narrower user request (such as analysis only), explicit review checkpoints, and existing authorization; this skill does not authorize commits or publishing. Ask about a consequential unresolved design choice only when it blocks the next step.
 
@@ -20,11 +20,11 @@ Worked example — the Bubble port, as shipped: `TagHelpers/Bubble/`, `docs/Docs
 
 ## The fidelity rule
 
-**For upstream-derived themes, duplicate shadcn's utility classes, `data-slot` names and `data-*` state attributes exactly.** Custom themes preserve the shared DOM/state contract but intentionally use their own visual language. Record consequential inferred decisions in the custom theme specification.
+**Duplicate shadcn's anatomy, `data-slot` names and `data-*` state attributes exactly; translate its utility classes into token-driven CSS.** Upstream's classes are the specification of the default look, not code to copy: StellarAdmin ships no Tailwind, and a hard-coded `h-8` or `rounded-lg` would ignore density and the theme's radius. Each value becomes the token that plays the same role (Phase 2).
 
-Verify against the **compiled bundle**, not the class strings you wrote — arbitrary variants like `[button,a]:` only prove out after Tailwind compiles them.
+Verify against the **built stylesheet and the rendered page**, not the rules you wrote: compare computed sizes and colours of a DocsSamples demo, in the default theme, with upstream's.
 
-Keep upstream classes that are inert for us, so a later sibling component needs no CSS change (Bubble kept `group-data-[align=end]/message:self-end`, which needs a `Message` we have not built).
+Keep upstream behaviour that is inert for us when it costs nothing, so a later sibling component needs no CSS change (Bubble aligned itself inside a `Message` before we had built one).
 
 ## Phase 0 — settle the design
 
@@ -55,54 +55,39 @@ Keep notes as you go — anatomy, prop table, behavioural notes, a11y guidance �
 
 ## Phase 2 — CSS
 
-Check what is already shipped first; it usually collapses this phase to four rules. `util/ThemeGenerator` sweeps *every* `.cn-*` rule out of upstream's `style-<theme>.css`, so a new component's themed rules often land in our bundles before we write any C#:
+Read the Radix JSON from Phase 1 for the look: its class strings have everything inlined (Base UI's split them behind `cn-*` markers, whose styles live in upstream's per-style CSS). Read the Base UI source for the parts and their states. List every utility per part, then restate it in tokens:
 
-```bash
-grep 'sa-<component>' src/StellarAdmin.TagHelpers/Client/css/themes/shadcn.vega.css
-```
+| Upstream | StellarAdmin |
+|---|---|
+| Spacing `p-2`, `gap-1.5`, `px-2.5` | `calc(n * var(--sa-unit))`; follows density |
+| Control heights `h-6`, `h-7`, `h-8`, `h-9` | `--sa-control-h-xs`, `-h-sm`, `--sa-control-h`, `-h-lg` |
+| `text-xs`, `text-sm`, `text-base` | `--sa-text-xs`, `-sm`, `-base`; control labels `--sa-text-control` |
+| `rounded-md` / `rounded-lg` on controls, `rounded-xl` on containers | `--sa-radius-control-sm`, `--sa-radius-control`, `--sa-radius-container`; a part that grows taller than a control (textarea, alert) `--sa-radius-box`; tags `--sa-radius-tag`; rows in a menu or tab list `--sa-radius-item` |
+| `bg-background`, `bg-card`, `bg-popover` | `--sa-color-canvas`, `--sa-color-surface`, `--sa-color-surface-raised` |
+| `bg-muted`, `bg-secondary` | `--sa-color-surface-sunken`; a fill on whatever it sits on `--sa-color-tint` |
+| `text-foreground`, `text-muted-foreground` | `--sa-color-ink`, `--sa-color-ink-muted` |
+| `bg-primary` / `text-primary-foreground` | `--sa-color-accent-fill` / `--sa-color-on-accent`; accent as text `--sa-color-accent-text` |
+| `bg-accent` (hover), selected | `--sa-color-hover`, `--sa-color-selected`, `--sa-color-highlight` / `--sa-color-on-highlight` |
+| `border`, `border-input` | `--sa-border-width` with `--sa-color-line` (containers, dividers) or `--sa-color-line-control` (controls) |
+| `destructive` | `--sa-color-danger-fill`, `--sa-color-on-danger`, `--sa-color-danger-text`, `--sa-color-danger-soft` |
+| `shadow-xs`, `shadow-sm`, `shadow-md`, `shadow-lg` | `--sa-shadow-control`, `-container`, `-overlay`, `-dialog` |
+| `focus-visible:ring-*`, `aria-invalid:*` | `--sa-focus-shadow` (buttons, tabs) or `--sa-focus-shadow-field` (inputs); `--sa-invalid-shadow` |
+| `font-medium` on controls | `--sa-weight-control` |
+| `disabled:opacity-50` | `--sa-disabled-opacity` |
 
-**Do not re-run ThemeGenerator.** The rules are usually already there, and a run drags in unrelated upstream drift across every existing component — a separate chore needing its own VRT comparison.
+[Theme tokens](../../../docs/design/tokens.md) lists every name; use nothing else, and nothing private to another component. Where a value has no role (an icon gap, a 1px nudge), keep it as a multiple of `--sa-unit` or a literal, and say so in a comment. The Tailwind adapter (`Client/css/tailwind-adapter.css`) maps the same names the other way and is a quick cross-check.
 
-What is left is the structural residue, and the Base UI source states it outright:
+Write the rules in `Client/css/components/<component>.css`: a header comment naming the component and its tags, the rules in `@layer sa.components`, and private `--_*` variables for values that vary by variant, size or state (the variant classes set them; the base rule reads them). Values that differ in dark mode go in `@layer sa.tokens` under `.dark`. Style off the `data-*` attributes and native state, never marker classes. A file must not rely on another file's order: a rule that adjusts another component's part out-ranks it by selector. Follow an existing file of the same kind (`badge.css`, `button.css`, `card.css`).
 
-```jsx
-// bases/base — cn-* marker + structural utilities
-className={cn("cn-bubble-group flex min-w-0 flex-col", className)}
+When upstream's look needs a decision the tokens don't make (an outline only some themes want, a band behind a header), check the knobs first: `--sa-outlines`, `--sa-footer-fill`, `--sa-column-head-fill` and the rest already switch such treatments across components, and a new part should honour the ones that apply to it. A treatment that must differ between themes and no knob covers is a new knob, which needs Jerrie's approval; see the [theme skill](../create-custom-theme/SKILL.md). Don't add one just for this component.
 
-// new-york-v4 (radix) — everything inlined, no cn-* markers
-className={cn("flex min-w-0 flex-col gap-2", className)}
-```
-
-**The structural rule is the Base UI class string minus its `cn-*` marker.** It goes in `Client/css/components.css`, inserted alphabetically. Marker classes that emit no CSS (`group/bubble`) stay in the C# class list, not the stylesheet, and need no `@source inline()` entry — real utilities appearing only in C# string literals do.
-
-**Cross-check:** the Radix string is the union of our two layers. Diff it against `themed ∪ structural`; anything in neither has been dropped.
-
-| Layer | File | Wins over |
-|---|---|---|
-| Themed | `Client/css/themes/<theme>.css`, nested `@layer components.theme` | — |
-| Structural | `Client/css/components.css`, directly in `@layer components` | themed (outer layer beats nested sub-layer) |
-| Author utilities | consumer markup | both |
-
-### Custom themes and coverage
-
-Every shipped theme must support the new component. Read [Ledger's specification](../../../docs/design/themes/ledger.md) for its palette, geometry, interaction rules, and inference method. Compose missing designs from established primitives; do not import a generated upstream theme as a fallback or copy the prototype's `.ldg-*` markup. Preserve existing tag helper semantics and author utility precedence.
-
-Update `util/theme-coverage/coverage.json` after reviewing each theme. The manifest records component tags and styling hooks, so new subcomponents and variant hooks also require a review. Use `reviewed` with actual theme rule evidence, or `shared-only` with a rationale when shared/composed styles are sufficient. Never add empty rules merely to satisfy coverage. `pending` is rejected by builds.
-
-```bash
-node util/theme-coverage/check.mjs
-node --test util/theme-coverage/check.test.mjs
-```
-
-Ledger's CSS is hand-authored. ThemeGenerator must only write upstream-derived files; it must not own custom themes. Add the real example and inspect light/dark and interactive states before marking coverage reviewed. DocsSamples supports `?theme=ledger&mode=dark`; VRT supports `--theme ledger --mode dark`.
-
-Build the CSS directly — it fails loudly where `dotnet build` can succeed over a silently failed CSS build:
+Build the CSS directly; it fails loudly where `dotnet build` can succeed over a silently failed CSS build:
 
 ```bash
 cd src/StellarAdmin.TagHelpers/Client && npm run build:css
 ```
 
-Then check the new rules in `wwwroot/stellar-admin.shadcn.nova.css` against upstream.
+Then check the component in DocsSamples (Phase 4) in the default theme against upstream, and in the theme fixtures (`?theme=ledger|ops|soft`, light and dark), which move radius, density, outlines and elevation the furthest. Run `util/theme-check/contrast.mjs` on its page (see its README): no text failures, and no new faint parts or pill corners.
 
 ## Phase 3 — tag helpers
 
@@ -146,7 +131,7 @@ ASPNETCORE_ENVIRONMENT=Development \
   dotnet run --project docs/DocsSamples --no-launch-profile --urls http://localhost:5206
 ```
 
-Check desktop and mobile widths, light and dark. There is no dark toggle — force it over CDP with `document.documentElement.classList.add('dark')` before capturing. **Stop the server when done.** Port 5205 is Jerrie's own instance; never touch it.
+Check desktop and mobile widths, light and dark (`?mode=dark`), in the default theme and the fixtures (`?theme=ops`, `?theme=soft`). **Stop the server when done.** Port 5205 is Jerrie's own instance; never touch it.
 
 ## Phase 5 — website docs
 
@@ -156,7 +141,7 @@ Register each partial in `docs/DocsSamplesGenerator/Generator.cs` as a `new("<Co
 dotnet run --project docs/DocsSamplesGenerator
 ```
 
-The generator regenerates all demos, and SVG attribute order plus antiforgery tokens can differ between runs. Record pre-existing edits first. Run `bash .agents/skills/port-shadcn-component/scripts/classify-generator-output.sh ../website` from the product repository for a read-only classification, then review the actual diffs. Normalized equality can hide real SVG edits and must never trigger automatic restores. Use isolated worktrees or a pre-generation snapshot if output cleanup is needed; preserve existing edits. Check that changed theme bundles are scoped to the intended classes.
+The generator regenerates all demos, and SVG attribute order plus antiforgery tokens can differ between runs. Record pre-existing edits first. Run `bash .agents/skills/port-shadcn-component/scripts/classify-generator-output.sh ../website` from the product repository for a read-only classification, then review the actual diffs. Normalized equality can hide real SVG edits and must never trigger automatic restores. Use isolated worktrees or a pre-generation snapshot if output cleanup is needed; preserve existing edits. Check that the exported `stellar-admin.css` changed only by the new component's rules.
 
 Write `../website/content/docs/tag-helpers/components/<component>.mdx` by hand and add its slug to `meta.json` under the right group. Structure, per `bubble.mdx`:
 

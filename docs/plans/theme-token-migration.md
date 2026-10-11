@@ -1,6 +1,6 @@
 # Theme token migration
 
-Status: in progress, phase 3 done and awaiting its checkpoint. Branch `token-spec-concept`. Builds on the [token spec concept](token-spec-concept.md), whose prototype is in `sandbox/html/token-spec/`.
+Status: in progress, phase 3 done and awaiting its checkpoint; phase 4 done (2026-10-11), and phase 5's consumer reference regeneration with it. Branch `token-spec-concept`. Builds on the [token spec concept](token-spec-concept.md), whose prototype is in `sandbox/html/token-spec/`.
 
 ## Goal
 
@@ -175,6 +175,14 @@ Dashboard stylesheets (2026-10-10, after review): `ConfigureTheme`, `DashboardTh
 - Theme builder on the website (website repository), now its own plan, [theme builder](theme-builder.md), done before the rest of this phase: the prototype builder, previewing real components through the generated inline examples, exporting a knob file and a shareable URL that encodes the knobs. Starts from any preset.
 - Consumer skill in `skills/`: turns a description ("warm, editorial, dense, green accent") into a knob file. Contents: the knob reference with each knob's meaning and range, the presets as worked examples, guidance on mapping adjectives to knobs, and a builder URL for the result. Contrast is guaranteed by the token formulas, so the skill does not need to check it.
 - Rework the development skills: `create-custom-theme` becomes "add a curated preset" (or is retired); `port-shadcn-component` translates upstream classes into tier 2 tokens instead of copying them; `prototype-component` builds against `stellar-admin.css`.
+
+Done (2026-10-11), with phase 5's consumer reference regeneration:
+
+- Consumer skill: a separate installable skill, `skills/stellar-admin-theme/`, so a theme request triggers it and it can be invoked by name (first written inside the Tag Helpers skill, split out after review). Its `SKILL.md` holds the workflow: check the package ships `stellar-admin.css`, choose knobs, write the file with a builder link, link it (layout or `dashboard.AddStylesheet`), load fonts. In the Tag Helpers skill, `references/theming.md` is rewritten: the default theme is `stellar-admin.css` alone, a theme file sets knobs in `sa.theme`, creating one is the theme skill (with its install command), fonts, scoped knobs, dark mode, the foundation tokens for an app's own CSS, the Tailwind adapter, `ConfigureMenu`, and an upgrade note for the old bundles and shadcn variables. The theme skill's `references/theme-knobs.md`: every knob with default, range and meaning (handwritten from `knobs.json`; it points to the shipped `stellar-admin.knobs.json` for the installed version), a description-to-knobs table, Ledger, Ops and Soft as worked examples (copies of the theme fixtures), and the builder link format (`#v1:` pairs, as the website's `encodeHash`). `setup.md` (step 4, another theme, Tailwind utilities, browser baseline), `conventions.md` (§4, §11), `SKILL.md` (description, guide list) and the Dashboard `setup.md` (`AddStylesheet` instead of `ConfigureTheme`) updated; `skills/README.md` (table row, install section), `docs/repos/skills.md` and `readme.md` list the theme skill.
+- Development skills: `create-custom-theme` keeps its name and now covers theme fixtures and new knobs (what a knob touches, Jerrie approves names); `docs/design/custom-theme-workflow.md` is removed, its themes and specifications being gone. `port-shadcn-component`: the fidelity rule keeps upstream's anatomy and states and translates its classes into tokens, with a mapping table; Phase 2 no longer refers to ThemeGenerator, theme bundles or coverage. `prototype-component`: the recipe links `stellar-admin.css` and a theme fixture, writes the candidate as plain token CSS (reference `secondary-depth.html`), and leaves the static server running for review. `AGENTS.md` and `docs/agents.md` updated.
+- Regenerated: `dotnet run --project util/SkillsGenerator` changed one reference (`empty.md`, the sample's `border-dashed` from phase 3); `--check` reports no drift.
+
+Verified (2026-10-11): SkillsGenerator `--check` no drift; `build/skill-validation` `npm test` 8 of 8 and `npm run check` (2 skills, 69 Markdown files, links and anchors, after the split); relative links in the development skills resolve; every token name the consumer guide and the porting table cite exists in `tokens.css`. Not run: `npx skills add` for the new skill, the builder link in a browser, a fresh-session discovery check of the skills, an agent writing a theme from a description.
 
 ### Phase 5: docs and references
 

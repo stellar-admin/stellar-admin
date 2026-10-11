@@ -96,7 +96,7 @@ Documentation and code examples for all the Tag Helpers [can be found online](ht
 
 ## Using StellarAdmin with AI agents
 
-The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
+The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours (`--skill stellar-admin-theme`). Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
 
 From your application's project directory, install the skill with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme):
 
