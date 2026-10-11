@@ -24,11 +24,12 @@
 
   function apply() {
     window.saLoadThemeFonts(theme);
-    // The theme is a preset stylesheet linked after stellar-admin.css; the default theme has none.
+    // The theme is a theme fixture (util/theme-check/presets) linked after stellar-admin.css; the
+    // default theme has none.
     if (theme === "default") {
       stylesheet.removeAttribute("href");
     } else {
-      const pathname = `/_content/StellarAdmin.TagHelpers/presets/${theme}.css`;
+      const pathname = `/presets/${theme}.css`;
       if (!stylesheet.getAttribute("href") || new URL(stylesheet.href).pathname !== pathname)
         stylesheet.href = pathname;
     }

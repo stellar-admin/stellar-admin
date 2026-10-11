@@ -1,6 +1,8 @@
-/* StellarAdmin preset: Ledger. Warm paper that turns indigo in dark mode, an indigo accent, roomier
+/* Theme fixture: Ledger. Warm paper that turns indigo in dark mode, an indigo accent, roomier
    controls, uppercase labels on banded table heads, a soft focus halo, outlined parts and tactile
-   buttons. Suggested font: Lexend. Link it after stellar-admin.css. */
+   buttons. Suggested font: Lexend. Formerly a shipped preset; now a seed in the website's theme
+   builder (same values) and a non-default theme for the theme checks and the samples' theme picker.
+   Link it after stellar-admin.css. */
 @layer sa.theme {
   :root {
     --sa-accent: oklch(0.48 0.18 262);

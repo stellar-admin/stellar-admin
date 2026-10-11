@@ -1,6 +1,6 @@
 # Theme checks
 
-Checks for the token-driven stylesheet (`stellar-admin.css`, see [theme tokens](../../docs/design/tokens.md)). Each runs every page given in the base theme, each preset and seeded random themes, in light and dark mode, in headless Chromium over the DevTools protocol (`../visual-regression/browser.mjs`). Set `CHROME_PATH` or pass `--browser` when Chromium is installed under another name.
+Checks for the token-driven stylesheet (`stellar-admin.css`, see [theme tokens](../../docs/design/tokens.md)). Each runs every page given in the base theme, each preset file and seeded random themes, in light and dark mode, in headless Chromium over the DevTools protocol (`../visual-regression/browser.mjs`). Set `CHROME_PATH` or pass `--browser` when Chromium is installed under another name.
 
 A theme is applied after the page loads: transitions off, the preset file's CSS appended, then the random knobs set on the root element. The mode is passed as `?mode=light|dark`, which both the prototype and DocsSamples read. Every third random theme is extreme: ranged knobs take one end of a wider range.
 
@@ -15,7 +15,7 @@ node util/theme-check/contrast.mjs "http://127.0.0.1:8321/sandbox/html/token-spe
 - Parts: every element with its own fill or border must separate from what is behind it by a luminance contrast of at least `--min-separation` (1.1), through its fill or its border, whichever is stronger; a real drop shadow also counts. A fill within 1.02 of its backdrop and no border is skipped as deliberately edgeless, the switch thumb is measured against its track, and a fill that fills a bordered parent shares its edge.
 - Pill corners: a drawn box (fill, border or image) over 1.5 times a control's height and wider than it is tall, whose corner radius reaches 40% of its height, is reported: it reads as an ellipse, usually a control radius on a part that should use `--sa-radius-box`. Reported for review; the exit code is unchanged.
 
-It prints a line per page, then the failing text, faint parts and pill corners grouped by element. It exits with 1 when any text fails; faint parts are reported for review. Options: `--presets <folder>` (default `sandbox/html/token-spec/presets`, the eight prototype presets as stress tests; `src/StellarAdmin.TagHelpers/Client/css/presets` for the shipped ones; `none` for the base theme alone), `--random <count>` (12), `--seed <n>` (7), `--modes light,dark`, `--min-separation <ratio>`, `--out <report.json>`.
+It prints a line per page, then the failing text, faint parts and pill corners grouped by element. It exits with 1 when any text fails; faint parts are reported for review. Options: `--presets <folder>` (default `sandbox/html/token-spec/presets`, the eight prototype presets as stress tests; `util/theme-check/presets` for the theme fixtures, the former shipped presets and the theme builder's seeds; `none` for the base theme alone), `--random <count>` (12), `--seed <n>` (7), `--modes light,dark`, `--min-separation <ratio>`, `--out <report.json>`.
 
 ## Screenshots
 

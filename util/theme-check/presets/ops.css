@@ -1,5 +1,7 @@
-/* StellarAdmin preset: Ops. Dense and sharp, with strong lines, a safety-orange accent, banded table
-   heads and an offset focus ring. Suggested font: IBM Plex Sans. Link it after stellar-admin.css. */
+/* Theme fixture: Ops. Dense and sharp, with strong lines, a safety-orange accent, banded table heads
+   and an offset focus ring. Suggested font: IBM Plex Sans. Formerly a shipped preset; now a seed in
+   the website's theme builder (same values) and a non-default theme for the theme checks and the
+   samples' theme picker. Link it after stellar-admin.css. */
 @layer sa.theme {
   :root {
     --sa-accent: oklch(0.66 0.18 48);

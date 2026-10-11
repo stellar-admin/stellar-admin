@@ -44,7 +44,7 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 
 ### 4. Link the stylesheet and JavaScript file
 
-Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The stylesheet carries the default theme; to use a preset, link it after the stylesheet (`ledger`, `ops` or `soft`), and set your own theme knobs in a stylesheet of your own after that.
+Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The stylesheet carries the default theme. For another look, make a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder), or write one yourself, and link it after the stylesheet.
 
 ```razor
 <!DOCTYPE html>
@@ -52,7 +52,7 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 <head>
     ...
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/presets/ledger.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>

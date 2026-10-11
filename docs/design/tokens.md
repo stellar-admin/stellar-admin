@@ -6,15 +6,15 @@ The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the
 
 | Tier | What | Who sets it |
 | --- | --- | --- |
-| 0 | Knobs: design decisions (`--sa-accent`, `--sa-radius`, `--sa-density`, …) | Themes and presets, usually only these |
+| 0 | Knobs: design decisions (`--sa-accent`, `--sa-radius`, `--sa-density`, …) | Themes, usually only these |
 | 1 | Foundation tokens, derived from the knobs (`--sa-color-*`, `--sa-radius-*`, `--sa-space-*`, …) | Themes, rarely, to override one derivation |
 | 2 | Raw rules in `@layer sa.overrides` | Escape hatch; each rule points to a missing knob |
 
-Layer order: `theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities`. Tailwind's layers are named so that an author's utilities stay above the components on a page that also loads Tailwind CSS; the first stylesheet that declares layers fixes the order, so a Tailwind build loaded before `stellar-admin.css` starts with the same statement. Themes and presets go in `sa.theme`.
+Layer order: `theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities`. Tailwind's layers are named so that an author's utilities stay above the components on a page that also loads Tailwind CSS; the first stylesheet that declares layers fixes the order, so a Tailwind build loaded before `stellar-admin.css` starts with the same statement. Themes go in `sa.theme`.
 
-## Presets and the Tailwind adapter
+## Themes and the Tailwind adapter
 
-The default theme needs no file. The shipped presets are knob files linked after `stellar-admin.css`: `presets/ledger.css` (warm paper, indigo, roomier, tactile buttons; Lexend), `presets/ops.css` (dense, sharp, strong lines, orange; IBM Plex Sans) and `presets/soft.css` (pills, roomy, violet; Figtree). An app's own theme file is the same shape and goes after the preset.
+The default theme needs no file. Any other theme is a knob file the app owns, linked after `stellar-admin.css`; the [theme builder](https://www.stellaradmin.com/theme-builder) starts from a few seeds (Ledger, Ops, Soft, the former presets) and downloads one. The library ships no presets; the former ones are theme fixtures in `util/theme-check/presets/`, for the theme checks and the samples' theme pickers.
 
 `stellar-admin.tailwind.css` is an `@theme inline` file for an app's own Tailwind build: spacing, small text sizes, fonts, radius steps and the shadcn colour names (`--color-primary`, `--color-muted-foreground`, …) map onto the tokens. Import it after `@import "tailwindcss"`, with the layer order declared first.
 

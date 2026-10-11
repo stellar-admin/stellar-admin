@@ -63,9 +63,6 @@
       <ClientOutput Include="wwwroot/stellar-admin.css" />
       <ClientOutput Include="wwwroot/stellar-admin.tailwind.css" />
       <ClientOutput Include="wwwroot/stellar-admin.knobs.json" />
-      <ClientOutput Include="wwwroot/presets/ledger.css" />
-      <ClientOutput Include="wwwroot/presets/ops.css" />
-      <ClientOutput Include="wwwroot/presets/soft.css" />
     </ItemGroup>
   </Target>
 

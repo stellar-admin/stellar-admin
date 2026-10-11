@@ -16,6 +16,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
+  <!-- Theme fixtures (util/theme-check/presets): the samples' theme picker links them from /presets/. -->
+  <ItemGroup>
+    <Content Include="..\..\util\theme-check\presets\*.css" Link="wwwroot\presets\%(Filename)%(Extension)" />
+  </ItemGroup>
   <Target Name="Tailwind" BeforeTargets="Build">
     <Exec
       WorkingDirectory="Client"

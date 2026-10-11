@@ -10,10 +10,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
+  <!-- Theme fixtures (util/theme-check/presets): the samples' theme picker links them from /presets/. -->
+  <ItemGroup>
+    <Content Include="..\..\util\theme-check\presets\*.css" Link="wwwroot\presets\%(Filename)%(Extension)" />
+  </ItemGroup>
   <!--
-    The layout links _content/StellarAdmin.TagHelpers/stellar-admin.css (and a preset), and this
-    Tailwind build covers only the app's own markup, importing the StellarAdmin Tailwind adapter so
-    token-named utilities (bg-primary, …) resolve to the tokens.
+    The layout links _content/StellarAdmin.TagHelpers/stellar-admin.css (and a theme fixture from
+    /presets/), and this Tailwind build covers only the app's own markup, importing the StellarAdmin
+    Tailwind adapter so token-named utilities (bg-primary, …) resolve to the tokens.
   -->
   <Target Name="Tailwind" BeforeTargets="Build">
     <Exec

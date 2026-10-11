@@ -651,7 +651,7 @@
     border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
   }
   .rounded-md {
     border-radius: var(--sa-radius-control-sm);

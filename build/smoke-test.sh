@@ -184,7 +184,7 @@ assert_asset() {
   echo "ok $path ($(wc -c <"$file") bytes)"
 }
 assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.css "--sa-color-"
-assert_asset /_content/StellarAdmin.TagHelpers/presets/ledger.css "--sa-accent"
+assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json "--sa-accent"
 assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.js "function"
 assert_asset /_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css "sa-resource-form"
 assert_asset /_content/StellarAdmin.Dashboard/htmx.min.js "htmx"

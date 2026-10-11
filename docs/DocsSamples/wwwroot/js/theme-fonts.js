@@ -1,5 +1,5 @@
 // Shared by DocsSamples, DocsSamplesPro, and the exported website demos.
-// Font loading belongs to the demo application; the presets work without it.
+// Font loading belongs to the demo application; the theme files work without it.
 (() => {
   const families = {
     default: "Inter:wght@400..700",

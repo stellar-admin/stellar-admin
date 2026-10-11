@@ -5,14 +5,13 @@
 //                               components/*.css file in name order, so a component never relies on
 //                               another's file order and out-ranks another component's part by
 //                               selector instead
-//   presets/<name>.css          each css/presets/*.css, as it is
 //   stellar-admin.tailwind.css  css/tailwind-adapter.css, as it is
 //   stellar-admin.knobs.json    css/knobs.json, the knob manifest for tools such as the website's theme
-//                               builder, after checking it against tokens.css and the presets
+//                               builder, after checking it against tokens.css
 //
 //   node ./scripts/build-css.mjs
 
-import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const css = resolve(import.meta.dirname, "../css");
@@ -41,11 +40,8 @@ const header =
 const sources = ["reset.css", "tokens.css", "structure.css", ...cssFiles("components").map((file) => `components/${file}`)];
 write("stellar-admin.css", header + sources.map((path) => `\n/* ${path} */\n${read(path).trim()}\n`).join(""));
 
-const presets = cssFiles("presets");
-mkdirSync(resolve(wwwroot, "presets"), { recursive: true });
-for (const stale of readdirSync(resolve(wwwroot, "presets")).filter((file) => !presets.includes(file)))
-  rmSync(resolve(wwwroot, "presets", stale));
-for (const file of presets) write(`presets/${file}`, read(`presets/${file}`));
+// The presets were shipped from wwwroot/presets until the theme builder replaced them.
+rmSync(resolve(wwwroot, "presets"), { recursive: true, force: true });
 
 write("stellar-admin.tailwind.css", read("tailwind-adapter.css"));
 
@@ -53,8 +49,7 @@ write("stellar-admin.knobs.json", JSON.stringify(checkKnobs(JSON.parse(read("kno
 
 // Fails the build when the manifest and the stylesheet disagree: every knob declared on the knob :root
 // block of tokens.css (above its fixed tokens) has an entry with the same default, every entry names a
-// knob, optional knobs are read through a var() fallback, and the presets set only knobs, with values a
-// choice offers. `essential` marks the few knobs a tool shows first (the builder's simple mode); only
+// knob, and optional knobs are read through a var() fallback. `essential` marks the few knobs a tool shows first (the builder's simple mode); only
 // required knobs can be essential.
 function checkKnobs(manifest) {
   const errors = [];
@@ -100,15 +95,6 @@ function checkKnobs(manifest) {
   }
   if (!manifest.knobs.some((knob) => knob.essential)) errors.push("no knob is essential");
   for (const name of knobs.keys()) if (!entries.has(name)) errors.push(`${name}: a knob in tokens.css without a manifest entry`);
-
-  for (const file of cssFiles("presets")) {
-    for (const [name, value] of declarations(read(`presets/${file}`))) {
-      const knob = entries.get(name);
-      if (!knob) errors.push(`presets/${file}: ${name} is not in the manifest`);
-      else if (knob.choices && !knob.choices.some((choice) => choice.value === value)) errors.push(`presets/${file}: ${name}: ${value} is not a choice`);
-      else if (knob.type === "switch" && value !== "0" && value !== "1") errors.push(`presets/${file}: ${name}: ${value} is not 0 or 1`);
-    }
-  }
 
   if (errors.length) throw new Error(`knobs.json disagrees with the stylesheets:\n  ${errors.join("\n  ")}`);
   return manifest;

@@ -6,7 +6,7 @@ namespace StellarAdmin.Dashboard.IntegrationTests.Theme;
 public class DashboardThemeTests
 {
     [Test]
-    public async Task DefaultConfiguration_RendersTheStylesheetWithoutPresetOrWebFonts()
+    public async Task DefaultConfiguration_RendersTheStylesheetWithoutWebFonts()
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(new([]));
@@ -23,14 +23,11 @@ public class DashboardThemeTests
                     .GetAttribute("href")
             )
             .StartsWith("/_content/StellarAdmin.TagHelpers/stellar-admin.css");
-        await Assert
-            .That(document.QuerySelector("link[href*='StellarAdmin.TagHelpers/presets/']"))
-            .IsNull();
         await Assert.That(document.QuerySelector("link[href*='fonts.googleapis.com']")).IsNull();
     }
 
     [Test]
-    public async Task PresetAndFontStylesheets_RenderAfterTheBundleInRegistrationOrder()
+    public async Task ThemeAndFontStylesheets_RenderAfterTheBundleInRegistrationOrder()
     {
         // Arrange
         const string Fonts =
@@ -40,8 +37,8 @@ public class DashboardThemeTests
             configureDashboard: dashboard =>
             {
                 dashboard.AddStylesheet(Fonts);
-                dashboard.AddStylesheet("~/_content/StellarAdmin.TagHelpers/presets/ledger.css");
                 dashboard.AddStylesheet("~/css/theme.css");
+                dashboard.AddStylesheet("~/css/overrides.css");
             }
         );
         using var client = sut.GetTestClient();
@@ -57,13 +54,11 @@ public class DashboardThemeTests
         var bundle = hrefs.FindIndex(href =>
             href.Contains("StellarAdmin.TagHelpers/stellar-admin.css")
         );
-        var preset = hrefs.FindIndex(href =>
-            href.StartsWith("/_content/StellarAdmin.TagHelpers/presets/ledger.css")
-        );
         var theme = hrefs.FindIndex(href => href.StartsWith("/css/theme.css"));
+        var overrides = hrefs.FindIndex(href => href.StartsWith("/css/overrides.css"));
         await Assert.That(bundle).IsGreaterThanOrEqualTo(0);
         await Assert.That(hrefs).Contains(Fonts);
-        await Assert.That(preset).IsGreaterThan(bundle);
-        await Assert.That(theme).IsGreaterThan(preset);
+        await Assert.That(theme).IsGreaterThan(bundle);
+        await Assert.That(overrides).IsGreaterThan(theme);
     }
 }

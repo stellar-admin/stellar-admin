@@ -17,20 +17,13 @@ internal sealed partial class Generator
     private static string GetRepoRootFolder([CallerFilePath] string sourceFilePath = "") =>
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
 
-    // The library's presets, from the same folder its CSS build copies them from, so new presets flow
-    // through the export automatically. "default" is the token stylesheet alone, with no preset.
+    // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
+    // docs theme picker. "default" is the token stylesheet alone, with no preset.
     private static readonly string[] PresetNames =
     [
         .. Directory
             .EnumerateFiles(
-                Path.Combine(
-                    RepoRootFolder,
-                    "src",
-                    "StellarAdmin.TagHelpers",
-                    "Client",
-                    "css",
-                    "presets"
-                ),
+                Path.Combine(RepoRootFolder, "util", "theme-check", "presets"),
                 "*.css"
             )
             .Select(Path.GetFileNameWithoutExtension)
@@ -242,9 +235,7 @@ internal sealed partial class Generator
 
         foreach (var preset in PresetNames)
         {
-            var response = await client.GetAsync(
-                $"/_content/StellarAdmin.TagHelpers/presets/{preset}.css"
-            );
+            var response = await client.GetAsync($"/presets/{preset}.css");
             response.EnsureSuccessStatusCode();
 
             await File.WriteAllBytesAsync(

@@ -14,14 +14,14 @@
     <script src="/js/theme-fonts.js" asp-append-version="true"></script>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-    @* The theme picker's preset; the default theme has none. *@
+    @* The theme picker's theme file, one of the theme fixtures (util/theme-check/presets); the default theme has none. *@
     @if (theme == "default")
     {
         <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet"/>
     }
     else
     {
-        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/_content/StellarAdmin.TagHelpers/presets/{theme}.css")" asp-append-version="true"/>
+        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/presets/{theme}.css")" asp-append-version="true"/>
     }
     <script src="/js/appearance.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Styles", false)

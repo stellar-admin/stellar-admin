@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: in progress, steps 1 to 4 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: implemented, steps 1 to 5 done (2026-10-11); not pushed or released. Open decisions below remain. Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -85,6 +85,7 @@ The full list of 54 knobs is daunting for a first visit.
 - Delete `Client/css/presets/`, their `ClientOutput` lines and the `wwwroot/presets/` outputs. The package ships `stellar-admin.css`, `stellar-admin.tailwind.css` and the knob manifest.
 - Keep the presets as test fixtures (for example `util/theme-check/presets/`), so DocsSamples' and ComponentPlayground's pickers and the contrast check still exercise non-default themes. DocsSamples serves them from its own static files; the generator exports them for the website docs picker until the website takes its preset values from its own data.
 - Update the readme, product guide, `tokens.md` and the release notes: presets come from the builder.
+- Done as: `Client/css/presets/` moved to `util/theme-check/presets/` (header comments say what they are now); `build-css.mjs` no longer copies presets and deletes a stale `wwwroot/presets/`; the `ClientOutput` lines are gone. The manifest check no longer reads the presets (the fixtures live outside the package; the website's seeds are its own data). DocsSamples and ComponentPlayground include the fixtures as linked `Content` under `wwwroot/presets/`, so their pickers link `/presets/<name>.css` (fingerprinted like any static asset); the generator lists and downloads them from there, so the website's docs picker and exported preset files are unchanged apart from the header comments. The Dashboard theme tests use plain stylesheet paths instead of a preset, and the release smoke test asserts the knob manifest instead of `presets/ledger.css`. Readme, product guide, `tokens.md` and the theme-check README updated; the repository has no release notes file, so that part has nothing to update. Website: the seed and docs-picker comments name the fixtures.
 
 ## Open decisions
 
@@ -93,6 +94,15 @@ The full list of 54 knobs is daunting for a first visit.
 - Font list: the prototype's ten families, or fewer.
 
 ## Verification record
+
+Step 5 (2026-10-11):
+
+- `node scripts/build-css.mjs` writes `stellar-admin.css`, the Tailwind adapter and the manifest, and removes `wwwroot/presets/`. Solution build succeeds (existing warnings only). The Dashboard theme tests pass (2). `dotnet pack` of TagHelpers: the package's static assets are `stellar-admin.css`, `stellar-admin.js` (and map), `stellar-admin.knobs.json` and `stellar-admin.tailwind.css`, no presets.
+- Generator run: downloads the three fixtures from DocsSamples' `/presets/`; the website's exported preset files differ only in their header comments. The `theme-fonts.js` comment change gave it a new fingerprint, so every demo page changes to reference it.
+- ComponentPlayground on port 5207 (stopped after): `/presets/soft.css` 200, the old `_content/StellarAdmin.TagHelpers/presets/soft.css` 404, `?theme=soft` links the fingerprinted fixture after `stellar-admin.css`. The theme-check helper loads `util/theme-check/presets` (base, ledger, ops, soft).
+- Website `lint`, `types:check` and `build` pass.
+- Also in the diff: ComponentPlayground's built `wwwroot/css/site.css` caught up with the adapter's `rounded-lg` → `--sa-radius-box` change from an earlier commit, whose build output had not been committed.
+- Not run: the release smoke test (`build/smoke-test.sh`), the full test suite, the contrast check over the fixtures, DocsSamples in a browser.
 
 Step 4 (2026-10-11):
 
