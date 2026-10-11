@@ -6,6 +6,8 @@ For cross-repo work, this guide assumes a sibling `../website` checkout. Use `ST
 
 `docs/DocsSamplesGenerator` exports sample HTML, snippets, and assets into the website. Change samples and export behavior at their product source. Run `dotnet run --project docs/DocsSamplesGenerator` from the product root, with DocsSamples available as described in [development guidance](../development.md). The destination defaults to `../website` and can be overridden by `STELLARADMIN_WEBSITE_DIR`. Do not discard unrelated generated diffs automatically.
 
+Besides the demo pages and snippets, the export writes `public/demo/tag-helpers/assets/stellar-admin.knobs.json` (the knob manifest, for the theme builder's controls) and `assets/presets/`: one knob file per theme fixture plus `presets.json` (name, label, description, default first), which the website's docs theme picker and the theme builder's seeds read. See [theme fixtures](stellar-admin.md#theme-fixtures) for where they come from.
+
 For inline examples, use the [shared workflow](../design/inline-website-examples.md) and [embedding skill](../../.agents/skills/embed-website-components/SKILL.md). Their implementation lives in the website's `src/components/inline-example/` and `scripts/export-inline-example.mjs`. Run `pnpm examples:export` in the website after the relevant docs exports change, then inspect the actual diff.
 
 The product owns shared component workflows and conventions; the website owns its application and its contributor entry point. The website remains separate throughout consolidation.

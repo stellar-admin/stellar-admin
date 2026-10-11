@@ -113,7 +113,34 @@ Optional webfonts are linked from the app layout, **not** `@import`ed in CSS. A 
 ## Verifying changes
 Follow the [unit testing conventions](../conventions/unit-testing.md) for new and migrated .NET tests: mirror the owning SUT's project and folders, use TUnit, and write explicit arrange–act–assert sections. `StellarAdmin.Core.Tests` runs icon configuration and DI registration tests through TUnit. `StellarAdmin.TagHelpers.Tests` uses TUnit for component rendering and TagHelpers registration tests. Dashboard builder tests live in `StellarAdmin.Dashboard.Tests`; Dashboard rendering/binding and EF resource behavior live in their respective `.IntegrationTests` projects. Both CI and release discover all five TUnit test projects in `StellarAdmin.slnx` automatically through `dotnet test`; adding a test project to the solution needs no workflow entry. There are no legacy test runners. Also verify component work by running the DocsSamples site (`docs/DocsSamples`) and exercising the relevant `Pages/<Component>/` sample in the browser (desktop + mobile widths where applicable).
 
-DocsSamples and ComponentPlayground link `stellar-admin.css` and have a theme picker (`?theme=ledger|ops|soft&mode=light|dark`) over the theme fixtures in `util/theme-check/presets/` (the former presets), which both projects serve from `/presets/` straight from that folder (`UseStaticFiles` in `Program.cs`). That folder is the one source of the themes: each file's header comment starts `Theme fixture: <label>` with a description paragraph under it, and its font is its `--sa-font-sans`, matched against the knob manifest's Google Fonts choices. `docs/DocsSamples/ThemeFixtures.cs` reads them for DocsSamples, ComponentPlayground (linked in) and the DocsSamplesGenerator, which exports the files and a `presets.json` index (name, label, description) for the website's docs theme picker and theme builder seeds. Adding a theme is adding a file there. ComponentPlayground additionally runs the `@tailwindcss/forms` plugin in its own build. Both import the Tailwind adapter into their own Tailwind builds, keeping that consumer path exercised. `util/theme-check/` checks text contrast and takes screenshots across the theme fixtures and seeded random themes (see its README).
+DocsSamples and ComponentPlayground link `stellar-admin.css` and have a theme picker (`?theme=ledger|ops|soft&mode=light|dark`) over the theme fixtures (see below). ComponentPlayground additionally runs the `@tailwindcss/forms` plugin in its own build. Both import the Tailwind adapter into their own Tailwind builds, keeping that consumer path exercised. `util/theme-check/` checks text contrast and takes screenshots across the theme fixtures and seeded random themes (see its README).
+
+### Theme fixtures
+
+The library ships no presets. The themes the samples, the website's docs theme picker, the theme builder's seeds and the theme checks offer all come from one folder, `util/theme-check/presets/` (the former presets). Each file's header comment starts `Theme fixture: <label>` with a description paragraph under it; its font is its `--sa-font-sans`, matched against the knob manifest's Google Fonts choices. The default theme is no file: the reader adds it, and it means `stellar-admin.css` alone. Adding a theme is adding a file there.
+
+```
+util/theme-check/presets/<name>.css
+│
+├── docs/DocsSamples/ThemeFixtures.cs   reads default + each file: name, label, description, font
+│   │
+│   ├── DocsSamples           Program.cs serves the folder at /presets/; _Layout and
+│   │                         _NavigationLayout render the picker, the theme link and
+│   │                         window.saThemeFonts (read by theme-fonts.js)
+│   ├── ComponentPlayground   same reader (linked Compile); serves /presets/, renders its picker
+│   └── DocsSamplesGenerator  exports into the website's public/demo/tag-helpers/:
+│                               assets/presets/<name>.css   (fetched from /presets/)
+│                               assets/presets/presets.json (name, label, description)
+│                               *.html, each with the theme sync script and the font map
+│                             website src/lib/theme-presets.ts reads those files for
+│                               the docs theme picker (localStorage "demo-theme"; each
+│                               demo's sync script links assets/presets/<name>.css)
+│                               and the theme builder's "Start from" seeds
+│
+└── util/theme-check          contrast.mjs and screenshots.mjs append each file (default --presets)
+```
+
+The samples and the theme checks read the folder on their next start or run; the website sees a change only after the generator runs and its output is committed there. The knob manifest (`Client/css/knobs.json`) is the library's own source, used here only for the font lookup. The prototype presets in `sandbox/html/token-spec/presets/` are a separate set, for the prototype and as an optional `--presets` stress test.
 
 ### Visual-regression tool
 `util/visual-regression/vrt.mjs` (Node + system chromium over CDP; pixelmatch/pngjs via its own `package.json`) screenshots every DocsSamples page at two viewports plus overlay open-state scenarios, then pixel-diffs two capture runs (anti-aliasing-classified pixels are counted separately as hairline changes — same-environment captures are byte-identical, so they are signal, not noise). Pixel comparison is only deterministic within one environment: capture base and head on the same machine in one sitting — never compare captures from different machines or browser builds. Captures are on-demand and gitignored (`util/visual-regression/snapshots/`).
