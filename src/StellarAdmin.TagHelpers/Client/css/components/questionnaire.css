@@ -84,7 +84,7 @@
     min-height: 2.75rem;
     padding: calc(2.5 * var(--sa-unit)) calc(3 * var(--sa-unit));
     border: var(--sa-border-width) solid var(--sa-color-line-control);
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     background: var(--sa-color-field);
     background-clip: padding-box;
     font-size: var(--sa-text-body);

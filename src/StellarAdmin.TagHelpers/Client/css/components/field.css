@@ -166,7 +166,7 @@
     flex-direction: column;
     width: 100%;
     border: var(--sa-border-width) solid var(--sa-color-line-control);
-    border-radius: var(--sa-radius-control);
+    border-radius: var(--sa-radius-box);
     background: var(--sa-color-field);
     background-clip: padding-box;
     box-shadow: var(--sa-shadow-control);

@@ -173,7 +173,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 *From `Pages/Table/_RowDetails.cshtml`*
 
 ```razor
-<div class="w-full overflow-hidden rounded-md border">
+<div class="w-full overflow-hidden rounded-lg border">
     <sa-table-row-details>
         <sa-table>
             <sa-table-header>
@@ -230,7 +230,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 *From `Pages/Table/_RowDetailsRowClick.cshtml`*
 
 ```razor
-<div class="w-full overflow-hidden rounded-md border">
+<div class="w-full overflow-hidden rounded-lg border">
     <sa-table-row-details row-click="true"
                           expand-mode="TableRowDetailExpandMode.Single"
                           emphasis="TableRowDetailEmphasis.Rail"
