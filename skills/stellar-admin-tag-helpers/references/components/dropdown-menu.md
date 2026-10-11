@@ -6,13 +6,13 @@ generated: true
 
 # DropdownMenu
 
-The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them.
+The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. Set `id` here, not on the content, to choose that id.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-dropdown-menu>` | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. |
+| `<sa-dropdown-menu>` | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. Set `id` here, not on the content, to choose that id. |
 | `<sa-dropdown-menu-checkbox-item>` | A menu item with a checkable state, rendered as a `<div role="menuitemcheckbox">` with a check indicator. |
 | `<sa-dropdown-menu-content>` | The popover panel that holds a dropdown menu's items, positioned relative to its trigger. |
 | `<sa-dropdown-menu-group>` | Groups related menu items together, exposed to assistive technology as a `role="group"`. |
@@ -22,7 +22,7 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 | `<sa-dropdown-menu-radio-item>` | A single option within a `sa-dropdown-menu-radio-group`, rendered as a `<div role="menuitemradio">` with a selection indicator. |
 | `<sa-dropdown-menu-separator>` | A horizontal divider that visually separates groups of menu items. |
 | `<sa-dropdown-menu-shortcut>` | Displays a keyboard shortcut hint, aligned to the trailing edge of a menu item. |
-| `<sa-dropdown-menu-sub>` | Wraps a submenu, pairing a `sa-dropdown-menu-sub-trigger` with its `sa-dropdown-menu-sub-content` and generating the shared id that links them. |
+| `<sa-dropdown-menu-sub>` | Wraps a submenu, pairing a `sa-dropdown-menu-sub-trigger` with its `sa-dropdown-menu-sub-content` and generating the shared id that links them. Set `id` here, not on the sub-content, to choose that id. |
 | `<sa-dropdown-menu-sub-content>` | The popover panel that holds a submenu's items, positioned relative to its sub-trigger. |
 | `<sa-dropdown-menu-sub-trigger>` | The menu item that opens a submenu, rendered with a trailing chevron and wired to its sub-content panel. |
 | `<sa-dropdown-menu-trigger>` | The button that toggles a dropdown menu and anchors its content, styled with button variant and size options. |

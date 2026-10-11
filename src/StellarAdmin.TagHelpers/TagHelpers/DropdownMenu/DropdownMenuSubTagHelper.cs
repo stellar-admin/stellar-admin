@@ -4,7 +4,8 @@ namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Wraps a submenu, pairing a <c>sa-dropdown-menu-sub-trigger</c> with its
-///     <c>sa-dropdown-menu-sub-content</c> and generating the shared id that links them.
+///     <c>sa-dropdown-menu-sub-content</c> and generating the shared id that links them. Set
+///     <c>id</c> here, not on the sub-content, to choose that id.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-sub")]
 public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase

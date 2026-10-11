@@ -4,7 +4,7 @@ namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     The root of a dropdown menu, pairing a trigger with its content and generating the shared id
-///     that links them.
+///     that links them. Set <c>id</c> here, not on the content, to choose that id.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu")]
 public class DropdownMenuTagHelper : StellarAdminTagHelperBase

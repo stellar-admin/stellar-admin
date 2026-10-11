@@ -28,8 +28,21 @@ public class DropdownMenuContentTagHelper(IOptions<StellarAdminTagHelpersOptions
         output.TagMode = TagMode.StartTagAndEndTag;
 
         var menuId = GetContext<DropdownMenuContext>(context)?.MenuId;
-        if (menuId != null && !output.Attributes.ContainsName("id"))
+        if (menuId != null)
         {
+            // The trigger has already rendered against the shared id, so an id of the content's
+            // own would leave the trigger pointing at nothing.
+            if (
+                output.Attributes.TryGetAttribute("id", out var idAttribute)
+                && idAttribute.Value?.ToString() is { Length: > 0 } userId
+                && userId != menuId
+            )
+            {
+                throw new InvalidOperationException(
+                    $"<sa-dropdown-menu-content> cannot set its own id; set id=\"{userId}\" on <sa-dropdown-menu>, which shares it with the trigger."
+                );
+            }
+
             output.Attributes.SetAttribute("id", menuId);
         }
 

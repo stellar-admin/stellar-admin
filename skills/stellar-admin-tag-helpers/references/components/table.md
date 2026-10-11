@@ -82,7 +82,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
                 </sa-table-cell>
                 <sa-table-cell>@booking.Destination</sa-table-cell>
                 <sa-table-cell class="text-right">
-                    @booking.Amount.ToString("N")
+                    @booking.Amount.ToString("N2")
                 </sa-table-cell>
             </sa-table-row>    
         }
@@ -99,7 +99,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
                         .Select(b => b.Amount)
                         .Sum();
                 }
-                @activeValue.ToString("N")
+                @activeValue.ToString("N2")
             </sa-table-cell>
         </sa-table-row>
     </sa-table-footer>
@@ -146,7 +146,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
                 </sa-table-cell>
                 <sa-table-cell>@booking.Destination</sa-table-cell>
                 <sa-table-cell class="text-right">
-                    @booking.Amount.ToString("N")
+                    @booking.Amount.ToString("N2")
                 </sa-table-cell>
             </sa-table-row>    
         }
@@ -163,7 +163,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
                         .Select(b => b.Amount)
                         .Sum();
                 }
-                @activeValue.ToString("N")
+                @activeValue.ToString("N2")
             </sa-table-cell>
         </sa-table-row>
     </sa-table-footer>
