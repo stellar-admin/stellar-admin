@@ -1,0 +1,9 @@
+@page
+@{
+    if (HttpContext.Request.Query.ContainsKey("clean"))
+    {
+        Layout = "_Layout";
+    }
+}
+
+<partial name="_AdminShell"/>

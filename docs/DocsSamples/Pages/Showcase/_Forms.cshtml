@@ -1,0 +1,95 @@
+<sa-page-container width="PageContainerWidth.Medium">
+    <sa-page-header>
+        <sa-page-header-title>Trip settings</sa-page-header-title>
+        <sa-page-header-description>How the Kyoto week appears in the Voyager catalog, and who can book it.</sa-page-header-description>
+        <sa-page-header-actions>
+            <sa-button variant="ButtonVariant.Outline">Preview</sa-button>
+            <sa-button>Save changes</sa-button>
+        </sa-page-header-actions>
+    </sa-page-header>
+
+    <sa-form-section title="Trip details" description="The name, code and description travelers see." layout="FormSectionLayout.Card">
+        <sa-field-group>
+            <sa-form-row>
+                <sa-field>
+                    <sa-field-label for="forms-name">Trip name</sa-field-label>
+                    <sa-input id="forms-name" value="A week in Kyoto"/>
+                    <sa-field-description>Shown in search results and on the booking page.</sa-field-description>
+                </sa-field>
+                <sa-field>
+                    <sa-field-label for="forms-code">Booking code</sa-field-label>
+                    <sa-input id="forms-code" value="KYO-07" disabled/>
+                    <sa-field-description>Set when the trip is created.</sa-field-description>
+                </sa-field>
+            </sa-form-row>
+            <sa-form-row>
+                <sa-field>
+                    <sa-field-label for="forms-region">Region</sa-field-label>
+                    <sa-select id="forms-region">
+                        <option>East Asia</option>
+                        <option>Southeast Asia</option>
+                        <option>Europe</option>
+                    </sa-select>
+                </sa-field>
+                <sa-field>
+                    <sa-field-label for="forms-email">Host email</sa-field-label>
+                    <sa-input id="forms-email" type="email" value="kyoto@@" aria-invalid="true"/>
+                    <p class="text-xs text-destructive">Please enter a complete email address.</p>
+                </sa-field>
+            </sa-form-row>
+            <sa-field>
+                <sa-field-label for="forms-description">Description</sa-field-label>
+                <sa-textarea id="forms-description" rows="4" class="min-h-28">Explore Kyoto's temples, gardens and local food over seven unhurried days.</sa-textarea>
+            </sa-field>
+        </sa-field-group>
+    </sa-form-section>
+
+    <sa-form-section title="Availability" description="Places, pricing and the waitlist." layout="FormSectionLayout.Card">
+        <sa-field-group>
+            <sa-form-row>
+                <sa-field>
+                    <sa-field-label for="forms-places">Available places</sa-field-label>
+                    <sa-input id="forms-places" type="number" min="0" value="12"/>
+                </sa-field>
+                <sa-field>
+                    <sa-field-label for="forms-price">Price per traveler</sa-field-label>
+                    <sa-input-group>
+                        <sa-input-group-addon>$</sa-input-group-addon>
+                        <sa-input-group-input id="forms-price" value="2,480"/>
+                        <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">USD</sa-input-group-addon>
+                    </sa-input-group>
+                </sa-field>
+            </sa-form-row>
+            <sa-radio-group name="forms-cancellation" value="flexible" label="Cancellation">
+                <sa-radio-group-item value="flexible" description="Full refund up to 14 days before departure">Flexible</sa-radio-group-item>
+                <sa-radio-group-item value="strict" description="Refunds as travel credit only">Strict</sa-radio-group-item>
+            </sa-radio-group>
+            <sa-button variant="ButtonVariant.Link" class="self-start px-0">Read the cancellation policy</sa-button>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-input type="checkbox" id="forms-waitlist" checked/>
+                <sa-field-content>
+                    <sa-field-label for="forms-waitlist">Allow waitlist</sa-field-label>
+                    <sa-field-description>Accept requests when the trip is full.</sa-field-description>
+                </sa-field-content>
+            </sa-field>
+            <sa-field orientation="FieldOrientation.Horizontal">
+                <sa-switch id="forms-alerts" checked/>
+                <sa-field-content>
+                    <sa-field-label for="forms-alerts">Booking alerts</sa-field-label>
+                    <sa-field-description>Email the host when someone books.</sa-field-description>
+                </sa-field-content>
+            </sa-field>
+        </sa-field-group>
+    </sa-form-section>
+
+    <sa-card>
+        <sa-card-header>
+            <sa-card-title>Archive this trip</sa-card-title>
+            <sa-card-description>Travelers can no longer find or book it. Existing bookings are kept.</sa-card-description>
+        </sa-card-header>
+        <sa-card-footer class="justify-end gap-2">
+            <sa-button variant="ButtonVariant.Ghost">Cancel</sa-button>
+            <sa-button variant="ButtonVariant.Destructive">Archive trip</sa-button>
+        </sa-card-footer>
+    </sa-card>
+</sa-page-container>

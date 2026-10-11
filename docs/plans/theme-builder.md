@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: in progress, steps 1 to 3a done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: in progress, steps 1 to 4 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -76,6 +76,9 @@ The full list of 54 knobs is daunting for a first visit.
 ### 4. More preview pages (product samples, website)
 
 - A page picker over a few exports: the showcase, a form-heavy page, overlays (dialog, menus, popovers open), a Dashboard-like shell (sidebar, header, table). Add DocsSamples pages where no existing one fits; they export like any other.
+- Done as: three DocsSamples pages under `Showcase/` (listed in the samples navigation and exported like the others): `_AdminShell` (sidebar with two groups and a current page, app header, page header with tabs, stat cards, a table card with pagination in its footer), `_Forms` (a settings page: form sections with a disabled and an invalid field, select, input group, radio group, checkbox, switch, a link button, a card with a destructive action) and `_Overlays` (a page under a modal dialog, with the dialog's menu and a tooltip open and a persistent toast of each status; a script opens them on load, passing each popover its trigger as `source` so it anchors). The builder's preview picker lists Showcase, Admin page, Forms, Overlays and Studies (the existing masonry); the page is not part of the theme or the URL.
+- Knobs no page shows at rest: `--sa-press-offset` and the focus knobs (`--sa-focus-width`, `--sa-focus-offset`, `--sa-focus-color`), which need a press or keyboard focus in the preview. Status colours show only on Overlays (toasts), `--sa-nav-tint` only on Admin page, `--sa-link-decoration` only on Forms, `--sa-font-mono` only on Studies.
+- Found, not fixed (library): an `id` on `<sa-dropdown-menu-content>` replaces the generated id while the trigger keeps `popovertarget` pointing at the generated one, so the trigger no longer opens the menu. Also, `Table/_Intro` (and its docs export) formats amounts with the server culture's `N` (`1,249.990` here); the admin page uses `N2` with the invariant culture.
 
 ### 5. Remove the presets from the library (product, breaking)
 
@@ -91,6 +94,13 @@ The full list of 54 knobs is daunting for a first visit.
 
 ## Verification record
 
+Step 4 (2026-10-11):
+
+- Generator runs (three, as the pages changed); 451 exports. The website gets the three pages and their `_include` snippets; the DocsSamples site stylesheet gained `sm:mr-auto` and, on the run after the first, a new fingerprint (`site.urffqt6gbo.css`), so every demo page changes to reference it. The first run had written the new content under the old name: the fingerprint lags the samples' Tailwind build by one run.
+- Website `lint`, `types:check` and `build` pass. In Chromium against `pnpm dev` (port 3106, stopped after): switching the preview through all five pages keeps the theme applied (a Soft-like link: `--sa-radius: 9999px` on each page's root); on Overlays the dialog, the menu (anchored under "More") and the tooltip (anchored over "Save") are open, light and dark.
+- Knob coverage, against the exports served statically (port 4311, stopped after), transitions and animations off, every knob in light and dark: Showcase 42 knobs, Admin page 39, Forms 30, Overlays 40, Studies 43. Missed by the test values only and checked by hand: `--sa-section-label-font` (as monospace, changes the menu label) and `--sa-dialog-footer-rule` (0 clears the rule's colour). Not shown at rest: press offset and the three focus knobs.
+- Screenshots of the three new pages looked right after two fixes: the popovers were at the page's corner (opened without `source`), and the table amounts used three decimals.
+
 Step 3a (2026-10-11):
 
 - `build-css.mjs` passes with the ten flags; `essential` on an optional knob or with a non-`true` value fails, naming the knob (restored after).
@@ -102,6 +112,7 @@ Step 3 (2026-10-11):
 - Website `lint`, `types:check` and `build` pass; the build prerenders `/theme-builder`.
 - In Chromium against `pnpm dev` (port 3106, stopped after): for each of the 54 knobs, changing its control (dark-only knobs in dark mode) set the value on the preview root and in the hash, changed the showcase's computed styles, and Reset or Auto returned it (the hash was empty after all of them). With `ops` stored as the docs theme, the builder at default showed `--sa-radius: 6px` and no `--sa-radius-outer`. Seeding Soft set its values and loaded Figtree; opening its builder link reproduced the same export; the exported file added to the bare showcase page at the preview's size gave the same computed styles for every element (bar a running spinner's rotation). Import of a theme file (unknown knob and plain property ignored) and of a builder link applied. Phone width (390px): no horizontal scroll, preview pinned above the controls. Screenshots looked right in light and dark.
 - Not run: the export linked into DocsSamples itself (checked on the exported showcase page instead), browsers other than Chromium, the production build in a browser.
+- Correction (found in step 4): the claim that every knob changed the showcase's computed styles was wrong. The comparison included a running spinner's rotation, so every before/after pair differed. Rechecked in step 4 with transitions and animations off; see step 4 for which knobs each page shows. The per-knob checks of the preview root, the hash and Reset/Auto stand.
 
 Step 2 (2026-10-11):
 

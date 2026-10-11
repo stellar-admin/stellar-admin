@@ -1,0 +1,91 @@
+@* Every overlay open at once, for theme previews: a modal dialog over a page, with its menu, a tooltip
+   and a toast of each status open on top. Opened by the script at the end, after the components are
+   defined. *@
+<main class="mx-auto flex w-full max-w-5xl flex-col gap-5">
+    <header class="flex flex-wrap items-end justify-between gap-3 border-b pb-4">
+        <div>
+            <p class="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">StellarAdmin · Overlays</p>
+            <h1 class="sa-font-heading text-2xl font-semibold tracking-tight">Bookings</h1>
+            <p class="mt-1 text-sm text-muted-foreground">The page behind the dialog, under the scrim.</p>
+        </div>
+        <sa-button commandfor="overlays-dialog" command="show-modal">Edit booking</sa-button>
+    </header>
+    <div class="grid gap-5 md:grid-cols-3">
+        <section>
+            <h2 class="sa-font-heading mb-4 text-sm font-semibold">Data</h2>
+            <partial name="~/Pages/Showcase/GalleryParts/_Data.cshtml"/>
+        </section>
+        <section>
+            <h2 class="sa-font-heading mb-4 text-sm font-semibold">People</h2>
+            <partial name="~/Pages/Showcase/GalleryParts/_People.cshtml"/>
+        </section>
+        <section>
+            <h2 class="sa-font-heading mb-4 text-sm font-semibold">Feedback</h2>
+            <partial name="~/Pages/Showcase/GalleryParts/_Feedback.cshtml"/>
+        </section>
+    </div>
+
+    <sa-dialog id="overlays-dialog">
+        <sa-dialog-header>
+            <sa-dialog-title>Edit booking VT-2041</sa-dialog-title>
+            <sa-dialog-description>Changes are emailed to the traveler when you save.</sa-dialog-description>
+        </sa-dialog-header>
+        <sa-field-group>
+            <sa-field>
+                <sa-field-label for="overlays-traveler">Traveler</sa-field-label>
+                <sa-input id="overlays-traveler" value="Amelia Hart"/>
+            </sa-field>
+            <sa-field>
+                <sa-field-label for="overlays-cabin">Cabin</sa-field-label>
+                <sa-select id="overlays-cabin">
+                    <option>Economy</option>
+                    <option selected>Premium Economy</option>
+                    <option>Business</option>
+                </sa-select>
+            </sa-field>
+        </sa-field-group>
+        <sa-dialog-footer>
+            <sa-dropdown-menu>
+                <sa-dropdown-menu-trigger variant="ButtonVariant.Outline" class="sm:mr-auto">More <sa-icon name="chevron-down"/>
+                </sa-dropdown-menu-trigger>
+                <sa-dropdown-menu-content>
+                    <sa-dropdown-menu-label>Booking</sa-dropdown-menu-label>
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="copy"/>
+                        Duplicate
+                        <sa-dropdown-menu-shortcut>⌘D</sa-dropdown-menu-shortcut>
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-item>
+                        <sa-icon name="mail"/>
+                        Resend confirmation
+                    </sa-dropdown-menu-item>
+                    <sa-dropdown-menu-checkbox-item checked="true">Notify traveler</sa-dropdown-menu-checkbox-item>
+                    <sa-dropdown-menu-separator/>
+                    <sa-dropdown-menu-item variant="DropdownMenuItemVariant.Destructive">
+                        <sa-icon name="trash-2"/>
+                        Cancel booking
+                    </sa-dropdown-menu-item>
+                </sa-dropdown-menu-content>
+            </sa-dropdown-menu>
+            <sa-button variant="ButtonVariant.Outline" commandfor="overlays-dialog" command="close">Cancel</sa-button>
+            <sa-button commandfor="overlays-dialog" command="close" interestfor="overlays-tooltip">Save</sa-button>
+            <sa-tooltip id="overlays-tooltip">Emails the traveler</sa-tooltip>
+        </sa-dialog-footer>
+    </sa-dialog>
+    <sa-toaster/>
+</main>
+
+<script>
+    window.addEventListener("load", () => {
+        document.getElementById("overlays-dialog").showModal();
+        // The source anchors each popover to its trigger, as opening it from the trigger would.
+        const menu = document.querySelector("#overlays-dialog [data-slot=dropdown-menu-content]");
+        menu.showPopover({ source: document.querySelector(`[popovertarget="${menu.id}"]`) });
+        menu.querySelector("[role=menuitem]")?.focus();
+        document.getElementById("overlays-tooltip").showPopover({ source: document.querySelector('[interestfor="overlays-tooltip"]') });
+        const toast = window.stellarAdmin.toast;
+        toast.add({ title: "Fare alert", description: "Flights to Kyoto dropped 12% this week.", type: "info", duration: 0 });
+        toast.add({ title: "Passport expires soon", description: "Renew it before the March trip.", type: "warning", duration: 0 });
+        toast.add({ title: "Booking confirmed", description: "Lisbon departs 14 October.", type: "success", duration: 0 });
+    });
+</script>

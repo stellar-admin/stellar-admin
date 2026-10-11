@@ -8,7 +8,10 @@ internal static class DemoNavigation
         new DemoGroup(
             "Showcases",
             [
+                new DemoItem("Admin Shell", "/Showcase/AdminShell"),
+                new DemoItem("Forms", "/Showcase/Forms"),
                 new DemoItem("Masonry", "/Showcase/Masonry"),
+                new DemoItem("Overlays", "/Showcase/Overlays"),
                 new DemoItem("Theme Showcase", "/Showcase/ThemeShowcase"),
             ]
         ),
