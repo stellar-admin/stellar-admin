@@ -21,7 +21,7 @@
     }
     else
     {
-        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/presets/{theme}.css")" asp-append-version="true"/>
+        <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet" href="@($"/presets/{theme}.css")"/>
     }
     <script src="/js/appearance.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Styles", false)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 using StellarAdmin;
 using StellarAdmin.TagHelpers;
 
@@ -18,6 +19,26 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// The theme fixtures for the theme picker, served from the repository (util/theme-check/presets).
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.GetFullPath(
+                Path.Combine(
+                    app.Environment.ContentRootPath,
+                    "..",
+                    "..",
+                    "util",
+                    "theme-check",
+                    "presets"
+                )
+            )
+        ),
+        RequestPath = "/presets",
+    }
+);
 
 app.UseRouting();
 
