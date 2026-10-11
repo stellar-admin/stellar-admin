@@ -78,7 +78,7 @@
     color: var(--_fg);
     font-size: var(--_text);
     font-weight: var(--sa-weight-control);
-    line-height: 1;
+    line-height: var(--sa-leading-ui);  /* a taller line box than the text, so a truncating child keeps its descenders */
     white-space: nowrap;
     outline: none;
     user-select: none;
