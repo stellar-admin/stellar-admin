@@ -7,10 +7,12 @@
   .sa-badge {
     --_badge-danger-fg: var(--sa-color-danger-text);
   }
-  .dark .sa-badge {
-    /* Lighter than danger text: the soft tint is translucent, and on a tinted row (a selected or
-       hovered data grid row) it keeps 4.5:1 only with more room. */
-    --_badge-danger-fg: oklch(from var(--sa-color-danger) max(l, 0.82) min(c, 0.12) h);
+  @scope (.dark) to (.light) {
+    :scope .sa-badge {
+      /* Lighter than danger text: the soft tint is translucent, and on a tinted row (a selected or
+         hovered data grid row) it keeps 4.5:1 only with more room. */
+      --_badge-danger-fg: oklch(from var(--sa-color-danger) max(l, 0.82) min(c, 0.12) h);
+    }
   }
 }
 

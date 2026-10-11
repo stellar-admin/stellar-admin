@@ -10,10 +10,13 @@
    It maps Tailwind's theme onto the tokens: spacing follows --sa-unit (density), and the small text
    sizes, the fonts, the radius steps and the colours (by their shadcn names: bg-primary,
    text-muted-foreground, border-border, …) follow the theme. The variables are inline, so utilities
-   read the tokens where they are used and follow .dark, [data-sa-density] and [data-sa-scope]
+   read the tokens where they are used and follow .dark, .light, [data-sa-density] and [data-sa-scope]
    sections. stellar-admin.css is still linked as usual; this file adds no rules. */
 
-@custom-variant dark (&:is(.dark *));
+/* Inside .dark and not switched back by a .light inside it, three levels deep (.dark .light .dark). The
+   components use @scope (.dark) to (.light) instead, which nests to any depth, but a browser does not
+   apply @scope nested in a utility's rule, which is what a block variant would produce. */
+@custom-variant dark (&:is(.dark *):not(:where(.dark .light *)), &:is(.dark *):where(.dark .light .dark *));
 
 @theme inline {
   --spacing: var(--sa-unit);

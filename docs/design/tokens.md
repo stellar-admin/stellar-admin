@@ -20,10 +20,10 @@ The default theme needs no file. Any other theme is a theme file the app owns, l
 
 ## Scopes
 
-Formulas resolve on `:root`, `.dark`, `[data-sa-density]` and `[data-sa-scope]`, so a theme variable set on any of these re-derives everything inside it.
+Formulas resolve on `:root`, `.dark`, `.light`, `[data-sa-density] and `[data-sa-scope]`, so a theme variable set on any of these re-derives everything inside it.
 
-- `.dark` on any element switches that subtree to dark mode.
-- `data-sa-density="compact"` (0.8) or `"comfortable"` (1.2) sets the density of a section.
+- `.dark` on any element switches that subtree to dark mode, and `.light` switches it back. Each stops at the other (`@scope (.dark) to (.light)`), so they nest to any depth; the Tailwind adapter's `dark:` variant follows them three levels deep.
+- `data-sa-density="compact"` (0.8×) or `"comfortable"` (1.2×) scales the theme's density for a section.
 - `data-sa-scope` marks an element that sets its own theme variables, such as a branded panel.
 
 ## Theme variables (tier 0)

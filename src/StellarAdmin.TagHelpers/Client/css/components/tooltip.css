@@ -5,8 +5,10 @@
   .sa-tooltip-content {
     --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 20%, transparent);
   }
-  .dark .sa-tooltip-content {
-    --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 10%, transparent);
+  @scope (.dark) to (.light) {
+    :scope .sa-tooltip-content {
+      --_tooltip-kbd-bg: color-mix(in oklab, var(--sa-color-surface) 10%, transparent);
+    }
   }
 }
 

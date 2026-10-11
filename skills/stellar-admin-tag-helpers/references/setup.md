@@ -60,7 +60,7 @@ The assets are served from the package as static web assets under `_content/Stel
 
 Both are **static web assets**, so the app must serve them — the default templates already call `app.MapStaticAssets()` (or `app.UseStaticFiles()` on older templates). If those two URLs 404, that's the missing piece rather than anything StellarAdmin-specific.
 
-The package targets **net10.0**, so the app must be on .NET 10 or later. The stylesheet needs Chrome and Edge 119, Safari 18 or Firefox 128 or later (it uses relative colour syntax, `color-mix()`, cascade layers, native nesting and `:has()` without fallbacks); in older browsers colours fail silently.
+The package targets **net10.0**, so the app must be on .NET 10 or later. The stylesheet needs Chrome and Edge 119, Safari 18 or Firefox 146 or later (it uses relative colour syntax, `color-mix()`, cascade layers, native nesting, `:has()` and `@scope` without fallbacks); in older browsers colours fail silently.
 
 ## Optional: convert the layout and remove Bootstrap
 

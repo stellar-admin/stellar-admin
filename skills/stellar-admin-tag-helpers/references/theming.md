@@ -64,7 +64,7 @@ Theme variables re-derive everything inside the element they are set on, so part
 </section>
 ```
 
-- The `dark` class on any element switches that subtree to dark mode.
+- The `dark` class on any element switches that subtree to dark mode, and the `light` class switches it back (a light panel inside a dark page). They nest: each stops at the other.
 
 ## Dark mode
 

@@ -10,10 +10,12 @@
     --_toggle-outline-border: var(--sa-color-line);
     --_toggle-outline-on-border: var(--sa-color-line-control);
   }
-  .dark .sa-toggle {
-    --_toggle-outline-bg: var(--sa-color-field);
-    --_toggle-outline-border: var(--sa-color-line-control);
-    --_toggle-outline-on-border: var(--sa-color-line-control-hover);
+  @scope (.dark) to (.light) {
+    :scope .sa-toggle {
+      --_toggle-outline-bg: var(--sa-color-field);
+      --_toggle-outline-border: var(--sa-color-line-control);
+      --_toggle-outline-on-border: var(--sa-color-line-control-hover);
+    }
   }
 }
 

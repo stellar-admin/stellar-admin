@@ -13,9 +13,11 @@
     --_bubble-tinted-bg: oklch(from var(--sa-color-accent) 0.92 calc(c * 0.4) h);
     --_bubble-tinted-bg-hover: oklch(from var(--sa-color-accent) 0.87 calc(c * 0.5) h);
   }
-  .dark :is(.sa-bubble, .sa-bubble-group) {
-    --_bubble-tinted-bg: oklch(from var(--sa-color-accent) 0.3 calc(c * 0.4) h);
-    --_bubble-tinted-bg-hover: oklch(from var(--sa-color-accent) 0.35 calc(c * 0.5) h);
+  @scope (.dark) to (.light) {
+    :scope :is(.sa-bubble, .sa-bubble-group) {
+      --_bubble-tinted-bg: oklch(from var(--sa-color-accent) 0.3 calc(c * 0.4) h);
+      --_bubble-tinted-bg-hover: oklch(from var(--sa-color-accent) 0.35 calc(c * 0.5) h);
+    }
   }
 }
 

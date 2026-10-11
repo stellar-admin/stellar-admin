@@ -10,8 +10,10 @@
     --_slider-thumb-size: calc(3 * var(--sa-unit));
     --_slider-thumb-bg: var(--sa-color-surface);
   }
-  .dark :is(.sa-slider, .sa-slider-value) {
-    --_slider-thumb-bg: var(--sa-color-ink);
+  @scope (.dark) to (.light) {
+    :scope :is(.sa-slider, .sa-slider-value) {
+      --_slider-thumb-bg: var(--sa-color-ink);
+    }
   }
 }
 

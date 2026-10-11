@@ -9,10 +9,12 @@
     --_segmented-control-selected-bg: var(--sa-color-surface);
     --_segmented-control-selected-border: transparent;
   }
-  .dark .sa-segmented-control {
-    --_segmented-control-item-fg: var(--sa-color-ink-muted);
-    --_segmented-control-selected-bg: var(--sa-color-field);
-    --_segmented-control-selected-border: var(--sa-color-line-control);
+  @scope (.dark) to (.light) {
+    :scope .sa-segmented-control {
+      --_segmented-control-item-fg: var(--sa-color-ink-muted);
+      --_segmented-control-selected-bg: var(--sa-color-field);
+      --_segmented-control-selected-border: var(--sa-color-line-control);
+    }
   }
 }
 

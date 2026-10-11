@@ -78,7 +78,7 @@ A theme file sets variables in the `sa.theme` layer:
 
 #### Browser support
 
-The stylesheet uses CSS relative colour syntax, `color-mix()`, cascade layers, native nesting and `:has()`, without fallbacks: Chrome and Edge 119, Safari 18 and Firefox 128 or later. In older browsers colours fail silently, leaving components unstyled in places.
+The stylesheet uses CSS relative colour syntax, `color-mix()`, cascade layers, native nesting, `:has()` and `@scope`, without fallbacks: Chrome and Edge 119, Safari 18 and Firefox 146 or later. In older browsers colours fail silently, leaving components unstyled in places.
 
 ### 5. Start using the Tag Helpers
 

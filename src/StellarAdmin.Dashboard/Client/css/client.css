@@ -363,8 +363,10 @@
         transition: opacity 0.3s;
     }
 
-    .dark dialog.sa-sheet-stack-level::after {
-        background: oklch(0 0 0 / 0.4);
+    @scope (.dark) to (.light) {
+        :scope dialog.sa-sheet-stack-level::after {
+            background: oklch(0 0 0 / 0.4);
+        }
     }
 
     dialog.sa-sheet-stack-level[data-under]::after {

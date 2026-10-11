@@ -16,8 +16,10 @@
     /* Choice cards: the selected card's accent wash. */
     --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 6%, var(--sa-color-field));
   }
-  .dark .sa-field-label {
-    --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
+  @scope (.dark) to (.light) {
+    :scope .sa-field-label {
+      --_field-card-selected-bg: color-mix(in oklab, var(--sa-color-accent) 12%, var(--sa-color-field));
+    }
   }
 }
 

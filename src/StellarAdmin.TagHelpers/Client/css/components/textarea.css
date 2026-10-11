@@ -9,8 +9,10 @@
     --_textarea-shadow: var(--sa-shadow-control),
       inset 0 1px 1px rgb(0 0 0 / calc(0.05 * var(--_relief-press) * var(--_relief-k)));
   }
-  .dark .sa-textarea {
-    --_relief-k: 4;
+  @scope (.dark) to (.light) {
+    :scope .sa-textarea {
+      --_relief-k: 4;
+    }
   }
 }
 

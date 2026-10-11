@@ -9,9 +9,11 @@
     --_alert-danger-bg: color-mix(in oklab, oklch(from var(--sa-color-danger) min(l, 0.58) c h) 6%, var(--sa-color-surface));
     --_alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 35%, var(--sa-color-surface));
   }
-  .dark .sa-alert {
-    --_alert-danger-bg: color-mix(in oklab, var(--sa-color-danger) 12%, var(--sa-color-surface));
-    --_alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 40%, var(--sa-color-surface));
+  @scope (.dark) to (.light) {
+    :scope .sa-alert {
+      --_alert-danger-bg: color-mix(in oklab, var(--sa-color-danger) 12%, var(--sa-color-surface));
+      --_alert-danger-border: color-mix(in oklab, var(--sa-color-danger) 40%, var(--sa-color-surface));
+    }
   }
 }
 

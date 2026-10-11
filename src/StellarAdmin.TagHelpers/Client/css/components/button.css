@@ -25,16 +25,18 @@
     --_button-outline-border: var(--sa-color-line);
     --_danger-hover: color-mix(in oklab, var(--sa-color-danger-fill) 88%, var(--sa-color-ink));
   }
-  .dark .sa-button {
-    --_relief-k: 1.45;
-    --_relief-k-drop: 2.5;
-    --_sheen-k: 0.7;
-    --_secondary-lit: 0;
-    --_secondary-sheen: 0.6;
-    --_button-outline-bg: var(--sa-color-field);
-    --_button-outline-border: var(--sa-color-line-control);
-    /* Away from the label, as --sa-color-accent-hover in dark mode. */
-    --_danger-hover: color-mix(in oklab, var(--sa-color-danger-fill) 88%, oklch(from var(--sa-color-on-danger) clamp(0, (0.62 - l) * 1000, 1) 0 0));
+  @scope (.dark) to (.light) {
+    :scope .sa-button {
+      --_relief-k: 1.45;
+      --_relief-k-drop: 2.5;
+      --_sheen-k: 0.7;
+      --_secondary-lit: 0;
+      --_secondary-sheen: 0.6;
+      --_button-outline-bg: var(--sa-color-field);
+      --_button-outline-border: var(--sa-color-line-control);
+      /* Away from the label, as --sa-color-accent-hover in dark mode. */
+      --_danger-hover: color-mix(in oklab, var(--sa-color-danger-fill) 88%, oklch(from var(--sa-color-on-danger) clamp(0, (0.62 - l) * 1000, 1) 0 0));
+    }
   }
 }
 

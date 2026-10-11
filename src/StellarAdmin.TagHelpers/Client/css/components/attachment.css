@@ -160,7 +160,9 @@
       -webkit-text-fill-color: transparent;
       animation: sa-attachment-shimmer 2s linear infinite;
     }
-    .dark :is([data-state="processing"], [data-state="uploading"]) > .sa-attachment-content > & {
+  }
+  @scope (.dark) to (.light) {
+    :scope :is([data-state="processing"], [data-state="uploading"]) > .sa-attachment-content > .sa-attachment-title {
       --_highlight: oklch(from currentColor max(0.8, calc(l + 0.4)) c h / calc(alpha + 0.4));
     }
   }

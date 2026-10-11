@@ -33,8 +33,10 @@
       --_badge: calc(3 * var(--sa-unit));
     }
   }
-  .dark .sa-avatar::after {
-    mix-blend-mode: lighten;
+  @scope (.dark) to (.light) {
+    :scope .sa-avatar::after {
+      mix-blend-mode: lighten;
+    }
   }
   .sa-avatar-image {
     width: 100%;

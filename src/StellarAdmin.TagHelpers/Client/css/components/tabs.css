@@ -8,10 +8,12 @@
     --_tabs-selected-bg: var(--sa-color-surface);
     --_tabs-selected-border: transparent;
   }
-  .dark .sa-tabs {
-    --_tabs-trigger-fg: var(--sa-color-ink-muted);
-    --_tabs-selected-bg: var(--sa-color-field);
-    --_tabs-selected-border: var(--sa-color-line-control);
+  @scope (.dark) to (.light) {
+    :scope .sa-tabs {
+      --_tabs-trigger-fg: var(--sa-color-ink-muted);
+      --_tabs-selected-bg: var(--sa-color-field);
+      --_tabs-selected-border: var(--sa-color-line-control);
+    }
   }
 }
 

@@ -11,12 +11,14 @@
       var(--sa-color-surface)
     );
   }
-  .dark .sa-switch-wrapper {
-    --_switch-thumb-bg: color-mix(
-      in oklab,
-      var(--sa-color-ink-muted) calc(var(--sa-outlines) * 100%),
-      var(--sa-color-ink)
-    );
+  @scope (.dark) to (.light) {
+    :scope .sa-switch-wrapper {
+      --_switch-thumb-bg: color-mix(
+        in oklab,
+        var(--sa-color-ink-muted) calc(var(--sa-outlines) * 100%),
+        var(--sa-color-ink)
+      );
+    }
   }
 }
 
