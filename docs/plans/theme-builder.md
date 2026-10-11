@@ -87,6 +87,12 @@ The full list of 54 knobs is daunting for a first visit.
 - Update the readme, product guide, `tokens.md` and the release notes: presets come from the builder.
 - Done as: `Client/css/presets/` moved to `util/theme-check/presets/` (header comments say what they are now); `build-css.mjs` no longer copies presets and deletes a stale `wwwroot/presets/`; the `ClientOutput` lines are gone. The manifest check no longer reads the presets (the fixtures live outside the package; the website's seeds are its own data). DocsSamples and ComponentPlayground serve the fixture folder at `/presets/` with `UseStaticFiles` and a `PhysicalFileProvider` (linked `Content` items were tried first: static web assets registered them under the app's own `wwwroot`, and they were served as empty files), so their pickers link `/presets/<name>.css`; the generator lists and downloads them from there, so the website's docs picker and exported preset files are unchanged apart from the header comments. The Dashboard theme tests use plain stylesheet paths instead of a preset, and the release smoke test asserts the knob manifest instead of `presets/ledger.css`. Readme, product guide, `tokens.md` and the theme-check README updated; the repository has no release notes file, so that part has nothing to update. Website: the seed and docs-picker comments name the fixtures.
 
+### 5a. One source for the themes (product, website)
+
+After step 5 the same three themes lived in the fixtures, in a copy in the website's `seeds.ts`, and as hard-coded names and fonts in the DocsSamples layout and menu, ComponentPlayground's layout, `theme-fonts.js` and the website's `demo-theme.ts`; the theme checks defaulted to the eight prototype presets.
+
+- Done as: `util/theme-check/presets/` is the one source. Each file's header starts `Theme fixture: <label>` with a description paragraph under it; the font is the file's `--sa-font-sans`, matched against the manifest's Google Fonts choices. `docs/DocsSamples/ThemeFixtures.cs` reads them (default first), shared by DocsSamples, ComponentPlayground (linked `Compile`) and the generator. The DocsSamples layout writes the font map for `theme-fonts.js` (`window.saThemeFonts`), so the exported demos carry it too. The generator exports the files and `assets/presets/presets.json` (name, label, description), and fails on an empty download. The website's docs picker and the builder's seeds read `presets.json` and the files; `seeds.ts` and the hard-coded list are gone. The theme checks default to the fixtures; the prototype presets are an option.
+
 ## Open decisions
 
 - Route name and where the builder sits in the website navigation.
@@ -94,6 +100,13 @@ The full list of 54 knobs is daunting for a first visit.
 - Font list: the prototype's ten families, or fewer.
 
 ## Verification record
+
+Step 5a (2026-10-11):
+
+- Builds of DocsSamples, the generator and ComponentPlayground succeed. Generator run: `presets.json` lists default, ledger, ops and soft with the fixtures' labels and descriptions; the three preset files have content; the exported pages carry the font map (Inter, Lexend, IBM Plex Sans, Figtree).
+- In Chromium: DocsSamples (port 5206) lists the four themes with descriptions; Soft gives `--sa-radius: 9999px` and loads Figtree, Default gives 6px and Inter. ComponentPlayground (port 5207) lists them with descriptions and links IBM Plex Sans for `?theme=ops`. Website (`pnpm dev`, port 3106): the docs picker lists the four and Ops gives a demo `3px`; the builder's seeds list the four, Soft sets its knobs and shows its description, Default empties the hash. All servers stopped after (a dev server left over from step 4 on port 3106 served this check, and was stopped too).
+- Website `lint`, `types:check` and `build` pass.
+- Not run: the theme checks themselves over the fixtures.
 
 Step 5 (2026-10-11):
 

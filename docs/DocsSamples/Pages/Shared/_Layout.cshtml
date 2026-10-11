@@ -1,7 +1,8 @@
-﻿@{
+﻿@inject IReadOnlyList<ThemeFixture> Themes
+@{
+    var themes = Themes.Select(t => t.Name).ToArray();
     var theme = Context.Request.Query["theme"].ToString();
-    string[] themes = ["default", "ledger", "ops", "soft"];
-    if (!themes.Contains(theme)) { theme = "default"; }
+    if (!themes.Contains(theme)) { theme = ThemeFixtures.DefaultName; }
     var dark = Context.Request.Query["mode"] == "dark";
 }
 <!DOCTYPE html>
@@ -11,11 +12,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    @* Each theme's web font, from the theme fixtures, for theme-fonts.js. *@
+    <script>window.saThemeFonts = @Json.Serialize(Themes.ToDictionary(t => t.Name, t => t.GoogleFonts));</script>
     <script src="/js/theme-fonts.js" asp-append-version="true"></script>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
     @* The theme picker's theme file, one of the theme fixtures (util/theme-check/presets); the default theme has none. *@
-    @if (theme == "default")
+    @if (theme == ThemeFixtures.DefaultName)
     {
         <link id="docs-sample-theme" data-themes="@string.Join(",", themes)" rel="stylesheet"/>
     }

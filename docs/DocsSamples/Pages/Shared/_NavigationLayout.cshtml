@@ -1,4 +1,5 @@
-﻿@{
+﻿@inject IReadOnlyList<ThemeFixture> Themes
+@{
     Layout = "_Layout";
 }
 
@@ -46,10 +47,10 @@
                 </sa-dropdown-menu-trigger>
                 <sa-dropdown-menu-content class="w-56">
                     <sa-dropdown-menu-radio-group id="docs-sample-theme-options" value="default" aria-label="Theme">
-                        @foreach (var theme in new[] { "default", "ledger", "ops", "soft" })
+                        @foreach (var theme in Themes)
                         {
-                            <sa-dropdown-menu-radio-item value="@theme"
-                                                         close-on-click="true">@(char.ToUpperInvariant(theme[0]) + theme[1..])</sa-dropdown-menu-radio-item>
+                            <sa-dropdown-menu-radio-item value="@theme.Name" title="@theme.Description"
+                                                         close-on-click="true">@theme.Label</sa-dropdown-menu-radio-item>
                         }
                     </sa-dropdown-menu-radio-group>
                 </sa-dropdown-menu-content>

@@ -1,8 +1,10 @@
-/* Theme fixture: Ledger. Warm paper that turns indigo in dark mode, an indigo accent, roomier
-   controls, uppercase labels on banded table heads, a soft focus halo, outlined parts and tactile
-   buttons. Suggested font: Lexend. Formerly a shipped preset; now a seed in the website's theme
-   builder (same values) and a non-default theme for the theme checks and the samples' theme picker.
-   Link it after stellar-admin.css. */
+/* Theme fixture: Ledger
+   Warm paper that turns indigo in dark mode, an indigo accent, roomier controls, uppercase labels
+   on banded table heads, a soft focus halo, outlined parts and tactile buttons.
+
+   The first line names the theme and the paragraph under it describes it: the samples' theme
+   pickers, the docs export and the website's theme builder read both. The font comes from
+   --sa-font-sans. Formerly a shipped preset. Link it after stellar-admin.css. */
 @layer sa.theme {
   :root {
     --sa-accent: oklch(0.48 0.18 262);

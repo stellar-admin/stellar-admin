@@ -10,6 +10,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
   </ItemGroup>
+  <!-- The theme picker's themes: the reader DocsSamples and the docs export share. -->
+  <ItemGroup>
+    <Compile Include="..\..\docs\DocsSamples\ThemeFixtures.cs" Link="ThemeFixtures.cs" />
+  </ItemGroup>
   <!--
     The layout links _content/StellarAdmin.TagHelpers/stellar-admin.css (and a theme fixture from
     /presets/), and this Tailwind build covers only the app's own markup, importing the StellarAdmin

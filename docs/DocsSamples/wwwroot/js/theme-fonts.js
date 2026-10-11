@@ -1,15 +1,13 @@
 // Shared by DocsSamples, DocsSamplesPro, and the exported website demos.
 // Font loading belongs to the demo application; the theme files work without it.
 (() => {
-  const families = {
-    default: "Inter:wght@400..700",
-    ledger: "Lexend:wght@300..700",
-    ops: "IBM+Plex+Sans:wght@400;500;600;700",
-    soft: "Figtree:wght@400..700",
-  };
+  // Each theme's Google Fonts family, written by the layout from the theme fixtures; a theme without
+  // a web font has none.
+  const families = window.saThemeFonts ?? {};
 
   window.saLoadThemeFonts = (theme) => {
-    const family = families[theme] ?? families.default;
+    const family = theme in families ? families[theme] : families.default;
+    if (!family) return document.getElementById("docs-theme-fonts")?.remove();
     const href = `https://fonts.googleapis.com/css2?family=${family}&display=swap`;
     let link = document.getElementById("docs-theme-fonts");
     if (!link) {

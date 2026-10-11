@@ -1,18 +1,13 @@
-﻿@{
+﻿@using DocsSamples
+@inject IReadOnlyList<ThemeFixture> Themes
+@{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString();
     var pageTitle = DemoNavigation.Groups.SelectMany(group => group.Items).FirstOrDefault(item => item.Page == currentPage)?.Title
                     ?? ViewData["Title"] as string;
     // The theme picker: a theme fixture (util/theme-check/presets) linked after stellar-admin.css
     // (?theme=ledger); the default theme has none.
-    var presets = new Dictionary<string, string>
-    {
-        ["default"] = "Inter:wght@400..700",
-        ["ledger"] = "Lexend:wght@300..700",
-        ["ops"] = "IBM+Plex+Sans:wght@400;500;600;700",
-        ["soft"] = "Figtree:wght@400..700",
-    };
-    var theme = Context.Request.Query["theme"].ToString();
-    if (!presets.ContainsKey(theme)) { theme = "default"; }
+    var theme = Themes.FirstOrDefault(t => t.Name == Context.Request.Query["theme"].ToString())
+                ?? Themes[0];
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -22,12 +17,15 @@
     <title>@pageTitle - ComponentPlayground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link rel="stylesheet" href="@($"https://fonts.googleapis.com/css2?family={presets[theme]}&display=swap")"/>
+    @if (theme.GoogleFonts is not null)
+    {
+        <link rel="stylesheet" href="@($"https://fonts.googleapis.com/css2?family={theme.GoogleFonts}&display=swap")"/>
+    }
     <!-- stellar-admin.css and the theme for the components, site.css for this app's own markup. -->
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-    @if (theme != "default")
+    @if (theme.Name != ThemeFixtures.DefaultName)
     {
-        <link rel="stylesheet" href="@($"/presets/{theme}.css")"/>
+        <link rel="stylesheet" href="@($"/presets/{theme.Name}.css")"/>
     }
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
@@ -87,17 +85,16 @@
                 <sa-sidebar-group-label>Theme</sa-sidebar-group-label>
                 <sa-sidebar-group-content>
                     <sa-sidebar-menu>
-                        @foreach (var preset in presets.Keys)
+                        @foreach (var preset in Themes)
                         {
-                            var label = char.ToUpperInvariant(preset[0]) + preset[1..];
                             <sa-sidebar-menu-item>
                                 @if (preset == theme)
                                 {
-                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset}")" data-active="">@label</sa-sidebar-menu-link>
+                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset.Name}")" data-active="" title="@preset.Description">@preset.Label</sa-sidebar-menu-link>
                                 }
                                 else
                                 {
-                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset}")">@label</sa-sidebar-menu-link>
+                                    <sa-sidebar-menu-link href="@($"{Context.Request.Path}?theme={preset.Name}")" title="@preset.Description">@preset.Label</sa-sidebar-menu-link>
                                 }
                             </sa-sidebar-menu-item>
                         }

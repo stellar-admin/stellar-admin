@@ -1,5 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using DocsSamples;
 
 namespace DocsSamplesGenerator;
 
@@ -18,20 +21,16 @@ internal sealed partial class Generator
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
 
     // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
-    // docs theme picker. "default" is the token stylesheet alone, with no preset.
+    // docs theme picker and the theme builder's seeds. "default" is the token stylesheet alone, with no
+    // preset.
+    private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(RepoRootFolder);
+
+    private static readonly string[] ThemeNames = [.. Themes.Select(theme => theme.Name)];
+
     private static readonly string[] PresetNames =
     [
-        .. Directory
-            .EnumerateFiles(
-                Path.Combine(RepoRootFolder, "util", "theme-check", "presets"),
-                "*.css"
-            )
-            .Select(Path.GetFileNameWithoutExtension)
-            .OfType<string>()
-            .Order(),
+        .. ThemeNames.Where(name => name != ThemeFixtures.DefaultName),
     ];
-
-    private static readonly string[] ThemeNames = ["default", .. PresetNames];
 
     // Injected into the head of every exported demo page. Mirrors the docs website's state in
     // localStorage (shared because the demos are served same-origin) so demos follow the site's
@@ -227,7 +226,11 @@ internal sealed partial class Generator
         }
     }
 
-    /// <summary>Downloads every preset stylesheet under its stable, unfingerprinted name.</summary>
+    /// <summary>
+    /// Downloads every preset stylesheet under its stable, unfingerprinted name, and writes
+    /// presets.json beside them: each theme's name, label and description, default first, for the
+    /// website's docs theme picker and theme builder.
+    /// </summary>
     public async Task DownloadPresetStylesheetsAsync(HttpClient client)
     {
         var folder = Path.Combine(DownloadedAssetsOutputFolder, "presets");
@@ -238,17 +241,37 @@ internal sealed partial class Generator
             var response = await client.GetAsync($"/presets/{preset}.css");
             response.EnsureSuccessStatusCode();
 
-            await File.WriteAllBytesAsync(
-                Path.Combine(folder, $"{preset}.css"),
-                await response.Content.ReadAsByteArrayAsync()
-            );
+            var content = await response.Content.ReadAsByteArrayAsync();
+            if (content.Length == 0)
+                throw new InvalidOperationException($"/presets/{preset}.css was served empty.");
+
+            await File.WriteAllBytesAsync(Path.Combine(folder, $"{preset}.css"), content);
         }
+
+        await File.WriteAllTextAsync(
+            Path.Combine(folder, "presets.json"),
+            JsonSerializer.Serialize(
+                Themes.Select(theme => new
+                {
+                    name = theme.Name,
+                    label = theme.Label,
+                    description = theme.Description,
+                }),
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                }
+            ) + "\n"
+        );
     }
 
     /// <summary>Downloads the knob manifest under its stable name, for the website's theme builder.</summary>
     public async Task DownloadKnobManifestAsync(HttpClient client)
     {
-        var response = await client.GetAsync("/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json");
+        var response = await client.GetAsync(
+            "/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json"
+        );
         response.EnsureSuccessStatusCode();
 
         await File.WriteAllBytesAsync(

@@ -13,12 +13,16 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var repoRoot = Path.GetFullPath(
+            Path.Combine(builder.Environment.ContentRootPath, "..", "..")
+        );
 
         // Add services to the container.
         builder.Services.AddSingleton<IUrlHelperFactory, DemoUrlHelperFactory>(
             _ => new DemoUrlHelperFactory(new UrlHelperFactory())
         );
         builder.Services.AddRazorPages();
+        builder.Services.AddSingleton(ThemeFixtures.Load(repoRoot));
         var stellarAdmin = builder.Services.AddStellarAdmin(sa =>
         {
             sa.AddIconPack<VoyagerIconPack>().AddTagHelpers();
@@ -55,18 +59,7 @@ public class Program
         app.UseStaticFiles(
             new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(
-                    Path.GetFullPath(
-                        Path.Combine(
-                            app.Environment.ContentRootPath,
-                            "..",
-                            "..",
-                            "util",
-                            "theme-check",
-                            "presets"
-                        )
-                    )
-                ),
+                FileProvider = new PhysicalFileProvider(ThemeFixtures.Folder(repoRoot)),
                 RequestPath = "/presets",
             }
         );

@@ -1,12 +1,15 @@
+using DocsSamples;
 using Microsoft.Extensions.FileProviders;
 using StellarAdmin;
 using StellarAdmin.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
+var repoRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", ".."));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddSingleton(ThemeFixtures.Load(repoRoot));
 
 var app = builder.Build();
 
@@ -24,18 +27,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(
     new StaticFileOptions
     {
-        FileProvider = new PhysicalFileProvider(
-            Path.GetFullPath(
-                Path.Combine(
-                    app.Environment.ContentRootPath,
-                    "..",
-                    "..",
-                    "util",
-                    "theme-check",
-                    "presets"
-                )
-            )
-        ),
+        FileProvider = new PhysicalFileProvider(ThemeFixtures.Folder(repoRoot)),
         RequestPath = "/presets",
     }
 );

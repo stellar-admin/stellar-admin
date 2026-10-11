@@ -1,7 +1,9 @@
-/* Theme fixture: Soft. Pill controls, roomy spacing, floating surfaces and a violet accent. Suggested
-   font: Figtree. Formerly a shipped preset; now a seed in the website's theme builder (same values)
-   and a non-default theme for the theme checks and the samples' theme picker. Link it after
-   stellar-admin.css. */
+/* Theme fixture: Soft
+   Pill controls, roomy spacing, floating surfaces and a violet accent.
+
+   The first line names the theme and the paragraph under it describes it: the samples' theme
+   pickers, the docs export and the website's theme builder read both. The font comes from
+   --sa-font-sans. Formerly a shipped preset. Link it after stellar-admin.css. */
 @layer sa.theme {
   :root {
     --sa-accent: oklch(0.56 0.2 295);

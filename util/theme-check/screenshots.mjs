@@ -9,7 +9,7 @@ import { applyTheme, parseArguments, themesFor, withMode } from "./themes.mjs";
 
 const options = parseArguments(process.argv.slice(2), {
   out: "",
-  presets: "sandbox/html/token-spec/presets",
+  presets: "util/theme-check/presets",
   random: "6",
   seed: "7",
   modes: "light,dark",
