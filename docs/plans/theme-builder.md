@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: implemented, steps 1 to 5 done (2026-10-11); not pushed or released. Open decisions below remain. Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: implemented, steps 1 to 5b done (2026-10-11); not released. The open decisions are settled. Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -93,13 +93,24 @@ After step 5 the same three themes lived in the fixtures, in a copy in the websi
 
 - Done as: `util/theme-check/presets/` is the one source. Each file's header starts `Theme fixture: <label>` with a description paragraph under it; the font is the file's `--sa-font-sans`, matched against the manifest's Google Fonts choices. `docs/DocsSamples/ThemeFixtures.cs` reads them (default first), shared by DocsSamples, ComponentPlayground (linked `Compile`) and the generator. The DocsSamples layout writes the font map for `theme-fonts.js` (`window.saThemeFonts`), so the exported demos carry it too. The generator exports the files and `assets/presets/presets.json` (name, label, description), and fails on an empty download. The website's docs picker and the builder's seeds read `presets.json` and the files; `seeds.ts` and the hard-coded list are gone. The theme checks default to the fixtures; the prototype presets are an option.
 
-## Open decisions
+### 5b. No theme picker on the docs website (product generator, website)
 
-- Route name and where the builder sits in the website navigation.
-- Whether the website keeps a docs theme picker over its seeds after step 5, or only the default plus a reader's builder theme (the later feature).
-- Font list: the prototype's ten families, or fewer.
+Decided: the website's docs show the default theme only, with no picker above each demo; the theme builder is where readers try the presets. DocsSamples and ComponentPlayground keep their pickers.
+
+- Done as: the generator's injected script follows only the site's light/dark mode (no `demo-theme`), and replaces the samples' preset link with a call that loads the default font; it still exports the fixtures and `presets.json` for the builder. Website: the `<Demo>` toolbar row and its theme select, `demo-theme-select.tsx` and `demo-theme.ts` are gone.
+
+## Decisions
+
+- Route: `/theme-builder` with its navigation link, as built.
+- Docs website: the default theme only, no per-demo picker (step 5b). DocsSamples and ComponentPlayground keep theirs.
+- Fonts: the manifest's font choices stay as they are, a few families for a feel of the result.
 
 ## Verification record
+
+Step 5b (2026-10-11):
+
+- Generator builds and runs: 451 demos regenerated; the exported pages have no preset link or `demo-theme` handling. Website `lint` and `tsc --noEmit` pass; `build` not run.
+- In Chromium, an exported page (`button-intro.html`, served statically on port 3106, stopped after) with `demo-theme=ledger` and `theme=dark` stored: no preset stylesheet, the page is dark, Inter linked and loaded, no page errors. DocsSamples is unchanged and was not rerun.
 
 Step 5a (2026-10-11):
 

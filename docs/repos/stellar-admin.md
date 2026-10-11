@@ -117,7 +117,7 @@ DocsSamples and ComponentPlayground link `stellar-admin.css` and have a theme pi
 
 ### Theme fixtures
 
-The library ships no presets. The themes the samples, the website's docs theme picker, the theme builder's seeds and the theme checks offer all come from one folder, `util/theme-check/presets/` (the former presets). Each file's header comment starts `Theme fixture: <label>` with a description paragraph under it; its font is its `--sa-font-sans`, matched against the knob manifest's Google Fonts choices. The default theme is no file: the reader adds it, and it means `stellar-admin.css` alone. Adding a theme is adding a file there.
+The library ships no presets. The themes the samples' pickers, the website theme builder's seeds and the theme checks offer all come from one folder, `util/theme-check/presets/` (the former presets). Each file's header comment starts `Theme fixture: <label>` with a description paragraph under it; its font is its `--sa-font-sans`, matched against the knob manifest's Google Fonts choices. The default theme is no file: the reader adds it, and it means `stellar-admin.css` alone. Adding a theme is adding a file there.
 
 ```
 util/theme-check/presets/<name>.css
@@ -131,11 +131,9 @@ util/theme-check/presets/<name>.css
 │   └── DocsSamplesGenerator  exports into the website's public/demo/tag-helpers/:
 │                               assets/presets/<name>.css   (fetched from /presets/)
 │                               assets/presets/presets.json (name, label, description)
-│                               *.html, each with the theme sync script and the font map
+│                               *.html, default theme only (light/dark sync, default font)
 │                             website src/lib/theme-presets.ts reads those files for
-│                               the docs theme picker (localStorage "demo-theme"; each
-│                               demo's sync script links assets/presets/<name>.css)
-│                               and the theme builder's "Start from" seeds
+│                               the theme builder's "Start from" seeds
 │
 └── util/theme-check          contrast.mjs and screenshots.mjs append each file (default --presets)
 ```

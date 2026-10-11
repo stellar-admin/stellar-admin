@@ -21,29 +21,22 @@ internal sealed partial class Generator
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceFilePath)!, "..", ".."));
 
     // The theme fixtures (util/theme-check/presets) the samples serve from /presets/, exported for the
-    // docs theme picker and the theme builder's seeds. "default" is the token stylesheet alone, with no
-    // preset.
+    // theme builder's presets. "default" is the token stylesheet alone, with no preset.
     private static readonly IReadOnlyList<ThemeFixture> Themes = ThemeFixtures.Load(RepoRootFolder);
-
-    private static readonly string[] ThemeNames = [.. Themes.Select(theme => theme.Name)];
 
     private static readonly string[] PresetNames =
     [
-        .. ThemeNames.Where(name => name != ThemeFixtures.DefaultName),
+        .. Themes.Select(theme => theme.Name).Where(name => name != ThemeFixtures.DefaultName),
     ];
 
-    // Injected into the head of every exported demo page. Mirrors the docs website's state in
-    // localStorage (shared because the demos are served same-origin) so demos follow the site's
-    // light/dark selection ("theme", the next-themes key) and the reader's demo theme choice
-    // ("demo-theme"), both in the inline iframe and the full-preview tab. The storage and matchMedia
-    // listeners keep already-open demos in sync with live toggles. A theme is a preset stylesheet
-    // linked after stellar-admin.css, or none for the default. saThemeInit is called by an inline
-    // script placed right after the preset link (see PresetLinkRegex) so a preset applies during
-    // parsing, before anything paints.
-    private static readonly string ThemeSyncScript = $$"""
+    // Injected into the head of every exported demo page. Mirrors the docs website's light/dark
+    // selection in localStorage ("theme", the next-themes key; shared because the demos are served
+    // same-origin), both in the inline iframe and the full-preview tab. The storage and matchMedia
+    // listeners keep already-open demos in sync with live toggles. The demos use the default theme;
+    // saThemeInit, called in place of the samples' preset link (see PresetLinkRegex), loads its font.
+    private const string ThemeSyncScript = """
             <script>
                 (function () {
-                    var themes = ['{{string.Join("', '", ThemeNames)}}'];
                     var media = window.matchMedia('(prefers-color-scheme: dark)');
                     function applyDark() {
                         var theme = null;
@@ -52,49 +45,12 @@ internal sealed partial class Generator
                         document.documentElement.classList.toggle('dark', dark);
                         document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
                     }
-                    function selectedTheme() {
-                        var theme = null;
-                        try { theme = localStorage.getItem('demo-theme'); } catch (e) { }
-                        if (themes.indexOf(theme) < 0) theme = 'default';
-                        return theme;
-                    }
-                    function presetHref() {
-                        var theme = selectedTheme();
-                        return theme === 'default' ? null : '/demo/tag-helpers/assets/presets/' + theme + '.css';
-                    }
                     window.saThemeInit = function () {
-                        window.saLoadThemeFonts(selectedTheme());
-                        var link = document.querySelector('link[data-sa-theme]');
-                        var href = presetHref();
-                        if (link && href) link.setAttribute('href', href);
+                        window.saLoadThemeFonts('default');
                     };
-                    function swapTheme() {
-                        window.saLoadThemeFonts(selectedTheme());
-                        var links = document.querySelectorAll('link[data-sa-theme]');
-                        var current = links[links.length - 1];
-                        var href = presetHref();
-                        if (!current || current.getAttribute('href') === href) return;
-                        for (var i = 0; i < links.length - 1; i++) links[i].remove();
-                        if (!href || !current.getAttribute('href')) {
-                            if (href) current.setAttribute('href', href);
-                            else current.removeAttribute('href');
-                            return;
-                        }
-                        var next = document.createElement('link');
-                        next.rel = 'stylesheet';
-                        next.setAttribute('data-sa-theme', '');
-                        next.href = href;
-                        next.addEventListener('load', function () {
-                            if (!next.isConnected) return;
-                            var all = document.querySelectorAll('link[data-sa-theme]');
-                            for (var i = 0; i < all.length && all[i] !== next; i++) all[i].remove();
-                        });
-                        current.after(next);
-                    }
                     applyDark();
                     window.addEventListener('storage', function (e) {
                         if (e.key === null || e.key === 'theme') applyDark();
-                        if (e.key === null || e.key === 'demo-theme') swapTheme();
                     });
                     media.addEventListener('change', applyDark);
                 })();
@@ -206,8 +162,8 @@ internal sealed partial class Generator
         {
             var filename = Path.GetFileName(match.Groups["filename"].Value);
 
-            // Presets are downloaded separately under stable names (the runtime theme switcher
-            // depends on them), and the samples' own theme picker is not exported.
+            // Presets are downloaded separately under stable names (the theme builder reads them),
+            // and the samples' own theme picker is not exported.
             if (
                 match.Groups["url"].Value.Contains("/presets/")
                 || filename.StartsWith("appearance.")
@@ -229,7 +185,7 @@ internal sealed partial class Generator
     /// <summary>
     /// Downloads every preset stylesheet under its stable, unfingerprinted name, and writes
     /// presets.json beside them: each theme's name, label and description, default first, for the
-    /// website's docs theme picker and theme builder.
+    /// website's theme builder.
     /// </summary>
     public async Task DownloadPresetStylesheetsAsync(HttpClient client)
     {
@@ -413,16 +369,11 @@ internal sealed partial class Generator
                     $"{match.Groups["tag"].Value}/demo/tag-helpers/assets/{match.Groups["filename"].Value}"
             );
 
-        // Sync the demo with the docs website's light/dark and theme selection. Injected here rather
-        // than in the DocsSamples layouts so it never affects the samples app itself. The samples'
-        // preset link becomes an empty link with the data-sa-theme marker the script looks for,
-        // followed by the saThemeInit() call that links a selected preset before first paint.
+        // Sync the demo with the docs website's light/dark selection. Injected here rather than in the
+        // DocsSamples layouts so it never affects the samples app itself. The samples' preset link
+        // (their theme picker's) is replaced by the saThemeInit() call that loads the default font.
         input = input.Replace("<head>", "<head>\n" + ThemeSyncScript);
-        input = PresetLinkRegex()
-            .Replace(
-                input,
-                """<link rel="stylesheet" data-sa-theme /><script>saThemeInit();</script>"""
-            );
+        input = PresetLinkRegex().Replace(input, "<script>saThemeInit();</script>");
 
         return input;
     }
