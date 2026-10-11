@@ -6,7 +6,7 @@
   /* The input-styled group is a field: it reads the input's variables, declared here as on .sa-input. */
   .sa-chip-group[data-appearance="input"] {
     --_input-h: var(--sa-control-h);
-    --_input-radius: var(--sa-radius-control);
+    --_input-radius: var(--sa-radius-box);  /* the group wraps onto more lines, so it rounds like a textarea */
     --_input-text: var(--sa-text-control);
     --_input-bg: var(--sa-color-field);
     --_input-bg-disabled: var(--sa-color-field-disabled);
