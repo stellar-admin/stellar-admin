@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: in progress, steps 1 and 2 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: in progress, steps 1 to 3 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -59,6 +59,11 @@ This is the export half of migration phase 5, pulled forward because the builder
 - Import: paste a `theme.css` (or open a builder URL) to keep editing.
 - No contrast checker in the UI: the token formulas carry contrast. The product keeps `util/theme-check` for the presets.
 - Verify: website lint/typecheck/build; in a browser, every control changes the preview, the URL round-trips, an exported file linked into DocsSamples reproduces the preview, mobile width usable.
+- Done as (website `src/routes/theme-builder.tsx`, `src/components/theme-builder/knob-control.tsx`, `src/lib/theme-builder/{knobs,seeds}.ts`; a "Theme builder" link in the top navigation):
+  - The page fetches the exported manifest at runtime and builds one control per knob by group: colour (swatch plus a text field for any CSS colour), number and length (slider plus text field; `named` values as buttons), switch (checkbox), choice and font (select; a value outside the choices shows as "Custom"). Optional knobs have an "Auto" checkbox; other knobs a "Reset" once changed. A value equal to the default is stored as no value.
+  - Seeds: Default, Ledger, Ops, Soft, their values copied from the presets into `seeds.ts`.
+  - Preview: its own fixed-height iframe of the showcase export, not `DemoPreview` (which sizes the frame to its content and exposes no load hook). Every knob is written onto the frame's root, unset optional knobs as `initial` (so their `var()` fallback applies), so a preset the reader picked for the docs demos, which the page links from storage, cannot show through. Light/dark is the builder's own and survives the page's own mode script. On narrow screens the preview sits above the controls, pinned to the top half of the screen.
+  - The hash and the export carry the knobs that differ from the default. The export's font `@import` covers the chosen web fonts only when a font knob changed (the default Inter is the app's to load, as without a theme), with a checkbox to leave it out. Import takes a pasted theme file or a builder link.
 
 ### 4. More preview pages (product samples, website)
 
@@ -77,6 +82,12 @@ This is the export half of migration phase 5, pulled forward because the builder
 - Font list: the prototype's ten families, or fewer.
 
 ## Verification record
+
+Step 3 (2026-10-11):
+
+- Website `lint`, `types:check` and `build` pass; the build prerenders `/theme-builder`.
+- In Chromium against `pnpm dev` (port 3106, stopped after): for each of the 54 knobs, changing its control (dark-only knobs in dark mode) set the value on the preview root and in the hash, changed the showcase's computed styles, and Reset or Auto returned it (the hash was empty after all of them). With `ops` stored as the docs theme, the builder at default showed `--sa-radius: 6px` and no `--sa-radius-outer`. Seeding Soft set its values and loaded Figtree; opening its builder link reproduced the same export; the exported file added to the bare showcase page at the preview's size gave the same computed styles for every element (bar a running spinner's rotation). Import of a theme file (unknown knob and plain property ignored) and of a builder link applied. Phone width (390px): no horizontal scroll, preview pinned above the controls. Screenshots looked right in light and dark.
+- Not run: the export linked into DocsSamples itself (checked on the exported showcase page instead), browsers other than Chromium, the production build in a browser.
 
 Step 2 (2026-10-11):
 
