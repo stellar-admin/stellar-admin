@@ -10,7 +10,7 @@
    It maps Tailwind's theme onto the tokens: spacing follows --sa-unit (density), and the small text
    sizes, the fonts, the radius steps and the colours (by their shadcn names: bg-primary,
    text-muted-foreground, border-border, …) follow the theme. The variables are inline, so utilities
-   read the tokens where they are used and follow .dark, [data-density] and [data-sa-scope]
+   read the tokens where they are used and follow .dark, [data-sa-density] and [data-sa-scope]
    sections. stellar-admin.css is still linked as usual; this file adds no rules. */
 
 @custom-variant dark (&:is(.dark *));

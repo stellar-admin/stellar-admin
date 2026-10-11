@@ -55,7 +55,7 @@ The default theme prefers Inter; load Inter too if the app wants it rather than 
 
 Theme variables re-derive everything inside the element they are set on, so part of a page can differ from the rest:
 
-- `data-density="compact"` (0.8) or `data-density="comfortable"` (1.2) on any element changes the density of that section.
+- `data-sa-density="compact"` (0.8) or `data-sa-density="comfortable"` (1.2) on any element changes the density of that section.
 - `data-sa-scope` marks an element that sets its own variables, such as a branded panel:
 
 ```razor

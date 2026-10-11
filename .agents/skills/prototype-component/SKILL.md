@@ -38,7 +38,7 @@ Body:
 - Use the **exact HTML the tag helpers emit** for surrounding real components (correct `data-slot`s and `sa-*` classes). Don't hand-derive it; capture it from a running DocsSamples: `curl "http://localhost:5206/DocsStatic?name=<Component>%2F_Intro&layout=_CleanLayout"`. Shorten generated ids and update every `commandfor` to match.
 - **The live candidate in its real position** (for example the top of the sidebar inset), with the classes it would emit and its rules in the candidate stylesheet.
 - **Labeled comparison strips** below, one `<section>` per open question (density, spacing, edge treatment, arrangement…), each strip a full-width framed figure with a caption naming the values it uses. Wire every interactive control for real (same `commandfor`); the library JS keeps multiple triggers in sync.
-- **A control bar** fixed at the bottom right: the theme picker (the default and at least Ops and Soft, the dense-sharp and pill-roomy ends), `.dark` on `<html>`, and a `data-density="compact"` / `"comfortable"` toggle on the main area when spacing is in question. Buttons flipping `data-variant` on the relevant element where the candidate has variants.
+- **A control bar** fixed at the bottom right: the theme picker (the default and at least Ops and Soft, the dense-sharp and pill-roomy ends), `.dark` on `<html>`, and a `data-sa-density="compact"` / `"comfortable"` toggle on the main area when spacing is in question. Buttons flipping `data-variant` on the relevant element where the candidate has variants.
 - Sandbox content uses the Voyager Travel theme like the docs.
 
 ## Iteration loop

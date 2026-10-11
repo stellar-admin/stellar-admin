@@ -70,7 +70,7 @@ To return to the default theme, remove the theme file's link. To offer several t
 
 ## Part of a page
 
-The same variables re-derive everything inside the element they are set on. `data-density="compact"` or `"comfortable"` changes a section's density; `data-sa-scope` marks an element that sets its own variables, such as a branded panel:
+The same variables re-derive everything inside the element they are set on. `data-sa-density="compact"` or `"comfortable"` changes a section's density; `data-sa-scope` marks an element that sets its own variables, such as a branded panel:
 
 ```razor
 <section data-sa-scope style="--sa-accent: oklch(0.6 0.15 150); --sa-radius: 9999px;">

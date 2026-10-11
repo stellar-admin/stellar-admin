@@ -142,6 +142,7 @@ internal static class DemoNavigation
             [
                 new DemoItem("Standard", "/ThemeOverride/Standard"),
                 new DemoItem("Override", "/ThemeOverride/Override"),
+                new DemoItem("Density and Scopes", "/Theming/Index"),
             ]
         ),
         new DemoGroup("Others", [new DemoItem("Semantic Icons", "/Icon/Semantic")]),

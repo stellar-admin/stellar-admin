@@ -22,7 +22,7 @@
  *
  * Scoping. Custom properties that reference other custom properties resolve where they are declared,
  * and descendants inherit the resolved value. So formulas are declared on every element that can change
- * a theme variable: :root, a .dark scope, a [data-density] scope and a [data-sa-scope] (any element that
+ * a theme variable: :root, a .dark scope, a [data-sa-density] scope and a [data-sa-scope] (any element that
  * sets its own theme variables, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
  *
  * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It sets a
@@ -107,12 +107,12 @@
     --sa-disabled-opacity: 0.5;
   }
 
-  [data-density="compact"] { --sa-density: 0.8; }
-  [data-density="comfortable"] { --sa-density: 1.2; }
+  [data-sa-density="compact"] { --sa-density: 0.8; }
+  [data-sa-density="comfortable"] { --sa-density: 1.2; }
 
   /* --- Geometry and type: re-derived wherever density or theme variables change -------------- */
   :root,
-  [data-density],
+  [data-sa-density],
   [data-sa-scope] {
     --sa-unit: calc(0.25rem * var(--sa-density));
 
