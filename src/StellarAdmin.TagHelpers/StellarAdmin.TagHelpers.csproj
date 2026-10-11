@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="Client/css/knobs.json" />
     <ClientInput Include="Client/js/**/*.ts" />
     <ClientInput Include="Client/js/**/*.js" />
     <ClientInput Include="Client/scripts/*.mjs" />
@@ -61,6 +62,7 @@
       <ClientOutput Include="wwwroot/stellar-admin.js" />
       <ClientOutput Include="wwwroot/stellar-admin.css" />
       <ClientOutput Include="wwwroot/stellar-admin.tailwind.css" />
+      <ClientOutput Include="wwwroot/stellar-admin.knobs.json" />
       <ClientOutput Include="wwwroot/presets/ledger.css" />
       <ClientOutput Include="wwwroot/presets/ops.css" />
       <ClientOutput Include="wwwroot/presets/soft.css" />

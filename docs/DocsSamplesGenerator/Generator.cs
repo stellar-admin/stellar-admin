@@ -254,6 +254,18 @@ internal sealed partial class Generator
         }
     }
 
+    /// <summary>Downloads the knob manifest under its stable name, for the website's theme builder.</summary>
+    public async Task DownloadKnobManifestAsync(HttpClient client)
+    {
+        var response = await client.GetAsync("/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json");
+        response.EnsureSuccessStatusCode();
+
+        await File.WriteAllBytesAsync(
+            Path.Combine(DownloadedAssetsOutputFolder, "stellar-admin.knobs.json"),
+            await response.Content.ReadAsByteArrayAsync()
+        );
+    }
+
     /// <summary>Reads a demo partial's source and writes a fenced Razor code-include (.mdx).</summary>
     public async Task GenerateDemoPartialSourceFileAsync(string page)
     {

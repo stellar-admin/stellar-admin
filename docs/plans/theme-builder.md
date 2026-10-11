@@ -1,6 +1,6 @@
 # Theme builder
 
-Status: in progress, step 1 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
+Status: in progress, steps 1 and 2 done (2026-10-11). Website branch `theme-builder`. Split out of phase 4 of the [theme token migration](theme-token-migration.md); the rest of that phase (consumer skill, development skills) waits for this. Product branch `token-spec-concept`; the website is a separate repository (`../website`, its own `AGENTS.md`).
 
 ## Goal
 
@@ -33,6 +33,8 @@ This is the export half of migration phase 5, pulled forward because the builder
 - A test (TagHelpers tests or a `build-css.mjs` check) fails when a required knob in `tokens.css` has no manifest entry, a manifest entry names no knob, or a default differs.
 - The generator copies it into the website's demo assets with the stylesheet, so the builder reads the knobs of the exact library version its preview uses.
 - Later readers: the consumer skill (migration phase 4) and the docs knob reference (phase 5).
+- Done as: source `Client/css/knobs.json`, written to `wwwroot/stellar-admin.knobs.json` by `build-css.mjs`, whose check is the test (it fails the CSS build, and so `dotnet build`). 54 knobs, 10 optional, in seven groups (colour, shape, type, section labels, structure, buttons, focus). Every knob in the `tokens.css` knob block has an entry, the fixed tokens are left out except `--sa-press-offset` (a knob in `tokens.md`). The prototype's compound controls (card footer, column heads) are separate knobs here; the builder may group them again. `length` knobs carry a `unit` and `named` values (`Pill` = `9999px` for the radius); optional knobs carry `follows` and an `initial` value for when they are first set. The check also reads the presets: each name is a knob, and switch and choice values are ones the manifest offers.
+- For step 3: preset values the controls cannot show as they are: Soft's `--sa-radius-outer: 1.375rem` (the control is px) and `--sa-line-strength: 0.7` (below the range; acts as 0.75), Ledger's `--sa-focus-color: color-mix(…)` (not a plain colour). The builder keeps such a value as written until the user moves the control.
 
 ### 3. Builder MVP (website)
 
@@ -75,6 +77,12 @@ This is the export half of migration phase 5, pulled forward because the builder
 - Font list: the prototype's ten families, or fewer.
 
 ## Verification record
+
+Step 2 (2026-10-11):
+
+- `node scripts/build-css.mjs` passes and writes the manifest. With the manifest broken on purpose (a changed default, a removed knob, an unknown knob, an optional knob nothing reads) and Soft given `--sa-pills: 2` and an unknown knob, it fails naming each of the seven problems; restored after.
+- Generator run (which built TagHelpers through the csproj): it downloads the manifest from `_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json` to the website's `public/demo/tag-helpers/assets/stellar-admin.knobs.json`. The run also rewrote 286 demo pages with per-run noise only (antiforgery tokens, carousel ids, SVG attribute order); those were discarded, so the website change is the one new file.
+- Not run: tests (no .NET code under test changed), website lint/build (the website only gains a static JSON file).
 
 Step 1 (2026-10-11):
 

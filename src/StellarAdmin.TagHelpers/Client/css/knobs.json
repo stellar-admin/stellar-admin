@@ -1,0 +1,160 @@
+{
+  "$comment": "The theme knobs, for tools such as the website's theme builder. Source of wwwroot/stellar-admin.knobs.json; scripts/build-css.mjs checks it against tokens.css. Meanings follow docs/design/tokens.md.",
+  "version": 1,
+  "groups": [
+    { "id": "colour", "label": "Colour" },
+    { "id": "shape", "label": "Shape and depth" },
+    { "id": "type", "label": "Space and type" },
+    { "id": "section-labels", "label": "Section labels" },
+    { "id": "structure", "label": "Structure" },
+    { "id": "buttons", "label": "Buttons" },
+    { "id": "focus", "label": "Focus" }
+  ],
+  "knobs": [
+    { "name": "--sa-accent", "group": "colour", "label": "Accent", "meaning": "Brand colour: primary actions, focus, selection, bold highlights.", "type": "color", "default": "oklch(0.5 0.16 258)" },
+    { "name": "--sa-accent-dark", "group": "colour", "label": "Accent (dark)", "meaning": "The accent in dark mode.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#7aa2ff" },
+    { "name": "--sa-on-accent", "group": "colour", "label": "Text on accent", "meaning": "Text on accent fills, instead of the automatic black or white.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#ffffff" },
+    { "name": "--sa-danger", "group": "colour", "label": "Danger", "meaning": "Destructive actions and errors.", "type": "color", "default": "oklch(0.58 0.22 27)" },
+    { "name": "--sa-danger-dark", "group": "colour", "label": "Danger (dark)", "meaning": "The danger colour in dark mode.", "type": "color", "optional": true, "follows": "--sa-danger", "initial": "#f87171" },
+    { "name": "--sa-success", "group": "colour", "label": "Success", "meaning": "Status colour for success.", "type": "color", "default": "oklch(0.6 0.15 150)" },
+    { "name": "--sa-warning", "group": "colour", "label": "Warning", "meaning": "Status colour for warnings.", "type": "color", "default": "oklch(0.72 0.16 70)" },
+    { "name": "--sa-info", "group": "colour", "label": "Info", "meaning": "Status colour for information.", "type": "color", "default": "oklch(0.6 0.14 240)" },
+    { "name": "--sa-neutral-hue", "group": "colour", "label": "Neutral hue", "meaning": "Hue the greys lean toward.", "type": "number", "min": 0, "max": 360, "step": 1, "default": "255" },
+    { "name": "--sa-neutral-chroma", "group": "colour", "label": "Neutral tint", "meaning": "How much the greys lean (0 is pure grey).", "type": "number", "min": 0, "max": 0.04, "step": 0.001, "default": "0.006" },
+    { "name": "--sa-neutral-hue-dark", "group": "colour", "label": "Neutral hue (dark)", "meaning": "The neutral hue in dark mode.", "type": "number", "min": 0, "max": 360, "step": 1, "optional": true, "follows": "--sa-neutral-hue", "initial": "262" },
+    { "name": "--sa-neutral-chroma-dark", "group": "colour", "label": "Neutral tint (dark)", "meaning": "The neutral tint in dark mode.", "type": "number", "min": 0, "max": 0.04, "step": 0.001, "optional": true, "follows": "--sa-neutral-chroma", "initial": "0.008" },
+    { "name": "--sa-accent-tint", "group": "colour", "label": "Accent in washes", "meaning": "How much the accent tints hover, selection and highlight washes.", "type": "number", "min": 0, "max": 1, "step": 0.05, "default": "0.15" },
+    { "name": "--sa-surface-depth", "group": "colour", "label": "Surface depth", "meaning": "Separation between the page and cards (0 is one flat surface).", "type": "number", "min": 0, "max": 1, "step": 0.05, "default": "0.8" },
+    { "name": "--sa-nav-tint", "group": "colour", "label": "Sidebar tint", "meaning": "The sidebar, from page colour to sunken.", "type": "number", "min": 0, "max": 1, "step": 0.05, "default": "0.5" },
+    { "name": "--sa-line-strength", "group": "colour", "label": "Line strength", "meaning": "Dividers and control borders (below 0.75 acts as 0.75).", "type": "number", "min": 0.75, "max": 2, "step": 0.05, "default": "1" },
+
+    { "name": "--sa-radius", "group": "shape", "label": "Radius", "meaning": "Control corners.", "type": "length", "unit": "px", "min": 0, "max": 24, "step": 1, "named": [{ "label": "Pill", "value": "9999px" }], "default": "6px" },
+    { "name": "--sa-radius-outer", "group": "shape", "label": "Container radius", "meaning": "Card and dialog corners.", "type": "length", "unit": "px", "min": 0, "max": 32, "step": 1, "optional": true, "follows": "--sa-radius", "initial": "12px" },
+    { "name": "--sa-pills", "group": "shape", "label": "Pill tags", "meaning": "Tags (badges, chips, the switch) are pills instead of following the radius.", "type": "switch", "default": "0" },
+    { "name": "--sa-outlines", "group": "shape", "label": "Outlines", "meaning": "Filled parts (buttons, badges, chips, the switch track) also draw an outline.", "type": "switch", "default": "1" },
+    {
+      "name": "--sa-relief", "group": "shape", "label": "Relief", "meaning": "Raised adds a shadow under buttons; tactile also adds a bottom edge, a hover lift, a pressed state and recessed fields.", "type": "choice",
+      "choices": [{ "label": "Flat", "value": "0" }, { "label": "Raised", "value": "1" }, { "label": "Tactile", "value": "2" }],
+      "default": "0"
+    },
+    { "name": "--sa-sheen", "group": "shape", "label": "Sheen", "meaning": "Solid buttons get a lit surface: a gradient, a top highlight, a darker edge and a pressed shadow.", "type": "switch", "default": "1" },
+    { "name": "--sa-stroke", "group": "shape", "label": "Stroke", "meaning": "Border width.", "type": "length", "unit": "px", "min": 0, "max": 3, "step": 0.5, "default": "1px" },
+    { "name": "--sa-elevation", "group": "shape", "label": "Elevation", "meaning": "Shadow strength: 0 flat, 1 soft, 2 or more floating.", "type": "number", "min": 0, "max": 3, "step": 0.1, "default": "0.7" },
+
+    { "name": "--sa-density", "group": "type", "label": "Density", "meaning": "Spacing and control sizes, not type: 0.75 dense to 1.25 roomy.", "type": "number", "min": 0.7, "max": 1.4, "step": 0.01, "default": "1" },
+    { "name": "--sa-type-scale", "group": "type", "label": "Type scale", "meaning": "Text sizes.", "type": "number", "min": 0.8, "max": 1.2, "step": 0.01, "default": "1" },
+    {
+      "name": "--sa-font-sans", "group": "type", "label": "Font", "meaning": "Body and control font.", "type": "font",
+      "choices": [
+        { "label": "Inter", "value": "\"Inter\", ui-sans-serif, system-ui, sans-serif", "google": "Inter:wght@400..700" },
+        { "label": "Geist", "value": "\"Geist\", system-ui, sans-serif", "google": "Geist:wght@400..700" },
+        { "label": "IBM Plex Sans", "value": "\"IBM Plex Sans\", system-ui, sans-serif", "google": "IBM+Plex+Sans:wght@400;500;600;700" },
+        { "label": "Figtree", "value": "\"Figtree\", system-ui, sans-serif", "google": "Figtree:wght@400..700" },
+        { "label": "Source Sans 3", "value": "\"Source Sans 3\", system-ui, sans-serif", "google": "Source+Sans+3:wght@400..700" },
+        { "label": "Space Grotesk", "value": "\"Space Grotesk\", system-ui, sans-serif", "google": "Space+Grotesk:wght@400..700" },
+        { "label": "Lexend", "value": "\"Lexend\", system-ui, sans-serif", "google": "Lexend:wght@300..700" },
+        { "label": "Archivo", "value": "\"Archivo\", system-ui, sans-serif", "google": "Archivo:wght@400..700" },
+        { "label": "System", "value": "ui-sans-serif, system-ui, sans-serif" }
+      ],
+      "default": "\"Inter\", ui-sans-serif, system-ui, sans-serif"
+    },
+    {
+      "name": "--sa-font-heading", "group": "type", "label": "Heading font", "meaning": "Titles.", "type": "font",
+      "choices": [
+        { "label": "Same as body", "value": "var(--sa-font-sans)" },
+        { "label": "Fraunces", "value": "\"Fraunces\", Georgia, serif", "google": "Fraunces:wght@400..700" },
+        { "label": "Space Grotesk", "value": "\"Space Grotesk\", system-ui, sans-serif", "google": "Space+Grotesk:wght@400..700" },
+        { "label": "Lexend", "value": "\"Lexend\", system-ui, sans-serif", "google": "Lexend:wght@300..700" }
+      ],
+      "default": "var(--sa-font-sans)"
+    },
+    {
+      "name": "--sa-font-mono", "group": "type", "label": "Monospace font", "meaning": "Code.", "type": "font",
+      "choices": [
+        { "label": "System", "value": "ui-monospace, \"SFMono-Regular\", Menlo, Consolas, monospace" },
+        { "label": "JetBrains Mono", "value": "\"JetBrains Mono\", ui-monospace, monospace", "google": "JetBrains+Mono:wght@400..700" },
+        { "label": "IBM Plex Mono", "value": "\"IBM Plex Mono\", ui-monospace, monospace", "google": "IBM+Plex+Mono:wght@400;500;600;700" },
+        { "label": "Geist Mono", "value": "\"Geist Mono\", ui-monospace, monospace", "google": "Geist+Mono:wght@400..700" }
+      ],
+      "default": "ui-monospace, \"SFMono-Regular\", Menlo, Consolas, monospace"
+    },
+    {
+      "name": "--sa-kbd-font", "group": "type", "label": "Keyboard key font", "meaning": "Keyboard keys.", "type": "choice",
+      "choices": [{ "label": "Monospace", "value": "var(--sa-font-mono)" }],
+      "optional": true, "follows": "--sa-font-sans", "initial": "var(--sa-font-mono)"
+    },
+    {
+      "name": "--sa-weight-control", "group": "type", "label": "Control weight", "meaning": "Buttons, tabs, menu items.", "type": "choice",
+      "choices": [{ "label": "400", "value": "400" }, { "label": "500", "value": "500" }, { "label": "600", "value": "600" }],
+      "default": "500"
+    },
+    {
+      "name": "--sa-weight-heading", "group": "type", "label": "Heading weight", "meaning": "Titles.", "type": "choice",
+      "choices": [{ "label": "400", "value": "400" }, { "label": "500", "value": "500" }, { "label": "600", "value": "600" }, { "label": "700", "value": "700" }],
+      "default": "600"
+    },
+    { "name": "--sa-leading-body", "group": "type", "label": "Line height", "meaning": "Line height of running text.", "type": "number", "min": 1.3, "max": 1.8, "step": 0.05, "default": "1.5" },
+
+    {
+      "name": "--sa-section-label-font", "group": "section-labels", "label": "Font", "meaning": "Section labels: menu labels, sidebar group labels, and column heads when they take the section label style.", "type": "choice",
+      "choices": [{ "label": "Body font", "value": "inherit" }, { "label": "Heading font", "value": "var(--sa-font-heading)" }, { "label": "Monospace", "value": "var(--sa-font-mono)" }],
+      "default": "inherit"
+    },
+    {
+      "name": "--sa-section-label-text", "group": "section-labels", "label": "Size", "meaning": "Section label text size.", "type": "choice",
+      "choices": [
+        { "label": "11px", "value": "var(--sa-text-2xs)" },
+        { "label": "11.5px", "value": "calc(0.71875rem * var(--sa-type-scale))" },
+        { "label": "12px", "value": "var(--sa-text-xs)" },
+        { "label": "14px", "value": "var(--sa-text-sm)" }
+      ],
+      "default": "calc(0.71875rem * var(--sa-type-scale))"
+    },
+    {
+      "name": "--sa-section-label-weight", "group": "section-labels", "label": "Weight", "meaning": "Section label weight.", "type": "choice",
+      "choices": [{ "label": "400", "value": "400" }, { "label": "500", "value": "500" }, { "label": "600", "value": "600" }, { "label": "700", "value": "700" }],
+      "default": "500"
+    },
+    {
+      "name": "--sa-section-label-transform", "group": "section-labels", "label": "Case", "meaning": "Section label case.", "type": "choice",
+      "choices": [{ "label": "As written", "value": "none" }, { "label": "Uppercase", "value": "uppercase" }],
+      "default": "none"
+    },
+    { "name": "--sa-section-label-tracking", "group": "section-labels", "label": "Tracking", "meaning": "Section label letter spacing.", "type": "length", "unit": "em", "min": 0, "max": 0.15, "step": 0.01, "default": "0em" },
+
+    { "name": "--sa-footer-fill", "group": "structure", "label": "Card footer band", "meaning": "Card footers sit on a tinted band.", "type": "switch", "default": "0" },
+    { "name": "--sa-footer-rule", "group": "structure", "label": "Card footer rule", "meaning": "Card footers have a divider above them.", "type": "switch", "default": "1" },
+    { "name": "--sa-dialog-footer-fill", "group": "structure", "label": "Dialog footer band", "meaning": "Dialog and sheet footers sit on a tinted band.", "type": "switch", "optional": true, "follows": "--sa-footer-fill", "initial": "1" },
+    { "name": "--sa-dialog-footer-rule", "group": "structure", "label": "Dialog footer rule", "meaning": "Dialog and sheet footers have a divider above them.", "type": "switch", "optional": true, "follows": "--sa-footer-rule", "initial": "1" },
+    { "name": "--sa-column-head-label", "group": "structure", "label": "Column heads as labels", "meaning": "Table column heads take the section label style.", "type": "switch", "default": "0" },
+    { "name": "--sa-column-head-fill", "group": "structure", "label": "Column head band", "meaning": "Table column heads sit on a sunken band.", "type": "switch", "default": "1" },
+    {
+      "name": "--sa-column-head-case", "group": "structure", "label": "Column head case", "meaning": "Table column head case.", "type": "choice",
+      "choices": [{ "label": "As written", "value": "none" }, { "label": "Uppercase", "value": "uppercase" }, { "label": "As section labels", "value": "var(--sa-section-label-transform)" }],
+      "default": "none"
+    },
+    {
+      "name": "--sa-column-head-font", "group": "structure", "label": "Column head font", "meaning": "Table column head font.", "type": "choice",
+      "choices": [{ "label": "Body font", "value": "inherit" }, { "label": "Monospace", "value": "var(--sa-font-mono)" }],
+      "default": "inherit"
+    },
+    {
+      "name": "--sa-current-page-fill", "group": "structure", "label": "Current page", "meaning": "The current page in pagination.", "type": "choice",
+      "choices": [{ "label": "Outline", "value": "0" }, { "label": "Soft", "value": "0.15" }, { "label": "Solid", "value": "1" }],
+      "default": "0"
+    },
+
+    { "name": "--sa-solid-destructive", "group": "buttons", "label": "Solid destructive", "meaning": "Destructive buttons are solid instead of a soft tint.", "type": "switch", "default": "1" },
+    { "name": "--sa-filled-secondary", "group": "buttons", "label": "Filled secondary", "meaning": "Secondary buttons have a sunken fill instead of a bordered surface.", "type": "switch", "default": "1" },
+    {
+      "name": "--sa-link-decoration", "group": "buttons", "label": "Link buttons", "meaning": "Link buttons at rest.", "type": "choice",
+      "choices": [{ "label": "No underline", "value": "none" }, { "label": "Underline", "value": "underline" }],
+      "default": "none"
+    },
+    { "name": "--sa-press-offset", "group": "buttons", "label": "Press nudge", "meaning": "How far a button moves when pressed.", "type": "length", "unit": "px", "min": 0, "max": 2, "step": 0.5, "default": "1px" },
+
+    { "name": "--sa-focus-width", "group": "focus", "label": "Ring width", "meaning": "Focus ring width.", "type": "length", "unit": "px", "min": 1, "max": 4, "step": 0.5, "default": "3px" },
+    { "name": "--sa-focus-offset", "group": "focus", "label": "Ring offset", "meaning": "Gap between the control and the ring.", "type": "length", "unit": "px", "min": 0, "max": 4, "step": 0.5, "default": "0px" },
+    { "name": "--sa-focus-color", "group": "focus", "label": "Ring colour", "meaning": "Focus ring colour.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#93b4f5" }
+  ]
+}

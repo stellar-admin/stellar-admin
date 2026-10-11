@@ -1,6 +1,6 @@
 # Theme tokens
 
-The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/theme-token-migration.md); `src/StellarAdmin.TagHelpers/Client/css/tokens.css` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal.
+The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/theme-token-migration.md); `src/StellarAdmin.TagHelpers/Client/css/tokens.css` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal. The knobs are also listed for tools in `Client/css/knobs.json` (shipped as `stellar-admin.knobs.json`), which the CSS build checks against `tokens.css`.
 
 ## Tiers
 

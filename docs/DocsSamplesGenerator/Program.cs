@@ -38,6 +38,10 @@ public static class Program
                         ctx.Status("Downloading preset stylesheets...");
                         await generator.DownloadPresetStylesheetsAsync(client);
                         AnsiConsole.MarkupLine("[green]✓[/] Downloaded preset stylesheets.");
+
+                        ctx.Status("Downloading knob manifest...");
+                        await generator.DownloadKnobManifestAsync(client);
+                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded knob manifest.");
                     }
                 );
 
