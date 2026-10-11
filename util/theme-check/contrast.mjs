@@ -39,7 +39,7 @@ try {
         await evaluate(applyTheme(theme));
         await sleep(300);
         const result = await evaluate(`(${pageCheck})(${+options.minSeparation})`);
-        report.push({ theme: theme.name, mode, url, knobs: theme.knobs, ...result });
+        report.push({ theme: theme.name, mode, url, variables: theme.variables, ...result });
       }
 } finally {
   chrome.kill();

@@ -39,12 +39,12 @@ Use the pinned SDK and checked-in package manager lockfiles. Keep package bounda
 
 Canonical development skills live in `.agents/skills/`; `.claude/skills/` contains relative links to them. These help build StellarAdmin. The separately packaged consumer skills in `skills/` teach applications how to use it; do not mix their audiences or discovery paths.
 
-- [create-custom-theme](.agents/skills/create-custom-theme/SKILL.md): theme fixtures (the samples' and theme builder's themes) and new knobs.
+- [create-custom-theme](.agents/skills/create-custom-theme/SKILL.md): theme fixtures (the samples' and theme builder's themes) and new theme variables.
 - [prototype-component](.agents/skills/prototype-component/SKILL.md): visual exploration for new components before extraction.
 - [port-shadcn-component](.agents/skills/port-shadcn-component/SKILL.md): port upstream components through library, samples, website, and consumer references.
 - [embed-website-components](.agents/skills/embed-website-components/SKILL.md): shared workflow for generated inline website examples.
 
-See [agent setup](docs/agents.md) for discovery and handoffs. Theme knobs and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
+See [agent setup](docs/agents.md) for discovery and handoffs. Theme variables and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
 
 ## Separate website and release transition
 

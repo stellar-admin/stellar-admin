@@ -1,5 +1,5 @@
 {
-  "$comment": "The theme knobs, for tools such as the website's theme builder. Source of wwwroot/stellar-admin.knobs.json; scripts/build-css.mjs checks it against tokens.css. Meanings follow docs/design/tokens.md.",
+  "$comment": "The theme variables, for tools such as the website's theme builder. Source of wwwroot/stellar-admin.theme-variables.json; scripts/build-css.mjs checks it against tokens.css. Meanings follow docs/design/tokens.md.",
   "version": 1,
   "groups": [
     { "id": "colour", "label": "Colour" },
@@ -10,7 +10,7 @@
     { "id": "buttons", "label": "Buttons" },
     { "id": "focus", "label": "Focus" }
   ],
-  "knobs": [
+  "variables": [
     { "name": "--sa-accent", "group": "colour", "essential": true, "label": "Accent", "meaning": "Brand colour: primary actions, focus, selection, bold highlights.", "type": "color", "default": "oklch(0.5 0.16 258)" },
     { "name": "--sa-accent-dark", "group": "colour", "label": "Accent (dark)", "meaning": "The accent in dark mode.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#7aa2ff" },
     { "name": "--sa-on-accent", "group": "colour", "label": "Text on accent", "meaning": "Text on accent fills, instead of the automatic black or white.", "type": "color", "optional": true, "follows": "--sa-accent", "initial": "#ffffff" },

@@ -39,9 +39,9 @@ public static class Program
                         await generator.DownloadPresetStylesheetsAsync(client);
                         AnsiConsole.MarkupLine("[green]✓[/] Downloaded preset stylesheets.");
 
-                        ctx.Status("Downloading knob manifest...");
-                        await generator.DownloadKnobManifestAsync(client);
-                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded knob manifest.");
+                        ctx.Status("Downloading theme variable manifest...");
+                        await generator.DownloadThemeVariableManifestAsync(client);
+                        AnsiConsole.MarkupLine("[green]✓[/] Downloaded theme variable manifest.");
                     }
                 );
 

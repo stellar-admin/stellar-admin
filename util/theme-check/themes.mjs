@@ -39,14 +39,14 @@ export function withMode(url, mode) {
   return result.href;
 }
 
-// Applied after load: no transitions (so colours are final), the preset's CSS, the random knobs
+// Applied after load: no transitions (so colours are final), the preset's CSS, the random variables
 // on the root element.
 export function applyTheme(theme) {
   return `(() => {
     const style = document.createElement("style");
     style.textContent = "*, ::before, ::after { transition: none !important; }\\n" + ${JSON.stringify(theme.css ?? "")};
     document.head.append(style);
-    for (const [name, value] of Object.entries(${JSON.stringify(theme.knobs ?? {})}))
+    for (const [name, value] of Object.entries(${JSON.stringify(theme.variables ?? {})}))
       document.documentElement.style.setProperty(name, value);
   })()`;
 }

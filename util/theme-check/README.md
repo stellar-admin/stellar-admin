@@ -2,7 +2,7 @@
 
 Checks for the token-driven stylesheet (`stellar-admin.css`, see [theme tokens](../../docs/design/tokens.md)). Each runs every page given in the base theme, each preset file and seeded random themes, in light and dark mode, in headless Chromium over the DevTools protocol (`../visual-regression/browser.mjs`). Set `CHROME_PATH` or pass `--browser` when Chromium is installed under another name.
 
-A theme is applied after the page loads: transitions off, the preset file's CSS appended, then the random knobs set on the root element. The mode is passed as `?mode=light|dark`, which both the prototype and DocsSamples read. Every third random theme is extreme: ranged knobs take one end of a wider range.
+A theme is applied after the page loads: transitions off, the preset file's CSS appended, then the random theme variables set on the root element. The mode is passed as `?mode=light|dark`, which both the prototype and DocsSamples read. Every third random theme is extreme: ranged theme variables take one end of a wider range.
 
 ## Contrast
 

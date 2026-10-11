@@ -5,7 +5,7 @@ StellarAdmin has two products, with a separate consumer skill planned for each, 
 | Product | Skill directory | Status |
 | --- | --- | --- |
 | Tag Helpers — UI library for ASP.NET Core MVC and Razor Pages | [stellar-admin-tag-helpers](stellar-admin-tag-helpers/SKILL.md) | Available: setup, components, forms, layout, and theming. |
-| Themes — theme files of knob values, for either product | [stellar-admin-theme](stellar-admin-theme/SKILL.md) | Available: writing a theme from a description or brand colours, the knob reference, worked examples, and theme builder links. |
+| Themes — theme files of CSS variables, for either product | [stellar-admin-theme](stellar-admin-theme/SKILL.md) | Available: writing a theme from a description or brand colours, the theme variable reference, worked examples, and theme builder links. |
 | Dashboard — integrated admin panel | `stellar-admin-dashboard/` | Planned: existing [component references](stellar-admin-dashboard/references/components-index.md) and [setup notes](stellar-admin-dashboard/references/setup.md) are preserved here, but there is no installable skill yet. |
 
 ## Install the Tag Helpers skill

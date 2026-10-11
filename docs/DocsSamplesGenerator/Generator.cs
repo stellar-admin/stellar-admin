@@ -222,16 +222,16 @@ internal sealed partial class Generator
         );
     }
 
-    /// <summary>Downloads the knob manifest under its stable name, for the website's theme builder.</summary>
-    public async Task DownloadKnobManifestAsync(HttpClient client)
+    /// <summary>Downloads the theme variable manifest under its stable name, for the website's theme builder.</summary>
+    public async Task DownloadThemeVariableManifestAsync(HttpClient client)
     {
         var response = await client.GetAsync(
-            "/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json"
+            "/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json"
         );
         response.EnsureSuccessStatusCode();
 
         await File.WriteAllBytesAsync(
-            Path.Combine(DownloadedAssetsOutputFolder, "stellar-admin.knobs.json"),
+            Path.Combine(DownloadedAssetsOutputFolder, "stellar-admin.theme-variables.json"),
             await response.Content.ReadAsByteArrayAsync()
         );
     }

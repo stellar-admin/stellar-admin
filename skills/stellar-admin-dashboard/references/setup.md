@@ -8,7 +8,7 @@ The resource page helpers live in `StellarAdmin.Dashboard`, which is MIT license
 
 ## Dashboard theme
 
-Dashboard uses the default theme: its layout links `stellar-admin.css`. For another look, add a theme file of knob values (written by hand or downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)) and any web font it needs as stylesheets in `Program.cs`:
+Dashboard uses the default theme: its layout links `stellar-admin.css`. For another look, add a theme file of CSS variables (written by hand or downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)) and any web font it needs as stylesheets in `Program.cs`:
 
 ```csharp
 builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
@@ -18,7 +18,7 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 });
 ```
 
-The layout links `stellar-admin.css` first, then the registered stylesheets in registration order. A theme file sets its knobs in `@layer sa.theme`, so it outranks the Dashboard's own stylesheet whatever the order. Dashboard makes no font requests unless a font stylesheet is registered; without one, the theme's font stacks fall back to native fonts. The theme applies to the whole Dashboard; it does not add a visitor theme picker. The stellar-admin-theme skill writes theme files; the Tag Helpers skill's theming guide covers fonts and dark mode.
+The layout links `stellar-admin.css` first, then the registered stylesheets in registration order. A theme file sets its variables in `@layer sa.theme`, so it outranks the Dashboard's own stylesheet whatever the order. Dashboard makes no font requests unless a font stylesheet is registered; without one, the theme's font stacks fall back to native fonts. The theme applies to the whole Dashboard; it does not add a visitor theme picker. The stellar-admin-theme skill writes theme files; the Tag Helpers skill's theming guide covers fonts and dark mode.
 
 ## Resource registration
 

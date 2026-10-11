@@ -1,18 +1,18 @@
-# Theme knobs
+# Theme variables
 
-The knobs a theme file sets, how to turn a description into knob values, three complete themes as worked examples, and how to link the result to the theme builder. How to write, link and load a theme file is in the [skill's workflow](../SKILL.md#workflow).
+The variables a theme file sets, how to turn a description into variable values, three complete themes as worked examples, and how to link the result to the theme builder. How to write, link and load a theme file is in the [skill's workflow](../SKILL.md#workflow).
 
-The package also ships this list as `stellar-admin.knobs.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json`), for the installed version. If a knob below is missing from the app's copy, the app's package predates it: don't use it.
+The package also ships this list as `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json`), for the installed version. If a variable below is missing from the app's copy, the app's package predates it: don't use it.
 
-## The knobs
+## The variables
 
-Starred knobs (★) are the essential ones: most themes are made from these alone. Optional knobs are unset by default and follow the knob they refine until set. Ranges are the useful ones; the theme builder's controls use the same.
+Starred variables (★) are the essential ones: most themes are made from these alone. Optional variables are unset by default and follow the variable they refine until set. Ranges are the useful ones; the theme builder's controls use the same.
 
 ### Colour
 
 Colours accept any CSS colour; `oklch(lightness chroma hue)` is the easiest to reason about. The accent's fills and text are adjusted for contrast automatically, so any lightness works.
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-accent` ★ | `oklch(0.5 0.16 258)` | any colour | Brand colour: primary actions, focus, selection, bold highlights |
 | `--sa-accent-dark` | follows the accent | any colour | The accent in dark mode |
@@ -30,7 +30,7 @@ Colours accept any CSS colour; `oklch(lightness chroma hue)` is the easiest to r
 
 ### Shape and depth
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-radius` ★ | `6px` | 0–24px, or `9999px` | Control corners; `9999px` gives pill controls |
 | `--sa-radius-outer` | derived from the radius | 0–32px | Card and dialog corners |
@@ -43,7 +43,7 @@ Colours accept any CSS colour; `oklch(lightness chroma hue)` is the easiest to r
 
 ### Space and type
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-density` ★ | `1` | 0.7–1.4 | Spacing and control sizes, not text: 0.75 dense to 1.25 roomy |
 | `--sa-type-scale` | `1` | 0.8–1.2 | Text sizes |
@@ -61,7 +61,7 @@ End every font stack with native fallbacks. The theme builder offers Inter, Geis
 
 Menu labels, sidebar group labels, and table column heads when `--sa-column-head-label` is on.
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-section-label-font` | `inherit` | `inherit`, `var(--sa-font-heading)`, `var(--sa-font-mono)` | Font |
 | `--sa-section-label-text` | 11.5px | `var(--sa-text-2xs)` (11px), `var(--sa-text-xs)` (12px), `var(--sa-text-sm)` (14px) | Size |
@@ -71,7 +71,7 @@ Menu labels, sidebar group labels, and table column heads when `--sa-column-head
 
 ### Structure and buttons
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-footer-fill` | `0` | 0 or 1 | Card footers sit on a tinted band |
 | `--sa-footer-rule` | `1` | 0 or 1 | Card footers have a divider above them |
@@ -88,17 +88,17 @@ Menu labels, sidebar group labels, and table column heads when `--sa-column-head
 
 ### Focus
 
-| Knob | Default | Range | Meaning |
+| Variable | Default | Range | Meaning |
 | --- | --- | --- | --- |
 | `--sa-focus-width` | `3px` | 1–4px | Focus ring width |
 | `--sa-focus-offset` | `0px` | 0–4px | Gap between the control and the ring |
 | `--sa-focus-color` | a wash of the accent | any colour | Focus ring colour |
 
-## From a description to knobs
+## From a description to variables
 
-Start from the default (or the closest worked example below) and move only the knobs the description asks for. Words in a description usually map like this:
+Start from the default (or the closest worked example below) and move only the variables the description asks for. Words in a description usually map like this:
 
-| Description | Knobs |
+| Description | Variables |
 | --- | --- |
 | Dense, compact, data-heavy, power users | `--sa-density` 0.78–0.9; `--sa-radius` 2–4px; `--sa-elevation` 0.3–0.5; `--sa-focus-width` 2px; `--sa-section-label-text: var(--sa-text-xs)` |
 | Roomy, airy, relaxed, consumer | `--sa-density` 1.1–1.2; `--sa-radius` 8–10px; `--sa-leading-body` 1.6 |
@@ -117,7 +117,7 @@ Start from the default (or the closest worked example below) and move only the k
 
 Colour names as oklch hues: red 27, orange 48, amber 70, yellow 95, green 150, teal 185, cyan 210, blue 258, indigo 270, violet 295, pink 350. Lightness 0.45–0.65 and chroma 0.12–0.2 give a typical accent; a brand colour can be given as hex instead.
 
-A dark mode that should feel different from the light one (warm paper turning to a cool night) uses the `-dark` knobs; otherwise leave them unset.
+A dark mode that should feel different from the light one (warm paper turning to a cool night) uses the `-dark` variables; otherwise leave them unset.
 
 ## Worked examples
 
@@ -222,11 +222,11 @@ Three complete themes, also offered as starting points in the theme builder.
 }
 ```
 
-These set more knobs than a theme needs; some repeat a default to make the choice explicit. A theme of four or five knobs is normal.
+These set more variables than a theme needs; some repeat a default to make the choice explicit. A theme of four or five variables is normal.
 
 ## Link the result to the theme builder
 
-The theme builder reads a theme from its URL, so a link shows the theme on real components and lets the user tune it. Build the link from the knobs the theme sets:
+The theme builder reads a theme from its URL, so a link shows the theme on real components and lets the user tune it. Build the link from the variables the theme sets:
 
 `https://www.stellaradmin.com/theme-builder#v1:` followed by `name=value` pairs joined with `&`, where each name drops its `--sa-` prefix and each value is URL-encoded (`encodeURIComponent`: spaces become `%20`, commas `%2C`, quotes `%22`).
 

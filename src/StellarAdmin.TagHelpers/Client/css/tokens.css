@@ -1,10 +1,10 @@
-/* StellarAdmin foundation: knobs (tier 0) and foundation tokens (tier 1).
+/* StellarAdmin foundation: theme variables (tier 0) and foundation tokens (tier 1).
  *
- * The one source of theme values. Knobs generate the foundation tokens; components read the knobs
- * and foundation tokens directly and have no public tokens of their own. The public names are
+ * The one source of theme values. Theme variables generate the foundation tokens; components read the
+ * theme variables and foundation tokens directly and have no public tokens of their own. The public names are
  * documented in docs/design/tokens.md; anything starting --_ is internal.
  *
- *   Tier 0  knobs        --sa-accent, --sa-danger, --sa-neutral-*, --sa-radius, --sa-density, … and the
+ *   Tier 0  variables    --sa-accent, --sa-danger, --sa-neutral-*, --sa-radius, --sa-density, … and the
  *                        tier 1 tokens that need no formula (fonts, weights, label case, switches).
  *                        A theme is usually a few of these:
  *                          :root { --sa-accent: #0f766e; --sa-radius: 2px; --sa-density: 0.85; }
@@ -13,17 +13,17 @@
  *   Tier 2  overrides    Raw .sa-* rules in sa.overrides. The escape hatch; every rule there is a sign
  *                        the vocabulary is missing something.
  *
- * Kinds of knob:
- *   - required knobs have a default on :root;
- *   - optional knobs have no default and are read through a var() fallback (--sa-accent-dark,
+ * Kinds of theme variable:
+ *   - required theme variables have a default on :root;
+ *   - optional theme variables have no default and are read through a var() fallback (--sa-accent-dark,
  *     --sa-radius-outer, --sa-on-accent, --sa-focus-color, --sa-danger-dark, --sa-neutral-hue-dark,
  *     --sa-neutral-chroma-dark, and per-component ones: --sa-dialog-footer-fill/-rule, --sa-kbd-font), so when unset
- *     they re-derive in every scope from the knobs they would otherwise follow.
+ *     they re-derive in every scope from the theme variables they would otherwise follow.
  *
  * Scoping. Custom properties that reference other custom properties resolve where they are declared,
  * and descendants inherit the resolved value. So formulas are declared on every element that can change
- * a knob: :root, a .dark scope, a [data-density] scope and a [data-sa-scope] (any element that sets its
- * own knobs, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
+ * a theme variable: :root, a .dark scope, a [data-density] scope and a [data-sa-scope] (any element that
+ * sets its own theme variables, e.g. a branded panel). Colour formulas are split by mode; geometry is mode-independent.
  *
  * Modifier rule. A modifier class (a variant, MenuAccent.Bold, …) never redefines a token. It sets a
  * private --_* variable that the component's rules read.
@@ -36,7 +36,7 @@
 @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
 
 @layer sa.tokens {
-  /* --- Knobs, with the base theme's values ---------------------------------------------------- */
+  /* --- Theme variables, with the base theme's values ------------------------------------------ */
   :root {
     /* Colour */
     --sa-accent: oklch(0.5 0.16 258);    /* brand colour: primary buttons, focus, bold highlights */
@@ -71,7 +71,7 @@
     --sa-focus-width: 3px;
     --sa-focus-offset: 0px;              /* > 0 draws a surface-coloured gap before the ring */
 
-    /* Type: tier 1 tokens that need no formula, so they act as knobs as they are */
+    /* Type: tier 1 tokens that need no formula, so they act as theme variables as they are */
     --sa-font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
     --sa-font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
     --sa-font-heading: var(--sa-font-sans);
@@ -110,7 +110,7 @@
   [data-density="compact"] { --sa-density: 0.8; }
   [data-density="comfortable"] { --sa-density: 1.2; }
 
-  /* --- Geometry and type: re-derived wherever density or knobs change ------------------------ */
+  /* --- Geometry and type: re-derived wherever density or theme variables change -------------- */
   :root,
   [data-density],
   [data-sa-scope] {
@@ -273,7 +273,7 @@
     --sa-invalid-shadow: 0 0 #0000;
     --sa-invalid-focus-shadow: 0 0 0 var(--sa-focus-width) var(--sa-invalid-ring-color);
 
-    /* One elevation knob scales every shadow's opacity; dark mode needs about 2.5× to read. */
+    /* One elevation theme variable scales every shadow's opacity; dark mode needs about 2.5× to read. */
     --_shadow: oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.07 * var(--_shadow-a)));
     --_shadow-soft: oklch(0.2 calc(var(--_c) * 3) var(--_h) / calc(0.04 * var(--_shadow-a)));
     --sa-shadow-control: 0 1px 2px 0 var(--_shadow-soft);

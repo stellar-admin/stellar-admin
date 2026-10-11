@@ -1,6 +1,6 @@
 # Theming StellarAdmin
 
-**A theme is knob values.** The package ships one stylesheet, `stellar-admin.css`, which carries every component and the default theme. Any other look is a short CSS file of knob values — `--sa-accent`, `--sa-radius`, `--sa-density`, … — that the app owns and links after the stylesheet. Every colour, size and shadow is derived from the knobs, so a theme changes all components at once, in light and dark mode, without touching component CSS. Dark mode is a CSS class.
+**A theme is a few CSS variables.** The package ships one stylesheet, `stellar-admin.css`, which carries every component and the default theme. Any other look is a short CSS file that sets a few theme variables — CSS variables such as `--sa-accent`, `--sa-radius`, `--sa-density`, … — that the app owns and links after the stylesheet. Every colour, size and shadow is derived from the variables, so a theme changes all components at once, in light and dark mode, without touching component CSS. Dark mode is a CSS class.
 
 ## The default theme
 
@@ -12,7 +12,7 @@ With no theme file, the app gets the default theme: a blue accent, near-neutral 
 
 ## A theme file
 
-A theme file sets knobs in the `sa.theme` cascade layer, on `:root`:
+A theme file sets variables in the `sa.theme` cascade layer, on `:root`:
 
 ```css
 @layer sa.theme {
@@ -31,17 +31,17 @@ Save it in the app (for example `wwwroot/css/theme.css`) and link it **after** `
 <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
 ```
 
-Set only the knobs that differ from the default; leave the rest out. Dark mode is derived from the same knobs, so a theme normally sets nothing for `.dark` (the optional `-dark` knobs exist for when it should differ). The installed package lists every knob, with its meaning and range, in `stellar-admin.knobs.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.knobs.json`).
+Set only the variables that differ from the default; leave the rest out. Dark mode is derived from the same variables, so a theme normally sets nothing for `.dark` (the optional `-dark` variables exist for when it should differ). The installed package lists every variable, with its meaning and range, in `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json`).
 
 To switch themes, switch the theme file's `<link>`. To go back to the default, remove it.
 
 ### Create or change a theme
 
-Writing a theme — from a description ("warm, editorial, dense, green accent"), brand colours or a reference look — is the separate **stellar-admin-theme** skill, with the knob reference, worked examples and the theme builder link. If it isn't installed, suggest `npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme`, or point the user to the [theme builder](https://www.stellaradmin.com/theme-builder): they pick a starting point, adjust the knobs on live components, and download the theme file.
+Writing a theme — from a description ("warm, editorial, dense, green accent"), brand colours or a reference look — is the separate **stellar-admin-theme** skill, with the theme variable reference, worked examples and the theme builder link. If it isn't installed, suggest `npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme`, or point the user to the [theme builder](https://www.stellaradmin.com/theme-builder): they pick a starting point, adjust the variables on live components, and download the theme file.
 
 ## Fonts
 
-The library never downloads fonts. Each font knob is a font stack whose first family is preferred and whose fallbacks are native, so a theme works without loading anything — it just renders in the fallback.
+The library never downloads fonts. Each font variable is a font stack whose first family is preferred and whose fallbacks are native, so a theme works without loading anything — it just renders in the fallback.
 
 To get the intended typography, load the family from the app's layout, before the stylesheets, using Google Fonts or self-hosted files:
 
@@ -51,12 +51,12 @@ To get the intended typography, load the family from the app's layout, before th
 
 The default theme prefers Inter; load Inter too if the app wants it rather than the system font. A theme file downloaded from the theme builder may instead start with an `@import url("https://fonts.googleapis.com/…")` line. That works only as the file's first statement in a file that is linked; inside a file that is itself `@import`ed, browsers drop it silently.
 
-## Scoped knobs
+## Scoped theme variables
 
-Knobs re-derive everything inside the element they are set on, so part of a page can differ from the rest:
+Theme variables re-derive everything inside the element they are set on, so part of a page can differ from the rest:
 
 - `data-density="compact"` (0.8) or `data-density="comfortable"` (1.2) on any element changes the density of that section.
-- `data-sa-scope` marks an element that sets its own knobs, such as a branded panel:
+- `data-sa-scope` marks an element that sets its own variables, such as a branded panel:
 
 ```razor
 <section data-sa-scope style="--sa-accent: oklch(0.6 0.15 150); --sa-radius: 9999px;">
@@ -93,7 +93,7 @@ Setting `color-scheme` alongside the class keeps native controls — scrollbars,
 
 ## Use the tokens in your own CSS
 
-The knobs feed **foundation tokens** that the components read, and the app's own CSS can read them too, so custom markup follows the theme and dark mode:
+The theme variables feed **design tokens** that the components read, and the app's own CSS can read them too, so custom markup follows the theme and dark mode:
 
 ```css
 .trip-summary {
@@ -122,7 +122,7 @@ The knobs feed **foundation tokens** that the components read, and the app's own
 | Type | `--sa-font-sans`, `--sa-font-heading`, `--sa-font-mono`, `--sa-text-xs`, `--sa-text-sm`, `--sa-text-base` |
 | Shadows | `--sa-shadow-container`, `--sa-shadow-overlay` |
 
-Read the tokens; don't set them. A theme sets knobs. A token name not listed here, and anything starting `--_`, is internal and may change.
+Read the tokens; don't set them. A theme sets the theme variables. A token name not listed here, and anything starting `--_`, is internal and may change.
 
 ### Tailwind utilities in your own markup
 
@@ -172,13 +172,13 @@ Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle` — only call 
 
 ## Upgrading from theme bundles
 
-Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, `stellar-admin.shadcn.nova.css`, …), Dashboard's `ConfigureTheme`, and shadcn-named variables (`--primary`, `--radius`) for customization. If the installed package still has those bundles, follow that version's documentation instead of this guide. When upgrading, link `stellar-admin.css` instead, move any customization to knobs in a theme file, and replace overrides of `--primary`, `--background` and the other shadcn variables, which the components no longer read, with the matching knobs (`--sa-accent`, `--sa-neutral-hue`, …). The former themes are not reproduced; pick the closest look in the theme builder.
+Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, `stellar-admin.shadcn.nova.css`, …), Dashboard's `ConfigureTheme`, and shadcn-named variables (`--primary`, `--radius`) for customization. If the installed package still has those bundles, follow that version's documentation instead of this guide. When upgrading, link `stellar-admin.css` instead, move any customization to variables in a theme file, and replace overrides of `--primary`, `--background` and the other shadcn variables, which the components no longer read, with the matching variables (`--sa-accent`, `--sa-neutral-hue`, …). The former themes are not reproduced; pick the closest look in the theme builder.
 
 ## Rules
 
-1. `stellar-admin.css` alone is the default theme. Any other theme is a knob file the app owns, linked after it; switch themes by switching that `<link>`.
-2. Set knobs, in `@layer sa.theme` on `:root`. Don't set foundation tokens, and don't write component rules to change a look a knob covers.
-3. Set only the knobs that differ from the default, and let dark mode derive from them.
+1. `stellar-admin.css` alone is the default theme. Any other theme is a theme file of CSS variables the app owns, linked after it; switch themes by switching that `<link>`.
+2. Set theme variables, in `@layer sa.theme` on `:root`. Don't set design tokens, and don't write component rules to change a look a variable covers.
+3. Set only the variables that differ from the default, and let dark mode derive from them.
 4. Load web fonts from the app layout; the stylesheet never fetches them.
 5. Enable dark mode with the `dark` class on an ancestor, with `color-scheme` alongside it; don't write dark CSS of your own.
 6. In your own CSS, read the `--sa-color-*`, `--sa-radius-*` and `--sa-space-*` tokens instead of hard-coded colours and sizes. Tailwind utilities need the app's own Tailwind build plus the adapter.

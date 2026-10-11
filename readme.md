@@ -61,7 +61,7 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 </html>
 ```
 
-A theme file sets knobs in the `sa.theme` layer:
+A theme file sets variables in the `sa.theme` layer:
 
 ```css
 @layer sa.theme {

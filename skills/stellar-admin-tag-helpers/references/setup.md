@@ -55,7 +55,7 @@ The assets are served from the package as static web assets under `_content/Stel
 <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 ```
 
-- The **CSS** carries all component styling and the default theme. Missing it → unstyled components. Another theme is an optional file of knob values linked after it; see [theming](theming.md).
+- The **CSS** carries all component styling and the default theme. Missing it → unstyled components. Another theme is an optional file of CSS variables linked after it; see [theming](theming.md).
 - The **JS** bundle carries the `<sel-*>` web components, the `interestfor` polyfill, and the `window.stellarAdmin` helpers. Missing it → static components still render, but the dropdown menu's keyboard handling, the slider, the OTP input, the sidebar toggle and the table selection stop working. See `javascript.md`.
 
 Both are **static web assets**, so the app must serve them — the default templates already call `app.MapStaticAssets()` (or `app.UseStaticFiles()` on older templates). If those two URLs 404, that's the missing piece rather than anything StellarAdmin-specific.
@@ -70,7 +70,7 @@ For basic installation, retain Bootstrap and explain that CSS resets and overlap
 
 ## Optional: use another theme
 
-The default theme needs nothing more. For another look, write a theme file of knob values (or download one from the [theme builder](https://www.stellaradmin.com/theme-builder)) and link it after `stellar-admin.css`:
+The default theme needs nothing more. For another look, write a theme file of CSS variables (or download one from the [theme builder](https://www.stellaradmin.com/theme-builder)) and link it after `stellar-admin.css`:
 
 ```razor
 <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>

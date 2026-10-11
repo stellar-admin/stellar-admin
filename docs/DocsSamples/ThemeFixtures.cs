@@ -78,17 +78,17 @@ public static partial class ThemeFixtures
             "StellarAdmin.TagHelpers",
             "Client",
             "css",
-            "knobs.json"
+            "theme-variables.json"
         );
         using var document = JsonDocument.Parse(File.ReadAllText(manifest));
-        var knob = document
-            .RootElement.GetProperty("knobs")
+        var variable = document
+            .RootElement.GetProperty("variables")
             .EnumerateArray()
             .Single(k => k.GetProperty("name").GetString() == "--sa-font-sans");
 
-        defaultFont = Normalize(knob.GetProperty("default").GetString()!);
+        defaultFont = Normalize(variable.GetProperty("default").GetString()!);
         var fonts = new Dictionary<string, string>();
-        foreach (var choice in knob.GetProperty("choices").EnumerateArray())
+        foreach (var choice in variable.GetProperty("choices").EnumerateArray())
         {
             if (choice.TryGetProperty("google", out var google))
                 fonts[Normalize(choice.GetProperty("value").GetString()!)] = google.GetString()!;

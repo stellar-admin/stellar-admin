@@ -1,4 +1,4 @@
-// Seeded random knob sets for the theme checks. Every third theme is extreme: each ranged knob
+// Seeded random variable sets for the theme checks. Every third theme is extreme: each ranged variable
 // takes one end of a wider range, to find formulas that only hold for moderate values.
 
 export function randomThemes(count, seed) {
@@ -11,7 +11,7 @@ export function randomThemes(count, seed) {
     const ranged = (low, high, extremeLow, extremeHigh) =>
       extreme ? pick([extremeLow, extremeHigh]) : between(low, high);
     const hue = Math.round(random() * 360);
-    const knobs = {
+    const variables = {
       "--sa-accent": `oklch(${ranged(0.45, 0.7, 0.3, 0.88)} ${ranged(0.08, 0.22, 0.02, 0.3)} ${hue})`,
       "--sa-danger": `oklch(${ranged(0.5, 0.65, 0.4, 0.75)} ${between(0.15, 0.24)} ${Math.round(between(15, 35))})`,
       "--sa-neutral-hue": String(random() < 0.6 ? hue : Math.round(random() * 360)),
@@ -33,6 +33,6 @@ export function randomThemes(count, seed) {
       "--sa-column-head-label": pick(["0", "1"]),
       "--sa-column-head-fill": pick(["0", "1"]),
     };
-    return { name: `random${index}${extreme ? "-extreme" : ""}`, knobs };
+    return { name: `random${index}${extreme ? "-extreme" : ""}`, variables };
   });
 }

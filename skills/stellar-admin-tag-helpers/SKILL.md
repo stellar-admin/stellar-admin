@@ -42,7 +42,7 @@ For focused tasks, read the relevant workflow guide:
 
 - **[Forms](references/forms.md)** — fields, validation, model binding, and input composition.
 - **[Layout](references/layout.md)** — app shells, navigation, page structure, and cards.
-- **[Theming](references/theming.md)** — the default theme, linking a theme file, fonts, dark mode, using the tokens in your own CSS, and menu appearance. Creating or changing a theme (knob values from a description, brand colours, a theme builder link) is the separate **stellar-admin-theme** skill; if it isn't installed, suggest `npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme`.
+- **[Theming](references/theming.md)** — the default theme, linking a theme file, fonts, dark mode, using the tokens in your own CSS, and menu appearance. Creating or changing a theme (choosing CSS variable values from a description, brand colours, a theme builder link) is the separate **stellar-admin-theme** skill; if it isn't installed, suggest `npx skills add stellar-admin/stellar-admin --skill stellar-admin-theme`.
 
 ## The six things to get right (details in conventions.md)
 

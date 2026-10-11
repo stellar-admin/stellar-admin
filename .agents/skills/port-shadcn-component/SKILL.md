@@ -12,7 +12,7 @@ description: >-
 
 # Porting a shadcn component
 
-Touches the product repository and the website. Upstream settles the anatomy, the states and the default look; StellarAdmin restates that look in its tokens, so every theme follows from the knobs without per-theme work.
+Touches the product repository and the website. Upstream settles the anatomy, the states and the default look; StellarAdmin restates that look in its tokens, so every theme follows from the theme variables without per-theme work.
 
 For an authorized end-to-end port, carry the work through CSS, tag helpers, DocsSamples demos, website docs, and consumer references. Make routine Phase 0 decisions using the defaults below and report them. Respect a narrower user request (such as analysis only), explicit review checkpoints, and existing authorization; this skill does not authorize commits or publishing. Ask about a consequential unresolved design choice only when it blocks the next step.
 
@@ -79,7 +79,7 @@ Read the Radix JSON from Phase 1 for the look: its class strings have everything
 
 Write the rules in `Client/css/components/<component>.css`: a header comment naming the component and its tags, the rules in `@layer sa.components`, and private `--_*` variables for values that vary by variant, size or state (the variant classes set them; the base rule reads them). Values that differ in dark mode go in `@layer sa.tokens` under `.dark`. Style off the `data-*` attributes and native state, never marker classes. A file must not rely on another file's order: a rule that adjusts another component's part out-ranks it by selector. Follow an existing file of the same kind (`badge.css`, `button.css`, `card.css`).
 
-When upstream's look needs a decision the tokens don't make (an outline only some themes want, a band behind a header), check the knobs first: `--sa-outlines`, `--sa-footer-fill`, `--sa-column-head-fill` and the rest already switch such treatments across components, and a new part should honour the ones that apply to it. A treatment that must differ between themes and no knob covers is a new knob, which needs Jerrie's approval; see the [theme skill](../create-custom-theme/SKILL.md). Don't add one just for this component.
+When upstream's look needs a decision the tokens don't make (an outline only some themes want, a band behind a header), check the theme variables first: `--sa-outlines`, `--sa-footer-fill`, `--sa-column-head-fill` and the rest already switch such treatments across components, and a new part should honour the ones that apply to it. A treatment that must differ between themes and no theme variable covers is a new theme variable, which needs Jerrie's approval; see the [theme skill](../create-custom-theme/SKILL.md). Don't add one just for this component.
 
 Build the CSS directly; it fails loudly where `dotnet build` can succeed over a silently failed CSS build:
 
