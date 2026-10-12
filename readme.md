@@ -44,7 +44,7 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 
 ### 4. Link the stylesheet and JavaScript file
 
-Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page. The stylesheet carries the default theme. For another look, make a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder), or write one yourself, and link it after the stylesheet.
+Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page or layout.
 
 ```razor
 <!DOCTYPE html>
@@ -52,7 +52,6 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 <head>
     ...
     <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
     <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
@@ -61,24 +60,8 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 </html>
 ```
 
-A theme file sets variables in the `sa.theme` layer:
-
-```css
-@layer sa.theme {
-  :root {
-    --sa-accent: oklch(0.5 0.14 245);
-    --sa-radius: 4px;
-    --sa-density: 0.9;
-  }
-}
-```
-
 > [!TIP]
-> You can find more information on the [Theming](https://www.stellaradmin.com/docs/tag-helpers/theming) page.
-
-#### Browser support
-
-The stylesheet uses CSS relative colour syntax, `color-mix()`, cascade layers, native nesting, `:has()` and `@scope`, without fallbacks: Chrome and Edge 119, Safari 18 and Firefox 146 or later. In older browsers colours fail silently, leaving components unstyled in places.
+> To change the default theme, create a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder) and link it after the stylesheet. The [Theming page](https://www.stellaradmin.com/docs/tag-helpers/theming) provides more information on theming. 
 
 ### 5. Start using the Tag Helpers
 
