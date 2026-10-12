@@ -42,6 +42,29 @@
             </sa-data-grid-item-template>
         </sa-data-grid-column>
     }
+    @if (Model.RowDetails is { } rowDetails)
+    {
+        var panel = rowDetails.Panels[0];
+        <sa-data-grid-row-detail toggle="rowDetails.Toggle" row-click="rowDetails.RowClick"
+                                 expand-mode="rowDetails.ExpandMode" emphasis="rowDetails.Emphasis"
+                                 inset="rowDetails.Inset" animate="rowDetails.Animate">
+            @* Links and forms in the details navigate normally instead of swapping the grid *@
+            <div hx-boost:inherited="false">
+                @if (panel.LoadsOnDemand)
+                {
+                    <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
+                         hx-trigger='row-detail-expand from:"closest tr" once'
+                         hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
+                        <partial name="_IndexRowDetailLoading" />
+                    </div>
+                }
+                else
+                {
+                    <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
+                }
+            </div>
+        </sa-data-grid-row-detail>
+    }
     @if (Model.Paging is { } paging)
     {
         <sa-data-grid-pager asp-action="Index" asp-route-id="@((string?)null)"

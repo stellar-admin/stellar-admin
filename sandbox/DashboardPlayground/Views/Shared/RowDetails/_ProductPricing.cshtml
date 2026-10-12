@@ -1,0 +1,19 @@
+@model ProductPricing
+<dl class="grid grid-cols-2 gap-x-8 gap-y-3 text-sm sm:grid-cols-4">
+    <div>
+        <dt class="text-muted-foreground">SKU</dt>
+        <dd class="font-medium">@(string.IsNullOrEmpty(Model.Sku) ? "—" : Model.Sku)</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">Category</dt>
+        <dd class="font-medium">@(Model.Category ?? "Uncategorized")</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">Price incl. 15% VAT</dt>
+        <dd class="font-medium tabular-nums">@((Model.Price * 1.15m).ToString("0.00"))</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">Price per dozen</dt>
+        <dd class="font-medium tabular-nums">@((Model.Price * 12).ToString("0.00"))</dd>
+    </div>
+</dl>

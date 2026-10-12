@@ -1,0 +1,8 @@
+@model Customer
+<div class="flex items-center gap-3">
+    <sa-avatar name="@Model.Name" />
+    <div class="flex flex-col text-sm">
+        <span class="font-medium">@Model.Name</span>
+        <a class="text-muted-foreground underline-offset-4 hover:underline" href="mailto:@Model.Email">@Model.Email</a>
+    </div>
+</div>

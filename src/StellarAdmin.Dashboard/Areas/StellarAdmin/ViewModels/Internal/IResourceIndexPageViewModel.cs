@@ -61,6 +61,11 @@ public interface IResourceIndexPageViewModel
     ResourceIndexQuery Query { get; }
 
     /// <summary>
+    ///     The row details settings, or null when rows do not expand.
+    /// </summary>
+    ResourceRowDetailsOptions? RowDetails { get; }
+
+    /// <summary>
     ///     The scope tabs.
     /// </summary>
     IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; }

@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -186,21 +185,12 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         bool includeLookups = false
     )
     {
-        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
-        var property = entityType.FindPrimaryKey()!.Properties.Single();
-        if (!TryParseResourceId(id, property.ClrType, out var key))
+        if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, id, out var predicate))
         {
             return Task.FromResult<TEntity?>(null);
         }
 
-        var parameter = Expression.Parameter(typeof(TEntity), "entity");
-        var predicate = Expression.Lambda<Func<TEntity, bool>>(
-            Expression.Equal(
-                Expression.Property(parameter, property.Name),
-                Expression.Constant(key, property.ClrType)
-            ),
-            parameter
-        );
+        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         IQueryable<TEntity> query = db.Set<TEntity>();
         if (noTracking)
         {
@@ -241,42 +231,4 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
                 Expression.Quote(selector)
             )
         );
-
-    private static bool TryParseResourceId(string id, Type underlyingType, out object? parsedId)
-    {
-        if (
-            underlyingType == typeof(int)
-            && int.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number)
-        )
-        {
-            parsedId = number;
-            return true;
-        }
-        if (
-            underlyingType == typeof(long)
-            && long.TryParse(
-                id,
-                NumberStyles.Integer,
-                CultureInfo.InvariantCulture,
-                out var longNumber
-            )
-        )
-        {
-            parsedId = longNumber;
-            return true;
-        }
-        if (underlyingType == typeof(Guid) && Guid.TryParse(id, out var guid))
-        {
-            parsedId = guid;
-            return true;
-        }
-        if (underlyingType == typeof(string))
-        {
-            parsedId = id;
-            return true;
-        }
-
-        parsedId = null;
-        return false;
-    }
 }

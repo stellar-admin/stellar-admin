@@ -1,6 +1,7 @@
 using DashboardPlayground.Data;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
+using StellarAdmin.TagHelpers;
 
 namespace DashboardPlayground.Resources.Categories;
 
@@ -27,6 +28,14 @@ internal static class CategoryResourceRegistration
                     search => search.Placeholder = "Search categories..."
                 );
                 index.EnablePaging();
+                index.EnableRowDetails<CategoryProducts, CategoryProductsHandler>(
+                    "RowDetails/_CategoryProducts",
+                    details =>
+                    {
+                        details.Toggle = DataGridRowDetailToggle.Trailing;
+                        details.ExpandMode = TableRowDetailExpandMode.Single;
+                    }
+                );
             });
             resource.AllowCreate(create =>
                 create.Fields(fields => fields.Add(category => category.Name))

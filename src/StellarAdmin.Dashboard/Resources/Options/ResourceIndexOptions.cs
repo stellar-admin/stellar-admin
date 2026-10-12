@@ -39,6 +39,11 @@ public class ResourceIndexOptions
     public ResourcePagingOptions? Paging { get; set; }
 
     /// <summary>
+    ///     The row details settings, or null when rows do not expand.
+    /// </summary>
+    public ResourceRowDetailsOptions? RowDetails { get; set; }
+
+    /// <summary>
     ///     The scope settings, or null when scopes are disabled.
     /// </summary>
     public ResourceScopesOptions? Scopes { get; set; }

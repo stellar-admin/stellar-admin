@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard;
+using StellarAdmin.TagHelpers;
 
 namespace DashboardPlayground.Resources.Customers;
 
@@ -17,12 +18,22 @@ internal static class CustomerResourceRegistration
             resource.AllowDelete();
             resource.UseKey(customer => customer.Id);
             resource.Index(index =>
+            {
                 index.Columns(columns =>
                 {
                     columns.Add(customer => customer.Name);
                     columns.Add(customer => customer.Email);
-                })
-            );
+                });
+                // Renders with the index, from the customer already loaded for the row
+                index.EnableRowDetails(
+                    "RowDetails/_CustomerSummary",
+                    details =>
+                    {
+                        details.RowClick = true;
+                        details.Emphasis = TableRowDetailEmphasis.Rail;
+                    }
+                );
+            });
             resource.AllowCreate<CreateCustomerModel, CreateCustomerHandler>(create =>
                 create.Fields(fields =>
                 {

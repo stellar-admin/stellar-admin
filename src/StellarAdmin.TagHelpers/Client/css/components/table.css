@@ -105,6 +105,9 @@
        including content that htmx swaps in after the row opens. */
     display: grid;
     grid-template-rows: 0fr;
+    /* The cell spans the table, so the details never set its width. Without this, the content's
+       pinned width would hold the table, and the page, at their width when the viewport narrows. */
+    contain: inline-size;
     transition: grid-template-rows calc(var(--sa-motion-fast) * 4 / 3) ease-out;
 
     .sa-table-row-detail[data-state="open"] > .sa-table-row-detail-cell > & { grid-template-rows: 1fr; }

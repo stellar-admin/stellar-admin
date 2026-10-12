@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -539,6 +540,36 @@ public class ResourceController<TResource>(
         );
     }
 
+    /// <summary>
+    ///     Renders a row's details that load when the row expands.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> RowDetail(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            string.IsNullOrEmpty(id)
+            || _resourceOptions.KeySelector is null
+            || _resourceOptions.Index.RowDetails?.Panels.FirstOrDefault()
+                is not { Loader: { } loader } panel
+        )
+        {
+            return NotFound();
+        }
+
+        var model = await loader(HttpContext.RequestServices, id, cancellationToken);
+        if (model is null)
+        {
+            // htmx swaps error responses, so the row shows that its details are gone
+            Response.StatusCode = StatusCodes.Status404NotFound;
+            return PartialView("_IndexRowDetailNotFound");
+        }
+
+        return PartialView(panel.PartialName, model);
+    }
+
     // The collection's elements, such as int for List<int>; a nullable element converts to its underlying type
     private static Type? GetElementType(Type collectionType)
     {
@@ -786,6 +817,23 @@ public class ResourceController<TResource>(
             );
     }
 
+    // Rows load details by their key, so details that load on demand need one
+    private ResourceRowDetailsOptions? GetRowDetails()
+    {
+        var rowDetails = _resourceOptions.Index.RowDetails;
+        if (
+            rowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == true
+            && _resourceOptions.KeySelector is null
+        )
+        {
+            throw new InvalidOperationException(
+                "Row details that load when a row expands require a resource key. Call UseKey on the resource."
+            );
+        }
+
+        return rowDetails;
+    }
+
     private async Task<(
         IReadOnlyDictionary<string, object?> Data,
         IReadOnlyDictionary<string, string> Templates
@@ -914,6 +962,7 @@ public class ResourceController<TResource>(
                 Items = result.Items,
                 Paging = pagingModel,
                 Query = query,
+                RowDetails = GetRowDetails(),
                 Scopes = _resourceOptions.Index.Scopes is { } scopes
                     ? scopes
                         .Items.Select(scope => new ResourceIndexScopeViewModel(

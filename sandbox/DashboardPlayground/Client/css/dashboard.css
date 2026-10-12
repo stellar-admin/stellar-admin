@@ -1,6 +1,6 @@
-/* DashboardPlayground: utilities for class names set in resource registrations, linked after
-   stellar-admin.css and the Dashboard stylesheet, which already ship the reset, the tokens and every
-   component rule, so this file emits utilities only.
+/* DashboardPlayground: utilities for class names set in resource registrations and the row details
+   partials, linked after stellar-admin.css and the Dashboard stylesheet, which already ship the
+   reset, the tokens and every component rule, so this file emits utilities only.
 
    Both theme imports are reference-only, so no variables are emitted here; the StellarAdmin Tailwind
    adapter maps the colour names, spacing and radii onto the tokens. */
@@ -12,3 +12,4 @@
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../Resources";
+@source "../../Views/Shared/RowDetails";

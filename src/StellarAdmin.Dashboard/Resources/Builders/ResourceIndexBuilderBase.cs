@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -103,9 +104,80 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
+    ///     Lets rows expand to show a partial view, rendered with the index with the row's resource as its model.
+    /// </summary>
+    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
+        RegisterRowDetails(partialName, null);
+
+    /// <summary>
+    ///     Lets rows expand to show a partial view, rendered with the index with the row's resource as its model, and
+    ///     configures the rows.
+    /// </summary>
+    public TBuilder EnableRowDetails(
+        string partialName,
+        Action<ResourceRowDetailsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails(partialName));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show a partial view, with a model the handler loads when the row expands.
+    /// </summary>
+    public ResourceRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
+        string partialName
+    )
+        where THandler : class, IResourceRowDetailHandler<TModel>
+    {
+        Services.TryAddScoped<THandler>();
+
+        return RegisterRowDetails(
+            partialName,
+            async (services, id, cancellationToken) =>
+                await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken)
+        );
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show a partial view, with a model the handler loads when the row expands, and
+    ///     configures the rows.
+    /// </summary>
+    public TBuilder EnableRowDetails<TModel, THandler>(
+        string partialName,
+        Action<ResourceRowDetailsBuilder<TResource>> configure
+    )
+        where THandler : class, IResourceRowDetailHandler<TModel>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails<TModel, THandler>(partialName));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
     ///     Creates a search builder for the resource.
     /// </summary>
     protected ResourceSearchBuilder<TResource> CreateSearchBuilder() => new(Services);
+
+    /// <summary>
+    ///     Lets rows expand to show a partial view, with a model the loader returns for a resource key when the row
+    ///     expands, or with the row's resource when the loader is null.
+    /// </summary>
+    protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
+        string partialName,
+        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
+    )
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.RowDetails = new() { Panels = { new(partialName, loader) } }
+        );
+
+        return new(Services);
+    }
 
     private TBuilder ConfigureDefaultSort(LambdaExpression field, ResourceSortDirection direction)
     {

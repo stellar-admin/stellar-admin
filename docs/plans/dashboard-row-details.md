@@ -1,6 +1,6 @@
 # Dashboard row details
 
-Status: proposed (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
+Status: phase 1 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
 
 ## Goal
 
@@ -139,6 +139,21 @@ index.EnableRowDetails(panels =>
 - `ExpandWhen`, a fields panel, and the segmented tab look (deferred above).
 - Changes to the `sa-table-*` and `sa-data-grid` row-detail layers, unless a phase finds a bug.
 
+## Phase 1 as built (2026-10-12)
+
+- `EnableRowDetails(partialName)`, `EnableRowDetails<TModel, THandler>(partialName)` and the EF Core `EnableRowDetails(partialName, select)`, each with a configure overload. `IResourceRowDetailHandler<TModel>` has `FindAsync(id, cancellationToken)`.
+- `ResourceIndexOptions.RowDetails` (`ResourceRowDetailsOptions`: the settings and `Panels`). `ResourceRowDetailPanelOptions` has `PartialName` and `LoadsOnDemand`, and an internal loader. `Title` and `Name` wait for phase 3, where they are first used.
+- The EF Core package reaches the loader through a protected `RegisterRowDetails(partialName, loader)` on `ResourceIndexBuilderBase`, since it has no access to Dashboard internals. The key predicate moved from `EfCoreResourceDataSource` to an internal `EfCoreResourceKey` helper, shared by both, without behavior changes. The projection loader runs `Take(1)` into a list, so a projection to a value type still reports a missing entity, and it respects global query filters.
+- `ResourceController.RowDetail` (`GET {resource}/rowdetail/{id}`) returns the panel's partial, a 404 with `_IndexRowDetailNotFound` when the loader returns null (htmx 4 swaps error responses, so the row shows the message), and an empty 404 when no panel loads on demand or the resource has no key. Index rendering throws when on-demand details are configured without a key.
+- `_IndexDataGrid` adds `sa-data-grid-row-detail`. Inline panels render the partial with the row item. On-demand panels render `_IndexRowDetailLoading` in an element with `hx-trigger='row-detail-expand from:"closest tr" once'`, `hx-target="this"`, `hx-swap="outerHTML"`, and empty `hx-select` and `hx-select-oob`, overriding the grid container's inherited ones. The details wrapper sets `hx-boost:inherited="false"`, so links and forms in application content navigate normally instead of swapping the grid.
+- Library fix found here: `.sa-table-row-detail-reveal` gets `contain: inline-size`. Without it the content's measured pixel width fed back into the table's minimum width, so the page could not narrow when a vertical scrollbar appeared or the window shrank (horizontal page overflow on the playground Categories page).
+- The EF Core integration test project switched to the Razor SDK (`AddRazorSupportForMvc`) for its partial view fixture.
+- Playground: Products (EF projection, defaults), Categories (handler loading the category's products, trailing toggle, single mode), Customers (inline, row click, rail). Partials in `Views/Shared/RowDetails/` with their own `_ViewImports`. The playground stylesheet scans that folder.
+
 ## Verification log
 
-None yet.
+2026-10-12, phase 1:
+
+- Dashboard unit tests: 81 pass (2 new). Dashboard integration tests: 393 pass (8 new). EF Core integration tests: 79 pass (6 new).
+- Library, EF Core package and playground build. The only warning is the existing CS1574 in `ViewDataKeys.cs`.
+- CDP check in the playground (16 checks pass): a detail row per data row, leading and trailing toggles, the projection and handler loading on expand, one request across collapse and re-expand, single mode, row click and rail, collapsed detail rows after a search swap that still load, and no console errors. Categories no longer overflows horizontally after expanding. At 900px the Products page overflows with or without expanded rows, caused by the page header, which predates this work.

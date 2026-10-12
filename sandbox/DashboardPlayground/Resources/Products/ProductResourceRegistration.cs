@@ -63,6 +63,16 @@ internal static class ProductResourceRegistration
                     search => search.Placeholder = "Search products..."
                 );
                 index.DefaultSortBy(product => product.Name);
+                // Loads the details when a row first expands, with one query for that product
+                index.EnableRowDetails(
+                    "RowDetails/_ProductPricing",
+                    product => new ProductPricing(
+                        product.Name,
+                        product.Details.Sku,
+                        product.Category != null ? product.Category.Name : null,
+                        product.Price
+                    )
+                );
                 index.EnablePaging(paging =>
                 {
                     paging.PageSize = 10;

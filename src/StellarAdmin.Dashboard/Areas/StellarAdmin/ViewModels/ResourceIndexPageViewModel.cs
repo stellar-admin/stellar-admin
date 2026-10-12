@@ -65,6 +65,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public ResourceIndexQuery Query { get; init; } = new();
 
     /// <summary>
+    ///     The row details settings, or null when rows do not expand.
+    /// </summary>
+    public ResourceRowDetailsOptions? RowDetails { get; init; }
+
+    /// <summary>
     ///     The scope tabs.
     /// </summary>
     public IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; init; } = [];
