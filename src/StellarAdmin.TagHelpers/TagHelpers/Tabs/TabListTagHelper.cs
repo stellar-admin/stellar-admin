@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.TagHelpers;
 
 /// <summary>
-///     A list of tabs, each linking to a different view or page.
+///     A list of tabs: <c>&lt;sa-tab-link&gt;</c>s, each linking to a different view or page, or
+///     inside an <c>&lt;sa-tabs&gt;</c>, <c>&lt;sa-tab&gt;</c>s that switch between panels.
 /// </summary>
 [HtmlTargetElement("sa-tab-list")]
 public class TabListTagHelper : StellarAdminTagHelperBase
@@ -50,6 +51,15 @@ public class TabListTagHelper : StellarAdminTagHelperBase
         var tabListTagBuilder = new TagBuilder("div");
         tabListTagBuilder.Attributes.Add("data-slot", "tabs-list");
         tabListTagBuilder.Attributes.Add("data-variant", effectiveVariant.GetDataAttributeText());
+        // Only tabs that switch panels form a tab list; link tabs keep link semantics.
+        if (GetContext<TabsContext>(context) is not null)
+        {
+            tabListTagBuilder.Attributes.Add("role", "tablist");
+            tabListTagBuilder.Attributes.Add(
+                "aria-orientation",
+                effectiveOrientation.GetDataAttributeText()
+            );
+        }
         tabListTagBuilder.Attributes.Add(
             "class",
             JoinCssClasses(

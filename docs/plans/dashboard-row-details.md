@@ -1,6 +1,6 @@
 # Dashboard row details
 
-Status: phase 1 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
+Status: phases 1 and 2 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
 
 ## Goal
 
@@ -150,7 +150,21 @@ index.EnableRowDetails(panels =>
 - The EF Core integration test project switched to the Razor SDK (`AddRazorSupportForMvc`) for its partial view fixture.
 - Playground: Products (EF projection, defaults), Categories (handler loading the category's products, trailing toggle, single mode), Customers (inline, row click, rail). Partials sit in the resource view folders (`Areas/StellarAdmin/Views/Products/`, `Categories/`, `Customers/`) and are registered by bare name; one `Areas/StellarAdmin/Views/_ViewImports.cshtml` covers them. The folder names are matched case-insensitively against the lower-case resource route names, because MVC looks up compiled views without regard to case. The playground stylesheet scans `Areas/StellarAdmin/Views`.
 
+## Phase 2 as built (2026-10-12)
+
+- `<sa-tabs selected="itinerary">` names the initially selected panel; without it the first tab's panel is selected. This replaces the plan's `selected` on `sa-tab`: an early tab cannot know whether a later one is selected, so the choice moved to the parent.
+- `sa-tabs` renders `<sel-tabs class="sa-tabs-container">` with an id (the author's, else `--sa-tabs-{unique id}`). `sa-tab for="…"` renders `<button type="button" role="tab">` with the id `{for}-tab` unless given one, `aria-controls`, `aria-selected`, a roving `tabindex`, `data-active` and `disabled`. `sa-tab-panel` needs an `id` and renders `role="tabpanel"`, `aria-labelledby` (the tab's id), `tabindex="0"` and `hidden` unless selected. Both throw outside `sa-tabs`, and without `for` or `id`.
+- Tabs select through the Invoker Commands API (`command="--select-tab"`, `commandfor` the `sel-tabs` id), as the product guide requires for activation, instead of the plan's click delegation. That also keeps nested tabs apart without an ownership check. Keyboard handling is delegated on `sel-tabs`, skipping nested tabs and disabled tabs, and follows `aria-orientation` and RTL.
+- `sa-tab-list` adds `role="tablist"` and `aria-orientation` only inside `sa-tabs`. A panel removes the tabs context for its content, so a link tab list in a panel keeps link semantics.
+- CSS (`tabs.css`): `.sa-tabs-container` stacks the list and panels at the list's gap, side by side for a vertical list; `.sa-tab-panel` has a focus ring. The theme coverage manifest no longer exists, so there was nothing to update.
+- DocsSamples Tabs page: Panels (with a disabled tab), Panels Line (icons, `selected`), Panels Vertical and Panels Load On Show (a `tab-show` listener; the comment points to the htmx equivalent, since DocsSamples has no htmx). The four samples are exported to the website, and its tabs page now describes link tabs and panel tabs as the two forms, with the panel examples, the `tab-show` and `tab-hide` events and htmx loading, accessibility, and API tables for `sa-tabs`, `sa-tab` and `sa-tab-panel` (website lint, type check and build pass). The export also refreshed every demo for the rebuilt assets (new asset hashes and reordered SVG attributes). Skills examples and the consumer reference wait for phase 3.
+
 ## Verification log
+
+2026-10-12, phase 2:
+
+- TagHelpers unit tests: 292 pass (19 new, in `TabsTagHelperTests`, `TabTagHelperTests`, `TabPanelTagHelperTests` and `TabListTagHelperTests`). The client builds and type-checks.
+- CDP check on a static page using the built `stellar-admin.js`, `stellar-admin.css` and htmx 4 (19 checks pass): click selection, `tab-hide` then `tab-show` after the panel is visible, no events for the initial state, arrow keys skipping a disabled tab and wrapping, Home and End, `hx-trigger="tab-show once"` loading once across reselection, disabled tabs ignoring clicks, nested tabs staying independent, vertical keys and layout, the public `select()`, and no console errors.
 
 2026-10-12, phase 1:
 

@@ -10,6 +10,7 @@ import "./web-components/sel-sidebar";
 import "./web-components/sel-slider";
 import "./web-components/sel-table-row-details";
 import "./web-components/sel-table-selection";
+import "./web-components/sel-tabs";
 import "./web-components/sel-toaster";
 
 import { alertDialog } from "./wrappers/alert-dialog";

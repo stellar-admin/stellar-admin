@@ -1,0 +1,33 @@
+<!-- code begin -->
+<sa-tabs class="w-full max-w-md">
+    <sa-tab-list>
+        <sa-tab for="tabs-load-summary">Summary</sa-tab>
+        <sa-tab for="tabs-load-documents">Documents</sa-tab>
+    </sa-tab-list>
+    <sa-tab-panel id="tabs-load-summary">
+        <p class="font-medium">Booking VYG-4471-KX</p>
+        <p class="text-muted-foreground text-sm">Reykjavík, 14 to 17 March. Paid in full.</p>
+    </sa-tab-panel>
+    <sa-tab-panel id="tabs-load-documents">
+        <div class="flex flex-col gap-2">
+            <sa-skeleton class="h-4 w-48"/>
+            <sa-skeleton class="h-4 w-40"/>
+        </div>
+    </sa-tab-panel>
+</sa-tabs>
+
+<script>
+    (() => {
+        // With htmx, hx-get="…" hx-trigger="tab-show once" on the panel does the same.
+        const panel = document.getElementById("tabs-load-documents");
+        panel.addEventListener("tab-show", async () => {
+            await new Promise((resolve) => setTimeout(resolve, 800));
+            panel.innerHTML = `
+                <ul class="text-muted-foreground list-disc space-y-1 ps-5 text-sm">
+                    <li>E-ticket LIS to KEF</li>
+                    <li>Hotel Borg confirmation</li>
+                </ul>`;
+        }, { once: true });
+    })();
+</script>
+<!-- code end -->

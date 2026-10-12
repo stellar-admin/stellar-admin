@@ -1,6 +1,7 @@
-/* Tabs: <sa-tab-list> (a tab list of links, default or line variant, horizontal or vertical).
+/* Tabs: <sa-tab-list> (a tab list of links, default or line variant, horizontal or vertical), and
+   <sa-tabs> (sel-tabs), which adds panels the list's <sa-tab>s switch between.
    Replaces: .sa-tabs, .sa-tabs-list, .sa-tabs-list-variant-default, .sa-tabs-list-variant-line,
-   .sa-tabs-trigger */
+   .sa-tabs-trigger, .sa-tabs-container, .sa-tab-panel */
 
 @layer sa.tokens {
   .sa-tabs {
@@ -18,6 +19,22 @@
 }
 
 @layer sa.components {
+  /* The panels sit below the list, or beside a vertical one, at the list's own gap. */
+  .sa-tabs-container {
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--sa-unit));
+    &:has(> .sa-tabs[data-orientation="vertical"]) { flex-direction: row; }
+  }
+  .sa-tab-panel {
+    flex: 1;
+    min-width: 0;
+    border-radius: var(--sa-radius-control);
+    outline: none;
+    &[hidden] { display: none; }
+    &:focus-visible { box-shadow: var(--sa-focus-shadow); }
+  }
+
   .sa-tabs {
     display: flex;
     gap: calc(2 * var(--sa-unit));
