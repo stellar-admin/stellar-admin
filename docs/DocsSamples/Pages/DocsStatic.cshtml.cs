@@ -33,6 +33,12 @@ public class DocsStatic : PageModel
             or "Details/_Responsive"
             or "Details/_Templates"
             or "Details/_Values" => Details.Index.SampleBooking,
+            "Grid/_DisplayFields"
+            or "Grid/_GridItems"
+            or "Grid/_Intro"
+            or "Grid/_Narrow"
+            or "Grid/_Responsive"
+            or "Grid/_Spans" => Grid.Index.SampleBooking,
             "Field/_CheckboxImplicit" => new CheckboxImplicitModel { SyncMapWithItinerary = true },
             "Field/_FieldGroupImplicit" => new FieldGroupImplicitModel
             {

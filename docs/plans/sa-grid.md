@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype and tag helpers done; Dashboard, samples, website and skills outstanding.
+Status: in progress (2026-10-12). Prototype, tag helpers and DocsSamples done; Dashboard, website and skills outstanding.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
@@ -87,6 +87,16 @@ Done (2026-10-12):
 
 Verified: solution build; TagHelpers tests 400/400; Dashboard tests 98/98; DocsSamples `Details/_Columns`, `_Responsive`, `_Horizontal`, `_InForm`, `_RowDetails` rendered in headless Chromium (dark). Until the samples step, pages using `sa-form-row` render unstyled rows and `column-span-full` no longer spans.
 
+### DocsSamples
+
+Done (2026-10-12):
+
+- New Grid page (`Pages/Grid`, nav "Form Layout › Grid"): `_Intro` (two columns, a full-width input), `_Spans` (`columns="3" columns-sm="2" columns-lg="4"`, per-tier spans), `_DisplayFields` (display fields, an explicit `sa-field` and inputs), `_GridItems` (a checkbox, then sections in grid items: Audit details beside responsive Payment details), `_Responsive` (explicit responsive `sa-field`s and a display field; implicit inputs have no orientation attribute), `_Narrow`. Model `TravellerBooking`; DocsStatic maps the partials to `Grid.Index.SampleBooking`.
+- FormRow pages and nav entry removed. `FormSection/_Intro`, `_Card`, `_Stacked`, `Showcase/_Forms` (Trip details) and `Details/_InForm` use `sa-grid columns="2"` with full-width spans; Showcase Availability keeps its field group with an `sa-grid` in place of the row. `Details/_Columns`, `_Values`, `_RowDetails` use `column-span="full"`.
+- Generator: Grid entries in, FormRow entries out. Not run yet: regenerating writes the website, so it runs with the website step.
+
+Verified: DocsSamples build; all six Grid partials and the converted samples return 200 from DocsStatic; Grid page, FormSection/_Intro, Details/_InForm, Details/_Columns and Showcase/_Forms checked in headless Chromium (dark).
+
 ### Dashboard
 
 - `_FormItems.cshtml`, `_FormSection.cshtml` and `_FormGroup.cshtml` emit `sa-grid`/`sa-grid-item`; fields get their span through the item, since editor templates render arbitrary markup.
@@ -94,10 +104,9 @@ Verified: solution build; TagHelpers tests 400/400; Dashboard tests 98/98; DocsS
 - Fold `FormGrid.ValidateColumns` into `ResponsiveGrid` (10).
 - Rename `GridColumnsBuilder.Default` → `Base`, `ColumnSpanBuilder.Default`/`DefaultFull` → `Base`/`BaseFull` and the internal `Default` members of `FormGridColumnDefinitions`/`FormColumnSpanDefinitions` (24); update callers in DashboardPlayground (`FormLayoutGalleryRegistration`), tests and the Dashboard consumer skill reference (`setup.md`).
 
-### Samples, website, skills
+### Website, skills
 
-- DocsSamples: a Grid page (intro, spans per breakpoint, mixed inputs and display fields, nested section, responsive fields); remove the FormRow pages and navigation entry; switch `FormSection/_Intro`, `_Card`, `_Stacked`, `Showcase/_Forms` and `Details/_InForm` to `sa-grid`. Replace `column-span-full` in `Details/_Columns`, `_Values` and `_RowDetails`.
-- Generator: Grid entries in, FormRow entries out; regenerate.
+- Run the generator (Grid entries are in, FormRow entries out).
 - Website: `grid.mdx`, remove `form-row.mdx` (no redirect) and its includes and demos, `meta.json`, update `form-section.mdx` and `details.mdx` (`columns-base`, `full` spans, `column-span-full` removed).
 - Skills: regenerate (`components/grid.md` in, `form-row.md` out, index), update `form-section.md`, `details.md` (`columns-base`, `full` spans) and `forms.md` (whose grouping example uses a raw `grid grid-cols-2` div), and `skills.examples.json`.
 

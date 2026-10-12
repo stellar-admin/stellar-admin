@@ -1,0 +1,29 @@
+@model DocsSamples.Pages.Grid.TravellerBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-grid columns="3">
+        <sa-input asp-for="FirstName" />
+        <sa-input asp-for="LastName" />
+        <sa-input asp-for="Phone" />
+        <sa-input asp-for="SendConfirmation" column-span="full" />
+        <sa-grid-item column-span="full" column-span-lg="2">
+            <sa-form-section title="Audit" description="Maintained automatically." layout="FormSectionLayout.Stacked">
+                <sa-details columns="2" columns-sm="2">
+                    <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
+                    <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
+                </sa-details>
+            </sa-form-section>
+        </sa-grid-item>
+        <sa-grid-item column-span="full" column-span-lg="1">
+            <sa-form-section title="Payment" layout="FormSectionLayout.Stacked">
+                <sa-details orientation="FieldOrientation.Responsive">
+                    <sa-display-field asp-for="Total" />
+                    <sa-display-field asp-for="Paid" />
+                    <sa-display-field asp-for="Balance" />
+                </sa-details>
+            </sa-form-section>
+        </sa-grid-item>
+    </sa-grid>
+    <!-- code end -->
+</div>

@@ -1,0 +1,13 @@
+@model DocsSamples.Pages.Grid.TravellerBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-grid columns="2">
+        <sa-input asp-for="FirstName" />
+        <sa-input asp-for="LastName" />
+        <sa-input asp-for="Email" column-span="full" description="We send the itinerary here." />
+        <sa-input asp-for="Phone" />
+        <sa-input asp-for="Departure" />
+    </sa-grid>
+    <!-- code end -->
+</div>

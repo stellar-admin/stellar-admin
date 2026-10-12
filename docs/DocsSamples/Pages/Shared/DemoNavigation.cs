@@ -28,8 +28,8 @@ internal static class DemoNavigation
         new DemoGroup(
             "Form Layout",
             [
-                new DemoItem("Form Row", "/FormRow/Index"),
                 new DemoItem("Form Section", "/FormSection/Index"),
+                new DemoItem("Grid", "/Grid/Index"),
             ]
         ),
         new DemoGroup(

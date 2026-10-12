@@ -1,0 +1,20 @@
+@model DocsSamples.Pages.Grid.TravellerBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-grid columns="3">
+        <sa-display-field asp-for="Reference" />
+        <sa-input asp-for="FirstName" />
+        <sa-input asp-for="LastName" />
+        <sa-display-field asp-for="Status">
+            <sa-badge>@Model.Status</sa-badge>
+        </sa-display-field>
+        <sa-input asp-for="Email" column-span="2" />
+        <sa-field column-span="full">
+            <sa-field-label for="grid-display-note">Note for the traveller</sa-field-label>
+            <sa-input id="grid-display-note" name="TravellerNote" />
+            <sa-field-description>Shown on the itinerary.</sa-field-description>
+        </sa-field>
+    </sa-grid>
+    <!-- code end -->
+</div>

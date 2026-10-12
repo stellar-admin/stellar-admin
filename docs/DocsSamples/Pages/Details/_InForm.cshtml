@@ -4,17 +4,13 @@
     <!-- code begin -->
     <form>
         <sa-form-section title="Booking" description="Who is travelling and where.">
-            <sa-field-group>
-                <sa-form-row>
-                    <sa-display-field asp-for="Reference" />
-                    <sa-input asp-for="LeadTraveller" />
-                </sa-form-row>
-                <sa-form-row>
-                    <sa-input asp-for="Email" />
-                    <sa-display-field asp-for="Status" />
-                </sa-form-row>
-                <sa-textarea asp-for="Notes" rows="3" />
-            </sa-field-group>
+            <sa-grid columns="2">
+                <sa-display-field asp-for="Reference" />
+                <sa-input asp-for="LeadTraveller" />
+                <sa-input asp-for="Email" />
+                <sa-display-field asp-for="Status" />
+                <sa-textarea asp-for="Notes" rows="3" column-span="full" />
+            </sa-grid>
         </sa-form-section>
         <sa-form-section title="Audit" description="Maintained automatically.">
             <sa-details columns="2">

@@ -2,24 +2,22 @@
     <div class="w-full">
         <!-- code begin -->
         <sa-form-section title="Trip details" description="How this trip appears in the Voyager catalog." layout="FormSectionLayout.Card">
-            <sa-field-group>
-                <sa-form-row>
-                    <sa-field>
-                        <sa-field-label for="card-name">Trip name</sa-field-label>
-                        <sa-input id="card-name" name="TripName" value="A week in Kyoto" />
-                        <sa-field-description>The name travelers see.</sa-field-description>
-                    </sa-field>
-                    <sa-field>
-                        <sa-field-label for="card-code">Booking code</sa-field-label>
-                        <sa-input id="card-code" name="BookingCode" value="KYO-07" />
-                    </sa-field>
-                </sa-form-row>
+            <sa-grid columns="2">
                 <sa-field>
+                    <sa-field-label for="card-name">Trip name</sa-field-label>
+                    <sa-input id="card-name" name="TripName" value="A week in Kyoto" />
+                    <sa-field-description>The name travelers see.</sa-field-description>
+                </sa-field>
+                <sa-field>
+                    <sa-field-label for="card-code">Booking code</sa-field-label>
+                    <sa-input id="card-code" name="BookingCode" value="KYO-07" />
+                </sa-field>
+                <sa-field column-span="full">
                     <sa-field-label for="card-description">Description</sa-field-label>
                     <sa-textarea id="card-description" name="Description" rows="4" class="min-h-28">Explore Kyoto's temples, gardens, and local food.</sa-textarea>
                     <sa-field-description>Describe the trip and its highlights.</sa-field-description>
                 </sa-field>
-            </sa-field-group>
+            </sa-grid>
         </sa-form-section>
         <sa-form-section title="Availability" description="Set the number of places travelers can book." layout="FormSectionLayout.Card">
             <sa-field-group>
