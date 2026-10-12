@@ -15,11 +15,11 @@
                 orientation="@details.Orientation" variant="@details.Variant">
         @foreach (var field in details.Fields)
         {
-            using (BeginField(field.FieldName, field.Display))
+            using (BeginField(field))
             {
                 <sa-display-field asp-for="@Model" label="@field.Title" format="@field.Format" empty-text="@field.EmptyText" template="@field.Display?.TemplateName"
-                                  column-span="@field.ColumnSpan.Base" column-span-sm="@field.ColumnSpan.Small"
-                                  column-span-md="@field.ColumnSpan.Medium" column-span-lg="@field.ColumnSpan.Large"
+                                  column-span="@Span(field.ColumnSpan.Base)" column-span-sm="@Span(field.ColumnSpan.Small)"
+                                  column-span-md="@Span(field.ColumnSpan.Medium)" column-span-lg="@Span(field.ColumnSpan.Large)"
                                   column-start="@Start(field.ColumnStart.Base)" column-start-sm="@Start(field.ColumnStart.Small)"
                                   column-start-md="@Start(field.ColumnStart.Medium)" column-start-lg="@Start(field.ColumnStart.Large)" />
             }
@@ -28,6 +28,15 @@
 </sa-form-section>
 
 @functions {
+    // The tag helper reads a span as a column number or full
+    private static string? Span(int? span) =>
+        span switch
+        {
+            null => null,
+            ResponsiveGrid.FullSpan => "full",
+            _ => span.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        };
+
     // The tag helper reads a start as a column number or auto
     private static string? Start(int? start) =>
         start switch

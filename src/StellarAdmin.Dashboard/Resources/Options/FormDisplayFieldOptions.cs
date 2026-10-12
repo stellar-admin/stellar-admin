@@ -47,6 +47,8 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     /// </summary>
     public string? Title { get; internal set; }
 
+    internal Type? HandlerType { get; set; }
+
     internal FormDisplayFieldOptions(
         LambdaExpression fieldExpression,
         string fieldName,

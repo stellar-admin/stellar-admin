@@ -12,6 +12,16 @@ public static class ViewDataKeys
     public const string FieldDisplay = "StellarAdminFieldDisplay";
 
     /// <summary>
+    ///     The key for the data prepared for the display field being rendered.
+    /// </summary>
+    public const string FieldDisplayData = "StellarAdminFieldDisplayData";
+
+    /// <summary>
+    ///     The key for the data prepared by a form's field displays, by display field.
+    /// </summary>
+    public const string DisplayData = "StellarAdminDisplayData";
+
+    /// <summary>
     ///     The key for the form container being rendered.
     /// </summary>
     public const string FormContainer = "StellarAdminFormContainer";

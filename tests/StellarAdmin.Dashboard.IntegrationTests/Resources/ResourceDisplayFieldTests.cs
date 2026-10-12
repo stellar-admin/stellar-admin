@@ -1,8 +1,10 @@
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources.Builders;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.TagHelpers;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
@@ -77,6 +79,77 @@ public class ResourceDisplayFieldTests
     }
 
     [Test]
+    public async Task Edit_WithBadgeDisplay_RendersBadgeWithVariant()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                        fields
+                            .AddDisplayField(product => product.Name)
+                            .UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline)
+                    )
+                );
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var badge = document.RequiredElement(
+            "[data-slot='display-field-value'] [data-slot='badge']"
+        );
+        await Assert.That(badge.TextContent.Trim()).IsEqualTo("Notebook");
+        await Assert.That(badge.ClassList.Contains("sa-badge-variant-outline")).IsTrue();
+    }
+
+    [Test]
+    [Arguments(2, "Notebooks")]
+    [Arguments(9, "9")]
+    public async Task Edit_WithLookupDisplay_ShowsItemTitleOrValue(int id, string expected)
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(id, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields =>
+                        fields.AddDetails(
+                            "Category",
+                            details =>
+                                details
+                                    .Add(product => product.Id)
+                                    .UseDisplay<LookupDisplay>(lookup =>
+                                        lookup.UseItems<CategoryLookupSource, Category, int>(
+                                            category => category.Id,
+                                            category => category.Name
+                                        )
+                                    )
+                        )
+                    )
+                );
+            },
+            configureServices: services =>
+                services.AddSingleton<CategoryStore>().AddScoped<CategoryLookupSource>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync($"/stellaradmin/products/edit/{id}");
+
+        // Assert
+        await Assert.That(document.RequiredElement("dd").TextContent.Trim()).IsEqualTo(expected);
+    }
+
+    [Test]
     public async Task Edit_WithDetails_RendersListWithLayoutAndPlacement()
     {
         // Arrange
@@ -102,6 +175,7 @@ public class ResourceDisplayFieldTests
                                     field => field.Title = "Reference"
                                 );
                                 details.Add(product => product.Price).ColumnSpan(2).ColumnStart(2);
+                                details.Add(product => product.Name).ColumnSpanFull();
                             }
                         );
                     })
@@ -125,7 +199,7 @@ public class ResourceDisplayFieldTests
             .That(details.RequiredElement("dl").GetAttribute("style"))
             .IsEqualTo("--sa-cols-md:3;--sa-cols-lg:3");
         var fields = details.QuerySelectorAll("dl > [data-slot='display-field']");
-        await Assert.That(fields.Length).IsEqualTo(2);
+        await Assert.That(fields.Length).IsEqualTo(3);
         await Assert.That(fields[0].GetAttribute("data-orientation")).IsEqualTo("horizontal");
         await Assert
             .That(fields[0].RequiredElement("dt").TextContent.Trim())
@@ -134,6 +208,9 @@ public class ResourceDisplayFieldTests
         await Assert
             .That(fields[1].GetAttribute("style"))
             .IsEqualTo("--sa-span-md:2;--sa-span-lg:2;--sa-start-md:2;--sa-start-lg:2");
+        await Assert
+            .That(fields[2].GetAttribute("style"))
+            .IsEqualTo("--sa-span-md:3;--sa-span-lg:3");
     }
 
     [Test]

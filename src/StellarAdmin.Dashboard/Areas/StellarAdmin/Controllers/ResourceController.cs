@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
 using StellarAdmin.TagHelpers;
@@ -677,6 +678,11 @@ public class ResourceController<TResource>(
         var fields = create.Fields.ToArray();
         var labels = CreateLabelContext();
         var editors = await PrepareEditorsAsync(fields, resource, cancellationToken);
+        var displayData = await PrepareDisplaysAsync(
+            create.DisplayFields,
+            resource,
+            cancellationToken
+        );
 
         return new ResourceFormPageViewModel
         {
@@ -684,6 +690,7 @@ public class ResourceController<TResource>(
             Fields = fields,
             Items = create.Items.ToArray(),
             Columns = create.Columns,
+            DisplayData = displayData,
             EditorData = editors.Data,
             EditorTemplates = editors.Templates,
             SectionLayout = create.SectionLayout,
@@ -730,6 +737,11 @@ public class ResourceController<TResource>(
         var edit = _resourceOptions.Edit!;
         var labels = CreateLabelContext();
         var editors = await PrepareEditorsAsync(edit.Fields, resource, cancellationToken);
+        var displayData = await PrepareDisplaysAsync(
+            edit.DisplayFields,
+            resource,
+            cancellationToken
+        );
 
         return ResourceView(
             nameof(Edit),
@@ -748,6 +760,7 @@ public class ResourceController<TResource>(
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),
                 Columns = edit.Columns,
+                DisplayData = displayData,
                 EditorData = editors.Data,
                 EditorTemplates = editors.Templates,
                 SectionLayout = edit.SectionLayout,
@@ -835,6 +848,35 @@ public class ResourceController<TResource>(
         }
 
         return rowDetails;
+    }
+
+    private async Task<IReadOnlyDictionary<FormDisplayFieldOptions, object?>> PrepareDisplaysAsync(
+        IEnumerable<FormDisplayFieldOptions> fields,
+        object model,
+        CancellationToken cancellationToken
+    )
+    {
+        var data = new Dictionary<FormDisplayFieldOptions, object?>();
+        foreach (var field in fields)
+        {
+            if (field.HandlerType is { } handlerType)
+            {
+                var handler = (IFieldDisplayHandler)
+                    ActivatorUtilities.CreateInstance(
+                        HttpContext.RequestServices,
+                        handlerType,
+                        field.Display!
+                    );
+                var context = new FieldDisplayContext(
+                    field.FieldName,
+                    model,
+                    ResourcePropertyPath.GetValue(model, field.PropertyPath)
+                );
+                data[field] = await handler.PrepareAsync(context, cancellationToken);
+            }
+        }
+
+        return data;
     }
 
     private async Task<(

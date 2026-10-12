@@ -37,10 +37,42 @@ public class ResourceFormOptions : IFormScope
 
     internal FormGridColumnDefinitions Columns { get; set; }
 
+    // Every display field, including those in containers and details sections
+    internal IEnumerable<FormDisplayFieldOptions> DisplayFields => EnumerateDisplayFields(Items);
+
     FormGridColumnDefinitions IFormScope.Columns
     {
         get => Columns;
         set => Columns = value;
+    }
+
+    private static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(
+        IEnumerable<FormItemOptions> items
+    )
+    {
+        foreach (var item in items)
+        {
+            switch (item)
+            {
+                case FormDisplayFieldOptions field:
+                    yield return field;
+                    break;
+                case FormDetailsOptions details:
+                    foreach (var field in details.Fields)
+                    {
+                        yield return field;
+                    }
+
+                    break;
+                case FormContainerOptions container:
+                    foreach (var field in EnumerateDisplayFields(container.Items))
+                    {
+                        yield return field;
+                    }
+
+                    break;
+            }
+        }
     }
 
     private static IEnumerable<FormFieldOptions> EnumerateFields(IEnumerable<FormItemOptions> items)

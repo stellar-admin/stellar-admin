@@ -27,6 +27,14 @@ public sealed class DisplayFieldsLayoutGallery
     [Display(Name = "Cabin")]
     public GalleryCabin Cabin { get; set; }
 
+    [Display(Name = "Home airport")]
+    public string? HomeAirport { get; set; }
+
+    // Views/Shared/DisplayTemplates/BookingStatus.cshtml chooses the badge by value
+    [Display(Name = "Status")]
+    [UIHint("BookingStatus")]
+    public GalleryBookingStatus Status { get; set; }
+
     [Display(Name = "Contact email")]
     [EmailAddress]
     public string? ContactEmail { get; set; }
@@ -65,10 +73,21 @@ public sealed class DisplayFieldsLayoutGallery
             Departure = new(2027, 4, 2),
             BookingReference = "VGR-24817",
             Cabin = GalleryCabin.PremiumEconomy,
+            HomeAirport = "AMS",
+            Status = GalleryBookingStatus.Confirmed,
             ContactEmail = "amelia.hart@example.com",
             CreatedBy = "Jonah Reyes",
             CreatedAt = new(2026, 9, 14, 10, 32, 0),
             IsPaid = true,
             Total = 1840.5m,
         };
+}
+
+public enum GalleryBookingStatus
+{
+    Pending,
+
+    Confirmed,
+
+    Cancelled,
 }

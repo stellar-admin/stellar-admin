@@ -19,4 +19,10 @@ public abstract class FieldDisplayView<TDisplay> : RazorPage<object?>
     /// </summary>
     public TDisplay Display =>
         field ??= ViewData[ViewDataKeys.FieldDisplay] as TDisplay ?? new TDisplay();
+
+    /// <summary>
+    ///     Data prepared for this display on the current request, or <c>null</c> when the display
+    ///     has no handler.
+    /// </summary>
+    public object? DisplayData => ViewData[ViewDataKeys.FieldDisplayData];
 }

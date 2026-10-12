@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
@@ -26,10 +25,11 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
 
     // Razor binds asp-for to an expression written in the view, so a field chosen at runtime is
     // rendered by pointing the page's model at the field's value, as an editor template sees it,
-    // until the returned scope is disposed. The display template reads the field's display from
-    // the view context's data, which the tag helper renders it with.
-    internal IDisposable BeginField(string fieldName, FieldDisplay? display)
+    // until the returned scope is disposed. The display template reads the field's display and its
+    // prepared data from the view context's data, which the tag helper renders it with.
+    internal IDisposable BeginField(FormDisplayFieldOptions field)
     {
+        var fieldName = field.FieldName;
         var expression = Context
             .RequestServices.GetRequiredService<ModelExpressionProvider>()
             .CreateModelExpression(ViewData, fieldName);
@@ -44,12 +44,18 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
         };
         var contextData = ViewContext.ViewData;
         var originalDisplay = contextData[ViewDataKeys.FieldDisplay];
-        contextData[ViewDataKeys.FieldDisplay] = display;
+        var originalDisplayData = contextData[ViewDataKeys.FieldDisplayData];
+        contextData[ViewDataKeys.FieldDisplay] = field.Display;
+        contextData[ViewDataKeys.FieldDisplayData] = (
+            original[ViewDataKeys.DisplayData]
+            as IReadOnlyDictionary<FormDisplayFieldOptions, object?>
+        )?.GetValueOrDefault(field);
 
         return new FieldScope(() =>
         {
             ViewData = original;
             contextData[ViewDataKeys.FieldDisplay] = originalDisplay;
+            contextData[ViewDataKeys.FieldDisplayData] = originalDisplayData;
         });
     }
 

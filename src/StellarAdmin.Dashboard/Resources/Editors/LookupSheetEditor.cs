@@ -102,20 +102,6 @@ public sealed class LookupSheetEditor
         Func<TEntity, string> title,
         Action<LookupItemsBuilder<TEntity>> configure
     )
-        where TSource : class, ILookupSource<TEntity, TValue>
-    {
-        ArgumentNullException.ThrowIfNull(value);
-        ArgumentNullException.ThrowIfNull(title);
-        ArgumentNullException.ThrowIfNull(configure);
-
-        var items = new LookupItemsBuilder<TEntity>();
-        configure(items);
-        Items = new LookupItems<TSource, TEntity, TValue>(
-            value,
-            title,
-            items.Description,
-            items.Media,
-            items.MediaType
-        );
-    }
+        where TSource : class, ILookupSource<TEntity, TValue> =>
+        Items = LookupItems.Create<TSource, TEntity, TValue>(value, title, configure);
 }

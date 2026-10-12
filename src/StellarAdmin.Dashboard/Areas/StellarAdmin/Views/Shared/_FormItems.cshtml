@@ -31,7 +31,7 @@
             }
             else if (item is FormDisplayFieldOptions displayField)
             {
-                using (BeginField(displayField.FieldName, displayField.Display))
+                using (BeginField(displayField))
                 {
                     <sa-display-field asp-for="@Model" label="@displayField.Title" format="@displayField.Format"
                                       empty-text="@displayField.EmptyText" template="@displayField.Display?.TemplateName" />

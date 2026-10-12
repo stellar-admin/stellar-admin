@@ -133,6 +133,28 @@ public class ResourceFieldsBuilderTests
     }
 
     [Test]
+    public async Task UseDisplay_WithHandlerForAnotherDisplay_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+                fields.AddDisplayField(product => product.Name).UseDisplay<MismatchedDisplay>()
+            )
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
     [Arguments("nested")]
     [Arguments("method")]
     [Arguments("readOnly")]
@@ -263,6 +285,11 @@ public class ResourceFieldsBuilderTests
         public string Prefix { get; set; } = "";
 
         public override string TemplateName => "Reference";
+    }
+
+    public sealed class MismatchedDisplay : FieldDisplay, IFieldDisplay<LookupDisplayHandler>
+    {
+        public override string TemplateName => "Mismatched";
     }
 
     public sealed class ProductDataSource

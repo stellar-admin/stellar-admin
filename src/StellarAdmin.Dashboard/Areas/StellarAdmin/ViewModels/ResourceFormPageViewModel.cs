@@ -36,6 +36,15 @@ public class ResourceFormPageViewModel
     public IReadOnlyList<FormItemOptions> Items { get; internal init; } = [];
 
     /// <summary>
+    ///     Request data prepared by the configured field displays.
+    /// </summary>
+    public IReadOnlyDictionary<FormDisplayFieldOptions, object?> DisplayData
+    {
+        get;
+        internal set;
+    } = new Dictionary<FormDisplayFieldOptions, object?>();
+
+    /// <summary>
     ///     Request data prepared by the configured field editors.
     /// </summary>
     public IReadOnlyDictionary<string, object?> EditorData { get; internal set; } =

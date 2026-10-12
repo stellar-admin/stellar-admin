@@ -43,6 +43,29 @@ public abstract class LookupItems
         LookupQuery query,
         CancellationToken cancellationToken
     );
+
+    internal static LookupItems Create<TSource, TEntity, TValue>(
+        Func<TEntity, TValue> value,
+        Func<TEntity, string> title,
+        Action<LookupItemsBuilder<TEntity>> configure
+    )
+        where TSource : class, ILookupSource<TEntity, TValue>
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var items = new LookupItemsBuilder<TEntity>();
+        configure(items);
+
+        return new LookupItems<TSource, TEntity, TValue>(
+            value,
+            title,
+            items.Description,
+            items.Media,
+            items.MediaType
+        );
+    }
 }
 
 internal sealed class LookupItems<TSource, TEntity, TValue>(

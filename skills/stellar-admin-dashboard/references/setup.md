@@ -289,26 +289,28 @@ edit.Fields(fields =>
 - Display fields are never bound: a posted value for one is ignored, and the property needs only a public getter. The value comes from the page's model, so with `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` the property must be on `TModel`.
 - `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title`, `Format` and `EmptyText`, `UseDisplay<TDisplay>()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
 - Values render through `<sa-display-field>`: booleans as a check or cross, enums by their `[Display]` name, `[EmailAddress]` and `[Url]` values as links, and `Format` or `[DisplayFormat]` formatting. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash. `[UIHint("Status")]` renders the view `DisplayTemplates/Status` with the value as its model; a missing template throws.
-- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. A display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`; the template, `DisplayTemplates/{TemplateName}`, inherits `FieldDisplayView<TDisplay>`, whose `Display` property holds the configured settings and whose model is the value. It is not used for an empty value.
+- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. Displays are in `StellarAdmin.Dashboard.Resources.Displays`, and none is used for an empty value. The built-in displays:
+  - `BadgeDisplay` shows the value as a badge, and each item of a collection as its own badge. `Variant` (a `BadgeVariant`, default `Secondary`) applies to every value.
+  - `LookupDisplay` shows the title of the item a key refers to, through the same `UseItems` overloads and `ILookupSource<TEntity, TValue>` as `LookupSheetEditor`. A collection of keys shows each title, and a key no item matches shows the key.
 
 ```csharp
-public sealed class BadgeDisplay : FieldDisplay
-{
-    public BadgeVariant Variant { get; set; } = BadgeVariant.Secondary;
-
-    public override string TemplateName => "Badge";
-}
-
 details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
+details.Add(booking => booking.CategoryId).UseDisplay<LookupDisplay>(lookup =>
+    lookup.UseItems<CategoryLookupSource, Category, int>(category => category.Id, category => category.Name));
 ```
+
+- To choose a badge or other markup by value, write a display template and name it with `[UIHint]`; it applies wherever the property is displayed:
 
 ```razor
-@* Views/Shared/DisplayTemplates/Badge.cshtml *@
-@inherits StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<BadgeDisplay>
+@* Views/Shared/DisplayTemplates/BookingStatus.cshtml, for [UIHint("BookingStatus")] *@
+@using StellarAdmin.TagHelpers
+@model BookingStatus
 @addTagHelper *, StellarAdmin.TagHelpers
 
-<sa-badge variant="@Display.Variant">@Model</sa-badge>
+<sa-badge variant="@(Model switch { BookingStatus.Confirmed => BadgeVariant.Default, BookingStatus.Cancelled => BadgeVariant.Destructive, _ => BadgeVariant.Secondary })">@Model</sa-badge>
 ```
+
+- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings and the model is the value. A display that needs request data, such as records looked up by key, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
 
 - A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
 - Display fields work on create pages too, where a value that isn't set yet shows its empty text.

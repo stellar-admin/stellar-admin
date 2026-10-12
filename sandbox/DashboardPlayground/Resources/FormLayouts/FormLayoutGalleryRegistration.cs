@@ -2,6 +2,7 @@ using DashboardPlayground.Resources.FieldEditors;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.Resources.Builders;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.TagHelpers;
 
@@ -488,18 +489,26 @@ internal static class FormLayoutGalleryRegistration
             details =>
             {
                 details.Description =
-                    "Stacked labels; the cabin uses UseDisplay<BadgeDisplay>, the email links, and the notes are empty.";
+                    "Stacked labels; the cabin uses UseDisplay<BadgeDisplay>, the home airport UseDisplay<LookupDisplay>, the status a [UIHint] template that picks the badge by value, and the notes are empty.";
                 details.Columns(3);
                 details.Add(model => model.BookingReference);
                 details
                     .Add(model => model.Cabin)
                     .UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
-                details.Add(model => model.IsPaid);
-                details.Add(model => model.ContactEmail).ColumnSpan(2);
-                details.Add(model => model.Total, field => field.Format = "€{0:N2}");
+                details.Add(model => model.Status);
                 details
-                    .Add(model => model.AgentNotes, field => field.EmptyText = "No notes")
-                    .ColumnSpanFull();
+                    .Add(model => model.HomeAirport)
+                    .UseDisplay<LookupDisplay>(lookup =>
+                        lookup.UseItems<LayoutDestinationLookupSource, LayoutDestination, string>(
+                            destination => destination.Code,
+                            destination => destination.Name
+                        )
+                    );
+                details.Add(model => model.IsPaid);
+                details.Add(model => model.Total, field => field.Format = "€{0:N2}");
+                details.Add(model => model.ContactEmail).ColumnSpan(2);
+                var notes = details.Add(model => model.AgentNotes).ColumnSpanFull();
+                notes.EmptyText = "No notes";
             }
         );
         fields.AddDetails(

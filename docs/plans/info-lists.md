@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website and skills done and committed. Dashboard display fields (decisions 49, 52–56) implemented, uncommitted. View page and configured row details deferred.
+Status: in progress (2026-10-12). Tag helpers, samples, website, skills and Dashboard display fields (decisions 49, 52–56) committed. Display handlers and the built-in `BadgeDisplay` and `LookupDisplay` (decisions 63–69) implemented, uncommitted. View page and configured row details deferred.
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show entries on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -80,7 +80,7 @@ Public API (implemented 2026-10-12):
 - `ResourceFieldsBuilder<TResource>` (so also sections and groups): `AddDisplayField(expression)` returning `ResourceDisplayFieldBuilder`, and `AddDisplayField(expression, configure)` returning the fields builder; `AddDetails(title)` returning `ResourceDetailsBuilder<TResource>`, and `AddDetails(title, configure)` returning the fields builder.
 - `ResourceDisplayFieldBuilder`: setter-only `Title`, `Format` and `EmptyText`; `UseDisplay<TDisplay>()` and `UseDisplay<TDisplay>(configure)` (`TDisplay : FieldDisplay, new()`); `ColumnSpan(int)`, `ColumnSpan(Action<ColumnSpanBuilder>)`, `ColumnSpanFull()`, `ColumnStart(int)`, `ColumnStart(Action<ColumnStartBuilder>)`.
 - `ResourceDetailsBuilder<TResource>`: `Add(expression)` returning `ResourceDisplayFieldBuilder` and `Add(expression, configure)` returning the details builder (display fields only); setter-only `Description`, `Layout`, `Orientation` (`FieldOrientation?`) and `Variant` (`DetailsVariant?`); `ColumnSpan`/`ColumnSpanFull`/`ColumnStart` as on sections; `Columns(int)`/`Columns(Action<GridColumnsBuilder>)`.
-- Displays: abstract `FieldDisplay` (`TemplateName`), `FieldDisplayView<TDisplay>` (`Display`), and `ViewDataKeys.FieldDisplay`.
+- Displays (`StellarAdmin.Dashboard.Resources.Displays`): abstract `FieldDisplay` (`TemplateName`); `IFieldDisplay`/`IFieldDisplay<THandler>`, `IFieldDisplayHandler`/`IFieldDisplayHandler<TDisplay>`, `FieldDisplayHandler<TDisplay>`, `FieldDisplayContext`; built-in `BadgeDisplay` (`Variant`) and `LookupDisplay` (`Items`, `UseItems` ×3) with `LookupDisplayHandler`. `FieldDisplayView<TDisplay>` (`Display`, `DisplayData`), `ViewDataKeys.FieldDisplay`, `FieldDisplayData` and `DisplayData`, and `ResourceFormPageViewModel.DisplayData`.
 - Options: `FormDisplayFieldOptions` (with `Display`) and `FormDetailsOptions` (sealed, beside field, section and group). `ResourceFormOptions.Fields` still lists only editable fields, so binding and the EF field checks never see display fields.
 
 ## Decisions
@@ -117,6 +117,16 @@ Dashboard display fields (2026-10-12; numbered in the conversation's sequence):
 55. A display field reads its value from the page's model, like an input: on `AllowEdit<TModel, THandler>`/`AllowCreate<TModel, THandler>` the property must be on `TModel`. No special rule. Decided.
 56. Custom value rendering is `UseDisplay<TDisplay>()`/`UseDisplay<TDisplay>(configure)`, mirroring `UseEditor`, so a display can carry settings to its template. A display derives from the abstract `FieldDisplay` (in `StellarAdmin.Dashboard.Resources.Displays`) and names its template through `TemplateName`; the template, `DisplayTemplates/{TemplateName}`, inherits `FieldDisplayView<TDisplay>`, whose `Display` holds the configured instance (default settings when absent) and whose model is the value. No handlers or built-in displays yet. Decided (Jerrie chose this over a `Template` name).
 
+Built-in displays (2026-10-12):
+
+63. Display handlers mirror editor handlers: a display that needs request data implements `IFieldDisplay<THandler>`; the handler (`IFieldDisplayHandler<TDisplay>`, base `FieldDisplayHandler<TDisplay>`, DI constructor) returns data from `PrepareAsync(FieldDisplayContext, CancellationToken)`, prepared by the controller for every display field in the form tree, and the template reads it as `FieldDisplayView.DisplayData`. `UseDisplay` checks that the handler implements `IFieldDisplayHandler<TDisplay>`. Decided.
+64. `LookupDisplay` has the lookup editor's `UseItems` overloads and resolves the value through `LookupItems.FindAsync`: it shows each item's title, and a value no item matches shows the value. Decided.
+65. A per-value badge function: dropped by 68.
+66. Built-in templates live in `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/` (`Badge`, `Lookup`), mirroring `EditorTemplates/Editors/`. Decided.
+67. The Display fields gallery uses both, plus a `[UIHint]` template that picks the badge by value. Decided.
+68. `BadgeDisplay` has only a fixed `Variant` (default `Secondary`); choosing a badge by value is a display template (`[UIHint]`), documented in the skill. The display field builders stay non-generic. Decided.
+69. Display handlers and `LookupDisplay` as planned in 63 and 64. Decided.
+
 ## Prototype
 
 Picks (2026-10-12): A1 (muted label, medium-weight value); C2 (only display fields placed directly among inputs, outside `sa-details`, take an input's label style and a control's height so rows line up); D1 (`—` placeholder, overridable per field); F2 (caption labels inside row details, through a contextual rule rather than an attribute). G (view-page sections) waits for the Dashboard view page; G1 (split sections) is the likely default.
@@ -144,9 +154,17 @@ Dashboard display fields (implemented 2026-10-12, uncommitted):
 - Playground: Form layouts → Display fields (`DisplayFieldsLayoutGallery`): a root display field (a getter-only property), display fields among inputs in `Columns(3)`, a stacked `AddDetails` in `Columns(3)` with spans, a custom `BadgeDisplay` (`Views/Shared/DisplayTemplates/Badge.cshtml`) on the cabin, an email link, a boolean and an empty value, and a horizontal divided audit section in `Columns(2)`.
 - Skills: `references/setup.md` has a Display fields section and a link from Create forms.
 
-Outstanding: the view page and configured row details (deferred, decisions 4 and 5); lookup labels for display fields (a foreign key shows its raw value); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
+Built-in displays (implemented 2026-10-12, uncommitted): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (internal; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor`, `MultiLookupSheetEditor` and `LookupDisplay`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, `HomeAirport` uses `LookupDisplay` over `LayoutDestinationLookupSource`, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents the built-in displays, per-value templates and custom displays with handlers.
+
+Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+Built-in displays, completed 2026-10-12:
+
+- Tests: `StellarAdmin.Dashboard.Tests` 113 passed (new: a display whose handler is for another display throws); `StellarAdmin.Dashboard.IntegrationTests` 414 passed (new: `BadgeDisplay` variant, `LookupDisplay` matched and unmatched keys, a full span in details); EF integration 80 passed.
+- Playground on port 5207, headless Chromium at 1300px light and dark: the badge, lookup and `[UIHint]` status in the details section; the agent notes span the full row; the create page returns 200.
+- Skill validation and `SkillsGenerator --check` pass.
 
 Dashboard display fields, completed 2026-10-12:
 

@@ -130,7 +130,19 @@ public sealed class ResourceDisplayFieldBuilder
         {
             var display = new TDisplay();
             configure(display);
+            var handlerType = (display as IFieldDisplay)?.HandlerType;
+            if (
+                handlerType is not null
+                && !typeof(IFieldDisplayHandler<TDisplay>).IsAssignableFrom(handlerType)
+            )
+            {
+                throw new InvalidOperationException(
+                    $"{handlerType.Name} must implement IFieldDisplayHandler<{typeof(TDisplay).Name}>."
+                );
+            }
+
             options.Display = display;
+            options.HandlerType = handlerType;
         });
 
         return this;
