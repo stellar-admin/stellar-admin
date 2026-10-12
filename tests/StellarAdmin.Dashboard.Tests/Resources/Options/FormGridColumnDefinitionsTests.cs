@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Tests.Resources.Options;
 
@@ -14,7 +15,7 @@ public class FormGridColumnDefinitionsTests
         var tiers = sut.Resolve();
 
         // Assert
-        await Assert.That(tiers).IsEqualTo(new FormGridTiers(1, 1, 3, 3));
+        await Assert.That(tiers).IsEqualTo(new GridTiers(1, 1, 3, 3));
     }
 
     [Test]
@@ -41,7 +42,7 @@ public class FormGridColumnDefinitionsTests
         var tiers = sut.Resolve();
 
         // Assert
-        await Assert.That(tiers).IsEqualTo(new FormGridTiers(1, 1, 1, 1));
+        await Assert.That(tiers).IsEqualTo(new GridTiers(1, 1, 1, 1));
     }
 
     [Test]
@@ -54,6 +55,6 @@ public class FormGridColumnDefinitionsTests
         var tiers = sut.Resolve();
 
         // Assert
-        await Assert.That(tiers).IsEqualTo(new FormGridTiers(1, 2, 2, 4));
+        await Assert.That(tiers).IsEqualTo(new GridTiers(1, 2, 2, 4));
     }
 }

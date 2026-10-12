@@ -67,7 +67,7 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WhenValueIsEmpty_RendersPlaceholderInsteadOfTemplate()
+    public async Task ProcessAsync_WhenValueIsEmpty_RendersEmptyTextInsteadOfTemplate()
     {
         // Arrange
         using var context = new RenderingContext();

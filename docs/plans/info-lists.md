@@ -98,9 +98,13 @@ Answers from 2026-10-12. Earlier sketches above use `sa-info-*`; the chosen name
 11. Prototype first. Decided; the prototype is `sandbox/html/details.html`.
 12. Supersede the crud-screen plan's `sa-details`/`sa-display-field` part: yes, once the prototype confirms the design.
 13. Muted inline text after a value ("by Amelia Hart"): a `secondary` attribute. Decided.
-14. Column span: `column-span="2"` and `column-span-full="true"`, mirroring the Dashboard's `ColumnSpan`/`ColumnSpanFull`, capped at the current column count. Column start is left out until the Dashboard's unscheduled `ColumnStart` (archived dashboard-form-grid plan) is taken up, so both stay aligned. Proposed; attribute shape awaiting confirmation.
+14. Column span: `column-span="2"` and `column-span-full="true"`, mirroring the Dashboard's `ColumnSpan`/`ColumnSpanFull`, capped at the current column count. Column start is left out until the Dashboard's unscheduled `ColumnStart` (archived dashboard-form-grid plan) is taken up, so both stay aligned. Decided; made responsive by 18.
 15. Templates: `template="X"` or `[UIHint("X")]` resolves `DisplayTemplates/X` by name only, never by type, so MVC's built-in type templates (a `bool` disabled checkbox) and an app's existing type templates never apply. A missing named template throws rather than falling back silently. The template's model is the value. Decided.
 16. Enums render as plain text by default; a badge is a template or child content. Decided.
+17. The empty-value attribute is `empty-text` (`EmptyText`), not `placeholder`: it says when the text shows and that it is text, and avoids the input hint meaning. Decided.
+18. Responsive columns and spans, matching the Dashboard form grid: `columns-sm`/`-md`/`-lg` and `column-span-sm`/`-md`/`-lg` at the form grid's 30/40/56rem container breakpoints, an unset breakpoint inheriting from the next smaller one. `columns="N"` is shorthand for `columns-md` (one column below 40rem, as the Dashboard's `Columns(N)`), so the old automatic two-column step is gone; `columns-sm` restores it. No base-breakpoint columns attribute. `column-span-full` sets the base span to full and the breakpoint spans still apply. Decided.
+19. One public helper for both: `ResponsiveGrid` (resolve columns and spans, format the inline variables) and `GridTiers` in TagHelpers. The Dashboard's form grid and choice columns use it, replacing its internal `FormGridTiers` and `FormGridStyle`, and the `--sa-cols`/`--sa-span`/`--sa-rows` registrations moved from the Dashboard's `client.css` to TagHelpers' `structure.css`. Decided.
+20. Column counts and spans are 1–12, the Dashboard's limit. Decided.
 
 ## Prototype
 
@@ -110,10 +114,10 @@ Picks (2026-10-12): A1 (muted label, medium-weight value); C2 (only display fiel
 
 ## Tag helpers (implemented 2026-10-12)
 
-- `src/StellarAdmin.TagHelpers/TagHelpers/Details/`: `DetailsTagHelper` (`sa-details`: `columns` 1–4, `orientation`, `variant`), `DetailsVariant` (`Default`, `Divided`), internal `DetailsContext`, and `DisplayFieldTagHelper` (`sa-display-field`: `asp-for`, `label`, `format`, `placeholder`, `href`, `template`, `secondary`, `column-span`, `column-span-full`, `orientation`).
+- `src/StellarAdmin.TagHelpers/TagHelpers/Details/`: `DetailsTagHelper` (`sa-details`: `columns`, `columns-sm`, `columns-md`, `columns-lg`, `orientation`, `variant`), `DetailsVariant` (`Default`, `Divided`), internal `DetailsContext`, and `DisplayFieldTagHelper` (`sa-display-field`: `asp-for`, `label`, `format`, `empty-text`, `href`, `template`, `secondary`, `column-span`, `column-span-sm`, `column-span-md`, `column-span-lg`, `column-span-full`, `orientation`).
 - `sa-details` renders a `div` (the container query target) around a `dl`. A display field is an `sa-field` root (`data-slot="display-field"`) with a `dt`/`dd` label and value inside `sa-details`, and `div`s elsewhere.
-- Value precedence: child content; then the placeholder for null, blank strings and empty collections (`placeholder`, then `[DisplayFormat(NullDisplayText)]`, then `—`); then a named template (`template` or `[UIHint]`, resolved as `DisplayTemplates/{name}`, by name only, missing throws, model is the value with the property's model explorer); then built-in rendering: booleans as a `BooleanTrue`/`BooleanFalse` icon with screen-reader Yes/No, enums by `[Display]` name, collections joined with commas, `format` or `[DisplayFormat]`, `[EmailAddress]` as `mailto:`, `[Url]` linked only for http/https, `href` linking the text; numbers get `data-kind="number"`, `MultilineText` gets `data-kind="text"`. `secondary` is appended to non-empty values.
-- Column spans are emitted only inside `sa-details`, capped at the list's column count (`data-column-span` = `2`, `3` or `full`).
+- Value precedence: child content; then the empty text for null, blank strings and empty collections (`empty-text`, then `[DisplayFormat(NullDisplayText)]`, then `—`); then a named template (`template` or `[UIHint]`, resolved as `DisplayTemplates/{name}`, by name only, missing throws, model is the value with the property's model explorer); then built-in rendering: booleans as a `BooleanTrue`/`BooleanFalse` icon with screen-reader Yes/No, enums by `[Display]` name, collections joined with commas, `format` or `[DisplayFormat]`, `[EmailAddress]` as `mailto:`, `[Url]` linked only for http/https, `href` linking the text; numbers get `data-kind="number"`, `MultilineText` gets `data-kind="text"`. `secondary` is appended to non-empty values.
+- Grid (decisions 18–20): `sa-details` writes its resolved column counts on the `dl` and each display field its resolved span as inline variables (`--sa-cols-md:3`, `--sa-span-lg:2`; values at 1 left out), through `TagHelpers/Grid/ResponsiveGrid.cs`. Spans are emitted only inside `sa-details`, limited to the column count at each breakpoint. Setting both `columns` and `columns-md`, or `column-span` and `column-span-full`, throws.
 - `Client/css/components/details.css` holds the extracted prototype rules, with the among-inputs (C2) and row-detail (F2) rules. Layout rules name `.sa-field.sa-display-field` to out-rank `field.css`, which builds after it.
 - Core: `SemanticIconRole.BooleanTrue` and `BooleanFalse` appended, mapped to `check` and `x` in the Lucide and both Tabler packs.
 
@@ -131,4 +135,11 @@ Completed 2026-10-12:
 
 - DocsSamples on port 5206: `/Details` returns 200; each example captured through `DocsStatic` in headless Chromium at 1100px light and dark, and the record page and form examples at 390px.
 
-Not run: the full solution test command, the theme fixtures and density, the DocsSamplesGenerator export.
+Responsive grid and `empty-text` (decisions 17–20), completed 2026-10-12:
+
+- Release build of `StellarAdmin.slnx` (TagHelpers CSS rebuilt), no new warnings.
+- Full solution test command: 1035 passed, 0 failed, across Core, TagHelpers, TagHelpers integration, Dashboard, Dashboard integration and EF Core integration. New: `ResponsiveGridTests`, plus rewritten `sa-details` column and display-field span cases; the Dashboard's definition and choice-column tests now run through the helper.
+- DocsSamples on port 5206: the Columns and spans example (`columns="3" columns-sm="2" columns-lg="4"`) measured in headless Chromium at 420, 560, 720 and 1000px: 1, 2, 3 and 4 columns, with each field's span as configured.
+- The built `stellar-admin.css` holds the 12 grid `@property` registrations and the Dashboard bundle none; the Dashboard layout links `stellar-admin.css`.
+
+Not run: the theme fixtures and density, the DocsSamplesGenerator export, and a rendered Dashboard form page after the registration move (covered only by the stylesheet check above and the integration tests' markup).

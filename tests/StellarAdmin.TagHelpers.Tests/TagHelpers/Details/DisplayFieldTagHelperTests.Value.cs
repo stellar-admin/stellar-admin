@@ -50,7 +50,7 @@ public partial class DisplayFieldTagHelperTests
     [Arguments(null)]
     [Arguments("")]
     [Arguments("  ")]
-    public async Task ProcessAsync_WhenValueIsEmpty_RendersDefaultPlaceholder(string? promoCode)
+    public async Task ProcessAsync_WhenValueIsEmpty_RendersDefaultEmptyText(string? promoCode)
     {
         // Arrange
         using var context = new RenderingContext();
@@ -70,7 +70,7 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WhenCollectionIsEmpty_RendersPlaceholder()
+    public async Task ProcessAsync_WhenCollectionIsEmpty_RendersEmptyText()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -85,7 +85,7 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WhenUnboundWithoutChildContent_RendersPlaceholder()
+    public async Task ProcessAsync_WhenUnboundWithoutChildContent_RendersEmptyText()
     {
         // Arrange
         using var context = new RenderingContext();
@@ -100,13 +100,13 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WhenPlaceholderIsSet_RendersItForEmptyValue()
+    public async Task ProcessAsync_WhenEmptyTextIsSet_RendersItForEmptyValue()
     {
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateSut(context);
         sut.For = CreateFor(context, new Booking(), nameof(Booking.PromoCode));
-        sut.Placeholder = "None";
+        sut.EmptyText = "None";
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);

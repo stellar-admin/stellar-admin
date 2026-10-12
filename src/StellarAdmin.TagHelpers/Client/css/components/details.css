@@ -1,8 +1,10 @@
 /* Details: read-only display fields in a description list. The wrapper is the container its column
-   breakpoints query; the list inside is the grid. A display field is an sa-field (field.css), so the
-   rules that change its layout name both classes to out-rank field.css. Among inputs (outside a
-   details list) a display field takes an input's label style and a control's height, so a row of
-   inputs and display fields lines up. In a row detail, labels are captions.
+   breakpoints query; the list inside is the grid. The tag helpers write the list's column counts and
+   each field's span per breakpoint as the inline grid variables (structure.css). A display field is
+   an sa-field (field.css), so the rules that change its layout name both classes to out-rank
+   field.css. Among inputs (outside a details list) a display field takes an input's label style and
+   a control's height, so a row of inputs and display fields lines up. In a row detail, labels are
+   captions.
    Replaces: .sa-details, .sa-details-list, .sa-display-field, .sa-display-field-label,
    .sa-display-field-value, .sa-display-field-secondary */
 
@@ -15,34 +17,36 @@
   }
   .sa-details-list {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
     gap: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit));
     margin: 0;
+    & > * {
+      grid-column: span var(--sa-span);
+    }
   }
-  @container details (min-width: 28rem) {
-    .sa-details:is([data-columns="2"], [data-columns="3"], [data-columns="4"]) > .sa-details-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      & > [data-column-span] {
-        grid-column: 1 / -1;
+  @container details (min-width: 30rem) {
+    .sa-details-list {
+      grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-sm);
       }
     }
   }
   @container details (min-width: 40rem) {
-    .sa-details[data-columns="3"] > .sa-details-list {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .sa-details[data-columns="4"] > .sa-details-list {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .sa-details:is([data-columns="3"], [data-columns="4"]) > .sa-details-list > [data-column-span="2"] {
-      grid-column: span 2;
-    }
-    .sa-details[data-columns="4"] > .sa-details-list > [data-column-span="3"] {
-      grid-column: span 3;
+    .sa-details-list {
+      grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-md);
+      }
     }
   }
-  .sa-details-list > [data-column-span="full"] {
-    grid-column: 1 / -1;
+  @container details (min-width: 56rem) {
+    .sa-details-list {
+      grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-lg);
+      }
+    }
   }
 
   /* Divided: rows separated by rules. */

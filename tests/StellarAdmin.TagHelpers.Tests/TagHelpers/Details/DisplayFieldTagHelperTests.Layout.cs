@@ -92,17 +92,17 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    [Arguments(3, 2, null, "2")]
-    [Arguments(4, 3, null, "3")]
-    [Arguments(2, 2, null, "full")]
-    [Arguments(3, 5, null, "full")]
-    [Arguments(3, null, true, "full")]
-    [Arguments(1, 2, null, null)]
-    [Arguments(3, 1, null, null)]
-    public async Task ProcessAsync_WhenInsideDetailsWithColumnSpan_CapsSpanAtColumnCount(
+    [Arguments(3, 2, null, null, "--sa-span-md:2;--sa-span-lg:2")]
+    [Arguments(3, 5, null, null, "--sa-span-md:3;--sa-span-lg:3")]
+    [Arguments(3, null, true, null, "--sa-span-md:3;--sa-span-lg:3")]
+    [Arguments(3, null, true, 2, "--sa-span-md:3;--sa-span-lg:2")]
+    [Arguments(1, 2, null, null, null)]
+    [Arguments(3, 1, null, null, null)]
+    public async Task ProcessAsync_WhenInsideDetailsWithColumnSpan_LimitsSpanToColumnCount(
         int columns,
         int? columnSpan,
         bool? columnSpanFull,
+        int? columnSpanLarge,
         string? expected
     )
     {
@@ -112,6 +112,7 @@ public partial class DisplayFieldTagHelperTests
         sut.Label = "Notes";
         sut.ColumnSpan = columnSpan;
         sut.ColumnSpanFull = columnSpanFull;
+        sut.ColumnSpanLarge = columnSpanLarge;
         var details = new DetailsTagHelper { Columns = columns };
 
         // Act
@@ -122,18 +123,86 @@ public partial class DisplayFieldTagHelperTests
 
         // Assert
         await Assert
-            .That(html.QuerySelector("[data-slot=display-field]")?.GetAttribute("data-column-span"))
+            .That(html.QuerySelector("[data-slot=display-field]")?.GetAttribute("style"))
             .IsEqualTo(expected);
     }
 
     [Test]
-    public async Task ProcessAsync_WhenColumnSpanIsLessThanOne_ThrowsInvalidOperationException()
+    public async Task ProcessAsync_WhenInsideDetailsWithBreakpointSpans_WritesSpanPerBreakpoint()
     {
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateSut(context);
         sut.Label = "Notes";
-        sut.ColumnSpan = 0;
+        sut.ColumnSpanSmall = 2;
+        sut.ColumnSpanLarge = 4;
+        var details = new DetailsTagHelper
+        {
+            ColumnsSmall = 2,
+            ColumnsMedium = 3,
+            ColumnsLarge = 6,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            details,
+            detailsContext => TagHelperRenderer.RenderChildAsync(sut, detailsContext)
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=display-field]")?.GetAttribute("style"))
+            .IsEqualTo("--sa-span-sm:2;--sa-span-md:2;--sa-span-lg:4");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WhenOutsideDetailsWithColumnSpan_WritesNoSpan()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Notes";
+        sut.ColumnSpan = 2;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert.That(html.Body?.FirstElementChild?.HasAttribute("style")).IsFalse();
+    }
+
+    [Test]
+    [Arguments(0, null)]
+    [Arguments(13, null)]
+    [Arguments(null, 0)]
+    public async Task ProcessAsync_WhenColumnSpanIsOutOfRange_ThrowsInvalidOperationException(
+        int? columnSpan,
+        int? columnSpanMedium
+    )
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Notes";
+        sut.ColumnSpan = columnSpan;
+        sut.ColumnSpanMedium = columnSpanMedium;
+
+        // Act
+        Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task ProcessAsync_WhenColumnSpanAndColumnSpanFullAreSet_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Notes";
+        sut.ColumnSpan = 2;
+        sut.ColumnSpanFull = true;
 
         // Act
         Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);

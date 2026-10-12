@@ -7,7 +7,7 @@
         <sa-display-field asp-for="PromoCode" />
         @* [DisplayFormat(NullDisplayText = "None")] *@
         <sa-display-field asp-for="DietaryNeeds" />
-        <sa-display-field asp-for="ArchivedAt" placeholder="Not archived" />
+        <sa-display-field asp-for="ArchivedAt" empty-text="Not archived" />
         @* Zero and false are values *@
         <sa-display-field asp-for="Infants" />
     </sa-details>

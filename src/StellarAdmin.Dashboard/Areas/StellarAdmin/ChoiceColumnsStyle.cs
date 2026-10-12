@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 
@@ -6,16 +7,16 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 // the next one starts.
 internal static class ChoiceColumnsStyle
 {
-    public static string? Format(FormGridTiers columns, int choiceCount, bool down)
+    public static string? Format(GridTiers columns, int choiceCount, bool down)
     {
-        var columnsStyle = FormGridStyle.Columns(columns);
+        var columnsStyle = ResponsiveGrid.ColumnsStyle(columns);
         if (!down)
         {
             return columnsStyle;
         }
 
-        var rowsStyle = FormGridStyle.Rows(
-            new FormGridTiers(
+        var rowsStyle = ResponsiveGrid.RowsStyle(
+            new GridTiers(
                 Rows(choiceCount, columns.Default),
                 Rows(choiceCount, columns.Small),
                 Rows(choiceCount, columns.Medium),

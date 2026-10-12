@@ -15,80 +15,6 @@
 
 @source "../../Areas/StellarAdmin/Views";
 
-/* Form grid: the views write each scope's column counts and each item's span per tier as inline variables, leaving
-   out tiers at 1. The variables don't inherit, so a nested grid or item never picks up its parent's values. */
-@property --sa-cols {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-cols-sm {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-cols-md {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-cols-lg {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-span {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-span-sm {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-span-md {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-span-lg {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-rows {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-rows-sm {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-rows-md {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
-@property --sa-rows-lg {
-    syntax: "<integer>";
-    inherits: false;
-    initial-value: 1;
-}
-
 @layer components {
     .sa-resource-index-grid .sa-data-grid-footer {
         flex-wrap: wrap;
@@ -124,6 +50,8 @@
         margin-inline-start: auto;
     }
 
+    /* Form grid: the views write each scope's column counts and each item's span per tier as the inline grid
+       variables, which stellar-admin.css registers (structure.css in StellarAdmin.TagHelpers). */
     .sa-form-grid {
         width: 100%;
         min-width: 0;

@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
@@ -40,7 +41,7 @@ public sealed class ResourceGroupBuilder<TResource> : ResourceFieldsBuilder<TRes
     /// </summary>
     public ResourceGroupBuilder<TResource> ColumnSpanFull()
     {
-        _columnSpan = new(Default: FormColumnSpanDefinitions.Full);
+        _columnSpan = new(Default: ResponsiveGrid.FullSpan);
 
         return this;
     }

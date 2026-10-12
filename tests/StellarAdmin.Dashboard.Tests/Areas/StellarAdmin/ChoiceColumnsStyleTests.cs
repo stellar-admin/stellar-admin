@@ -1,5 +1,6 @@
 using StellarAdmin.Dashboard.Areas.StellarAdmin;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Tests.Areas.StellarAdmin;
 
@@ -9,7 +10,7 @@ public class ChoiceColumnsStyleTests
     public async Task Format_Across_WritesOnlyColumns()
     {
         // Arrange
-        var columns = new FormGridTiers(1, 2, 2, 3);
+        var columns = new GridTiers(1, 2, 2, 3);
 
         // Act
         var style = ChoiceColumnsStyle.Format(columns, 7, false);
@@ -22,7 +23,7 @@ public class ChoiceColumnsStyleTests
     public async Task Format_Down_WritesRowsThatFillEachColumnFirst()
     {
         // Arrange
-        var columns = new FormGridTiers(1, 2, 2, 3);
+        var columns = new GridTiers(1, 2, 2, 3);
 
         // Act
         var style = ChoiceColumnsStyle.Format(columns, 7, true);
@@ -39,7 +40,7 @@ public class ChoiceColumnsStyleTests
     public async Task Format_DownWithOneRowPerTier_WritesOnlyColumns()
     {
         // Arrange
-        var columns = new FormGridTiers(3, 3, 3, 3);
+        var columns = new GridTiers(3, 3, 3, 3);
 
         // Act
         var style = ChoiceColumnsStyle.Format(columns, 3, true);
@@ -54,7 +55,7 @@ public class ChoiceColumnsStyleTests
     public async Task Format_DownWithoutChoices_WritesNothing()
     {
         // Arrange
-        var columns = new FormGridTiers(1, 1, 1, 1);
+        var columns = new GridTiers(1, 1, 1, 1);
 
         // Act
         var style = ChoiceColumnsStyle.Format(columns, 0, true);

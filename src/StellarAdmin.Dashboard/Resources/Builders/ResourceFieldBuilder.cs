@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using StellarAdmin.Dashboard.Resources.Editors;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
@@ -73,9 +74,7 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     public ResourceFieldBuilder ColumnSpanFull()
     {
-        _configuration.Add(options =>
-            options.ColumnSpan = new(Default: FormColumnSpanDefinitions.Full)
-        );
+        _configuration.Add(options => options.ColumnSpan = new(Default: ResponsiveGrid.FullSpan));
 
         return this;
     }

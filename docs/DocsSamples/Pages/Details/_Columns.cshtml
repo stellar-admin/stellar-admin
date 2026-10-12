@@ -2,13 +2,16 @@
 
 <div class="w-full">
     <!-- code begin -->
-    <sa-details columns="3">
+    <sa-details columns="3" columns-sm="2" columns-lg="4">
+        <sa-display-field asp-for="Reference" />
         <sa-display-field asp-for="LeadTraveller" />
         <sa-display-field asp-for="Email" column-span="2" />
         <sa-display-field asp-for="Departure" />
         <sa-display-field asp-for="Return" />
         <sa-display-field asp-for="Cabin" />
-        <sa-display-field asp-for="Notes" column-span-full="true" />
+        <sa-display-field asp-for="Party" />
+        <sa-display-field asp-for="Notes" column-span-full="true" column-span-lg="3" />
+        <sa-display-field asp-for="Total" />
     </sa-details>
     <!-- code end -->
 </div>

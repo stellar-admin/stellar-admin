@@ -8,10 +8,10 @@
 @* The wrapper is the container the grid's breakpoints query; the content is the grid itself *@
 <div class="sa-form-grid" data-slot="form-grid">
     <div class="sa-form-grid-content" data-slot="form-grid-content" data-columns="@(multipleColumns ? "multiple" : "single")"
-         style="@FormGridStyle.Columns(columns)">
+         style="@ResponsiveGrid.ColumnsStyle(columns)">
         @foreach (var item in Items)
         {
-            var spanStyle = FormGridStyle.Span(item.ColumnSpan.Resolve(columns));
+            var spanStyle = ResponsiveGrid.SpanStyle(item.ColumnSpan.Resolve(columns));
             if (item is FormFieldOptions field)
             {
                 <div class="sa-form-grid-cell" data-slot="form-grid-cell" style="@spanStyle">

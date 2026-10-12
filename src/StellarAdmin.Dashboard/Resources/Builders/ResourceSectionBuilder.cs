@@ -63,7 +63,7 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// </summary>
     public ResourceSectionBuilder<TResource> ColumnSpanFull()
     {
-        _columnSpan = new(Default: FormColumnSpanDefinitions.Full);
+        _columnSpan = new(Default: ResponsiveGrid.FullSpan);
 
         return this;
     }

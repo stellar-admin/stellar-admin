@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
@@ -33,7 +34,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder DefaultFull()
     {
-        Span = Span with { Default = FormColumnSpanDefinitions.Full };
+        Span = Span with { Default = ResponsiveGrid.FullSpan };
 
         return this;
     }
@@ -53,7 +54,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder LargeFull()
     {
-        Span = Span with { Large = FormColumnSpanDefinitions.Full };
+        Span = Span with { Large = ResponsiveGrid.FullSpan };
 
         return this;
     }
@@ -73,7 +74,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder MediumFull()
     {
-        Span = Span with { Medium = FormColumnSpanDefinitions.Full };
+        Span = Span with { Medium = ResponsiveGrid.FullSpan };
 
         return this;
     }
@@ -93,7 +94,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder SmallFull()
     {
-        Span = Span with { Small = FormColumnSpanDefinitions.Full };
+        Span = Span with { Small = ResponsiveGrid.FullSpan };
 
         return this;
     }

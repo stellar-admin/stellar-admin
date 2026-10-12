@@ -19,16 +19,16 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-display-field")]
 public class DisplayFieldTagHelper : StellarAdminTagHelperBase
 {
-    private const string DefaultPlaceholder = "—";
+    private const string DefaultEmptyText = "—";
 
     private readonly IOptions<IconOptions> _iconOptions;
     private readonly ICompositeViewEngine _viewEngine;
 
     /// <summary>
-    ///     The number of columns the field spans in an <c>&lt;sa-details&gt;</c> list.
+    ///     The number of columns the field spans in an <c>&lt;sa-details&gt;</c> list, from 1 to 12.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1. Capped at the list's column count.
+    ///     Defaults to 1. Limited to the list's column count at each width.
     /// </remarks>
     [HtmlAttributeName("column-span")]
     public int? ColumnSpan { get; set; }
@@ -37,10 +37,50 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
     ///     Whether the field spans every column of an <c>&lt;sa-details&gt;</c> list.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Defaults to <c>false</c>. The breakpoint spans, such as <see cref="ColumnSpanLarge" />,
+    ///     still apply from their widths.
     /// </remarks>
     [HtmlAttributeName("column-span-full")]
     public bool? ColumnSpanFull { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the list is at least 56rem wide, from 1 to
+    ///     12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-lg")]
+    public int? ColumnSpanLarge { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the list is at least 40rem wide, from 1 to
+    ///     12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-md")]
+    public int? ColumnSpanMedium { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the list is at least 30rem wide, from 1 to
+    ///     12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnSpan" />.
+    /// </remarks>
+    [HtmlAttributeName("column-span-sm")]
+    public int? ColumnSpanSmall { get; set; }
+
+    /// <summary>
+    ///     The text displayed when the value is empty.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the property's null display text, otherwise a dash.
+    /// </remarks>
+    [HtmlAttributeName("empty-text")]
+    public string? EmptyText { get; set; }
 
     /// <summary>
     ///     The model property whose label and value are displayed.
@@ -83,15 +123,6 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
     public FieldOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     The text displayed when the value is empty.
-    /// </summary>
-    /// <remarks>
-    ///     Defaults to the property's null display text, otherwise a dash.
-    /// </remarks>
-    [HtmlAttributeName("placeholder")]
-    public string? Placeholder { get; set; }
-
-    /// <summary>
     ///     Muted text displayed after the value.
     /// </summary>
     [HtmlAttributeName("secondary")]
@@ -124,9 +155,9 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
     {
         // Razor writes a string attribute bound to a null expression as an empty string, so an
         // empty value means "not set" and the metadata defaults still apply.
+        EmptyText = string.IsNullOrEmpty(EmptyText) ? null : EmptyText;
         Format = string.IsNullOrEmpty(Format) ? null : Format;
         Href = string.IsNullOrEmpty(Href) ? null : Href;
-        Placeholder = string.IsNullOrEmpty(Placeholder) ? null : Placeholder;
         Secondary = string.IsNullOrEmpty(Secondary) ? null : Secondary;
         Template = string.IsNullOrEmpty(Template) ? null : Template;
 
@@ -138,12 +169,18 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             );
         }
 
-        if (ColumnSpan is < 1)
+        if (ColumnSpan is not null && ColumnSpanFull == true)
         {
             throw new InvalidOperationException(
-                "The <sa-display-field> column-span attribute must be at least 1."
+                "An <sa-display-field> can set either the column-span or the column-span-full "
+                    + "attribute, not both."
             );
         }
+
+        ValidateColumnSpan(ColumnSpan, "column-span");
+        ValidateColumnSpan(ColumnSpanSmall, "column-span-sm");
+        ValidateColumnSpan(ColumnSpanMedium, "column-span-md");
+        ValidateColumnSpan(ColumnSpanLarge, "column-span-lg");
 
         // Inside a details list the label and value are a dt and dd; elsewhere, such as among
         // inputs in a form, a dt outside a dl is invalid, so both are divs.
@@ -159,9 +196,9 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()
         );
-        if (detailsContext is not null && GetColumnSpanText(detailsContext.Columns) is { } span)
+        if (detailsContext is not null && GetColumnSpanStyle(detailsContext.Columns) is { } span)
         {
-            output.Attributes.SetAttribute("data-column-span", span);
+            output.AppendStyle(span);
         }
 
         output.Attributes.SetAttribute(
@@ -226,6 +263,17 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
                 or TypeCode.Decimal;
     }
 
+    private static void ValidateColumnSpan(int? value, string attributeName)
+    {
+        if (value is < 1 or > ResponsiveGrid.MaxColumns)
+        {
+            throw new InvalidOperationException(
+                $"The <sa-display-field> {attributeName} attribute must be between 1 and "
+                    + $"{ResponsiveGrid.MaxColumns}."
+            );
+        }
+    }
+
     private string FormatItem(object? item, ModelMetadata metadata)
     {
         var format = Format ?? metadata.DisplayFormatString;
@@ -259,21 +307,17 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             : FormatItem(value, metadata);
     }
 
-    private string? GetColumnSpanText(int columns)
+    private string? GetColumnSpanStyle(GridTiers columns)
     {
-        if (ColumnSpanFull == true)
-        {
-            return "full";
-        }
-
-        if (ColumnSpan is not > 1 || columns == 1)
-        {
-            return null;
-        }
-
-        return ColumnSpan >= columns
-            ? "full"
-            : ColumnSpan.Value.ToString(CultureInfo.InvariantCulture);
+        return ResponsiveGrid.SpanStyle(
+            ResponsiveGrid.ResolveSpan(
+                columns,
+                ColumnSpanFull == true ? ResponsiveGrid.FullSpan : ColumnSpan,
+                ColumnSpanSmall,
+                ColumnSpanMedium,
+                ColumnSpanLarge
+            )
+        );
     }
 
     private IHtmlContent RenderBoolean(TagHelperContext context, bool value)
@@ -356,7 +400,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
         {
             valueElement.Attributes["data-empty"] = "true";
             valueElement.InnerHtml.Append(
-                Placeholder ?? metadata?.NullDisplayText ?? DefaultPlaceholder
+                EmptyText ?? metadata?.NullDisplayText ?? DefaultEmptyText
             );
 
             return;

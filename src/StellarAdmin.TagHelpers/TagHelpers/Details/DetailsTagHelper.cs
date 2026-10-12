@@ -8,16 +8,41 @@ namespace StellarAdmin.TagHelpers;
 [HtmlTargetElement("sa-details")]
 public class DetailsTagHelper : StellarAdminTagHelperBase
 {
-    private const int MaxColumns = 4;
-
     /// <summary>
-    ///     The number of columns when there is room for them, from 1 to 4.
+    ///     The number of columns when the list is at least 40rem wide, from 1 to 12.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1. Narrower lists use fewer columns.
+    ///     Defaults to 1. Narrower lists use one column, unless <see cref="ColumnsSmall" /> is set.
     /// </remarks>
     [HtmlAttributeName("columns")]
     public int? Columns { get; set; }
+
+    /// <summary>
+    ///     The number of columns when the list is at least 56rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the number of columns at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("columns-lg")]
+    public int? ColumnsLarge { get; set; }
+
+    /// <summary>
+    ///     The number of columns when the list is at least 40rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="Columns" />, otherwise the number of columns at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("columns-md")]
+    public int? ColumnsMedium { get; set; }
+
+    /// <summary>
+    ///     The number of columns when the list is at least 30rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1.
+    /// </remarks>
+    [HtmlAttributeName("columns-sm")]
+    public int? ColumnsSmall { get; set; }
 
     /// <summary>
     ///     How each field arranges its label and value, unless the field sets its own.
@@ -39,25 +64,30 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveColumns = Columns ?? 1;
-        if (effectiveColumns is < 1 or > MaxColumns)
+        if (Columns is not null && ColumnsMedium is not null)
         {
             throw new InvalidOperationException(
-                $"The <sa-details> columns attribute must be between 1 and {MaxColumns}."
+                "An <sa-details> can set either the columns or the columns-md attribute, not both."
             );
         }
 
-        var effectiveVariant = Variant ?? DetailsVariant.Default;
-        SetContext(
-            context,
-            new DetailsContext { Columns = effectiveColumns, Orientation = Orientation }
+        ValidateColumns(Columns, "columns");
+        ValidateColumns(ColumnsSmall, "columns-sm");
+        ValidateColumns(ColumnsMedium, "columns-md");
+        ValidateColumns(ColumnsLarge, "columns-lg");
+
+        var columns = ResponsiveGrid.ResolveColumns(
+            small: ColumnsSmall,
+            medium: ColumnsMedium ?? Columns,
+            large: ColumnsLarge
         );
+        var effectiveVariant = Variant ?? DetailsVariant.Default;
+        SetContext(context, new DetailsContext { Columns = columns, Orientation = Orientation });
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("data-slot", "details");
-        output.Attributes.SetAttribute("data-columns", effectiveColumns);
         output.Attributes.SetAttribute("data-variant", effectiveVariant.GetDataAttributeText());
 
         output.Attributes.SetAttribute(
@@ -65,12 +95,27 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-details", output.GetUserSuppliedClass())
         );
 
-        // The wrapper is the container the column breakpoints query; the list is the grid itself
+        // The wrapper is the container the column breakpoints query; the list is the grid itself,
+        // so it carries the column variables, which don't inherit
+        var columnsStyle = ResponsiveGrid.ColumnsStyle(columns);
         output.PreContent.SetHtmlContent(
-            """<dl class="sa-details-list" data-slot="details-list">"""
+            columnsStyle is null
+                ? """<dl class="sa-details-list" data-slot="details-list">"""
+                : $"""<dl class="sa-details-list" data-slot="details-list" style="{columnsStyle}">"""
         );
         output.PostContent.SetHtmlContent("</dl>");
 
         return Task.CompletedTask;
+    }
+
+    private static void ValidateColumns(int? value, string attributeName)
+    {
+        if (value is < 1 or > ResponsiveGrid.MaxColumns)
+        {
+            throw new InvalidOperationException(
+                $"The <sa-details> {attributeName} attribute must be between 1 and "
+                    + $"{ResponsiveGrid.MaxColumns}."
+            );
+        }
     }
 }
