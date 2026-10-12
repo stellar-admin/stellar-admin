@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` and `LookupDisplay` (63–69) done and committed. Outstanding: the `LookupDisplay.UseSource` rename (78), the Dashboard view page and configured row details (decisions 4 and 5).
+Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show read-only fields on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -21,7 +21,7 @@ Make read-only displays of a record's fields a first-class feature, similar to F
 - Form layout is a polymorphic tree: `FormItemOptions` (private constructor) has field, section and group subclasses, and `_FormItems.cshtml` switches on the item type. Fields render through `EditorTemplates`, which wrap TagHelpers inputs.
 - `ResourceFieldBuilder` has `Title`, `Description`, `ColumnSpan` and `UseEditor<TEditor>`; `ResourceFieldsBuilder` has `Add`, `AddSection`, `AddGroup` and `Columns`.
 - Edit POST loads the record, binds only the configured field names on top of it, and re-renders that record on failure, so non-bound values are still present after an invalid POST.
-- The grid formats values with `Format`, a `GridDisplayTemplates/{template}` partial, or the metadata template hint. The lookup editors resolve a related record's title through `LookupItems.FindAsync`, which `LookupDisplay` now reuses (`LookupLabelContext` only carries UI labels such as Add and Choose).
+- The grid formats values with `Format`, a `GridDisplayTemplates/{template}` partial, or the metadata template hint. The lookup editors resolve a related record's title through `LookupItems.FindAsync` (`LookupLabelContext` only carries UI labels such as Add and Choose).
 - `crud-screen-tag-helpers.md` proposed `sa-details`/`sa-display-field` with display precedence (child content, then template, then metadata formatting; null shows a placeholder, zero and false are real values). This plan supersedes that part.
 
 ## Proposed approach
@@ -80,7 +80,7 @@ Public API (implemented 2026-10-12):
 - `ResourceFieldsBuilder<TResource>` (so also sections and groups): `AddDisplayField(expression)` returning `ResourceDisplayFieldBuilder`, and `AddDisplayField(expression, configure)` returning the fields builder; `AddDetails(title)` returning `ResourceDetailsBuilder<TResource>`, and `AddDetails(title, configure)` returning the fields builder.
 - `ResourceDisplayFieldBuilder`: setter-only `Title`, `Format` and `EmptyText`; `UseDisplay<TDisplay>()` and `UseDisplay<TDisplay>(configure)` (`TDisplay : FieldDisplay, new()`); `ColumnSpan(int)`, `ColumnSpan(Action<ColumnSpanBuilder>)`, `ColumnSpanFull()`, `ColumnStart(int)`, `ColumnStart(Action<ColumnStartBuilder>)`.
 - `ResourceDetailsBuilder<TResource>`: `Add(expression)` returning `ResourceDisplayFieldBuilder` and `Add(expression, configure)` returning the details builder (display fields only); setter-only `Description`, `Layout`, `Orientation` (`FieldOrientation?`) and `Variant` (`DetailsVariant?`); `ColumnSpan`/`ColumnSpanFull`/`ColumnStart` as on sections; `Columns(int)`/`Columns(Action<GridColumnsBuilder>)`.
-- Displays (`StellarAdmin.Dashboard.Resources.Displays`): abstract `FieldDisplay` (`TemplateName`); `IFieldDisplay`/`IFieldDisplay<THandler>`, `IFieldDisplayHandler`/`IFieldDisplayHandler<TDisplay>`, `FieldDisplayHandler<TDisplay>`, `FieldDisplayContext`; built-in `BadgeDisplay` (`Variant`) and `LookupDisplay` (`Items`, `UseItems` ×3) with `LookupDisplayHandler`. `FieldDisplayView<TDisplay>` (`Display`, `DisplayData`), `ViewDataKeys.FieldDisplay`, `FieldDisplayData` and `DisplayData`, and `ResourceFormPageViewModel.DisplayData`.
+- Displays (`StellarAdmin.Dashboard.Resources.Displays`): abstract `FieldDisplay` (`TemplateName`); `IFieldDisplay`/`IFieldDisplay<THandler>`, `IFieldDisplayHandler`/`IFieldDisplayHandler<TDisplay>`, `FieldDisplayHandler<TDisplay>`, `FieldDisplayContext`; built-in `BadgeDisplay` (`Variant`). `FieldDisplayView<TDisplay>` (`Display`, `DisplayData`), `ViewDataKeys.FieldDisplay`, `FieldDisplayData` and `DisplayData`, and `ResourceFormPageViewModel.DisplayData`.
 - Options: `FormDisplayFieldOptions` (with `Display`) and `FormDetailsOptions` (sealed, beside field, section and group). `ResourceFormOptions.Fields` still lists only editable fields, so binding and the EF field checks never see display fields.
 
 ## Decisions
@@ -120,7 +120,7 @@ Dashboard display fields (2026-10-12; numbered in the conversation's sequence):
 Built-in displays (2026-10-12):
 
 63. Display handlers mirror editor handlers: a display that needs request data implements `IFieldDisplay<THandler>`; the handler (`IFieldDisplayHandler<TDisplay>`, base `FieldDisplayHandler<TDisplay>`, DI constructor) returns data from `PrepareAsync(FieldDisplayContext, CancellationToken)`, prepared by the controller for every display field in the form tree, and the template reads it as `FieldDisplayView.DisplayData`. `UseDisplay` checks that the handler implements `IFieldDisplayHandler<TDisplay>`. Decided.
-64. `LookupDisplay` has the lookup editor's `UseItems` overloads and resolves the value through `LookupItems.FindAsync`: it shows each item's title, and a value no item matches shows the value. Decided.
+64. `LookupDisplay` has the lookup editor's `UseItems` overloads and resolves the value through `LookupItems.FindAsync`: it shows each item's title, and a value no item matches shows the value. Decided; superseded by 80.
 65. A per-value badge function: dropped by 68.
 66. Built-in templates live in `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/` (`Badge`, `Lookup`), mirroring `EditorTemplates/Editors/`. Decided.
 67. The Display fields gallery uses both, plus a `[UIHint]` template that picks the badge by value. Decided.
@@ -133,6 +133,7 @@ EF Core references (2026-10-12):
 77. An EF Core `LookupDisplay.UseItems` extension: dropped (79). With 76, an EF resource displays `p => p.Category.Name` directly.
 78. Rename `LookupDisplay.UseItems` to `UseSource<TSource, TEntity, TValue>(value, title)`, drop its `LookupItems` and description/media overloads and make `Items` internal: it only fetches the referenced records by key, never a list. Decided; not yet implemented.
 79. Drop 77. Decided.
+80. Drop `LookupDisplay` (and with it 78): with 76 an EF resource displays `p => p.Category.Name`, and a custom model can carry the related value, so a key-to-title display only served keys without a navigation or model, which a custom display with a handler covers. Its handler and template are removed; display handlers (63) and `BadgeDisplay` stay, and `LookupItems.Create` stays as the lookup editors' shared factory. Decided; implemented.
 
 ## Prototype
 
@@ -161,11 +162,13 @@ Dashboard display fields (implemented 2026-10-12, committed):
 - Playground: Form layouts → Display fields (`DisplayFieldsLayoutGallery`): a root display field (a getter-only property), display fields among inputs in `Columns(3)`, a stacked `AddDetails` in `Columns(3)` with spans, a custom `BadgeDisplay` (`Views/Shared/DisplayTemplates/Badge.cshtml`) on the cabin, an email link, a boolean and an empty value, and a horizontal divided audit section in `Columns(2)`.
 - Skills: `references/setup.md` has a Display fields section and a link from Create forms.
 
-Built-in displays (implemented 2026-10-12, committed): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (internal; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor`, `MultiLookupSheetEditor` and `LookupDisplay`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, `HomeAirport` uses `LookupDisplay` over `LayoutDestinationLookupSource`, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents the built-in displays, per-value templates and custom displays with handlers.
+Built-in displays (implemented 2026-10-12, committed): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (public since 76; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor` and `MultiLookupSheetEditor`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents `BadgeDisplay`, per-value templates and custom displays with handlers.
 
 Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+Dropping `LookupDisplay` (80), completed 2026-10-12: the handler path is covered by a test-only `CategoryNameDisplay` (integration) and a mismatched-handler display (unit).
 
 EF Core references (76), completed 2026-10-12: EF integration tests 82 passed (new `ResourceDisplayFieldTests`: `Category.Name` and the owned `Details.Sku` render from one query that joins `Category`; a display field on the key alone doesn't join); Dashboard unit 113 and integration 414 passed.
 

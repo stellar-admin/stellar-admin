@@ -111,8 +111,8 @@ public class ResourceDisplayFieldTests
 
     [Test]
     [Arguments(2, "Notebooks")]
-    [Arguments(9, "9")]
-    public async Task Edit_WithLookupDisplay_ShowsItemTitleOrValue(int id, string expected)
+    [Arguments(9, "None")]
+    public async Task Edit_WithDisplayHandler_PassesPreparedDataToTemplate(int id, string expected)
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(
@@ -127,18 +127,14 @@ public class ResourceDisplayFieldTests
                             details =>
                                 details
                                     .Add(product => product.Id)
-                                    .UseDisplay<LookupDisplay>(lookup =>
-                                        lookup.UseItems<CategoryLookupSource, Category, int>(
-                                            category => category.Id,
-                                            category => category.Name
-                                        )
+                                    .UseDisplay<CategoryNameDisplay>(display =>
+                                        display.Missing = "None"
                                     )
                         )
                     )
                 );
             },
-            configureServices: services =>
-                services.AddSingleton<CategoryStore>().AddScoped<CategoryLookupSource>()
+            configureServices: services => services.AddSingleton<CategoryStore>()
         );
         using var client = sut.GetTestClient();
 
@@ -146,7 +142,9 @@ public class ResourceDisplayFieldTests
         var document = await client.GetDocumentAsync($"/stellaradmin/products/edit/{id}");
 
         // Assert
-        await Assert.That(document.RequiredElement("dd").TextContent.Trim()).IsEqualTo(expected);
+        await Assert
+            .That(document.RequiredElement("dd [data-custom-display='category']").TextContent)
+            .IsEqualTo(expected);
     }
 
     [Test]

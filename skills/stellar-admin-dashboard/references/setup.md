@@ -290,14 +290,11 @@ edit.Fields(fields =>
 - A display field can read through references, such as `booking => booking.Customer.Name`. An EF Core resource's edit page loads the references on each display field's path with the record, in the same query; a null reference shows the empty text. Other data sources and custom models must load them themselves.
 - `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title`, `Format` and `EmptyText`, `UseDisplay<TDisplay>()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
 - Values render through `<sa-display-field>`: booleans as a check or cross, enums by their `[Display]` name, `[EmailAddress]` and `[Url]` values as links, and `Format` or `[DisplayFormat]` formatting. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash. `[UIHint("Status")]` renders the view `DisplayTemplates/Status` with the value as its model; a missing template throws.
-- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. Displays are in `StellarAdmin.Dashboard.Resources.Displays`, and none is used for an empty value. The built-in displays:
+- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. Displays are in `StellarAdmin.Dashboard.Resources.Displays`, and none is used for an empty value. The built-in display:
   - `BadgeDisplay` shows the value as a badge, and each item of a collection as its own badge. `Variant` (a `BadgeVariant`, default `Secondary`) applies to every value.
-  - `LookupDisplay` shows the title of the item a key refers to, through the same `UseItems` overloads and `ILookupSource<TEntity, TValue>` as `LookupSheetEditor`. A collection of keys shows each title, and a key no item matches shows the key.
 
 ```csharp
 details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
-details.Add(booking => booking.CategoryId).UseDisplay<LookupDisplay>(lookup =>
-    lookup.UseItems<CategoryLookupSource, Category, int>(category => category.Id, category => category.Name));
 ```
 
 - To choose a badge or other markup by value, write a display template and name it with `[UIHint]`; it applies wherever the property is displayed:
@@ -311,7 +308,7 @@ details.Add(booking => booking.CategoryId).UseDisplay<LookupDisplay>(lookup =>
 <sa-badge variant="@(Model switch { BookingStatus.Confirmed => BadgeVariant.Default, BookingStatus.Cancelled => BadgeVariant.Destructive, _ => BadgeVariant.Secondary })">@Model</sa-badge>
 ```
 
-- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings and the model is the value. A display that needs request data, such as records looked up by key, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
+- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings and the model is the value. A display that needs request data, such as a record looked up by a key that has no navigation, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
 
 - A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
 - Display fields work on create pages too, where a value that isn't set yet shows its empty text.

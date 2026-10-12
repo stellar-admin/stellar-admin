@@ -287,9 +287,23 @@ public class ResourceFieldsBuilderTests
         public override string TemplateName => "Reference";
     }
 
-    public sealed class MismatchedDisplay : FieldDisplay, IFieldDisplay<LookupDisplayHandler>
+    public sealed class MismatchedDisplay : FieldDisplay, IFieldDisplay<OtherDisplayHandler>
     {
         public override string TemplateName => "Mismatched";
+    }
+
+    public sealed class OtherDisplay : FieldDisplay
+    {
+        public override string TemplateName => "Other";
+    }
+
+    public sealed class OtherDisplayHandler(OtherDisplay display)
+        : FieldDisplayHandler<OtherDisplay>(display)
+    {
+        public override Task<object?> PrepareAsync(
+            FieldDisplayContext context,
+            CancellationToken cancellationToken
+        ) => Task.FromResult<object?>(null);
     }
 
     public sealed class ProductDataSource
