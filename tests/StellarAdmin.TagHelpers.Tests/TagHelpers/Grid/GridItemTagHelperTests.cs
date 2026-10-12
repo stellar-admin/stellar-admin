@@ -65,6 +65,66 @@ public class GridItemTagHelperTests
     }
 
     [Test]
+    [Arguments("1", null, null, null, "--sa-start-sm:1;--sa-start-md:1;--sa-start-lg:1")]
+    [Arguments("2", null, "auto", null, "--sa-start-sm:2")]
+    [Arguments(null, null, "3", "AUTO", "--sa-start-md:3")]
+    [Arguments(null, null, null, "4", "--sa-start-lg:4")]
+    [Arguments("5", null, null, null, null)]
+    public async Task ProcessAsync_WhenStartsAreSet_ResolvesThemAgainstGridColumns(
+        string? columnStart,
+        string? columnStartSmall,
+        string? columnStartMedium,
+        string? columnStartLarge,
+        string? expected
+    )
+    {
+        // Arrange
+        var sut = new GridItemTagHelper
+        {
+            ColumnStart = columnStart,
+            ColumnStartSmall = columnStartSmall,
+            ColumnStartMedium = columnStartMedium,
+            ColumnStartLarge = columnStartLarge,
+        };
+        var grid = new GridTagHelper
+        {
+            ColumnsSmall = 2,
+            ColumnsMedium = 3,
+            ColumnsLarge = 4,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            grid,
+            gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=grid-item]")?.GetAttribute("style"))
+            .IsEqualTo(expected);
+    }
+
+    [Test]
+    public async Task ProcessAsync_WhenSpanAndStartAreSet_WritesSpanThenStart()
+    {
+        // Arrange
+        var sut = new GridItemTagHelper { ColumnSpan = "2", ColumnStartLarge = "3" };
+        var grid = new GridTagHelper { Columns = 2, ColumnsLarge = 4 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            grid,
+            gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=grid-item]")?.GetAttribute("style"))
+            .IsEqualTo("--sa-span-md:2;--sa-span-lg:2;--sa-start-lg:3");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenUserSuppliesStyle_KeepsItBeforeSpan()
     {
         // Arrange
@@ -128,6 +188,29 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper { ColumnSpanLarge = columnSpan };
+        var grid = new GridTagHelper { Columns = 2 };
+
+        // Act
+        Func<Task> act = () =>
+            TagHelperRenderer.RenderAsync(
+                grid,
+                gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+            );
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
+    [Arguments("0")]
+    [Arguments("13")]
+    [Arguments("first")]
+    public async Task ProcessAsync_WhenStartIsInvalid_ThrowsInvalidOperationException(
+        string columnStart
+    )
+    {
+        // Arrange
+        var sut = new GridItemTagHelper { ColumnStartMedium = columnStart };
         var grid = new GridTagHelper { Columns = 2 };
 
         // Act

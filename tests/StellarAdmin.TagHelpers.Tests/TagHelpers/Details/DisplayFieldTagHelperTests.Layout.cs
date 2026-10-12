@@ -155,6 +155,29 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenInsideDetailsWithStart_WritesStartOnField()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Notes";
+        sut.ColumnStart = "1";
+        sut.ColumnStartLarge = "2";
+        var details = new DetailsTagHelper { Columns = 3 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            details,
+            detailsContext => TagHelperRenderer.RenderChildAsync(sut, detailsContext)
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=display-field]")?.GetAttribute("style"))
+            .IsEqualTo("--sa-start-md:1;--sa-start-lg:2");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenOutsideGridWithColumnSpan_WritesNoSpan()
     {
         // Arrange

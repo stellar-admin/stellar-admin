@@ -9,7 +9,7 @@ namespace StellarAdmin.TagHelpers;
 ///     Base class for StellarAdmin.TagHelpers form-input tag helpers. Wires up <c>asp-for</c> model binding and
 ///     the shared field attributes (label, description, error) that wrap an input control.
 /// </summary>
-public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
+public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private string? _descriptionId;
@@ -61,6 +61,47 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     /// </remarks>
     [HtmlAttributeName("column-span-sm")]
     public string? ColumnSpanSmall { get; set; }
+
+    /// <summary>
+    ///     The column the input's field starts at in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
+    ///     previous item.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the input's field
+    ///     would extend past the last column.
+    /// </remarks>
+    [HtmlAttributeName("column-start")]
+    public string? ColumnStart { get; set; }
+
+    /// <summary>
+    ///     The column the input's field starts at when the grid is at least 56rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-lg")]
+    public string? ColumnStartLarge { get; set; }
+
+    /// <summary>
+    ///     The column the input's field starts at when the grid is at least 40rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-md")]
+    public string? ColumnStartMedium { get; set; }
+
+    /// <summary>
+    ///     The column the input's field starts at when the grid is at least 30rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnStart" />.
+    /// </remarks>
+    [HtmlAttributeName("column-start-sm")]
+    public string? ColumnStartSmall { get; set; }
 
     /// <summary>
     ///     Supporting help text rendered as the field's description.
@@ -133,19 +174,12 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         }
 
         // Directly in a grid, the field (or the bare input) sits in a grid item that carries its
-        // span, since the input may render inside its own wrapper
+        // placement, since the input may render inside its own wrapper
         var grid = GetEnclosingGrid(context);
-        var spanStyle = GridLayout.SpanStyle(
-            grid,
-            context.TagName,
-            ColumnSpan,
-            ColumnSpanSmall,
-            ColumnSpanMedium,
-            ColumnSpanLarge
-        );
+        var placementStyle = GridLayout.PlacementStyle(grid, context.TagName, this);
         if (grid is not null)
         {
-            GridLayout.WrapInItem(output, spanStyle);
+            GridLayout.WrapInItem(output, placementStyle);
         }
     }
 

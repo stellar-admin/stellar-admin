@@ -95,6 +95,78 @@ public class ResponsiveGridTests
     }
 
     [Test]
+    public async Task ResolveStart_WithNoValues_UsesAutoStart()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 3, 4);
+        var span = new GridTiers(1, 1, 1, 1);
+
+        // Act
+        var start = ResponsiveGrid.ResolveStart(columns, span);
+
+        // Assert
+        await Assert.That(start).IsEqualTo(new GridTiers(0, 0, 0, 0));
+    }
+
+    [Test]
+    public async Task ResolveStart_WithUnsetBreakpoints_InheritsFromNextSmallerBreakpoint()
+    {
+        // Arrange
+        var columns = new GridTiers(2, 2, 3, 4);
+        var span = new GridTiers(1, 1, 1, 1);
+
+        // Act
+        var start = ResponsiveGrid.ResolveStart(columns, span, 2, large: ResponsiveGrid.AutoStart);
+
+        // Assert
+        await Assert.That(start).IsEqualTo(new GridTiers(2, 2, 2, 0));
+    }
+
+    [Test]
+    public async Task ResolveStart_WithOneColumn_DropsStart()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 2, 2);
+        var span = new GridTiers(1, 1, 1, 1);
+
+        // Act
+        var start = ResponsiveGrid.ResolveStart(columns, span, 1);
+
+        // Assert
+        await Assert.That(start).IsEqualTo(new GridTiers(0, 1, 1, 1));
+    }
+
+    [Test]
+    public async Task ResolveStart_WhenItemWouldExtendPastLastColumn_DropsStartAtThatBreakpoint()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 3, 4);
+        var span = new GridTiers(1, 2, 2, 2);
+
+        // Act
+        var start = ResponsiveGrid.ResolveStart(columns, span, small: 2);
+
+        // Assert
+        await Assert.That(start).IsEqualTo(new GridTiers(0, 0, 2, 2));
+    }
+
+    [Test]
+    [Arguments(-1)]
+    [Arguments(13)]
+    public async Task ResolveStart_WithStartOutOfRange_ThrowsArgumentOutOfRangeException(int value)
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 3, 4);
+        var span = new GridTiers(1, 1, 1, 1);
+
+        // Act
+        Action act = () => ResponsiveGrid.ResolveStart(columns, span, medium: value);
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+    }
+
+    [Test]
     public async Task ColumnsStyle_WithValuesAboveOne_WritesOnlyThoseBreakpoints()
     {
         // Arrange
@@ -118,6 +190,32 @@ public class ResponsiveGridTests
 
         // Assert
         await Assert.That(style).IsNull();
+    }
+
+    [Test]
+    public async Task StartStyle_WithAutoStartAtEveryBreakpoint_ReturnsNull()
+    {
+        // Arrange
+        var start = new GridTiers(0, 0, 0, 0);
+
+        // Act
+        var style = ResponsiveGrid.StartStyle(start);
+
+        // Assert
+        await Assert.That(style).IsNull();
+    }
+
+    [Test]
+    public async Task StartStyle_WithStarts_WritesEveryBreakpointWithAStartIncludingOne()
+    {
+        // Arrange
+        var start = new GridTiers(0, 1, 2, 0);
+
+        // Act
+        var style = ResponsiveGrid.StartStyle(start);
+
+        // Assert
+        await Assert.That(style).IsEqualTo("--sa-start-sm:1;--sa-start-md:2");
     }
 
     [Test]

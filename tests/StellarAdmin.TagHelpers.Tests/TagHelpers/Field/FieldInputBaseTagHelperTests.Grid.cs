@@ -35,6 +35,28 @@ public partial class FieldInputBaseTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenInsideGridWithStart_WritesStartOnGridItem()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut("input", context);
+        sut.Label = "Destination";
+        sut.ColumnStartMedium = "2";
+        var grid = new GridTagHelper { Columns = 2 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            grid,
+            gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+        );
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=grid-item]")?.GetAttribute("style"))
+            .IsEqualTo("--sa-start-md:2;--sa-start-lg:2");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenInsideGridWithoutField_WrapsControlInGridItem()
     {
         // Arrange

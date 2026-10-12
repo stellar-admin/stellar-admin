@@ -1,8 +1,8 @@
 /* Grid: responsive columns for sa-grid and sa-details. The wrapper is the container the column
    breakpoints query; the content inside is the grid. The tag helpers write the column counts and
-   each item's span per breakpoint as the inline grid variables (structure.css). Fields and display
-   fields placed directly in an sa-grid get their item from their own tag helper. Each item is the
-   field-group container of what it holds, so content that measures its field group, such as the
+   each item's span and start per breakpoint as the inline grid variables (structure.css). Fields
+   and display fields placed directly in an sa-grid get their item from their own tag helper. Each
+   item is the field-group container of what it holds, so content that measures its field group, such as the
    Dashboard's choice columns, measures its own column.
    Replaces: .sa-grid, .sa-grid-content, .sa-grid-item */
 
@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
     & > * {
-      grid-column: span var(--sa-span);
+      grid-column: var(--sa-start) / span var(--sa-span);
       min-width: 0;
     }
   }
@@ -30,7 +30,7 @@
     :is(.sa-grid-content, .sa-details-list) {
       grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
       & > * {
-        grid-column: span var(--sa-span-sm);
+        grid-column: var(--sa-start-sm) / span var(--sa-span-sm);
       }
     }
   }
@@ -38,7 +38,7 @@
     :is(.sa-grid-content, .sa-details-list) {
       grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
       & > * {
-        grid-column: span var(--sa-span-md);
+        grid-column: var(--sa-start-md) / span var(--sa-span-md);
       }
     }
   }
@@ -46,7 +46,7 @@
     :is(.sa-grid-content, .sa-details-list) {
       grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
       & > * {
-        grid-column: span var(--sa-span-lg);
+        grid-column: var(--sa-start-lg) / span var(--sa-span-lg);
       }
     }
   }

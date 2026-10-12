@@ -13,6 +13,11 @@ namespace StellarAdmin.TagHelpers;
 public static class ResponsiveGrid
 {
     /// <summary>
+    ///     A start that places the item after the item before it, as if no start were set.
+    /// </summary>
+    public const int AutoStart = 0;
+
+    /// <summary>
     ///     A span that covers every column of its grid.
     /// </summary>
     public const int FullSpan = int.MaxValue;
@@ -88,6 +93,39 @@ public static class ResponsiveGrid
     }
 
     /// <summary>
+    ///     Returns the column each breakpoint starts the item at.
+    /// </summary>
+    /// <remarks>
+    ///     A breakpoint without a start uses the start of the next smaller breakpoint; the smallest
+    ///     defaults to <see cref="AutoStart" />. A start is dropped at a breakpoint where the grid has
+    ///     one column or the item would extend past the last column.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     A start is less than <see cref="AutoStart" /> or greater than <see cref="MaxColumns" />.
+    /// </exception>
+    public static GridTiers ResolveStart(
+        GridTiers columns,
+        GridTiers span,
+        int? @base = null,
+        int? small = null,
+        int? medium = null,
+        int? large = null
+    )
+    {
+        var baseStart = ValidateStart(@base, nameof(@base)) ?? AutoStart;
+        var smallStart = ValidateStart(small, nameof(small)) ?? baseStart;
+        var mediumStart = ValidateStart(medium, nameof(medium)) ?? smallStart;
+        var largeStart = ValidateStart(large, nameof(large)) ?? mediumStart;
+
+        return new(
+            FitStart(baseStart, columns.Base, span.Base),
+            FitStart(smallStart, columns.Small, span.Small),
+            FitStart(mediumStart, columns.Medium, span.Medium),
+            FitStart(largeStart, columns.Large, span.Large)
+        );
+    }
+
+    /// <summary>
     ///     Returns the inline style that sets a grid's row counts.
     /// </summary>
     /// <returns>
@@ -103,22 +141,34 @@ public static class ResponsiveGrid
     /// </returns>
     public static string? SpanStyle(GridTiers span) => Format("--sa-span", span);
 
-    // A tier at 1 is left out, since the variables are registered with 1 as their initial value
-    // and don't inherit.
-    private static string? Format(string variable, GridTiers tiers)
+    /// <summary>
+    ///     Returns the inline style that sets a grid item's starts.
+    /// </summary>
+    /// <returns>
+    ///     The style, or <c>null</c> when the item has no start at any breakpoint.
+    /// </returns>
+    public static string? StartStyle(GridTiers start) =>
+        Format("--sa-start", start, omitted: AutoStart);
+
+    private static int FitStart(int start, int columns, int span) =>
+        columns == 1 || start + span - 1 > columns ? AutoStart : start;
+
+    // A tier at the variable's initial value is left out, since the variables are registered with
+    // it and don't inherit: 1 for counts and spans, auto for starts.
+    private static string? Format(string variable, GridTiers tiers, int omitted = 1)
     {
         var style = new StringBuilder();
-        Append(style, variable, tiers.Base);
-        Append(style, $"{variable}-sm", tiers.Small);
-        Append(style, $"{variable}-md", tiers.Medium);
-        Append(style, $"{variable}-lg", tiers.Large);
+        Append(style, variable, tiers.Base, omitted);
+        Append(style, $"{variable}-sm", tiers.Small, omitted);
+        Append(style, $"{variable}-md", tiers.Medium, omitted);
+        Append(style, $"{variable}-lg", tiers.Large, omitted);
 
         return style.Length > 0 ? style.ToString() : null;
     }
 
-    private static void Append(StringBuilder style, string variable, int value)
+    private static void Append(StringBuilder style, string variable, int value, int omitted)
     {
-        if (value == 1)
+        if (value == omitted)
         {
             return;
         }
@@ -137,6 +187,17 @@ public static class ResponsiveGrid
         {
             ArgumentOutOfRangeException.ThrowIfLessThan(count, 1, paramName);
             ArgumentOutOfRangeException.ThrowIfGreaterThan(count, MaxColumns, paramName);
+        }
+
+        return value;
+    }
+
+    private static int? ValidateStart(int? value, string paramName)
+    {
+        if (value is { } start)
+        {
+            ArgumentOutOfRangeException.ThrowIfLessThan(start, AutoStart, paramName);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(start, MaxColumns, paramName);
         }
 
         return value;

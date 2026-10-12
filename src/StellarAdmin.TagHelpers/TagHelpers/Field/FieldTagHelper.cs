@@ -8,7 +8,7 @@ namespace StellarAdmin.TagHelpers;
 ///     according to the chosen orientation.
 /// </summary>
 [HtmlTargetElement("sa-field")]
-public class FieldTagHelper : StellarAdminTagHelperBase
+public class FieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     /// <summary>
     ///     The number of columns the field spans in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or
@@ -51,6 +51,47 @@ public class FieldTagHelper : StellarAdminTagHelperBase
     public string? ColumnSpanSmall { get; set; }
 
     /// <summary>
+    ///     The column the field starts at in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
+    ///     previous item.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the field
+    ///     would extend past the last column.
+    /// </remarks>
+    [HtmlAttributeName("column-start")]
+    public string? ColumnStart { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 56rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-lg")]
+    public string? ColumnStartLarge { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 40rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-md")]
+    public string? ColumnStartMedium { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 30rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnStart" />.
+    /// </remarks>
+    [HtmlAttributeName("column-start-sm")]
+    public string? ColumnStartSmall { get; set; }
+
+    /// <summary>
     ///     How the field arranges its label, control, and supporting text.
     /// </summary>
     /// <remarks>
@@ -70,14 +111,7 @@ public class FieldTagHelper : StellarAdminTagHelperBase
 
         var effectiveOrientation = Orientation ?? FieldOrientation.Vertical;
         var grid = GetEnclosingGrid(context);
-        var spanStyle = GridLayout.SpanStyle(
-            grid,
-            "sa-field",
-            ColumnSpan,
-            ColumnSpanSmall,
-            ColumnSpanMedium,
-            ColumnSpanLarge
-        );
+        var placementStyle = GridLayout.PlacementStyle(grid, "sa-field", this);
 
         var tagBuilder = new FieldTagBuilder(effectiveOrientation, userSuppliedClass);
 
@@ -86,10 +120,10 @@ public class FieldTagHelper : StellarAdminTagHelperBase
 
         output.MergeAttributes(tagBuilder);
 
-        // Directly in a grid, the field sits in a grid item that carries its span
+        // Directly in a grid, the field sits in a grid item that carries its placement
         if (grid is not null)
         {
-            GridLayout.WrapInItem(output, spanStyle);
+            GridLayout.WrapInItem(output, placementStyle);
         }
 
         return Task.CompletedTask;

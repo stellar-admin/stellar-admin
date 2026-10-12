@@ -17,7 +17,7 @@ namespace StellarAdmin.TagHelpers;
 ///     template, or the model property selected by <c>asp-for</c>.
 /// </summary>
 [HtmlTargetElement("sa-display-field")]
-public class DisplayFieldTagHelper : StellarAdminTagHelperBase
+public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     private const string DefaultEmptyText = "—";
 
@@ -63,6 +63,48 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
     /// </remarks>
     [HtmlAttributeName("column-span-sm")]
     public string? ColumnSpanSmall { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at in an <c>&lt;sa-grid&gt;</c> or
+    ///     <c>&lt;sa-details&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
+    ///     previous item.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the field
+    ///     would extend past the last column.
+    /// </remarks>
+    [HtmlAttributeName("column-start")]
+    public string? ColumnStart { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 56rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-lg")]
+    public string? ColumnStartLarge { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 40rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-md")]
+    public string? ColumnStartMedium { get; set; }
+
+    /// <summary>
+    ///     The column the field starts at when the grid is at least 30rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnStart" />.
+    /// </remarks>
+    [HtmlAttributeName("column-start-sm")]
+    public string? ColumnStartSmall { get; set; }
 
     /// <summary>
     ///     The text displayed when the value is empty.
@@ -165,14 +207,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
         // outside a dl is invalid, so both are divs.
         var grid = GetEnclosingGrid(context);
         var details = grid?.Owner as DetailsTagHelper;
-        var spanStyle = GridLayout.SpanStyle(
-            grid,
-            "sa-display-field",
-            ColumnSpan,
-            ColumnSpanSmall,
-            ColumnSpanMedium,
-            ColumnSpanLarge
-        );
+        var placementStyle = GridLayout.PlacementStyle(grid, "sa-display-field", this);
         var effectiveOrientation = Orientation ?? details?.Orientation ?? FieldOrientation.Vertical;
 
         output.TagName = "div";
@@ -183,9 +218,9 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()
         );
-        if (details is not null && spanStyle is not null)
+        if (details is not null && placementStyle is not null)
         {
-            output.AppendStyle(spanStyle);
+            output.AppendStyle(placementStyle);
         }
 
         output.Attributes.SetAttribute(
@@ -208,7 +243,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
 
         if (grid is not null && details is null)
         {
-            GridLayout.WrapInItem(output, spanStyle);
+            GridLayout.WrapInItem(output, placementStyle);
         }
     }
 

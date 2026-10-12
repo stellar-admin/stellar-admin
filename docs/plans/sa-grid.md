@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website and skills done; Dashboard outstanding.
+Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website and skills done; column start (34–38) in the tag helpers, with its samples, website and skills outstanding; Dashboard outstanding.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
@@ -40,6 +40,11 @@ Numbers continue the discussion of 2026-10-12.
 31. The responsive layout of fields (label taking the spare width, the control at its natural width) suits nothing but small controls, and does not line up with display fields. Settled by 32.
 32. Remove `FieldOrientation.Responsive` completely, from `sa-field`, `sa-display-field` and `sa-details`: it was ported from shadcn, nothing in the product used it, and the grid already collapses columns in narrow containers. Horizontal fields (switch, checkbox, radio, choice cards) are unaffected. Decided.
 33. Fields and display fields directly in `sa-grid` keep their grid item, which carries the span (needed for inputs inside their own wrappers, 30) and stays a `field-group` container for content that measures its field group. Decided.
+34. Column start is named `column-start`, next to `column-span`, matching CSS `grid-column-start` and the Dashboard's unscheduled `ColumnStart` (archived dashboard-form-grid plan; info-lists 14). Decided.
+35. Starts are responsive: `column-start`, `column-start-sm`, `column-start-md`, `column-start-lg`, each 1–12 or `auto`, inherited upward like spans; `auto` resets a tier. Decided.
+36. A start is dropped at a tier where the grid has one column or the item would extend past the last column (start + span − 1 > columns); the span is never shrunk for it. Resolved on the server; an invalid value throws. Decided.
+37. Starts apply wherever spans do: `sa-field`, implicit-field inputs, `sa-grid-item`, `sa-display-field` in `sa-grid` and `sa-details`, and the Dashboard's `ColumnStart` on fields, sections and groups. Decided.
+38. Order: tag helpers, then samples, website and skills, then the Dashboard step uses it. No prototype. Decided.
 
 ## Proposed API
 
@@ -63,6 +68,7 @@ Numbers continue the discussion of 2026-10-12.
 - `sa-grid-item`: `column-span`, `column-span-sm`, `column-span-md`, `column-span-lg`, each 1–12 or `full`. Throws outside `sa-grid`.
 - `sa-details`: gains `columns-base`; `orientation` takes `Vertical` or `Horizontal` (32). `sa-display-field` loses `column-span-full`; its span attributes take `full` (26).
 - Fields (`sa-field`, implicit-field inputs, `sa-display-field`): the same span attributes as `sa-grid-item` (17).
+- Start (34–37): `column-start`, `column-start-sm`, `column-start-md`, `column-start-lg`, each 1–12 or `auto`, on everything that takes the span attributes. `ResponsiveGrid` gains `AutoStart`, `ResolveStart(columns, span, base, small, medium, large)` and `StartStyle`.
 - Span resolution, capping and validation are the existing `ResponsiveGrid` rules; a field finds the enclosing grid's column tiers through a grid context shared by `sa-grid` and `sa-details`.
 
 ## Work
@@ -115,11 +121,18 @@ Done (2026-10-12):
 
 Verified: website lint, type check and build; the Grid page in the dev server (headless Chromium, dark); SkillsGenerator `--check` (no drift); skill validation tests and check.
 
+### Column start (34–38)
+
+Tag helpers done (2026-10-12): `ResponsiveGrid.AutoStart`, `ResolveStart` and `StartStyle` (`--sa-start*`, left out at `auto`); `GridLayout.PlacementStyle` parses spans and starts through an internal `IGridPlacement` implemented by `sa-field`, `FieldInputBaseTagHelper`, `sa-grid-item` and `sa-display-field`, which gain the four start attributes; `structure.css` registers `--sa-start*` (`auto | <integer>`, initial `auto`) and `grid.css` places items with `grid-column: var(--sa-start) / span var(--sa-span)` per tier. Verified: TagHelpers tests 420/420, Dashboard build, start placement in headless Chromium (a start of 3 leaves a gap, a start of 1 begins a new row, the next item follows).
+
+Outstanding: a Grid sample, the website Grid page and field/details API tables, and the skills.
+
 ### Dashboard
 
 - `_FormItems.cshtml`, `_FormSection.cshtml` and `_FormGroup.cshtml` emit `sa-grid`/`sa-grid-item`; fields get their span through the item, since editor templates render arbitrary markup.
 - Remove the form grid rules from `client.css`; keep the multi-column section separator rule against the new classes.
 - Fold `FormGrid.ValidateColumns` into `ResponsiveGrid` (10).
+- `ColumnStart` on fields, sections and groups through `ResponsiveGrid.ResolveStart` (37).
 - Rename `GridColumnsBuilder.Default` → `Base`, `ColumnSpanBuilder.Default`/`DefaultFull` → `Base`/`BaseFull` and the internal `Default` members of `FormGridColumnDefinitions`/`FormColumnSpanDefinitions` (24); update callers in DashboardPlayground (`FormLayoutGalleryRegistration`), tests and the Dashboard consumer skill reference (`setup.md`).
 
 ### Verification

@@ -4,13 +4,14 @@ namespace StellarAdmin.TagHelpers;
 
 /// <summary>
 ///     Places content, such as a form section or a details list, in an <c>&lt;sa-grid&gt;</c>
-///     with its own column span.
+///     with its own column span and start.
 /// </summary>
 /// <remarks>
-///     Fields don't need one: they set their own span with <c>column-span</c>.
+///     Fields don't need one: they set their own span and start with <c>column-span</c> and
+///     <c>column-start</c>.
 /// </remarks>
 [HtmlTargetElement("sa-grid-item")]
-public class GridItemTagHelper : StellarAdminTagHelperBase
+public class GridItemTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     /// <summary>
     ///     The number of columns the item spans, from 1 to 12, or <c>full</c> for every column.
@@ -51,6 +52,47 @@ public class GridItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("column-span-sm")]
     public string? ColumnSpanSmall { get; set; }
 
+    /// <summary>
+    ///     The column the item starts at in its <c>&lt;sa-grid&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
+    ///     previous item.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the item
+    ///     would extend past the last column.
+    /// </remarks>
+    [HtmlAttributeName("column-start")]
+    public string? ColumnStart { get; set; }
+
+    /// <summary>
+    ///     The column the item starts at when the grid is at least 56rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-lg")]
+    public string? ColumnStartLarge { get; set; }
+
+    /// <summary>
+    ///     The column the item starts at when the grid is at least 40rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the start at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-start-md")]
+    public string? ColumnStartMedium { get; set; }
+
+    /// <summary>
+    ///     The column the item starts at when the grid is at least 30rem wide, from 1 to 12, or
+    ///     <c>auto</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnStart" />.
+    /// </remarks>
+    [HtmlAttributeName("column-start-sm")]
+    public string? ColumnStartSmall { get; set; }
+
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var grid = GetEnclosingGrid(context);
@@ -61,14 +103,7 @@ public class GridItemTagHelper : StellarAdminTagHelperBase
             );
         }
 
-        var spanStyle = GridLayout.SpanStyle(
-            grid,
-            "sa-grid-item",
-            ColumnSpan,
-            ColumnSpanSmall,
-            ColumnSpanMedium,
-            ColumnSpanLarge
-        );
+        var placementStyle = GridLayout.PlacementStyle(grid, "sa-grid-item", this);
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -78,9 +113,9 @@ public class GridItemTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses("sa-grid-item", output.GetUserSuppliedClass())
         );
-        if (spanStyle is not null)
+        if (placementStyle is not null)
         {
-            output.AppendStyle(spanStyle);
+            output.AppendStyle(placementStyle);
         }
 
         return Task.CompletedTask;

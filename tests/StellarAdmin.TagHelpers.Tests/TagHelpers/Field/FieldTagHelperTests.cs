@@ -40,6 +40,24 @@ public class FieldTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenInsideGridWithStart_WritesStartOnGridItem()
+    {
+        // Arrange
+        var sut = new FieldTagHelper { ColumnStart = "1" };
+        var grid = new GridTagHelper { Columns = 2 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            grid,
+            gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+        );
+
+        // Assert
+        var item = html.QuerySelector(".sa-grid-content > [data-slot=grid-item]");
+        await Assert.That(item?.GetAttribute("style")).IsEqualTo("--sa-start-md:1;--sa-start-lg:1");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenNestedInGridItem_RendersFieldOnly()
     {
         // Arrange
