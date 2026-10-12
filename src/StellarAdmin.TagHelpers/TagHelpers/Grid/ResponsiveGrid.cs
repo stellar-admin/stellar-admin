@@ -41,18 +41,18 @@ public static class ResponsiveGrid
     ///     A count is less than 1 or greater than <see cref="MaxColumns" />.
     /// </exception>
     public static GridTiers ResolveColumns(
-        int? @default = null,
+        int? @base = null,
         int? small = null,
         int? medium = null,
         int? large = null
     )
     {
-        var defaultCount = ValidateColumns(@default, nameof(@default)) ?? 1;
-        var smallCount = ValidateColumns(small, nameof(small)) ?? defaultCount;
+        var baseCount = ValidateColumns(@base, nameof(@base)) ?? 1;
+        var smallCount = ValidateColumns(small, nameof(small)) ?? baseCount;
         var mediumCount = ValidateColumns(medium, nameof(medium)) ?? smallCount;
         var largeCount = ValidateColumns(large, nameof(large)) ?? mediumCount;
 
-        return new(defaultCount, smallCount, mediumCount, largeCount);
+        return new(baseCount, smallCount, mediumCount, largeCount);
     }
 
     /// <summary>
@@ -68,19 +68,19 @@ public static class ResponsiveGrid
     /// </exception>
     public static GridTiers ResolveSpan(
         GridTiers columns,
-        int? @default = null,
+        int? @base = null,
         int? small = null,
         int? medium = null,
         int? large = null
     )
     {
-        var defaultSpan = ValidateSpan(@default, nameof(@default)) ?? 1;
-        var smallSpan = ValidateSpan(small, nameof(small)) ?? defaultSpan;
+        var baseSpan = ValidateSpan(@base, nameof(@base)) ?? 1;
+        var smallSpan = ValidateSpan(small, nameof(small)) ?? baseSpan;
         var mediumSpan = ValidateSpan(medium, nameof(medium)) ?? smallSpan;
         var largeSpan = ValidateSpan(large, nameof(large)) ?? mediumSpan;
 
         return new(
-            Math.Min(defaultSpan, columns.Default),
+            Math.Min(baseSpan, columns.Base),
             Math.Min(smallSpan, columns.Small),
             Math.Min(mediumSpan, columns.Medium),
             Math.Min(largeSpan, columns.Large)
@@ -108,7 +108,7 @@ public static class ResponsiveGrid
     private static string? Format(string variable, GridTiers tiers)
     {
         var style = new StringBuilder();
-        Append(style, variable, tiers.Default);
+        Append(style, variable, tiers.Base);
         Append(style, $"{variable}-sm", tiers.Small);
         Append(style, $"{variable}-md", tiers.Medium);
         Append(style, $"{variable}-lg", tiers.Large);

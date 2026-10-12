@@ -25,53 +25,44 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
     private readonly ICompositeViewEngine _viewEngine;
 
     /// <summary>
-    ///     The number of columns the field spans in an <c>&lt;sa-details&gt;</c> list, from 1 to 12.
+    ///     The number of columns the field spans in an <c>&lt;sa-grid&gt;</c> or
+    ///     <c>&lt;sa-details&gt;</c>, from 1 to 12, or <c>full</c> for every column.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1. Limited to the list's column count at each width.
+    ///     Defaults to 1. Limited to the grid's column count at each width.
     /// </remarks>
     [HtmlAttributeName("column-span")]
-    public int? ColumnSpan { get; set; }
+    public string? ColumnSpan { get; set; }
 
     /// <summary>
-    ///     Whether the field spans every column of an <c>&lt;sa-details&gt;</c> list.
-    /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>. The breakpoint spans, such as <see cref="ColumnSpanLarge" />,
-    ///     still apply from their widths.
-    /// </remarks>
-    [HtmlAttributeName("column-span-full")]
-    public bool? ColumnSpanFull { get; set; }
-
-    /// <summary>
-    ///     The number of columns the field spans when the list is at least 56rem wide, from 1 to
-    ///     12.
+    ///     The number of columns the field spans when the grid is at least 56rem wide, from 1 to
+    ///     12, or <c>full</c>.
     /// </summary>
     /// <remarks>
     ///     Defaults to the span at 40rem.
     /// </remarks>
     [HtmlAttributeName("column-span-lg")]
-    public int? ColumnSpanLarge { get; set; }
+    public string? ColumnSpanLarge { get; set; }
 
     /// <summary>
-    ///     The number of columns the field spans when the list is at least 40rem wide, from 1 to
-    ///     12.
+    ///     The number of columns the field spans when the grid is at least 40rem wide, from 1 to
+    ///     12, or <c>full</c>.
     /// </summary>
     /// <remarks>
     ///     Defaults to the span at 30rem.
     /// </remarks>
     [HtmlAttributeName("column-span-md")]
-    public int? ColumnSpanMedium { get; set; }
+    public string? ColumnSpanMedium { get; set; }
 
     /// <summary>
-    ///     The number of columns the field spans when the list is at least 30rem wide, from 1 to
-    ///     12.
+    ///     The number of columns the field spans when the grid is at least 30rem wide, from 1 to
+    ///     12, or <c>full</c>.
     /// </summary>
     /// <remarks>
     ///     Defaults to <see cref="ColumnSpan" />.
     /// </remarks>
     [HtmlAttributeName("column-span-sm")]
-    public int? ColumnSpanSmall { get; set; }
+    public string? ColumnSpanSmall { get; set; }
 
     /// <summary>
     ///     The text displayed when the value is empty.
@@ -169,24 +160,20 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             );
         }
 
-        if (ColumnSpan is not null && ColumnSpanFull == true)
-        {
-            throw new InvalidOperationException(
-                "An <sa-display-field> can set either the column-span or the column-span-full "
-                    + "attribute, not both."
-            );
-        }
-
-        ValidateColumnSpan(ColumnSpan, "column-span");
-        ValidateColumnSpan(ColumnSpanSmall, "column-span-sm");
-        ValidateColumnSpan(ColumnSpanMedium, "column-span-md");
-        ValidateColumnSpan(ColumnSpanLarge, "column-span-lg");
-
-        // Inside a details list the label and value are a dt and dd; elsewhere, such as among
-        // inputs in a form, a dt outside a dl is invalid, so both are divs.
-        var detailsContext = GetContext<DetailsContext>(context);
-        var effectiveOrientation =
-            Orientation ?? detailsContext?.Orientation ?? FieldOrientation.Vertical;
+        // In a details list the field is a grid cell holding a dt and dd; directly in an sa-grid
+        // it is wrapped in a grid item; elsewhere, such as among inputs in a form section, a dt
+        // outside a dl is invalid, so both are divs.
+        var grid = GetEnclosingGrid(context);
+        var details = grid?.Owner as DetailsTagHelper;
+        var spanStyle = GridLayout.SpanStyle(
+            grid,
+            "sa-display-field",
+            ColumnSpan,
+            ColumnSpanSmall,
+            ColumnSpanMedium,
+            ColumnSpanLarge
+        );
+        var effectiveOrientation = Orientation ?? details?.Orientation ?? FieldOrientation.Vertical;
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -196,9 +183,9 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             "data-orientation",
             effectiveOrientation.GetDataAttributeText()
         );
-        if (detailsContext is not null && GetColumnSpanStyle(detailsContext.Columns) is { } span)
+        if (details is not null && spanStyle is not null)
         {
-            output.AppendStyle(span);
+            output.AppendStyle(spanStyle);
         }
 
         output.Attributes.SetAttribute(
@@ -206,18 +193,23 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-field", "sa-display-field", output.GetUserSuppliedClass())
         );
 
-        var labelElement = new TagBuilder(detailsContext is null ? "div" : "dt");
+        var labelElement = new TagBuilder(details is null ? "div" : "dt");
         labelElement.Attributes["data-slot"] = "display-field-label";
         labelElement.AddCssClass("sa-display-field-label");
         labelElement.InnerHtml.Append(label);
 
-        var valueElement = new TagBuilder(detailsContext is null ? "div" : "dd");
+        var valueElement = new TagBuilder(details is null ? "div" : "dd");
         valueElement.Attributes["data-slot"] = "display-field-value";
         valueElement.AddCssClass("sa-display-field-value");
         await RenderValueAsync(context, valueElement, await output.GetChildContentAsync());
 
         output.Content.SetHtmlContent(labelElement);
         output.Content.AppendHtml(valueElement);
+
+        if (grid is not null && details is null)
+        {
+            GridLayout.WrapInItem(output, spanStyle);
+        }
     }
 
     private static string? GetMetadataHref(object value, ModelMetadata metadata)
@@ -263,17 +255,6 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
                 or TypeCode.Decimal;
     }
 
-    private static void ValidateColumnSpan(int? value, string attributeName)
-    {
-        if (value is < 1 or > ResponsiveGrid.MaxColumns)
-        {
-            throw new InvalidOperationException(
-                $"The <sa-display-field> {attributeName} attribute must be between 1 and "
-                    + $"{ResponsiveGrid.MaxColumns}."
-            );
-        }
-    }
-
     private string FormatItem(object? item, ModelMetadata metadata)
     {
         var format = Format ?? metadata.DisplayFormatString;
@@ -305,19 +286,6 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase
                     .Select(item => FormatItem(item, metadata.ElementMetadata ?? metadata))
             )
             : FormatItem(value, metadata);
-    }
-
-    private string? GetColumnSpanStyle(GridTiers columns)
-    {
-        return ResponsiveGrid.SpanStyle(
-            ResponsiveGrid.ResolveSpan(
-                columns,
-                ColumnSpanFull == true ? ResponsiveGrid.FullSpan : ColumnSpan,
-                ColumnSpanSmall,
-                ColumnSpanMedium,
-                ColumnSpanLarge
-            )
-        );
     }
 
     private IHtmlContent RenderBoolean(TagHelperContext context, bool value)

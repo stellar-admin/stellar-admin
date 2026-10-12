@@ -92,17 +92,16 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    [Arguments(3, 2, null, null, "--sa-span-md:2;--sa-span-lg:2")]
-    [Arguments(3, 5, null, null, "--sa-span-md:3;--sa-span-lg:3")]
-    [Arguments(3, null, true, null, "--sa-span-md:3;--sa-span-lg:3")]
-    [Arguments(3, null, true, 2, "--sa-span-md:3;--sa-span-lg:2")]
-    [Arguments(1, 2, null, null, null)]
-    [Arguments(3, 1, null, null, null)]
+    [Arguments(3, "2", null, "--sa-span-md:2;--sa-span-lg:2")]
+    [Arguments(3, "5", null, "--sa-span-md:3;--sa-span-lg:3")]
+    [Arguments(3, "full", null, "--sa-span-md:3;--sa-span-lg:3")]
+    [Arguments(3, "full", "2", "--sa-span-md:3;--sa-span-lg:2")]
+    [Arguments(1, "2", null, null)]
+    [Arguments(3, "1", null, null)]
     public async Task ProcessAsync_WhenInsideDetailsWithColumnSpan_LimitsSpanToColumnCount(
         int columns,
-        int? columnSpan,
-        bool? columnSpanFull,
-        int? columnSpanLarge,
+        string? columnSpan,
+        string? columnSpanLarge,
         string? expected
     )
     {
@@ -111,7 +110,6 @@ public partial class DisplayFieldTagHelperTests
         var sut = CreateSut(context);
         sut.Label = "Notes";
         sut.ColumnSpan = columnSpan;
-        sut.ColumnSpanFull = columnSpanFull;
         sut.ColumnSpanLarge = columnSpanLarge;
         var details = new DetailsTagHelper { Columns = columns };
 
@@ -134,8 +132,9 @@ public partial class DisplayFieldTagHelperTests
         using var context = new RenderingContext();
         var sut = CreateSut(context);
         sut.Label = "Notes";
-        sut.ColumnSpanSmall = 2;
-        sut.ColumnSpanLarge = 4;
+        sut.ColumnSpanSmall = "2";
+        sut.ColumnSpanMedium = "full";
+        sut.ColumnSpanLarge = "4";
         var details = new DetailsTagHelper
         {
             ColumnsSmall = 2,
@@ -152,57 +151,66 @@ public partial class DisplayFieldTagHelperTests
         // Assert
         await Assert
             .That(html.QuerySelector("[data-slot=display-field]")?.GetAttribute("style"))
-            .IsEqualTo("--sa-span-sm:2;--sa-span-md:2;--sa-span-lg:4");
+            .IsEqualTo("--sa-span-sm:2;--sa-span-md:3;--sa-span-lg:4");
     }
 
     [Test]
-    public async Task ProcessAsync_WhenOutsideDetailsWithColumnSpan_WritesNoSpan()
+    public async Task ProcessAsync_WhenOutsideGridWithColumnSpan_WritesNoSpan()
     {
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateSut(context);
         sut.Label = "Notes";
-        sut.ColumnSpan = 2;
+        sut.ColumnSpan = "2";
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);
 
         // Assert
         await Assert.That(html.Body?.FirstElementChild?.HasAttribute("style")).IsFalse();
+        await Assert.That(html.QuerySelector("[data-slot=grid-item]")).IsNull();
     }
 
     [Test]
-    [Arguments(0, null)]
-    [Arguments(13, null)]
-    [Arguments(null, 0)]
-    public async Task ProcessAsync_WhenColumnSpanIsOutOfRange_ThrowsInvalidOperationException(
-        int? columnSpan,
-        int? columnSpanMedium
+    public async Task ProcessAsync_WhenInsideGrid_WrapsFieldInGridItemWithSpan()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Booking";
+        sut.ColumnSpan = "full";
+        var grid = new GridTagHelper { Columns = 3 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(
+            grid,
+            gridContext => TagHelperRenderer.RenderChildAsync(sut, gridContext)
+        );
+
+        // Assert
+        var item = html.QuerySelector(".sa-grid-content > [data-slot=grid-item]");
+        await Assert.That(item?.ClassName).IsEqualTo("sa-grid-item");
+        await Assert.That(item?.GetAttribute("style")).IsEqualTo("--sa-span-md:3;--sa-span-lg:3");
+        await Assert
+            .That(html.QuerySelector("[data-slot=display-field]")?.HasAttribute("style"))
+            .IsFalse();
+        await Assert.That(html.QuerySelector("dt, dd")).IsNull();
+    }
+
+    [Test]
+    [Arguments("0")]
+    [Arguments("13")]
+    [Arguments("two")]
+    [Arguments("-1")]
+    public async Task ProcessAsync_WhenColumnSpanIsInvalid_ThrowsInvalidOperationException(
+        string columnSpan
     )
     {
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateSut(context);
         sut.Label = "Notes";
-        sut.ColumnSpan = columnSpan;
-        sut.ColumnSpanMedium = columnSpanMedium;
-
-        // Act
-        Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);
-
-        // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
-    }
-
-    [Test]
-    public async Task ProcessAsync_WhenColumnSpanAndColumnSpanFullAreSet_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        using var context = new RenderingContext();
-        var sut = CreateSut(context);
-        sut.Label = "Notes";
-        sut.ColumnSpan = 2;
-        sut.ColumnSpanFull = true;
+        sut.ColumnSpanMedium = columnSpan;
 
         // Act
         Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);

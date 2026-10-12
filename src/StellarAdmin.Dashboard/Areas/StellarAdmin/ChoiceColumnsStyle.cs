@@ -17,7 +17,7 @@ internal static class ChoiceColumnsStyle
 
         var rowsStyle = ResponsiveGrid.RowsStyle(
             new GridTiers(
-                Rows(choiceCount, columns.Default),
+                Rows(choiceCount, columns.Base),
                 Rows(choiceCount, columns.Small),
                 Rows(choiceCount, columns.Medium),
                 Rows(choiceCount, columns.Large)

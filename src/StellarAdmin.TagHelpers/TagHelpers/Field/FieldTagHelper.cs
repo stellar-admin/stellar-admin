@@ -11,6 +11,46 @@ namespace StellarAdmin.TagHelpers;
 public class FieldTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
+    ///     The number of columns the field spans in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or
+    ///     <c>full</c> for every column.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1. Limited to the grid's column count at each width.
+    /// </remarks>
+    [HtmlAttributeName("column-span")]
+    public string? ColumnSpan { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the grid is at least 56rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-lg")]
+    public string? ColumnSpanLarge { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the grid is at least 40rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-md")]
+    public string? ColumnSpanMedium { get; set; }
+
+    /// <summary>
+    ///     The number of columns the field spans when the grid is at least 30rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnSpan" />.
+    /// </remarks>
+    [HtmlAttributeName("column-span-sm")]
+    public string? ColumnSpanSmall { get; set; }
+
+    /// <summary>
     ///     How the field arranges its label, control, and supporting text.
     /// </summary>
     /// <remarks>
@@ -29,6 +69,15 @@ public class FieldTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("class", string.Empty);
 
         var effectiveOrientation = Orientation ?? FieldOrientation.Vertical;
+        var grid = GetEnclosingGrid(context);
+        var spanStyle = GridLayout.SpanStyle(
+            grid,
+            "sa-field",
+            ColumnSpan,
+            ColumnSpanSmall,
+            ColumnSpanMedium,
+            ColumnSpanLarge
+        );
 
         var tagBuilder = new FieldTagBuilder(effectiveOrientation, userSuppliedClass);
 
@@ -36,6 +85,13 @@ public class FieldTagHelper : StellarAdminTagHelperBase
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.MergeAttributes(tagBuilder);
+
+        // Directly in a grid, the field sits in a grid item, which is the container its
+        // responsive orientation measures
+        if (grid is not null)
+        {
+            GridLayout.WrapInItem(output, spanStyle);
+        }
 
         return Task.CompletedTask;
     }

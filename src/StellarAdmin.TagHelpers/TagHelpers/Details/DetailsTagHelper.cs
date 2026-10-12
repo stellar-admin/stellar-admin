@@ -12,10 +12,20 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
     ///     The number of columns when the list is at least 40rem wide, from 1 to 12.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1. Narrower lists use one column, unless <see cref="ColumnsSmall" /> is set.
+    ///     Defaults to 1. Narrower lists use one column, unless <see cref="ColumnsBase" /> or
+    ///     <see cref="ColumnsSmall" /> is set.
     /// </remarks>
     [HtmlAttributeName("columns")]
     public int? Columns { get; set; }
+
+    /// <summary>
+    ///     The number of columns at the smallest width, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1.
+    /// </remarks>
+    [HtmlAttributeName("columns-base")]
+    public int? ColumnsBase { get; set; }
 
     /// <summary>
     ///     The number of columns when the list is at least 56rem wide, from 1 to 12.
@@ -39,7 +49,7 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
     ///     The number of columns when the list is at least 30rem wide, from 1 to 12.
     /// </summary>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     Defaults to the number of columns at the smallest width.
     /// </remarks>
     [HtmlAttributeName("columns-sm")]
     public int? ColumnsSmall { get; set; }
@@ -64,25 +74,16 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        if (Columns is not null && ColumnsMedium is not null)
-        {
-            throw new InvalidOperationException(
-                "An <sa-details> can set either the columns or the columns-md attribute, not both."
-            );
-        }
-
-        ValidateColumns(Columns, "columns");
-        ValidateColumns(ColumnsSmall, "columns-sm");
-        ValidateColumns(ColumnsMedium, "columns-md");
-        ValidateColumns(ColumnsLarge, "columns-lg");
-
-        var columns = ResponsiveGrid.ResolveColumns(
-            small: ColumnsSmall,
-            medium: ColumnsMedium ?? Columns,
-            large: ColumnsLarge
+        var columns = GridLayout.ResolveColumns(
+            "sa-details",
+            Columns,
+            ColumnsBase,
+            ColumnsSmall,
+            ColumnsMedium,
+            ColumnsLarge
         );
         var effectiveVariant = Variant ?? DetailsVariant.Default;
-        SetContext(context, new DetailsContext { Columns = columns, Orientation = Orientation });
+        SetContext(context, new GridContext { Columns = columns, Owner = this });
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -106,16 +107,5 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
         output.PostContent.SetHtmlContent("</dl>");
 
         return Task.CompletedTask;
-    }
-
-    private static void ValidateColumns(int? value, string attributeName)
-    {
-        if (value is < 1 or > ResponsiveGrid.MaxColumns)
-        {
-            throw new InvalidOperationException(
-                $"The <sa-details> {attributeName} attribute must be between 1 and "
-                    + $"{ResponsiveGrid.MaxColumns}."
-            );
-        }
     }
 }

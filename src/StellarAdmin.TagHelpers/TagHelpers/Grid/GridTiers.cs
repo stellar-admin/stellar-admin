@@ -3,7 +3,7 @@ namespace StellarAdmin.TagHelpers;
 /// <summary>
 ///     A value for each container breakpoint of a responsive grid, such as column counts or spans.
 /// </summary>
-/// <param name="Default">
+/// <param name="Base">
 ///     The value at the smallest width.
 /// </param>
 /// <param name="Small">
@@ -15,4 +15,4 @@ namespace StellarAdmin.TagHelpers;
 /// <param name="Large">
 ///     The value when the container is at least 56rem wide.
 /// </param>
-public readonly record struct GridTiers(int Default, int Small, int Medium, int Large);
+public readonly record struct GridTiers(int Base, int Small, int Medium, int Large);

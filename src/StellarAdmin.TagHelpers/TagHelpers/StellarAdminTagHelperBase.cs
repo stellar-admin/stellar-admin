@@ -88,6 +88,16 @@ public class StellarAdminTagHelperBase : TagHelper
         return context.Items.TryGetValue(typeof(T), out var value) ? value as T : null;
     }
 
+    // The grid this tag helper places itself in: the sa-grid or sa-details it is a direct child
+    // of. The grid's context reaches every descendant, so one nested deeper, such as a field in a
+    // section in a grid item, is not placed in it.
+    private protected GridContext? GetEnclosingGrid(TagHelperContext context)
+    {
+        var grid = GetContext<GridContext>(context);
+
+        return grid is not null && ReferenceEquals(grid.Owner, ParentTagHelper) ? grid : null;
+    }
+
     /// <summary>
     ///     Returns an identifier unique to this element, for minting DOM ids. Equal to
     ///     <see cref="TagHelperContext.UniqueId" /> (a per-source-tag compile-time literal)

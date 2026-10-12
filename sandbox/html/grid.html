@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grid</title>
+<!-- Prototype: sa-grid / sa-grid-item, one responsive grid for forms that shares its columns, spans and tier rules
+     with sa-details, and fields that measure their own column. Uses the built library bundle; build it first
+     (npm run build in src/StellarAdmin.TagHelpers/Client). Plan: docs/plans/sa-grid.md. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+<style>
+  /* ---------------------------------------------------------------------------------------------
+     Candidate CSS, written as the library would: grid.css (new) and the display-field part of details.css.
+     The built bundle still carries today's details.css; the candidate renames the details container to grid,
+     so today's tier rules and 32rem responsive rule (container details) stop matching. Strip B1 restores a
+     details container on purpose to show today's behaviour.
+     --------------------------------------------------------------------------------------------- */
+  @layer sa.components {
+    /* --- grid.css: one set of tier rules for sa-grid and sa-details ------------------------------ */
+    .sa-grid,
+    .sa-details {
+      container: grid / inline-size;
+      width: 100%;
+      min-width: 0;
+    }
+    .sa-grid-content,
+    .sa-details-list {
+      display: grid;
+      grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span);
+        min-width: 0;
+      }
+    }
+    .sa-grid-content {
+      align-items: start;
+      gap: calc(5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    }
+    @container grid (min-width: 30rem) {
+      :is(.sa-grid-content, .sa-details-list) {
+        grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
+        & > * {
+          grid-column: span var(--sa-span-sm);
+        }
+      }
+    }
+    @container grid (min-width: 40rem) {
+      :is(.sa-grid-content, .sa-details-list) {
+        grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
+        & > * {
+          grid-column: span var(--sa-span-md);
+        }
+      }
+    }
+    @container grid (min-width: 56rem) {
+      :is(.sa-grid-content, .sa-details-list) {
+        grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
+        & > * {
+          grid-column: span var(--sa-span-lg);
+        }
+      }
+    }
+    /* Each item is the field-group container of what it holds, so a responsive field measures its own
+       column (field.css switches at 28rem of field-group). Fields get their item from their own tag helper. */
+    .sa-grid-item {
+      container: field-group / inline-size;
+    }
+    /* Sections side by side are separated by the grid gap, not a rule. */
+    .sa-grid-item + .sa-grid-item > .sa-form-section {
+      margin-top: 0;
+      border-top-width: 0;
+      padding-top: 0;
+    }
+
+    /* --- details.css: a display field measures itself ------------------------------------------- */
+    /* The field is its own container and always a two-track grid (label 1fr, value 2fr); stacked, both
+       parts span the two tracks, so the switch to side by side only restyles the label and value. */
+    .sa-field.sa-display-field {
+      container: display-field / inline-size;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      align-items: baseline;
+      gap: calc(1 * var(--sa-unit)) calc(4 * var(--sa-unit));
+      & > * {
+        grid-column: 1 / -1;
+      }
+    }
+    .sa-field.sa-display-field[data-orientation="horizontal"] > * {
+      grid-column: auto;
+    }
+    @container display-field (min-width: 28rem) {
+      .sa-field.sa-display-field[data-orientation="responsive"] > * {
+        grid-column: auto;
+      }
+    }
+    .sa-field.sa-display-field:not(.sa-details-list > *) {
+      row-gap: calc(2 * var(--sa-unit));
+      column-gap: calc(4 * var(--sa-unit));
+    }
+  }
+
+  /* Strip B1: today's rule, side by side at 32rem of the whole list (a details container around it). */
+  @container details (min-width: 32rem) {
+    .today .sa-field.sa-display-field[data-orientation="responsive"] > * { grid-column: auto; }
+  }
+  /* Strip C: alternative display-field thresholds (only one survives extraction). */
+  @container display-field (min-width: 20rem) {
+    .thr-20 .sa-field.sa-display-field[data-orientation="responsive"] > * { grid-column: auto; }
+  }
+  @container display-field (min-width: 24rem) {
+    .thr-24 .sa-field.sa-display-field[data-orientation="responsive"] > * { grid-column: auto; }
+  }
+
+  /* --- Prototype scaffolding (not extracted) ------------------------------------------------------ */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1280px; margin: 0 auto; padding: 24px 16px 96px; }
+  h1.page-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 8px; max-width: 95ch; }
+  section.q { margin-top: 36px; }
+  section.q > h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  section.q > p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 12px; max-width: 95ch; }
+  .strips { display: grid; gap: 12px; }
+  .strips.two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); }
+  figure.strip { margin: 0; border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-surface); overflow: hidden; min-width: 0; }
+  figure.strip > figcaption { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: space-between; padding: 8px 14px; font-size: 0.75rem; color: var(--sa-color-ink-muted); border-bottom: 1px solid var(--sa-color-line); background: var(--sa-color-surface-subtle); }
+  figure.strip > figcaption b { color: var(--sa-color-ink); font-weight: 600; }
+  .strip-body { padding: 20px; min-width: 0; overflow-x: auto; }
+  /* A frame of a fixed width, with the grid tier it lands in. */
+  .frame { position: relative; box-sizing: border-box; padding: 20px; border: 1px dashed var(--sa-color-line-control); border-radius: 6px; background: var(--sa-color-surface); }
+  .frame + .frame { margin-top: 16px; }
+  .frame-label { position: absolute; top: -9px; left: 10px; padding: 0 6px; font-size: 0.6875rem; color: var(--sa-color-ink-muted); background: var(--sa-color-surface); }
+  .resizable { resize: horizontal; overflow: auto; width: 100%; max-width: 100%; min-width: 280px; }
+  .tier { display: inline-block; padding: 1px 6px; border-radius: 4px; font: 500 0.6875rem/1.4 ui-monospace, monospace; color: var(--sa-color-accent-text); background: color-mix(in oklab, var(--sa-color-accent) 12%, transparent); }
+  .tier-probe { container: probe / inline-size; }
+  .tier-probe .tier::after { content: "base"; }
+  @container probe (min-width: 30rem) { .tier-probe .tier::after { content: "sm"; } }
+  @container probe (min-width: 40rem) { .tier-probe .tier::after { content: "md"; } }
+  @container probe (min-width: 56rem) { .tier-probe .tier::after { content: "lg"; } }
+  .tier-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.75rem; color: var(--sa-color-ink-muted); }
+  /* Strip D: placeholder items that print their own span attributes. */
+  .box { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 8px; border-radius: 6px; font: 0.6875rem/1.3 ui-monospace, monospace; text-align: center; color: var(--sa-color-ink-muted); background: var(--sa-color-surface-subtle); border: 1px solid var(--sa-color-line); }
+  details.razor { margin: 0; border-top: 1px solid var(--sa-color-line); font-size: 0.75rem; }
+  details.razor > summary { padding: 6px 14px; cursor: pointer; color: var(--sa-color-ink-muted); }
+  details.razor pre { margin: 0; padding: 10px 14px; overflow-x: auto; font-size: 0.75rem; line-height: 1.5; background: var(--sa-color-surface-subtle); }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 12px; font-size: 0.8125rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay); }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="page" id="main">
+  <h1 class="page-title">Grid (sa-grid / sa-grid-item)</h1>
+  <p class="lede">One responsive grid for forms, sharing its attributes, tiers (base, sm 30rem, md 40rem, lg 56rem) and CSS with <code>sa-details</code>. Fields carry their own <code>column-span*</code>; anything else spans through <code>sa-grid-item</code>. Inside either grid a responsive field switches orientation at the width of its own column (decision 16). Markup below is what the tag helpers would emit; the inline <code>--sa-cols*</code>/<code>--sa-span*</code> values are resolved as <code>ResponsiveGrid</code> does (inherit upward, cap to each tier's columns, omit 1).</p>
+
+  <section class="q">
+    <h2>A · Live candidate: a booking's edit page</h2>
+    <p>Drag the frame's bottom-right corner to resize it. The badge shows the tier the grid is in. Inputs, an explicit field, display fields and two grid items holding stacked sections; the Payment section's responsive display fields go side by side when their own column is wide enough, not when the grid is.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>A</b> · sa-grid columns="3" columns-sm="2"</span><span>resizable</span></figcaption>
+        <div class="strip-body"><div class="frame resizable tier-probe"><div class="tier-row"><span>Grid tier</span><span class="tier"></span></div><div data-render="booking"></div></div></div>
+        <div data-razor="booking"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>A′ · The same page at the plan's widths</h2>
+    <p>420px lands in base (one column), 560px in sm (two), 720px in md (three), 1000px in lg (three; the audit item spans two). Frame widths include 20px padding each side.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>A′</b> · 420 / 560 / 720 / 1000px</span></figcaption>
+        <div class="strip-body" data-widths="420,560,720,1000" data-render-each="booking"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>B · Responsive fields measure their own column (16)</h2>
+    <p>B1 is today: responsive display fields in a three-column <code>sa-details</code> switch at 32rem of the whole list, so each 290px column puts a label beside its value. B2 is the candidate: each display field is its own container, so they stay stacked until a column is wide enough. B3/B4 show the same for inputs: in a two-column <code>sa-form-row</code> the responsive fields measure the field group around the row; in <code>sa-grid</code> they measure their item.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>B1</b> · today · sa-details columns="3", responsive fields, 1000px</span><span>switches at 32rem of the list</span></figcaption>
+        <div class="strip-body"><div class="frame" style="width:1000px"><div class="today" style="container: details / inline-size" data-render="detailsResponsiveToday"></div></div></div></figure>
+      <figure class="strip"><figcaption><span><b>B2</b> · candidate · same markup, 1000px</span><span>switches at 28rem of the field</span></figcaption>
+        <div class="strip-body"><div class="frame" style="width:1000px" data-render="detailsResponsive"></div></div>
+        <div data-razor="detailsResponsive"></div></figure>
+      <figure class="strip"><figcaption><span><b>B3</b> · today · field group › sa-form-row, responsive inputs, 720px</span><span>switches at 28rem of the group</span></figcaption>
+        <div class="strip-body"><div class="frame" style="width:720px" data-render="formRowToday"></div></div></figure>
+      <figure class="strip"><figcaption><span><b>B4</b> · candidate · sa-grid columns="2", responsive inputs, 720px and 1000px</span><span>switches at 28rem of the item</span></figcaption>
+        <div class="strip-body"><div class="frame" style="width:720px" data-render="gridResponsive"></div><div class="frame" style="width:1000px" data-render="gridResponsive"></div></div>
+        <div data-razor="gridResponsive"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>C · Where a responsive display field switches</h2>
+    <p>Inputs switch at 28rem of their column (field.css, unchanged). C1 uses the same 28rem for display fields (the candidate); C2 and C3 switch earlier, since a display field's value is text rather than a control. Each strip shows a two-column <code>sa-details</code> at 560px, 720px and 1000px, so columns are about 250, 330 and 470px.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>C1 (candidate)</b> · 28rem (448px)</span></figcaption><div class="strip-body" data-widths="560,720,1000" data-render-each="details2Responsive"></div></figure>
+      <figure class="strip thr-24"><figcaption><span><b>C2</b> · 24rem (384px)</span></figcaption><div class="strip-body" data-widths="560,720,1000" data-render-each="details2Responsive"></div></figure>
+      <figure class="strip thr-20"><figcaption><span><b>C3</b> · 20rem (320px)</span></figcaption><div class="strip-body" data-widths="560,720,1000" data-render-each="details2Responsive"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>D · Spans per tier</h2>
+    <p>Each box prints its own attributes. <code>columns-base="1" columns-sm="2" columns-md="4" columns-lg="6"</code>. <code>full</code> spans every column at that tier and later tiers inherit it; a number larger than a tier's columns is capped.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>D</b> · 420 / 560 / 720 / 1000px</span></figcaption><div class="strip-body" data-widths="420,560,720,1000" data-render-each="spans"></div>
+        <div data-razor="spans"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>E · Display fields among inputs</h2>
+    <p>A display field directly in <code>sa-grid</code> keeps the among-inputs style (input label, control height) and lines up with the inputs in its row; horizontal and responsive orientations follow its own width as in B2.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><span><b>E</b> · sa-grid columns="2" · vertical, horizontal and responsive display fields beside inputs · 720px and 1000px</span></figcaption>
+        <div class="strip-body" data-widths="720,1000" data-render-each="mixed"></div><div data-razor="mixed"></div></figure>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <label>Theme
+    <select id="theme-select">
+      <option value="">Default</option>
+      <option value="ops">Ops</option>
+      <option value="soft">Soft</option>
+      <option value="ledger">Ledger</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="dark"> Dark</label>
+  <label>Density
+    <select id="density">
+      <option value="">Default</option>
+      <option value="compact">Compact</option>
+      <option value="comfortable">Comfortable</option>
+    </select>
+  </label>
+</div>
+
+<script>
+  // --- ResponsiveGrid, as the tag helpers resolve it ------------------------------------------------------
+  const TIERS = ["base", "sm", "md", "lg"];
+  const VAR = { base: "", sm: "-sm", md: "-md", lg: "-lg" };
+  // columns = md shorthand; unset tiers inherit the next smaller one; base defaults to 1.
+  function resolveColumns(a) {
+    const set = { base: a.base, sm: a.sm, md: a.md ?? a.columns, lg: a.lg };
+    const out = {};
+    let prev = 1;
+    for (const t of TIERS) prev = out[t] = set[t] ?? prev;
+    return out;
+  }
+  // span = base shorthand; 1–12 or "full"; inherits upward, capped to each tier's columns.
+  function resolveSpan(a, cols) {
+    const set = { base: a.span, sm: a.sm, md: a.md, lg: a.lg };
+    const out = {};
+    let prev = 1;
+    for (const t of TIERS) {
+      prev = set[t] ?? prev;
+      out[t] = prev === "full" ? cols[t] : Math.min(prev, cols[t]);
+    }
+    return out;
+  }
+  const styleOf = (name, values) => {
+    const s = TIERS.filter(t => values[t] !== 1).map(t => `--sa-${name}${VAR[t]}:${values[t]}`).join(";");
+    return s ? ` style="${s}"` : "";
+  };
+
+  // --- Markup the tag helpers emit ------------------------------------------------------------------------
+  let uid = 0;
+  const id = () => `f${++uid}`;
+  const error = () => `<div class="sa-field-error field-validation-valid" role="alert" data-slot="field-error"></div>`;
+  const description = text => text ? `<p class="sa-field-description" data-slot="field-description">${text}</p>` : "";
+  const field = (orientation, inner) => `<div class="sa-field sa-field-orientation-${orientation}" data-orientation="${orientation}" data-slot="field">${inner}</div>`;
+  const input = (label, value, o = {}) => ctx => {
+    const i = id();
+    return item(ctx, o, field(o.orientation ?? "vertical",
+      `<label class="sa-label sa-field-label" data-slot="field-label" for="${i}">${label}</label><input type="${o.type ?? "text"}" id="${i}" value="${value}" data-slot="input" class="sa-input">${error()}${description(o.description)}`));
+  };
+  const textarea = (label, value, o = {}) => ctx => {
+    const i = id();
+    return item(ctx, o, field("vertical",
+      `<label class="sa-label sa-field-label" data-slot="field-label" for="${i}">${label}</label><textarea rows="3" id="${i}" data-slot="textarea" class="sa-textarea">${value}</textarea>${error()}`));
+  };
+  const select = (label, options, selected, o = {}) => ctx => {
+    const i = id();
+    return item(ctx, o, field(o.orientation ?? "vertical",
+      `<label class="sa-label sa-field-label" data-slot="field-label" for="${i}">${label}</label><div data-slot="native-select-wrapper" data-size="default" class="sa-native-select-wrapper"><select data-slot="native-select" data-size="default" class="sa-native-select" id="${i}">${options.map(x => `<option${x === selected ? ' selected' : ""}>${x}</option>`).join("")}</select><svg class="sa-native-select-icon" aria-hidden="true" data-slot="native-select-icon" stroke-width="2" fill="none" stroke-linecap="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke="currentColor" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></div>${error()}`));
+  };
+  const checkbox = (label, desc, o = {}) => ctx => {
+    const i = id();
+    return item(ctx, o, field("horizontal",
+      `<span class="sa-input-control-wrapper"><input type="checkbox" id="${i}" checked data-slot="input" class="sa-checkbox"><span class="sa-checkbox-indicator"><svg class="sa-checkbox-indicator-icon" stroke-width="2" fill="none" stroke-linecap="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke="currentColor" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></span><div data-slot="field-content" class="sa-field-content"><label for="${i}" data-slot="field-label" class="sa-label sa-field-label">${label}</label>${description(desc)}</div>`));
+  };
+  // Display field: dt/dd in a details list, divs elsewhere. In a details list it is the grid child itself.
+  const display = (label, value, o = {}) => ctx => {
+    const inList = ctx?.kind === "details";
+    const [l, v] = inList ? ["dt", "dd"] : ["div", "div"];
+    const span = inList ? styleOf("span", resolveSpan(o, ctx.cols)) : "";
+    const attrs = `${o.kind ? ` data-kind="${o.kind}"` : ""}${o.empty ? ' data-empty="true"' : ""}`;
+    const secondary = o.secondary ? `<span class="sa-display-field-secondary" data-slot="display-field-secondary">${o.secondary}</span>` : "";
+    const html = `<div data-slot="display-field" data-orientation="${o.orientation ?? ctx?.orientation ?? "vertical"}"${span} class="sa-field sa-display-field"><${l} class="sa-display-field-label" data-slot="display-field-label">${label}</${l}><${v} class="sa-display-field-value"${attrs} data-slot="display-field-value">${value}${secondary}</${v}></div>`;
+    return inList ? html : item(ctx, o, html);
+  };
+  // Inside sa-grid every field sits in an item: the field tag helper renders it, with the field's own span.
+  function item(ctx, o, html) {
+    if (ctx?.kind !== "grid") return html;
+    return `<div data-slot="grid-item" class="sa-grid-item"${styleOf("span", resolveSpan(o, ctx.cols))}>${html}</div>`;
+  }
+  const gridItem = (o, children) => ctx => item(ctx, o, children.map(c => c(null)).join(""));
+  const grid = (a, children) => () => {
+    const ctx = { kind: "grid", cols: resolveColumns(a) };
+    return `<div data-slot="grid" class="sa-grid"><div class="sa-grid-content" data-slot="grid-content"${styleOf("cols", ctx.cols)}>${children.map(c => c(ctx)).join("")}</div></div>`;
+  };
+  const details = (a, children) => () => {
+    const ctx = { kind: "details", cols: resolveColumns(a), orientation: a.orientation };
+    return `<div data-slot="details" data-variant="default" class="sa-details"><dl class="sa-details-list" data-slot="details-list"${styleOf("cols", ctx.cols)}>${children.map(c => c(ctx)).join("")}</dl></div>`;
+  };
+  const section = (title, desc, children) => () => {
+    const i = id();
+    return `<section data-slot="form-section" data-layout="stacked" aria-labelledby="${i}" class="sa-form-section"><div class="sa-form-section-inner"><div class="sa-form-section-header" data-slot="form-section-header"><h2 class="sa-form-section-title" data-slot="form-section-title" id="${i}">${title}</h2>${desc ? `<p class="sa-form-section-description" data-slot="form-section-description">${desc}</p>` : ""}</div><div class="sa-form-section-content" data-slot="form-section-content">${children.map(c => c(null)).join("")}</div></div></section>`;
+  };
+  const fieldGroup = children => () => `<div data-slot="field-group" class="sa-field-group">${children.map(c => c(null)).join("")}</div>`;
+  const formRow = children => () => `<div data-slot="form-row" class="sa-form-row"><div class="sa-form-row-content" data-slot="form-row-content">${children.map(c => c(null)).join("")}</div></div>`;
+  const box = text => ctx => item(ctx, parseBox(text), `<div class="box">${text || "(no span)"}</div>`);
+  function parseBox(text) {
+    const o = {};
+    for (const [, k, v] of text.matchAll(/column-span(-\w+)?="([^"]+)"/g)) o[k ? k.slice(1) : "span"] = v === "full" ? "full" : +v;
+    return o;
+  }
+
+  // --- Scenarios --------------------------------------------------------------------------------------------
+  const cabins = ["Economy", "Premium Economy", "Business"];
+  const scenarios = {
+    booking: grid({ columns: 3, sm: 2 }, [
+      input("First name", "Kenji"),
+      input("Last name", "Watanabe"),
+      display("Booking", "TRP-4822"),
+      input("Email", "kenji.watanabe@example.com", { type: "email", span: 2 }),
+      input("Phone", "+81 75 555 0142", { type: "tel" }),
+      input("Departure", "2026-11-14", { type: "date" }),
+      input("Return", "2026-11-21", { type: "date" }),
+      select("Cabin", cabins, "Premium Economy"),
+      textarea("Agent notes", "Theatre tickets requested for the second evening.", { span: "full" }),
+      checkbox("Send confirmation", "Email the itinerary when the booking is saved.", { span: "full" }),
+      gridItem({ span: "full", lg: 2 }, [section("Audit", "Maintained automatically.", [details({ columns: 2 }, [
+        display("Created", "2 Oct 2026, 09:14", { secondary: "by Amelia Hart" }),
+        display("Last updated", "11 Oct 2026, 16:40", { secondary: "by System" }),
+        display("Version", "7", { kind: "number" }),
+        display("Archived", "Never", { empty: true }),
+      ])])]),
+      gridItem({ span: "full", lg: 1 }, [section("Payment", "Responsive display fields.", [details({ orientation: "responsive" }, [
+        display("Total", "€2,450.00", { kind: "number" }),
+        display("Paid", "€1,000.00", { kind: "number" }),
+        display("Balance", "€1,450.00", { kind: "number" }),
+      ])])]),
+    ]),
+    detailsResponsive: details({ columns: 3, orientation: "responsive" }, [
+      display("Lead traveller", "Kenji Watanabe"),
+      display("Destination", "Kyoto, Japan"),
+      display("Departure", "14 Nov 2026"),
+      display("Party", "2 adults"),
+      display("Cabin", "Premium Economy"),
+      display("Total", "€2,450.00", { kind: "number" }),
+    ]),
+    details2Responsive: details({ columns: 2, orientation: "responsive" }, [
+      display("Lead traveller", "Kenji Watanabe"),
+      display("Destination", "Kyoto, Japan"),
+      display("Departure", "14 Nov 2026"),
+      display("Total", "€2,450.00", { kind: "number" }),
+    ]),
+    formRowToday: fieldGroup([formRow([
+      input("Lead traveller", "Kenji Watanabe", { orientation: "responsive" }),
+      input("Destination", "Kyoto, Japan", { orientation: "responsive" }),
+    ])]),
+    gridResponsive: grid({ columns: 2 }, [
+      input("Lead traveller", "Kenji Watanabe", { orientation: "responsive" }),
+      input("Destination", "Kyoto, Japan", { orientation: "responsive" }),
+      select("Cabin", cabins, "Business", { orientation: "responsive", span: "full" }),
+    ]),
+    spans: grid({ base: 1, sm: 2, md: 4, lg: 6 }, [
+      box(""),
+      box(""),
+      box(`column-span="2"`),
+      box(`column-span="full"`),
+      box(`column-span-md="full" column-span-lg="2"`),
+      box(`column-span-sm="full" column-span-md="1"`),
+      box(`column-span-lg="3"`),
+      box(`column-span="12"`),
+    ]),
+    mixed: grid({ columns: 2 }, [
+      input("Lead traveller", "Kenji Watanabe"),
+      display("Booking", "TRP-4822"),
+      input("Destination", "Kyoto, Japan", { orientation: "responsive" }),
+      display("Status", '<span data-slot="badge" class="sa-badge sa-badge-variant-default">Confirmed</span>', { orientation: "responsive" }),
+      display("Created", "2 Oct 2026, 09:14", { orientation: "horizontal", secondary: "by Amelia Hart", span: "full" }),
+      display("Balance", "€1,450.00", { orientation: "responsive", kind: "number", span: "full" }),
+    ]),
+  };
+  // Today's details markup is the same as the candidate's; only the CSS differs.
+  scenarios.detailsResponsiveToday = scenarios.detailsResponsive;
+
+  for (const el of document.querySelectorAll("[data-render]")) el.innerHTML = scenarios[el.dataset.render]();
+  for (const el of document.querySelectorAll("[data-render-each]")) {
+    el.innerHTML = el.dataset.widths.split(",").map(w =>
+      `<div class="frame tier-probe" style="width:${w}px"><span class="frame-label">${w}px · <span class="tier"></span></span>${scenarios[el.dataset.renderEach]()}</div>`).join("");
+  }
+  for (const el of document.querySelectorAll(".frame:not(.tier-probe)")) el.classList.add("tier-probe");
+
+  // --- Razor (proposed, uncompiled) -------------------------------------------------------------------------
+  const razor = {
+    booking: `&lt;sa-grid columns="3" columns-sm="2"&gt;
+    &lt;sa-input asp-for="FirstName" /&gt;
+    &lt;sa-input asp-for="LastName" /&gt;
+    &lt;sa-display-field asp-for="Reference" /&gt;
+    &lt;sa-input asp-for="Email" column-span="2" /&gt;
+    &lt;sa-input asp-for="Phone" /&gt;
+    &lt;sa-input asp-for="Departure" /&gt;
+    &lt;sa-input asp-for="Return" /&gt;
+    &lt;sa-select asp-for="Cabin" asp-items="Model.Cabins" /&gt;
+    &lt;sa-textarea asp-for="Notes" column-span="full" /&gt;
+    &lt;sa-checkbox asp-for="SendConfirmation" column-span="full" /&gt;
+    &lt;sa-grid-item column-span="full" column-span-lg="2"&gt;
+        &lt;sa-form-section title="Audit" description="Maintained automatically." layout="FormSectionLayout.Stacked"&gt;
+            &lt;sa-details columns="2"&gt;
+                &lt;sa-display-field asp-for="CreatedAt" secondary="@Model.CreatedBy" /&gt;
+                ...
+            &lt;/sa-details&gt;
+        &lt;/sa-form-section&gt;
+    &lt;/sa-grid-item&gt;
+    &lt;sa-grid-item column-span="full" column-span-lg="1"&gt;
+        &lt;sa-form-section title="Payment" layout="FormSectionLayout.Stacked"&gt;
+            &lt;sa-details orientation="FieldOrientation.Responsive"&gt; ... &lt;/sa-details&gt;
+        &lt;/sa-form-section&gt;
+    &lt;/sa-grid-item&gt;
+&lt;/sa-grid&gt;`,
+    detailsResponsive: `&lt;sa-details columns="3" orientation="FieldOrientation.Responsive"&gt;
+    &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+    ...
+&lt;/sa-details&gt;`,
+    gridResponsive: `&lt;sa-grid columns="2"&gt;
+    &lt;sa-input asp-for="LeadTraveller" orientation="FieldOrientation.Responsive" /&gt;
+    &lt;sa-input asp-for="Destination" orientation="FieldOrientation.Responsive" /&gt;
+    &lt;sa-select asp-for="Cabin" orientation="FieldOrientation.Responsive" column-span="full" /&gt;
+&lt;/sa-grid&gt;`,
+    spans: `&lt;sa-grid columns-base="1" columns-sm="2" columns-md="4" columns-lg="6"&gt;
+    &lt;sa-grid-item&gt;...&lt;/sa-grid-item&gt;
+    &lt;sa-grid-item column-span="2"&gt;...&lt;/sa-grid-item&gt;
+    &lt;sa-grid-item column-span="full"&gt;...&lt;/sa-grid-item&gt;
+    &lt;sa-grid-item column-span-md="full" column-span-lg="2"&gt;...&lt;/sa-grid-item&gt;
+    ...
+&lt;/sa-grid&gt;`,
+    mixed: `&lt;sa-grid columns="2"&gt;
+    &lt;sa-input asp-for="LeadTraveller" /&gt;
+    &lt;sa-display-field asp-for="Reference" /&gt;
+    &lt;sa-input asp-for="Destination" orientation="FieldOrientation.Responsive" /&gt;
+    &lt;sa-display-field asp-for="Status" orientation="FieldOrientation.Responsive" /&gt;
+    &lt;sa-display-field asp-for="CreatedAt" orientation="FieldOrientation.Horizontal" column-span="full" /&gt;
+    &lt;sa-display-field asp-for="Balance" orientation="FieldOrientation.Responsive" column-span="full" /&gt;
+&lt;/sa-grid&gt;`,
+  };
+  for (const el of document.querySelectorAll("[data-razor]")) {
+    el.outerHTML = `<details class="razor"><summary><b>Razor</b> (proposed)</summary><pre><code>${razor[el.dataset.razor]}</code></pre></details>`;
+  }
+
+  // --- Controls ---------------------------------------------------------------------------------------------
+  const params = new URLSearchParams(location.search);
+  const theme = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (theme.value) link.href = `../../util/theme-check/presets/${theme.value}.css`;
+    else link.removeAttribute("href");
+  };
+  theme.value = params.get("theme") ?? "";
+  theme.addEventListener("change", applyTheme);
+  applyTheme();
+
+  const dark = document.getElementById("dark");
+  dark.checked = params.get("mode") === "dark";
+  const applyDark = () => document.documentElement.classList.toggle("dark", dark.checked);
+  dark.addEventListener("change", applyDark);
+  applyDark();
+
+  const density = document.getElementById("density");
+  density.value = params.get("density") ?? "";
+  const applyDensity = () => density.value ? document.getElementById("main").dataset.saDensity = density.value : delete document.getElementById("main").dataset.saDensity;
+  density.addEventListener("change", applyDensity);
+  applyDensity();
+</script>
+
+</body>
+</html>

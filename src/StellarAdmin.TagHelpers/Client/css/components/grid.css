@@ -1,0 +1,63 @@
+/* Grid: responsive columns for sa-grid and sa-details. The wrapper is the container the column
+   breakpoints query; the content inside is the grid. The tag helpers write the column counts and
+   each item's span per breakpoint as the inline grid variables (structure.css). Each sa-grid item is
+   the field-group container of what it holds, so a responsive field measures its own column
+   (field.css); fields and display fields placed directly in an sa-grid get their item from their own
+   tag helper.
+   Replaces: .sa-grid, .sa-grid-content, .sa-grid-item */
+
+@layer sa.components {
+  .sa-grid,
+  .sa-details {
+    container: grid / inline-size;
+    width: 100%;
+    min-width: 0;
+  }
+  .sa-grid-content,
+  .sa-details-list {
+    display: grid;
+    grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
+    & > * {
+      grid-column: span var(--sa-span);
+      min-width: 0;
+    }
+  }
+  .sa-grid-content {
+    align-items: start;
+    gap: calc(5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+  }
+  @container grid (min-width: 30rem) {
+    :is(.sa-grid-content, .sa-details-list) {
+      grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-sm);
+      }
+    }
+  }
+  @container grid (min-width: 40rem) {
+    :is(.sa-grid-content, .sa-details-list) {
+      grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-md);
+      }
+    }
+  }
+  @container grid (min-width: 56rem) {
+    :is(.sa-grid-content, .sa-details-list) {
+      grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
+      & > * {
+        grid-column: span var(--sa-span-lg);
+      }
+    }
+  }
+
+  .sa-grid-item {
+    container: field-group / inline-size;
+  }
+  /* Sections side by side are separated by the grid gap, not a rule. */
+  .sa-grid-item + .sa-grid-item > .sa-form-section {
+    margin-top: 0;
+    border-top-width: 0;
+    padding-top: 0;
+  }
+}

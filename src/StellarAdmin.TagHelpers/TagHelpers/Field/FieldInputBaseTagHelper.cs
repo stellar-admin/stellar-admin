@@ -23,6 +23,46 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
     private const string ForAttributeName = "asp-for";
 
     /// <summary>
+    ///     The number of columns the input's field spans in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or
+    ///     <c>full</c> for every column.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1. Limited to the grid's column count at each width.
+    /// </remarks>
+    [HtmlAttributeName("column-span")]
+    public string? ColumnSpan { get; set; }
+
+    /// <summary>
+    ///     The number of columns the input's field spans when the grid is at least 56rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-lg")]
+    public string? ColumnSpanLarge { get; set; }
+
+    /// <summary>
+    ///     The number of columns the input's field spans when the grid is at least 40rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the span at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("column-span-md")]
+    public string? ColumnSpanMedium { get; set; }
+
+    /// <summary>
+    ///     The number of columns the input's field spans when the grid is at least 30rem wide, from 1 to
+    ///     12, or <c>full</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ColumnSpan" />.
+    /// </remarks>
+    [HtmlAttributeName("column-span-sm")]
+    public string? ColumnSpanSmall { get; set; }
+
+    /// <summary>
     ///     Supporting help text rendered as the field's description.
     /// </summary>
     [HtmlAttributeName("description")]
@@ -90,6 +130,22 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
         if (ShouldRenderFieldWrapper())
         {
             await RenderFieldWrapper(context, output, fieldLayout);
+        }
+
+        // Directly in a grid, the field (or the bare input) sits in a grid item, which is the
+        // container a responsive field's orientation measures
+        var grid = GetEnclosingGrid(context);
+        var spanStyle = GridLayout.SpanStyle(
+            grid,
+            context.TagName,
+            ColumnSpan,
+            ColumnSpanSmall,
+            ColumnSpanMedium,
+            ColumnSpanLarge
+        );
+        if (grid is not null)
+        {
+            GridLayout.WrapInItem(output, spanStyle);
         }
     }
 

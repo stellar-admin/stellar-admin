@@ -1,6 +1,5 @@
-/* Details: read-only display fields in a description list. The wrapper is the container its column
-   breakpoints query; the list inside is the grid. The tag helpers write the list's column counts and
-   each field's span per breakpoint as the inline grid variables (structure.css). A display field is
+/* Details: read-only display fields in a description list. Its columns and spans are grid.css's. A
+   display field measures its own width for its responsive orientation. A display field is
    an sa-field (field.css), so the rules that change its layout name both classes to out-rank
    field.css. Among inputs (outside a details list) a display field takes an input's label style and
    a control's height, so a row of inputs and display fields lines up. In a row detail, labels are
@@ -9,44 +8,10 @@
    .sa-display-field-value, .sa-display-field-secondary */
 
 @layer sa.components {
-  /* --- Details list ------------------------------------------------------------------------ */
-  .sa-details {
-    container: details / inline-size;
-    width: 100%;
-    min-width: 0;
-  }
+  /* --- Details list: the columns are grid.css's ------------------------------------------- */
   .sa-details-list {
-    display: grid;
-    grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
     gap: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit));
     margin: 0;
-    & > * {
-      grid-column: span var(--sa-span);
-    }
-  }
-  @container details (min-width: 30rem) {
-    .sa-details-list {
-      grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
-      & > * {
-        grid-column: span var(--sa-span-sm);
-      }
-    }
-  }
-  @container details (min-width: 40rem) {
-    .sa-details-list {
-      grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
-      & > * {
-        grid-column: span var(--sa-span-md);
-      }
-    }
-  }
-  @container details (min-width: 56rem) {
-    .sa-details-list {
-      grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
-      & > * {
-        grid-column: span var(--sa-span-lg);
-      }
-    }
   }
 
   /* Divided: rows separated by rules. */
@@ -61,10 +26,20 @@
   }
 
   /* --- Display field ----------------------------------------------------------------------- */
+  /* The field is its own container and always a two-track grid (label 1fr, value 2fr). Stacked,
+     the label and value span both tracks, so the switch to side by side only restyles them. */
   .sa-field.sa-display-field {
-    gap: calc(1 * var(--sa-unit));
+    container: display-field / inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-content: start;
+    align-items: baseline;
+    gap: calc(1 * var(--sa-unit)) calc(4 * var(--sa-unit));
     min-width: 0;
     margin: 0;
+    & > * {
+      grid-column: 1 / -1;
+    }
   }
   .sa-display-field-label {
     margin: 0;
@@ -116,26 +91,20 @@
     font-weight: 400;
   }
 
-  /* Horizontal: a label column and a value column, the same split in every row. */
-  .sa-field.sa-display-field[data-orientation="horizontal"] {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-items: baseline;
-    gap: calc(4 * var(--sa-unit));
+  /* Horizontal: a label column and a value column, the same split in every row. Responsive:
+     stacked until the field itself is as wide as a responsive input's column. */
+  .sa-field.sa-display-field[data-orientation="horizontal"] > * {
+    grid-column: auto;
   }
-  /* Responsive: stacked until the list is wide enough. */
-  @container details (min-width: 32rem) {
-    .sa-field.sa-display-field[data-orientation="responsive"] {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-      align-items: baseline;
-      gap: calc(4 * var(--sa-unit));
+  @container display-field (min-width: 28rem) {
+    .sa-field.sa-display-field[data-orientation="responsive"] > * {
+      grid-column: auto;
     }
   }
 
   /* Among inputs: an input's label, and a value at a control's height. */
   .sa-field.sa-display-field:not(.sa-details-list > *) {
-    gap: calc(2 * var(--sa-unit));
+    row-gap: calc(2 * var(--sa-unit));
     & > .sa-display-field-label {
       color: var(--sa-color-ink);
       font-weight: var(--sa-weight-control);
@@ -150,7 +119,7 @@
 
   /* In a row detail: caption labels, regular-weight values. */
   .sa-table-row-detail-content .sa-field.sa-display-field {
-    gap: calc(0.5 * var(--sa-unit));
+    row-gap: calc(0.5 * var(--sa-unit));
     & > .sa-display-field-label {
       font-size: var(--sa-text-xs);
     }
