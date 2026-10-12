@@ -256,9 +256,10 @@ edit.Fields(fields =>
 });
 ```
 
-- Breakpoints are `Default`, `Small` (30rem), `Medium` (40rem) and `Large` (56rem). They measure the width of the grid itself, not the viewport, so a narrow section or the create sheet keeps fewer columns.
+- Breakpoints are `Base`, `Small` (30rem), `Medium` (40rem) and `Large` (56rem). They measure the width of the grid itself, not the viewport, so a narrow section or the create sheet keeps fewer columns.
 - `Columns(n)` keeps one column below `Medium` and uses `n` from `Medium`. `Columns(columns => columns.Small(2).Large(3))` sets each breakpoint; an unset breakpoint uses the next smaller one. Columns default to 1, and counts run from 1 to 12.
-- `ColumnSpan(n)` spans `n` columns at every breakpoint, and `ColumnSpan(span => span.Medium(2))` sets each breakpoint. `ColumnSpanFull()` spans the whole grid, and `DefaultFull()`, `SmallFull()`, `MediumFull()` and `LargeFull()` do so at one breakpoint. A span larger than the grid is reduced to its column count. Spans default to 1.
+- `ColumnSpan(n)` spans `n` columns at every breakpoint, and `ColumnSpan(span => span.Medium(2))` sets each breakpoint. `ColumnSpanFull()` spans the whole grid, and `BaseFull()`, `SmallFull()`, `MediumFull()` and `LargeFull()` do so at one breakpoint. A span larger than the grid is reduced to its column count. Spans default to 1.
+- `ColumnStart(n)` starts an item at column `n` (1 to 12), and `ColumnStart(start => start.Medium(1).Large(3))` sets each breakpoint; `SmallAuto()`, `MediumAuto()` and `LargeAuto()` go back to following the item before. A start of 1 begins a new row. A start is ignored at a breakpoint where the grid has one column or the item would extend past the last column; the span is never reduced for it.
 - Items fill the grid in order. The grid doesn't reorder items to fill gaps, so tab order follows the configuration.
 - `section.Layout` overrides the form's `SectionLayout` for one section. The create sheet always stacks sections.
 

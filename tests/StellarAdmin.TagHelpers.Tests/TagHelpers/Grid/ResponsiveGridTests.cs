@@ -232,4 +232,34 @@ public class ResponsiveGridTests
             .That(style)
             .IsEqualTo("--sa-rows:4;--sa-rows-sm:3;--sa-rows-md:2;--sa-rows-lg:2");
     }
+
+    [Test]
+    [Arguments(1)]
+    [Arguments(12)]
+    public async Task ValidateColumns_WithValueInRange_ReturnsValue(int value)
+    {
+        // Arrange
+
+        // Act
+        var result = ResponsiveGrid.ValidateColumns(value, nameof(value));
+
+        // Assert
+        await Assert.That(result).IsEqualTo(value);
+    }
+
+    [Test]
+    [Arguments(0)]
+    [Arguments(13)]
+    public async Task ValidateColumns_WithValueOutOfRange_ThrowsArgumentOutOfRangeException(
+        int value
+    )
+    {
+        // Arrange
+
+        // Act
+        Action act = () => ResponsiveGrid.ValidateColumns(value, nameof(value));
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+    }
 }

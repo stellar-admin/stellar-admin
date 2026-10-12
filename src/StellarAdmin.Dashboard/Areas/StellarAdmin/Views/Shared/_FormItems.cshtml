@@ -3,31 +3,31 @@
     var editorData = ViewData[ViewDataKeys.EditorData] as IReadOnlyDictionary<string, object?>;
     var editorTemplates = ViewData[ViewDataKeys.EditorTemplates] as IReadOnlyDictionary<string, string>;
     var columns = (ViewData[ViewDataKeys.FormColumns] as FormGridColumnDefinitions? ?? default).Resolve();
-    var multipleColumns = columns is not { Base: 1, Small: 1, Medium: 1, Large: 1 };
 }
-@* The wrapper is the container the grid's breakpoints query; the content is the grid itself *@
-<div class="sa-form-grid" data-slot="form-grid">
-    <div class="sa-form-grid-content" data-slot="form-grid-content" data-columns="@(multipleColumns ? "multiple" : "single")"
-         style="@ResponsiveGrid.ColumnsStyle(columns)">
-        @foreach (var item in Items)
-        {
-            var spanStyle = ResponsiveGrid.SpanStyle(item.ColumnSpan.Resolve(columns));
-            if (item is FormFieldOptions field)
+<sa-grid columns-base="@columns.Base" columns-sm="@columns.Small" columns-md="@columns.Medium" columns-lg="@columns.Large">
+    @foreach (var item in Items)
+    {
+        // Every item sits in a grid item that carries its placement, since editor templates render arbitrary markup
+        var span = item.ColumnSpan.Resolve(columns);
+        var start = item.ColumnStart.Resolve(columns, span);
+        var placementStyles = new[] { ResponsiveGrid.SpanStyle(span), ResponsiveGrid.StartStyle(start) }.OfType<string>().ToArray();
+        var placementStyle = placementStyles.Length > 0 ? string.Join(';', placementStyles) : null;
+
+        <sa-grid-item style="@placementStyle">
+            @if (item is FormFieldOptions field)
             {
-                <div class="sa-form-grid-cell" data-slot="form-grid-cell" style="@spanStyle">
-                    @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
+                @Html.Editor(field.FieldName, editorTemplates?.GetValueOrDefault(field.FieldName), new Dictionary<string, object>
+                {
+                    [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
                     {
-                        [ViewDataKeys.FormFieldProperties] = new FormFieldProperties
-                        {
-                            Description = field.Description,
-                            EditorData = editorData?.GetValueOrDefault(field.FieldName),
-                            Editor = field.Editor,
-                            FieldName = field.FieldName,
-                            IsReadOnly = field.IsReadOnly,
-                            Title = field.Title,
-                        },
-                    })
-                </div>
+                        Description = field.Description,
+                        EditorData = editorData?.GetValueOrDefault(field.FieldName),
+                        Editor = field.Editor,
+                        FieldName = field.FieldName,
+                        IsReadOnly = field.IsReadOnly,
+                        Title = field.Title,
+                    },
+                })
             }
             else if (item is FormContainerOptions container)
             {
@@ -42,11 +42,10 @@
                     [ViewDataKeys.FormContainer] = container,
                     [ViewDataKeys.FormItems] = container.Items,
                     [ViewDataKeys.FormColumns] = container.Columns,
-                    [ViewDataKeys.FormSpanStyle] = spanStyle,
                 };
 
                 <partial name="@partial" model="@Model" view-data="@containerViewData" />
             }
-        }
-    </div>
-</div>
+        </sa-grid-item>
+    }
+</sa-grid>

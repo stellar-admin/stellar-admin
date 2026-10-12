@@ -23,7 +23,7 @@ public class FormColumnSpanDefinitionsTests
     public async Task Resolve_WithFullSpan_SpansAllColumnsAtEachTier()
     {
         // Arrange
-        var sut = new FormColumnSpanDefinitions(Default: ResponsiveGrid.FullSpan);
+        var sut = new FormColumnSpanDefinitions(Base: ResponsiveGrid.FullSpan);
         var columns = new GridTiers(1, 2, 3, 4);
 
         // Act
@@ -37,7 +37,7 @@ public class FormColumnSpanDefinitionsTests
     public async Task Resolve_WithSpanWiderThanParent_InheritsRequestedSpanAndClampsEachTier()
     {
         // Arrange
-        var sut = new FormColumnSpanDefinitions(Default: 3, Large: 2);
+        var sut = new FormColumnSpanDefinitions(Base: 3, Large: 2);
         var columns = new GridTiers(1, 2, 4, 4);
 
         // Act

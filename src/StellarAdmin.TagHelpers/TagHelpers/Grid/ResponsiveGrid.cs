@@ -150,6 +150,21 @@ public static class ResponsiveGrid
     public static string? StartStyle(GridTiers start) =>
         Format("--sa-start", start, omitted: AutoStart);
 
+    /// <summary>
+    ///     Returns a column count, span or start after checking that it is from 1 to
+    ///     <see cref="MaxColumns" />.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     The value is less than 1 or greater than <see cref="MaxColumns" />.
+    /// </exception>
+    public static int ValidateColumns(int value, string paramName)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(value, 1, paramName);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(value, MaxColumns, paramName);
+
+        return value;
+    }
+
     private static int FitStart(int start, int columns, int span) =>
         columns == 1 || start + span - 1 > columns ? AutoStart : start;
 
@@ -181,16 +196,8 @@ public static class ResponsiveGrid
         style.Append(variable).Append(':').Append(value.ToString(CultureInfo.InvariantCulture));
     }
 
-    private static int? ValidateColumns(int? value, string paramName)
-    {
-        if (value is { } count)
-        {
-            ArgumentOutOfRangeException.ThrowIfLessThan(count, 1, paramName);
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(count, MaxColumns, paramName);
-        }
-
-        return value;
-    }
+    private static int? ValidateColumns(int? value, string paramName) =>
+        value is { } count ? ValidateColumns(count, paramName) : null;
 
     private static int? ValidateStart(int? value, string paramName)
     {

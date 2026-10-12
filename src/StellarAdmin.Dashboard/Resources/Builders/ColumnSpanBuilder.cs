@@ -22,9 +22,9 @@ public sealed class ColumnSpanBuilder
     /// <remarks>
     ///     Defaults to 1.
     /// </remarks>
-    public ColumnSpanBuilder Default(int span)
+    public ColumnSpanBuilder Base(int span)
     {
-        Span = Span with { Default = FormGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Base = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
 
         return this;
     }
@@ -32,9 +32,9 @@ public sealed class ColumnSpanBuilder
     /// <summary>
     ///     Spans all columns at the smallest width.
     /// </summary>
-    public ColumnSpanBuilder DefaultFull()
+    public ColumnSpanBuilder BaseFull()
     {
-        Span = Span with { Default = ResponsiveGrid.FullSpan };
+        Span = Span with { Base = ResponsiveGrid.FullSpan };
 
         return this;
     }
@@ -44,7 +44,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder Large(int span)
     {
-        Span = Span with { Large = FormGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Large = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
 
         return this;
     }
@@ -64,7 +64,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder Medium(int span)
     {
-        Span = Span with { Medium = FormGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Medium = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
 
         return this;
     }
@@ -84,7 +84,7 @@ public sealed class ColumnSpanBuilder
     /// </summary>
     public ColumnSpanBuilder Small(int span)
     {
-        Span = Span with { Small = FormGrid.ValidateColumns(span, nameof(span)) };
+        Span = Span with { Small = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
 
         return this;
     }
@@ -110,5 +110,5 @@ public sealed class ColumnSpanBuilder
     }
 
     internal static FormColumnSpanDefinitions FromSpan(int span) =>
-        new(Default: FormGrid.ValidateColumns(span, nameof(span)));
+        new(Base: ResponsiveGrid.ValidateColumns(span, nameof(span)));
 }

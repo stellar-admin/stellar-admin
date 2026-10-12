@@ -93,7 +93,7 @@ public class ResourceCreateTests
         // Assert
         await Assert.That(document.QuerySelectorAll("input[name^='Entity.']").Length).IsEqualTo(0);
         await Assert.That(document.QuerySelector("[data-slot='form-section']")).IsNull();
-        await Assert.That(document.QuerySelector("[data-slot='form-grid-cell']")).IsNull();
+        await Assert.That(document.QuerySelector("[data-slot='grid-item']")).IsNull();
     }
 
     [Test]
@@ -264,7 +264,7 @@ public class ResourceCreateTests
             .That(
                 document
                     .RequiredElement("[data-slot='form-section']")
-                    .QuerySelectorAll("[data-slot='form-grid-content'][data-columns='multiple']")
+                    .QuerySelectorAll("[data-slot='grid-content'][data-columns='multiple']")
                     .Length
             )
             .IsEqualTo(1);
@@ -290,7 +290,7 @@ public class ResourceCreateTests
     }
 
     [Test]
-    public async Task GridLayout_WritesResolvedColumnsAndSpans()
+    public async Task GridLayout_WritesResolvedColumnsSpansAndStarts()
     {
         // Arrange
         await using var sut = await DashboardTestHost.CreateAsync(
@@ -307,6 +307,7 @@ public class ResourceCreateTests
                         fields.AddGroup(group =>
                         {
                             group.ColumnSpan(span => span.Medium(2));
+                            group.ColumnStart(2);
                             group.Add(product => product.Id);
                         });
                     })
@@ -317,7 +318,7 @@ public class ResourceCreateTests
         var document = await client.GetDocumentAsync("/stellaradmin/products/create");
 
         // Assert
-        var grid = document.RequiredElement("[data-slot='form-grid-content']");
+        var grid = document.RequiredElement("[data-slot='grid-content']");
         await Assert
             .That(grid.GetAttribute("style"))
             .IsEqualTo("--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3");
@@ -331,15 +332,20 @@ public class ResourceCreateTests
         await Assert
             .That(items[1].GetAttribute("style"))
             .IsEqualTo("--sa-span-sm:2;--sa-span-md:2;--sa-span-lg:2");
-        await Assert.That(items[2].GetAttribute("data-slot")).IsEqualTo("field-group");
+        await Assert
+            .That(items.All(item => item.GetAttribute("data-slot") == "grid-item"))
+            .IsTrue();
         await Assert
             .That(items[2].GetAttribute("style"))
-            .IsEqualTo("--sa-span-md:2;--sa-span-lg:2");
-        var groupGrid = items[2].RequiredElement("[data-slot='form-grid-content']");
+            .IsEqualTo("--sa-span-md:2;--sa-span-lg:2;--sa-start-sm:2;--sa-start-lg:2");
+        await Assert
+            .That(items[2].FirstElementChild?.GetAttribute("data-slot"))
+            .IsEqualTo("field-group");
+        var groupGrid = items[2].RequiredElement("[data-slot='grid-content']");
         await Assert.That(groupGrid.HasAttribute("style")).IsFalse();
         await Assert.That(groupGrid.GetAttribute("data-columns")).IsEqualTo("single");
         await Assert
-            .That(groupGrid.RequiredElement("[data-slot='form-grid-cell']").HasAttribute("style"))
+            .That(groupGrid.RequiredElement("[data-slot='grid-item']").HasAttribute("style"))
             .IsFalse();
     }
 
@@ -455,12 +461,14 @@ public class ResourceCreateTests
             )
             .IsEqualTo("Catalog <information>");
         await Assert.That(section.QuerySelector("details")).IsNull();
-        var grid = section.RequiredElement(
-            "[data-slot='form-grid-content'][data-columns='multiple']"
-        );
+        var grid = section.RequiredElement("[data-slot='grid-content'][data-columns='multiple']");
         await Assert.That(grid.GetAttribute("style")).IsEqualTo("--sa-cols-md:2;--sa-cols-lg:2");
         await Assert
-            .That(grid.QuerySelectorAll(":scope > [data-slot='field-group']").Length)
+            .That(
+                grid.QuerySelectorAll(
+                    ":scope > [data-slot='grid-item'] > [data-slot='field-group']"
+                ).Length
+            )
             .IsEqualTo(2);
         await Assert
             .That(grid.RequiredElement("label[for='Entity_Name']").TextContent.Trim())

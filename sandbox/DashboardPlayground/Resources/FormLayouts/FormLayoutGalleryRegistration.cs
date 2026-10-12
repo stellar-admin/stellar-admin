@@ -177,11 +177,11 @@ internal static class FormLayoutGalleryRegistration
             }
         );
         fields.AddSection(
-            "Columns(columns => columns.Default(2))",
+            "Columns(columns => columns.Base(2))",
             section =>
             {
                 section.Description = "Two columns at every width, even on a phone.";
-                section.Columns(columns => columns.Default(2));
+                section.Columns(columns => columns.Base(2));
                 section.Add(model => model.Street);
                 section.Add(model => model.City);
                 section.Add(model => model.PostalCode);
@@ -255,6 +255,24 @@ internal static class FormLayoutGalleryRegistration
                 section.Columns(4);
                 section.Add(model => model.Visa);
                 section.Add(model => model.VisaExpiry);
+            }
+        );
+        fields.AddSection(
+            "Starts in Columns(3)",
+            section =>
+            {
+                section.Description =
+                    "A start of 1 begins a new row, and a later start leaves the columns before it empty. Starts are dropped below Medium, where the grid has one column.";
+                section.Columns(3);
+                section.Add(model => model.LeadTraveller);
+                section.Add(model => model.Total).ColumnStart(3);
+                section.Add(model => model.Outbound).ColumnStart(1);
+                section.Add(model => model.Inbound);
+                section.Add(model => model.PartySize);
+                section
+                    .Add(model => model.Notes)
+                    .ColumnSpan(2)
+                    .ColumnStart(start => start.Base(2).Large(1));
             }
         );
     }

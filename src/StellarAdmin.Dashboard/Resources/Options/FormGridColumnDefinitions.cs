@@ -4,7 +4,7 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 
 // Requested column counts per tier; an unset tier inherits from the next smaller tier.
 internal readonly record struct FormGridColumnDefinitions(
-    int? Default = null,
+    int? Base = null,
     int? Small = null,
     int? Medium = null,
     int? Large = null
@@ -12,7 +12,7 @@ internal readonly record struct FormGridColumnDefinitions(
 {
     // A plain count keeps one column below the medium tier.
     public static FormGridColumnDefinitions FromCount(int count) =>
-        new(Medium: FormGrid.ValidateColumns(count, nameof(count)));
+        new(Medium: ResponsiveGrid.ValidateColumns(count, nameof(count)));
 
-    public GridTiers Resolve() => ResponsiveGrid.ResolveColumns(Default, Small, Medium, Large);
+    public GridTiers Resolve() => ResponsiveGrid.ResolveColumns(Base, Small, Medium, Large);
 }

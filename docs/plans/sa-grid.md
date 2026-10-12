@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website and skills done; column start (34–38) done in the tag helpers, samples, website and skills; Dashboard outstanding.
+Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website, skills, column start (34–38) and the Dashboard done; choice columns (22) are the follow-up.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
@@ -45,6 +45,7 @@ Numbers continue the discussion of 2026-10-12.
 36. A start is dropped at a tier where the grid has one column or the item would extend past the last column (start + span − 1 > columns); the span is never shrunk for it. Resolved on the server; an invalid value throws. Decided.
 37. Starts apply wherever spans do: `sa-field`, implicit-field inputs, `sa-grid-item`, `sa-display-field` in `sa-grid` and `sa-details`, and the Dashboard's `ColumnStart` on fields, sections and groups. Decided.
 38. Order: tag helpers, then samples, website and skills, then the Dashboard step uses it. No prototype. Decided.
+39. `sa-grid` marks its content `data-columns="single"` or `"multiple"` (any tier above one column). Sections in consecutive grid items count as consecutive sections, so a single-column grid keeps the rule between stacked sections, and only a multi-column grid drops it (29), as the Dashboard did. Without this, every Dashboard form with several sections would lose its separators once sections sit in grid items. Made during the Dashboard step (2026-10-12).
 
 ## Proposed API
 
@@ -136,6 +137,18 @@ Verified: both samples in DocsSamples (5206) at 1000–1100px and 420px (stacks,
 - Fold `FormGrid.ValidateColumns` into `ResponsiveGrid` (10).
 - `ColumnStart` on fields, sections and groups through `ResponsiveGrid.ResolveStart` (37).
 - Rename `GridColumnsBuilder.Default` → `Base`, `ColumnSpanBuilder.Default`/`DefaultFull` → `Base`/`BaseFull` and the internal `Default` members of `FormGridColumnDefinitions`/`FormColumnSpanDefinitions` (24); update callers in DashboardPlayground (`FormLayoutGalleryRegistration`), tests and the Dashboard consumer skill reference (`setup.md`).
+
+Done (2026-10-12):
+
+- `_FormItems.cshtml` renders `sa-grid` (all four column tiers) and puts every field, section and group in an `sa-grid-item` with the resolved span and start style; `_FormSection`/`_FormGroup` no longer carry a span style, and `ViewDataKeys.FormSpanStyle` is removed. The `.sa-form-grid*` rules are gone from `client.css`; the choice column rules stay (22).
+- `FormGrid` is removed; the builders and `FormGridColumnDefinitions.FromCount` call the new public `ResponsiveGrid.ValidateColumns(value, paramName)` (1–12).
+- `ColumnStart(int)` and `ColumnStart(Action<ColumnStartBuilder>)` on `ResourceFieldBuilder`, `ResourceSectionBuilder` and `ResourceGroupBuilder`; `ColumnStartBuilder` has `Base`, `Small`, `Medium`, `Large` (1–12) and `SmallAuto`, `MediumAuto`, `LargeAuto`; internal `FormColumnStartDefinitions` resolves through `ResponsiveGrid.ResolveStart`.
+- `Default` → `Base` renames done; the playground's Spans gallery gains "Starts in Columns(3)"; `setup.md` has `Base`, `BaseFull` and a `ColumnStart` bullet.
+- Library (39): `sa-grid` writes `data-columns`; `grid.css` scopes the separator removal to multi-column grids; `form-section.css` treats sections in consecutive grid items as consecutive.
+- The Dashboard form grid now has the shared grid gap (5u rows, 4u columns); it inherited its parent's gap (4u rows at the top level, 5u columns in sections) before.
+- Tests: `ResponsiveGridTests` (`ValidateColumns`), `GridTagHelperTests` (`data-columns`), `FormColumnStartDefinitionsTests`, start cases in `ResourceFieldsBuilderTests`, and the Dashboard integration tests read the `sa-grid` markup (`GridLayout_WritesResolvedColumnsSpansAndStarts`).
+
+Verified: solution build; all .NET tests 1103/1103; DashboardPlayground (5207) Form layouts gallery at 1300px against screenshots taken before the change (Columns, Spans, Sections and groups, Section layouts, Mixed editors: same layout, stacked sections keep their rules, only the gap differs); the Starts section at 1300, 1100 and 900px (start 3 leaves column 2 empty, start 1 begins a row, Notes moves from column 2 to 1 at Large, all stacked at 900px). Not run: dark mode, theme fixtures, the create sheet. Reviewed in the playground by Jerrie (2026-10-12): layouts look correct.
 
 ### Verification
 

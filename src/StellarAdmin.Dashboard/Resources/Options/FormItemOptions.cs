@@ -7,5 +7,7 @@ public abstract class FormItemOptions
 {
     internal FormColumnSpanDefinitions ColumnSpan { get; set; }
 
+    internal FormColumnStartDefinitions ColumnStart { get; set; }
+
     private protected FormItemOptions() { }
 }

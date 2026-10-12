@@ -44,9 +44,6 @@ public static class ViewDataKeys
     // The column definitions of the form scope whose items are rendered
     internal const string FormColumns = "StellarAdminFormColumns";
 
-    // The inline span variables of the container being rendered, resolved against its parent grid
-    internal const string FormSpanStyle = "StellarAdminFormSpanStyle";
-
     // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
     internal const string SheetLevel = "StellarAdminSheetLevel";
 }

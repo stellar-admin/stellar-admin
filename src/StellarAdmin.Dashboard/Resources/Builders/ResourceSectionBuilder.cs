@@ -10,6 +10,7 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
 {
     private readonly string _title;
     private FormColumnSpanDefinitions _columnSpan;
+    private FormColumnStartDefinitions _columnStart;
     private string? _description;
     private FormSectionLayout? _layout;
 
@@ -63,7 +64,31 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// </summary>
     public ResourceSectionBuilder<TResource> ColumnSpanFull()
     {
-        _columnSpan = new(Default: ResponsiveGrid.FullSpan);
+        _columnSpan = new(Base: ResponsiveGrid.FullSpan);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the column the section starts at in its parent.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to following the item before it. Ignored where the parent has one column or
+    ///     the section would extend past the last column.
+    /// </remarks>
+    public ResourceSectionBuilder<TResource> ColumnStart(int start)
+    {
+        _columnStart = ColumnStartBuilder.FromStart(start);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the column the section starts at in its parent, at each breakpoint.
+    /// </summary>
+    public ResourceSectionBuilder<TResource> ColumnStart(Action<ColumnStartBuilder> configure)
+    {
+        _columnStart = ColumnStartBuilder.Build(configure);
 
         return this;
     }
@@ -72,6 +97,7 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
         new(_title)
         {
             ColumnSpan = _columnSpan,
+            ColumnStart = _columnStart,
             Description = _description,
             Layout = _layout,
         };

@@ -8,10 +8,11 @@
     container: form-section / inline-size;
     width: 100%;
     min-width: 0;
-    & + & {
+    /* Sections in consecutive grid items count as consecutive sections */
+    &:is(& + &, .sa-grid-item + .sa-grid-item > &) {
       margin-top: calc(8 * var(--sa-unit));
     }
-    & + &:not([data-layout="card"]) {
+    &:is(& + &, .sa-grid-item + .sa-grid-item > &):not([data-layout="card"]) {
       padding-top: calc(8 * var(--sa-unit));
       border-top: var(--sa-border-width) solid var(--sa-color-line);
     }

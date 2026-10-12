@@ -958,7 +958,7 @@
     }
   }
   .dark\:bg-blue-600 {
-    &:is(.dark *) {
+    &:is(.dark *):not(:where(.dark .light *)), &:is(.dark *):where(.dark .light .dark *) {
       background-color: oklch(54.6% 0.245 262.881);
     }
   }

@@ -80,12 +80,14 @@ public class GridTagHelper : StellarAdminTagHelperBase
         );
 
         // The wrapper is the container the column breakpoints query; the content inside is the
-        // grid itself, so it carries the column variables, which don't inherit
+        // grid itself, so it carries the column variables, which don't inherit. A grid with one
+        // column at every width stacks its items, which keeps the rule between stacked sections.
         var columnsStyle = ResponsiveGrid.ColumnsStyle(columns);
+        var columnsKind = columnsStyle is null ? "single" : "multiple";
         output.PreContent.SetHtmlContent(
             columnsStyle is null
-                ? """<div class="sa-grid-content" data-slot="grid-content">"""
-                : $"""<div class="sa-grid-content" data-slot="grid-content" style="{columnsStyle}">"""
+                ? $"""<div class="sa-grid-content" data-slot="grid-content" data-columns="{columnsKind}">"""
+                : $"""<div class="sa-grid-content" data-slot="grid-content" data-columns="{columnsKind}" style="{columnsStyle}">"""
         );
         output.PostContent.SetHtmlContent("</div>");
 

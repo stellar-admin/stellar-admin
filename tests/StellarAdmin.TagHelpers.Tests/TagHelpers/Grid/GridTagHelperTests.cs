@@ -39,7 +39,24 @@ public class GridTagHelperTests
         using var html = await TagHelperRenderer.RenderAsync(sut);
 
         // Assert
-        await Assert.That(html.QuerySelector(".sa-grid-content")?.HasAttribute("style")).IsFalse();
+        var content = html.QuerySelector(".sa-grid-content");
+        await Assert.That(content?.HasAttribute("style")).IsFalse();
+        await Assert.That(content?.GetAttribute("data-columns")).IsEqualTo("single");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WhenAnyBreakpointHasMoreThanOneColumn_MarksMultipleColumns()
+    {
+        // Arrange
+        var sut = new GridTagHelper { ColumnsLarge = 2 };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector(".sa-grid-content")?.GetAttribute("data-columns"))
+            .IsEqualTo("multiple");
     }
 
     [Test]

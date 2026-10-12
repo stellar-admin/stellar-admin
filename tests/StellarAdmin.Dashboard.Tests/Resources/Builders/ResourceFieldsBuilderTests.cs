@@ -45,6 +45,10 @@ public class ResourceFieldsBuilderTests
     [Arguments("spanTier")]
     [Arguments("groupSpan")]
     [Arguments("sectionSpan")]
+    [Arguments("fieldStart")]
+    [Arguments("startTier")]
+    [Arguments("groupStart")]
+    [Arguments("sectionStart")]
     public async Task Fields_WithGridValueOutOfRange_ThrowsArgumentOutOfRangeException(
         string setting
     )
@@ -77,6 +81,20 @@ public class ResourceFieldsBuilderTests
                             break;
                         case "sectionSpan":
                             fields.AddSection("Details").ColumnSpan(13);
+                            break;
+                        case "fieldStart":
+                            fields.Add(product => product.Name).ColumnStart(0);
+                            break;
+                        case "startTier":
+                            fields
+                                .Add(product => product.Name)
+                                .ColumnStart(start => start.Medium(13));
+                            break;
+                        case "groupStart":
+                            fields.AddGroup().ColumnStart(13);
+                            break;
+                        case "sectionStart":
+                            fields.AddSection("Details").ColumnStart(0);
                             break;
                     }
                 })

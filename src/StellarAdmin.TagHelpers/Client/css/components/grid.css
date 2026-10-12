@@ -54,8 +54,9 @@
   .sa-grid-item {
     container: field-group / inline-size;
   }
-  /* Sections side by side are separated by the grid gap, not a rule. */
-  .sa-grid-item + .sa-grid-item > .sa-form-section {
+  /* Sections side by side are separated by the grid gap, not a rule. A grid with one column at
+     every width keeps the rule between its stacked sections (form-section.css). */
+  .sa-grid-content[data-columns="multiple"] > .sa-grid-item + .sa-grid-item > .sa-form-section {
     margin-top: 0;
     border-top-width: 0;
     padding-top: 0;

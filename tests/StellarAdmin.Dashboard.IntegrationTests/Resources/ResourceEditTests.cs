@@ -157,7 +157,7 @@ public class ResourceEditTests
         await Assert
             .That(
                 document
-                    .RequiredElement("[data-slot='form-grid-content'][data-columns='multiple']")
+                    .RequiredElement("[data-slot='grid-content'][data-columns='multiple']")
                     .QuerySelectorAll("input[name^='Entity.']")
                     .Length
             )

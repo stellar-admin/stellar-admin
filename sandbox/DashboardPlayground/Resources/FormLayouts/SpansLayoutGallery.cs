@@ -76,6 +76,26 @@ public sealed class SpansLayoutGallery
     [Display(Name = "Visa expiry · span 1")]
     public string? VisaExpiry { get; set; }
 
+    // Starts in a three-column grid
+
+    [Display(Name = "Lead traveller · span 1")]
+    public string? LeadTraveller { get; set; }
+
+    [Display(Name = "Total · start 3")]
+    public string? Total { get; set; }
+
+    [Display(Name = "Outbound · start 1")]
+    public string? Outbound { get; set; }
+
+    [Display(Name = "Inbound · span 1")]
+    public string? Inbound { get; set; }
+
+    [Display(Name = "Party size · span 1")]
+    public string? PartySize { get; set; }
+
+    [Display(Name = "Notes · start 2, span 2, Large start 1")]
+    public string? Notes { get; set; }
+
     public static SpansLayoutGallery CreateSample() =>
         new()
         {
@@ -99,5 +119,11 @@ public sealed class SpansLayoutGallery
             Insurance = "Full cover with zero excess",
             Visa = "Not required",
             VisaExpiry = "",
+            LeadTraveller = "Amelia Hart",
+            Total = "€1,840.00",
+            Outbound = "2027-04-02",
+            Inbound = "2027-04-09",
+            PartySize = "2",
+            Notes = "Anniversary trip; arrange a bottle of wine in the room.",
         };
 }

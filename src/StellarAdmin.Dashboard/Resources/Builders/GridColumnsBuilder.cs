@@ -1,4 +1,5 @@
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
 
@@ -20,9 +21,9 @@ public sealed class GridColumnsBuilder
     /// <remarks>
     ///     Defaults to 1.
     /// </remarks>
-    public GridColumnsBuilder Default(int count)
+    public GridColumnsBuilder Base(int count)
     {
-        Columns = Columns with { Default = FormGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Base = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
 
         return this;
     }
@@ -32,7 +33,7 @@ public sealed class GridColumnsBuilder
     /// </summary>
     public GridColumnsBuilder Large(int count)
     {
-        Columns = Columns with { Large = FormGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Large = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
 
         return this;
     }
@@ -42,7 +43,7 @@ public sealed class GridColumnsBuilder
     /// </summary>
     public GridColumnsBuilder Medium(int count)
     {
-        Columns = Columns with { Medium = FormGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Medium = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
 
         return this;
     }
@@ -52,7 +53,7 @@ public sealed class GridColumnsBuilder
     /// </summary>
     public GridColumnsBuilder Small(int count)
     {
-        Columns = Columns with { Small = FormGrid.ValidateColumns(count, nameof(count)) };
+        Columns = Columns with { Small = ResponsiveGrid.ValidateColumns(count, nameof(count)) };
 
         return this;
     }

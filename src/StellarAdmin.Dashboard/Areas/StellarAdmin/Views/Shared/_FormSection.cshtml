@@ -9,7 +9,6 @@
         : sectionOptions.Layout ?? ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
 }
 
-<sa-form-section title="@sectionOptions.Title" description="@sectionOptions.Description" layout="@layout"
-                 style="@(ViewData[ViewDataKeys.FormSpanStyle] as string)">
+<sa-form-section title="@sectionOptions.Title" description="@sectionOptions.Description" layout="@layout">
     <partial name="_FormItems" model="@Model" />
 </sa-form-section>

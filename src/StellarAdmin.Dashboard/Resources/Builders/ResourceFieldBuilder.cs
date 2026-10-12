@@ -74,7 +74,33 @@ public sealed class ResourceFieldBuilder
     /// </summary>
     public ResourceFieldBuilder ColumnSpanFull()
     {
-        _configuration.Add(options => options.ColumnSpan = new(Default: ResponsiveGrid.FullSpan));
+        _configuration.Add(options => options.ColumnSpan = new(Base: ResponsiveGrid.FullSpan));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the column the field starts at.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to following the item before it. Ignored where the grid has one column or the
+    ///     field would extend past the last column.
+    /// </remarks>
+    public ResourceFieldBuilder ColumnStart(int start)
+    {
+        var columnStart = ColumnStartBuilder.FromStart(start);
+        _configuration.Add(options => options.ColumnStart = columnStart);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the column the field starts at, at each breakpoint.
+    /// </summary>
+    public ResourceFieldBuilder ColumnStart(Action<ColumnStartBuilder> configure)
+    {
+        var columnStart = ColumnStartBuilder.Build(configure);
+        _configuration.Add(options => options.ColumnStart = columnStart);
 
         return this;
     }
