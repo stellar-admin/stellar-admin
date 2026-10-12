@@ -145,6 +145,7 @@ if (!ModelState.IsValid) return Page();
 | Numeric range | `<sa-slider asp-for="..." min="0" max="100">` |
 | One-time code | `<sa-input-otp asp-for="..." groups="3,3">` |
 | Input with an addon | `<sa-input-group>` with `<sa-input-group-input>` + `<sa-input-group-addon>` |
+| Read-only value (no input) | [`<sa-display-field asp-for="...">`](components/details.md) among the inputs; a block of them, such as audit information, in `<sa-details>` |
 
 Bound to a `bool`, `<sa-input asp-for="...">` renders a checkbox without an explicit `type`.
 

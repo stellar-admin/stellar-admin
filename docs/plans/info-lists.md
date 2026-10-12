@@ -123,7 +123,9 @@ Picks (2026-10-12): A1 (muted label, medium-weight value); C2 (only display fiel
 
 DocsSamples: `docs/DocsSamples/Pages/Details/` (navigation under Data Display) with Details, Columns and spans, Horizontal, Divided, Responsive, Empty values, Value types, Templates and custom content, Among form inputs, Record page and Row details examples; `Pages/Shared/DisplayTemplates/BookingStatus.cshtml` and `Reference.cshtml`; the partials are registered in `DocsStatic.cshtml.cs`.
 
-Outstanding: the website docs page and generated demos, the consumer skills reference (including the two icon roles in `references/icons.md`), and the Dashboard entries work.
+Website and skills (2026-10-12): the eleven Details partials are registered in `docs/DocsSamplesGenerator/Generator.cs` and exported; the website has `content/docs/tag-helpers/components/details.mdx` (under Data Display in `meta.json`). The skills reference has a generated `components/details.md` with a hand-written structure region (values, columns and spans, `ResponsiveGrid`), six curated examples in `util/SkillsGenerator/skills.examples.json`, the `BooleanTrue`/`BooleanFalse` rows in `references/icons.md`, and a read-only value row in `references/forms.md`.
+
+Outstanding: the Dashboard entries work.
 
 ## Verification
 
@@ -142,4 +144,10 @@ Responsive grid and `empty-text` (decisions 17–20), completed 2026-10-12:
 - DocsSamples on port 5206: the Columns and spans example (`columns="3" columns-sm="2" columns-lg="4"`) measured in headless Chromium at 420, 560, 720 and 1000px: 1, 2, 3 and 4 columns, with each field's span as configured.
 - The built `stellar-admin.css` holds the 12 grid `@property` registrations and the Dashboard bundle none; the Dashboard layout links `stellar-admin.css`.
 
-Not run: the theme fixtures and density, the DocsSamplesGenerator export, and a rendered Dashboard form page after the registration move (covered only by the stylesheet check above and the integration tests' markup).
+Website and skills, completed 2026-10-12:
+
+- DocsSamplesGenerator export into `../website`: 472 partials. Apart from the new Details demos and snippets, every changed demo differs only by the new stylesheet fingerprints, antiforgery tokens, SVG attribute order and random element ids (checked by normalized comparison against HEAD). The exported `stellar-admin.css` adds only the grid registrations and `details.css`; the samples' `site.css` gains `mb-8` and the unused `columns-sm`/`columns-lg` utilities Tailwind picks up from the attribute names.
+- Website: `pnpm lint`, `pnpm types:check` and `pnpm build` pass, and the build prerenders `/docs/tag-helpers/components/details`; the page and its Columns demo were screenshotted from `pnpm dev` at 1400px.
+- Skills: `util/SkillsGenerator` regenerated, `--check` reports no drift, and `build/skill-validation` tests and check pass.
+
+Not run: the theme fixtures and density, and a rendered Dashboard form page after the registration move (covered only by the stylesheet check above and the integration tests' markup).
