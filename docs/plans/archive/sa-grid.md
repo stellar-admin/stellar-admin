@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website, skills, column start (34–38), the Dashboard and choice columns (40–43) done.
+Status: completed (2026-10-12). Prototype, tag helpers, DocsSamples, website, skills, column start (34–38), the Dashboard and choice columns (40–43) done and committed.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
