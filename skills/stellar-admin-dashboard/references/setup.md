@@ -187,6 +187,35 @@ The data source decides how to apply each scope alongside search, before countin
 
 Tabs use HTMX navigation. Selecting a scope resets the page and retains search and explicitly selected sorting and page size. The default tab omits the scope parameter. Search, paging, sorting, and deletion preserve scope selection.
 
+## Index row details
+
+Let index rows expand to show more about a record. Each call replaces earlier row details configuration:
+
+```csharp
+// Renders with the index, with the row's resource as the partial's model
+index.EnableRowDetails("_ProductSummary");
+
+// Loads when the row first expands, with the model the handler returns for the row's key
+index.EnableRowDetails<ProductNotes, ProductNotesHandler>("_ProductNotes", details =>
+{
+    details.Emphasis = TableRowDetailEmphasis.Rail;
+    details.ExpandMode = TableRowDetailExpandMode.Single;
+});
+
+// Two or more panels show as tabs
+index.EnableRowDetails(panels =>
+{
+    panels.Add("Summary", "_ProductSummary");
+    panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+});
+```
+
+A handler implements `IResourceRowDetailHandler<TModel>`, whose `FindAsync(id, cancellationToken)` returns the model, or null when the record no longer exists; the row then says so. Unregistered handlers are added as scoped services. Partial names resolve like any partial: put them in `Areas/StellarAdmin/Views/{slug}/` beside the resource's view overrides or in `Shared/`. Details that load on demand need a resource key, and the index throws without one. Links and forms inside the details navigate normally rather than swapping the grid.
+
+The configure callback receives `ResourceRowDetailsBuilder<TResource>`, with `Animate` (default true), `Emphasis` (default `Band`), `ExpandMode` (default `Multiple`), `Inset` (default `Aligned`), `RowClick` (default false; clicks on links, buttons and form controls keep their own behavior) and `Toggle` (default `Leading`; `Trailing` or `None`). The no-callback overloads return that builder.
+
+`panels.Add(title, partialName)` adds a panel rendered with the index, and `panels.Add<TModel, THandler>(title, partialName)` one loaded through a handler. The title labels the tab. Each returns `ResourceRowDetailPanelBuilder`, whose `Name` identifies the panel and defaults to the title in lower case with dashes (`"Order history"` becomes `order-history`); names must be unique, and registration throws on a duplicate or an empty set. A single panel renders without tabs. With two or more, a first panel that loads on demand loads when the row expands, and the others when their tab is first shown. Each row's tabs work independently and load each panel once.
+
 ## Create forms
 
 Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
@@ -443,6 +472,8 @@ dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
 Register AppDbContext with the application's chosen EF provider before serving resource requests. The EF builder selects its own data source and discovers the key from EF metadata, so it has no UseDataSource or UseKey methods. Supported keys are single public CLR properties of type int, long, Guid, or string. Labels and index titles use the shared defaults and overrides. Queries honor EF global query filters, count before paging, and append primary-key ordering to keep page results stable. Search predicates and sort selectors must translate through the chosen provider. Search filters the query before counting and paging. The predicate factory is required by `EnableSearch`. Its no-callback overload returns the shared search builder for placeholder configuration. Repeated calls replace the search configuration.
 
 EF scopes accept an optional predicate on each entry. Omitting it leaves that scope unfiltered while retaining EF global query filters. The selected predicate combines with search before counting and paging. Scope predicates must translate through the chosen provider. The no-callback `EnableScopes()` overload returns the EF scopes builder. Repeated calls replace the entries and default selection. Scope identifiers, default selection, tabs, and navigation follow the shared scope behavior described above.
+
+EF row details can also project the row's entity when they load, in one untracked query that honors global query filters: `index.EnableRowDetails("_ProductPricing", product => new ProductPricing(product.Name, product.Price))`, or `panels.Add("Pricing", "_ProductPricing", product => new ProductPricing(...))` inside `EnableRowDetails(panels => ...)`, where the EF index builder supplies `EfCoreRowDetailPanelsBuilder<TContext, TEntity>`. A missing or filtered entity shows that the record no longer exists. The projection must translate through the chosen provider. DashboardPlayground's Products index combines a projected Pricing panel, an inline Overview panel and a handler-loaded Related panel.
 
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 

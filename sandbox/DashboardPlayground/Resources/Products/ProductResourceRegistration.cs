@@ -63,16 +63,26 @@ internal static class ProductResourceRegistration
                     search => search.Placeholder = "Search products..."
                 );
                 index.DefaultSortBy(product => product.Name);
-                // Loads the details when a row first expands, with one query for that product
-                index.EnableRowDetails(
-                    "_ProductPricing",
-                    product => new ProductPricing(
-                        product.Name,
-                        product.Details.Sku,
-                        product.Category != null ? product.Category.Name : null,
-                        product.Price
-                    )
-                );
+                // Pricing loads when a row first expands, with one query for that product. Overview renders with
+                // the index, and Related loads when its tab is first shown
+                index.EnableRowDetails(panels =>
+                {
+                    panels.Add(
+                        "Pricing",
+                        "_ProductPricing",
+                        product => new ProductPricing(
+                            product.Name,
+                            product.Details.Sku,
+                            product.Category != null ? product.Category.Name : null,
+                            product.Price
+                        )
+                    );
+                    panels.Add("Overview", "_ProductOverview");
+                    panels.Add<RelatedProducts, RelatedProductsHandler>(
+                        "Related",
+                        "_RelatedProducts"
+                    );
+                });
                 index.EnablePaging(paging =>
                 {
                     paging.PageSize = 10;

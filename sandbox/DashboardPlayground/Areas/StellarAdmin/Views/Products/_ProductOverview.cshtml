@@ -1,0 +1,19 @@
+@model Product
+<dl class="grid grid-cols-2 gap-x-8 gap-y-3 text-sm sm:grid-cols-4">
+    <div>
+        <dt class="text-muted-foreground">Product</dt>
+        <dd class="font-medium">@Model.Name</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">ID</dt>
+        <dd class="font-medium tabular-nums">@Model.Id</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">SKU</dt>
+        <dd class="font-medium">@(string.IsNullOrEmpty(Model.Details.Sku) ? "—" : Model.Details.Sku)</dd>
+    </div>
+    <div>
+        <dt class="text-muted-foreground">Unit price</dt>
+        <dd class="font-medium tabular-nums">@Model.Price.ToString("0.00")</dd>
+    </div>
+</dl>

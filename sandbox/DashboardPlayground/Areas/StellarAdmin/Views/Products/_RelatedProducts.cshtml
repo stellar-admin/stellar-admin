@@ -1,0 +1,20 @@
+@model RelatedProducts
+@if (Model.Category is null)
+{
+    <p class="text-sm text-muted-foreground">This product has no category.</p>
+}
+else if (Model.Products.Count == 0)
+{
+    <p class="text-sm text-muted-foreground">No other products in @Model.Category.</p>
+}
+else
+{
+    <div class="flex flex-col gap-2">
+        <p class="text-sm text-muted-foreground">Other products in @Model.Category, the first @Model.Products.Count by name</p>
+        <sa-data-grid items="Model.Products">
+            <sa-data-grid-column title="Product" field="Name" class="font-medium" />
+            <sa-data-grid-column title="SKU" field="Sku" />
+            <sa-data-grid-column title="Unit price" field="Price" format="{0:0.00}" class="text-right" />
+        </sa-data-grid>
+    </div>
+}

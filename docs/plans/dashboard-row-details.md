@@ -1,6 +1,6 @@
 # Dashboard row details
 
-Status: phases 1 and 2 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
+Status: phases 1 to 3 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
 
 ## Goal
 
@@ -159,7 +159,22 @@ index.EnableRowDetails(panels =>
 - CSS (`tabs.css`): `.sa-tabs-container` stacks the list and panels at the list's gap, side by side for a vertical list; `.sa-tab-panel` has a focus ring. The theme coverage manifest no longer exists, so there was nothing to update.
 - DocsSamples Tabs page: Panels (with a disabled tab), Panels Line (icons, `selected`), Panels Vertical and Panels Load On Show (a `tab-show` listener; the comment points to the htmx equivalent, since DocsSamples has no htmx). The four samples are exported to the website, and its tabs page now describes link tabs and panel tabs as the two forms, with the panel examples, the `tab-show` and `tab-hide` events and htmx loading, accessibility, and API tables for `sa-tabs`, `sa-tab` and `sa-tab-panel` (website lint, type check and build pass). The export also refreshed every demo for the rebuilt assets (new asset hashes and reordered SVG attributes). Skills examples and the consumer reference wait for phase 3.
 
+## Phase 3 as built (2026-10-12)
+
+- `EnableRowDetails(panels => …)` and `EnableRowDetails(panels => …, details => …)` on the index builder base, with `ResourceRowDetailPanelsBuilder<TResource>` (`Add(title, partialName)`, `Add<TModel, THandler>(title, partialName)`). The EF Core index builder's overloads take `EfCoreRowDetailPanelsBuilder<TContext, TEntity>`, a subclass adding `Add<TModel>(title, partialName, select)`; C# picks the derived class's overload, so the lambda needs no type. The projection loader moved to an internal `EfCoreRowDetailLoader`, shared with the single-panel overload. The phase 1 single-panel overloads are unchanged.
+- `Add` returns `ResourceRowDetailPanelBuilder` with a setter-only `Name`, defaulting to the title in lower case with dashes (decision 1). `ResourceRowDetailPanelOptions` gains `Title` and `Name`, both null for single-panel registrations. Registration throws on an empty set, a duplicate name or an empty name (a title of only punctuation).
+- Endpoint (decision 3, internal): one route, with the panel in the query string, `rowdetail/{id}?panel={name}`, since the Dashboard's conventional route allows a single `{id}` segment. The controller matches the panel by name; a single panel has no name and no query parameter.
+- Rendering: one panel renders as in phase 1. Two or more render `sa-tabs` with a Line tab list (decision 2) inside the details wrapper. Panel ids are `--resource-row-detail-{row}-{name}`, numbered by a counter declared outside the grid, because the grid runs its content again for each row. On-demand panels carry the htmx attributes on the `sa-tab-panel` itself (`hx-swap="innerHTML"`): the first loads on `row-detail-expand from:"closest tr" once`, the others on `tab-show once`.
+- Playground: Products has a projected Pricing panel (first, so it loads on expand), an inline Overview panel and a `RelatedProductsHandler` panel listing up to five other products in the category.
+- Docs: `skills/stellar-admin-dashboard/references/setup.md` gains an "Index row details" section covering phases 1 and 3, and an EF Core paragraph on projections. The website has no Dashboard pages, so nothing was added there. The tag helpers skill's tabs reference now includes the Panels and Panels Load On Show samples (`skills.examples.json`, regenerated).
+
 ## Verification log
+
+2026-10-12, phase 3:
+
+- Dashboard unit tests: 98 pass (17 new, in `ResourceRowDetailPanelsBuilderTests`, `ResourceRowDetailPanelBuilderTests` and `ResourceIndexBuilderBaseTests`). Dashboard integration tests: 400 pass (7 new). EF Core integration tests: 80 pass (1 new).
+- Library, EF Core package and playground build. `SkillsGenerator --check` reports no drift.
+- CDP check in the playground (23 checks pass): Products tab labels and Line variant, unique panel ids across rows, the projected first panel loading on expand, the handler panel not loading until shown and then loading once across reselection, the inline panel, a second row loading its own panel, rows keeping independent tab selection, arrow keys, tabs working after a search swap, and no console errors; the phase 1 Categories and Customers checks still pass.
 
 2026-10-12, phase 2:
 

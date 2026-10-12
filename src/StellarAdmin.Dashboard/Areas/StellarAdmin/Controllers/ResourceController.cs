@@ -541,19 +541,22 @@ public class ResourceController<TResource>(
     }
 
     /// <summary>
-    ///     Renders a row's details that load when the row expands.
+    ///     Renders a row detail panel that loads when it is first shown.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> RowDetail(
         [FromRoute] string id,
+        [FromQuery] string? panel,
         CancellationToken cancellationToken
     )
     {
         if (
             string.IsNullOrEmpty(id)
             || _resourceOptions.KeySelector is null
-            || _resourceOptions.Index.RowDetails?.Panels.FirstOrDefault()
-                is not { Loader: { } loader } panel
+            || _resourceOptions.Index.RowDetails?.Panels.FirstOrDefault(options =>
+                options.Name == panel
+            )
+                is not { Loader: { } loader } panelOptions
         )
         {
             return NotFound();
@@ -567,7 +570,7 @@ public class ResourceController<TResource>(
             return PartialView("_IndexRowDetailNotFound");
         }
 
-        return PartialView(panel.PartialName, model);
+        return PartialView(panelOptions.PartialName, model);
     }
 
     // The collection's elements, such as int for List<int>; a nullable element converts to its underlying type

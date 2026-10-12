@@ -1,4 +1,9 @@
 @model IResourceIndexPageViewModel
+@{
+    // Numbers the rows' details, so each row's panels have their own ids. The grid runs its content again for
+    // each row, so the count lives outside it
+    var row = 0;
+}
 
 <sa-data-grid items="Model.Items" class="sa-resource-index-grid">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
@@ -44,23 +49,59 @@
     }
     @if (Model.RowDetails is { } rowDetails)
     {
-        var panel = rowDetails.Panels[0];
         <sa-data-grid-row-detail toggle="rowDetails.Toggle" row-click="rowDetails.RowClick"
                                  expand-mode="rowDetails.ExpandMode" emphasis="rowDetails.Emphasis"
                                  inset="rowDetails.Inset" animate="rowDetails.Animate">
             @* Links and forms in the details navigate normally instead of swapping the grid *@
             <div hx-boost:inherited="false">
-                @if (panel.LoadsOnDemand)
+                @if (rowDetails.Panels.Count == 1)
                 {
-                    <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
-                         hx-trigger='row-detail-expand from:"closest tr" once'
-                         hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
-                        <partial name="_IndexRowDetailLoading" />
-                    </div>
+                    var panel = rowDetails.Panels[0];
+                    if (panel.LoadsOnDemand)
+                    {
+                        <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
+                             hx-trigger='row-detail-expand from:"closest tr" once'
+                             hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
+                            <partial name="_IndexRowDetailLoading" />
+                        </div>
+                    }
+                    else
+                    {
+                        <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
+                    }
                 }
                 else
                 {
-                    <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
+                    row++;
+                    <sa-tabs>
+                        <sa-tab-list variant="TabListVariant.Line">
+                            @foreach (var panel in rowDetails.Panels)
+                            {
+                                <sa-tab for="@($"--resource-row-detail-{row}-{panel.Name}")">@panel.Title</sa-tab>
+                            }
+                        </sa-tab-list>
+                        @for (var index = 0; index < rowDetails.Panels.Count; index++)
+                        {
+                            var panel = rowDetails.Panels[index];
+                            var panelId = $"--resource-row-detail-{row}-{panel.Name}";
+                            if (panel.LoadsOnDemand)
+                            {
+                                @* The first panel loads when the row expands, the others when their tab is first shown *@
+                                <sa-tab-panel id="@panelId"
+                                              hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
+                                              hx-trigger='@(index == 0 ? "row-detail-expand from:\"closest tr\" once" : "tab-show once")'
+                                              hx-target="this" hx-swap="innerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
+                                    <partial name="_IndexRowDetailLoading" />
+                                </sa-tab-panel>
+                            }
+                            else
+                            {
+                                <sa-tab-panel id="@panelId">
+                                    <partial name="@panel.PartialName" model="Html.GridItem<object>()" />
+                                </sa-tab-panel>
+                            }
+                        }
+                    </sa-tabs>
                 }
             </div>
         </sa-data-grid-row-detail>

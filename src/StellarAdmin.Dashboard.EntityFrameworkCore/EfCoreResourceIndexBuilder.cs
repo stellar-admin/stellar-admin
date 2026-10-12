@@ -18,6 +18,20 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
         : base(services) { }
 
     /// <summary>
+    ///     Lets rows expand to show panels, as tabs when there are two or more.
+    /// </summary>
+    public ResourceRowDetailsBuilder<TEntity> EnableRowDetails(
+        Action<EfCoreRowDetailPanelsBuilder<TContext, TEntity>> panels
+    )
+    {
+        ArgumentNullException.ThrowIfNull(panels);
+        var builder = new EfCoreRowDetailPanelsBuilder<TContext, TEntity>(Services);
+        panels(builder);
+
+        return RegisterRowDetails(builder);
+    }
+
+    /// <summary>
     ///     Lets rows expand to show a partial view, with a model projected from the row's entity when the row expands.
     /// </summary>
     public ResourceRowDetailsBuilder<TEntity> EnableRowDetails<TModel>(
@@ -29,24 +43,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
 
         return RegisterRowDetails(
             partialName,
-            async (services, id, cancellationToken) =>
-            {
-                var db = services.GetRequiredService<TContext>();
-                if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, id, out var predicate))
-                {
-                    return null;
-                }
-
-                // A list distinguishes a missing entity from a projection to a default value
-                var models = await db.Set<TEntity>()
-                    .AsNoTracking()
-                    .Where(predicate)
-                    .Select(select)
-                    .Take(1)
-                    .ToListAsync(cancellationToken);
-
-                return models.Count == 0 ? null : models[0];
-            }
+            EfCoreRowDetailLoader.Create<TContext, TEntity, TModel>(select)
         );
     }
 
@@ -62,6 +59,20 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(EnableRowDetails(partialName, select));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show panels, as tabs when there are two or more, and configures the rows.
+    /// </summary>
+    public EfCoreResourceIndexBuilder<TContext, TEntity> EnableRowDetails(
+        Action<EfCoreRowDetailPanelsBuilder<TContext, TEntity>> panels,
+        Action<ResourceRowDetailsBuilder<TEntity>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails(panels));
 
         return this;
     }

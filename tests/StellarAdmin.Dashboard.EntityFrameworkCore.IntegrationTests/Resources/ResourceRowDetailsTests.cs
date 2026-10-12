@@ -60,6 +60,39 @@ public class ResourceRowDetailsTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
+    [Test]
+    public async Task ProjectedPanel_RowDetailRendersProjection()
+    {
+        // Arrange
+        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+            resource.Index(index =>
+                index.EnableRowDetails(panels =>
+                    panels.Add(
+                        "Pricing",
+                        "_ProductPricing",
+                        product => new ProductPricing(
+                            product.Name,
+                            product.Price,
+                            product.Category != null ? product.Category.Name : null
+                        )
+                    )
+                )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/products/rowdetail/2?panel=pricing"
+        );
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert
+            .That(await response.Content.ReadAsStringAsync())
+            .Contains("<p data-test=\"pricing\">Apple, 20, Technology</p>");
+    }
+
     private static void ConfigureProjectedDetails(
         EfCoreResourceBuilder<CatalogDbContext, Product> resource
     ) =>

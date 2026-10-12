@@ -208,6 +208,149 @@ public class ResourceRowDetailsTests
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Unauthorized);
     }
 
+    [Test]
+    public async Task Panels_RenderTabsForEachRow()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m), new(8, "Pencil", 1.25m)]),
+            ConfigurePanels
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var content = document.QuerySelectorAll("[data-slot='table-row-detail-content']")[1];
+        await Assert
+            .That(content.TextContents("[role='tab']"))
+            .IsEquivalentTo(["Notes", "Summary", "Archived notes"]);
+        await Assert
+            .That(content.QuerySelectorAll("[role='tabpanel']").Select(panel => panel.Id))
+            .IsEquivalentTo([
+                "--resource-row-detail-2-notes",
+                "--resource-row-detail-2-summary",
+                "--resource-row-detail-2-archived-notes",
+            ]);
+        await Assert
+            .That(content.RequiredElement("[data-test='summary']").TextContent)
+            .IsEqualTo("Summary for Pencil");
+    }
+
+    [Test]
+    public async Task Panels_LoadFirstPanelOnExpandAndOthersWhenShown()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigurePanels
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var notes = document.RequiredElement("#--resource-row-detail-1-notes");
+        await Assert
+            .That(notes.GetAttribute("hx-get"))
+            .IsEqualTo("/stellaradmin/products/rowdetail/7?panel=notes");
+        await Assert
+            .That(notes.GetAttribute("hx-trigger"))
+            .IsEqualTo("row-detail-expand from:\"closest tr\" once");
+        var archived = document.RequiredElement("#--resource-row-detail-1-archived-notes");
+        await Assert
+            .That(archived.GetAttribute("hx-get"))
+            .IsEqualTo("/stellaradmin/products/rowdetail/7?panel=archived-notes");
+        await Assert.That(archived.GetAttribute("hx-trigger")).IsEqualTo("tab-show once");
+        await Assert
+            .That(
+                document.RequiredElement("#--resource-row-detail-1-summary").HasAttribute("hx-get")
+            )
+            .IsFalse();
+    }
+
+    [Test]
+    public async Task Panels_RowDetailRendersNamedPanel()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigurePanels
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products/rowdetail/7?panel=archived-notes"
+        );
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("[data-test='notes']").TextContent)
+            .IsEqualTo("Notes for Notebook");
+    }
+
+    [Test]
+    [Arguments("")]
+    [Arguments("?panel=summary")]
+    [Arguments("?panel=missing")]
+    public async Task Panels_RowDetailWithoutOnDemandPanel_ReturnsNotFound(string query)
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigurePanels
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync($"/stellaradmin/products/rowdetail/7{query}");
+
+        // Assert
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
+        await Assert.That(await response.Content.ReadAsStringAsync()).IsEmpty();
+    }
+
+    [Test]
+    public async Task SinglePanel_RendersWithoutTabs()
+    {
+        // Arrange
+        await using var sut = await DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                resource.Index(index =>
+                    index.EnableRowDetails(panels => panels.Add("Summary", "_ProductSummary"))
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert.That(document.QuerySelector("sel-tabs")).IsNull();
+        await Assert
+            .That(document.RequiredElement("[data-test='summary']").TextContent)
+            .IsEqualTo("Summary for Notebook");
+    }
+
+    private static void ConfigurePanels(
+        Dashboard.Resources.Builders.ResourceBuilder<Product> resource
+    )
+    {
+        resource.UseKey(product => product.Id);
+        resource.Index(index =>
+            index.EnableRowDetails(panels =>
+            {
+                panels.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
+                panels.Add("Summary", "_ProductSummary");
+                panels.Add<ProductNotes, ProductNotesHandler>("Archived notes", "_ProductNotes");
+            })
+        );
+    }
+
     private static void ConfigureHandlerDetails(
         Dashboard.Resources.Builders.ResourceBuilder<Product> resource
     )

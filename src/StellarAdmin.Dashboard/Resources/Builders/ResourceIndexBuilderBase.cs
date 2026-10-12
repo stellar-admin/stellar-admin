@@ -136,8 +136,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
 
         return RegisterRowDetails(
             partialName,
-            async (services, id, cancellationToken) =>
-                await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken)
+            ResourceRowDetailPanelsBuilder<TResource>.CreateHandlerLoader<TModel, THandler>()
         );
     }
 
@@ -153,6 +152,34 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     {
         ArgumentNullException.ThrowIfNull(configure);
         configure(EnableRowDetails<TModel, THandler>(partialName));
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show panels, as tabs when there are two or more.
+    /// </summary>
+    public ResourceRowDetailsBuilder<TResource> EnableRowDetails(
+        Action<ResourceRowDetailPanelsBuilder<TResource>> panels
+    )
+    {
+        ArgumentNullException.ThrowIfNull(panels);
+        var builder = new ResourceRowDetailPanelsBuilder<TResource>(Services);
+        panels(builder);
+
+        return RegisterRowDetails(builder);
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show panels, as tabs when there are two or more, and configures the rows.
+    /// </summary>
+    public TBuilder EnableRowDetails(
+        Action<ResourceRowDetailPanelsBuilder<TResource>> panels,
+        Action<ResourceRowDetailsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(EnableRowDetails(panels));
 
         return (TBuilder)this;
     }
@@ -175,6 +202,50 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         Services.Configure<ResourceOptions<TResource>>(options =>
             options.Index.RowDetails = new() { Panels = { new(partialName, loader) } }
         );
+
+        return new(Services);
+    }
+
+    /// <summary>
+    ///     Lets rows expand to show the panels the builder added.
+    /// </summary>
+    protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
+        ResourceRowDetailPanelsBuilder<TResource> panels
+    )
+    {
+        ArgumentNullException.ThrowIfNull(panels);
+        if (panels.Panels.Count == 0)
+        {
+            throw new InvalidOperationException("Add at least one row detail panel.");
+        }
+
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var panel in panels.Panels)
+        {
+            if (string.IsNullOrEmpty(panel.Name))
+            {
+                throw new InvalidOperationException(
+                    $"The row detail panel '{panel.Title}' needs a name. Set Name on the panel."
+                );
+            }
+
+            if (!names.Add(panel.Name))
+            {
+                throw new InvalidOperationException(
+                    $"Row detail panel names must be unique, and '{panel.Name}' is used more than once."
+                );
+            }
+        }
+
+        var registered = panels.Panels.ToList();
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.Index.RowDetails = new();
+            foreach (var panel in registered)
+            {
+                options.Index.RowDetails.Panels.Add(panel);
+            }
+        });
 
         return new(Services);
     }

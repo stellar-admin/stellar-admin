@@ -53,7 +53,7 @@
 | [Spinner](components/spinner.md) | `<sa-spinner>` | An animated spinning icon that indicates a loading or busy state. |
 | [Switch](components/switch.md) | `<sa-switch>` | A toggle control that switches between on and off states. |
 | [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | A responsive data table, rendered as a `<table>` inside a scrollable container. |
-| [Tabs](components/tabs.md) | `<sa-tab-link>`, `<sa-tab-list>` | A single tab within a `<sa-tab-list>`, rendered as a link to its target view. |
+| [Tabs](components/tabs.md) | `<sa-tab>`, `<sa-tab-link>`, `<sa-tab-list>`, … | A tab within the `<sa-tab-list>` of an `<sa-tabs>`, which shows its panel when selected. |
 | [Textarea](components/textarea.md) | `<sa-textarea>` | A styled multi-line text input that grows with its content. |
 | [Toaster](components/toaster.md) | `<sa-toaster>` | The region that shows toast notifications. |
 | [Toggle](components/toggle.md) | `<sa-toggle>` | Renders a two-state button that can be toggled on or off. |

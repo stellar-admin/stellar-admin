@@ -62,7 +62,7 @@
   "Spinner": ["Spinner/_InButtons"],
   "Switch": ["Switch/_Intro", "Switch/_ModelBinding"],
   "Table": ["Table/_Intro", "Table/_Select", "Table/_RowDetails", "Table/_RowDetailsRowClick"],
-  "Tabs": ["Tabs/_Intro", "Tabs/_Icons", "Tabs/_Url"],
+  "Tabs": ["Tabs/_Intro", "Tabs/_Icons", "Tabs/_Url", "Tabs/_Panels", "Tabs/_PanelsLoadOnShow"],
   "Textarea": ["Textarea/_Intro", "Textarea/_ModelBinding"],
   "Toaster": ["Toast/_Intro", "Toast/_Types", "Toast/_Action", "Toast/_Promise"],
   "Toggle": ["Toggle/_Intro", "Toggle/_WithText"],
