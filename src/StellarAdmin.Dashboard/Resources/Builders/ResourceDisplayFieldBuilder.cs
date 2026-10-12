@@ -26,15 +26,6 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     The composite format string for the value, such as <c>{0:C}</c>. Defaults to the
-    ///     property's <c>[DisplayFormat(DataFormatString)]</c>.
-    /// </summary>
-    public string? Format
-    {
-        set => _configuration.Add(options => options.Format = value);
-    }
-
-    /// <summary>
     ///     The field label.
     /// </summary>
     public string? Title
@@ -118,8 +109,8 @@ public sealed class ResourceDisplayFieldBuilder
     ///     Uses and configures a display for this field.
     /// </summary>
     /// <remarks>
-    ///     Without a display, the value renders from the property's metadata, or the display
-    ///     template its <c>[UIHint]</c> names.
+    ///     Without a display, the field renders the display template its property's
+    ///     <c>[UIHint]</c> names, or the default display for its type.
     /// </remarks>
     public ResourceDisplayFieldBuilder UseDisplay<TDisplay>(Action<TDisplay> configure)
         where TDisplay : FieldDisplay, new()
@@ -143,6 +134,7 @@ public sealed class ResourceDisplayFieldBuilder
 
             options.Display = display;
             options.HandlerType = handlerType;
+            options.UsesBuiltInRendering = false;
         });
 
         return this;
@@ -153,6 +145,25 @@ public sealed class ResourceDisplayFieldBuilder
     /// </summary>
     public ResourceDisplayFieldBuilder UseDisplay<TDisplay>()
         where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
+
+    /// <summary>
+    ///     Renders the value from the property's metadata instead of a display.
+    /// </summary>
+    /// <remarks>
+    ///     The value is formatted with the property's <c>[DisplayFormat]</c>, a boolean shows an
+    ///     icon, and email addresses and web addresses become links.
+    /// </remarks>
+    public ResourceDisplayFieldBuilder UseBuiltInRendering()
+    {
+        _configuration.Add(options =>
+        {
+            options.Display = null;
+            options.HandlerType = null;
+            options.UsesBuiltInRendering = true;
+        });
+
+        return this;
+    }
 
     // Display fields are never bound, so unlike editable fields they need no setter
     internal static ResourceDisplayFieldBuilder Create(LambdaExpression field, string paramName)

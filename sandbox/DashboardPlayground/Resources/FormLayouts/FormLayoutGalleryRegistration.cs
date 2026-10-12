@@ -480,7 +480,9 @@ internal static class FormLayoutGalleryRegistration
                 section.Add(model => model.Destination);
                 section.AddDisplayField(model => model.BookingReference);
                 section.Add(model => model.Departure);
-                section.AddDisplayField(model => model.Total, field => field.Format = "€{0:N2}");
+                section
+                    .AddDisplayField(model => model.Total)
+                    .UseDisplay<NumberDisplay>(number => number.Format = "€#,##0.00");
                 section.AddDisplayField(model => model.IsPaid);
             }
         );
@@ -497,10 +499,78 @@ internal static class FormLayoutGalleryRegistration
                     .UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
                 details.Add(model => model.Status);
                 details.Add(model => model.IsPaid);
-                details.Add(model => model.Total, field => field.Format = "€{0:N2}");
+                details
+                    .Add(model => model.Total)
+                    .UseDisplay<NumberDisplay>(number => number.Format = "€#,##0.00");
                 details.Add(model => model.ContactEmail).ColumnSpan(2);
                 var notes = details.Add(model => model.AgentNotes).ColumnSpanFull();
                 notes.EmptyText = "No notes";
+            }
+        );
+        fields.AddDetails(
+            "Standard displays in Columns(3)",
+            details =>
+            {
+                details.Description =
+                    "No UseDisplay: each value renders with the default display for its type or data type, and the created date with its [DisplayFormat].";
+                details.Columns(3);
+                details.Add(model => model.HotelWebsite);
+                details.Add(model => model.HotelPhone);
+                details.Add(model => model.ContactEmail);
+                details.Add(model => model.Departure);
+                details.Add(model => model.CheckIn);
+                details.Add(model => model.CreatedAt);
+                details.Add(model => model.Cabin);
+                details.Add(model => model.Nights);
+                details.Add(model => model.IsPaid);
+                details.Add(model => model.Itinerary).ColumnSpanFull();
+            }
+        );
+        fields.AddDetails(
+            "Display settings in Columns(3)",
+            details =>
+            {
+                details.Description =
+                    "Formats on NumberDisplay and DateDisplay, BooleanDisplay text, a link that opens in the same tab, a clamped multiline text, and UseBuiltInRendering.";
+                details.Columns(3);
+                details
+                    .Add(model => model.Total)
+                    .UseDisplay<NumberDisplay>(number => number.Format = "N2");
+                details
+                    .Add(model => model.Departure)
+                    .UseDisplay<DateDisplay>(date => date.Format = "dddd d MMMM yyyy");
+                details
+                    .Add(model => model.IsPaid)
+                    .UseDisplay<BooleanDisplay>(boolean =>
+                    {
+                        boolean.Appearance = BooleanDisplayAppearance.IconAndText;
+                        boolean.TrueText = "Paid in full";
+                    });
+                details
+                    .Add(model => model.HotelWebsite)
+                    .UseDisplay<LinkDisplay>(link => link.OpenInNewTab = false);
+                details.Add(
+                    model => model.IsPaid,
+                    field =>
+                    {
+                        field.Title = "Paid (text)";
+                        field.UseDisplay<BooleanDisplay>(boolean =>
+                            boolean.Appearance = BooleanDisplayAppearance.Text
+                        );
+                    }
+                );
+                details.Add(
+                    model => model.CreatedAt,
+                    field =>
+                    {
+                        field.Title = "Created (built-in)";
+                        field.UseBuiltInRendering();
+                    }
+                );
+                details
+                    .Add(model => model.Itinerary)
+                    .ColumnSpanFull()
+                    .UseDisplay<TextDisplay>(text => text.LineClamp = 2);
             }
         );
         fields.AddDetails(

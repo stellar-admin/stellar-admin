@@ -15,9 +15,9 @@
                 orientation="@details.Orientation" variant="@details.Variant">
         @foreach (var field in details.Fields)
         {
-            using (BeginField(field))
+            using (var scope = BeginField(field))
             {
-                <sa-display-field asp-for="@Model" label="@field.Title" format="@field.Format" empty-text="@field.EmptyText" template="@field.Display?.TemplateName"
+                <sa-display-field asp-for="@Model" label="@field.Title" empty-text="@field.EmptyText" template="@scope.TemplateName"
                                   column-span="@Span(field.ColumnSpan.Base)" column-span-sm="@Span(field.ColumnSpan.Small)"
                                   column-span-md="@Span(field.ColumnSpan.Medium)" column-span-lg="@Span(field.ColumnSpan.Large)"
                                   column-start="@Start(field.ColumnStart.Base)" column-start-sm="@Start(field.ColumnStart.Small)"

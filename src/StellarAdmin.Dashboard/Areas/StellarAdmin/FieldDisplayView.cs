@@ -25,4 +25,14 @@ public abstract class FieldDisplayView<TDisplay> : RazorPage<object?>
     ///     has no handler.
     /// </summary>
     public object? DisplayData => ViewData[ViewDataKeys.FieldDisplayData];
+
+    /// <summary>
+    ///     Formats the field's value in the current culture.
+    /// </summary>
+    /// <param name="format">
+    ///     A format string, such as <c>N2</c>, or <c>null</c> to use the property's
+    ///     <c>[DisplayFormat]</c>. Without either, enum members show their <c>[Display]</c> names.
+    /// </param>
+    public string FormatValue(string? format = null) =>
+        FieldValueFormatter.Format(Model, ViewData.ModelMetadata, format);
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
@@ -27,7 +28,7 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
     // rendered by pointing the page's model at the field's value, as an editor template sees it,
     // until the returned scope is disposed. The display template reads the field's display and its
     // prepared data from the view context's data, which the tag helper renders it with.
-    internal IDisposable BeginField(FormDisplayFieldOptions field)
+    internal FieldScope BeginField(FormDisplayFieldOptions field)
     {
         var fieldName = field.FieldName;
         var expression = Context
@@ -42,25 +43,41 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
                 HtmlFieldPrefix = original.TemplateInfo.GetFullHtmlFieldName(fieldName),
             },
         };
+
+        // A [UIHint] template wins over the default display, and the tag helper renders it
+        var metadata = expression.Metadata;
+        var display =
+            field.Display
+            ?? (
+                field.UsesBuiltInRendering || metadata.TemplateHint is not null
+                    ? null
+                    : FieldDisplayDefaults.Resolve(metadata)
+            );
         var contextData = ViewContext.ViewData;
         var originalDisplay = contextData[ViewDataKeys.FieldDisplay];
         var originalDisplayData = contextData[ViewDataKeys.FieldDisplayData];
-        contextData[ViewDataKeys.FieldDisplay] = field.Display;
+        contextData[ViewDataKeys.FieldDisplay] = display;
         contextData[ViewDataKeys.FieldDisplayData] = (
             original[ViewDataKeys.DisplayData]
             as IReadOnlyDictionary<FormDisplayFieldOptions, object?>
         )?.GetValueOrDefault(field);
 
-        return new FieldScope(() =>
-        {
-            ViewData = original;
-            contextData[ViewDataKeys.FieldDisplay] = originalDisplay;
-            contextData[ViewDataKeys.FieldDisplayData] = originalDisplayData;
-        });
+        return new FieldScope(
+            display?.TemplateName,
+            () =>
+            {
+                ViewData = original;
+                contextData[ViewDataKeys.FieldDisplay] = originalDisplay;
+                contextData[ViewDataKeys.FieldDisplayData] = originalDisplayData;
+            }
+        );
     }
 
-    private sealed class FieldScope(Action restore) : IDisposable
+    internal sealed class FieldScope(string? templateName, Action restore) : IDisposable
     {
+        // The display template the field renders, or null to let the tag helper choose
+        public string? TemplateName { get; } = templateName;
+
         public void Dispose() => restore();
     }
 }

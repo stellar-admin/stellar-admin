@@ -1,4 +1,6 @@
 using System.Net;
+using AngleSharp.Dom;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
@@ -59,10 +61,9 @@ public class ResourceDisplayFieldTests
                     edit.Fields(fields =>
                     {
                         fields.Add(model => model.ProductName);
-                        fields.AddDisplayField(
-                            model => model.Price,
-                            field => field.Format = "{0:0.00}"
-                        );
+                        fields
+                            .AddDisplayField(model => model.Price)
+                            .UseDisplay<NumberDisplay>(number => number.Format = "0.00");
                     })
                 );
             }
@@ -145,6 +146,206 @@ public class ResourceDisplayFieldTests
         await Assert
             .That(document.RequiredElement("dd [data-custom-display='category']").TextContent)
             .IsEqualTo(expected);
+    }
+
+    [Test]
+    public async Task Edit_WithoutDisplay_RendersDefaultDisplayForType()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(details =>
+        {
+            details.Add(model => model.ProductName);
+            details.Add(model => model.Notes);
+            details.Add(model => model.Email);
+            details.Add(model => model.Website);
+            details.Add(model => model.Phone);
+            details.Add(model => model.Released);
+            details.Add(model => model.Updated);
+            details.Add(model => model.Opens);
+            details.Add(model => model.Active);
+            details.Add(model => model.Discontinued);
+            details.Add(model => model.Status);
+            details.Add(model => model.Price);
+            details.Add(model => model.Weight);
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        var name = values["ProductName"].RequiredElement(".sa-text-display");
+        await Assert.That(name.TextContent).IsEqualTo("Notebook");
+        await Assert.That(name.GetAttribute("data-multiline")).IsEqualTo("false");
+        await Assert.That(name.HasAttribute("data-line-clamp")).IsFalse();
+        var notes = values["Notes"].RequiredElement(".sa-text-display");
+        await Assert.That(notes.GetAttribute("data-multiline")).IsEqualTo("true");
+        await Assert.That(notes.TextContent).IsEqualTo("Ships from Cape Town.\nAllow two days.");
+        var email = values["Email"].RequiredElement("a");
+        await Assert.That(email.GetAttribute("href")).IsEqualTo("mailto:sales@voyager.example");
+        var website = values["Website"].RequiredElement("a");
+        await Assert
+            .That(website.GetAttribute("href"))
+            .IsEqualTo("https://voyager.example/notebook");
+        await Assert.That(website.GetAttribute("target")).IsEqualTo("_blank");
+        await Assert.That(website.GetAttribute("rel")).IsEqualTo("noopener noreferrer");
+        var phone = values["Phone"].RequiredElement("a");
+        await Assert.That(phone.GetAttribute("href")).IsEqualTo("tel:+27215550100");
+        await Assert.That(phone.TextContent).IsEqualTo("+27 21 555 0100");
+        await AssertTime(values["Released"], "2026-03-14", "14 Mar 2026");
+        await AssertTime(values["Updated"], "2026-10-12T14:05:00", "12 Oct 2026, 14:05");
+        await AssertTime(values["Opens"], "09:30:00", "09:30");
+        var active = values["Active"].RequiredElement(".sa-boolean-display");
+        await Assert.That(active.GetAttribute("data-value")).IsEqualTo("true");
+        await Assert.That(active.QuerySelector("svg")).IsNotNull();
+        await Assert.That(active.RequiredElement(".sr-only").TextContent).IsEqualTo("Yes");
+        await Assert
+            .That(values["Discontinued"].RequiredElement(".sr-only").TextContent)
+            .IsEqualTo("No");
+        await Assert.That(values["Status"].TextContent.Trim()).IsEqualTo("On sale");
+        await Assert
+            .That(values["Price"].RequiredElement(".sa-number-display").TextContent)
+            .IsEqualTo("8.50");
+        await Assert
+            .That(values["Weight"].RequiredElement(".sa-number-display").TextContent)
+            .IsEqualTo("1.500");
+    }
+
+    [Test]
+    public async Task Edit_WithDisplaySettings_RendersSettings()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(details =>
+        {
+            details.Add(model => model.Notes).UseDisplay<TextDisplay>(text => text.LineClamp = 2);
+            details
+                .Add(model => model.Website)
+                .UseDisplay<LinkDisplay>(link => link.OpenInNewTab = false);
+            details
+                .Add(model => model.Updated)
+                .UseDisplay<DateDisplay>(date => date.Format = "yyyy/MM/dd");
+            details
+                .Add(model => model.Active)
+                .UseDisplay<BooleanDisplay>(boolean =>
+                {
+                    boolean.Appearance = BooleanDisplayAppearance.Text;
+                    boolean.TrueText = "Listed";
+                });
+            details
+                .Add(model => model.Discontinued)
+                .UseDisplay<BooleanDisplay>(boolean =>
+                    boolean.Appearance = BooleanDisplayAppearance.IconAndText
+                );
+            details
+                .Add(model => model.Weight)
+                .UseDisplay<NumberDisplay>(number => number.Format = "0.0");
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        var notes = values["Notes"].RequiredElement(".sa-text-display");
+        await Assert.That(notes.GetAttribute("data-line-clamp")).IsEqualTo("2");
+        await Assert.That(notes.GetAttribute("style")).IsEqualTo("--_line-clamp:2");
+        await Assert.That(values["Website"].RequiredElement("a").HasAttribute("target")).IsFalse();
+        await AssertTime(values["Updated"], "2026-10-12T14:05:00", "2026/10/12");
+        var active = values["Active"].RequiredElement(".sa-boolean-display");
+        await Assert.That(active.QuerySelector("svg")).IsNull();
+        await Assert.That(active.TextContent.Trim()).IsEqualTo("Listed");
+        var discontinued = values["Discontinued"].RequiredElement(".sa-boolean-display");
+        await Assert.That(discontinued.QuerySelector("svg")).IsNotNull();
+        await Assert.That(discontinued.QuerySelector(".sr-only")).IsNull();
+        await Assert.That(discontinued.TextContent.Trim()).IsEqualTo("No");
+        await Assert.That(values["Weight"].TextContent.Trim()).IsEqualTo("1.5");
+    }
+
+    [Test]
+    public async Task Edit_WithUIHint_RendersHintTemplateUnlessDisplayIsConfigured()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(details =>
+        {
+            details.Add(model => model.Code);
+            details.Add(
+                model => model.Code,
+                field =>
+                {
+                    field.Title = "Badge";
+                    field.UseDisplay<BadgeDisplay>();
+                }
+            );
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        await Assert
+            .That(values["Code"].RequiredElement("[data-custom-display='code']").TextContent)
+            .IsEqualTo("NB-7");
+        await Assert
+            .That(values["Badge"].RequiredElement("[data-slot='badge']").TextContent.Trim())
+            .IsEqualTo("NB-7");
+    }
+
+    [Test]
+    public async Task Edit_WithBuiltInRendering_RendersValueFromMetadata()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(details =>
+        {
+            details.Add(model => model.Weight).UseBuiltInRendering();
+            details.Add(model => model.Active).UseBuiltInRendering();
+            details.Add(model => model.Reference);
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        await Assert.That(values["Weight"].GetAttribute("data-kind")).IsEqualTo("number");
+        await Assert.That(values["Weight"].InnerHtml.Trim()).IsEqualTo("1.500");
+        await Assert.That(values["Active"].GetAttribute("data-boolean")).IsEqualTo("true");
+        await Assert
+            .That(values["Reference"].InnerHtml.Trim())
+            .IsEqualTo(ProductFactsHandler.Reference.ToString());
+    }
+
+    [Test]
+    public async Task Edit_WithEmptyValue_ShowsEmptyTextInsteadOfDisplay()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(
+            details =>
+            {
+                details.Add(model => model.Email, field => field.EmptyText = "No email");
+                details.Add(model => model.Discontinued);
+            },
+            model =>
+            {
+                model.Email = null;
+                model.Discontinued = null;
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        await Assert.That(values["Email"].GetAttribute("data-empty")).IsEqualTo("true");
+        await Assert.That(values["Email"].TextContent.Trim()).IsEqualTo("No email");
+        await Assert.That(values["Discontinued"].GetAttribute("data-empty")).IsEqualTo("true");
+        await Assert.That(values["Discontinued"].QuerySelector(".sa-boolean-display")).IsNull();
     }
 
     [Test]
@@ -356,6 +557,44 @@ public class ResourceDisplayFieldTests
         await Assert.That(state.Products[0].Price).IsEqualTo(8.50m);
     }
 
+    private static async Task AssertTime(IElement value, string machineValue, string text)
+    {
+        var time = value.RequiredElement("time");
+        await Assert.That(time.GetAttribute("datetime")).IsEqualTo(machineValue);
+        await Assert.That(time.TextContent).IsEqualTo(text);
+    }
+
+    private static Task<WebApplication> CreateFactsHostAsync(
+        Action<ResourceDetailsBuilder<ProductFactsModel>> configure,
+        Action<ProductFactsModel>? change = null
+    ) =>
+        DashboardTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                resource.UseKey(product => product.Id);
+                resource.AllowEdit<ProductFactsModel, ProductFactsHandler>(edit =>
+                    edit.Fields(fields =>
+                    {
+                        fields.Add(model => model.ProductName);
+                        fields.AddDetails("Facts", configure);
+                    })
+                );
+            },
+            configureServices: services =>
+                services.AddSingleton(new ProductFactsChange(change ?? (_ => { })))
+        );
+
+    // The value of each display field, by its label
+    private static Dictionary<string, IElement> GetValues(IDocument document) =>
+        document
+            .QuerySelectorAll("[data-slot='display-field']")
+            .ToDictionary(
+                field =>
+                    field.RequiredElement("[data-slot='display-field-label']").TextContent.Trim(),
+                field => field.RequiredElement("[data-slot='display-field-value']")
+            );
+
     private static void ConfigureEdit(ResourceBuilder<Product> resource)
     {
         resource.UseKey(product => product.Id);
@@ -363,10 +602,9 @@ public class ResourceDisplayFieldTests
             edit.Fields(fields =>
             {
                 fields.Add(product => product.Name);
-                fields.AddDisplayField(
-                    product => product.Price,
-                    field => field.Format = "{0:0.00}"
-                );
+                fields
+                    .AddDisplayField(product => product.Price)
+                    .UseDisplay<NumberDisplay>(number => number.Format = "0.00");
             })
         );
     }

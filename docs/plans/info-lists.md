@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
+Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed; standard displays (90–118) done, not yet committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show read-only fields on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -135,6 +135,24 @@ EF Core references (2026-10-12):
 79. Drop 77. Decided.
 80. Drop `LookupDisplay` (and with it 78): with 76 an EF resource displays `p => p.Category.Name`, and a custom model can carry the related value, so a key-to-title display only served keys without a navigation or model, which a custom display with a handler covers. Its handler and template are removed; display handlers (63) and `BadgeDisplay` stay, and `LookupItems.Create` stays as the lookup editors' shared factory. Decided; implemented.
 
+Standard displays (agreed 2026-10-12; 81–89, 91–92 and 99–102 were options in the discussion that the decisions below replaced):
+
+90. App-level configuration of the default displays: deferred, to be designed together with editor defaults and the grid's column displays. The mapping is hard-coded for now.
+93. Without `UseDisplay`, a Dashboard display field uses a default display chosen from the property's metadata by an internal map. TagHelpers knows nothing of displays: the Dashboard passes the display's template name to `sa-display-field`. Precedence: `UseDisplay`, then `UseBuiltInRendering()`, then `[UIHint]`, then the default display, then the tag helper's own rendering (collections, GUIDs, other types). Decided.
+94. `UseBuiltInRendering()` opts a field out of the default display, back to the tag helper's rendering (which honours `[DisplayFormat]`). Decided.
+95. A `Format` on `FieldDisplayView`: superseded by 116.
+96. `PhoneDisplay` renders a `tel:` link. Decided.
+97. `LinkDisplay` links http(s) only, with `OpenInNewTab` (default `true`). Decided.
+98. `DateDisplay` renders `<time datetime>` in ISO 8601, defaulting to `d MMM yyyy`, `d MMM yyyy, HH:mm` and `HH:mm`. Decided.
+103. The standard set covers all common cases: `TextDisplay` (`LineClamp`; multiline keeps line breaks), `EmailDisplay`, `LinkDisplay`, `PhoneDisplay`, `DateDisplay` (including `TimeOnly`), `BooleanDisplay`, `EnumDisplay`, `NumberDisplay` (tabular figures), and `BadgeDisplay`, which is opt-in only. Decided; 104–111 were the individual displays.
+112. `BooleanDisplay` defaults to a check or a muted cross with Yes/No for screen readers; null shows the empty text. Decided.
+113. `BooleanDisplay.Appearance` is a `BooleanDisplayAppearance` (`Icon`, `Text`, `IconAndText`), with `TrueText`/`FalseText` defaulting to "Yes"/"No". Decided.
+114. The false icon is muted, not red. Decided.
+115. `Format` belongs to the display: `NumberDisplay.Format` and `DateDisplay.Format` take a plain .NET format string (`"N2"`, `"d MMM yyyy"`), falling back to `[DisplayFormat]`, then the display's default. Decided.
+116. The display field builder and `FormDisplayFieldOptions` lose `Format`; `EmptyText` stays on the field. `FieldDisplayView<TDisplay>.FormatValue(format)` formats the value for templates. Decided.
+117. `UseBuiltInRendering` still honours `[DisplayFormat]`, through the tag helper. Decided.
+118. The default display is resolved in the view (`FormFieldsBaseView.BeginField`) from the field's model metadata rather than in the controller: default displays need no handler or request data, so the controller is unchanged. Implementation choice.
+
 ## Prototype
 
 Picks (2026-10-12): A1 (muted label, medium-weight value); C2 (only display fields placed directly among inputs, outside `sa-details`, take an input's label style and a control's height so rows line up); D1 (`—` placeholder, overridable per field); F2 (caption labels inside row details, through a contextual rule rather than an attribute). G (view-page sections) waits for the Dashboard view page; G1 (split sections) is the likely default.
@@ -164,9 +182,26 @@ Dashboard display fields (implemented 2026-10-12, committed):
 
 Built-in displays (implemented 2026-10-12, committed): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (public since 76; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor` and `MultiLookupSheetEditor`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents `BadgeDisplay`, per-value templates and custom displays with handlers.
 
+Standard displays (implemented 2026-10-12, not committed):
+
+- `src/StellarAdmin.Dashboard/Resources/Displays/`: `TextDisplay`, `EmailDisplay`, `LinkDisplay`, `PhoneDisplay`, `DateDisplay`, `NumberDisplay`, `BooleanDisplay`, `BooleanDisplayAppearance`, `EnumDisplay`; internal `FieldDisplayDefaults` (the map: data type `EmailAddress`/`Url`/`PhoneNumber` first, then dates and times, `bool`, non-flags enums, numbers, strings) and `FieldValueFormatter` (format string, then `[DisplayFormat]`, then enum `[Display]` names, current culture), shared by `FieldDisplayView.FormatValue` and the badge template.
+- `ResourceDisplayFieldBuilder.UseBuiltInRendering()` (last call between it and `UseDisplay` wins); `Format` removed from the builder, `FormDisplayFieldOptions` and the form views.
+- `BeginField` returns a scope carrying the resolved template name, which `_FormItems` and `_FormDetails` pass as `template`.
+- Templates in `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/` (`Text`, `Email`, `Link`, `Phone`, `Date`, `Number`, `Boolean`, `Enum`; `Badge` now uses the shared formatter). Razor writes `data-*` attributes even when null, so `Text` branches for the clamped case and writes `data-multiline` as `true`/`false`.
+- Dashboard `client.css`: `.sa-text-display` (multiline, line clamp through `--_line-clamp`), `.sa-number-display` (tabular figures), `.sa-boolean-display` (success check, muted cross).
+- Playground: the Display fields gallery's `Total` uses `NumberDisplay` with a format, and two new details sections show every default display and the display settings, including `UseBuiltInRendering`; the gallery model gained a hotel website, phone, check-in time, nights and a multiline itinerary.
+- Skills: `setup.md` documents the precedence, every built-in display and its settings, `UseBuiltInRendering`, `FormatValue` and overriding a built-in template.
+
 Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+Standard displays (90–118), completed 2026-10-12:
+
+- Tests: `StellarAdmin.Dashboard.Tests` 136 passed (new `FieldDisplayDefaultsTests` for every mapped and unmapped type, and `UseBuiltInRendering`/`UseDisplay` last-call-wins); `StellarAdmin.Dashboard.IntegrationTests` 419 passed (new: every default display through a `ProductFactsModel` custom edit model, display settings, `[UIHint]` over the default and `UseDisplay` over `[UIHint]`, `UseBuiltInRendering` with `[DisplayFormat]` and a GUID, empty values skipping the display; the `Format` cases moved to `NumberDisplay`); EF integration 82 passed.
+- Playground on port 5207, headless Chromium at 1280px light: the two new gallery sections (links, `<time>` dates, the check, enum name, the multiline itinerary, the formatted total and date, icon-and-text and text booleans, the clamped itinerary).
+- Skill validation and `SkillsGenerator --check` pass.
+- Not checked: dark mode, theme fixtures, phone widths; TagHelpers tests (TagHelpers unchanged).
 
 Dropping `LookupDisplay` (80), completed 2026-10-12: the handler path is covered by a test-only `CategoryNameDisplay` (integration) and a mismatched-handler display (unit).
 

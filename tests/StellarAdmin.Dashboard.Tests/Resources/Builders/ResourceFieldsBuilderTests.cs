@@ -83,7 +83,7 @@ public class ResourceFieldsBuilderTests
                     field =>
                     {
                         field.Title = "Copy";
-                        field.Format = "{0}!";
+                        field.EmptyText = "None";
                         field.UseDisplay<ReferenceDisplay>(display => display.Prefix = "#");
                     }
                 );
@@ -98,7 +98,7 @@ public class ResourceFieldsBuilderTests
         var field = (FormDisplayFieldOptions)options.Create!.Items[1];
         await Assert.That(field.FieldName).IsEqualTo("ReadOnly");
         await Assert.That(field.Title).IsEqualTo("Copy");
-        await Assert.That(field.Format).IsEqualTo("{0}!");
+        await Assert.That(field.EmptyText).IsEqualTo("None");
         await Assert.That(((ReferenceDisplay)field.Display!).Prefix).IsEqualTo("#");
         await Assert.That(options.Create.Fields.Select(f => f.FieldName)).IsEquivalentTo(["Name"]);
     }
@@ -130,6 +130,40 @@ public class ResourceFieldsBuilderTests
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments(true)]
+    [Arguments(false)]
+    public async Task UseBuiltInRendering_AndUseDisplay_LastCallWins(bool builtInLast)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                var field = fields.AddDisplayField(product => product.Name);
+                if (builtInLast)
+                {
+                    field.UseDisplay<ReferenceDisplay>().UseBuiltInRendering();
+                }
+                else
+                {
+                    field.UseBuiltInRendering().UseDisplay<ReferenceDisplay>();
+                }
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var field = (FormDisplayFieldOptions)options.Create!.Items[0];
+        await Assert.That(field.UsesBuiltInRendering).IsEqualTo(builtInLast);
+        await Assert.That(field.Display is ReferenceDisplay).IsEqualTo(!builtInLast);
     }
 
     [Test]

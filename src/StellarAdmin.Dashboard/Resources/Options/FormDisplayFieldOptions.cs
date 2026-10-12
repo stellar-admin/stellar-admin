@@ -10,8 +10,8 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public sealed class FormDisplayFieldOptions : FormItemOptions
 {
     /// <summary>
-    ///     The display's configuration, or <c>null</c> to render the value from the property's
-    ///     metadata.
+    ///     The display's configuration, or <c>null</c> to use the property's <c>[UIHint]</c>
+    ///     template or the default display for its type.
     /// </summary>
     public FieldDisplay? Display { get; internal set; }
 
@@ -32,12 +32,6 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     public string FieldName { get; }
 
     /// <summary>
-    ///     The composite format string for the value, or <c>null</c> to derive it from the
-    ///     property's metadata.
-    /// </summary>
-    public string? Format { get; internal set; }
-
-    /// <summary>
     ///     The properties selected by <see cref="FieldExpression" />, in order.
     /// </summary>
     public IReadOnlyList<PropertyInfo> PropertyPath { get; }
@@ -48,6 +42,8 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     public string? Title { get; internal set; }
 
     internal Type? HandlerType { get; set; }
+
+    internal bool UsesBuiltInRendering { get; set; }
 
     internal FormDisplayFieldOptions(
         LambdaExpression fieldExpression,

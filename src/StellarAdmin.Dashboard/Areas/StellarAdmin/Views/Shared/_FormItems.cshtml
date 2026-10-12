@@ -31,10 +31,9 @@
             }
             else if (item is FormDisplayFieldOptions displayField)
             {
-                using (BeginField(displayField))
+                using (var scope = BeginField(displayField))
                 {
-                    <sa-display-field asp-for="@Model" label="@displayField.Title" format="@displayField.Format"
-                                      empty-text="@displayField.EmptyText" template="@displayField.Display?.TemplateName" />
+                    <sa-display-field asp-for="@Model" label="@displayField.Title" empty-text="@displayField.EmptyText" template="@scope.TemplateName" />
                 }
             }
             else if (item is FormDetailsOptions details)

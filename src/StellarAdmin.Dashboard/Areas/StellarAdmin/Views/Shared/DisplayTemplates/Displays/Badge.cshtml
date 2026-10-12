@@ -1,5 +1,4 @@
 @using System.Collections
-@using System.Globalization
 @using StellarAdmin.Dashboard.Resources.Displays
 @inherits FieldDisplayView<BadgeDisplay>
 
@@ -12,27 +11,5 @@
 @* A collection shows a badge for each item *@
 @foreach (var item in items)
 {
-    <sa-badge variant="@Display.Variant">@FormatItem(item, itemMetadata)</sa-badge>
-}
-
-@functions {
-    // Enum members show their [Display] names, as the display field does
-    private static string FormatItem(object? item, Microsoft.AspNetCore.Mvc.ModelBinding.ModelMetadata metadata)
-    {
-        if (item is Enum value && metadata.IsEnum)
-        {
-            var numericValue = value.ToString("D");
-            foreach (var (groupAndName, enumValue) in metadata.EnumGroupedDisplayNamesAndValues!)
-            {
-                if (enumValue == numericValue)
-                {
-                    return groupAndName.Name;
-                }
-            }
-        }
-
-        return metadata.DisplayFormatString is { } format
-            ? string.Format(CultureInfo.CurrentCulture, format, item)
-            : Convert.ToString(item, CultureInfo.CurrentCulture) ?? "";
-    }
+    <sa-badge variant="@Display.Variant">@FieldValueFormatter.Format(item, itemMetadata)</sa-badge>
 }

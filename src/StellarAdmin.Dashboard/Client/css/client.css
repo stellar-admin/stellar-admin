@@ -223,4 +223,44 @@
             opacity: 0;
         }
     }
+
+    /* Field displays render inside the display field's value, which lays its content out in a row */
+    .sa-text-display {
+        min-width: 0;
+
+        &[data-multiline="true"] {
+            flex-basis: 100%;
+            font-weight: 400;
+            white-space: pre-line;
+        }
+
+        &[data-line-clamp] {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: var(--_line-clamp);
+        }
+    }
+
+    .sa-number-display {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .sa-boolean-display {
+        display: inline-flex;
+        align-items: center;
+        gap: calc(1.5 * var(--sa-unit));
+
+        & > svg {
+            flex-shrink: 0;
+        }
+
+        &[data-value="true"] > svg {
+            color: var(--sa-color-success);
+        }
+
+        &[data-value="false"] > svg {
+            color: var(--sa-color-ink-muted);
+        }
+    }
 }

@@ -272,7 +272,7 @@ edit.Fields(fields =>
 {
     fields.Add(booking => booking.TravellerName);
     fields.AddDisplayField(booking => booking.Reference);
-    fields.AddDisplayField(booking => booking.Total, field => field.Format = "€{0:N2}");
+    fields.AddDisplayField(booking => booking.Total).UseDisplay<NumberDisplay>(number => number.Format = "N2");
 
     fields.AddDetails("Audit", details =>
     {
@@ -288,10 +288,20 @@ edit.Fields(fields =>
 
 - Display fields are never bound: a posted value for one is ignored, and the property needs only a public getter. The value comes from the page's model, so with `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` the property must be on `TModel`.
 - A display field can read through references, such as `booking => booking.Customer.Name`. An EF Core resource's edit page loads the references on each display field's path with the record, in the same query; a null reference shows the empty text. Other data sources and custom models must load them themselves.
-- `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title`, `Format` and `EmptyText`, `UseDisplay<TDisplay>()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
-- Values render through `<sa-display-field>`: booleans as a check or cross, enums by their `[Display]` name, `[EmailAddress]` and `[Url]` values as links, and `Format` or `[DisplayFormat]` formatting. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash. `[UIHint("Status")]` renders the view `DisplayTemplates/Status` with the value as its model; a missing template throws.
-- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. Displays are in `StellarAdmin.Dashboard.Resources.Displays`, and none is used for an empty value. The built-in display:
-  - `BadgeDisplay` shows the value as a badge, and each item of a collection as its own badge. `Variant` (a `BadgeVariant`, default `Secondary`) applies to every value.
+- `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title` and `EmptyText`, `UseDisplay<TDisplay>()`, `UseBuiltInRendering()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
+- An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash, and no display or template runs for it.
+- A value renders, in order of precedence, through the display set with `UseDisplay<TDisplay>(display => ...)` (as `UseEditor` does for inputs); through `<sa-display-field>`'s own rendering after `UseBuiltInRendering()`; through the template its `[UIHint("Status")]` names, the view `DisplayTemplates/Status` with the value as its model (a missing template throws); or through the default display for its data type, then its type. Values with no default display, such as collections and GUIDs, use `<sa-display-field>`'s rendering, which joins collections with commas and applies `[DisplayFormat]`.
+- Displays are in `StellarAdmin.Dashboard.Resources.Displays`. The built-in displays, and the properties they are the default for:
+  - `EmailDisplay`, for `[EmailAddress]`: a `mailto:` link.
+  - `LinkDisplay`, for `[Url]`: a link for `http` and `https` addresses, and text otherwise. `OpenInNewTab` (default `true`).
+  - `PhoneDisplay`, for `[Phone]`: a `tel:` link that dials the digits.
+  - `DateDisplay`, for `DateTime`, `DateTimeOffset`, `DateOnly` and `TimeOnly`: a `<time>` element. `Format`, a .NET format string such as `"d MMM yyyy"`, defaults to `[DisplayFormat]`, then `d MMM yyyy` for dates (including `[DataType(DataType.Date)]`), `HH:mm` for times and `d MMM yyyy, HH:mm` for both.
+  - `BooleanDisplay`, for `bool`: `Appearance` (`BooleanDisplayAppearance.Icon`, the default, `Text` or `IconAndText`) shows a check or a muted cross, `TrueText` or `FalseText` (default `"Yes"` and `"No"`), or both; screen readers announce the text with the icon.
+  - `EnumDisplay`, for enums other than flags: the member's `[Display]` name.
+  - `NumberDisplay`, for numeric types: figures of equal width. `Format`, such as `"N2"` or `"C"`, defaults to `[DisplayFormat]`, then the number as is.
+  - `TextDisplay`, for other strings: multiline text (`[DataType(DataType.MultilineText)]`) keeps its line breaks, and `LineClamp` truncates it after that many lines.
+  - `BadgeDisplay`, never a default: the value as a badge, and each item of a collection as its own badge. `Variant` (a `BadgeVariant`, default `Secondary`) applies to every value.
+- Formats are culture-sensitive and use the request's current culture. To change how a display renders everywhere, add a view at its path, such as `Areas/StellarAdmin/Views/Shared/DisplayTemplates/Displays/Boolean.cshtml`, to the application.
 
 ```csharp
 details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
@@ -308,7 +318,7 @@ details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Va
 <sa-badge variant="@(Model switch { BookingStatus.Confirmed => BadgeVariant.Default, BookingStatus.Cancelled => BadgeVariant.Destructive, _ => BadgeVariant.Secondary })">@Model</sa-badge>
 ```
 
-- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings and the model is the value. A display that needs request data, such as a record looked up by a key that has no navigation, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
+- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings, the model is the value, and `FormatValue(format)` formats it with a format string, then `[DisplayFormat]`, with enum members by their `[Display]` names. A display that needs request data, such as a record looked up by a key that has no navigation, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
 
 - A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
 - Display fields work on create pages too, where a value that isn't set yet shows its empty text.
