@@ -29,7 +29,7 @@ internal static class CategoryResourceRegistration
                 );
                 index.EnablePaging();
                 index.EnableRowDetails<CategoryProducts, CategoryProductsHandler>(
-                    "RowDetails/_CategoryProducts",
+                    "_CategoryProducts",
                     details =>
                     {
                         details.Toggle = DataGridRowDetailToggle.Trailing;

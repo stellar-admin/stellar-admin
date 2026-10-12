@@ -26,7 +26,7 @@ internal static class CustomerResourceRegistration
                 });
                 // Renders with the index, from the customer already loaded for the row
                 index.EnableRowDetails(
-                    "RowDetails/_CustomerSummary",
+                    "_CustomerSummary",
                     details =>
                     {
                         details.RowClick = true;

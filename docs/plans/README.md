@@ -11,6 +11,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [table-row-details](oss/table-row-details.md) | implemented, awaiting review | Expandable table rows at the `sa-table-*` level with a `sa-data-grid` convenience layer, plus DocsSamples demos, website docs and skills references. Visuals approved in `sandbox/html/expandable-rows.html`. Dashboard integration is a later plan. |
 | [dashboard-row-details](dashboard-row-details.md) | phase 1 implemented, awaiting review | Expandable rows on the Dashboard resource index, with inline, handler and EF Core projection panels, panel tabs added to the library's tabs family, and multiple panels as tabs. |
+| [info-lists](info-lists.md) | idea | First-class read-only field displays, similar to Filament infolists. Not planned yet; overlaps the `sa-details`/`sa-display-field` idea in crud-screen-tag-helpers. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records

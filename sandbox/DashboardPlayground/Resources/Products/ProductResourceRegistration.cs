@@ -65,7 +65,7 @@ internal static class ProductResourceRegistration
                 index.DefaultSortBy(product => product.Name);
                 // Loads the details when a row first expands, with one query for that product
                 index.EnableRowDetails(
-                    "RowDetails/_ProductPricing",
+                    "_ProductPricing",
                     product => new ProductPricing(
                         product.Name,
                         product.Details.Sku,
