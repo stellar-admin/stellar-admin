@@ -58,6 +58,68 @@ public class ResourceFieldsBuilder<TResource>
     }
 
     /// <summary>
+    ///     Adds a titled section that lists read-only fields.
+    /// </summary>
+    public ResourceDetailsBuilder<TResource> AddDetails(string title)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(title);
+
+        var details = new ResourceDetailsBuilder<TResource>(title);
+        _configure(scope => scope.Items.Add(details.Build()));
+
+        return details;
+    }
+
+    /// <summary>
+    ///     Adds and configures a titled section that lists read-only fields.
+    /// </summary>
+    public ResourceFieldsBuilder<TResource> AddDetails(
+        string title,
+        Action<ResourceDetailsBuilder<TResource>> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AddDetails(title));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds a read-only field.
+    /// </summary>
+    /// <remarks>
+    ///     The field is never bound, so its property needs no setter.
+    /// </remarks>
+    public ResourceDisplayFieldBuilder AddDisplayField<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    )
+    {
+        var fieldBuilder = ResourceDisplayFieldBuilder.Create(field, nameof(field));
+        _configure(scope => scope.Items.Add(fieldBuilder.Build()));
+
+        return fieldBuilder;
+    }
+
+    /// <summary>
+    ///     Adds and configures a read-only field.
+    /// </summary>
+    /// <remarks>
+    ///     The field is never bound, so its property needs no setter.
+    /// </remarks>
+    public ResourceFieldsBuilder<TResource> AddDisplayField<TProperty>(
+        Expression<Func<TResource, TProperty>> field,
+        Action<ResourceDisplayFieldBuilder> configure
+    )
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AddDisplayField(field));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a group of related fields.
     /// </summary>
     public ResourceGroupBuilder<TResource> AddGroup() =>

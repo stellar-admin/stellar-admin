@@ -1,0 +1,15 @@
+@using DashboardPlayground.Resources.FormLayouts
+@using StellarAdmin.Dashboard.Areas.StellarAdmin
+@using StellarAdmin.TagHelpers
+@addTagHelper *, StellarAdmin.TagHelpers
+@inherits FieldDisplayView<BadgeDisplay>
+
+@{
+    // Enum members show their [Display] names
+    var metadata = ViewData.ModelMetadata;
+    var text = Model is Enum value && metadata.IsEnum
+        ? metadata.EnumGroupedDisplayNamesAndValues!.FirstOrDefault(pair => pair.Value == value.ToString("D")).Key.Name
+        : Model?.ToString();
+}
+
+<sa-badge variant="@Display.Variant">@text</sa-badge>

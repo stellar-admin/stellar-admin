@@ -29,6 +29,20 @@
                     },
                 })
             }
+            else if (item is FormDisplayFieldOptions displayField)
+            {
+                using (BeginField(displayField.FieldName, displayField.Display))
+                {
+                    <sa-display-field asp-for="@Model" label="@displayField.Title" format="@displayField.Format"
+                                      empty-text="@displayField.EmptyText" template="@displayField.Display?.TemplateName" />
+                }
+            }
+            else if (item is FormDetailsOptions details)
+            {
+                var detailsViewData = new ViewDataDictionary(ViewData) { [ViewDataKeys.FormContainer] = details };
+
+                <partial name="_FormDetails" model="@Model" view-data="@detailsViewData" />
+            }
             else if (item is FormContainerOptions container)
             {
                 var partial = container switch

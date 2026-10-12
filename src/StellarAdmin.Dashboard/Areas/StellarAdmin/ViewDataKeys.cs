@@ -6,6 +6,12 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 public static class ViewDataKeys
 {
     /// <summary>
+    ///     The key for the <see cref="Resources.Displays.FieldDisplay" /> of the display field being
+    ///     rendered.
+    /// </summary>
+    public const string FieldDisplay = "StellarAdminFieldDisplay";
+
+    /// <summary>
     ///     The key for the form container being rendered.
     /// </summary>
     public const string FormContainer = "StellarAdminFormContainer";

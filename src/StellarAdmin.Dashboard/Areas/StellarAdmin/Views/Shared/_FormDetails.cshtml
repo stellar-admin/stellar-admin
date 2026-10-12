@@ -1,0 +1,39 @@
+@inherits FormFieldsBaseView<object>
+
+@{
+    var details = (FormDetailsOptions)ViewData[ViewDataKeys.FormContainer]!;
+    var columns = details.Columns.Resolve();
+
+    // The create sheet is too narrow to split sections, so it stacks them whatever their layout
+    var layout = ViewData[ViewDataKeys.SheetLevel] is int
+        ? FormSectionLayout.Stacked
+        : details.Layout ?? ViewData[ViewDataKeys.FormSectionLayout] as FormSectionLayout?;
+}
+
+<sa-form-section title="@details.Title" description="@details.Description" layout="@layout">
+    <sa-details columns-base="@columns.Base" columns-sm="@columns.Small" columns-md="@columns.Medium" columns-lg="@columns.Large"
+                orientation="@details.Orientation" variant="@details.Variant">
+        @foreach (var field in details.Fields)
+        {
+            using (BeginField(field.FieldName, field.Display))
+            {
+                <sa-display-field asp-for="@Model" label="@field.Title" format="@field.Format" empty-text="@field.EmptyText" template="@field.Display?.TemplateName"
+                                  column-span="@field.ColumnSpan.Base" column-span-sm="@field.ColumnSpan.Small"
+                                  column-span-md="@field.ColumnSpan.Medium" column-span-lg="@field.ColumnSpan.Large"
+                                  column-start="@Start(field.ColumnStart.Base)" column-start-sm="@Start(field.ColumnStart.Small)"
+                                  column-start-md="@Start(field.ColumnStart.Medium)" column-start-lg="@Start(field.ColumnStart.Large)" />
+            }
+        }
+    </sa-details>
+</sa-form-section>
+
+@functions {
+    // The tag helper reads a start as a column number or auto
+    private static string? Start(int? start) =>
+        start switch
+        {
+            null => null,
+            ResponsiveGrid.AutoStart => "auto",
+            _ => start.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        };
+}

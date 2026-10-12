@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers implemented (uncommitted); Dashboard work not started.
+Status: in progress (2026-10-12). Tag helpers, samples, website and skills done and committed. Dashboard display fields (decisions 49, 52–56) implemented, uncommitted. View page and configured row details deferred.
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show entries on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -52,34 +52,36 @@ Mixing appears cheap because the item tree is already polymorphic and binding al
 
 ### Dashboard sketch
 
+Superseded 2026-10-12: the earlier "entries" sketch (`AddEntry`, `AllowView(view => view.Entries(...))`, row-detail panels from entries) is replaced by display fields (decisions 49, 52–55).
+
 ```csharp
-// Audit entries on the edit page
 resource.AllowEdit(edit => edit.Fields(fields =>
 {
     fields.Add(p => p.Name);
-    fields.Add(p => p.Price);
-    fields.AddSection("Audit", audit =>
+    fields.AddDisplayField(p => p.Reference);              // beside normal fields
+    fields.AddSection("Pricing", pricing =>
     {
-        audit.AddEntry(p => p.CreatedAt);
-        audit.AddEntry(p => p.UpdatedAt, entry => entry.Placeholder = "Never");
+        pricing.Add(p => p.Price);
+        pricing.AddDisplayField(p => p.UpdatedAt, f => f.EmptyText = "Never");
+    });
+    fields.AddDetails("Audit", audit =>                    // display fields only
+    {
+        audit.Orientation = FieldOrientation.Horizontal;
+        audit.Variant = DetailsVariant.Divided;
+        audit.Columns(2);
+        audit.Add(p => p.CreatedAt);
+        audit.Add(p => p.CreatedBy, f => f.UseDisplay<BadgeDisplay>());
     });
 }));
-
-// View page
-resource.AllowView(view => view.Entries(entries =>
-{
-    entries.Columns(2);
-    entries.Add(p => p.Name);
-    entries.Add(p => p.Price, entry => entry.Format = "{0:C}");
-    entries.Add(p => p.CategoryId, entry => entry.Title = "Category"); // lookup label
-    entries.Add(p => p.Status, entry => entry.UseDisplay<BadgeDisplay>());
-}));
-
-// Row-detail panel from entries instead of a partial
-index.EnableRowDetails(panels => panels.AddEntries("Overview", entries => { /* ... */ }));
 ```
 
-`ResourceEntryBuilder` would mirror `ResourceFieldBuilder`: `Title`, `Description`, `Format`, `Placeholder`, `ColumnSpan`, and `UseDisplay<TDisplay>(configure)` as the counterpart of `UseEditor`. Entries render through `DisplayTemplates`, which wrap `sa-info-entry`.
+Public API (implemented 2026-10-12):
+
+- `ResourceFieldsBuilder<TResource>` (so also sections and groups): `AddDisplayField(expression)` returning `ResourceDisplayFieldBuilder`, and `AddDisplayField(expression, configure)` returning the fields builder; `AddDetails(title)` returning `ResourceDetailsBuilder<TResource>`, and `AddDetails(title, configure)` returning the fields builder.
+- `ResourceDisplayFieldBuilder`: setter-only `Title`, `Format` and `EmptyText`; `UseDisplay<TDisplay>()` and `UseDisplay<TDisplay>(configure)` (`TDisplay : FieldDisplay, new()`); `ColumnSpan(int)`, `ColumnSpan(Action<ColumnSpanBuilder>)`, `ColumnSpanFull()`, `ColumnStart(int)`, `ColumnStart(Action<ColumnStartBuilder>)`.
+- `ResourceDetailsBuilder<TResource>`: `Add(expression)` returning `ResourceDisplayFieldBuilder` and `Add(expression, configure)` returning the details builder (display fields only); setter-only `Description`, `Layout`, `Orientation` (`FieldOrientation?`) and `Variant` (`DetailsVariant?`); `ColumnSpan`/`ColumnSpanFull`/`ColumnStart` as on sections; `Columns(int)`/`Columns(Action<GridColumnsBuilder>)`.
+- Displays: abstract `FieldDisplay` (`TemplateName`), `FieldDisplayView<TDisplay>` (`Display`), and `ViewDataKeys.FieldDisplay`.
+- Options: `FormDisplayFieldOptions` (with `Display`) and `FormDetailsOptions` (sealed, beside field, section and group). `ResourceFormOptions.Fields` still lists only editable fields, so binding and the EF field checks never see display fields.
 
 ## Decisions
 
@@ -87,11 +89,11 @@ Answers from 2026-10-12. Earlier sketches above use `sa-info-*`; the chosen name
 
 1. Layering: TagHelpers first, then the Dashboard builder. Decided.
 2. Naming: `sa-details`/`sa-display-field`, built on the existing `sa-field` infrastructure: a display field is an `sa-field` (keeping `orientation`) with a `dt`/`dd` label and value inside `sa-details` (a container `div` around a `dl` grid), and plain `div`s outside a `dl`, such as beside inputs in a form section. Decided, subject to the prototype.
-3. Mixing entries into forms (`AddEntry` on fields, sections and groups), with entries-only sections as the fallback. Agreed.
-4. Dashboard view page: after the prototype and tag helpers.
-5. Row-detail panels from entries: deferred.
-6. Entries on create pages: deferred.
-7. Separate edit models: deferred.
+3. Mixing entries into forms (`AddEntry` on fields, sections and groups), with entries-only sections as the fallback. Agreed; renamed and refined by 49, 52 and 53.
+4. Dashboard view page: after the prototype and tag helpers. Deferred again (2026-10-12): display fields and `DisplayTemplates` depend only on a model and a property, so a view page can later host the same item tree without API changes.
+5. Row-detail panels from entries: deferred. Row details stay partials using `sa-grid` and `sa-details`; a configured panel could later reuse the details builder (53).
+6. Entries on create pages: deferred. Replaced by 54.
+7. Separate edit models: deferred. Replaced by 55.
 8. Value rendering: Dashboard `DisplayTemplates/{type}`. Decided.
 9. Value rendering in the tag helper: built in C# inside the tag helper, as the data grid does (TagHelpers ships no views): format or `[DisplayFormat]`, encoded text, the placeholder for null, `[EmailAddress]`/`[Url]` as links, booleans as an icon (check, muted cross, screen-reader Yes/No), enums as plain text. Anything else is a named template or child content. Decided.
 10. Arrangement: attributes, not a pick: `orientation` (`FieldOrientation`, on `sa-details` for all fields or per field) and `variant="DetailsVariant.Divided"`. Defaults: stacked, not divided. Decided.
@@ -105,6 +107,15 @@ Answers from 2026-10-12. Earlier sketches above use `sa-info-*`; the chosen name
 18. Responsive columns and spans, matching the Dashboard form grid: `columns-sm`/`-md`/`-lg` and `column-span-sm`/`-md`/`-lg` at the form grid's 30/40/56rem container breakpoints, an unset breakpoint inheriting from the next smaller one. `columns="N"` is shorthand for `columns-md` (one column below 40rem, as the Dashboard's `Columns(N)`), so the old automatic two-column step is gone; `columns-sm` restores it. No base-breakpoint columns attribute. `column-span-full` sets the base span to full and the breakpoint spans still apply. Decided.
 19. One public helper for both: `ResponsiveGrid` (resolve columns and spans, format the inline variables) and `GridTiers` in TagHelpers. The Dashboard's form grid and choice columns use it, replacing its internal `FormGridTiers` and `FormGridStyle`, and the `--sa-cols`/`--sa-span`/`--sa-rows` registrations moved from the Dashboard's `client.css` to TagHelpers' `structure.css`. Decided.
 20. Column counts and spans are 1–12, the Dashboard's limit. Decided.
+
+Dashboard display fields (2026-10-12; numbered in the conversation's sequence):
+
+49. Naming: "display fields" and "details", matching `sa-display-field` and `sa-details`; "entries" is dropped. Decided.
+52. A display field is a new form item, added with `AddDisplayField` at the same level as `Add`, in fields, sections and groups. It is never bound and needs no setter. Decided.
+53. A details section is its own form item, added with `AddDetails(title)`. Its builder accepts only display fields and exposes the section options (description, layout, span, start) plus `sa-details`' layout: `Columns`, `Orientation`, `Variant`. Decided.
+54. Display fields are allowed on create pages too (for example read-only details about other records); a null value shows the empty text. Decided.
+55. A display field reads its value from the page's model, like an input: on `AllowEdit<TModel, THandler>`/`AllowCreate<TModel, THandler>` the property must be on `TModel`. No special rule. Decided.
+56. Custom value rendering is `UseDisplay<TDisplay>()`/`UseDisplay<TDisplay>(configure)`, mirroring `UseEditor`, so a display can carry settings to its template. A display derives from the abstract `FieldDisplay` (in `StellarAdmin.Dashboard.Resources.Displays`) and names its template through `TemplateName`; the template, `DisplayTemplates/{TemplateName}`, inherits `FieldDisplayView<TDisplay>`, whose `Display` holds the configured instance (default settings when absent) and whose model is the value. No handlers or built-in displays yet. Decided (Jerrie chose this over a `Template` name).
 
 ## Prototype
 
@@ -125,11 +136,27 @@ DocsSamples: `docs/DocsSamples/Pages/Details/` (navigation under Data Display) w
 
 Website and skills (2026-10-12): the eleven Details partials are registered in `docs/DocsSamplesGenerator/Generator.cs` and exported; the website has `content/docs/tag-helpers/components/details.mdx` (under Data Display in `meta.json`). The skills reference has a generated `components/details.md` with a hand-written structure region (values, columns and spans, `ResponsiveGrid`), six curated examples in `util/SkillsGenerator/skills.examples.json`, the `BooleanTrue`/`BooleanFalse` rows in `references/icons.md`, and a read-only value row in `references/forms.md`.
 
-Outstanding: the Dashboard entries work.
+Dashboard display fields (implemented 2026-10-12, uncommitted):
+
+- `src/StellarAdmin.Dashboard/Resources/`: `Options/FormDisplayFieldOptions.cs`, `Options/FormDetailsOptions.cs`, `Builders/ResourceDisplayFieldBuilder.cs` (property paths need only public getters), `Builders/ResourceDetailsBuilder.cs`, and `AddDisplayField`/`AddDetails` on `ResourceFieldsBuilder`.
+- Views: `_FormItems.cshtml` renders a display field as `sa-display-field` in its grid item, and a details item through the new `_FormDetails.cshtml` (an `sa-form-section` around `sa-details`, stacked in the create sheet like sections). Display fields render inline rather than through templates, so inside `sa-details` they are direct children and get `dt`/`dd` and spans. `FormFieldsBaseView.BeginField` (internal) points the page's view data at the field's value while the tag renders, since `asp-for` takes a compile-time expression, and puts the field's display in the view context's data for the template.
+- TagHelpers `details.css`: the divided variant now draws a top rule on every field and clips the first row's, so rules stay between rows in multiple columns (before, the second column's first field had a rule).
+- Playground: Form layouts → Display fields (`DisplayFieldsLayoutGallery`): a root display field (a getter-only property), display fields among inputs in `Columns(3)`, a stacked `AddDetails` in `Columns(3)` with spans, a custom `BadgeDisplay` (`Views/Shared/DisplayTemplates/Badge.cshtml`) on the cabin, an email link, a boolean and an empty value, and a horizontal divided audit section in `Columns(2)`.
+- Skills: `references/setup.md` has a Display fields section and a link from Create forms.
+
+Outstanding: the view page and configured row details (deferred, decisions 4 and 5); lookup labels for display fields (a foreign key shows its raw value); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
 
-Completed 2026-10-12:
+Dashboard display fields, completed 2026-10-12:
+
+- Tests: `StellarAdmin.Dashboard.Tests` 112 passed (new `ResourceFieldsBuilderTests` cases for display fields, details, rejected expressions, blank titles and out-of-range spans, starts and columns); `StellarAdmin.Dashboard.IntegrationTests` 411 passed (new `ResourceDisplayFieldTests`: a custom display with default and configured settings, at the root and in details, via the `PriceDisplay` fixture and `Views/Shared/DisplayTemplates/Price.cshtml`; create page empty text, custom `TModel`, details layout and placement, display fields among inputs and in sections, redisplay after an invalid POST, posted values ignored); TagHelpers 435 + 19, Core 74, EF integration 80 passed.
+- Playground on port 5207, headless Chromium: the Display fields gallery edit page at 1300px light and dark and at 420px; the divided audit section before and after the CSS change; the create page shows empty text; after `UseDisplay`, the badge display in the details section.
+- DocsSamples on port 5206: `Details/_Divided` and `Details/_RecordPage` with the new divided rule look unchanged (no rule above the first row).
+- `SkillsGenerator --check`: no drift; skill validation passes.
+- Not checked: theme fixtures; DocsSamples light mode.
+
+Tag helpers, completed 2026-10-12:
 
 - `dotnet build` of TagHelpers (client CSS rebuilt; `details.css` is in `stellar-admin.css`) and of both test projects.
 - `StellarAdmin.TagHelpers.Tests`: 342 passed, including 37 new `DetailsTagHelperTests`/`DisplayFieldTagHelperTests` cases (confirmed in `--list-tests`). `StellarAdmin.Core.Tests`: 74 passed.

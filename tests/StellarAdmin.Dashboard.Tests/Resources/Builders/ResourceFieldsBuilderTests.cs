@@ -1,9 +1,137 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using StellarAdmin.Dashboard.Resources;
+using StellarAdmin.Dashboard.Resources.Displays;
+using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Tests.Resources.Builders;
 
 public class ResourceFieldsBuilderTests
 {
+    [Test]
+    public async Task AddDetails_WithFields_BuildsReadOnlySection()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+                fields.AddDetails(
+                    "Audit",
+                    details =>
+                    {
+                        details.Description = "Read-only values.";
+                        details.Orientation = FieldOrientation.Horizontal;
+                        details.Variant = DetailsVariant.Divided;
+                        details.Add(product => product.ReadOnly, field => field.Title = "Copy");
+                        details.Add(product => product.Name).EmptyText = "None";
+                    }
+                )
+            )
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var details = (FormDetailsOptions)options.Create!.Items[0];
+        await Assert.That(details.Title).IsEqualTo("Audit");
+        await Assert.That(details.Description).IsEqualTo("Read-only values.");
+        await Assert.That(details.Orientation).IsEqualTo(FieldOrientation.Horizontal);
+        await Assert.That(details.Variant).IsEqualTo(DetailsVariant.Divided);
+        await Assert
+            .That(details.Fields.Select(field => field.FieldName))
+            .IsEquivalentTo(["ReadOnly", "Name"]);
+        await Assert.That(details.Fields[0].Title).IsEqualTo("Copy");
+        await Assert.That(details.Fields[1].EmptyText).IsEqualTo("None");
+        await Assert.That(options.Create.Fields).IsEmpty();
+    }
+
+    [Test]
+    [Arguments("")]
+    [Arguments(" ")]
+    public async Task AddDetails_WithBlankTitle_ThrowsArgumentException(string title)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+
+        // Act
+        Action act = () =>
+            sut.AllowCreate(create => create.Fields(fields => fields.AddDetails(title)));
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    public async Task AddDisplayField_WithGetterOnlyProperty_AddsUnboundField()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+        sut.UseDataSource<ProductDataSource>();
+        sut.AllowCreate(create =>
+            create.Fields(fields =>
+            {
+                fields.Add(product => product.Name);
+                fields.AddDisplayField(
+                    product => product.ReadOnly,
+                    field =>
+                    {
+                        field.Title = "Copy";
+                        field.Format = "{0}!";
+                        field.UseDisplay<ReferenceDisplay>(display => display.Prefix = "#");
+                    }
+                );
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        var options = provider.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
+
+        // Assert
+        var field = (FormDisplayFieldOptions)options.Create!.Items[1];
+        await Assert.That(field.FieldName).IsEqualTo("ReadOnly");
+        await Assert.That(field.Title).IsEqualTo("Copy");
+        await Assert.That(field.Format).IsEqualTo("{0}!");
+        await Assert.That(((ReferenceDisplay)field.Display!).Prefix).IsEqualTo("#");
+        await Assert.That(options.Create.Fields.Select(f => f.FieldName)).IsEquivalentTo(["Name"]);
+    }
+
+    [Test]
+    [Arguments("display")]
+    [Arguments("details")]
+    public async Task AddDisplayField_WithMethodExpression_RejectsField(string scope)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddDashboard().AddResource<Product>();
+
+        // Act
+        Action act = () =>
+            sut.AllowCreate(create =>
+                create.Fields(fields =>
+                {
+                    if (scope == "display")
+                    {
+                        fields.AddDisplayField(product => product.Name.ToUpper());
+                    }
+                    else
+                    {
+                        fields.AddDetails("Audit").Add(product => product.Name.ToUpper());
+                    }
+                })
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
     [Test]
     [Arguments("nested")]
     [Arguments("method")]
@@ -49,6 +177,11 @@ public class ResourceFieldsBuilderTests
     [Arguments("startTier")]
     [Arguments("groupStart")]
     [Arguments("sectionStart")]
+    [Arguments("displayFieldSpan")]
+    [Arguments("displayFieldStart")]
+    [Arguments("detailsColumns")]
+    [Arguments("detailsSpan")]
+    [Arguments("detailsStart")]
     public async Task Fields_WithGridValueOutOfRange_ThrowsArgumentOutOfRangeException(
         string setting
     )
@@ -96,6 +229,21 @@ public class ResourceFieldsBuilderTests
                         case "sectionStart":
                             fields.AddSection("Details").ColumnStart(0);
                             break;
+                        case "displayFieldSpan":
+                            fields.AddDisplayField(product => product.Name).ColumnSpan(0);
+                            break;
+                        case "displayFieldStart":
+                            fields.AddDisplayField(product => product.Name).ColumnStart(13);
+                            break;
+                        case "detailsColumns":
+                            fields.AddDetails("Audit").Columns(13);
+                            break;
+                        case "detailsSpan":
+                            fields.AddDetails("Audit").ColumnSpan(0);
+                            break;
+                        case "detailsStart":
+                            fields.AddDetails("Audit").ColumnStart(13);
+                            break;
                     }
                 })
             );
@@ -108,5 +256,27 @@ public class ResourceFieldsBuilderTests
     {
         public string Name { get; set; } = "";
         public string ReadOnly => Name;
+    }
+
+    public sealed class ReferenceDisplay : FieldDisplay
+    {
+        public string Prefix { get; set; } = "";
+
+        public override string TemplateName => "Reference";
+    }
+
+    public sealed class ProductDataSource
+        : IResourceDataSource<Product>,
+            IResourceCreateHandler<Product>
+    {
+        public Task<ResourceOperationResult> CreateAsync(
+            Product model,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(ResourceOperationResult.Success());
+
+        public Task<ResourceListResult<Product>> ListAsync(
+            ResourceListRequest request,
+            CancellationToken cancellationToken
+        ) => Task.FromResult(new ResourceListResult<Product>([], 0));
     }
 }

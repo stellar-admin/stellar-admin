@@ -218,7 +218,7 @@ The configure callback receives `ResourceRowDetailsBuilder<TResource>`, with `An
 
 ## Create forms
 
-Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
+Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. `AddDisplayField` and `AddDetails` show read-only values; see [Display fields](#display-fields). Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
 
 The form model should be a mutable reference type. By default, the controller uses its public parameterless constructor. Use `create.UseFactory(() => new Product(...))` for explicit initialization or models without a parameterless constructor. Field selectors must name direct properties with public getters and setters. The controller constructs a resource for both GET and POST and binds only configured properties, using input names such as `Entity.Name`. ASP.NET Core model validation applies, including data annotations. Invalid submissions redisplay entered values and errors without calling the data source. POST requires an antiforgery token. A successful `CreateAsync` redirects to the index. The data source assigns generated values such as IDs. Write operations return `ResourceOperationResult.Success()`, `NotFound()`, or `ValidationFailed(...)`; a create handler whose model isn't the resource can return `Success(key)` so a lookup can select what it created. Field error names are unprefixed model property names. Use null for summary errors. Errors for fields outside the form also appear in the summary. Rejected writes must not persist changes. Unexpected failures should throw.
 
@@ -262,6 +262,56 @@ edit.Fields(fields =>
 - `ColumnStart(n)` starts an item at column `n` (1 to 12), and `ColumnStart(start => start.Medium(1).Large(3))` sets each breakpoint; `SmallAuto()`, `MediumAuto()` and `LargeAuto()` go back to following the item before. A start of 1 begins a new row. A start is ignored at a breakpoint where the grid has one column or the item would extend past the last column; the span is never reduced for it.
 - Items fill the grid in order. The grid doesn't reorder items to fill gaps, so tab order follows the configuration.
 - `section.Layout` overrides the form's `SectionLayout` for one section. The create sheet always stacks sections.
+
+## Display fields
+
+Create and edit forms can show read-only values beside their inputs. `AddDisplayField` adds one at the same level as `Add`, in the form, a section or a group, and `AddDetails` adds a titled section that holds only display fields and lays them out as a details list.
+
+```csharp
+edit.Fields(fields =>
+{
+    fields.Add(booking => booking.TravellerName);
+    fields.AddDisplayField(booking => booking.Reference);
+    fields.AddDisplayField(booking => booking.Total, field => field.Format = "€{0:N2}");
+
+    fields.AddDetails("Audit", details =>
+    {
+        details.Orientation = FieldOrientation.Horizontal;
+        details.Variant = DetailsVariant.Divided;
+        details.Columns(2);
+        details.Add(booking => booking.CreatedAt);
+        details.Add(booking => booking.CreatedBy);
+        details.Add(booking => booking.UpdatedAt, field => field.EmptyText = "Never");
+    });
+});
+```
+
+- Display fields are never bound: a posted value for one is ignored, and the property needs only a public getter. The value comes from the page's model, so with `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` the property must be on `TModel`.
+- `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title`, `Format` and `EmptyText`, `UseDisplay<TDisplay>()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
+- Values render through `<sa-display-field>`: booleans as a check or cross, enums by their `[Display]` name, `[EmailAddress]` and `[Url]` values as links, and `Format` or `[DisplayFormat]` formatting. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash. `[UIHint("Status")]` renders the view `DisplayTemplates/Status` with the value as its model; a missing template throws.
+- `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. A display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`; the template, `DisplayTemplates/{TemplateName}`, inherits `FieldDisplayView<TDisplay>`, whose `Display` property holds the configured settings and whose model is the value. It is not used for an empty value.
+
+```csharp
+public sealed class BadgeDisplay : FieldDisplay
+{
+    public BadgeVariant Variant { get; set; } = BadgeVariant.Secondary;
+
+    public override string TemplateName => "Badge";
+}
+
+details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
+```
+
+```razor
+@* Views/Shared/DisplayTemplates/Badge.cshtml *@
+@inherits StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<BadgeDisplay>
+@addTagHelper *, StellarAdmin.TagHelpers
+
+<sa-badge variant="@Display.Variant">@Model</sa-badge>
+```
+
+- A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
+- Display fields work on create pages too, where a value that isn't set yet shows its empty text.
 
 ## Custom create models
 

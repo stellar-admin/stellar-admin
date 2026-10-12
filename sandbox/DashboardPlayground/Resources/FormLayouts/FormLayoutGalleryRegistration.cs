@@ -52,6 +52,13 @@ internal static class FormLayoutGalleryRegistration
             FormSectionLayout.Stacked,
             ConfigureMixedEditorsFields
         );
+        dashboard.AddLayoutResource<DisplayFieldsLayoutGallery>(
+            "form-display-fields",
+            "Display fields",
+            55,
+            FormSectionLayout.Card,
+            ConfigureDisplayFieldsFields
+        );
         dashboard.AddDestinationResource();
     }
 
@@ -452,6 +459,60 @@ internal static class FormLayoutGalleryRegistration
                 section.Add(model => model.TextMessages).UseEditor<ToggleEditor>();
                 section.Add(model => model.AcceptTerms).UseEditor<CheckboxEditor>();
                 section.Add(model => model.SharePartners).UseEditor<CheckboxEditor>();
+            }
+        );
+    }
+
+    private static void ConfigureDisplayFieldsFields(
+        ResourceFieldsBuilder<DisplayFieldsLayoutGallery> fields
+    )
+    {
+        fields.AddDisplayField(model => model.Summary);
+        fields.AddSection(
+            "Display fields among inputs in Columns(3)",
+            section =>
+            {
+                section.Description =
+                    "AddDisplayField beside Add: labels and rows line up with the inputs, and nothing is bound.";
+                section.Columns(3);
+                section.Add(model => model.TravellerName);
+                section.Add(model => model.Destination);
+                section.AddDisplayField(model => model.BookingReference);
+                section.Add(model => model.Departure);
+                section.AddDisplayField(model => model.Total, field => field.Format = "€{0:N2}");
+                section.AddDisplayField(model => model.IsPaid);
+            }
+        );
+        fields.AddDetails(
+            "AddDetails in Columns(3)",
+            details =>
+            {
+                details.Description =
+                    "Stacked labels; the cabin uses UseDisplay<BadgeDisplay>, the email links, and the notes are empty.";
+                details.Columns(3);
+                details.Add(model => model.BookingReference);
+                details
+                    .Add(model => model.Cabin)
+                    .UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
+                details.Add(model => model.IsPaid);
+                details.Add(model => model.ContactEmail).ColumnSpan(2);
+                details.Add(model => model.Total, field => field.Format = "€{0:N2}");
+                details
+                    .Add(model => model.AgentNotes, field => field.EmptyText = "No notes")
+                    .ColumnSpanFull();
+            }
+        );
+        fields.AddDetails(
+            "Audit: horizontal and divided in Columns(2)",
+            details =>
+            {
+                details.Description = "Orientation = Horizontal and Variant = Divided.";
+                details.Orientation = FieldOrientation.Horizontal;
+                details.Variant = DetailsVariant.Divided;
+                details.Columns(2);
+                details.Add(model => model.CreatedAt);
+                details.Add(model => model.CreatedBy);
+                details.Add(model => model.UpdatedAt, field => field.EmptyText = "Never");
             }
         );
     }

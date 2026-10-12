@@ -14,13 +14,15 @@
     margin: 0;
   }
 
-  /* Divided: rows separated by rules. */
+  /* Divided: rows separated by rules. Every field has a top border and the list clips the first
+     row's (with a pixel to spare at fractional offsets), so the rules stay between rows in any
+     number of columns. */
   .sa-details[data-variant="divided"] > .sa-details-list {
     gap: 0;
+    margin-top: calc(-1 * var(--sa-border-width));
+    clip-path: inset(calc(var(--sa-border-width) + 1px) 0 0 0);
     & > .sa-display-field {
       padding-block: calc(3 * var(--sa-unit));
-    }
-    & > .sa-display-field + .sa-display-field {
       border-top: var(--sa-border-width) solid var(--sa-color-line);
     }
   }
