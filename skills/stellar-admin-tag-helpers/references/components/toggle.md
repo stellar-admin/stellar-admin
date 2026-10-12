@@ -20,6 +20,10 @@ Renders a two-state button that can be toggled on or off.
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

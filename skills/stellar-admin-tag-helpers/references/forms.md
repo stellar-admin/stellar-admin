@@ -111,7 +111,7 @@ if (!ModelState.IsValid) return Page();
 ## Grouping: `<sa-field-group>` and `<sa-field-set>`
 
 - `<sa-field-group>` — spacing container for a set of fields (nestable).
-- [`<sa-grid>`](components/grid.md) — fields in responsive columns; fields set their own `column-span` (a number or `full`), other content spans through `<sa-grid-item>`.
+- [`<sa-grid>`](components/grid.md) — fields in responsive columns; fields set their own `column-span` (a number or `full`) and `column-start` (a column or `auto`), other content through `<sa-grid-item>`.
 - `<sa-field-set>` — a semantic fieldset; holds a `<sa-field-legend>` (heading) and optional `<sa-field-description>`, then a `<sa-field-group>`.
 - `<sa-field-content>` — a flex column grouping label + description, for horizontal fields.
 - `<sa-field-separator />` — a horizontal divider **between fields** inside a group, optionally with content (such as a label) centered on the line.

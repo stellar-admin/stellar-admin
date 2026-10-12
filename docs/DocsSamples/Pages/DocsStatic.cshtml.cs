@@ -30,13 +30,15 @@ public class DocsStatic : PageModel
             or "Details/_InForm"
             or "Details/_Intro"
             or "Details/_RecordPage"
+            or "Details/_Starts"
             or "Details/_Templates"
             or "Details/_Values" => Details.Index.SampleBooking,
             "Grid/_DisplayFields"
             or "Grid/_GridItems"
             or "Grid/_Intro"
             or "Grid/_Narrow"
-            or "Grid/_Spans" => Grid.Index.SampleBooking,
+            or "Grid/_Spans"
+            or "Grid/_Starts" => Grid.Index.SampleBooking,
             "Field/_CheckboxImplicit" => new CheckboxImplicitModel { SyncMapWithItinerary = true },
             "Field/_FieldGroupImplicit" => new FieldGroupImplicitModel
             {

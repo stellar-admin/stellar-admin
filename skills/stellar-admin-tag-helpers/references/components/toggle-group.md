@@ -30,6 +30,10 @@ Groups a set of toggle items into a single-select or multi-select control.
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

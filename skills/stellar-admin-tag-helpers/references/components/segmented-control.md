@@ -40,6 +40,10 @@ Use the component for a single choice from a short list. It has one horizontal a
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

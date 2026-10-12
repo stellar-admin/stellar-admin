@@ -11,7 +11,7 @@ Lays out read-only display fields in a description list.
 <!-- structure:begin -->
 ## When to use
 
-Use `<sa-details>` to show a record's values read-only: a view page, an audit section on an edit page, or the expanded panel of a [table](table.md) row detail. Inside `<sa-details>` each field renders a `<dt>`/`<dd>` pair in a `<dl>`. A `<sa-display-field>` can also sit among form inputs (for example in a [`<sa-grid>`](grid.md)); outside `<sa-details>` it renders `<div>`s and takes an input's label style and a control's height so the row lines up. Its column spans apply only directly in `<sa-details>` or `<sa-grid>`.
+Use `<sa-details>` to show a record's values read-only: a view page, an audit section on an edit page, or the expanded panel of a [table](table.md) row detail. Inside `<sa-details>` each field renders a `<dt>`/`<dd>` pair in a `<dl>`. A `<sa-display-field>` can also sit among form inputs (for example in a [`<sa-grid>`](grid.md)); outside `<sa-details>` it renders `<div>`s and takes an input's label style and a control's height so the row lines up. Its column spans and starts apply only directly in `<sa-details>` or `<sa-grid>`.
 
 ## Values
 
@@ -28,11 +28,11 @@ Bind a field with `asp-for`; the label comes from `[Display(Name)]` unless `labe
 
 Columns and spans work as in [`<sa-grid>`](grid.md). The columns respond to the list's container width, not the viewport. `columns` sets the count from 40rem; the list has one column below that unless `columns-base` or `columns-sm` is set. `columns-base`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one. Set either `columns` or `columns-md`, not both. Counts are 1 to 12.
 
-`column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` set a field's span the same way: a number from 1 to 12 or `full` for every column (for example `column-span="full" column-span-lg="2"`). Each span is limited to the column count at that width; an invalid value throws when the page renders.
+`column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` set a field's span the same way: a number from 1 to 12 or `full` for every column (for example `column-span="full" column-span-lg="2"`). Each span is limited to the column count at that width; an invalid value throws when the page renders. `column-start`, `column-start-sm`, `column-start-md` and `column-start-lg` start a field at a column (1 to 12, or `auto`), as in [`<sa-grid>`](grid.md).
 
 `orientation` on `<sa-details>` (`Vertical` or `Horizontal`) applies to every field unless a field sets its own. `variant="DetailsVariant.Divided"` separates the fields with rules, which suits a short horizontal list such as audit information.
 
-The same breakpoints and inline grid variables are available from the public `ResponsiveGrid` helper (`ResolveColumns`, `ResolveSpan`, `ColumnsStyle`, `SpanStyle`, `RowsStyle`) for a custom grid.
+The same breakpoints and inline grid variables are available from the public `ResponsiveGrid` helper (`ResolveColumns`, `ResolveSpan`, `ResolveStart`, `ColumnsStyle`, `SpanStyle`, `StartStyle`, `RowsStyle`) for a custom grid.
 
 <!-- structure:end -->
 
@@ -68,6 +68,10 @@ The same breakpoints and inline grid variables are available from the public `Re
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `empty-text` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `format` | `string` | — | — |
@@ -109,6 +113,19 @@ The same breakpoints and inline grid variables are available from the public `Re
     <sa-display-field asp-for="Party" />
     <sa-display-field asp-for="Notes" column-span="full" column-span-lg="3" />
     <sa-display-field asp-for="Total" />
+</sa-details>
+```
+
+*From `Pages/Details/_Starts.cshtml`*
+
+```razor
+<sa-details columns="3">
+    <sa-display-field asp-for="Reference" />
+    <sa-display-field asp-for="LeadTraveller" />
+    <sa-display-field asp-for="Departure" column-start="1" />
+    <sa-display-field asp-for="Return" />
+    <sa-display-field asp-for="Cabin" />
+    <sa-display-field asp-for="Total" column-start="3" />
 </sa-details>
 ```
 

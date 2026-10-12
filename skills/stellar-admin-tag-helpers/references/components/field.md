@@ -33,6 +33,10 @@ Wraps a form control together with its label, description, and error message, ar
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

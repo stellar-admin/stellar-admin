@@ -38,6 +38,10 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
+| `column-start` | `string` | `auto` | — |
+| `column-start-lg` | `string` | — | — |
+| `column-start-md` | `string` | — | — |
+| `column-start-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
