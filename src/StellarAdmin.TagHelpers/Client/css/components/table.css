@@ -86,7 +86,12 @@
       cursor: pointer;
     }
     &[data-emphasis="band"] :is(tr:has(+ .sa-table-row-detail[data-state="open"]), .sa-table-row-detail) {
-      background: var(--sa-color-surface-sunken);
+      /* Lighter than the column heads, so an expanded row does not read as a heading. */
+      background: var(--sa-color-surface-subtle);
+    }
+    /* The full-width divider is the row's own line, kept. */
+    &[data-divider="full-width"] tr:has(+ .sa-table-row-detail[data-state="open"]) {
+      border-bottom-color: var(--sa-color-line);
     }
     &[data-emphasis="rail"] :is(
       tr:has(+ .sa-table-row-detail[data-state="open"]) > :first-child,
@@ -129,6 +134,24 @@
     padding-inline: var(--sa-table-row-detail-inset-start, var(--sa-space-cell-x))
       var(--sa-table-row-detail-inset-end, var(--sa-space-cell-x));
     white-space: normal;
+
+    .sa-table-row-details[data-divider="full-width"] & { padding-top: calc(3 * var(--sa-unit)); }
+    /* The inset divider spans the content box, so it starts and ends where the content does. */
+    .sa-table-row-details[data-divider="inset"] & {
+      padding-top: 0;
+      &::before {
+        content: "";
+        display: block;
+        margin-bottom: calc(3 * var(--sa-unit));
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
+      }
+    }
+
+    /* Line tabs pad their triggers inside the list's inset, so the first label would start that far
+       in from the content; pulling the list back lines the label up, and the indicator overhangs. */
+    & .sa-tabs[data-orientation="horizontal"] > .sa-tabs-list-variant-line {
+      margin-inline-start: calc(-1 * (1.5 * var(--sa-unit) + max(var(--sa-border-width), 3px)));
+    }
   }
   /* The toggle is a ghost button (button.css); these out-rank its rules by selector. */
   .sa-button.sa-table-row-detail-toggle {

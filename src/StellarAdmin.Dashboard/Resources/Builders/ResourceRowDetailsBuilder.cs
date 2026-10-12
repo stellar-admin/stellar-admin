@@ -23,6 +23,17 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     }
 
     /// <summary>
+    ///     The line between an expanded row and its details.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="TableRowDetailDivider.Inset" />.
+    /// </remarks>
+    public TableRowDetailDivider Divider
+    {
+        set => Configure(options => options.Divider = value);
+    }
+
+    /// <summary>
     ///     How an expanded row and its details are set apart from the rows around them.
     /// </summary>
     /// <remarks>

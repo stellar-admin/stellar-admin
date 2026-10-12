@@ -50,7 +50,7 @@
     @if (Model.RowDetails is { } rowDetails)
     {
         <sa-data-grid-row-detail toggle="rowDetails.Toggle" row-click="rowDetails.RowClick"
-                                 expand-mode="rowDetails.ExpandMode" emphasis="rowDetails.Emphasis"
+                                 expand-mode="rowDetails.ExpandMode" emphasis="rowDetails.Emphasis" divider="rowDetails.Divider"
                                  inset="rowDetails.Inset" animate="rowDetails.Animate">
             @* Links and forms in the details navigate normally instead of swapping the grid *@
             <div hx-boost:inherited="false">

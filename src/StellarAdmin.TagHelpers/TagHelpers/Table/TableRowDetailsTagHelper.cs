@@ -43,6 +43,15 @@ public class TableRowDetailsTagHelper : StellarAdminTagHelperBase
     public TableRowDetailEmphasis? Emphasis { get; set; }
 
     /// <summary>
+    ///     The line between an expanded row and its details.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="TableRowDetailDivider.Inset" />.
+    /// </remarks>
+    [HtmlAttributeName("divider")]
+    public TableRowDetailDivider? Divider { get; set; }
+
+    /// <summary>
     ///     Where the content of a row's details starts.
     /// </summary>
     /// <remarks>
@@ -70,6 +79,7 @@ public class TableRowDetailsTagHelper : StellarAdminTagHelperBase
             RowClick ?? false,
             ExpandMode ?? TableRowDetailExpandMode.Multiple,
             Emphasis ?? TableRowDetailEmphasis.Band,
+            Divider ?? TableRowDetailDivider.Inset,
             Inset ?? TableRowDetailInset.Aligned,
             Animate ?? true
         );

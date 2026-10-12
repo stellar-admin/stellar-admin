@@ -168,7 +168,21 @@ index.EnableRowDetails(panels =>
 - Playground: Products has a projected Pricing panel (first, so it loads on expand), an inline Overview panel and a `RelatedProductsHandler` panel listing up to five other products in the category.
 - Docs: `skills/stellar-admin-dashboard/references/setup.md` gains an "Index row details" section covering phases 1 and 3, and an EF Core paragraph on projections. The website has no Dashboard pages, so nothing was added there. The tag helpers skill's tabs reference now includes the Panels and Panels Load On Show samples (`skills.examples.json`, regenerated).
 
+## Row details visuals (2026-10-12)
+
+Jerrie's review of phase 3 found the tabs indented from the content and the expanded row hard to tell from its details. The prototype `sandbox/html/row-details-emphasis.html` compared None, Band and Rail with card, tinted, well, outline and highlight variants, then None, Band and Rail with and without a divider. Decisions:
+
+- `TableRowDetailEmphasis` keeps None, Band and Rail. Band moves from `--sa-color-surface-sunken` (the column heads' fill) to the lighter `--sa-color-surface-subtle`, everywhere `sa-table-row-details` and `sa-data-grid` are used.
+- New `TableRowDetailDivider` enum (`None`, `Inset`, `FullWidth`), default `Inset`: `divider` on `sa-table-row-details` and `sa-data-grid-row-detail` (`data-divider`), and `Divider` on the Dashboard's row details builder and options. Inset draws a `::before` line across the content box, so it starts and ends where the content does; FullWidth keeps the row's own line.
+- Line tabs in row details content move back by the list inset, trigger border and padding, so the first label lines up with the content.
+
 ## Verification log
+
+2026-10-12, row details visuals:
+
+- TagHelpers unit tests: 293 pass (1 new; divider assertions added to the existing settings tests). Dashboard unit tests: 98 pass. Dashboard integration tests: 400 pass (the configured settings test covers `Divider`).
+- CDP check in the playground (28 checks pass): the phase 3 checks, plus the inset divider drawn from the content start, the first tab label within 1px of the content, and the band on `surface-subtle`.
+- Docs export regenerated the website demos (with the usual asset hash and SVG attribute churn); the table and data grid API tables list `divider`. Website lint and type check pass. `SkillsGenerator` regenerated the table and data grid references.
 
 2026-10-12, phase 3:
 

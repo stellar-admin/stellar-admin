@@ -51,6 +51,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 | `row-click` | `bool` | `false` | `true`, `false` |
 | `expand-mode` | `TableRowDetailExpandMode` | `Multiple` | `Multiple`, `Single` |
 | `emphasis` | `TableRowDetailEmphasis` | `Band` | `None`, `Band`, `Rail` |
+| `divider` | `TableRowDetailDivider` | `Inset` | `None`, `Inset`, `FullWidth` |
 | `inset` | `TableRowDetailInset` | `Aligned` | `Bleed`, `Aligned` |
 | `animate` | `bool` | `true` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |

@@ -11,6 +11,7 @@ internal sealed record TableRowDetailSettings(
     bool RowClick,
     TableRowDetailExpandMode ExpandMode,
     TableRowDetailEmphasis Emphasis,
+    TableRowDetailDivider Divider,
     TableRowDetailInset Inset,
     bool Animate
 );
@@ -28,6 +29,7 @@ internal static class TableRowDetailRendering
         yield return new("data-slot", "table-row-details");
         yield return new("data-expand-mode", settings.ExpandMode.GetDataAttributeText());
         yield return new("data-emphasis", settings.Emphasis.GetDataAttributeText());
+        yield return new("data-divider", settings.Divider.GetDataAttributeText());
         yield return new("data-inset", settings.Inset.GetDataAttributeText());
         yield return new("data-animate", settings.Animate ? "true" : "false");
         yield return new("data-row-click", settings.RowClick ? "true" : "false");

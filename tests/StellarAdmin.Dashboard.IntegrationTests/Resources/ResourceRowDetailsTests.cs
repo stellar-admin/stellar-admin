@@ -52,6 +52,7 @@ public class ResourceRowDetailsTests
                             details.RowClick = true;
                             details.ExpandMode = TableRowDetailExpandMode.Single;
                             details.Emphasis = TableRowDetailEmphasis.Rail;
+                            details.Divider = TableRowDetailDivider.FullWidth;
                             details.Inset = TableRowDetailInset.Bleed;
                             details.Animate = false;
                             details.Toggle = DataGridRowDetailToggle.None;
@@ -69,6 +70,7 @@ public class ResourceRowDetailsTests
         await Assert.That(rowDetails.GetAttribute("data-row-click")).IsEqualTo("true");
         await Assert.That(rowDetails.GetAttribute("data-expand-mode")).IsEqualTo("single");
         await Assert.That(rowDetails.GetAttribute("data-emphasis")).IsEqualTo("rail");
+        await Assert.That(rowDetails.GetAttribute("data-divider")).IsEqualTo("full-width");
         await Assert.That(rowDetails.GetAttribute("data-inset")).IsEqualTo("bleed");
         await Assert.That(rowDetails.GetAttribute("data-animate")).IsEqualTo("false");
         await Assert.That(document.QuerySelector("[data-slot='table-row-detail-toggle']")).IsNull();

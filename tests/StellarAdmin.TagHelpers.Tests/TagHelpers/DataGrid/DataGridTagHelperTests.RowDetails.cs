@@ -143,6 +143,7 @@ public partial class DataGridTagHelperTests
             RowClick = true,
             ExpandMode = TableRowDetailExpandMode.Single,
             Emphasis = TableRowDetailEmphasis.Rail,
+            Divider = TableRowDetailDivider.None,
             Inset = TableRowDetailInset.Bleed,
             Animate = false,
         };
@@ -155,6 +156,7 @@ public partial class DataGridTagHelperTests
         await Assert.That(details?.GetAttribute("data-row-click")).IsEqualTo("true");
         await Assert.That(details?.GetAttribute("data-expand-mode")).IsEqualTo("single");
         await Assert.That(details?.GetAttribute("data-emphasis")).IsEqualTo("rail");
+        await Assert.That(details?.GetAttribute("data-divider")).IsEqualTo("none");
         await Assert.That(details?.GetAttribute("data-inset")).IsEqualTo("bleed");
         await Assert.That(details?.GetAttribute("data-animate")).IsEqualTo("false");
     }

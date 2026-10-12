@@ -13,6 +13,11 @@ public sealed class ResourceRowDetailsOptions
     public bool Animate { get; set; } = true;
 
     /// <summary>
+    ///     The line between an expanded row and its details.
+    /// </summary>
+    public TableRowDetailDivider Divider { get; set; } = TableRowDetailDivider.Inset;
+
+    /// <summary>
     ///     How an expanded row and its details are set apart from the rows around them.
     /// </summary>
     public TableRowDetailEmphasis Emphasis { get; set; } = TableRowDetailEmphasis.Band;

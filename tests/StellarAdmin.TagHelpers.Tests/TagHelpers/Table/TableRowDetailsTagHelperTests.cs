@@ -17,6 +17,7 @@ public class TableRowDetailsTagHelperTests
         var details = html.QuerySelector("sel-table-row-details[data-slot=table-row-details]");
         await Assert.That(details?.GetAttribute("data-expand-mode")).IsEqualTo("multiple");
         await Assert.That(details?.GetAttribute("data-emphasis")).IsEqualTo("band");
+        await Assert.That(details?.GetAttribute("data-divider")).IsEqualTo("inset");
         await Assert.That(details?.GetAttribute("data-inset")).IsEqualTo("aligned");
         await Assert.That(details?.GetAttribute("data-animate")).IsEqualTo("true");
         await Assert.That(details?.GetAttribute("data-row-click")).IsEqualTo("false");
@@ -32,6 +33,7 @@ public class TableRowDetailsTagHelperTests
         {
             ExpandMode = TableRowDetailExpandMode.Single,
             Emphasis = TableRowDetailEmphasis.Rail,
+            Divider = TableRowDetailDivider.FullWidth,
             Inset = TableRowDetailInset.Bleed,
             Animate = false,
             RowClick = true,
@@ -44,6 +46,7 @@ public class TableRowDetailsTagHelperTests
         var details = html.QuerySelector("[data-slot=table-row-details]");
         await Assert.That(details?.GetAttribute("data-expand-mode")).IsEqualTo("single");
         await Assert.That(details?.GetAttribute("data-emphasis")).IsEqualTo("rail");
+        await Assert.That(details?.GetAttribute("data-divider")).IsEqualTo("full-width");
         await Assert.That(details?.GetAttribute("data-inset")).IsEqualTo("bleed");
         await Assert.That(details?.GetAttribute("data-animate")).IsEqualTo("false");
         await Assert.That(details?.GetAttribute("data-row-click")).IsEqualTo("true");
@@ -63,6 +66,21 @@ public class TableRowDetailsTagHelperTests
             .That(
                 html.QuerySelector("[data-slot=table-row-details]")?.GetAttribute("data-emphasis")
             )
+            .IsEqualTo("none");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithNoDivider_RendersNone()
+    {
+        // Arrange
+        var sut = new TableRowDetailsTagHelper { Divider = TableRowDetailDivider.None };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert
+            .That(html.QuerySelector("[data-slot=table-row-details]")?.GetAttribute("data-divider"))
             .IsEqualTo("none");
     }
 }

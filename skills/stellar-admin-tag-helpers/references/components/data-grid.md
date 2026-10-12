@@ -78,6 +78,7 @@ A data grid that renders a full table from declarative column definitions and a 
 | `row-click` | `bool` | `false` | `true`, `false` |
 | `expand-mode` | `TableRowDetailExpandMode` | `Multiple` | `Multiple`, `Single` |
 | `emphasis` | `TableRowDetailEmphasis` | `Band` | `None`, `Band`, `Rail` |
+| `divider` | `TableRowDetailDivider` | `Inset` | `None`, `Inset`, `FullWidth` |
 | `inset` | `TableRowDetailInset` | `Aligned` | `Bleed`, `Aligned` |
 | `animate` | `bool` | `true` | `true`, `false` |
 | `key-field` | `string` | — | — |
