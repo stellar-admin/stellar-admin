@@ -1,5 +1,5 @@
 /* Details: read-only display fields in a description list. Its columns and spans are grid.css's. A
-   display field measures its own width for its responsive orientation. A display field is
+   display field is
    an sa-field (field.css), so the rules that change its layout name both classes to out-rank
    field.css. Among inputs (outside a details list) a display field takes an input's label style and
    a control's height, so a row of inputs and display fields lines up. In a row detail, labels are
@@ -26,20 +26,10 @@
   }
 
   /* --- Display field ----------------------------------------------------------------------- */
-  /* The field is its own container and always a two-track grid (label 1fr, value 2fr). Stacked,
-     the label and value span both tracks, so the switch to side by side only restyles them. */
   .sa-field.sa-display-field {
-    container: display-field / inline-size;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-content: start;
-    align-items: baseline;
-    gap: calc(1 * var(--sa-unit)) calc(4 * var(--sa-unit));
+    gap: calc(1 * var(--sa-unit));
     min-width: 0;
     margin: 0;
-    & > * {
-      grid-column: 1 / -1;
-    }
   }
   .sa-display-field-label {
     margin: 0;
@@ -91,15 +81,12 @@
     font-weight: 400;
   }
 
-  /* Horizontal: a label column and a value column, the same split in every row. Responsive:
-     stacked until the field itself is as wide as a responsive input's column. */
-  .sa-field.sa-display-field[data-orientation="horizontal"] > * {
-    grid-column: auto;
-  }
-  @container display-field (min-width: 28rem) {
-    .sa-field.sa-display-field[data-orientation="responsive"] > * {
-      grid-column: auto;
-    }
+  /* Horizontal: a label column and a value column, the same split in every row. */
+  .sa-field.sa-display-field[data-orientation="horizontal"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: baseline;
+    column-gap: calc(4 * var(--sa-unit));
   }
 
   /* Among inputs: an input's label, and a value at a control's height. */

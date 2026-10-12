@@ -65,7 +65,7 @@ public partial class DisplayFieldTagHelperTests
 
     [Test]
     [Arguments(null, FieldOrientation.Horizontal, "horizontal")]
-    [Arguments(FieldOrientation.Responsive, FieldOrientation.Horizontal, "responsive")]
+    [Arguments(FieldOrientation.Vertical, FieldOrientation.Horizontal, "vertical")]
     public async Task ProcessAsync_WhenInsideDetailsWithOrientation_ResolvesFieldOrientation(
         FieldOrientation? fieldOrientation,
         FieldOrientation detailsOrientation,

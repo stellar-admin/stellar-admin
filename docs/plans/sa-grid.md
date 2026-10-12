@@ -11,7 +11,7 @@ Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: 
 - Dashboard form grid (`_FormItems.cshtml`, `_FormSection.cshtml`, `_FormGroup.cshtml`, `client.css`): private `.sa-form-grid*` markup and its own copy of the tier rules (container `form-grid`); each item sits in a cell that is a `field-group` container. Configured with `Columns` and `ColumnSpan` builders.
 - Dashboard choice columns (`CheckboxGroup` editor template, `ChoiceColumnsStyle`, `client.css`): a third copy of the tier rules on `.sa-choice-columns` (container `field-group`).
 - Shared already: `ResponsiveGrid` (resolution, 1–12 validation, inline `--sa-cols*`/`--sa-span*`/`--sa-rows*` variables) and the `@property` registrations in `structure.css`.
-- Bug: responsive display fields in `sa-details` switch orientation at 32rem of the whole list (`details.css`), not their column, so a multi-column list puts labels beside values in narrow columns.
+- Bug: responsive display fields in `sa-details` switch orientation at 32rem of the whole list (`details.css`), not their column, so a multi-column list puts labels beside values in narrow columns. Resolved by removing the responsive orientation (32).
 
 ## Decisions
 
@@ -19,7 +19,7 @@ Numbers continue the discussion of 2026-10-12.
 
 7. Remove `sa-form-row` completely: tag helper, CSS, DocsSamples pages, website page and includes, skills reference. No deprecation period. Decided.
 15. `sa-details` is not built on `sa-grid`; the two share `ResponsiveGrid`, the attribute names and one set of tier rules. Decided.
-16. Fields measure their own column: inside either grid a field's responsive orientation follows the width of its column, not of the whole grid. Fixes the `sa-details` bug above. Decided; mechanism settled in the prototype (see Prototype).
+16. Superseded by 32. Fields measure their own column: inside either grid a field's responsive orientation follows the width of its column, not of the whole grid. Fixes the `sa-details` bug above. Decided; mechanism settled in the prototype (see Prototype).
 17. Fields carry their own span: `column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` (see 26) on `sa-field`, on every input that renders its own field (through `FieldInputBaseTagHelper`), and on `sa-display-field`. They apply inside `sa-grid` or `sa-details` and do nothing elsewhere. An input with `render-field="false"` is wrapped in a grid item (30). Decided.
 18. Anything else spans through `sa-grid-item` (sections, groups, a `sa-details` in a form, arbitrary markup). `sa-grid-item` exists only in `sa-grid`; `sa-details` holds only display fields. Decided.
 19. Name: `sa-grid` and `sa-grid-item`. Decided.
@@ -31,11 +31,15 @@ Numbers continue the discussion of 2026-10-12.
 25. `sa-grid` and `sa-details` get `columns-base` (1–12). Decided.
 26. Span attributes take a number from 1 to 12 or `full`, at every tier: `column-span="full"`, `column-span-md="full"`, `column-span-lg="2"`. This replaces `column-span-full`, which is removed from `sa-display-field`. The attributes are strings, so an invalid value throws when the page renders. Decided.
 
-27. Responsive display fields switch at 28rem of their own width, the same as responsive inputs in their column. Decided (prototype strip C1).
+27. Superseded by 32. Responsive display fields switch at 28rem of their own width, the same as responsive inputs in their column. Decided (prototype strip C1).
 28. Nesting follows the normal rules: `columns="N"` means md, so an `sa-details columns="2"` in a grid item narrower than 40rem shows one column; authors set `columns-sm` when they nest. Decided.
 29. Sections in neighbouring grid items are separated by the grid gap, not a rule, as in the Dashboard today. Decided.
 
 30. An input with `render-field="false"` directly in `sa-grid` is wrapped in a grid item like a field, instead of carrying the span on the input element (17): several inputs render inside their own wrappers (select, checkbox), so the input element is not the grid's child. Decided.
+
+31. The responsive layout of fields (label taking the spare width, the control at its natural width) suits nothing but small controls, and does not line up with display fields. Settled by 32.
+32. Remove `FieldOrientation.Responsive` completely, from `sa-field`, `sa-display-field` and `sa-details`: it was ported from shadcn, nothing in the product used it, and the grid already collapses columns in narrow containers. Horizontal fields (switch, checkbox, radio, choice cards) are unaffected. Decided.
+33. Fields and display fields directly in `sa-grid` keep their grid item, which carries the span (needed for inputs inside their own wrappers, 30) and stays a `field-group` container for content that measures its field group. Decided.
 
 ## Proposed API
 
@@ -57,7 +61,7 @@ Numbers continue the discussion of 2026-10-12.
 
 - `sa-grid`: `columns` (shorthand for `columns-md`, one column below 40rem unless a smaller tier is set), `columns-base`, `columns-sm`, `columns-md`, `columns-lg`, each 1–12; setting both `columns` and `columns-md` throws. Renders a container `div` around the grid `div`, as `sa-details` renders a `div` around its `dl`.
 - `sa-grid-item`: `column-span`, `column-span-sm`, `column-span-md`, `column-span-lg`, each 1–12 or `full`. Throws outside `sa-grid`.
-- `sa-details`: gains `columns-base`; otherwise unchanged. `sa-display-field` loses `column-span-full`; its span attributes take `full` (26).
+- `sa-details`: gains `columns-base`; `orientation` takes `Vertical` or `Horizontal` (32). `sa-display-field` loses `column-span-full`; its span attributes take `full` (26).
 - Fields (`sa-field`, implicit-field inputs, `sa-display-field`): the same span attributes as `sa-grid-item` (17).
 - Span resolution, capping and validation are the existing `ResponsiveGrid` rules; a field finds the enclosing grid's column tiers through a grid context shared by `sa-grid` and `sa-details`.
 
@@ -97,6 +101,10 @@ Done (2026-10-12):
 
 Verified: DocsSamples build; all six Grid partials and the converted samples return 200 from DocsStatic; Grid page, FormSection/_Intro, Details/_InForm, Details/_Columns and Showcase/_Forms checked in headless Chromium (dark).
 
+### Responsive orientation removed (32)
+
+Done (2026-10-12): `FieldOrientation.Responsive` and its data attribute and class are removed; the responsive rules are gone from `field.css`, `structure.css` (vertical fields still stretch their children) and `details.css` (display fields are a flex column again, with the two-column grid only when horizontal); grid item comments updated. Samples `Grid/_Responsive` and `Details/_Responsive` removed (pages, DocsStatic, generator); `Grid/_GridItems` uses horizontal Payment details; the ComponentPlayground Field demo's responsive fields are vertical, its buttons horizontal. Verified: solution build, TagHelpers tests 400/400, Switch, Checkbox, Radio Group, Checkbox Group, Field, Details and Grid pages rendered in headless Chromium (dark).
+
 ### Dashboard
 
 - `_FormItems.cshtml`, `_FormSection.cshtml` and `_FormGroup.cshtml` emit `sa-grid`/`sa-grid-item`; fields get their span through the item, since editor templates render arbitrary markup.
@@ -107,8 +115,8 @@ Verified: DocsSamples build; all six Grid partials and the converted samples ret
 ### Website, skills
 
 - Run the generator (Grid entries are in, FormRow entries out).
-- Website: `grid.mdx`, remove `form-row.mdx` (no redirect) and its includes and demos, `meta.json`, update `form-section.mdx` and `details.mdx` (`columns-base`, `full` spans, `column-span-full` removed).
-- Skills: regenerate (`components/grid.md` in, `form-row.md` out, index), update `form-section.md`, `details.md` (`columns-base`, `full` spans) and `forms.md` (whose grouping example uses a raw `grid grid-cols-2` div), and `skills.examples.json`.
+- Website: `grid.mdx`, remove `form-row.mdx` (no redirect) and its includes and demos, `meta.json`, update `form-section.mdx` and `details.mdx` (`columns-base`, `full` spans, `column-span-full` removed, the responsive section and `details-responsive.mdx` include removed), and `field.mdx` (orientation values without `Responsive`).
+- Skills: regenerate (`components/grid.md` in, `form-row.md` out, index), update `form-section.md`, `details.md` (`columns-base`, `full` spans, no responsive orientation), `field.md` (orientation values) and `forms.md` (whose grouping example uses a raw `grid grid-cols-2` div), and `skills.examples.json`.
 
 ### Verification
 

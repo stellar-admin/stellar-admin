@@ -3,10 +3,8 @@
    card variant of CheckboxGroup, RadioGroup and ChoiceGroup, or written by hand). CheckboxGroup and
    RadioGroup render field groups (data-slot checkbox-group or radio-group) with field parts, so they
    are styled here too. Field labels are also labels (label.css).
-   Vertical and responsive fields force their children's widths with utility classes the tag helper
-   emits ([&>*]:w-full, components.css), so a child component's own width cannot win; the responsive
-   field's switch to a row uses the field group's container query, so the group stays a container
-   named field-group.
+   Vertical fields stretch their children over the children's own widths (structure.css). A field
+   group is a container named field-group, which the Dashboard's choice columns query.
    Replaces: .sa-field, .sa-field-content, .sa-field-description, .sa-field-error, .sa-field-group,
    .sa-field-label, .sa-field-legend, .sa-field-separator, .sa-field-separator-content,
    .sa-field-separator-line, .sa-field-set, .sa-field-title */
@@ -68,21 +66,6 @@
       flex-direction: column;
     }
     &[data-orientation="horizontal"] {
-      flex-direction: row;
-      align-items: center;
-      & > [data-slot="field-label"] {
-        flex: auto;
-      }
-      &:has(> [data-slot="field-content"]) {
-        align-items: flex-start;
-      }
-    }
-    &[data-orientation="responsive"] {
-      flex-direction: column;
-    }
-  }
-  @container field-group (min-width: 28rem) {
-    .sa-field[data-orientation="responsive"] {
       flex-direction: row;
       align-items: center;
       & > [data-slot="field-label"] {

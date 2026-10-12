@@ -86,8 +86,7 @@ public class FieldTagHelper : StellarAdminTagHelperBase
 
         output.MergeAttributes(tagBuilder);
 
-        // Directly in a grid, the field sits in a grid item, which is the container its
-        // responsive orientation measures
+        // Directly in a grid, the field sits in a grid item that carries its span
         if (grid is not null)
         {
             GridLayout.WrapInItem(output, spanStyle);

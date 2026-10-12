@@ -8,7 +8,6 @@ internal class FieldTagBuilder : TagBuilder
     {
         [FieldOrientation.Vertical] = ["sa-field-orientation-vertical"],
         [FieldOrientation.Horizontal] = ["sa-field-orientation-horizontal"],
-        [FieldOrientation.Responsive] = ["sa-field-orientation-responsive"],
     };
 
     public FieldTagBuilder(FieldOrientation orientation, string? userSuppliedClass)

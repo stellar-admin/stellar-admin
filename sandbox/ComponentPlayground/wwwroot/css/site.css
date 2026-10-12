@@ -937,11 +937,6 @@
   .\[--radius\:9999px\] {
     --radius: 9999px;
   }
-  .sm\:min-w-\[300px\] {
-    @media (width >= 40rem) {
-      min-width: 300px;
-    }
-  }
   .sm\:grid-cols-4 {
     @media (width >= 40rem) {
       grid-template-columns: repeat(4, minmax(0, 1fr));

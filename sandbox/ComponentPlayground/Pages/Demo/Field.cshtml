@@ -156,7 +156,7 @@
           <sa-field-description>Fill in your profile information.</sa-field-description>
           <sa-field-separator/>
           <sa-field-group>
-            <sa-field orientation="FieldOrientation.Responsive">
+            <sa-field>
               <sa-field-content>
                 <sa-field-label for="name">Name</sa-field-label>
                 <sa-field-description>
@@ -166,7 +166,7 @@
               <sa-input id="name" placeholder="Evil Rabbit" required/>
             </sa-field>
             <sa-field-separator/>
-            <sa-field orientation="FieldOrientation.Responsive">
+            <sa-field>
               <sa-field-content>
                 <sa-field-label form="lastName">Message</sa-field-label>
                 <sa-field-description>
@@ -178,10 +178,10 @@
                 id="message"
                 placeholder="Hello, world!"
                 required
-                class="min-h-[100px] resize-none sm:min-w-[300px]"></sa-textarea>
+                class="min-h-[100px] resize-none"></sa-textarea>
             </sa-field>
             <sa-field-separator/>
-            <sa-field orientation="FieldOrientation.Responsive">
+            <sa-field orientation="FieldOrientation.Horizontal">
               <sa-button type="submit">Submit</sa-button>
               <sa-button type="button" variant="ButtonVariant.Outline">
                 Cancel

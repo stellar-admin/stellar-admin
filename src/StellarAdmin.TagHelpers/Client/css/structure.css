@@ -63,13 +63,10 @@
     height: calc(4 * var(--sa-unit));
   }
 
-  /* A vertical or responsive field stretches its children, over their own widths (a toggle group's
-     fit-content); a responsive field stops once its field group is wide enough for a row. */
-  .sa-field.sa-field:is([data-orientation="vertical"], [data-orientation="responsive"]) > :not(.sr-only) {
+  /* A vertical field stretches its children, over their own widths (a toggle group's
+     fit-content). */
+  .sa-field.sa-field[data-orientation="vertical"] > :not(.sr-only) {
     width: 100%;
-  }
-  @container field-group (width >= 28rem) {
-    .sa-field.sa-field[data-orientation="responsive"] > :not(.sr-only) { width: auto; }
   }
 }
 

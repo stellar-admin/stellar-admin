@@ -1,9 +1,9 @@
 /* Grid: responsive columns for sa-grid and sa-details. The wrapper is the container the column
    breakpoints query; the content inside is the grid. The tag helpers write the column counts and
-   each item's span per breakpoint as the inline grid variables (structure.css). Each sa-grid item is
-   the field-group container of what it holds, so a responsive field measures its own column
-   (field.css); fields and display fields placed directly in an sa-grid get their item from their own
-   tag helper.
+   each item's span per breakpoint as the inline grid variables (structure.css). Fields and display
+   fields placed directly in an sa-grid get their item from their own tag helper. Each item is the
+   field-group container of what it holds, so content that measures its field group, such as the
+   Dashboard's choice columns, measures its own column.
    Replaces: .sa-grid, .sa-grid-content, .sa-grid-item */
 
 @layer sa.components {

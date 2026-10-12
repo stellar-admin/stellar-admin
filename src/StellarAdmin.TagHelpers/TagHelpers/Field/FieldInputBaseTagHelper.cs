@@ -132,8 +132,8 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase
             await RenderFieldWrapper(context, output, fieldLayout);
         }
 
-        // Directly in a grid, the field (or the bare input) sits in a grid item, which is the
-        // container a responsive field's orientation measures
+        // Directly in a grid, the field (or the bare input) sits in a grid item that carries its
+        // span, since the input may render inside its own wrapper
         var grid = GetEnclosingGrid(context);
         var spanStyle = GridLayout.SpanStyle(
             grid,
