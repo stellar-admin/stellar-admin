@@ -1,8 +1,8 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website, skills and Dashboard display fields (decisions 49, 52–56) committed. Display handlers and the built-in `BadgeDisplay` and `LookupDisplay` (decisions 63–69) implemented, uncommitted. View page and configured row details deferred.
+Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` and `LookupDisplay` (63–69) done and committed. Outstanding: the `LookupDisplay.UseSource` rename (78), the Dashboard view page and configured row details (decisions 4 and 5).
 
-Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show entries on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
+Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show read-only fields on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
 ## Filament 5 reference (checked 2026-10-12)
 
@@ -15,44 +15,44 @@ Make read-only displays of a record's fields a first-class feature, similar to F
 - Usage: resource view pages (falling back to a disabled form when no infolist is defined), view modals, relation managers, and edit pages.
 - Mixing: forms and infolists share one schema, and the schema docs show the exact audit case — a "Details" section of inputs beside an "Auditing" section of `TextEntry` components for `created_at`/`updated_at`.
 
-## What exists in StellarAdmin
+## What existed in StellarAdmin (before this plan)
 
 - The Dashboard has index, create and edit pages but no view page. Read-only displays exist only as row-detail partials with hand-written markup (for example `sandbox/DashboardPlayground/Areas/StellarAdmin/Views/Products/_ProductOverview.cshtml`).
 - Form layout is a polymorphic tree: `FormItemOptions` (private constructor) has field, section and group subclasses, and `_FormItems.cshtml` switches on the item type. Fields render through `EditorTemplates`, which wrap TagHelpers inputs.
 - `ResourceFieldBuilder` has `Title`, `Description`, `ColumnSpan` and `UseEditor<TEditor>`; `ResourceFieldsBuilder` has `Add`, `AddSection`, `AddGroup` and `Columns`.
 - Edit POST loads the record, binds only the configured field names on top of it, and re-renders that record on failure, so non-bound values are still present after an invalid POST.
-- The grid formats values with `Format`, a `GridDisplayTemplates/{template}` partial, or the metadata template hint. Lookup labels (`LookupLabelContext`) already resolve a related record's display text.
-- `crud-screen-tag-helpers.md` proposed `sa-details`/`sa-display-field` with display precedence (child content, then template, then metadata formatting; null shows a placeholder, zero and false are real values). This plan supersedes that part if accepted.
+- The grid formats values with `Format`, a `GridDisplayTemplates/{template}` partial, or the metadata template hint. The lookup editors resolve a related record's title through `LookupItems.FindAsync`, which `LookupDisplay` now reuses (`LookupLabelContext` only carries UI labels such as Add and Choose).
+- `crud-screen-tag-helpers.md` proposed `sa-details`/`sa-display-field` with display precedence (child content, then template, then metadata formatting; null shows a placeholder, zero and false are real values). This plan supersedes that part.
 
 ## Proposed approach
 
 Two layers, matching how `sa-input` underpins `Fields(...)`:
 
 1. A TagHelpers primitive for read-only label/value display, usable anywhere (row-detail partials, custom pages, beside `sa-input` inside `sa-form-section`).
-2. Dashboard configuration in which an entry is a fourth kind of form item beside fields, sections and groups. The same layout tree then serves view pages, row details, and entries mixed into create/edit forms. Entries never bind and never require a setter.
+2. Dashboard configuration in which a display field, and a details section of display fields, are new kinds of form item beside fields, sections and groups. The same layout tree then serves create and edit forms now, and a view page and row details later. Display fields never bind and never require a setter.
 
-Mixing appears cheap because the item tree is already polymorphic and binding already works from an explicit field-name list. If the spike shows otherwise, fall back to entries only in their own sections.
+Mixing proved cheap: the item tree was already polymorphic and binding already worked from an explicit field-name list.
 
-### TagHelpers sketch
+### TagHelpers
 
 ```razor
-<sa-info-list columns="4">
-    <sa-info-entry asp-for="Name" />
-    <sa-info-entry asp-for="Details.Sku" placeholder="—" />
-    <sa-info-entry asp-for="Price" format="{0:0.00}" label="Unit price" />
-    <sa-info-entry asp-for="IsPublished">@(Model.IsPublished ? "Published" : "Draft")</sa-info-entry>
-</sa-info-list>
+<sa-details columns="2">
+    <sa-display-field asp-for="Name" />
+    <sa-display-field asp-for="Details.Sku" empty-text="None" />
+    <sa-display-field asp-for="Price" format="{0:0.00}" label="Unit price" />
+    <sa-display-field asp-for="IsPublished">@(Model.IsPublished ? "Published" : "Draft")</sa-display-field>
+</sa-details>
 
-@* Mixed inside a form *@
+@* Among inputs in a form *@
 <sa-form-section title="Audit">
-    <sa-info-entry asp-for="CreatedAt" />
-    <sa-info-entry asp-for="UpdatedBy" />
+    <sa-display-field asp-for="CreatedAt" />
+    <sa-display-field asp-for="UpdatedBy" />
 </sa-form-section>
 ```
 
-### Dashboard sketch
+### Dashboard
 
-Superseded 2026-10-12: the earlier "entries" sketch (`AddEntry`, `AllowView(view => view.Entries(...))`, row-detail panels from entries) is replaced by display fields (decisions 49, 52–55).
+The earlier "entries" sketch (`AddEntry`, `AllowView(view => view.Entries(...))`, row-detail panels from entries) was replaced by display fields (decisions 49, 52–56).
 
 ```csharp
 resource.AllowEdit(edit => edit.Fields(fields =>
@@ -85,7 +85,7 @@ Public API (implemented 2026-10-12):
 
 ## Decisions
 
-Answers from 2026-10-12. Earlier sketches above use `sa-info-*`; the chosen names are `sa-details`/`sa-display-field`.
+Answers from 2026-10-12. Early sketches used `sa-info-list`/`sa-info-entry` and "entries"; the chosen names are `sa-details`/`sa-display-field` and display fields (2, 49).
 
 1. Layering: TagHelpers first, then the Dashboard builder. Decided.
 2. Naming: `sa-details`/`sa-display-field`, built on the existing `sa-field` infrastructure: a display field is an `sa-field` (keeping `orientation`) with a `dt`/`dd` label and value inside `sa-details` (a container `div` around a `dl` grid), and plain `div`s outside a `dl`, such as beside inputs in a form section. Decided, subject to the prototype.
@@ -127,6 +127,13 @@ Built-in displays (2026-10-12):
 68. `BadgeDisplay` has only a fixed `Variant` (default `Secondary`); choosing a badge by value is a display template (`[UIHint]`), documented in the skill. The display field builders stay non-generic. Decided.
 69. Display handlers and `LookupDisplay` as planned in 63 and 64. Decided.
 
+EF Core references (2026-10-12):
+
+76. The EF Core data source includes the reference navigations on each display field's path when it loads the edit record (`Category.Name` includes `Category`; owned types extend the path without an include; a collection or plain property ends it), so a display field reads a related value with no extra query. No new API; `ResourceFormOptions.DisplayFields` became public so the data source can read it. Decided; implemented.
+77. An EF Core `LookupDisplay.UseItems` extension: dropped (79). With 76, an EF resource displays `p => p.Category.Name` directly.
+78. Rename `LookupDisplay.UseItems` to `UseSource<TSource, TEntity, TValue>(value, title)`, drop its `LookupItems` and description/media overloads and make `Items` internal: it only fetches the referenced records by key, never a list. Decided; not yet implemented.
+79. Drop 77. Decided.
+
 ## Prototype
 
 Picks (2026-10-12): A1 (muted label, medium-weight value); C2 (only display fields placed directly among inputs, outside `sa-details`, take an input's label style and a control's height so rows line up); D1 (`—` placeholder, overridable per field); F2 (caption labels inside row details, through a contextual rule rather than an attribute). G (view-page sections) waits for the Dashboard view page; G1 (split sections) is the likely default.
@@ -146,7 +153,7 @@ DocsSamples: `docs/DocsSamples/Pages/Details/` (navigation under Data Display) w
 
 Website and skills (2026-10-12): the eleven Details partials are registered in `docs/DocsSamplesGenerator/Generator.cs` and exported; the website has `content/docs/tag-helpers/components/details.mdx` (under Data Display in `meta.json`). The skills reference has a generated `components/details.md` with a hand-written structure region (values, columns and spans, `ResponsiveGrid`), six curated examples in `util/SkillsGenerator/skills.examples.json`, the `BooleanTrue`/`BooleanFalse` rows in `references/icons.md`, and a read-only value row in `references/forms.md`.
 
-Dashboard display fields (implemented 2026-10-12, uncommitted):
+Dashboard display fields (implemented 2026-10-12, committed):
 
 - `src/StellarAdmin.Dashboard/Resources/`: `Options/FormDisplayFieldOptions.cs`, `Options/FormDetailsOptions.cs`, `Builders/ResourceDisplayFieldBuilder.cs` (property paths need only public getters), `Builders/ResourceDetailsBuilder.cs`, and `AddDisplayField`/`AddDetails` on `ResourceFieldsBuilder`.
 - Views: `_FormItems.cshtml` renders a display field as `sa-display-field` in its grid item, and a details item through the new `_FormDetails.cshtml` (an `sa-form-section` around `sa-details`, stacked in the create sheet like sections). Display fields render inline rather than through templates, so inside `sa-details` they are direct children and get `dt`/`dd` and spans. `FormFieldsBaseView.BeginField` (internal) points the page's view data at the field's value while the tag renders, since `asp-for` takes a compile-time expression, and puts the field's display in the view context's data for the template.
@@ -154,11 +161,13 @@ Dashboard display fields (implemented 2026-10-12, uncommitted):
 - Playground: Form layouts → Display fields (`DisplayFieldsLayoutGallery`): a root display field (a getter-only property), display fields among inputs in `Columns(3)`, a stacked `AddDetails` in `Columns(3)` with spans, a custom `BadgeDisplay` (`Views/Shared/DisplayTemplates/Badge.cshtml`) on the cabin, an email link, a boolean and an empty value, and a horizontal divided audit section in `Columns(2)`.
 - Skills: `references/setup.md` has a Display fields section and a link from Create forms.
 
-Built-in displays (implemented 2026-10-12, uncommitted): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (internal; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor`, `MultiLookupSheetEditor` and `LookupDisplay`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, `HomeAirport` uses `LookupDisplay` over `LayoutDestinationLookupSource`, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents the built-in displays, per-value templates and custom displays with handlers.
+Built-in displays (implemented 2026-10-12, committed): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (internal; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor`, `MultiLookupSheetEditor` and `LookupDisplay`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, `HomeAirport` uses `LookupDisplay` over `LayoutDestinationLookupSource`, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents the built-in displays, per-value templates and custom displays with handlers.
 
 Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+EF Core references (76), completed 2026-10-12: EF integration tests 82 passed (new `ResourceDisplayFieldTests`: `Category.Name` and the owned `Details.Sku` render from one query that joins `Category`; a display field on the key alone doesn't join); Dashboard unit 113 and integration 414 passed.
 
 Built-in displays, completed 2026-10-12:
 

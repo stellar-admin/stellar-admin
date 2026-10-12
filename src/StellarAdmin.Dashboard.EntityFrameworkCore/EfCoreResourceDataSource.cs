@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Dashboard.Resources;
 using StellarAdmin.Dashboard.Resources.Editors;
@@ -197,7 +199,8 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             query = query.AsNoTracking();
         }
 
-        // Lookup editors display the selected item from the reference loaded with the entity
+        // Lookup editors display the selected item from the reference loaded with the entity, and
+        // display fields read through the references on their paths
         if (includeLookups && _resourceOptions.Edit is { } edit)
         {
             var navigations = edit
@@ -205,6 +208,13 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
                     field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
                         ? reference.FindNavigation(entityType, field.FieldName)?.Name
                         : null
+                )
+                .Concat(
+                    edit.ModelType == typeof(TEntity)
+                        ? edit.DisplayFields.Select(field =>
+                            FindReferencePath(entityType, field.PropertyPath)
+                        )
+                        : []
                 )
                 .OfType<string>()
                 .Distinct(StringComparer.Ordinal);
@@ -215,6 +225,35 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    // The include path of the reference navigations a property path reads through, such as
+    // Supplier.Country for Supplier.Country.Name. Owned types load with their owner, so they extend
+    // the path without being included themselves; a collection or plain property ends it.
+    private static string? FindReferencePath(
+        IEntityType entityType,
+        IReadOnlyList<PropertyInfo> propertyPath
+    )
+    {
+        var segments = new List<string>();
+        string? path = null;
+        IEntityType current = entityType;
+        foreach (var property in propertyPath)
+        {
+            if (current.FindNavigation(property.Name) is not { IsCollection: false } navigation)
+            {
+                break;
+            }
+
+            segments.Add(navigation.Name);
+            current = navigation.TargetEntityType;
+            if (!current.IsOwned())
+            {
+                path = string.Join('.', segments);
+            }
+        }
+
+        return path;
     }
 
     private static IQueryable<TEntity> Order(

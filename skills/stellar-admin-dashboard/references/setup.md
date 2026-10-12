@@ -287,6 +287,7 @@ edit.Fields(fields =>
 ```
 
 - Display fields are never bound: a posted value for one is ignored, and the property needs only a public getter. The value comes from the page's model, so with `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` the property must be on `TModel`.
+- A display field can read through references, such as `booking => booking.Customer.Name`. An EF Core resource's edit page loads the references on each display field's path with the record, in the same query; a null reference shows the empty text. Other data sources and custom models must load them themselves.
 - `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title`, `Format` and `EmptyText`, `UseDisplay<TDisplay>()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
 - Values render through `<sa-display-field>`: booleans as a check or cross, enums by their `[Display]` name, `[EmailAddress]` and `[Url]` values as links, and `Format` or `[DisplayFormat]` formatting. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash. `[UIHint("Status")]` renders the view `DisplayTemplates/Status` with the value as its model; a missing template throws.
 - `UseDisplay<TDisplay>(display => ...)` renders the value through a display, as `UseEditor` does for inputs. Displays are in `StellarAdmin.Dashboard.Resources.Displays`, and none is used for an empty value. The built-in displays:

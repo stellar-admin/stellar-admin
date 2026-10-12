@@ -8,6 +8,13 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 public class ResourceFormOptions : IFormScope
 {
     /// <summary>
+    ///     All read-only fields in display order, including fields inside layout containers and
+    ///     details sections.
+    /// </summary>
+    public IReadOnlyList<FormDisplayFieldOptions> DisplayFields =>
+        EnumerateDisplayFields(Items).ToArray();
+
+    /// <summary>
     ///     All fields in display order, including fields inside layout containers.
     /// </summary>
     public IReadOnlyList<FormFieldOptions> Fields => EnumerateFields(Items).ToArray();
@@ -36,9 +43,6 @@ public class ResourceFormOptions : IFormScope
     public string? Title { get; set; }
 
     internal FormGridColumnDefinitions Columns { get; set; }
-
-    // Every display field, including those in containers and details sections
-    internal IEnumerable<FormDisplayFieldOptions> DisplayFields => EnumerateDisplayFields(Items);
 
     FormGridColumnDefinitions IFormScope.Columns
     {
