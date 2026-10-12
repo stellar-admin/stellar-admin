@@ -21,6 +21,8 @@ The `value` attributes are strings: use `value="express"` or `value="1"` for lit
 
 Both variants reuse the existing Field and Input HTML: a fieldset with a legend, a Field group, and horizontal fields containing the existing radio/checkbox indicators. `ChoiceCard` wraps each field in its label and places the input after its title and description. A group-level `class` applies to the fieldset; an item-level `class` applies to its field (Default) or outer label (ChoiceCard).
 
+Set `columns` (or `columns-base`, `columns-sm`, `columns-md`, `columns-lg`) to lay the options out in columns. The breakpoints are the same as `sa-grid`'s but measured against the field, so a group in a narrow grid column stays in one column. Options fill each row in turn; `flow="CheckboxGroupFlow.Down"` fills each column first.
+
 Checkbox groups bind one-dimensional `T[]`, `List<T>`, `IList<T>`, `ICollection<T>`, `IEnumerable<T>`, `IReadOnlyList<T>`, or `IReadOnlyCollection<T>` properties. Use writable properties. Elements support `string`, enums, `Guid`, `bool`, and numeric primitives; nullable value-type elements, binary `byte[]`, date/time, custom complex types, sets and immutable collections are not supported. Flags enums are individual collection values; the group does not combine selections into one flags scalar. Formatting and comparison use the current request culture.
 
 Without `asp-for`, use `values="@(new[] { "insurance", "gift" })"`. `asp-items` uses `SelectListItem.Selected` only when no explicit selection is supplied. An empty `values` collection explicitly selects nothing. All checkbox inputs share one field name and submit their own values. There are no boolean `false` hidden inputs.
@@ -45,8 +47,14 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `flow` | `CheckboxGroupFlow` | `Across` | `Across`, `Down` |
 | `values` | `IEnumerable<string>` | — | — |
 | `variant` | `CheckboxGroupVariant` | `Default` | `Default`, `ChoiceCard` |
+| `columns` | `int` | — | — |
+| `columns-base` | `int` | — | — |
+| `columns-lg` | `int` | — | — |
+| `columns-md` | `int` | — | — |
+| `columns-sm` | `int` | — | — |
 | `disabled` | `bool` | — | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `column-span` | `string` | — | — |
@@ -129,6 +137,21 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
         <sa-checkbox-group-item-media><sa-icon name="ship" /></sa-checkbox-group-item-media>
         Ferry
     </sa-checkbox-group-item>
+</sa-checkbox-group>
+```
+
+*From `Pages/CheckboxGroup/_Columns.cshtml`*
+
+```razor
+<sa-checkbox-group name="columns-checkbox" label="Trip extras" columns-sm="2" columns-lg="3"
+    flow="CheckboxGroupFlow.Down" values="@(["lounge", "transfer"])">
+    <sa-checkbox-group-item value="wifi">Wi-Fi on board</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="lounge">Lounge access</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="priority">Priority boarding</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="baggage">Extra baggage</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="seat">Seat selection</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="insurance">Travel insurance</sa-checkbox-group-item>
+    <sa-checkbox-group-item value="transfer">Airport transfer</sa-checkbox-group-item>
 </sa-checkbox-group>
 ```
 

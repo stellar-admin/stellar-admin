@@ -345,8 +345,8 @@ edit.Fields(fields =>
 | `CheckboxEditor` | A single checkbox for a `bool` | None |
 | `ToggleEditor` | `sa-switch` for a `bool` | None |
 | `SelectEditor` | `sa-select` | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText` |
-| `RadioGroupEditor` | `sa-radio-group` | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText`, `Appearance` (`RadioGroupAppearance.Default` or `Cards`), `ClassNames.Media` |
-| `CheckboxGroupEditor` | `sa-checkbox-group` for a collection property | `UseItems(...)`, `Appearance` (`CheckboxGroupAppearance.Default` or `Cards`), `Columns(...)`, `Flow` (`CheckboxGroupFlow.Down` or `Across`), `ClassNames.Media` |
+| `RadioGroupEditor` | `sa-radio-group` | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText`, `Appearance` (`RadioGroupAppearance.Default` or `Cards`), `Columns(...)`, `Flow` (`RadioGroupFlow.Across` or `Down`), `ClassNames.Media` |
+| `CheckboxGroupEditor` | `sa-checkbox-group` for a collection property | `UseItems(...)`, `Appearance` (`CheckboxGroupAppearance.Default` or `Cards`), `Columns(...)`, `Flow` (`CheckboxGroupFlow.Across` or `Down`), `ClassNames.Media` |
 | `SegmentedControlEditor` | `sa-segmented-control` that selects one value | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText`, `ClassNames.Media` |
 | `ToggleGroupEditor` | `sa-toggle-group` that selects multiple values for a collection property and one value otherwise | `UseItems(...)`, `EmptyChoice`, `EmptyChoiceText`, `Appearance` (`ToggleGroupAppearance.Chips`, `Joined` or `Buttons`), `CheckPlacement` (`ToggleGroupCheckPlacement.ReplaceMedia`, `Start` or `End`), `ClassNames.Media` |
 | `LookupSheetEditor` | A card or button showing the selection, which opens a sheet to search a long list | `UseItems(...)`, `Editor(...)` (`Layout`, `ShowMedia`, `EmptyText`, `AllowClear`), `Sheet(...)` (`Title`, `SearchPlaceholder`, `MinimumSearchLength`, `PageSize`, `ShowMedia`), `EnableCreate()`, `EnableCreate<TResource>()`, `ClassNames.Media` |
@@ -372,7 +372,7 @@ fields.Add(trip => trip.GuideId).UseEditor<RadioGroupEditor>(guides =>
 });
 ```
 
-`CheckboxGroupEditor` arranges its choices in columns with `Columns(n)` or `Columns(columns => columns.Small(2).Large(3))`. The breakpoints are the form's, but measured against the field's width, so a group in a narrow field stays in one column. The choices fill each column before the next; `Flow = CheckboxGroupFlow.Across` fills each row instead:
+`RadioGroupEditor` and `CheckboxGroupEditor` arrange their choices in columns with `Columns(n)` or `Columns(columns => columns.Small(2).Large(3))`. The breakpoints are the form's, but measured against the field's width, so a group in a narrow field stays in one column. The choices fill each row in turn; `Flow = CheckboxGroupFlow.Down` (or `RadioGroupFlow.Down`) fills each column before the next instead:
 
 ```csharp
 fields.Add(user => user.RoleIds).UseEditor<CheckboxGroupEditor>(roles =>

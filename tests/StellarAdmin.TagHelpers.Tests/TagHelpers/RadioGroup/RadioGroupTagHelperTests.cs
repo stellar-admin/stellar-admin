@@ -406,4 +406,32 @@ public class RadioGroupTagHelperTests
         Standard,
         Express,
     }
+
+    [Test]
+    public async Task ProcessAsync_WithColumnsFlowingDown_WritesColumnsAndRowsOnGroup()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new RadioGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "seat",
+            ColumnsBase = 2,
+            Flow = RadioGroupFlow.Down,
+            Items = [new("Aisle", "aisle"), new("Middle", "middle"), new("Window", "window")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var group = html.QuerySelector("[data-slot=radio-group]");
+        await Assert.That(group?.GetAttribute("data-columns")).IsEqualTo("multiple");
+        await Assert.That(group?.GetAttribute("data-flow")).IsEqualTo("down");
+        await Assert
+            .That(group?.GetAttribute("style"))
+            .IsEqualTo(
+                "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2;--sa-rows:2;--sa-rows-sm:2;--sa-rows-md:2;--sa-rows-lg:2"
+            );
+    }
 }

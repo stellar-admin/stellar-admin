@@ -3,8 +3,8 @@
    card variant of CheckboxGroup, RadioGroup and ChoiceGroup, or written by hand). CheckboxGroup and
    RadioGroup render field groups (data-slot checkbox-group or radio-group) with field parts, so they
    are styled here too. Field labels are also labels (label.css).
-   Vertical fields stretch their children over the children's own widths (structure.css). A field
-   group is a container named field-group, which the Dashboard's choice columns query.
+   Vertical fields stretch their children over the children's own widths (structure.css). Choice
+   groups with columns are laid out by grid.css.
    Replaces: .sa-field, .sa-field-content, .sa-field-description, .sa-field-error, .sa-field-group,
    .sa-field-label, .sa-field-legend, .sa-field-separator, .sa-field-separator-content,
    .sa-field-separator-line, .sa-field-set, .sa-field-title */
@@ -41,7 +41,6 @@
     }
   }
   .sa-field-group {
-    container: field-group / inline-size;
     display: flex;
     flex-direction: column;
     gap: calc(5 * var(--sa-unit));

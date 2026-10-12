@@ -12,6 +12,14 @@ namespace StellarAdmin.TagHelpers;
 public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
 {
     /// <summary>
+    ///     The order in which the options fill the columns set with <c>columns</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="CheckboxGroupFlow.Across" />.
+    /// </remarks>
+    public CheckboxGroupFlow? Flow { get; set; }
+
+    /// <summary>
     ///     The initially selected values when not using model binding.
     /// </summary>
     public IEnumerable<string>? Values { get; set; }
@@ -40,6 +48,7 @@ public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
             output,
             true,
             effectiveVariant == CheckboxGroupVariant.ChoiceCard,
+            Flow == CheckboxGroupFlow.Down,
             Values
         );
     }

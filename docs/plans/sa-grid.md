@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website, skills, column start (34–38) and the Dashboard done; choice columns (22) are the follow-up.
+Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website, skills, column start (34–38), the Dashboard and choice columns (40–43) done.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
@@ -25,7 +25,7 @@ Numbers continue the discussion of 2026-10-12.
 19. Name: `sa-grid` and `sa-grid-item`. Decided.
 20. The tag helpers and the Dashboard cover the same four tiers: base (below 30rem), sm (30rem), md (40rem) and lg (56rem). The shorthands stay and match on both sides: `columns="N"`/`Columns(N)` set the md tier so forms stack in narrow containers, and `column-span="N"`/`ColumnSpan(N)` set the base tier, inherited upward and capped to each tier's columns. Decided (24–26).
 21. The Dashboard's per-tier `SmallFull()`/`MediumFull()`/`LargeFull()` stay: they resolve the same as a span of 12 but state the intent. Decided.
-22. Choice columns (8) are a separate follow-up after this plan; the Dashboard keeps its own choice column rules until then. Decided.
+22. Choice columns (8) are a separate follow-up after this plan; the Dashboard keeps its own choice column rules until then. Decided; done as 40–43.
 23. The website's Form Row page is removed without a redirect. Decided.
 24. The narrowest tier is named Base everywhere: `GridColumnsBuilder.Base(n)` (was `Default`), `ColumnSpanBuilder.Base(n)` and `BaseFull()` (were `Default` and `DefaultFull`), `GridTiers.Base` (was `Default`), and the matching `ResponsiveGrid` parameters. Nothing is released, so the renames need no compatibility path. Decided.
 25. `sa-grid` and `sa-details` get `columns-base` (1–12). Decided.
@@ -46,6 +46,10 @@ Numbers continue the discussion of 2026-10-12.
 37. Starts apply wherever spans do: `sa-field`, implicit-field inputs, `sa-grid-item`, `sa-display-field` in `sa-grid` and `sa-details`, and the Dashboard's `ColumnStart` on fields, sections and groups. Decided.
 38. Order: tag helpers, then samples, website and skills, then the Dashboard step uses it. No prototype. Decided.
 39. `sa-grid` marks its content `data-columns="single"` or `"multiple"` (any tier above one column). Sections in consecutive grid items count as consecutive sections, so a single-column grid keeps the rule between stacked sections, and only a multi-column grid drops it (29), as the Dashboard did. Without this, every Dashboard form with several sections would lose its separators once sections sit in grid items. Made during the Dashboard step (2026-10-12).
+40. Choice columns measure the field around the group: a `sa-field` or `sa-field-set` holding a choice group with columns is the `grid` container, so they work outside an `sa-grid` too. An unbound group with `render-field="false"` in other markup stays in one column. Decided (2026-10-12).
+41. `sa-radio-group` gets the same columns as `sa-checkbox-group`, and the Dashboard `RadioGroupEditor` gains `Columns` and `Flow`. Decided.
+42. The flow defaults to across, in the library and the Dashboard. Decided.
+43. Order: tag helpers, then samples, website and skills, then the Dashboard; no prototype. Decided.
 
 ## Proposed API
 
@@ -150,6 +154,19 @@ Done (2026-10-12):
 
 Verified: solution build; all .NET tests 1103/1103; DashboardPlayground (5207) Form layouts gallery at 1300px against screenshots taken before the change (Columns, Spans, Sections and groups, Section layouts, Mixed editors: same layout, stacked sections keep their rules, only the gap differs); the Starts section at 1300, 1100 and 900px (start 3 leaves column 2 empty, start 1 begins a row, Notes moves from column 2 to 1 at Large, all stacked at 900px). Not run: dark mode, theme fixtures, the create sheet. Reviewed in the playground by Jerrie (2026-10-12): layouts look correct.
 
-### Verification
+### Choice columns (40–43)
+
+Done (2026-10-12):
+
+- Library: `columns`, `columns-base`, `columns-sm`, `columns-md`, `columns-lg` on `ChoiceGroupTagHelper` (so both groups), validated like `sa-grid`; `flow` on `sa-checkbox-group` (`CheckboxGroupFlow`) and `sa-radio-group` (`RadioGroupFlow`), `Across` (default) or `Down`. A group with more than one column at any width gets `data-columns="multiple"` and the `--sa-cols*` style; flowing down it also gets `data-flow="down"` and `--sa-rows*` from the new public `ResponsiveGrid.ResolveRows(columns, itemCount)`.
+- CSS: the choice group joins the shared tier rules in `grid.css`, with the rows rules for the down flow; `:is(.sa-field, .sa-field-set):has(> .sa-field-group[data-columns="multiple"])` is the `grid` container. The `field-group` containers on `.sa-field-group` and `.sa-grid-item` are removed, since nothing queries them any more.
+- Dashboard: the choice column rules leave `client.css`; `ChoiceColumnsStyle` and the Dashboard's own `CheckboxGroupFlow` are removed (`CheckboxGroupEditor.Flow` is now the TagHelpers enum, default `Across`); the `CheckboxGroup` template passes the resolved tiers and the flow to `sa-checkbox-group`; `RadioGroupEditor` gains `Columns(int)`, `Columns(Action<GridColumnsBuilder>)` and `Flow`, and its template (which composes `sa-field-group` itself) writes the same attributes and variables.
+- Samples: DocsSamples `CheckboxGroup/_Columns` (trip extras, `columns-sm="2" columns-lg="3"`, down) and `RadioGroup/_Columns` (cabin cards, `columns-sm="2"`), registered in the generator and `skills.examples.json`. Playground: the checkbox gallery's across example became `Flow = Down`; the radio gallery has a Columns section.
+- Website: Columns sections and the six attributes on the Checkbox Group and Radio Group pages; the generator added both demos and includes, and the other demos changed only by the stylesheet hash; `pnpm examples:export` refreshed the inline stylesheet, and `collapsible.html` changed only in SVG attribute order.
+- Skills: regenerated references list the attributes and the Columns samples; hand-written lines in both references' structure regions; `setup.md` covers columns on both editors, with across as the default.
+- Tests: `ResolveRows`, columns and flow on both groups (including invalid counts), Dashboard integration tests for both editors; `ChoiceColumnsStyleTests` removed.
+
+Verified: all .NET tests 1112/1112; DashboardPlayground (5207) checkbox and radio galleries at 1300 and 700px (two columns at a 41rem field, down fills each column first, cards in columns), at 420px (one column), and half-width fields (one column); Form layouts gallery at 1300px pixel-identical to the previous step's screenshots except for the Starts section, whose baseline predates that step's reordering; DocsSamples (5206) Columns samples; SkillsGenerator `--check` (no drift) and skill validation check; website lint, `types:check` and build. Not run: theme fixtures, light mode for the samples (the headless shots rendered dark).
+
 
 Build and tests for TagHelpers, Core and Dashboard; prototype and DocsSamples (port 5206) checked in headless Chromium at the widths above, light and dark; the DashboardPlayground Form layouts gallery before and after; generator diff reviewed; website lint, type check and build; skills `--check`.

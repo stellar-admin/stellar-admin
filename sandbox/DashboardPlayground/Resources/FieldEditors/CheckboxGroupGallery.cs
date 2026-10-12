@@ -42,8 +42,8 @@ public sealed class CheckboxGroupGallery
     [Display(Name = "string[] · Columns(2)")]
     public string[] Amenities { get; set; } = [];
 
-    [Display(Name = "string[] · Columns(Small(2), Large(3)) · Flow = Across")]
-    public string[] AcrossAmenities { get; set; } = [];
+    [Display(Name = "string[] · Columns(Small(2), Large(3)) · Flow = Down")]
+    public string[] DownAmenities { get; set; } = [];
 
     [Display(Name = "List<enum> · Appearance = Cards · Columns(2)")]
     public List<GalleryCabin> CardColumnCabins { get; set; } = [];
@@ -79,7 +79,7 @@ public sealed class CheckboxGroupGallery
             StyledCabins = [GalleryCabin.Economy],
             CardCabins = [GalleryCabin.Business],
             Amenities = ["wifi", "seat"],
-            AcrossAmenities = ["lounge", "transfer"],
+            DownAmenities = ["lounge", "transfer"],
             CardColumnCabins = [GalleryCabin.PremiumEconomy],
             NarrowAmenities = ["wifi"],
             NarrowAmenitiesBeside = ["insurance"],

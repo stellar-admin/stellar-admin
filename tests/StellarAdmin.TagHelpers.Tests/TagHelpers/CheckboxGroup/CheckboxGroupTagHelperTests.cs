@@ -52,7 +52,8 @@ public class CheckboxGroupTagHelperTests
         await Assert
             .That(html.QuerySelector("[data-slot=field] > [data-slot=field-label]")?.TextContent)
             .IsEqualTo("Roles");
-        await Assert.That(html.QuerySelector("[data-slot=checkbox-group]")?.GetAttribute("role"))
+        await Assert
+            .That(html.QuerySelector("[data-slot=checkbox-group]")?.GetAttribute("role"))
             .IsEqualTo("group");
         await Assert
             .That(
@@ -129,6 +130,118 @@ public class CheckboxGroupTagHelperTests
                 "Roles",
                 context.Metadata.GetModelExplorerForType(modelType, null)
             ),
+        };
+
+        // Act
+        Func<Task> act = async () =>
+        {
+            using var html = await TagHelperRenderer.RenderAsync(sut);
+        };
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithColumns_WritesColumnsOnGroup()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new CheckboxGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "amenities",
+            Columns = 2,
+            Items = [new("Wi-Fi", "wifi"), new("Lounge", "lounge"), new("Transfer", "transfer")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var group = html.QuerySelector("[data-slot=checkbox-group]");
+        await Assert.That(group?.GetAttribute("data-columns")).IsEqualTo("multiple");
+        await Assert.That(group?.HasAttribute("data-flow")).IsFalse();
+        await Assert.That(group?.GetAttribute("style")).IsEqualTo("--sa-cols-md:2;--sa-cols-lg:2");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithColumnsFlowingDown_WritesRowsPerBreakpoint()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new CheckboxGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "amenities",
+            ColumnsSmall = 2,
+            ColumnsLarge = 3,
+            Flow = CheckboxGroupFlow.Down,
+            Items =
+            [
+                new("Wi-Fi", "wifi"),
+                new("Lounge", "lounge"),
+                new("Priority", "priority"),
+                new("Baggage", "baggage"),
+                new("Transfer", "transfer"),
+            ],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var group = html.QuerySelector("[data-slot=checkbox-group]");
+        await Assert.That(group?.GetAttribute("data-flow")).IsEqualTo("down");
+        await Assert
+            .That(group?.GetAttribute("style"))
+            .IsEqualTo(
+                "--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3;--sa-rows:5;--sa-rows-sm:3;--sa-rows-md:3;--sa-rows-lg:2"
+            );
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithOneColumn_LeavesOutColumns()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new CheckboxGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "amenities",
+            Columns = 1,
+            Flow = CheckboxGroupFlow.Down,
+            Items = [new("Wi-Fi", "wifi"), new("Lounge", "lounge")],
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var group = html.QuerySelector("[data-slot=checkbox-group]");
+        await Assert.That(group?.HasAttribute("data-columns")).IsFalse();
+        await Assert.That(group?.HasAttribute("data-flow")).IsFalse();
+        await Assert.That(group?.HasAttribute("style")).IsFalse();
+    }
+
+    [Test]
+    [Arguments(0, null)]
+    [Arguments(13, null)]
+    [Arguments(2, 3)]
+    public async Task ProcessAsync_WithInvalidColumns_ThrowsInvalidOperationException(
+        int columns,
+        int? columnsMedium
+    )
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new CheckboxGroupTagHelper(context.Generator, context.Icons)
+        {
+            ViewContext = context.ViewContext,
+            Name = "amenities",
+            Columns = columns,
+            ColumnsMedium = columnsMedium,
+            Items = [new("Wi-Fi", "wifi")],
         };
 
         // Act

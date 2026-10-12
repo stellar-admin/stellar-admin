@@ -61,6 +61,25 @@ public static class ResponsiveGrid
     }
 
     /// <summary>
+    ///     Returns the row count at each breakpoint that fills each column before the next one
+    ///     starts.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="itemCount" /> is negative.
+    /// </exception>
+    public static GridTiers ResolveRows(GridTiers columns, int itemCount)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(itemCount);
+
+        return new(
+            Rows(itemCount, columns.Base),
+            Rows(itemCount, columns.Small),
+            Rows(itemCount, columns.Medium),
+            Rows(itemCount, columns.Large)
+        );
+    }
+
+    /// <summary>
     ///     Returns the span at each breakpoint, limited to the grid's column count at that
     ///     breakpoint.
     /// </summary>
@@ -195,6 +214,9 @@ public static class ResponsiveGrid
 
         style.Append(variable).Append(':').Append(value.ToString(CultureInfo.InvariantCulture));
     }
+
+    private static int Rows(int itemCount, int columns) =>
+        Math.Max(1, (itemCount + columns - 1) / columns);
 
     private static int? ValidateColumns(int? value, string paramName) =>
         value is { } count ? ValidateColumns(count, paramName) : null;

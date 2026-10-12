@@ -6,6 +6,7 @@ using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.TagHelpers;
 using TUnit.Assertions.Enums;
 using static StellarAdmin.Dashboard.IntegrationTests.Infrastructure.FormTestHelpers;
 
@@ -245,7 +246,7 @@ public class ChoiceEditorTests
     }
 
     [Test]
-    public async Task CheckboxGroupEditor_Columns_WritesColumnsAndRowsForDownFlow()
+    public async Task CheckboxGroupEditor_Columns_WritesColumnsAcrossByDefault()
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
@@ -260,16 +261,13 @@ public class ChoiceEditorTests
 
         // Assert
         var group = document.RequiredElement("[data-slot='checkbox-group']");
-        await Assert.That(group.ClassList.Contains("sa-choice-columns-down")).IsTrue();
-        await Assert
-            .That(group.GetAttribute("style"))
-            .IsEqualTo(
-                "--sa-cols-md:2;--sa-cols-lg:2;--sa-rows:3;--sa-rows-sm:3;--sa-rows-md:2;--sa-rows-lg:2"
-            );
+        await Assert.That(group.GetAttribute("data-columns")).IsEqualTo("multiple");
+        await Assert.That(group.HasAttribute("data-flow")).IsFalse();
+        await Assert.That(group.GetAttribute("style")).IsEqualTo("--sa-cols-md:2;--sa-cols-lg:2");
     }
 
     [Test]
-    public async Task CheckboxGroupEditor_ColumnsAcross_WritesOnlyColumns()
+    public async Task CheckboxGroupEditor_ColumnsDown_WritesColumnsAndRows()
     {
         // Arrange
         await using var sut = await CreateChoiceFieldsHost(fields =>
@@ -278,7 +276,7 @@ public class ChoiceEditorTests
                 .UseEditor<CheckboxGroupEditor>(editor =>
                 {
                     editor.Columns(columns => columns.Small(2).Large(3));
-                    editor.Flow = CheckboxGroupFlow.Across;
+                    editor.Flow = CheckboxGroupFlow.Down;
                 })
         );
         using var client = sut.GetTestClient();
@@ -288,11 +286,12 @@ public class ChoiceEditorTests
 
         // Assert
         var group = document.RequiredElement("[data-slot='checkbox-group']");
-        await Assert.That(group.ClassList.Contains("sa-choice-columns")).IsTrue();
-        await Assert.That(group.ClassList.Contains("sa-choice-columns-down")).IsFalse();
+        await Assert.That(group.GetAttribute("data-flow")).IsEqualTo("down");
         await Assert
             .That(group.GetAttribute("style"))
-            .IsEqualTo("--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3");
+            .IsEqualTo(
+                "--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3;--sa-rows:3;--sa-rows-sm:2;--sa-rows-md:2"
+            );
     }
 
     [Test]
@@ -309,7 +308,74 @@ public class ChoiceEditorTests
 
         // Assert
         var group = document.RequiredElement("[data-slot='checkbox-group']");
-        await Assert.That(group.ClassList.Contains("sa-choice-columns")).IsFalse();
+        await Assert.That(group.HasAttribute("data-columns")).IsFalse();
+        await Assert.That(group.HasAttribute("style")).IsFalse();
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_Columns_WritesColumnsAcrossByDefault()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabin)
+                .UseEditor<RadioGroupEditor>(editor => editor.Columns(2))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='radio-group']");
+        await Assert.That(group.GetAttribute("data-columns")).IsEqualTo("multiple");
+        await Assert.That(group.GetAttribute("data-flow")).IsEqualTo("across");
+        await Assert.That(group.GetAttribute("style")).IsEqualTo("--sa-cols-md:2;--sa-cols-lg:2");
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_ColumnsDown_WritesColumnsAndRows()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields
+                .Add(model => model.Cabin)
+                .UseEditor<RadioGroupEditor>(editor =>
+                {
+                    editor.Columns(columns => columns.Small(2).Large(3));
+                    editor.Flow = RadioGroupFlow.Down;
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='radio-group']");
+        await Assert.That(group.GetAttribute("data-flow")).IsEqualTo("down");
+        await Assert
+            .That(group.GetAttribute("style"))
+            .IsEqualTo(
+                "--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:3;--sa-rows:3;--sa-rows-sm:2;--sa-rows-md:2"
+            );
+    }
+
+    [Test]
+    public async Task RadioGroupEditor_WithoutColumns_WritesSingleColumn()
+    {
+        // Arrange
+        await using var sut = await CreateChoiceFieldsHost(fields =>
+            fields.Add(model => model.Cabin).UseEditor<RadioGroupEditor>()
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var group = document.RequiredElement("[data-slot='radio-group']");
+        await Assert.That(group.GetAttribute("data-columns")).IsEqualTo("single");
         await Assert.That(group.HasAttribute("style")).IsFalse();
     }
 

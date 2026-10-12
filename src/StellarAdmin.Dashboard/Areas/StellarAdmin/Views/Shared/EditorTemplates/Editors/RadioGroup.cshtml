@@ -7,6 +7,13 @@
     var classes = EditorClassNamesMapper.ForRadio(Editor);
     var cards = Editor.Appearance == RadioGroupAppearance.Cards;
     var emptyChecked = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
+    // The group writes the same columns as sa-radio-group: the column counts and, flowing down, the row counts that
+    // fill each column before the next one starts
+    var columns = Editor.ColumnDefinitions?.Resolve() ?? ResponsiveGrid.ResolveColumns();
+    var columnsStyle = ResponsiveGrid.ColumnsStyle(columns);
+    var down = columnsStyle is not null && Editor.Flow == RadioGroupFlow.Down;
+    var rowsStyle = down ? ResponsiveGrid.RowsStyle(ResponsiveGrid.ResolveRows(columns, choices.Count)) : null;
+    var groupStyle = string.Join(';', new[] { columnsStyle, rowsStyle }.OfType<string>());
 }
 
 <sa-field-set class="@classes.Root">
@@ -15,7 +22,9 @@
     </sa-field-legend>
     <sa-field-description class="@classes.Description" asp-for="@Model">@Description</sa-field-description>
 
-    <sa-field-group class="@classes.Control" data-slot="radio-group">
+    <sa-field-group class="@classes.Control" data-slot="radio-group"
+                    data-columns="@(columnsStyle is null ? "single" : "multiple")" data-flow="@(down ? "down" : "across")"
+                    style="@(groupStyle.Length > 0 ? groupStyle : null)">
         @foreach (var choice in choices)
         {
             var id = TagBuilder.CreateSanitizedId($"{Html.IdForModel()}_{choice.Value}", "_");

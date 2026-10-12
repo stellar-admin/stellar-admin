@@ -21,6 +21,8 @@ The `value` attributes are strings: use `value="express"` or `value="1"` for lit
 
 Both variants reuse the existing Field and Input HTML: a fieldset with a legend, a Field group, and horizontal fields containing the existing radio/checkbox indicators. `ChoiceCard` wraps each field in its label and places the input after its title and description. A group-level `class` applies to the fieldset; an item-level `class` applies to its field (Default) or outer label (ChoiceCard).
 
+Set `columns` (or `columns-base`, `columns-sm`, `columns-md`, `columns-lg`) to lay the options out in columns. The breakpoints are the same as `sa-grid`'s but measured against the field, so a group in a narrow grid column stays in one column. Options fill each row in turn; `flow="RadioGroupFlow.Down"` fills each column first.
+
 Radio groups bind a scalar `string`, enum, `Guid`, `bool`, or numeric primitive (`byte` through `ulong`, `float`, `double`, `decimal`), including nullable value types. Date/time and custom complex types are not supported in this initial API. Formatting and comparison use the current request culture, matching MVC form binding. Enum names and numeric enum submissions resolve to the same selection.
 
 Without `asp-for`, `value` selects an option. With `asp-items`, `SelectListItem.Selected` is used only when neither bound nor explicitly selected. Omit selection to start unchecked. A radio group permits only one selected option. Null is represented by no selection, not an option with a null value.
@@ -43,8 +45,14 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `flow` | `RadioGroupFlow` | `Across` | `Across`, `Down` |
 | `value` | `string` | — | — |
 | `variant` | `RadioGroupVariant` | `Default` | `Default`, `ChoiceCard` |
+| `columns` | `int` | — | — |
+| `columns-base` | `int` | — | — |
+| `columns-lg` | `int` | — | — |
+| `columns-md` | `int` | — | — |
+| `columns-sm` | `int` | — | — |
 | `disabled` | `bool` | — | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `column-span` | `string` | — | — |
@@ -122,6 +130,18 @@ Use a nullable property with `[Required]` when the server must reject no selecti
         <sa-radio-group-item-media><sa-avatar src="/avatars/avatar-2.jpg" /></sa-radio-group-item-media>
         Yuki Tanaka
     </sa-radio-group-item>
+</sa-radio-group>
+```
+
+*From `Pages/RadioGroup/_Columns.cshtml`*
+
+```razor
+<sa-radio-group name="columns-radio" label="Cabin" columns-sm="2" value="premium"
+    variant="RadioGroupVariant.ChoiceCard">
+    <sa-radio-group-item value="economy" description="A seat, a meal and a bag.">Economy</sa-radio-group-item>
+    <sa-radio-group-item value="premium" description="Extra legroom and priority boarding.">Premium economy</sa-radio-group-item>
+    <sa-radio-group-item value="business" description="Lie-flat seats and lounge access.">Business</sa-radio-group-item>
+    <sa-radio-group-item value="first" description="A private suite and chauffeur transfer.">First</sa-radio-group-item>
 </sa-radio-group>
 ```
 

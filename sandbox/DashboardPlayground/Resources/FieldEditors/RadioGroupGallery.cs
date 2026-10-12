@@ -53,6 +53,17 @@ public sealed class RadioGroupGallery
     [Display(Name = "string · UseItems with descriptions · Cards · ClassNames.Option.Root")]
     public string? SeatCards { get; set; }
 
+    // Columns
+
+    [Display(Name = "string · UseItems · Columns(2)")]
+    public string? ColumnSeat { get; set; }
+
+    [Display(Name = "string · UseItems · Columns(Small(2), Large(3)) · Flow = Down")]
+    public string? DownTransport { get; set; }
+
+    [Display(Name = "enum · Appearance = Cards · Columns(2)")]
+    public GalleryCabin CardColumnCabin { get; set; }
+
     // Media
 
     [Display(Name = "string · UseItems with icons and descriptions")]
@@ -81,6 +92,9 @@ public sealed class RadioGroupGallery
             ReadOnlyCabinCards = GalleryCabin.PremiumEconomy,
             Seat = "aisle",
             SeatCards = "window",
+            ColumnSeat = "window",
+            DownTransport = "ferry",
+            CardColumnCabin = GalleryCabin.Business,
             Transport = "train",
             AirportCode = "CPT",
             Guide = "thabo",

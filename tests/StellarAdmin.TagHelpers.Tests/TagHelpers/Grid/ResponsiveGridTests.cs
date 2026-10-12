@@ -43,6 +43,45 @@ public class ResponsiveGridTests
     }
 
     [Test]
+    public async Task ResolveRows_WithItems_FillsEachColumnBeforeTheNext()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 2, 3);
+
+        // Act
+        var rows = ResponsiveGrid.ResolveRows(columns, 7);
+
+        // Assert
+        await Assert.That(rows).IsEqualTo(new GridTiers(7, 4, 4, 3));
+    }
+
+    [Test]
+    public async Task ResolveRows_WithoutItems_UsesOneRow()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 3, 4);
+
+        // Act
+        var rows = ResponsiveGrid.ResolveRows(columns, 0);
+
+        // Assert
+        await Assert.That(rows).IsEqualTo(new GridTiers(1, 1, 1, 1));
+    }
+
+    [Test]
+    public async Task ResolveRows_WithNegativeItemCount_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var columns = new GridTiers(1, 2, 3, 4);
+
+        // Act
+        Action act = () => ResponsiveGrid.ResolveRows(columns, -1);
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentOutOfRangeException>();
+    }
+
+    [Test]
     public async Task ResolveSpan_WithNoValues_SpansOneColumn()
     {
         // Arrange

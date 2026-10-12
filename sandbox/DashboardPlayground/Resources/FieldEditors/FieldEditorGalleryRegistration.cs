@@ -761,6 +761,36 @@ internal static class FieldEditorGalleryRegistration
             }
         );
         fields.AddSection(
+            "Columns",
+            section =>
+            {
+                section.Description =
+                    "Columns respond to the field's width, and the choices fill each row unless Flow is Down.";
+                section
+                    .Add(model => model.ColumnSeat)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                    {
+                        radio.UseItems(GallerySeats.Items);
+                        radio.Columns(2);
+                    });
+                section
+                    .Add(model => model.DownTransport)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                    {
+                        radio.UseItems(GalleryTransport.Items);
+                        radio.Columns(columns => columns.Small(2).Large(3));
+                        radio.Flow = RadioGroupFlow.Down;
+                    });
+                section
+                    .Add(model => model.CardColumnCabin)
+                    .UseEditor<RadioGroupEditor>(radio =>
+                    {
+                        radio.Appearance = RadioGroupAppearance.Cards;
+                        radio.Columns(2);
+                    });
+            }
+        );
+        fields.AddSection(
             "Media",
             section =>
             {
@@ -850,7 +880,7 @@ internal static class FieldEditorGalleryRegistration
             section =>
             {
                 section.Description =
-                    "Columns respond to the field's width, and the choices flow down each column unless Flow is Across.";
+                    "Columns respond to the field's width, and the choices fill each row unless Flow is Down.";
                 section
                     .Add(model => model.CardCabins)
                     .UseEditor<CheckboxGroupEditor>(group =>
@@ -864,12 +894,12 @@ internal static class FieldEditorGalleryRegistration
                         group.Columns(2);
                     });
                 section
-                    .Add(model => model.AcrossAmenities)
+                    .Add(model => model.DownAmenities)
                     .UseEditor<CheckboxGroupEditor>(group =>
                     {
                         group.UseItems(GalleryAmenities.Items);
                         group.Columns(columns => columns.Small(2).Large(3));
-                        group.Flow = CheckboxGroupFlow.Across;
+                        group.Flow = CheckboxGroupFlow.Down;
                     });
                 section
                     .Add(model => model.CardColumnCabins)

@@ -17,6 +17,52 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
     private readonly IOptions<IconOptions> _icons;
 
     /// <summary>
+    ///     The number of columns of options when the field is at least 40rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1. Narrower fields use one column, unless <see cref="ColumnsBase" /> or
+    ///     <see cref="ColumnsSmall" /> is set.
+    /// </remarks>
+    [HtmlAttributeName("columns")]
+    public int? Columns { get; set; }
+
+    /// <summary>
+    ///     The number of columns of options at the smallest width, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to 1.
+    /// </remarks>
+    [HtmlAttributeName("columns-base")]
+    public int? ColumnsBase { get; set; }
+
+    /// <summary>
+    ///     The number of columns of options when the field is at least 56rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the number of columns at 40rem.
+    /// </remarks>
+    [HtmlAttributeName("columns-lg")]
+    public int? ColumnsLarge { get; set; }
+
+    /// <summary>
+    ///     The number of columns of options when the field is at least 40rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="Columns" />, otherwise the number of columns at 30rem.
+    /// </remarks>
+    [HtmlAttributeName("columns-md")]
+    public int? ColumnsMedium { get; set; }
+
+    /// <summary>
+    ///     The number of columns of options when the field is at least 30rem wide, from 1 to 12.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the number of columns at the smallest width.
+    /// </remarks>
+    [HtmlAttributeName("columns-sm")]
+    public int? ColumnsSmall { get; set; }
+
+    /// <summary>
     ///     Whether all options are disabled.
     /// </summary>
     public bool? Disabled { get; set; }
@@ -39,9 +85,18 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         TagHelperOutput output,
         bool multiple,
         bool card,
+        bool down,
         IEnumerable<string>? values
     )
     {
+        var columns = GridLayout.ResolveColumns(
+            multiple ? "sa-checkbox-group" : "sa-radio-group",
+            Columns,
+            ColumnsBase,
+            ColumnsSmall,
+            ColumnsMedium,
+            ColumnsLarge
+        );
         var name =
             For == null ? Name : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
         if (string.IsNullOrWhiteSpace(name))
@@ -184,6 +239,24 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
             "class",
             JoinCssClasses("sa-field-group", output.GetUserSuppliedClass())
         );
+        // The options fill a grid measured against the field around the group. Flowing down, each
+        // breakpoint also gets the row count that fills a column before the next one starts.
+        if (ResponsiveGrid.ColumnsStyle(columns) is { } columnsStyle)
+        {
+            output.Attributes.SetAttribute("data-columns", "multiple");
+            if (down)
+            {
+                var rows = ResponsiveGrid.ResolveRows(columns, items?.Count ?? group.ItemCount);
+                output.Attributes.SetAttribute("data-flow", "down");
+                if (ResponsiveGrid.RowsStyle(rows) is { } rowsStyle)
+                {
+                    columnsStyle = $"{columnsStyle};{rowsStyle}";
+                }
+            }
+
+            output.AppendStyle(columnsStyle);
+        }
+
         if (Disabled == true)
         {
             output.Attributes.SetAttribute("aria-disabled", "true");

@@ -1,9 +1,10 @@
-/* Grid: responsive columns for sa-grid and sa-details. The wrapper is the container the column
-   breakpoints query; the content inside is the grid. The tag helpers write the column counts and
-   each item's span and start per breakpoint as the inline grid variables (structure.css). Fields
-   and display fields placed directly in an sa-grid get their item from their own tag helper. Each
-   item is the field-group container of what it holds, so content that measures its field group, such as the
-   Dashboard's choice columns, measures its own column.
+/* Grid: responsive columns for sa-grid, sa-details and the options of checkbox and radio groups.
+   The wrapper is the container the column breakpoints query; the content inside is the grid. For a
+   choice group with columns, the wrapper is the field or field set around the group. The tag
+   helpers write the column counts, each item's span and start, and a choice group's row counts per
+   breakpoint as the inline grid variables (structure.css). Fields and display fields placed
+   directly in an sa-grid get their item from their own tag helper. Choice groups that flow down
+   fill each column before the next one starts.
    Replaces: .sa-grid, .sa-grid-content, .sa-grid-item */
 
 @layer sa.components {
@@ -13,8 +14,12 @@
     width: 100%;
     min-width: 0;
   }
+  :is(.sa-field, .sa-field-set):has(> .sa-field-group[data-columns="multiple"]) {
+    container: grid / inline-size;
+  }
   .sa-grid-content,
-  .sa-details-list {
+  .sa-details-list,
+  .sa-field-group[data-columns="multiple"] {
     display: grid;
     grid-template-columns: repeat(var(--sa-cols), minmax(0, 1fr));
     & > * {
@@ -26,34 +31,44 @@
     align-items: start;
     gap: calc(5 * var(--sa-unit)) calc(4 * var(--sa-unit));
   }
+  .sa-field-group[data-columns="multiple"][data-flow="down"] {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(var(--sa-rows), auto);
+  }
   @container grid (min-width: 30rem) {
-    :is(.sa-grid-content, .sa-details-list) {
+    :is(.sa-grid-content, .sa-details-list, .sa-field-group[data-columns="multiple"]) {
       grid-template-columns: repeat(var(--sa-cols-sm), minmax(0, 1fr));
       & > * {
         grid-column: var(--sa-start-sm) / span var(--sa-span-sm);
       }
     }
+    .sa-field-group[data-columns="multiple"][data-flow="down"] {
+      grid-template-rows: repeat(var(--sa-rows-sm), auto);
+    }
   }
   @container grid (min-width: 40rem) {
-    :is(.sa-grid-content, .sa-details-list) {
+    :is(.sa-grid-content, .sa-details-list, .sa-field-group[data-columns="multiple"]) {
       grid-template-columns: repeat(var(--sa-cols-md), minmax(0, 1fr));
       & > * {
         grid-column: var(--sa-start-md) / span var(--sa-span-md);
       }
     }
+    .sa-field-group[data-columns="multiple"][data-flow="down"] {
+      grid-template-rows: repeat(var(--sa-rows-md), auto);
+    }
   }
   @container grid (min-width: 56rem) {
-    :is(.sa-grid-content, .sa-details-list) {
+    :is(.sa-grid-content, .sa-details-list, .sa-field-group[data-columns="multiple"]) {
       grid-template-columns: repeat(var(--sa-cols-lg), minmax(0, 1fr));
       & > * {
         grid-column: var(--sa-start-lg) / span var(--sa-span-lg);
       }
     }
+    .sa-field-group[data-columns="multiple"][data-flow="down"] {
+      grid-template-rows: repeat(var(--sa-rows-lg), auto);
+    }
   }
 
-  .sa-grid-item {
-    container: field-group / inline-size;
-  }
   /* Sections side by side are separated by the grid gap, not a rule. A grid with one column at
      every width keeps the rule between its stacked sections (form-section.css). */
   .sa-grid-content[data-columns="multiple"] > .sa-grid-item + .sa-grid-item > .sa-form-section {

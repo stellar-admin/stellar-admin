@@ -1,5 +1,6 @@
 using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Options;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Editors;
 
@@ -15,7 +16,7 @@ public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGro
 
     /// <summary>
     ///     The order in which the choices fill the columns set with <see cref="Columns(int)" />. Defaults to
-    ///     <see cref="CheckboxGroupFlow.Down" />.
+    ///     <see cref="CheckboxGroupFlow.Across" />.
     /// </summary>
     public CheckboxGroupFlow Flow { get; set; }
 

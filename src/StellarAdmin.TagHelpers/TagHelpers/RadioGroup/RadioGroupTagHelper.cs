@@ -12,6 +12,14 @@ namespace StellarAdmin.TagHelpers;
 public class RadioGroupTagHelper : ChoiceGroupTagHelper
 {
     /// <summary>
+    ///     The order in which the options fill the columns set with <c>columns</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="RadioGroupFlow.Across" />.
+    /// </remarks>
+    public RadioGroupFlow? Flow { get; set; }
+
+    /// <summary>
     ///     The initially selected value when not using model binding.
     /// </summary>
     public string? Value { get; set; }
@@ -40,6 +48,7 @@ public class RadioGroupTagHelper : ChoiceGroupTagHelper
             output,
             false,
             effectiveVariant == RadioGroupVariant.ChoiceCard,
+            Flow == RadioGroupFlow.Down,
             Value == null ? null : new[] { Value }
         );
     }
