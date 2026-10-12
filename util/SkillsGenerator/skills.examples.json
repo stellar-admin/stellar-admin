@@ -28,6 +28,7 @@
   "DropdownMenu": ["DropdownMenu/_Intro", "DropdownMenu/_CheckboxItems", "DropdownMenu/_Submenu"],
   "Empty": ["Empty/_Intro", "Empty/_WithIcon"],
   "Field": ["Field/_Intro", "Field/_Implicit"],
+  "Grid": ["Grid/_Intro", "Grid/_Spans", "Grid/_DisplayFields", "Grid/_GridItems"],
   "Icon": ["Icon/_Intro", "Icon/_Custom"],
   "Input": ["Input/_Intro", "Input/_ModelBinding", "Checkbox/_Intro", "Radio/_Intro"],
   "InputGroup": ["InputGroup/_Icons", "InputGroup/_Buttons"],

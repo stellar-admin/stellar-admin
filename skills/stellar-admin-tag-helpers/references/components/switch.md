@@ -15,6 +15,10 @@ A toggle control that switches between on and off states. Backed by a native che
 | `form` | `string` | — | — |
 | `size` | `SwitchSize` | `Default` | `Default`, `Small` |
 | `value` | `string` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

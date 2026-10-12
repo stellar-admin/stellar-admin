@@ -1,6 +1,6 @@
 # Grid
 
-Status: in progress (2026-10-12). Prototype, tag helpers and DocsSamples done; Dashboard, website and skills outstanding.
+Status: in progress (2026-10-12). Prototype, tag helpers, DocsSamples, website and skills done; Dashboard outstanding.
 
 Give forms one public responsive grid, `sa-grid`, that works like `sa-details`: the same column and span attributes, the same breakpoints, the same CSS and the same rule for where a span goes. The Dashboard form grid moves onto it, and `sa-form-row` is removed.
 
@@ -105,18 +105,22 @@ Verified: DocsSamples build; all six Grid partials and the converted samples ret
 
 Done (2026-10-12): `FieldOrientation.Responsive` and its data attribute and class are removed; the responsive rules are gone from `field.css`, `structure.css` (vertical fields still stretch their children) and `details.css` (display fields are a flex column again, with the two-column grid only when horizontal); grid item comments updated. Samples `Grid/_Responsive` and `Details/_Responsive` removed (pages, DocsStatic, generator); `Grid/_GridItems` uses horizontal Payment details; the ComponentPlayground Field demo's responsive fields are vertical, its buttons horizontal. Verified: solution build, TagHelpers tests 400/400, Switch, Checkbox, Radio Group, Checkbox Group, Field, Details and Grid pages rendered in headless Chromium (dark).
 
+### Website, skills
+
+Done (2026-10-12):
+
+- Generator run: Grid demos and includes added; FormRow and `details-responsive` removed; the other demos changed only by the stylesheet hash and SVG attribute order.
+- Website: `grid.mdx` (usage, columns and spans, inputs and display fields, grid items, narrow, API for `sa-grid`, `sa-grid-item` and field spans); `form-row.mdx` removed (no redirect); `meta.json`; `form-section.mdx` uses `sa-grid`; `details.mdx` has `columns-base`, `full` spans, no `column-span-full` and no responsive section; `field.mdx` has the orientation values without `Responsive` and the span attributes; `pnpm examples:export` refreshed the inline example assets.
+- Skills: `skills.examples.json` has Grid examples; regenerated (`grid.md` in, `form-row.md` removed, every implicit input lists the span attributes); hand-written `grid.md` structure, `details.md` structure (grid spans, no responsive), and `forms.md` (the grouping example uses `sa-grid`).
+
+Verified: website lint, type check and build; the Grid page in the dev server (headless Chromium, dark); SkillsGenerator `--check` (no drift); skill validation tests and check.
+
 ### Dashboard
 
 - `_FormItems.cshtml`, `_FormSection.cshtml` and `_FormGroup.cshtml` emit `sa-grid`/`sa-grid-item`; fields get their span through the item, since editor templates render arbitrary markup.
 - Remove the form grid rules from `client.css`; keep the multi-column section separator rule against the new classes.
 - Fold `FormGrid.ValidateColumns` into `ResponsiveGrid` (10).
 - Rename `GridColumnsBuilder.Default` → `Base`, `ColumnSpanBuilder.Default`/`DefaultFull` → `Base`/`BaseFull` and the internal `Default` members of `FormGridColumnDefinitions`/`FormColumnSpanDefinitions` (24); update callers in DashboardPlayground (`FormLayoutGalleryRegistration`), tests and the Dashboard consumer skill reference (`setup.md`).
-
-### Website, skills
-
-- Run the generator (Grid entries are in, FormRow entries out).
-- Website: `grid.mdx`, remove `form-row.mdx` (no redirect) and its includes and demos, `meta.json`, update `form-section.mdx` and `details.mdx` (`columns-base`, `full` spans, `column-span-full` removed, the responsive section and `details-responsive.mdx` include removed), and `field.mdx` (orientation values without `Responsive`).
-- Skills: regenerate (`components/grid.md` in, `form-row.md` out, index), update `form-section.md`, `details.md` (`columns-base`, `full` spans, no responsive orientation), `field.md` (orientation values) and `forms.md` (whose grouping example uses a raw `grid grid-cols-2` div), and `skills.examples.json`.
 
 ### Verification
 

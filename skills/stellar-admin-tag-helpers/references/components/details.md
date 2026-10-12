@@ -11,7 +11,7 @@ Lays out read-only display fields in a description list.
 <!-- structure:begin -->
 ## When to use
 
-Use `<sa-details>` to show a record's values read-only: a view page, an audit section on an edit page, or the expanded panel of a [table](table.md) row detail. Inside `<sa-details>` each field renders a `<dt>`/`<dd>` pair in a `<dl>`. A `<sa-display-field>` can also sit among form inputs (for example inside a `<sa-form-row>`); outside `<sa-details>` it renders `<div>`s, takes an input's label style and a control's height so the row lines up, and ignores column spans.
+Use `<sa-details>` to show a record's values read-only: a view page, an audit section on an edit page, or the expanded panel of a [table](table.md) row detail. Inside `<sa-details>` each field renders a `<dt>`/`<dd>` pair in a `<dl>`. A `<sa-display-field>` can also sit among form inputs (for example in a [`<sa-grid>`](grid.md)); outside `<sa-details>` it renders `<div>`s and takes an input's label style and a control's height so the row lines up. Its column spans apply only directly in `<sa-details>` or `<sa-grid>`.
 
 ## Values
 
@@ -26,11 +26,11 @@ Bind a field with `asp-for`; the label comes from `[Display(Name)]` unless `labe
 
 ## Columns and spans
 
-The columns respond to the list's container width, not the viewport. `columns` sets the count from 40rem; the list has one column below that unless `columns-sm` is set. `columns-sm`, `columns-md` and `columns-lg` set the count at 30rem, 40rem and 56rem, and an unset width inherits the next smaller one. Set either `columns` or `columns-md`, not both. Counts are 1 to 12.
+Columns and spans work as in [`<sa-grid>`](grid.md). The columns respond to the list's container width, not the viewport. `columns` sets the count from 40rem; the list has one column below that unless `columns-base` or `columns-sm` is set. `columns-base`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one. Set either `columns` or `columns-md`, not both. Counts are 1 to 12.
 
-`column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` set a field's span the same way, and each span is limited to the column count at that width. `column-span-full="true"` spans every column; the per-width spans still apply from their widths (for example `column-span-full="true" column-span-lg="2"`). Set either `column-span` or `column-span-full`, not both.
+`column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` set a field's span the same way: a number from 1 to 12 or `full` for every column (for example `column-span="full" column-span-lg="2"`). Each span is limited to the column count at that width; an invalid value throws when the page renders.
 
-`orientation` on `<sa-details>` applies to every field unless a field sets its own; `FieldOrientation.Responsive` places the label beside the value once the list is 32rem wide. `variant="DetailsVariant.Divided"` separates the fields with rules, which suits a short horizontal list such as audit information.
+`orientation` on `<sa-details>` (`Vertical` or `Horizontal`) applies to every field unless a field sets its own. `variant="DetailsVariant.Divided"` separates the fields with rules, which suits a short horizontal list such as audit information.
 
 The same breakpoints and inline grid variables are available from the public `ResponsiveGrid` helper (`ResolveColumns`, `ResolveSpan`, `ColumnsStyle`, `SpanStyle`, `RowsStyle`) for a custom grid.
 
@@ -50,10 +50,11 @@ The same breakpoints and inline grid variables are available from the public `Re
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `columns` | `int` | — | — |
+| `columns-base` | `int` | — | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
-| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Responsive` |
+| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `variant` | `DetailsVariant` | `Default` | `Default`, `Divided` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -63,17 +64,16 @@ The same breakpoints and inline grid variables are available from the public `Re
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `column-span` | `int` | — | — |
-| `column-span-full` | `bool` | `false` | `true`, `false` |
-| `column-span-lg` | `int` | — | — |
-| `column-span-md` | `int` | — | — |
-| `column-span-sm` | `int` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `empty-text` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `format` | `string` | — | — |
 | `href` | `string` | — | — |
 | `label` | `string` | — | — |
-| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Responsive` |
+| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `secondary` | `string` | — | — |
 | `template` | `string` | `[UIHint]` | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
@@ -107,7 +107,7 @@ The same breakpoints and inline grid variables are available from the public `Re
     <sa-display-field asp-for="Return" />
     <sa-display-field asp-for="Cabin" />
     <sa-display-field asp-for="Party" />
-    <sa-display-field asp-for="Notes" column-span-full="true" column-span-lg="3" />
+    <sa-display-field asp-for="Notes" column-span="full" column-span-lg="3" />
     <sa-display-field asp-for="Total" />
 </sa-details>
 ```
@@ -155,17 +155,13 @@ The same breakpoints and inline grid variables are available from the public `Re
 ```razor
 <form>
     <sa-form-section title="Booking" description="Who is travelling and where.">
-        <sa-field-group>
-            <sa-form-row>
-                <sa-display-field asp-for="Reference" />
-                <sa-input asp-for="LeadTraveller" />
-            </sa-form-row>
-            <sa-form-row>
-                <sa-input asp-for="Email" />
-                <sa-display-field asp-for="Status" />
-            </sa-form-row>
-            <sa-textarea asp-for="Notes" rows="3" />
-        </sa-field-group>
+        <sa-grid columns="2">
+            <sa-display-field asp-for="Reference" />
+            <sa-input asp-for="LeadTraveller" />
+            <sa-input asp-for="Email" />
+            <sa-display-field asp-for="Status" />
+            <sa-textarea asp-for="Notes" rows="3" column-span="full" />
+        </sa-grid>
     </sa-form-section>
     <sa-form-section title="Audit" description="Maintained automatically.">
         <sa-details columns="2">

@@ -12,6 +12,10 @@ A styled multi-line text input that grows with its content. Supports model bindi
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

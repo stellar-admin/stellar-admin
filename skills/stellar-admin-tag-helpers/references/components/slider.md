@@ -34,6 +34,10 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 | `value-format` | `string` | — | — |
 | `thumb-labels` | `string` | — | — |
 | `form` | `string` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

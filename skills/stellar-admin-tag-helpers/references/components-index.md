@@ -25,8 +25,8 @@
 | [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. |
 | [Empty](components/empty.md) | `<sa-empty>`, `<sa-empty-content>`, `<sa-empty-description>`, … | An empty-state container that communicates the absence of content, composed of a header, media, title, description, and content subcomponents. |
 | [Field](components/field.md) | `<sa-field>`, `<sa-field-content>`, `<sa-field-description>`, … | Wraps a form control together with its label, description, and error message, arranging them according to the chosen orientation. |
-| [FormRow](components/form-row.md) | `<sa-form-row>` | Arranges form content in equal-width columns that stack in narrow containers. |
 | [FormSection](components/form-section.md) | `<sa-form-section>` | Groups form content under a title with an optional description. |
+| [Grid](components/grid.md) | `<sa-grid>`, `<sa-grid-item>` | Lays out fields and other content in responsive columns. |
 | [Icon](components/icon.md) | `<sa-icon>` | Renders an SVG icon from the active icon pack by name. |
 | [Input](components/input.md) | `<sa-input>` | A form input. |
 | [InputGroup](components/input-group.md) | `<sa-input-group>`, `<sa-input-group-addon>`, `<sa-input-group-button>`, … | A container that groups an input with add-ons, buttons, or text so they render as a single combined field. |

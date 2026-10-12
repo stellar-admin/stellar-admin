@@ -25,6 +25,10 @@ Prefer a [radio group](radio-group.md) when related options share one bound prop
 | `asp-format` | `string` | — | — |
 | `type` | `string` | — | — |
 | `value` | `string` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

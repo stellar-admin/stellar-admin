@@ -29,7 +29,11 @@ Wraps a form control together with its label, description, and error message, ar
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Responsive` |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
+| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

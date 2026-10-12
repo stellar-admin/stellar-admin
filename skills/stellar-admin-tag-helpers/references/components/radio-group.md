@@ -47,6 +47,10 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 | `variant` | `RadioGroupVariant` | `Default` | `Default`, `ChoiceCard` |
 | `disabled` | `bool` | — | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

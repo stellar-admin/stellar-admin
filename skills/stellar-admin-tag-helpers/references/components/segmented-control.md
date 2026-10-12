@@ -36,6 +36,10 @@ Use the component for a single choice from a short list. It has one horizontal a
 | `disabled` | `bool` | — | `true`, `false` |
 | `required` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

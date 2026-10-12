@@ -49,6 +49,10 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 | `variant` | `CheckboxGroupVariant` | `Default` | `Default`, `ChoiceCard` |
 | `disabled` | `bool` | — | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

@@ -31,6 +31,10 @@ A segmented one-time-code input. A single real `<input>` holds the whole code an
 | `aria-invalid` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `form` | `string` | — | — |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |

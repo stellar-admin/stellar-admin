@@ -111,6 +111,7 @@ if (!ModelState.IsValid) return Page();
 ## Grouping: `<sa-field-group>` and `<sa-field-set>`
 
 - `<sa-field-group>` — spacing container for a set of fields (nestable).
+- [`<sa-grid>`](components/grid.md) — fields in responsive columns; fields set their own `column-span` (a number or `full`), other content spans through `<sa-grid-item>`.
 - `<sa-field-set>` — a semantic fieldset; holds a `<sa-field-legend>` (heading) and optional `<sa-field-description>`, then a `<sa-field-group>`.
 - `<sa-field-content>` — a flex column grouping label + description, for horizontal fields.
 - `<sa-field-separator />` — a horizontal divider **between fields** inside a group, optionally with content (such as a label) centered on the line.
@@ -121,10 +122,10 @@ if (!ModelState.IsValid) return Page();
     <sa-field-description>We use this to deliver your tickets.</sa-field-description>
     <sa-field-group>
         <sa-input asp-for="Street" />
-        <div class="grid grid-cols-2 gap-4">
+        <sa-grid columns="2">
             <sa-input asp-for="City" />
             <sa-input asp-for="PostalCode" />
-        </div>
+        </sa-grid>
     </sa-field-group>
 </sa-field-set>
 ```

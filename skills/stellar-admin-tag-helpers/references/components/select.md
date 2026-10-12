@@ -14,6 +14,10 @@ A styled dropdown for choosing a single option, wrapping a native `<select>` ele
 |-----------|------|---------|--------|
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `size` | `SelectSize` | `Default` | `Default`, `Small` |
+| `column-span` | `string` | — | — |
+| `column-span-lg` | `string` | — | — |
+| `column-span-md` | `string` | — | — |
+| `column-span-sm` | `string` | — | — |
 | `description` | `string` | — | — |
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
