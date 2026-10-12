@@ -70,6 +70,7 @@ internal static class DemoNavigation
                 new DemoItem("Carousel", "/Carousel/Index"),
                 new DemoItem("Chip", "/Chip/Index"),
                 new DemoItem("Data Grid", "/DataGrid/Index"),
+                new DemoItem("Details", "/Details/Index"),
                 new DemoItem("Empty", "/Empty/Index"),
                 new DemoItem("Icon", "/Icon/Index"),
                 new DemoItem("Item", "/Item/Index"),

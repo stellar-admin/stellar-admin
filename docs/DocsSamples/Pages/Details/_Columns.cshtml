@@ -1,0 +1,14 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-details columns="3">
+        <sa-display-field asp-for="LeadTraveller" />
+        <sa-display-field asp-for="Email" column-span="2" />
+        <sa-display-field asp-for="Departure" />
+        <sa-display-field asp-for="Return" />
+        <sa-display-field asp-for="Cabin" />
+        <sa-display-field asp-for="Notes" column-span-full="true" />
+    </sa-details>
+    <!-- code end -->
+</div>

@@ -1,0 +1,41 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-page-header class="mb-8">
+        <sa-page-header-title>@Model.Reference</sa-page-header-title>
+        <sa-page-header-description>@Model.Destination · @Model.Departure.ToString("d MMM") – @Model.Return.ToString("d MMM yyyy")</sa-page-header-description>
+        <sa-page-header-actions>
+            <sa-button variant="ButtonVariant.Outline">Cancel booking</sa-button>
+            <sa-button>Edit</sa-button>
+        </sa-page-header-actions>
+    </sa-page-header>
+
+    <sa-form-section title="Booking" description="Who is travelling and where.">
+        <sa-details columns="2">
+            <sa-display-field asp-for="Reference" />
+            <sa-display-field asp-for="Status" />
+            <sa-display-field asp-for="LeadTraveller" />
+            <sa-display-field asp-for="Email" />
+            <sa-display-field asp-for="Destination" href="#destination-@Model.DestinationId" />
+            <sa-display-field asp-for="Departure" />
+            <sa-display-field asp-for="Party" />
+            <sa-display-field asp-for="Total" />
+            <sa-display-field asp-for="PromoCode" />
+        </sa-details>
+    </sa-form-section>
+    <sa-form-section title="Notes">
+        <sa-details>
+            <sa-display-field asp-for="Notes" />
+        </sa-details>
+    </sa-form-section>
+    <sa-form-section title="Audit" description="Maintained automatically.">
+        <sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal">
+            <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
+            <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
+            <sa-display-field asp-for="Version" />
+            <sa-display-field asp-for="ArchivedAt" />
+        </sa-details>
+    </sa-form-section>
+    <!-- code end -->
+</div>

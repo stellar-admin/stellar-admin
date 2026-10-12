@@ -1,0 +1,12 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal">
+        <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
+        <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
+        <sa-display-field asp-for="Version" />
+        <sa-display-field asp-for="ArchivedAt" />
+    </sa-details>
+    <!-- code end -->
+</div>

@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Details</title>
+<!-- Prototype: sa-details / sa-display-field, a read-only label/value display (Filament's infolists) built on the
+     sa-field infrastructure. Uses the built library bundle; build it first (npm run build in
+     src/StellarAdmin.TagHelpers/Client). Plan: docs/plans/info-lists.md. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+<style>
+  /* ---------------------------------------------------------------------------------------------
+     Candidate CSS, written as the library would (Client/css/components/details.css).
+     sa-details: a <div> container (so column counts can follow its own width) around a <dl> grid.
+     sa-display-field: an sa-field with a dt label and a dd value; outside a dl, both are divs.
+     --------------------------------------------------------------------------------------------- */
+  @layer sa.components {
+    .sa-details {
+      container: details / inline-size;
+      width: 100%;
+      min-width: 0;
+    }
+    .sa-details-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit));
+      margin: 0;
+    }
+    @container details (min-width: 28rem) {
+      .sa-details:is([data-columns="2"], [data-columns="3"], [data-columns="4"]) > .sa-details-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @container details (min-width: 40rem) {
+      .sa-details[data-columns="3"] > .sa-details-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sa-details[data-columns="4"] > .sa-details-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    /* The field: sa-field supplies the flex column; the display field tightens the label/value gap. */
+    .sa-display-field {
+      gap: calc(1 * var(--sa-unit));
+      min-width: 0;
+      margin: 0;
+      &[data-span="full"] { grid-column: 1 / -1; }
+    }
+    .sa-display-field-label {
+      margin: 0;
+      color: var(--sa-color-ink-muted);
+      font-size: var(--sa-text-sm);
+      font-weight: 400;
+      line-height: 1.375;
+    }
+    .sa-display-field-value {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: calc(1.5 * var(--sa-unit));
+      min-width: 0;
+      margin: 0;
+      color: var(--sa-color-ink);
+      font-size: var(--sa-text-sm);
+      font-weight: var(--sa-weight-control);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      &[data-kind="number"] { font-variant-numeric: tabular-nums; }
+      &[data-kind="text"] { display: block; font-weight: 400; white-space: pre-line; }
+      &[data-empty] { color: var(--sa-color-ink-placeholder); font-weight: 400; }
+      & > a { color: var(--sa-color-accent-text); text-underline-offset: 4px; }
+      & > a:hover { text-decoration: underline; }
+      & > svg { width: var(--sa-control-icon); height: var(--sa-control-icon); flex-shrink: 0; }
+      & > [data-boolean="true"] { color: var(--sa-color-success); }
+      & > [data-boolean="false"] { color: var(--sa-color-ink-muted); }
+      & > .sa-display-field-secondary { color: var(--sa-color-ink-muted); font-weight: 400; }
+    }
+
+    /* Horizontal: a label column and a value column, the same split in every row. */
+    .sa-display-field[data-orientation="horizontal"] {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      align-items: baseline;
+      gap: calc(4 * var(--sa-unit));
+    }
+    /* Responsive: stacked until the details are wide enough. */
+    @container details (min-width: 32rem) {
+      .sa-display-field[data-orientation="responsive"] {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        align-items: baseline;
+        gap: calc(4 * var(--sa-unit));
+      }
+    }
+
+    /* Among inputs (outside sa-details): an input's label, and the value takes a control's height so a
+       row of inputs and display fields lines up (C2). */
+    .sa-display-field:not(.sa-details-list > .sa-display-field) {
+      gap: calc(2 * var(--sa-unit));
+      & > .sa-display-field-label { color: var(--sa-color-ink); font-weight: var(--sa-weight-control); }
+      & > .sa-display-field-value { min-height: var(--sa-control-h); }
+      & > .sa-display-field-value:not([data-empty]) { font-weight: 400; }
+    }
+
+    /* In a row detail: caption labels, denser (F2). This would live with the table's row-detail rules. */
+    .sa-table-row-detail-content .sa-display-field {
+      gap: calc(0.5 * var(--sa-unit));
+      & > .sa-display-field-label { font-size: var(--sa-text-xs); }
+      & > .sa-display-field-value:not([data-empty]) { font-weight: 400; }
+    }
+
+    /* Divided: horizontal rows separated by rules, for audit-style and view-page lists. */
+    .sa-details[data-variant="divided"] > .sa-details-list {
+      gap: 0;
+      & > .sa-display-field {
+        padding-block: calc(3 * var(--sa-unit));
+        & + .sa-display-field { border-top: var(--sa-border-width) solid var(--sa-color-line); }
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------------------------------------
+     Option overrides: only for the comparison strips; not extracted.
+     --------------------------------------------------------------------------------------------- */
+  /* A2: field label. The label reads like an input's label; the value is regular weight. */
+  .opt-label-field .sa-display-field-label { color: var(--sa-color-ink); font-weight: var(--sa-weight-control); }
+  .opt-label-field .sa-display-field-value:not([data-empty]) { font-weight: 400; }
+  /* A3: caption. Extra-small muted label, regular value (the docs' row-detail sample). */
+  .opt-label-caption .sa-display-field-label { font-size: var(--sa-text-xs); }
+  .opt-label-caption .sa-display-field-value:not([data-empty]) { font-weight: 400; }
+  .opt-label-caption .sa-display-field { gap: calc(0.5 * var(--sa-unit)); }
+
+  /* E: status badge with a coloured dot. */
+  .status-dot { width: 6px; height: 6px; border-radius: var(--sa-radius-round); background: var(--sa-color-success); }
+
+  /* Proposed Razor under each example */
+  details.razor { border-top: 1px solid var(--sa-color-line); background: var(--sa-color-surface-subtle); }
+  section.q > details.razor { margin-top: 12px; border: 1px solid var(--sa-color-line); border-radius: 8px; overflow: hidden; }
+  details.razor > summary { cursor: pointer; padding: 6px 14px; font-size: 0.75rem; color: var(--sa-color-ink-muted); }
+  details.razor > summary b { color: var(--sa-color-ink); font-weight: 600; }
+  details.razor pre { margin: 0; padding: 4px 14px 14px; overflow-x: auto; font-family: var(--sa-font-mono); font-size: 0.75rem; line-height: 1.6; color: var(--sa-color-ink); }
+  details.razor .c { color: var(--sa-color-ink-muted); }
+
+  /* ---------------------------------------------------------------------------------------------
+     Page chrome
+     --------------------------------------------------------------------------------------------- */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1280px; margin: 0 auto; padding: 24px 16px 96px; }
+  h1.page-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 8px; max-width: 90ch; }
+  section.q { margin-top: 36px; }
+  section.q > h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  section.q > p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 12px; max-width: 95ch; }
+  .strips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 12px; }
+  .strips.wide { grid-template-columns: minmax(0, 1fr); }
+  figure.strip { margin: 0; border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-surface); overflow: hidden; min-width: 0; }
+  figure.strip > figcaption { padding: 8px 14px; font-size: 0.75rem; color: var(--sa-color-ink-muted); border-bottom: 1px solid var(--sa-color-line); background: var(--sa-color-surface-subtle); }
+  figure.strip > figcaption b { color: var(--sa-color-ink); font-weight: 600; }
+  .strip-body { padding: 20px; min-width: 0; }
+  .strip-body.on-canvas { background: var(--sa-color-canvas); }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 12px; font-size: 0.8125rem; border: 1px solid var(--sa-color-line); border-radius: 10px; background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay); }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+  .page-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .page-head h3 { margin: 0; font-size: var(--sa-text-base); font-weight: var(--sa-weight-heading); }
+  .page-head p { margin: 2px 0 0; color: var(--sa-color-ink-muted); font-size: var(--sa-text-sm); }
+</style>
+</head>
+<body>
+<div class="page" id="main">
+  <h1 class="page-title">Details (sa-details / sa-display-field)</h1>
+  <p class="lede">Read-only label/value display, Filament's infolists, built on the sa-field infrastructure: <code>sa-details</code> is a column grid around a <code>&lt;dl&gt;</code>; each <code>sa-display-field</code> is an <code>sa-field</code> with a <code>dt</code> label and a <code>dd</code> value, and keeps <code>orientation</code>. The live candidate (top) is the recommended default: muted label, medium-weight value. Each section below compares one open question; pick a letter per section.</p>
+
+  <section class="q" id="model">
+    <h2>Model used by the snippets</h2>
+    <p>Every snippet is proposed, uncompiled Tag Helper markup. Labels come from <code>[Display]</code> unless <code>label</code> overrides them; formatting comes from metadata (<code>[DataType]</code>, <code>[DisplayFormat]</code>) unless <code>format</code> overrides it; child content replaces value rendering entirely. Templates resolve by name only (<code>template</code> or <code>[UIHint]</code>) from MVC's DisplayTemplates/; the tag helper never looks one up by type, so MVC's built-in type templates never apply. Where options differ only in default styling (A, D), they share one snippet.</p>
+    <div data-razor="model"></div>
+  </section>
+
+  <section class="q" id="live">
+    <h2>Candidate: a booking's view page</h2>
+    <p>Split form sections holding details, the default label style, two columns, and an audit section in divided horizontal rows.</p>
+    <div class="strips wide"><figure class="strip"><figcaption><b>Live candidate</b> · sa-form-section (split) › sa-details columns="2"; Audit: variant="divided", orientation="horizontal"</figcaption>
+      <div class="strip-body on-canvas" data-render="viewPage"></div><div data-razor="viewPage"></div></figure></div>
+  </section>
+
+  <section class="q">
+    <h2>A · Label and value typography</h2>
+    <p>A1 is the candidate (Stripe/Linear: the value carries the weight). A2 matches an input's label so details and forms look alike. A3 is the docs' current row-detail sample.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><b>A1 (chosen)</b> · label sm muted 400 · value sm ink 500</figcaption><div class="strip-body" data-render="booking2"></div></figure>
+      <figure class="strip opt-label-field"><figcaption><b>A2</b> · label sm ink 500 (as sa-field-label) · value sm ink 400</figcaption><div class="strip-body" data-render="booking2"></div></figure>
+      <figure class="strip opt-label-caption"><figcaption><b>A3</b> · label xs muted · value sm ink 400 · gap 0.5u</figcaption><div class="strip-body" data-render="booking2"></div></figure>
+    </div>
+    <div data-razor="booking2"></div>
+  </section>
+
+  <section class="q">
+    <h2>B · Arrangement</h2>
+    <p>All four are attributes (<code>orientation</code>, <code>variant</code>); defaults are stacked and not divided. B1 stacked in columns. B2 horizontal (label column 1fr, value 2fr). B3 horizontal with rules between rows (Filament's inline labels / Tailwind UI description lists). B4 responsive: stacked when narrow, horizontal when wide. Resize the window or check mobile.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><b>B1</b> · stacked · columns="3"</figcaption><div class="strip-body" data-render="booking3"></div><div data-razor="booking3"></div></figure>
+      <figure class="strip"><figcaption><b>B2</b> · orientation="horizontal" · one column</figcaption><div class="strip-body" data-render="bookingHorizontal"></div><div data-razor="bookingHorizontal"></div></figure>
+      <figure class="strip"><figcaption><b>B3</b> · variant="divided" · horizontal</figcaption><div class="strip-body" data-render="bookingDivided"></div><div data-razor="bookingDivided"></div></figure>
+      <figure class="strip"><figcaption><b>B4</b> · orientation="responsive" · one column</figcaption><div class="strip-body" data-render="bookingResponsive"></div><div data-razor="bookingResponsive"></div></figure>
+    </div>
+  </section>
+
+  <section class="q">
+    <h2>C · Mixed with inputs on an edit page</h2>
+    <p>Display fields inside a form section beside inputs (a read-only booking code next to an editable name), plus an audit section. Chosen: C2. Only display fields placed directly among inputs (outside sa-details) take an input's label style and a control's height; sa-details inside a form looks as it does anywhere else. Rejected: C1 plain text (misaligned rows), C3 tinted well (reads as a disabled input).</p>
+    <div class="strips wide">
+      <figure class="strip"><figcaption><b>C2 (chosen)</b> · display fields among inputs: input-style label, value at control height; the audit section's sa-details keeps the details style</figcaption><div class="strip-body on-canvas" data-render="editPage"></div></figure>
+    </div>
+    <div data-razor="editPage"></div>
+  </section>
+
+  <section class="q">
+    <h2>D · Empty values</h2>
+    <p>The placeholder for null/empty. Zero and false stay real values. Placeholder text is per field (<code>placeholder="Never"</code>); this picks the default.</p>
+    <div class="strips">
+      <figure class="strip"><figcaption><b>D1 (chosen)</b> · "—" in placeholder ink</figcaption><div class="strip-body" data-render="empty:—"></div></figure>
+      <figure class="strip"><figcaption><b>D2</b> · "Not set" in placeholder ink</figcaption><div class="strip-body" data-render="empty:Not set"></div></figure>
+      <figure class="strip"><figcaption><b>D3</b> · "None" in placeholder ink</figcaption><div class="strip-body" data-render="empty:None"></div></figure>
+    </div>
+    <div data-razor="empty"></div>
+  </section>
+
+  <section class="q">
+    <h2>E · Value kinds</h2>
+    <p>Built-in rendering happens in C# inside the tag helper (as the data grid does): booleans as an icon, enums as plain text, [EmailAddress]/[Url] as links. Everything else here is <code>template</code> (a named partial in DisplayTemplates/, or [UIHint]) or child content.</p>
+    <div class="strips wide"><figure class="strip"><figcaption><b>E</b> · stacked · columns="4"</figcaption><div class="strip-body" data-render="kinds"></div><div data-razor="kinds"></div></figure></div>
+  </section>
+
+  <section class="q">
+    <h2>F · In a row-detail panel</h2>
+    <p>Chosen: F2. The same sa-details markup gets caption labels inside a row detail, through a contextual rule; elsewhere it uses A1.</p>
+    <div class="strips wide">
+      <figure class="strip"><figcaption><b>F2 (chosen)</b> · sa-details columns="4" · caption labels from a row-detail rule, not an attribute</figcaption><div class="strip-body" data-render="rowDetails"></div></figure>
+    </div>
+    <div data-razor="rowDetails"></div>
+  </section>
+
+  <section class="q">
+    <h2>G · View-page sections</h2>
+    <p>G1 is the live candidate (split sections). G2 card sections. G3 stacked sections, each a divided horizontal list.</p>
+    <div class="strips wide">
+      <figure class="strip"><figcaption><b>G2</b> · sa-form-section layout="card"</figcaption><div class="strip-body on-canvas" data-render="viewCards"></div><div data-razor="viewCards"></div></figure>
+      <figure class="strip"><figcaption><b>G3</b> · stacked sections · divided horizontal lists</figcaption><div class="strip-body on-canvas" data-render="viewStackedDivided"></div><div data-razor="viewStackedDivided"></div></figure>
+    </div>
+  </section>
+</div>
+
+<div class="controls">
+  <label>Theme
+    <select id="theme-select">
+      <option value="">Default</option>
+      <option value="ops">Ops</option>
+      <option value="soft">Soft</option>
+      <option value="ledger">Ledger</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="dark"> Dark</label>
+  <label>Density
+    <select id="density">
+      <option value="">Default</option>
+      <option value="compact">Compact</option>
+      <option value="comfortable">Comfortable</option>
+    </select>
+  </label>
+</div>
+
+<!-- F: the real row-details markup, with the hand-written dl replaced by the candidate. -->
+<template id="row-details-template">
+<div class="w-full overflow-hidden rounded-lg border" style="border:1px solid var(--sa-color-line);border-radius:var(--sa-radius-container);overflow:hidden">
+<sel-table-row-details data-slot="table-row-details" data-expand-mode="multiple" data-emphasis="band" data-divider="inset" data-inset="aligned" data-animate="true" data-row-click="false" class="sa-table-row-details">
+<div data-slot="table-container" class="sa-table-container"><table class="sa-table" data-slot="table">
+<thead data-slot="table-header" class="sa-table-header"><tr data-slot="table-row" class="sa-table-row">
+<th class="sa-table-head" style="width:1px" data-slot="table-head"></th>
+<th data-slot="table-head" class="sa-table-head">Booking #</th><th data-slot="table-head" class="sa-table-head">Status</th><th data-slot="table-head" class="sa-table-head">Destination</th><th class="sa-table-head" style="text-align:right" data-slot="table-head">Amount</th>
+</tr></thead>
+<tbody data-slot="table-body" class="sa-table-body">
+<tr data-slot="table-row" class="sa-table-row">
+<td class="sa-table-cell" style="width:1px" data-slot="table-cell"><button aria-label="Show details for TRP-4822" type="button" aria-expanded="true" data-slot="table-row-detail-toggle" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-table-row-detail-toggle"><svg height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m9 18 6-6-6-6"></path></svg></button></td>
+<td class="sa-table-cell" style="font-weight:500" data-slot="table-cell">TRP-4822</td><td data-slot="table-cell" class="sa-table-cell">Confirmed</td><td data-slot="table-cell" class="sa-table-cell">Kyoto, Japan</td><td class="sa-table-cell" style="text-align:right" data-slot="table-cell">2,450.00</td>
+</tr>
+<tr data-slot="table-row-detail" data-state="open" class="sa-table-row-detail"><td class="sa-table-row-detail-cell" data-slot="table-row-detail-cell"><div class="sa-table-row-detail-reveal"><div class="sa-table-row-detail-clip"><div class="sa-table-row-detail-content" data-slot="table-row-detail-content">
+<div class="sa-details" data-slot="details" data-columns="4"><dl class="sa-details-list" data-slot="details-list">
+<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical"><dt class="sa-display-field-label">Lead traveller</dt><dd class="sa-display-field-value">Kenji Watanabe</dd></div>
+<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical"><dt class="sa-display-field-label">Email</dt><dd class="sa-display-field-value"><a href="mailto:kenji.watanabe@example.com">kenji.watanabe@example.com</a></dd></div>
+<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical"><dt class="sa-display-field-label">Party</dt><dd class="sa-display-field-value">2 adults</dd></div>
+<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical"><dt class="sa-display-field-label">Promo code</dt><dd class="sa-display-field-value" data-empty>—</dd></div>
+<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical" data-span="full"><dt class="sa-display-field-label">Notes</dt><dd class="sa-display-field-value" data-kind="text">Theatre tickets requested for the second evening.</dd></div>
+</dl></div>
+</div></div></div></td></tr>
+<tr data-slot="table-row" class="sa-table-row">
+<td class="sa-table-cell" style="width:1px" data-slot="table-cell"><button aria-label="Show details for TRP-4823" type="button" aria-expanded="false" data-slot="table-row-detail-toggle" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-table-row-detail-toggle"><svg height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round" width="24" xmlns="http://www.w3.org/2000/svg"><path d="m9 18 6-6-6-6"></path></svg></button></td>
+<td class="sa-table-cell" style="font-weight:500" data-slot="table-cell">TRP-4823</td><td data-slot="table-cell" class="sa-table-cell">Pending</td><td data-slot="table-cell" class="sa-table-cell">Lisbon, Portugal</td><td class="sa-table-cell" style="text-align:right" data-slot="table-cell">980.00</td>
+</tr>
+</tbody></table></div>
+</sel-table-row-details>
+</div>
+</template>
+
+<script>
+  // --- Markup the tag helpers would emit -----------------------------------------------------------
+  const svg = d => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const check = svg(`<path d="M20 6 9 17l-5-5"/>`);
+  const cross = svg(`<path d="M18 6 6 18"/><path d="m6 6 12 12"/>`);
+  const yes = `<span data-boolean="true" style="display:contents">${check}</span><span class="sr-only">Yes</span>`;
+
+  // A display field: inList → dt/dd, otherwise divs (a dt outside a dl is invalid).
+  const field = (label, value, { orientation = "vertical", kind, empty, span, inList = true } = {}) => {
+    const [l, v] = inList ? ["dt", "dd"] : ["div", "div"];
+    const isEmpty = value == null || value === "";
+    return `<div class="sa-field sa-field-orientation-${orientation} sa-display-field" data-slot="display-field" data-orientation="${orientation}"${span ? ` data-span="${span}"` : ""}>` +
+      `<${l} class="sa-display-field-label" data-slot="display-field-label">${label}</${l}>` +
+      `<${v} class="sa-display-field-value" data-slot="display-field-value"${kind ? ` data-kind="${kind}"` : ""}${isEmpty ? " data-empty" : ""}>${isEmpty ? (empty ?? "—") : value}</${v}>` +
+      `</div>`;
+  };
+  const details = (fields, { columns = 1, variant } = {}) =>
+    `<div class="sa-details" data-slot="details" data-columns="${columns}"${variant ? ` data-variant="${variant}"` : ""}><dl class="sa-details-list" data-slot="details-list">${fields.join("")}</dl></div>`;
+  let sid = 0;
+  const section = (title, description, content, layout = "split") => {
+    const id = `fs-${++sid}`;
+    return `<section data-slot="form-section" data-layout="${layout}" aria-labelledby="${id}" class="sa-form-section"><div class="sa-form-section-inner"><div class="sa-form-section-header" data-slot="form-section-header"><h2 class="sa-form-section-title" data-slot="form-section-title" id="${id}">${title}</h2>${description ? `<p class="sa-form-section-description" data-slot="form-section-description">${description}</p>` : ""}</div><div class="sa-form-section-content" data-slot="form-section-content">${content}</div></div></section>`;
+  };
+  const input = (id, label, value, description) =>
+    `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label for="${id}" data-slot="field-label" class="sa-label sa-field-label">${label}</label><input id="${id}" name="${id}" value="${value}" data-slot="input" class="sa-input">${description ? `<p data-slot="field-description" class="sa-field-description">${description}</p>` : ""}</div>`;
+  const textarea = (id, label, value) =>
+    `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field"><label for="${id}" data-slot="field-label" class="sa-label sa-field-label">${label}</label><textarea id="${id}" name="${id}" rows="3" class="sa-textarea" data-slot="textarea">${value}</textarea></div>`;
+  const row = cells => `<div data-slot="form-row" class="sa-form-row"><div class="sa-form-row-content" data-slot="form-row-content">${cells.join("")}</div></div>`;
+  const group = items => `<div data-slot="field-group" class="sa-field-group">${items.join("")}</div>`;
+  const badge = (text, variant = "secondary", extra = "") => `<span data-slot="badge" class="sa-badge sa-badge-variant-${variant}">${extra}${text}</span>`;
+  const link = (href, text) => `<a href="${href}">${text}</a>`;
+  const button = (text, variant = "outline") => `<button type="button" class="sa-button sa-button-variant-${variant} sa-button-size-default" data-slot="button">${text}</button>`;
+
+  // --- Voyager Travel data ----------------------------------------------------------------------------
+  const booking = [
+    field("Booking", "TRP-4822"),
+    field("Status", badge("Confirmed")),
+    field("Lead traveller", "Kenji Watanabe"),
+    field("Email", link("mailto:kenji.watanabe@example.com", "kenji.watanabe@example.com")),
+    field("Destination", link("#", "Kyoto, Japan")),
+    field("Departure", "14 Nov 2026"),
+    field("Party", "2 adults"),
+    field("Total", "€2,450.00", { kind: "number" }),
+    field("Promo code", null),
+  ];
+  const audit = o => [
+    field("Created", `2 Oct 2026, 09:14 <span class="sa-display-field-secondary">by Amelia Hart</span>`, o),
+    field("Last updated", `11 Oct 2026, 16:40 <span class="sa-display-field-secondary">by System</span>`, o),
+    field("Version", "7", { ...o, kind: "number" }),
+    field("Archived", null, { ...o, empty: "Never" }),
+  ];
+  const notes = "Theatre tickets requested for the second evening.\nVegetarian meals for both travellers.";
+
+  const pageHead = (title, sub, actions) => `<div class="page-head"><div><h3>${title}</h3><p>${sub}</p></div><div style="display:flex;gap:8px">${actions}</div></div>`;
+
+  const renderers = {
+    booking2: () => details(booking, { columns: 2 }),
+    booking3: () => details(booking, { columns: 3 }),
+    bookingHorizontal: () => details(booking.slice(0, 6).map(f => f.replaceAll('"vertical"', '"horizontal"').replace("sa-field-orientation-vertical", "sa-field-orientation-horizontal"))),
+    bookingDivided: () => details(audit({ orientation: "horizontal" }).concat(booking.slice(0, 3).map(f => f.replaceAll('"vertical"', '"horizontal"'))), { variant: "divided" }),
+    bookingResponsive: () => details(booking.slice(0, 6).map(f => f.replaceAll('"vertical"', '"responsive"'))),
+    viewPage: () => pageHead("TRP-4822", "Kyoto, Japan · 14–21 Nov 2026", button("Cancel booking") + button("Edit", "default")) +
+      section("Booking", "Who is travelling and where.", details(booking, { columns: 2 })) +
+      section("Notes", null, details([field("Agent notes", notes, { kind: "text", span: "full" })])) +
+      section("Audit", "Maintained automatically.", details(audit({ orientation: "horizontal" }), { variant: "divided" })),
+    editPage: () => section("Booking", "Who is travelling and where.", group([
+        row([field("Booking", "TRP-4822", { inList: false }), input(`n${++sid}`, "Lead traveller", "Kenji Watanabe")]),
+        row([input(`e${++sid}`, "Email", "kenji.watanabe@example.com"), field("Status", badge("Confirmed"), { inList: false })]),
+        textarea(`t${++sid}`, "Agent notes", "Theatre tickets requested for the second evening."),
+      ])) +
+      section("Audit", "Maintained automatically.", details(audit(), { columns: 2 })),
+    kinds: () => details([
+      field("Text", "Kenji Watanabe"),
+      field("Number", "1,284", { kind: "number" }),
+      field("Currency", "€2,450.00", { kind: "number" }),
+      field("Date", "14 Nov 2026"),
+      field("Date and time", "11 Oct 2026, 16:40"),
+      field("Date, relative", `11 Oct 2026 <span class="sa-display-field-secondary">· yesterday</span>`),
+      field("Email", link("mailto:kenji.watanabe@example.com", "kenji.watanabe@example.com")),
+      field("URL", link("#", "voyager.example/trips/kyoto")),
+      field("Lookup (linked)", link("#", "Kyoto, Japan")),
+      field("Lookup (plain)", "Kyoto, Japan"),
+      field("Empty", null),
+      field("Zero", "0", { kind: "number" }),
+      field("Boolean · icon (default)", `${yes}`),
+      field("Boolean · icon false (default)", `<span data-boolean="false" style="display:contents">${cross}</span><span class="sr-only">No</span>`),
+      field("Boolean · icon + text", `<span data-boolean="true" style="display:contents">${check}</span>Yes`),
+      field("Boolean · text", "No"),
+      field("Status · secondary", badge("Confirmed")),
+      field("Status · outline + dot", badge("Confirmed", "outline", `<span class="status-dot"></span>`)),
+      field("Status · default", badge("Confirmed", "default")),
+      field("Enum · plain text (default)", "Confirmed"),
+      field("Tags (list)", [badge("Culture"), badge("Food"), badge("Rail pass")].join("")),
+      field("Long text", notes, { kind: "text", span: "full" }),
+    ], { columns: 4 }),
+    rowDetails: () => document.getElementById("row-details-template").innerHTML,
+    viewCards: () =>
+      `<div style="display:flex;flex-direction:column;gap:16px">` +
+      section("Booking", "Who is travelling and where.", details(booking, { columns: 3 }), "card") +
+      section("Audit", null, details(audit(), { columns: 4 }), "card") + `</div>`,
+    viewStackedDivided: () =>
+      section("Booking", null, details(booking.map(f => f.replaceAll('"vertical"', '"horizontal"')), { variant: "divided" }), "stacked") +
+      section("Audit", null, details(audit({ orientation: "horizontal" }), { variant: "divided" }), "stacked"),
+  };
+  const emptyRenderer = text => details([
+    field("Lead traveller", "Kenji Watanabe"), field("Promo code", null, { empty: text }),
+    field("Dietary needs", null, { empty: text }), field("Balance due", "€0.00", { kind: "number" }),
+  ], { columns: 2 });
+
+  for (const el of document.querySelectorAll("[data-render]")) {
+    const key = el.dataset.render;
+    el.innerHTML = key.startsWith("empty:") ? emptyRenderer(key.slice(6)) : renderers[key]();
+  }
+
+  // --- Proposed Razor (uncompiled) --------------------------------------------------------------------
+  const razor = {
+    model: ["BookingDetails.cs", `public sealed class BookingDetails
+{
+    [Display(Name = "Booking")] public string Id { get; init; }
+    public BookingStatus Status { get; init; }
+    [Display(Name = "Lead traveller")] public string LeadTraveller { get; init; }
+    [EmailAddress] public string Email { get; init; }
+    public int DestinationId { get; init; }
+    [Display(Name = "Destination")] public string DestinationName { get; init; }
+    [DisplayFormat(DataFormatString = "{0:d MMM yyyy}")] public DateOnly Departure { get; init; }
+    public string Party { get; init; }
+    [DataType(DataType.Currency)] public decimal Total { get; init; }
+    [Display(Name = "Promo code")] public string? PromoCode { get; init; }
+    [Display(Name = "Agent notes"), DataType(DataType.MultilineText)] public string? Notes { get; init; }
+    public bool TravelInsurance { get; init; }
+    public IReadOnlyList&lt;string&gt; Tags { get; init; }
+    // Also used in D and E: DietaryNeeds (string?), BalanceDue (decimal), SearchCount (int),
+    // [Url] Website (string), Infants (int), VisaRequired (bool)
+
+    // Audit
+    public DateTime CreatedAt { get; init; }
+    public string CreatedBy { get; init; }
+    public DateTime UpdatedAt { get; init; }
+    public string UpdatedBy { get; init; }
+    public int Version { get; init; }
+    [Display(Name = "Archived")] public DateTime? ArchivedAt { get; init; }
+}`],
+    viewPage: ["Live candidate", `@model BookingDetails
+
+&lt;sa-page-header&gt;
+    &lt;sa-page-header-title&gt;@Model.Id&lt;/sa-page-header-title&gt;
+    &lt;sa-page-header-description&gt;@Model.DestinationName · 14–21 Nov 2026&lt;/sa-page-header-description&gt;
+    &lt;sa-page-header-actions&gt;
+        &lt;sa-button variant="ButtonVariant.Outline"&gt;Cancel booking&lt;/sa-button&gt;
+        &lt;sa-button href="@Url.Page("Edit", new { id = Model.Id })"&gt;Edit&lt;/sa-button&gt;
+    &lt;/sa-page-header-actions&gt;
+&lt;/sa-page-header&gt;
+
+&lt;sa-form-section title="Booking" description="Who is travelling and where."&gt;
+    &lt;sa-details columns="2"&gt;
+        &lt;sa-display-field asp-for="Id" /&gt;
+        &lt;sa-display-field asp-for="Status"&gt;
+            &lt;sa-badge variant="BadgeVariant.Secondary"&gt;@Model.Status&lt;/sa-badge&gt;
+        &lt;/sa-display-field&gt;
+        &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+        &lt;sa-display-field asp-for="Email" /&gt;   <span class="c">@* [EmailAddress]: a mailto link *@</span>
+        &lt;sa-display-field asp-for="DestinationName"
+                          href="@Url.Page("/Destinations/Details", new { id = Model.DestinationId })" /&gt;
+        &lt;sa-display-field asp-for="Departure" /&gt;
+        &lt;sa-display-field asp-for="Party" /&gt;
+        &lt;sa-display-field asp-for="Total" /&gt;   <span class="c">@* [DataType(Currency)]: €2,450.00 *@</span>
+        &lt;sa-display-field asp-for="PromoCode" /&gt;   <span class="c">@* null: the placeholder *@</span>
+    &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;
+
+&lt;sa-form-section title="Notes"&gt;
+    &lt;sa-details&gt;
+        &lt;sa-display-field asp-for="Notes" /&gt;   <span class="c">@* MultilineText keeps line breaks *@</span>
+    &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;
+
+&lt;sa-form-section title="Audit" description="Maintained automatically."&gt;
+    &lt;sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal"&gt;
+        &lt;sa-display-field asp-for="CreatedAt" label="Created" format="{0:d MMM yyyy, HH:mm}"
+                          secondary="by @Model.CreatedBy" /&gt;
+        &lt;sa-display-field asp-for="UpdatedAt" label="Last updated" format="{0:d MMM yyyy, HH:mm}"
+                          secondary="by @Model.UpdatedBy" /&gt;
+        &lt;sa-display-field asp-for="Version" /&gt;
+        &lt;sa-display-field asp-for="ArchivedAt" placeholder="Never" /&gt;
+    &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;`],
+    booking2: ["A1–A3 (same markup)", `&lt;sa-details columns="2"&gt;
+    &lt;sa-display-field asp-for="Id" /&gt;
+    &lt;sa-display-field asp-for="Status"&gt;
+        &lt;sa-badge variant="BadgeVariant.Secondary"&gt;@Model.Status&lt;/sa-badge&gt;
+    &lt;/sa-display-field&gt;
+    &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+    &lt;sa-display-field asp-for="Email" /&gt;
+    &lt;sa-display-field asp-for="DestinationName" href="@destinationUrl" /&gt;
+    &lt;sa-display-field asp-for="Departure" /&gt;
+    &lt;sa-display-field asp-for="Party" /&gt;
+    &lt;sa-display-field asp-for="Total" /&gt;
+    &lt;sa-display-field asp-for="PromoCode" /&gt;
+&lt;/sa-details&gt;`],
+    booking3: ["B1", `&lt;sa-details columns="3"&gt;
+    &lt;sa-display-field asp-for="Id" /&gt;
+    ...
+&lt;/sa-details&gt;`],
+    bookingHorizontal: ["B2", `<span class="c">@* On the container, for every field... *@</span>
+&lt;sa-details orientation="FieldOrientation.Horizontal"&gt;
+    &lt;sa-display-field asp-for="Id" /&gt;
+    ...
+&lt;/sa-details&gt;
+
+<span class="c">@* ...or per field, as sa-field does *@</span>
+&lt;sa-display-field asp-for="Id" orientation="FieldOrientation.Horizontal" /&gt;`],
+    bookingDivided: ["B3", `&lt;sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal"&gt;
+    &lt;sa-display-field asp-for="CreatedAt" label="Created" secondary="by @Model.CreatedBy" /&gt;
+    ...
+&lt;/sa-details&gt;`],
+    bookingResponsive: ["B4", `&lt;sa-details orientation="FieldOrientation.Responsive"&gt;
+    &lt;sa-display-field asp-for="Id" /&gt;
+    ...
+&lt;/sa-details&gt;`],
+    editPage: ["C2", `@model EditBookingPage
+
+&lt;form method="post"&gt;
+    &lt;sa-form-section title="Booking" description="Who is travelling and where."&gt;
+        &lt;sa-field-group&gt;
+            &lt;sa-form-row&gt;
+                <span class="c">@* Outside sa-details: div label and value, no dt/dd. Posts nothing. *@</span>
+                &lt;sa-display-field asp-for="Booking.Id" /&gt;
+                &lt;sa-input asp-for="Input.LeadTraveller" /&gt;
+            &lt;/sa-form-row&gt;
+            &lt;sa-form-row&gt;
+                &lt;sa-input asp-for="Input.Email" /&gt;
+                &lt;sa-display-field asp-for="Booking.Status"&gt;
+                    &lt;sa-badge variant="BadgeVariant.Secondary"&gt;@Model.Booking.Status&lt;/sa-badge&gt;
+                &lt;/sa-display-field&gt;
+            &lt;/sa-form-row&gt;
+            &lt;sa-textarea asp-for="Input.Notes" /&gt;
+        &lt;/sa-field-group&gt;
+    &lt;/sa-form-section&gt;
+
+    &lt;sa-form-section title="Audit" description="Maintained automatically."&gt;
+        &lt;sa-details columns="2"&gt;
+            &lt;sa-display-field asp-for="Booking.CreatedAt" label="Created" secondary="by @Model.Booking.CreatedBy" /&gt;
+            &lt;sa-display-field asp-for="Booking.UpdatedAt" label="Last updated" secondary="by @Model.Booking.UpdatedBy" /&gt;
+            &lt;sa-display-field asp-for="Booking.Version" /&gt;
+            &lt;sa-display-field asp-for="Booking.ArchivedAt" placeholder="Never" /&gt;
+        &lt;/sa-details&gt;
+    &lt;/sa-form-section&gt;
+&lt;/form&gt;`],
+    empty: ["D1–D3 (same markup)", `&lt;sa-details columns="2"&gt;
+    &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+    &lt;sa-display-field asp-for="PromoCode" /&gt;                     <span class="c">@* null: "—" *@</span>
+    &lt;sa-display-field asp-for="DietaryNeeds" placeholder="None" /&gt;  <span class="c">@* per-field override *@</span>
+    &lt;sa-display-field asp-for="BalanceDue" /&gt;                     <span class="c">@* 0 is a value, not empty *@</span>
+&lt;/sa-details&gt;`],
+    kinds: ["E, in order", `&lt;sa-details columns="4"&gt;
+    <span class="c">@* Text, number, currency, date: metadata or format *@</span>
+    &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+    &lt;sa-display-field asp-for="SearchCount" format="{0:N0}" /&gt;
+    &lt;sa-display-field asp-for="Total" /&gt;                          <span class="c">@* [DataType(Currency)] *@</span>
+    &lt;sa-display-field asp-for="Departure" /&gt;                      <span class="c">@* [DisplayFormat] *@</span>
+    &lt;sa-display-field asp-for="UpdatedAt" format="{0:d MMM yyyy, HH:mm}" /&gt;
+    &lt;sa-display-field asp-for="UpdatedAt" format="{0:d MMM yyyy}" secondary="· yesterday" /&gt;
+
+    <span class="c">@* Links: [EmailAddress] and [Url] by metadata; anything else with href *@</span>
+    &lt;sa-display-field asp-for="Email" /&gt;
+    &lt;sa-display-field asp-for="Website" /&gt;
+    &lt;sa-display-field asp-for="DestinationName" href="@destinationUrl" /&gt;
+    &lt;sa-display-field asp-for="DestinationName" /&gt;
+
+    <span class="c">@* Empty and zero *@</span>
+    &lt;sa-display-field asp-for="PromoCode" /&gt;
+    &lt;sa-display-field asp-for="Infants" /&gt;
+
+    <span class="c">@* Booleans: bool renders an icon by default (the pick decides which) *@</span>
+    &lt;sa-display-field asp-for="TravelInsurance" /&gt;
+    &lt;sa-display-field asp-for="VisaRequired" /&gt;
+    &lt;sa-display-field asp-for="TravelInsurance" template="BooleanText" /&gt;   <span class="c">@* DisplayTemplates/BooleanText.cshtml *@</span>
+    &lt;sa-display-field asp-for="VisaRequired"&gt;@(Model.VisaRequired ? "Yes" : "No")&lt;/sa-display-field&gt;
+
+    <span class="c">@* Status: an enum is plain text by default; a badge is child content or a template *@</span>
+    &lt;sa-display-field asp-for="Status"&gt;
+        &lt;sa-badge variant="BadgeVariant.Secondary"&gt;@Model.Status&lt;/sa-badge&gt;
+    &lt;/sa-display-field&gt;
+    &lt;sa-display-field asp-for="Status" template="StatusBadge" /&gt;   <span class="c">@* or [UIHint("StatusBadge")] *@</span>
+    &lt;sa-display-field asp-for="Status"&gt;
+        &lt;sa-badge&gt;@Model.Status&lt;/sa-badge&gt;
+    &lt;/sa-display-field&gt;
+    &lt;sa-display-field asp-for="Status" /&gt;
+
+    <span class="c">@* Lists and long text *@</span>
+    &lt;sa-display-field asp-for="Tags"&gt;
+        @foreach (var tag in Model.Tags)
+        {
+            &lt;sa-badge variant="BadgeVariant.Secondary"&gt;@tag&lt;/sa-badge&gt;
+        }
+    &lt;/sa-display-field&gt;
+    &lt;sa-display-field asp-for="Notes" column-span-full="true" /&gt;  <span class="c">@* or column-span="2"; capped at the column count *@</span>
+&lt;/sa-details&gt;`],
+    rowDetails: ["F2", `<span class="c">@* Plain TagHelpers table *@</span>
+&lt;sa-table-row-detail&gt;
+    &lt;sa-details columns="4"&gt;
+        &lt;sa-display-field asp-for="@booking.LeadTraveller" /&gt;
+        &lt;sa-display-field asp-for="@booking.Email" /&gt;
+        &lt;sa-display-field asp-for="@booking.Party" /&gt;
+        &lt;sa-display-field asp-for="@booking.PromoCode" /&gt;
+        &lt;sa-display-field asp-for="@booking.Notes" label="Notes" column-span-full="true" /&gt;
+    &lt;/sa-details&gt;
+&lt;/sa-table-row-detail&gt;
+
+<span class="c">@* Dashboard row-detail partial (_BookingOverview.cshtml) *@</span>
+@model Booking
+&lt;sa-details columns="4"&gt;
+    &lt;sa-display-field asp-for="LeadTraveller" /&gt;
+    ...
+&lt;/sa-details&gt;`],
+    viewCards: ["G2", `&lt;sa-form-section title="Booking" description="Who is travelling and where." layout="FormSectionLayout.Card"&gt;
+    &lt;sa-details columns="3"&gt; ... &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;
+&lt;sa-form-section title="Audit" layout="FormSectionLayout.Card"&gt;
+    &lt;sa-details columns="4"&gt; ... &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;`],
+    viewStackedDivided: ["G3", `&lt;sa-form-section title="Booking" layout="FormSectionLayout.Stacked"&gt;
+    &lt;sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal"&gt; ... &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;
+&lt;sa-form-section title="Audit" layout="FormSectionLayout.Stacked"&gt;
+    &lt;sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal"&gt; ... &lt;/sa-details&gt;
+&lt;/sa-form-section&gt;`],
+  };
+  for (const el of document.querySelectorAll("[data-razor]")) {
+    const [title, code] = razor[el.dataset.razor];
+    el.outerHTML = `<details class="razor" open><summary><b>${el.dataset.razor === "model" ? "C#" : "Razor"}</b> · ${title}</summary><pre><code>${code}</code></pre></details>`;
+  }
+
+  // --- Controls ---------------------------------------------------------------------------------------
+  const params = new URLSearchParams(location.search);
+  const theme = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (theme.value) link.href = `../../util/theme-check/presets/${theme.value}.css`;
+    else link.removeAttribute("href");
+  };
+  theme.value = params.get("theme") ?? "";
+  theme.addEventListener("change", applyTheme);
+  applyTheme();
+
+  const dark = document.getElementById("dark");
+  dark.checked = params.get("mode") === "dark";
+  const applyDark = () => document.documentElement.classList.toggle("dark", dark.checked);
+  dark.addEventListener("change", applyDark);
+  applyDark();
+
+  const density = document.getElementById("density");
+  density.value = params.get("density") ?? "";
+  const applyDensity = () => density.value ? document.getElementById("main").dataset.saDensity = density.value : delete document.getElementById("main").dataset.saDensity;
+  density.addEventListener("change", applyDensity);
+  applyDensity();
+</script>
+
+</body>
+</html>

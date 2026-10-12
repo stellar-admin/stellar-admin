@@ -14,6 +14,8 @@ public class TablerFilledIconPack : IIconPack
         return new Dictionary<SemanticIconRole, string>
         {
             [SemanticIconRole.AccordionIndicator] = "chevron-down",
+            [SemanticIconRole.BooleanFalse] = "x",
+            [SemanticIconRole.BooleanTrue] = "check",
             [SemanticIconRole.BreadcrumbEllipsis] = "dots",
             [SemanticIconRole.BreadcrumbSeparator] = "chevron-right",
             [SemanticIconRole.CarouselNext] = "caret-right",

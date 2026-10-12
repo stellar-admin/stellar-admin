@@ -23,6 +23,16 @@ public class DocsStatic : PageModel
             "CheckboxGroup/_CollectionBinding" => new CheckboxGroup.Index.OrderModel(),
             "CheckboxGroup/_Validation" => new CheckboxGroup.Index.ValidationModel(),
             "Checkbox/_Validation" => new Checkbox.Index.ValidationModel(),
+            "Details/_Columns"
+            or "Details/_Divided"
+            or "Details/_EmptyValues"
+            or "Details/_Horizontal"
+            or "Details/_InForm"
+            or "Details/_Intro"
+            or "Details/_RecordPage"
+            or "Details/_Responsive"
+            or "Details/_Templates"
+            or "Details/_Values" => Details.Index.SampleBooking,
             "Field/_CheckboxImplicit" => new CheckboxImplicitModel { SyncMapWithItinerary = true },
             "Field/_FieldGroupImplicit" => new FieldGroupImplicitModel
             {

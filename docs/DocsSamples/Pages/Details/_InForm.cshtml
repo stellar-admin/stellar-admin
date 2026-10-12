@@ -1,0 +1,29 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <form>
+        <sa-form-section title="Booking" description="Who is travelling and where.">
+            <sa-field-group>
+                <sa-form-row>
+                    <sa-display-field asp-for="Reference" />
+                    <sa-input asp-for="LeadTraveller" />
+                </sa-form-row>
+                <sa-form-row>
+                    <sa-input asp-for="Email" />
+                    <sa-display-field asp-for="Status" />
+                </sa-form-row>
+                <sa-textarea asp-for="Notes" rows="3" />
+            </sa-field-group>
+        </sa-form-section>
+        <sa-form-section title="Audit" description="Maintained automatically.">
+            <sa-details columns="2">
+                <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
+                <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
+                <sa-display-field asp-for="Version" />
+                <sa-display-field asp-for="ArchivedAt" />
+            </sa-details>
+        </sa-form-section>
+    </form>
+    <!-- code end -->
+</div>

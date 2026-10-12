@@ -154,4 +154,14 @@ public enum SemanticIconRole
     ///     An indicator that a table row can expand to show its details.
     /// </summary>
     RowDetailIndicator,
+
+    /// <summary>
+    ///     A true value in a display field.
+    /// </summary>
+    BooleanTrue,
+
+    /// <summary>
+    ///     A false value in a display field.
+    /// </summary>
+    BooleanFalse,
 }

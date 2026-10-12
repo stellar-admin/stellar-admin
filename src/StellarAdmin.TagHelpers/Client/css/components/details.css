@@ -1,0 +1,157 @@
+/* Details: read-only display fields in a description list. The wrapper is the container its column
+   breakpoints query; the list inside is the grid. A display field is an sa-field (field.css), so the
+   rules that change its layout name both classes to out-rank field.css. Among inputs (outside a
+   details list) a display field takes an input's label style and a control's height, so a row of
+   inputs and display fields lines up. In a row detail, labels are captions.
+   Replaces: .sa-details, .sa-details-list, .sa-display-field, .sa-display-field-label,
+   .sa-display-field-value, .sa-display-field-secondary */
+
+@layer sa.components {
+  /* --- Details list ------------------------------------------------------------------------ */
+  .sa-details {
+    container: details / inline-size;
+    width: 100%;
+    min-width: 0;
+  }
+  .sa-details-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(5 * var(--sa-unit)) calc(8 * var(--sa-unit));
+    margin: 0;
+  }
+  @container details (min-width: 28rem) {
+    .sa-details:is([data-columns="2"], [data-columns="3"], [data-columns="4"]) > .sa-details-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      & > [data-column-span] {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+  @container details (min-width: 40rem) {
+    .sa-details[data-columns="3"] > .sa-details-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .sa-details[data-columns="4"] > .sa-details-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .sa-details:is([data-columns="3"], [data-columns="4"]) > .sa-details-list > [data-column-span="2"] {
+      grid-column: span 2;
+    }
+    .sa-details[data-columns="4"] > .sa-details-list > [data-column-span="3"] {
+      grid-column: span 3;
+    }
+  }
+  .sa-details-list > [data-column-span="full"] {
+    grid-column: 1 / -1;
+  }
+
+  /* Divided: rows separated by rules. */
+  .sa-details[data-variant="divided"] > .sa-details-list {
+    gap: 0;
+    & > .sa-display-field {
+      padding-block: calc(3 * var(--sa-unit));
+    }
+    & > .sa-display-field + .sa-display-field {
+      border-top: var(--sa-border-width) solid var(--sa-color-line);
+    }
+  }
+
+  /* --- Display field ----------------------------------------------------------------------- */
+  .sa-field.sa-display-field {
+    gap: calc(1 * var(--sa-unit));
+    min-width: 0;
+    margin: 0;
+  }
+  .sa-display-field-label {
+    margin: 0;
+    color: var(--sa-color-ink-muted);
+    font-size: var(--sa-text-sm);
+    font-weight: 400;
+    line-height: 1.375;
+  }
+  .sa-display-field-value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(1.5 * var(--sa-unit));
+    min-width: 0;
+    margin: 0;
+    color: var(--sa-color-ink);
+    font-size: var(--sa-text-sm);
+    font-weight: var(--sa-weight-control);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    &[data-kind="number"] {
+      font-variant-numeric: tabular-nums;
+    }
+    &[data-kind="text"] {
+      display: block;
+      font-weight: 400;
+      white-space: pre-line;
+    }
+    &[data-empty] {
+      color: var(--sa-color-ink-placeholder);
+      font-weight: 400;
+    }
+    &[data-boolean="true"] > svg {
+      color: var(--sa-color-success);
+    }
+    &[data-boolean="false"] > svg {
+      color: var(--sa-color-ink-muted);
+    }
+    & > a {
+      color: var(--sa-color-accent-text);
+      text-underline-offset: 4px;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .sa-display-field-secondary {
+    color: var(--sa-color-ink-muted);
+    font-weight: 400;
+  }
+
+  /* Horizontal: a label column and a value column, the same split in every row. */
+  .sa-field.sa-display-field[data-orientation="horizontal"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: baseline;
+    gap: calc(4 * var(--sa-unit));
+  }
+  /* Responsive: stacked until the list is wide enough. */
+  @container details (min-width: 32rem) {
+    .sa-field.sa-display-field[data-orientation="responsive"] {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      align-items: baseline;
+      gap: calc(4 * var(--sa-unit));
+    }
+  }
+
+  /* Among inputs: an input's label, and a value at a control's height. */
+  .sa-field.sa-display-field:not(.sa-details-list > *) {
+    gap: calc(2 * var(--sa-unit));
+    & > .sa-display-field-label {
+      color: var(--sa-color-ink);
+      font-weight: var(--sa-weight-control);
+    }
+    & > .sa-display-field-value {
+      min-height: var(--sa-control-h);
+    }
+    & > .sa-display-field-value:not([data-empty]) {
+      font-weight: 400;
+    }
+  }
+
+  /* In a row detail: caption labels, regular-weight values. */
+  .sa-table-row-detail-content .sa-field.sa-display-field {
+    gap: calc(0.5 * var(--sa-unit));
+    & > .sa-display-field-label {
+      font-size: var(--sa-text-xs);
+    }
+    & > .sa-display-field-value:not([data-empty]) {
+      font-weight: 400;
+    }
+  }
+}

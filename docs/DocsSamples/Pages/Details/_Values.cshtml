@@ -1,0 +1,21 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-details columns="4">
+        <sa-display-field asp-for="LeadTraveller" label="Text" />
+        <sa-display-field asp-for="Total" label="Number" />
+        <sa-display-field asp-for="Departure" label="Date" />
+        <sa-display-field asp-for="CreatedAt" label="Date and time" />
+        <sa-display-field asp-for="Cabin" label="Enum" />
+        <sa-display-field asp-for="Email" label="Email address" />
+        <sa-display-field asp-for="ItineraryPage" label="URL" />
+        <sa-display-field asp-for="Destination" label="Link" href="#destination-@Model.DestinationId" />
+        <sa-display-field asp-for="TravelInsurance" label="Boolean (true)" />
+        <sa-display-field asp-for="VisaRequired" label="Boolean (false)" />
+        <sa-display-field asp-for="Interests" label="List" />
+        <sa-display-field asp-for="Infants" label="Zero" />
+        <sa-display-field asp-for="Notes" label="Multiline text" column-span-full="true" />
+    </sa-details>
+    <!-- code end -->
+</div>

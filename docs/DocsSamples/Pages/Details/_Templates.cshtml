@@ -1,0 +1,25 @@
+@model DocsSamples.Pages.Details.TripBooking
+
+<div class="w-full">
+    <!-- code begin -->
+    <sa-details columns="3">
+        @* [UIHint("BookingStatus")] renders DisplayTemplates/BookingStatus *@
+        <sa-display-field asp-for="Status" />
+        @* A named template *@
+        <sa-display-field asp-for="Reference" template="Reference" />
+        @* Muted text after the value *@
+        <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
+        @* Child content replaces the value *@
+        <sa-display-field asp-for="Interests">
+            @foreach (var interest in Model.Interests)
+            {
+                <sa-badge variant="BadgeVariant.Secondary">@interest</sa-badge>
+            }
+        </sa-display-field>
+        <sa-display-field asp-for="TravelInsurance">
+            @(Model.TravelInsurance ? "Included" : "Not included")
+        </sa-display-field>
+        <sa-display-field label="Duration">7 nights</sa-display-field>
+    </sa-details>
+    <!-- code end -->
+</div>
