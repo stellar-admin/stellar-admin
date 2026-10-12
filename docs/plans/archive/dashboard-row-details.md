@@ -1,6 +1,6 @@
 # Dashboard row details
 
-Status: phases 1 to 3 implemented, awaiting review (2026-10-12). Builds on [table-row-details](oss/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
+Status: completed (2026-10-12): phases 1 to 3, plus the row details visuals (lighter band, divider, tab alignment), reviewed and archived. Builds on [table-row-details](../oss/archive/table-row-details.md), which shipped the `sa-table-*` and `sa-data-grid` layers.
 
 ## Goal
 
@@ -12,7 +12,7 @@ Let a Dashboard resource index expand a row to show application content below it
 2. Both loading modes: inline (the partial's model is the row item, rendered with the index) and on demand (a handler or an EF Core projection loads the model when the row expands).
 3. `ExpandWhen` is deferred.
 4. Expanded rows close when search, paging, sorting or a scope swaps the grid. Open rows are not kept in the URL.
-5. A no-code fields panel (`details.Fields(...)`) is deferred until display helpers exist ([crud-screen-tag-helpers](crud-screen-tag-helpers.md)).
+5. A no-code fields panel (`details.Fields(...)`) is deferred until display helpers exist ([crud-screen-tag-helpers](../crud-screen-tag-helpers.md)).
 6. Several panels render as tabs. This needs panel tabs in the library: extend the existing tabs family rather than reuse tab links or the segmented control.
 7. Phasing: single panel, then panel tabs, then multiple panels.
 8. A panel's URL name defaults to its title in kebab case (`"Payment history"` → `payment-history`), with an optional `Name` override.

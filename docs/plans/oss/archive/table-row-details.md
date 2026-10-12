@@ -1,6 +1,6 @@
 # Table row details
 
-Status: phases 1–3 implemented; phase 3 awaiting review (2026-10-09). Dashboard integration remains a separate, unplanned piece of work. Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
+Status: completed (2026-10-12): phases 1–3, reviewed and archived. Dashboard integration shipped in [dashboard-row-details](../../archive/dashboard-row-details.md), which also lightened the band and added a divider setting. Visual exploration approved in `sandbox/html/expandable-rows.html`. Dashboard integration is out of scope and gets its own plan later.
 
 ## Goal
 
