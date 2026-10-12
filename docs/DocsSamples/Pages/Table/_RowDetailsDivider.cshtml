@@ -1,0 +1,60 @@
+@{
+    var dividers = new[]
+    {
+        (Divider: TableRowDetailDivider.Inset, Label: "Inset (default)"),
+        (Divider: TableRowDetailDivider.FullWidth, Label: "FullWidth"),
+        (Divider: TableRowDetailDivider.None, Label: "None"),
+    };
+}
+<div class="flex w-full flex-col gap-6">
+    @foreach (var (divider, label) in dividers)
+    {
+        <div class="flex flex-col gap-2">
+            <p class="text-muted-foreground text-sm">@label</p>
+            <div class="overflow-hidden rounded-lg border">
+                <sa-table-row-details divider="divider">
+                    <sa-table>
+                        <sa-table-header>
+                            <sa-table-row>
+                                <sa-table-head class="w-px"><span class="sr-only">Details</span></sa-table-head>
+                                <sa-table-head>Booking #</sa-table-head>
+                                <sa-table-head>Destination</sa-table-head>
+                                <sa-table-head class="text-right">Amount</sa-table-head>
+                            </sa-table-row>
+                        </sa-table-header>
+                        <sa-table-body>
+                            @foreach (var booking in StaticData.Bookings.Take(2))
+                            {
+                                var details = StaticData.DetailsFor(booking.Id);
+                                <sa-table-row>
+                                    <sa-table-cell class="w-px">
+                                        <sa-table-row-detail-toggle aria-label="Show details for @booking.Id"/>
+                                    </sa-table-cell>
+                                    <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                                    <sa-table-cell>@booking.Destination</sa-table-cell>
+                                    <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
+                                </sa-table-row>
+                                <sa-table-row-detail expanded="@(booking == StaticData.Bookings.First())">
+                                    <dl class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3">
+                                        <div class="flex flex-col gap-0.5">
+                                            <dt class="text-muted-foreground text-xs">Lead traveller</dt>
+                                            <dd>@details.Traveller</dd>
+                                        </div>
+                                        <div class="flex flex-col gap-0.5">
+                                            <dt class="text-muted-foreground text-xs">Email</dt>
+                                            <dd>@details.Email</dd>
+                                        </div>
+                                        <div class="flex flex-col gap-0.5">
+                                            <dt class="text-muted-foreground text-xs">Party</dt>
+                                            <dd>@details.Party</dd>
+                                        </div>
+                                    </dl>
+                                </sa-table-row-detail>
+                            }
+                        </sa-table-body>
+                    </sa-table>
+                </sa-table-row-details>
+            </div>
+        </div>
+    }
+</div>

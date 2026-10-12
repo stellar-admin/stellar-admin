@@ -61,7 +61,7 @@
   "Slider": ["Slider/_Range", "Slider/_ModelBinding", "Slider/_Value", "Slider/_CustomMarks"],
   "Spinner": ["Spinner/_InButtons"],
   "Switch": ["Switch/_Intro", "Switch/_ModelBinding"],
-  "Table": ["Table/_Intro", "Table/_Select", "Table/_RowDetails", "Table/_RowDetailsRowClick"],
+  "Table": ["Table/_Intro", "Table/_Select", "Table/_RowDetails", "Table/_RowDetailsRowClick", "Table/_RowDetailsDivider"],
   "Tabs": ["Tabs/_Intro", "Tabs/_Icons", "Tabs/_Url", "Tabs/_Panels", "Tabs/_PanelsLoadOnShow"],
   "Textarea": ["Textarea/_Intro", "Textarea/_ModelBinding"],
   "Toaster": ["Toast/_Intro", "Toast/_Types", "Toast/_Action", "Toast/_Promise"],

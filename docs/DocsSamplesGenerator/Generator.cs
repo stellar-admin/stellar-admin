@@ -814,6 +814,7 @@ internal sealed partial class Generator
         new("Table/_Border"),
         new("Table/_Intro"),
         new("Table/_RowDetails"),
+        new("Table/_RowDetailsDivider"),
         new("Table/_RowDetailsRowClick"),
         new("Table/_RowSelection"),
         new("Table/_Select"),

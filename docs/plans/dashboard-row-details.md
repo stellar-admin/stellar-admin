@@ -175,6 +175,7 @@ Jerrie's review of phase 3 found the tabs indented from the content and the expa
 - `TableRowDetailEmphasis` keeps None, Band and Rail. Band moves from `--sa-color-surface-sunken` (the column heads' fill) to the lighter `--sa-color-surface-subtle`, everywhere `sa-table-row-details` and `sa-data-grid` are used.
 - New `TableRowDetailDivider` enum (`None`, `Inset`, `FullWidth`), default `Inset`: `divider` on `sa-table-row-details` and `sa-data-grid-row-detail` (`data-divider`), and `Divider` on the Dashboard's row details builder and options. Inset draws a `::before` line across the content box, so it starts and ends where the content does; FullWidth keeps the row's own line.
 - Line tabs in row details content move back by the list inset, trigger border and padding, so the first label lines up with the content.
+- DocsSamples Table page: "Row Details Divider" shows Inset, FullWidth and None, each with the first booking expanded. It is exported to the website, whose table page has a "Row details divider" section; the data grid page links to it from its row details prose. The sample is in the tag helpers skill examples.
 
 ## Verification log
 
@@ -183,6 +184,7 @@ Jerrie's review of phase 3 found the tabs indented from the content and the expa
 - TagHelpers unit tests: 293 pass (1 new; divider assertions added to the existing settings tests). Dashboard unit tests: 98 pass. Dashboard integration tests: 400 pass (the configured settings test covers `Divider`).
 - CDP check in the playground (28 checks pass): the phase 3 checks, plus the inset divider drawn from the content start, the first tab label within 1px of the content, and the band on `surface-subtle`.
 - Docs export regenerated the website demos (with the usual asset hash and SVG attribute churn); the table and data grid API tables list `divider`. Website lint and type check pass. `SkillsGenerator` regenerated the table and data grid references.
+- Divider sample: renders in DocsSamples with all three `data-divider` values and no script errors; exported (461 demos); website lint, type check and build pass, and the built table page has the new section.
 
 2026-10-12, phase 3:
 
