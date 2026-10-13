@@ -1,0 +1,18 @@
+@using System.Globalization
+@using StellarAdmin.Dashboard.Resources.Displays
+@inherits FieldDisplayView<PhoneDisplay>
+
+@{
+    // The link dials the digits, keeping a leading international +
+    var number = Convert.ToString(Model, CultureInfo.InvariantCulture)!.Trim();
+    var digits = new string(number.Where(char.IsAsciiDigit).ToArray());
+}
+
+@if (digits.Length == 0)
+{
+    @FormatValue()
+}
+else
+{
+    <a href="@($"tel:{(number.StartsWith('+') ? "+" : "")}{digits}")">@FormatValue()</a>
+}

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Displays;
 
@@ -7,6 +8,35 @@ namespace StellarAdmin.Dashboard.Resources.Displays;
 // CLR type. Collections and other types have none, so the display field renders them itself.
 internal static class FieldDisplayDefaults
 {
+    // The display a column's cells render, or null to let the grid render a [UIHint] template or
+    // the value itself. Its metadata resolves as the grid resolves it, property by property.
+    public static FieldDisplay? Resolve(
+        DataGridColumnOptions column,
+        IModelMetadataProvider metadataProvider
+    )
+    {
+        if (column.Display is not null || column.UsesBuiltInRendering)
+        {
+            return column.Display;
+        }
+
+        var expression = column.DisplayExpression ?? column.FieldExpression;
+        if (ResourcePropertyPath.GetProperties(expression) is not { } properties)
+        {
+            return null;
+        }
+
+        var containerType = expression.Parameters[0].Type;
+        ModelMetadata? metadata = null;
+        foreach (var property in properties)
+        {
+            metadata = metadataProvider.GetMetadataForProperty(containerType, property.Name);
+            containerType = metadata.ModelType;
+        }
+
+        return metadata!.TemplateHint is null ? Resolve(metadata) : null;
+    }
+
     public static FieldDisplay? Resolve(ModelMetadata metadata)
     {
         switch (metadata.DataTypeName)

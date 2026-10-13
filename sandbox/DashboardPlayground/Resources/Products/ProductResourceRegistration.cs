@@ -1,6 +1,7 @@
 using DashboardPlayground.Data;
 using StellarAdmin.Dashboard;
 using StellarAdmin.Dashboard.EntityFrameworkCore;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Editors;
 
 namespace DashboardPlayground.Resources.Products;
@@ -103,7 +104,7 @@ internal static class ProductResourceRegistration
                         {
                             column.Sortable();
                             column.Title = "Unit price";
-                            column.Format = "{0:0.00}";
+                            column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
                         }
                     );
                 });

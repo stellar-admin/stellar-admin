@@ -1,0 +1,15 @@
+@using System.Collections
+@using StellarAdmin.Dashboard.Resources.Displays
+@inherits FieldDisplayView<BadgeDisplay>
+
+@{
+    var metadata = ViewData.ModelMetadata;
+    var items = Model is IEnumerable values and not string ? values.Cast<object?>() : [Model];
+    var itemMetadata = Model is IEnumerable and not string ? metadata.ElementMetadata ?? metadata : metadata;
+}
+
+@* A collection shows a badge for each item *@
+@foreach (var item in items)
+{
+    <sa-badge variant="@Display.Variant">@FieldValueFormatter.Format(item, itemMetadata)</sa-badge>
+}

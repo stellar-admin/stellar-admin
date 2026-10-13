@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed; standard displays (90–118) done, not yet committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
+Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed; standard displays (90–118) done and committed; grid column displays (125–130) done, not yet committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show read-only fields on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -152,6 +152,12 @@ Standard displays (agreed 2026-10-12; 81–89, 91–92 and 99–102 were options
 116. The display field builder and `FormDisplayFieldOptions` lose `Format`; `EmptyText` stays on the field. `FieldDisplayView<TDisplay>.FormatValue(format)` formats the value for templates. Decided.
 117. `UseBuiltInRendering` still honours `[DisplayFormat]`, through the tag helper. Decided.
 118. The default display is resolved in the view (`FormFieldsBaseView.BeginField`) from the field's model metadata rather than in the controller: default displays need no handler or request data, so the controller is unchanged. Implementation choice.
+125. Index columns use the same displays and precedence as display fields: `UseDisplay`, then `UseBuiltInRendering()`, then `[UIHint]`, then the default display, then the tag helper's rendering. Decided.
+126. A cell renders a display's template as `GridDisplayTemplates/{TemplateName}`, beside `DisplayTemplates/{TemplateName}`, following the grid's existing convention; a custom display used in a column needs a grid template. Decided.
+127. `sa-data-grid-column` gains `empty-text` (an empty value skips the template; default `[DisplayFormat(NullDisplayText)]`, then an empty cell), and its templates receive the field property's model explorer. TagHelpers still knows nothing of displays. Decided.
+128. `Format` leaves the column builder and `DataGridColumnOptions` (as 115–116); the unused `DataGridColumnOptions.Template` is removed. Decided.
+129. Displays with a handler are not supported in columns: `UseDisplay` throws `NotSupportedException`, since a handler would run once per row; revisit with a batched design. Decided.
+130. `NumberDisplay` columns are right-aligned, header and cells. Decided.
 
 ## Prototype
 
@@ -182,7 +188,7 @@ Dashboard display fields (implemented 2026-10-12, committed):
 
 Built-in displays (implemented 2026-10-12, committed): the controller's `PrepareDisplaysAsync` runs display handlers for `ResourceFormOptions.DisplayFields` (public since 76; every display field, including in containers and details) on create, edit, the create sheet and redisplay, keyed by field options; `_FormPage` and `_CreateSheet` pass the data, and `BeginField` puts the field's entry in the view context's data. `LookupItems.Create` (internal) now builds the items for `LookupSheetEditor` and `MultiLookupSheetEditor`. `_FormDetails.cshtml` writes a full span as `full` (it wrote the integer, which the tag helper would reject). Playground: the gallery's custom `BadgeDisplay` is replaced by the built-in one, and `Status` uses `Views/Shared/DisplayTemplates/BookingStatus.cshtml` through `[UIHint]`. Skills: `setup.md` documents `BadgeDisplay`, per-value templates and custom displays with handlers.
 
-Standard displays (implemented 2026-10-12, not committed):
+Standard displays (implemented 2026-10-12, committed):
 
 - `src/StellarAdmin.Dashboard/Resources/Displays/`: `TextDisplay`, `EmailDisplay`, `LinkDisplay`, `PhoneDisplay`, `DateDisplay`, `NumberDisplay`, `BooleanDisplay`, `BooleanDisplayAppearance`, `EnumDisplay`; internal `FieldDisplayDefaults` (the map: data type `EmailAddress`/`Url`/`PhoneNumber` first, then dates and times, `bool`, non-flags enums, numbers, strings) and `FieldValueFormatter` (format string, then `[DisplayFormat]`, then enum `[Display]` names, current culture), shared by `FieldDisplayView.FormatValue` and the badge template.
 - `ResourceDisplayFieldBuilder.UseBuiltInRendering()` (last call between it and `UseDisplay` wins); `Format` removed from the builder, `FormDisplayFieldOptions` and the form views.
@@ -192,9 +198,24 @@ Standard displays (implemented 2026-10-12, not committed):
 - Playground: the Display fields gallery's `Total` uses `NumberDisplay` with a format, and two new details sections show every default display and the display settings, including `UseBuiltInRendering`; the gallery model gained a hotel website, phone, check-in time, nights and a multiline itinerary.
 - Skills: `setup.md` documents the precedence, every built-in display and its settings, `UseBuiltInRendering`, `FormatValue` and overriding a built-in template.
 
+Grid column displays (implemented 2026-10-13, not committed):
+
+- `ResourceColumnBuilder`: `UseDisplay<TDisplay>()`, `UseDisplay<TDisplay>(configure)`, `UseBuiltInRendering()` and setter-only `EmptyText`; `Format` removed. `DataGridColumnOptions`: `Display` and `EmptyText` added, `Format` and `Template` removed, internal `UsesBuiltInRendering`.
+- `FieldDisplayDefaults.Resolve(DataGridColumnOptions, IModelMetadataProvider)` resolves a column's display from its leaf property's metadata. `_IndexDataGrid.cshtml` resolves every column's display once, outside the per-row content, puts each in the view context's data before its column (cleared after the columns, so row detail partials don't see it), passes `template` and `empty-text`, and adds `text-right` to `NumberDisplay` columns.
+- Grid templates in `Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/Displays/`, copies of the details templates except `Text`, which keeps to one line unless clamped.
+- `DataGridColumnTagHelper`: `empty-text`, the empty check before any template (null, blank string, empty collection), and the field's `ModelExplorer` on the template's view data. Templates no longer receive null values.
+- Playground and the integration test host move their price column to `NumberDisplay`. Skills: `setup.md` documents column displays; the generated data-grid reference picks up `empty-text`.
+
 Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+Grid column displays (125–130), completed 2026-10-13:
+
+- Tests: `StellarAdmin.Dashboard.Tests` 145 passed (new `ResourceColumnBuilderTests`; column cases in `FieldDisplayDefaultsTests`: default for a nested leaf, configured display, built-in rendering, `[UIHint]`); `StellarAdmin.Dashboard.IntegrationTests` 425 passed (new `ResourceColumnDisplayTests` over a `ProductFactsModel` index: every default display, `NumberDisplay` format and right alignment, a custom display's grid template, `[UIHint]`, `UseBuiltInRendering`, empty text); `StellarAdmin.TagHelpers.Tests` 439 passed (new `DataGridColumnTagHelperTests`: `empty-text`, `NullDisplayText`, template metadata, empty values skipping the template); TagHelpers integration 19 and EF integration 82 passed.
+- Playground on port 5207, headless Chromium at 1280px light: the products index right-aligns Id, Category Id and Unit price, headers included.
+- Skill validation and `SkillsGenerator --check` pass.
+- Not checked: dark mode, theme fixtures, phone widths; the Users index (behind sign-in) for booleans and email links in the Playground.
 
 Standard displays (90–118), completed 2026-10-12:
 

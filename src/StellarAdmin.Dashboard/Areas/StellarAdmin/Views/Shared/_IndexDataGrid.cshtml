@@ -1,8 +1,12 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using StellarAdmin.Dashboard.Resources.Displays
 @model IResourceIndexPageViewModel
+@inject IModelMetadataProvider MetadataProvider
 @{
     // Numbers the rows' details, so each row's panels have their own ids. The grid runs its content again for
-    // each row, so the count lives outside it
+    // each row, so the count and the columns' displays live outside it
     var row = 0;
+    var displays = Model.Columns.Select(column => FieldDisplayDefaults.Resolve(column, MetadataProvider)).ToArray();
 }
 
 <sa-data-grid items="Model.Items" class="sa-resource-index-grid">
@@ -10,10 +14,21 @@
                        asp-route-sortBy="{sort}" asp-route-sortDirection="{dir}"
                        preserve-query="true" preserve-query-except="page"
                        sort-by="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
-    @foreach (var column in Model.Columns)
+    @for (var index = 0; index < Model.Columns.Count; index++)
     {
+        var column = Model.Columns[index];
+        var display = displays[index];
+
+        // The display template reads its display from the view context's data, which the column renders it with.
+        // Numbers line up on the right, header and cells alike
+        ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
         <sa-data-grid-column title="@column.Title" field-for="@(column.DisplayExpression ?? column.FieldExpression)"
-                             format="@column.Format" sortable="@column.Sortable" sort-field="@column.FieldName" />
+                             template="@display?.TemplateName" empty-text="@column.EmptyText"
+                             sortable="@column.Sortable" sort-field="@column.FieldName"
+                             class="@(display is NumberDisplay ? "text-right" : null)" />
+    }
+    @{
+        ViewContext.ViewData.Remove(ViewDataKeys.FieldDisplay);
     }
     @if (Model.CanEdit || Model.Delete is not null)
     {

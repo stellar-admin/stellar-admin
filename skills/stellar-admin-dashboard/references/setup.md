@@ -26,6 +26,7 @@ Register a resource through the Dashboard builder:
 
 ```csharp
 using StellarAdmin.Dashboard;
+using StellarAdmin.Dashboard.Resources.Displays;
 
 builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 {
@@ -43,7 +44,7 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
             columns.Add(product => product.Price, column =>
             {
                 column.Title = "Unit price";
-                column.Format = "{0:0.00}";
+                column.UseDisplay<NumberDisplay>(number => number.Format = "0.00");
             });
         }));
     });
@@ -59,7 +60,7 @@ Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product inde
 
 `ProductDataSource` implements `IResourceCrudDataSource<Product>` from `StellarAdmin.Dashboard.Resources` for all CRUD operations. The combined interface includes `IResourceDataSource<Product>` (`ListAsync`), `IResourceCreateHandler<Product>` (`CreateAsync`), `IResourceEditHandler<Product>` (`FindAsync` and `UpdateAsync`), and `IResourceDeleteHandler<Product>` (`DeleteAsync`). A source can instead implement just the individual interfaces it supports. The shared controller forwards the request cancellation token. Unregistered actions have no buttons and direct requests are rejected, even when the data source implements the corresponding handler. Configuring a form or deletion without a matching implementation produces an options validation error. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
 
-Index columns start empty. `Add` appends and `Clear` removes the configured columns. `Add(selector)` returns the column builder. `Add(selector, configure)` returns the columns builder. Column `Title` and `Format` are setter-only. Omitted titles use the selected property's display metadata/name. Omitted formats use its display metadata. Set `index.Title` to override the page title, which otherwise uses the current resource plural label. Empty results display an empty state. Paging, sortable columns, and search are opt-in index features.
+Index columns start empty. `Add` appends and `Clear` removes the configured columns. `Add(selector)` returns the column builder. `Add(selector, configure)` returns the columns builder. Column `Title` and `EmptyText` are setter-only. Omitted titles use the selected property's display metadata/name. A column renders its cells with the same displays as a display field (see [Display fields](#display-fields)): through `UseDisplay<TDisplay>(display => ...)`; as the grid's plain text after `UseBuiltInRendering()`, formatted with `[DisplayFormat]`; through the grid display template its `[UIHint("Status")]` names, the view `GridDisplayTemplates/Status`; or through the default display for its type. A display's template in a cell is `GridDisplayTemplates/{TemplateName}`, so a custom display used in a column needs one, and an override goes at a path such as `Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/Displays/Boolean.cshtml`. In a cell, `TextDisplay` ignores line breaks unless `LineClamp` is set, and a `NumberDisplay` column is right-aligned. Displays with a handler are not supported in columns and throw. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then an empty cell. Set `index.Title` to override the page title, which otherwise uses the current resource plural label. Empty results display an empty state. Paging, sortable columns, and search are opt-in index features.
 
 To customize a resource's index, add `Areas/StellarAdmin/Views/Product/Index.cshtml` to the application. The controller first searches for `Index` using normal MVC view lookup, including shared locations and configured view-location expanders, then falls back to `ResourceIndex` when no view is found. The built-in fallback lives in `Areas/StellarAdmin/Views/Shared/ResourceIndex.cshtml` and can also be overridden by the application. A custom view can use `ResourceIndexPageViewModel<Product>` from `StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels` and render `<sa-index-page model="Model" />` or supply its own markup.
 

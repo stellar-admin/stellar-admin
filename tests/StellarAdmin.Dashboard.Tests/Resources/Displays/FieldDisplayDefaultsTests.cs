@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Dashboard.Resources.Builders;
 using StellarAdmin.Dashboard.Resources.Displays;
+using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Tests.Resources.Displays;
 
@@ -54,16 +57,82 @@ public class FieldDisplayDefaultsTests
         await Assert.That(display).IsNull();
     }
 
-    private static ModelMetadata GetMetadata(string property)
+    [Test]
+    public async Task Resolve_WithColumnWithoutDisplay_ReturnsDefaultForLeafProperty()
+    {
+        // Arrange
+        var column = BuildColumn(model => model.Address!.City, _ => { });
+
+        // Act
+        var display = FieldDisplayDefaults.Resolve(column, CreateMetadataProvider());
+
+        // Assert
+        await Assert.That(display).IsTypeOf<TextDisplay>();
+    }
+
+    [Test]
+    public async Task Resolve_WithColumnDisplay_ReturnsColumnDisplay()
+    {
+        // Arrange
+        var column = BuildColumn(
+            model => model.Price,
+            builder => builder.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
+        );
+
+        // Act
+        var display = FieldDisplayDefaults.Resolve(column, CreateMetadataProvider());
+
+        // Assert
+        await Assert.That(display).IsSameReferenceAs(column.Display);
+    }
+
+    [Test]
+    public async Task Resolve_WithColumnUsingBuiltInRendering_ReturnsNull()
+    {
+        // Arrange
+        var column = BuildColumn(model => model.Price, builder => builder.UseBuiltInRendering());
+
+        // Act
+        var display = FieldDisplayDefaults.Resolve(column, CreateMetadataProvider());
+
+        // Assert
+        await Assert.That(display).IsNull();
+    }
+
+    [Test]
+    public async Task Resolve_WithColumnPropertyHavingUIHint_ReturnsNull()
+    {
+        // Arrange
+        var column = BuildColumn(model => model.Code, _ => { });
+
+        // Act
+        var display = FieldDisplayDefaults.Resolve(column, CreateMetadataProvider());
+
+        // Assert
+        await Assert.That(display).IsNull();
+    }
+
+    private static DataGridColumnOptions BuildColumn<TProperty>(
+        Expression<Func<Model, TProperty>> field,
+        Action<ResourceColumnBuilder<Model>> configure
+    )
+    {
+        var builder = new ResourceColumnBuilder<Model>(field);
+        configure(builder);
+
+        return builder.Build();
+    }
+
+    private static IModelMetadataProvider CreateMetadataProvider()
     {
         var services = new ServiceCollection();
         services.AddMvcCore().AddDataAnnotations();
-        using var provider = services.BuildServiceProvider();
 
-        return provider
-            .GetRequiredService<IModelMetadataProvider>()
-            .GetMetadataForProperty(typeof(Model), property);
+        return services.BuildServiceProvider().GetRequiredService<IModelMetadataProvider>();
     }
+
+    private static ModelMetadata GetMetadata(string property) =>
+        CreateMetadataProvider().GetMetadataForProperty(typeof(Model), property);
 
     public sealed class Model
     {
@@ -72,6 +141,9 @@ public class FieldDisplayDefaultsTests
         public Location? Address { get; set; }
 
         public bool? Archived { get; set; }
+
+        [UIHint("Code")]
+        public string? Code { get; set; }
 
         public DateTimeOffset? Closed { get; set; }
 
@@ -115,7 +187,10 @@ public class FieldDisplayDefaultsTests
         public string? Website { get; set; }
     }
 
-    public sealed class Location;
+    public sealed class Location
+    {
+        public string? City { get; set; }
+    }
 
     [Flags]
     public enum DayOfWeekFlags

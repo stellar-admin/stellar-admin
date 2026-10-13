@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -13,9 +15,10 @@ namespace StellarAdmin.TagHelpers;
 /// <summary>
 ///     Defines a column of a data grid. The cell value comes from, in order of precedence: a
 ///     nested <c>sa-data-grid-item-template</c>, plain child content (re-rendered per row), or
-///     the property named by <c>field</c> or selected by <c>field-for</c>. A field cell
-///     renders through a grid display template when the column declares a <c>template</c> or
-///     the field property carries a <c>[UIHint]</c>. The header renders a nested
+///     the property named by <c>field</c> or selected by <c>field-for</c>. An empty field value
+///     shows <c>empty-text</c>; otherwise a field cell renders through a grid display template
+///     when the column declares a <c>template</c> or the field property carries a
+///     <c>[UIHint]</c>. The header renders a nested
 ///     <c>sa-data-grid-header-template</c> when present, otherwise <c>title</c>, otherwise a
 ///     field column derives its header from the field's display name. A <c>class</c>
 ///     attribute is applied to both the header and body cells of the column.
@@ -34,6 +37,16 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </summary>
     [HtmlAttributeName("field")]
     public string? Field { get; set; }
+
+    /// <summary>
+    ///     The text a field cell shows when its value is null, blank or an empty collection,
+    ///     instead of rendering a grid display template.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the field's <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
+    /// </remarks>
+    [HtmlAttributeName("empty-text")]
+    public string? EmptyText { get; set; }
 
     /// <summary>
     ///     A lambda expression selecting the public property on the row item whose value
@@ -80,7 +93,8 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     ///     field value as the template's model. The name resolves like a partial view
     ///     named <c>GridDisplayTemplates/{template}</c> (e.g.
     ///     <c>/Views/Shared/GridDisplayTemplates/</c> or
-    ///     <c>/Pages/Shared/GridDisplayTemplates/</c>); an application-relative path
+    ///     <c>/Pages/Shared/GridDisplayTemplates/</c>), and the template's
+    ///     <c>ViewData.ModelMetadata</c> is the field property's; an application-relative path
     ///     (<c>~/</c> or <c>/</c>) is used verbatim. Takes precedence over a <c>[UIHint]</c>
     ///     on the field property. Requires <c>field</c> or <c>field-for</c>.
     /// </summary>
@@ -131,6 +145,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
         // empty string (title="@column.Title" with a null title), so an empty value means
         // "not set" — normalize to null so the metadata-based defaults still apply.
         Title = string.IsNullOrEmpty(Title) ? null : Title;
+        EmptyText = string.IsNullOrEmpty(EmptyText) ? null : EmptyText;
         Template = string.IsNullOrEmpty(Template) ? null : Template;
         Format = string.IsNullOrEmpty(Format) ? null : Format;
 
@@ -219,11 +234,18 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
                 : null;
 
             var fieldMetadata = GetFieldMetadata(gridContext, fieldName);
-            if ((Template ?? fieldMetadata?.TemplateHint) is { } templateName)
+            if (IsEmpty(value))
+            {
+                cellHtml = HtmlEncoder.Default.Encode(
+                    EmptyText ?? fieldMetadata?.NullDisplayText ?? ""
+                );
+            }
+            else if ((Template ?? fieldMetadata?.TemplateHint) is { } templateName)
             {
                 cellHtml = await RenderTemplate(
                     ResolveDisplayTemplate(gridContext, templateName),
-                    value
+                    value,
+                    fieldMetadata
                 );
             }
             else
@@ -287,6 +309,17 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
                 + "Only a property or chain of properties selected on the row item is "
                 + "supported, like (Booking b) => b.Customer.Name."
         );
+    }
+
+    private static bool IsEmpty([NotNullWhen(false)] object? value)
+    {
+        return value switch
+        {
+            null => true,
+            string text => string.IsNullOrWhiteSpace(text),
+            IEnumerable items => !items.Cast<object?>().Any(),
+            _ => false,
+        };
     }
 
     private static string SplitPascalCase(string name)
@@ -372,14 +405,20 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
             );
     }
 
-    private async Task<string> RenderTemplate(IView view, object? model)
+    private async Task<string> RenderTemplate(
+        IView view,
+        object value,
+        ModelMetadata? fieldMetadata
+    )
     {
-        // Model is assigned explicitly so a null field value reaches the template as null
-        // instead of the view data falling back to the page's model.
-        var viewData = new ViewDataDictionary<object?>(ViewContext.ViewData, model)
+        // The template sees the field property's metadata, as a display template does, so it
+        // can read the property's [DisplayFormat], [DataType] and enum display names.
+        var viewData = new ViewDataDictionary<object?>(ViewContext.ViewData, value);
+        if (fieldMetadata is not null)
         {
-            Model = model,
-        };
+            viewData.ModelExplorer = new ModelExplorer(_metadataProvider, fieldMetadata, value);
+        }
+
         using var writer = new StringWriter();
         await view.RenderAsync(new ViewContext(ViewContext, view, viewData, writer));
         return writer.ToString();

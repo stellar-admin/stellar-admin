@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin.Dashboard.IntegrationTests.Fixtures;
 using StellarAdmin.Dashboard.Resources.Builders;
+using StellarAdmin.Dashboard.Resources.Displays;
 
 namespace StellarAdmin.Dashboard.IntegrationTests.Infrastructure;
 
@@ -44,7 +45,9 @@ internal static class DashboardTestHost
                                 column =>
                                 {
                                     column.Title = "Unit price";
-                                    column.Format = "{0:0.00}";
+                                    column.UseDisplay<NumberDisplay>(number =>
+                                        number.Format = "0.00"
+                                    );
                                 }
                             );
                         })

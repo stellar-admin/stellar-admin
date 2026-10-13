@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using StellarAdmin.Dashboard.Resources.Displays;
 using StellarAdmin.Dashboard.Resources.Options;
 
 namespace StellarAdmin.Dashboard.Resources.Builders;
@@ -12,11 +13,12 @@ public sealed class ResourceColumnBuilder<TResource>
     private readonly LambdaExpression _field;
 
     /// <summary>
-    ///     The composite format string for cell values.
+    ///     The text a cell shows when its value is empty. Defaults to the property's
+    ///     <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
     /// </summary>
-    public string? Format
+    public string? EmptyText
     {
-        set => _configuration.Add(options => options.Format = value);
+        set => _configuration.Add(options => options.EmptyText = value);
     }
 
     /// <summary>
@@ -56,6 +58,61 @@ public sealed class ResourceColumnBuilder<TResource>
         {
             options.Sortable = true;
             options.SortExpression = selector;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Uses and configures a display for the column's cells.
+    /// </summary>
+    /// <remarks>
+    ///     Without a display, the cells render the grid display template their property's
+    ///     <c>[UIHint]</c> names, or the default display for its type. Displays with a handler
+    ///     are not supported in columns.
+    /// </remarks>
+    public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>(Action<TDisplay> configure)
+        where TDisplay : FieldDisplay, new()
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        // A handler would prepare its data once for every row, so columns leave them out for now
+        if (typeof(IFieldDisplay).IsAssignableFrom(typeof(TDisplay)))
+        {
+            throw new NotSupportedException(
+                $"{typeof(TDisplay).Name} has a handler, which columns do not support."
+            );
+        }
+
+        _configuration.Add(options =>
+        {
+            var display = new TDisplay();
+            configure(display);
+            options.Display = display;
+            options.UsesBuiltInRendering = false;
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Uses a display for the column's cells.
+    /// </summary>
+    public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>()
+        where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
+
+    /// <summary>
+    ///     Renders the cells from the property's metadata instead of a display.
+    /// </summary>
+    /// <remarks>
+    ///     The value is formatted with the property's <c>[DisplayFormat]</c>.
+    /// </remarks>
+    public ResourceColumnBuilder<TResource> UseBuiltInRendering()
+    {
+        _configuration.Add(options =>
+        {
+            options.Display = null;
+            options.UsesBuiltInRendering = true;
         });
 
         return this;
