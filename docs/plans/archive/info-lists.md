@@ -1,6 +1,6 @@
 # Info lists
 
-Status: in progress (2026-10-12). Tag helpers, samples, website, skills, Dashboard display fields and details sections (decisions 49, 52–56), display handlers and the built-in `BadgeDisplay` (63–69, 80) and EF Core reference loading (76) done and committed; standard displays (90–118) done and committed; grid column displays (125–130) done, not yet committed. Outstanding: the Dashboard view page and configured row details (decisions 4 and 5).
+Status: completed (2026-10-13). Tag helpers, samples, website, skills, Dashboard display fields and details sections, displays and display handlers, EF Core reference loading, grid column displays and the Dashboard view page are done and committed. Configured row details (decision 5) moved to [configured-row-details](../configured-row-details.md); app-level display defaults (90) and column display handlers (129) moved to [display-defaults](../display-defaults.md).
 
 Make read-only displays of a record's fields a first-class feature, similar to Filament's [infolists](https://filamentphp.com/docs/5.x/infolists/overview), instead of hand-written `dl`/`dt`/`dd` markup in partials such as row details. Developers must be able to show read-only fields on a view page, in row details, and on edit pages (for example audit information beside the editable fields).
 
@@ -221,7 +221,7 @@ Grid column displays (implemented 2026-10-13, not committed):
 - Playground demos (136–139, 2026-10-13): the Display fields gallery's index shows every type's default column display, and a new Display columns gallery (`DisplayColumnsGallery`, the same booking) shows configured displays, the `[UIHint]` status through `Views/Shared/GridDisplayTemplates/BookingStatus.cshtml`, a clamped itinerary, empty text and built-in rendering. The demos found three defects, now fixed: `FieldDisplayView.Display` cached the display on the page instance, which the grid reuses for every cell, so a second column using the same template got the first's display; cell links had no link style (the grid templates now add `sa-display-link`); and clamped text widened its column (capped at `80 * --sa-unit` in cells).
 - Playground and the integration test host move their price column to `NumberDisplay`. Skills: `setup.md` documents column displays; the generated data-grid reference picks up `empty-text`.
 
-Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
+Outstanding at close: the website's inline-example stylesheet still has the old divided rule (single-column demos look the same). Configured row details and display defaults continue in their own plans.
 
 ## Verification
 

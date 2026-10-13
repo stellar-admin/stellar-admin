@@ -10,7 +10,8 @@ The audit checks source, configuration, samples, generated website artifacts and
 | --- | --- | --- |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (a Dashboard `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
-| [info-lists](info-lists.md) | in progress | First-class read-only field displays, similar to Filament infolists. The `sa-details`/`sa-display-field` tag helpers, their samples, docs and skills, and Dashboard display fields, details sections and displays (`UseDisplay`, display handlers, `BadgeDisplay`) and EF Core reference loading are done; the Dashboard view page and configured row details are outstanding. Supersedes the `sa-details`/`sa-display-field` idea in crud-screen-tag-helpers. |
+| [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |
+| [display-defaults](display-defaults.md) | proposed | App-level configuration of the default displays, and display handlers in index columns. Carried over from info-lists decisions 90 and 129. |
 | [homepage-component-embeds](homepage-component-embeds.md) | proposed | The website retains `src/components/inline-example/inline-example.tsx`, generated fragments and `scripts/export-inline-example.mjs`, but `src/routes/index.tsx` does not consume the wrapper. |
 
 ## Retired implementation and research records
@@ -43,6 +44,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |
 | [grid-nested-field-binding](archive/grid-nested-field-binding.md) | completed |
 | [ice-theme](archive/ice-theme.md) | completed |
+| [info-lists](archive/info-lists.md) | completed; `sa-details` and `sa-display-field`, Dashboard display fields, details sections, displays and display handlers, EF Core reference loading, grid column displays and the `AllowView` view page. Configured row details and display defaults continue in their own plans; the website inline-example stylesheet still has the old divided rule. |
 | [identity-entity-constraint-research](archive/identity-entity-constraint-research.md) | completed |
 | [identity-on-resource-baseline](archive/identity-on-resource-baseline.md) | retired; historical Identity example. The role description migration was applied on 2026-09-27. |
 | [identity-options-builder](archive/identity-options-builder.md) | completed |
