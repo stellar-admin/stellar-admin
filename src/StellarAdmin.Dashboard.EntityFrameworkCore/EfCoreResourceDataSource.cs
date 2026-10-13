@@ -84,7 +84,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         var entityType = db.Model.FindEntityType(typeof(TEntity))!;
         var navigations = _resourceOptions
             .Index.Columns.Select(column =>
-                GetPropertyPath(column.DisplayExpression ?? column.FieldExpression) is { } path
+                GetPropertyPath(column.FieldExpression) is { } path
                     ? FindReferencePath(entityType, path)
                     : null
             )
@@ -106,7 +106,7 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
             );
             query = Order(
                 query,
-                column.SortExpression ?? column.DisplayExpression ?? column.FieldExpression,
+                column.SortExpression ?? column.FieldExpression,
                 sort.Direction == ResourceSortDirection.Descending
                     ? nameof(Queryable.OrderByDescending)
                     : nameof(Queryable.OrderBy)

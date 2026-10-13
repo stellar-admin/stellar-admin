@@ -22,7 +22,7 @@
         // The display template reads its display from the view context's data, which the column renders it with.
         // Numbers line up on the right, header and cells alike
         ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
-        <sa-data-grid-column title="@column.Title" field-for="@(column.DisplayExpression ?? column.FieldExpression)"
+        <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
                              template="@display?.TemplateName" empty-text="@column.EmptyText"
                              sortable="@column.Sortable" sort-field="@column.FieldName"
                              class="@(display is NumberDisplay ? "text-right" : null)" />

@@ -20,7 +20,7 @@ internal static class FieldDisplayDefaults
             return column.Display;
         }
 
-        var expression = column.DisplayExpression ?? column.FieldExpression;
+        var expression = column.FieldExpression;
         if (ResourcePropertyPath.GetProperties(expression) is not { } properties)
         {
             return null;

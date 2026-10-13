@@ -8,9 +8,6 @@ namespace StellarAdmin.Dashboard.Resources.Options;
 /// </summary>
 public sealed class DataGridColumnOptions
 {
-    /// <summary>The property used for cell values and sorting when it differs from the column field.</summary>
-    public LambdaExpression? DisplayExpression { get; internal set; }
-
     /// <summary>
     ///     The display that renders the column's cells, or <c>null</c> to render the grid display
     ///     template the property's <c>[UIHint]</c> names, or the default display for its type.
