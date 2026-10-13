@@ -58,8 +58,10 @@ internal static class FormLayoutGalleryRegistration
             "Display fields",
             55,
             FormSectionLayout.Card,
-            ConfigureDisplayFieldsFields
+            ConfigureDisplayFieldsFields,
+            ConfigureDisplayFieldsColumns
         );
+        dashboard.AddDisplayColumnsResource();
         dashboard.AddDestinationResource();
     }
 
@@ -69,7 +71,8 @@ internal static class FormLayoutGalleryRegistration
         string label,
         int order,
         FormSectionLayout sectionLayout,
-        Action<ResourceFieldsBuilder<TRecord>> configureFields
+        Action<ResourceFieldsBuilder<TRecord>> configureFields,
+        Action<ResourceColumnsBuilder<TRecord>>? configureColumns = null
     )
         where TRecord : FieldEditorGalleryRecord, IFieldEditorGalleryRecord<TRecord>
     {
@@ -86,7 +89,9 @@ internal static class FormLayoutGalleryRegistration
                 });
                 resource.UseDataSource<FieldEditorGalleryDataSource<TRecord>>();
                 resource.UseKey(record => record.Id);
-                resource.Index(index => index.Columns(columns => columns.Add(record => record.Id)));
+                resource.Index(index =>
+                    index.Columns(configureColumns ?? (columns => columns.Add(record => record.Id)))
+                );
                 resource.AllowCreate(create =>
                 {
                     create.SectionLayout = sectionLayout;
@@ -97,6 +102,89 @@ internal static class FormLayoutGalleryRegistration
                     edit.SectionLayout = sectionLayout;
                     edit.Fields(configureFields);
                 });
+            }
+        );
+    }
+
+    // Every column shows its type's default display
+    private static void ConfigureDisplayFieldsColumns(
+        ResourceColumnsBuilder<DisplayFieldsLayoutGallery> columns
+    )
+    {
+        columns.Add(record => record.TravellerName);
+        columns.Add(record => record.Departure);
+        columns.Add(record => record.CreatedAt);
+        columns.Add(record => record.CheckIn);
+        columns.Add(record => record.Cabin);
+        columns.Add(record => record.IsPaid);
+        columns.Add(record => record.Total);
+        columns.Add(record => record.ContactEmail);
+        columns.Add(record => record.HotelWebsite);
+        columns.Add(record => record.HotelPhone);
+    }
+
+    // The same booking with configured column displays, a [UIHint] template and empty text
+    private static void AddDisplayColumnsResource(this StellarAdminDashboardBuilder dashboard)
+    {
+        dashboard.AddResource<DisplayColumnsGallery>(
+            "form-display-columns",
+            resource =>
+            {
+                resource.PluralLabel = "Display columns";
+                resource.SingularLabel = "Display columns";
+                resource.SidebarItem(item =>
+                {
+                    item.Group = Group;
+                    item.Order = 56;
+                });
+                resource.UseDataSource<FieldEditorGalleryDataSource<DisplayColumnsGallery>>();
+                resource.Index(index =>
+                    index.Columns(columns =>
+                    {
+                        columns.Add(record => record.BookingReference);
+                        columns.Add(record => record.Status);
+                        columns.Add(
+                            record => record.Cabin,
+                            column => column.UseDisplay<BadgeDisplay>()
+                        );
+                        columns.Add(
+                            record => record.IsPaid,
+                            column =>
+                                column.UseDisplay<BooleanDisplay>(boolean =>
+                                {
+                                    boolean.Appearance = BooleanDisplayAppearance.IconAndText;
+                                    boolean.TrueText = "Paid";
+                                    boolean.FalseText = "Unpaid";
+                                })
+                        );
+                        columns.Add(
+                            record => record.Total,
+                            column =>
+                                column.UseDisplay<NumberDisplay>(number => number.Format = "C")
+                        );
+                        columns.Add(
+                            record => record.Departure,
+                            column =>
+                                column.UseDisplay<DateDisplay>(date => date.Format = "ddd d MMM")
+                        );
+                        columns.Add(
+                            record => record.Itinerary,
+                            column => column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
+                        );
+                        columns.Add(
+                            record => record.UpdatedAt,
+                            column => column.EmptyText = "Never"
+                        );
+                        columns.Add(
+                            record => record.CreatedAt,
+                            column =>
+                            {
+                                column.Title = "Created (built-in)";
+                                column.UseBuiltInRendering();
+                            }
+                        );
+                    })
+                );
             }
         );
     }

@@ -246,6 +246,21 @@
         font-variant-numeric: tabular-nums;
     }
 
+    /* In a cell, clamped text wraps at a readable width instead of widening its column */
+    [data-slot="table-cell"] > .sa-text-display[data-line-clamp] {
+        max-width: calc(80 * var(--sa-unit));
+    }
+
+    /* Links in cells, styled as a display field's links */
+    .sa-display-link {
+        color: var(--sa-color-accent-text);
+        text-underline-offset: 4px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
     .sa-boolean-display {
         display: inline-flex;
         align-items: center;

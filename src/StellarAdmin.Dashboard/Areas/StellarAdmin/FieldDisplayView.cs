@@ -13,12 +13,15 @@ namespace StellarAdmin.Dashboard.Areas.StellarAdmin;
 public abstract class FieldDisplayView<TDisplay> : RazorPage<object?>
     where TDisplay : FieldDisplay, new()
 {
+    private static readonly TDisplay DefaultDisplay = new();
+
     /// <summary>
     ///     The field's display configuration, or default settings when the template renders
     ///     without one.
     /// </summary>
-    public TDisplay Display =>
-        field ??= ViewData[ViewDataKeys.FieldDisplay] as TDisplay ?? new TDisplay();
+    // Read on each access: a grid renders every cell with the same page instance, so a cached display would
+    // carry over to the next column using the template
+    public TDisplay Display => ViewData[ViewDataKeys.FieldDisplay] as TDisplay ?? DefaultDisplay;
 
     /// <summary>
     ///     Data prepared for this display on the current request, or <c>null</c> when the display

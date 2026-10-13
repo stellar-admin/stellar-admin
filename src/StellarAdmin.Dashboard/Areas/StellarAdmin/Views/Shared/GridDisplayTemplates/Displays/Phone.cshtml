@@ -14,5 +14,5 @@
 }
 else
 {
-    <a href="@($"tel:{(number.StartsWith('+') ? "+" : "")}{digits}")">@FormatValue()</a>
+    <a class="sa-display-link" href="@($"tel:{(number.StartsWith('+') ? "+" : "")}{digits}")">@FormatValue()</a>
 }

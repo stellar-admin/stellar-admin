@@ -3,8 +3,9 @@ using DashboardPlayground.Resources.FieldEditors;
 
 namespace DashboardPlayground.Resources.FormLayouts;
 
-// Read-only display fields among inputs and in details sections, with every standard display.
-public sealed class DisplayFieldsLayoutGallery
+// Read-only display fields among inputs and in details sections, with every standard display. Its index
+// shows each type's default column display.
+public class DisplayFieldsLayoutGallery
     : FieldEditorGalleryRecord,
         IFieldEditorGalleryRecord<DisplayFieldsLayoutGallery>
 {
@@ -81,26 +82,31 @@ public sealed class DisplayFieldsLayoutGallery
             : $"{TravellerName} to {Destination} on {Departure:d MMM yyyy}";
 
     public static DisplayFieldsLayoutGallery CreateSample() =>
-        new()
-        {
-            TravellerName = "Amelia Hart",
-            Destination = "Lisbon",
-            Departure = new(2027, 4, 2),
-            BookingReference = "VGR-24817",
-            Cabin = GalleryCabin.PremiumEconomy,
-            Status = GalleryBookingStatus.Confirmed,
-            ContactEmail = "amelia.hart@example.com",
-            CreatedBy = "Jonah Reyes",
-            CreatedAt = new(2026, 9, 14, 10, 32, 0),
-            IsPaid = true,
-            Total = 1840.5m,
-            HotelWebsite = "https://example.com/hotel-alfama",
-            HotelPhone = "+351 21 555 0142",
-            CheckIn = new(15, 0),
-            Nights = 6,
-            Itinerary =
-                "Day 1: arrive in Lisbon and check in at Hotel Alfama.\nDay 2: walking tour of Alfama and Baixa, then a tram ride to Belém.\nDay 3: day trip to Sintra and Cascais.\nDays 4 to 6: free days with optional excursions.",
-        };
+        new DisplayFieldsLayoutGallery().WithSample();
+
+    // Fills in the sample, so a derived gallery shows the same booking
+    protected DisplayFieldsLayoutGallery WithSample()
+    {
+        TravellerName = "Amelia Hart";
+        Destination = "Lisbon";
+        Departure = new(2027, 4, 2);
+        BookingReference = "VGR-24817";
+        Cabin = GalleryCabin.PremiumEconomy;
+        Status = GalleryBookingStatus.Confirmed;
+        ContactEmail = "amelia.hart@example.com";
+        CreatedBy = "Jonah Reyes";
+        CreatedAt = new(2026, 9, 14, 10, 32, 0);
+        IsPaid = true;
+        Total = 1840.5m;
+        HotelWebsite = "https://example.com/hotel-alfama";
+        HotelPhone = "+351 21 555 0142";
+        CheckIn = new(15, 0);
+        Nights = 6;
+        Itinerary =
+            "Day 1: arrive in Lisbon and check in at Hotel Alfama.\nDay 2: walking tour of Alfama and Baixa, then a tram ride to Belém.\nDay 3: day trip to Sintra and Cascais.\nDays 4 to 6: free days with optional excursions.";
+
+        return this;
+    }
 }
 
 public enum GalleryBookingStatus

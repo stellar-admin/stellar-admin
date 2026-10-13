@@ -82,6 +82,33 @@ public class ResourceColumnDisplayTests
     }
 
     [Test]
+    public async Task Index_WithColumnsSharingDisplayTemplate_RendersEachColumnsDisplay()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(columns =>
+        {
+            columns.Add(facts => facts.ProductName);
+            columns.Add(
+                facts => facts.Notes,
+                column => column.UseDisplay<TextDisplay>(text => text.LineClamp = 2)
+            );
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var cells = Cells(document);
+        await Assert
+            .That(cells[0].RequiredElement(".sa-text-display").HasAttribute("data-line-clamp"))
+            .IsFalse();
+        await Assert
+            .That(cells[1].RequiredElement(".sa-text-display").GetAttribute("data-line-clamp"))
+            .IsEqualTo("2");
+    }
+
+    [Test]
     public async Task Index_WithCustomDisplay_RendersGridTemplateWithDisplay()
     {
         // Arrange
@@ -142,7 +169,7 @@ public class ResourceColumnDisplayTests
     {
         // Arrange
         await using var sut = await CreateAsync(columns =>
-            columns.Add(facts => facts.Notes, column => column.EmptyText = "No notes")
+            columns.Add(facts => facts.Discontinued, column => column.EmptyText = "Unknown")
         );
         using var client = sut.GetTestClient();
 
@@ -151,8 +178,8 @@ public class ResourceColumnDisplayTests
 
         // Assert
         var cell = Cells(document)[0];
-        await Assert.That(cell.TextContent.Trim()).IsEqualTo("No notes");
-        await Assert.That(cell.QuerySelector(".sa-text-display")).IsNull();
+        await Assert.That(cell.TextContent.Trim()).IsEqualTo("Unknown");
+        await Assert.That(cell.QuerySelector(".sa-boolean-display")).IsNull();
     }
 
     private static IElement[] Cells(IDocument document) =>
@@ -172,6 +199,7 @@ public class ResourceColumnDisplayTests
                             Active = true,
                             Code = "NB-01",
                             Email = "sales@voyager.example",
+                            Notes = "Ships in a sleeve.\nRecycled paper.",
                             Phone = "+27 21 555 0100",
                             Price = 8.50m,
                             ProductName = "Notebook",
