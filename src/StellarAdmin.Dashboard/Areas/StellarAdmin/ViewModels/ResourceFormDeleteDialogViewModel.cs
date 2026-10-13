@@ -1,7 +1,7 @@
 namespace StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The delete confirmation dialog of a form page, bound to the entity the page edits.
+///     The delete confirmation dialog of an edit or view page, bound to the entity the page shows.
 /// </summary>
 public sealed class ResourceFormDeleteDialogViewModel
 {
@@ -17,6 +17,9 @@ public sealed class ResourceFormDeleteDialogViewModel
     /// <summary>The confirmation message.</summary>
     public string Message { get; }
 
+    /// <summary>The page the delete starts from, which a rejected delete returns to.</summary>
+    public string Origin { get; }
+
     /// <summary>The title of the confirmation dialog, also used as the button label.</summary>
     public string Title { get; }
 
@@ -25,7 +28,8 @@ public sealed class ResourceFormDeleteDialogViewModel
         string message,
         string confirmLabel,
         string cancelLabel,
-        string entityId
+        string entityId,
+        string origin = "edit"
     )
     {
         Title = title;
@@ -33,5 +37,6 @@ public sealed class ResourceFormDeleteDialogViewModel
         ConfirmLabel = confirmLabel;
         CancelLabel = cancelLabel;
         EntityId = entityId;
+        Origin = origin;
     }
 }

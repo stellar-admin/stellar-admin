@@ -34,4 +34,9 @@ public sealed class ResourceLabelOptions
     ///     Default text for the sheet that pages load content into.
     /// </summary>
     public ResourceSheetLabelOptions Sheet { get; } = new();
+
+    /// <summary>
+    ///     Default view page text.
+    /// </summary>
+    public ResourceViewLabelOptions View { get; } = new();
 }

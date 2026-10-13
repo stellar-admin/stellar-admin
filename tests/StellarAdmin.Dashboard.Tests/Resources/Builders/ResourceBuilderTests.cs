@@ -166,6 +166,7 @@ public class ResourceBuilderTests
     [Arguments("create")]
     [Arguments("edit")]
     [Arguments("delete")]
+    [Arguments("view")]
     public async Task UseDataSource_WhenConfiguredActionIsUnsupported_RejectsConfiguration(
         string action
     )
@@ -184,6 +185,9 @@ public class ResourceBuilderTests
                 break;
             case "delete":
                 sut.AllowDelete(_ => { });
+                break;
+            case "view":
+                sut.AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
                 break;
         }
         using var provider = services.BuildServiceProvider();

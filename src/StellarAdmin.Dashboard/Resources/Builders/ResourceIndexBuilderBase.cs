@@ -53,6 +53,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             Services.Configure<ResourceOptions<TResource>>(options => options.Index.Title = value);
     }
 
+    /// <summary>
+    ///     The view link label.
+    /// </summary>
+    public string? ViewLabel
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.ViewLabel = value
+            );
+    }
+
     protected IServiceCollection Services { get; }
 
     protected ResourceIndexBuilderBase(IServiceCollection services) => Services = services;

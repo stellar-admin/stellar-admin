@@ -26,6 +26,17 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
+    ///     Whether the label displays above or beside the value.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the orientation of the field's section, then above.
+    /// </remarks>
+    public FieldOrientation? Orientation
+    {
+        set => _configuration.Add(options => options.Orientation = value);
+    }
+
+    /// <summary>
     ///     The field label.
     /// </summary>
     public string? Title

@@ -21,6 +21,11 @@ public interface IResourceIndexPageViewModel
     bool CanEdit { get; }
 
     /// <summary>
+    ///     Whether resources can be viewed.
+    /// </summary>
+    bool CanView { get; }
+
+    /// <summary>
     ///     The columns displayed in order.
     /// </summary>
     IReadOnlyList<DataGridColumnOptions> Columns { get; }
@@ -84,6 +89,11 @@ public interface IResourceIndexPageViewModel
     ///     The page title.
     /// </summary>
     string Title { get; }
+
+    /// <summary>
+    ///     The view link label.
+    /// </summary>
+    string? ViewLabel { get; }
 
     /// <summary>
     ///     Returns the key used in resource links.

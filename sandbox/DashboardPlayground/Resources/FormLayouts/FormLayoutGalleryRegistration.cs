@@ -59,7 +59,8 @@ internal static class FormLayoutGalleryRegistration
             55,
             FormSectionLayout.Card,
             ConfigureDisplayFieldsFields,
-            ConfigureDisplayFieldsColumns
+            ConfigureDisplayFieldsColumns,
+            ConfigureDisplayFieldsView
         );
         dashboard.AddDisplayColumnsResource();
         dashboard.AddDestinationResource();
@@ -72,7 +73,8 @@ internal static class FormLayoutGalleryRegistration
         int order,
         FormSectionLayout sectionLayout,
         Action<ResourceFieldsBuilder<TRecord>> configureFields,
-        Action<ResourceColumnsBuilder<TRecord>>? configureColumns = null
+        Action<ResourceColumnsBuilder<TRecord>>? configureColumns = null,
+        Action<ResourceViewFieldsBuilder<TRecord>>? configureView = null
     )
         where TRecord : FieldEditorGalleryRecord, IFieldEditorGalleryRecord<TRecord>
     {
@@ -102,6 +104,14 @@ internal static class FormLayoutGalleryRegistration
                     edit.SectionLayout = sectionLayout;
                     edit.Fields(configureFields);
                 });
+                if (configureView is not null)
+                {
+                    resource.AllowView(view =>
+                    {
+                        view.SectionLayout = sectionLayout;
+                        view.Fields(configureView);
+                    });
+                }
             }
         );
     }
@@ -672,6 +682,89 @@ internal static class FormLayoutGalleryRegistration
                 details.Add(model => model.CreatedAt);
                 details.Add(model => model.CreatedBy);
                 details.Add(model => model.UpdatedAt, field => field.EmptyText = "Never");
+            }
+        );
+    }
+
+    // The view page: every field is a display field, laid out with the same sections, groups and columns as a form
+    private static void ConfigureDisplayFieldsView(
+        ResourceViewFieldsBuilder<DisplayFieldsLayoutGallery> fields
+    )
+    {
+        fields.Add(model => model.Summary);
+        fields.AddSection(
+            "Booking in Columns(3)",
+            section =>
+            {
+                section.Description =
+                    "Add is a display field on the view page; the cabin uses UseDisplay<BadgeDisplay> and the status a [UIHint] template.";
+                section.Columns(3);
+                section.Add(model => model.TravellerName);
+                section.Add(model => model.Destination);
+                section.Add(model => model.BookingReference);
+                section
+                    .Add(model => model.Cabin)
+                    .UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline);
+                section.Add(model => model.Status);
+                section.Add(model => model.IsPaid);
+                section
+                    .Add(model => model.Total)
+                    .UseDisplay<NumberDisplay>(number => number.Format = "€#,##0.00");
+                section.Add(model => model.ContactEmail).ColumnSpan(2);
+                section.Add(model => model.AgentNotes, field => field.EmptyText = "No notes");
+            }
+        );
+        fields.AddSection(
+            "Trip: groups in Columns(2)",
+            section =>
+            {
+                section.Description =
+                    "Each column is a group of its own, and the itinerary spans both.";
+                section.Columns(2);
+                section.AddGroup(group =>
+                {
+                    group.Add(model => model.Departure);
+                    group.Add(model => model.CheckIn);
+                    group.Add(model => model.Nights);
+                });
+                section.AddGroup(group =>
+                {
+                    group.Add(model => model.HotelWebsite);
+                    group.Add(model => model.HotelPhone);
+                });
+                section
+                    .Add(model => model.Itinerary)
+                    .ColumnSpanFull()
+                    .UseDisplay<TextDisplay>(text => text.LineClamp = 2);
+            }
+        );
+        fields.AddSection(
+            "Audit: horizontal labels",
+            section =>
+            {
+                section.Description =
+                    "Orientation = Horizontal on the section, inherited by its nested section; Last updated sets its own.";
+                section.Orientation = FieldOrientation.Horizontal;
+                section.Columns(2);
+                section.Add(model => model.CreatedAt);
+                section.Add(model => model.CreatedBy);
+                section.AddSection(
+                    "Changes",
+                    changes =>
+                    {
+                        changes.ColumnSpanFull();
+                        changes.Columns(2);
+                        changes.Add(model => model.Status);
+                        changes.Add(
+                            model => model.UpdatedAt,
+                            field =>
+                            {
+                                field.EmptyText = "Never";
+                                field.Orientation = FieldOrientation.Vertical;
+                            }
+                        );
+                    }
+                );
             }
         );
     }

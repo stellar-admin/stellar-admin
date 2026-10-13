@@ -1,7 +1,7 @@
 namespace StellarAdmin.Dashboard.Resources;
 
 /// <summary>
-///     Provides index, create, edit, and delete operations for a resource.
+///     Provides index, view, create, edit, and delete operations for a resource.
 /// </summary>
 public interface IResourceCrudDataSource<TResource>
     : IResourceDataSource<TResource>,

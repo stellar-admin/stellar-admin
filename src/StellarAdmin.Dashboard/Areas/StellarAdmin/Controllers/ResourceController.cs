@@ -29,6 +29,9 @@ public class ResourceController<TResource>(
     ICompositeViewEngine viewEngine
 ) : Controller
 {
+    // The view page's action, whose method cannot be named View alongside the controller's View helpers
+    private const string ViewActionName = "View";
+
     private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
@@ -173,12 +176,15 @@ public class ResourceController<TResource>(
 
         if (!result.IsSuccess)
         {
-            if (origin == "edit")
+            if (origin is "edit" or "view")
             {
                 TempData[TempDataKeys.DeleteErrors] = JsonSerializer.Serialize(
                     result.Errors.Select(error => error.Message)
                 );
-                return RedirectToAction(nameof(Edit), new { id });
+                return RedirectToAction(
+                    origin == "edit" ? nameof(Edit) : ViewActionName,
+                    new { id }
+                );
             }
 
             AddValidationErrors(result, [], ResourceFormPageViewModel.BindingPrefix);
@@ -227,13 +233,7 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        if (TempData[TempDataKeys.DeleteErrors] is string deleteErrors)
-        {
-            foreach (var message in JsonSerializer.Deserialize<string[]>(deleteErrors) ?? [])
-            {
-                ModelState.AddModelError(string.Empty, message);
-            }
-        }
+        AddDeleteErrors();
 
         return await EditView(resource, id, cancellationToken);
     }
@@ -574,6 +574,58 @@ public class ResourceController<TResource>(
         return PartialView(panelOptions.PartialName, model);
     }
 
+    /// <summary>
+    ///     Displays the view page.
+    /// </summary>
+    [HttpGet]
+    [ActionName(ViewActionName)]
+    public async Task<IActionResult> Show(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            _resourceOptions.View is not { } view
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+        )
+        {
+            return NotFound();
+        }
+
+        var resource = _resourceOptions.ViewLoader is { } loader
+            ? await loader(HttpContext.RequestServices, id, cancellationToken)
+            : await ((IResourceViewHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
+        if (resource is null)
+        {
+            return NotFound();
+        }
+
+        AddDeleteErrors();
+
+        var labels = CreateLabelContext();
+        var fields = view.Fields;
+
+        return ResourceView(
+            ViewActionName,
+            new ResourceViewPageViewModel
+            {
+                Delete = CreateDeleteDialog(id, "view", labels),
+                DisplayData = await PrepareDisplaysAsync(fields, resource, cancellationToken),
+                EditLabel = _resourceOptions.Edit is null
+                    ? null
+                    : _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
+                Entity = resource,
+                EntityId = id,
+                Fields = fields,
+                Items = view.Items.ToArray(),
+                Columns = view.Columns,
+                SectionLayout = view.SectionLayout,
+                Title = view.Title ?? _labelOptions.View.Title(labels),
+            }
+        );
+    }
+
     // The collection's elements, such as int for List<int>; a nullable element converts to its underlying type
     private static Type? GetElementType(Type collectionType)
     {
@@ -659,6 +711,34 @@ public class ResourceController<TResource>(
             ModelState.AddModelError(key, error.Message);
         }
     }
+
+    // A rejected delete from the edit or view page returns there with its errors
+    private void AddDeleteErrors()
+    {
+        if (TempData[TempDataKeys.DeleteErrors] is string deleteErrors)
+        {
+            foreach (var message in JsonSerializer.Deserialize<string[]>(deleteErrors) ?? [])
+            {
+                ModelState.AddModelError(string.Empty, message);
+            }
+        }
+    }
+
+    private ResourceFormDeleteDialogViewModel? CreateDeleteDialog(
+        string id,
+        string origin,
+        ResourceLabelContext labels
+    ) =>
+        _resourceOptions.Delete is { } delete
+            ? new(
+                delete.Title ?? _labelOptions.Delete.Title(labels),
+                delete.Message ?? _labelOptions.Delete.Message(labels),
+                delete.ConfirmLabel ?? _labelOptions.Delete.ConfirmLabel(labels),
+                delete.CancelLabel ?? _labelOptions.Delete.CancelLabel(labels),
+                id,
+                origin
+            )
+            : null;
 
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
@@ -747,15 +827,7 @@ public class ResourceController<TResource>(
             nameof(Edit),
             new ResourceFormPageViewModel
             {
-                Delete = _resourceOptions.Delete is { } delete
-                    ? new(
-                        delete.Title ?? _labelOptions.Delete.Title(labels),
-                        delete.Message ?? _labelOptions.Delete.Message(labels),
-                        delete.ConfirmLabel ?? _labelOptions.Delete.ConfirmLabel(labels),
-                        delete.CancelLabel ?? _labelOptions.Delete.CancelLabel(labels),
-                        id
-                    )
-                    : null,
+                Delete = CreateDeleteDialog(id, "edit", labels),
                 Entity = resource,
                 Fields = edit.Fields,
                 Items = edit.Items.ToArray(),
@@ -985,6 +1057,8 @@ public class ResourceController<TResource>(
                 CanCreate = CanCreate,
                 CanEdit =
                     _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
+                CanView =
+                    _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
                 Columns = _resourceOptions.Index.Columns.ToArray(),
                 CreateLabel =
                     _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
@@ -1033,6 +1107,8 @@ public class ResourceController<TResource>(
                     )
                     : null,
                 Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
+                ViewLabel =
+                    _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
             }
         );
     }

@@ -95,10 +95,7 @@ public class ResourceFieldsBuilder<TResource>
         Expression<Func<TResource, TProperty>> field
     )
     {
-        var fieldBuilder = ResourceDisplayFieldBuilder.Create(field, nameof(field));
-        _configure(scope => scope.Items.Add(fieldBuilder.Build()));
-
-        return fieldBuilder;
+        return FormScopeBuilder.AddDisplayField(_configure, field, nameof(field));
     }
 
     /// <summary>
@@ -212,21 +209,5 @@ public class ResourceFieldsBuilder<TResource>
     private TBuilder AddContainer<TBuilder>(
         Func<Action<Action<IFormScope>>, TBuilder> createBuilder,
         Func<TBuilder, FormContainerOptions> build
-    )
-    {
-        var configuration = new List<Action<IFormScope>>();
-        var builder = createBuilder(configuration.Add);
-        _configure(scope =>
-        {
-            var container = build(builder);
-            foreach (var configure in configuration)
-            {
-                configure(container);
-            }
-
-            scope.Items.Add(container);
-        });
-
-        return builder;
-    }
+    ) => FormScopeBuilder.AddContainer(_configure, createBuilder, build);
 }

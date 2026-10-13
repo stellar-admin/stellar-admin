@@ -50,7 +50,7 @@ public class ResourceFormOptions : IFormScope
         set => Columns = value;
     }
 
-    private static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(
+    internal static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(
         IEnumerable<FormItemOptions> items
     )
     {

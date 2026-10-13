@@ -60,4 +60,9 @@ public class ResourceIndexOptions
     ///     Uses the global resource label callback when null.
     /// </remarks>
     public string? Title { get; set; }
+
+    /// <summary>
+    ///     The view link label.
+    /// </summary>
+    public string? ViewLabel { get; set; }
 }

@@ -49,6 +49,34 @@ internal static class ProductResourceRegistration
                     );
                 })
             );
+            resource.AllowView(view =>
+                view.Fields(fields =>
+                {
+                    fields.AddSection(
+                        "Product",
+                        section =>
+                        {
+                            section.Columns(2);
+                            section.Add(product => product.Name);
+                            section.Add(
+                                product => product.Category!.Name,
+                                field => field.Title = "Category"
+                            );
+                        }
+                    );
+                    fields.AddSection(
+                        "Pricing",
+                        section =>
+                        {
+                            section.Columns(2);
+                            section
+                                .Add(product => product.Price)
+                                .UseDisplay<NumberDisplay>(number => number.Format = "0.00");
+                            section.Add(product => product.Details.Sku);
+                        }
+                    );
+                })
+            );
             resource.AllowDelete();
             resource.Index(index =>
             {

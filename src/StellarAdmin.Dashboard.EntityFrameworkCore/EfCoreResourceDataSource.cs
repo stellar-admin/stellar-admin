@@ -213,21 +213,23 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         // Lookup editors display the selected item from the reference loaded with the entity, and
-        // display fields read through the references on their paths
-        if (includeLookups && _resourceOptions.Edit is { } edit)
+        // display fields read through the references on their paths. The edit and view pages load
+        // through the same method, so the entity carries the references either page needs
+        if (includeLookups)
         {
-            var navigations = edit
-                .Fields.Select(field =>
-                    field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
-                        ? reference.FindNavigation(entityType, field.FieldName)?.Name
-                        : null
-                )
+            var edit = _resourceOptions.Edit;
+            var view = _resourceOptions.View;
+            var lookupNavigations = (edit?.Fields ?? []).Select(field =>
+                field.Editor is LookupSheetEditor { Items: IEfCoreLookupReference reference }
+                    ? reference.FindNavigation(entityType, field.FieldName)?.Name
+                    : null
+            );
+            var displayFields = (
+                edit?.ModelType == typeof(TEntity) ? edit.DisplayFields : []
+            ).Concat(view?.ModelType == typeof(TEntity) ? view.Fields : []);
+            var navigations = lookupNavigations
                 .Concat(
-                    edit.ModelType == typeof(TEntity)
-                        ? edit.DisplayFields.Select(field =>
-                            FindReferencePath(entityType, field.PropertyPath)
-                        )
-                        : []
+                    displayFields.Select(field => FindReferencePath(entityType, field.PropertyPath))
                 )
                 .OfType<string>()
                 .Distinct(StringComparer.Ordinal);

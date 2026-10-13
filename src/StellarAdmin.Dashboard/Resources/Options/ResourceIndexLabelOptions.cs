@@ -33,4 +33,10 @@ public sealed class ResourceIndexLabelOptions
     /// </summary>
     public Func<ResourceLabelContext, string> Title { get; set; } =
         resource => resource.PluralLabel;
+
+    /// <summary>
+    ///     The callback that generates the default index view link label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> ViewLabel { get; set; } =
+        resource => $"View {resource.SingularLabel}";
 }

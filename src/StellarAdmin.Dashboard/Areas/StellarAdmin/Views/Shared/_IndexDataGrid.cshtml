@@ -30,7 +30,7 @@
     @{
         ViewContext.ViewData.Remove(ViewDataKeys.FieldDisplay);
     }
-    @if (Model.CanEdit || Model.Delete is not null)
+    @if (Model.CanView || Model.CanEdit || Model.Delete is not null)
     {
         <sa-data-grid-column sortable="false" class="w-px whitespace-nowrap">
             <sa-data-grid-item-template>
@@ -38,6 +38,16 @@
                     var resourceId = Model.GetKey(Html.GridItem<object>());
                     var deleteTooltipId = $"--resource-delete-{resourceId}";
                     var editTooltipId = $"--resource-edit-{resourceId}";
+                    var viewTooltipId = $"--resource-view-{resourceId}";
+                }
+                @if (Model.CanView)
+                {
+                    <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                                   asp-action="View" asp-route-id="@resourceId" hx-boost="false"
+                                   aria-label="@Model.ViewLabel" interestfor="@viewTooltipId">
+                        <sa-icon name="eye" />
+                    </sa-linkbutton>
+                    <sa-tooltip id="@viewTooltipId">@Model.ViewLabel</sa-tooltip>
                 }
                 @if (Model.CanEdit)
                 {

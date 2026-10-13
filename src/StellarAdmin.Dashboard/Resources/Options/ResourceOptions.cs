@@ -70,6 +70,12 @@ public sealed class ResourceOptions<TResource>
             field = value;
         }
     } = typeof(TResource).Name.Split('`')[0].Humanize();
+
+    /// <summary>
+    ///     The view page configuration, or null when the view page is disabled.
+    /// </summary>
+    public ResourceViewOptions? View { get; internal set; }
+
     internal Func<
         IServiceProvider,
         object,
@@ -91,6 +97,12 @@ public sealed class ResourceOptions<TResource>
         Task<object?>
     >? EditLoader { get; set; }
     internal string? KeyPropertyName { get; set; }
+    internal Func<
+        IServiceProvider,
+        string,
+        CancellationToken,
+        Task<object?>
+    >? ViewLoader { get; set; }
 
     /// <summary>
     ///     Specifies the property that identifies a resource.

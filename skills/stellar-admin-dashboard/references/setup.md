@@ -288,7 +288,7 @@ edit.Fields(fields =>
 ```
 
 - Display fields are never bound: a posted value for one is ignored, and the property needs only a public getter. The value comes from the page's model, so with `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` the property must be on `TModel`.
-- A display field can read through references, such as `booking => booking.Customer.Name`. An EF Core resource's edit page loads the references on each display field's path with the record, in the same query; a null reference shows the empty text. Other data sources and custom models must load them themselves.
+- A display field can read through references, such as `booking => booking.Customer.Name`. An EF Core resource's edit and view pages load the references on each display field's path with the record, in the same query; a null reference shows the empty text. Other data sources and custom models must load them themselves.
 - `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title` and `EmptyText`, `UseDisplay<TDisplay>()`, `UseBuiltInRendering()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
 - An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash, and no display or template runs for it.
 - A value renders, in order of precedence, through the display set with `UseDisplay<TDisplay>(display => ...)` (as `UseEditor` does for inputs); through `<sa-display-field>`'s own rendering after `UseBuiltInRendering()`; through the template its `[UIHint("Status")]` names, the view `DisplayTemplates/Status` with the value as its model (a missing template throws); or through the default display for its data type, then its type. Values with no default display, such as collections and GUIDs, use `<sa-display-field>`'s rendering, which joins collections with commas and applies `[DisplayFormat]`.
@@ -323,6 +323,39 @@ details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Va
 
 - A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
 - Display fields work on create pages too, where a value that isn't set yet shows its empty text.
+
+## View pages
+
+`resource.AllowView(view => ...)` adds a read-only page at `/{slug}/view/{id}` and an eye-icon View action on each index row, before Edit. Every field on it is a display field, laid out with the same sections, groups, columns, spans and starts as a form:
+
+```csharp
+resource.UseKey(booking => booking.Id);
+resource.AllowView(view =>
+{
+    view.Title = "Booking";
+    view.SectionLayout = FormSectionLayout.Split;
+    view.Fields(fields =>
+    {
+        fields.Columns(2);
+        fields.Add(booking => booking.Reference);
+        fields.Add(booking => booking.Customer.Name, field => field.Title = "Customer");
+        fields.AddSection("Audit", section =>
+        {
+            section.Orientation = FieldOrientation.Horizontal;
+            section.Columns(2);
+            section.Add(booking => booking.CreatedAt);
+            section.AddGroup(group => group.Add(booking => booking.UpdatedAt, field => field.EmptyText = "Never"));
+        });
+    });
+});
+```
+
+- `fields.Add` returns the display field builder described in [Display fields](#display-fields), plus `Orientation`. `AddSection` takes `Description`, `Layout`, `Orientation`, `Columns`, `ColumnSpan` and `ColumnStart`; `AddGroup` takes `Columns`, `ColumnSpan` and `ColumnStart`; `Clear()` removes earlier items. A section's `Orientation` applies to the display fields inside it, including nested sections, unless a field or nested section sets its own.
+- The page needs a key (`UseKey`) and at least one field; a view without fields fails at startup. Display handlers run as on the edit page.
+- The header offers Back, Delete when `AllowDelete` is configured (a rejected delete returns to the view page with its errors), and Edit when `AllowEdit` is configured.
+- The data source loads the record through `IResourceViewHandler<TResource>.FindAsync`, which `IResourceEditHandler<T>` extends, so a source that can edit can also view. `AllowView<TModel, THandler>(...)` displays a custom model, with `THandler : IResourceViewHandler<TModel>`.
+- `view.Title` defaults to `"View " + SingularLabel`; change the default with `labels.View(view => view.Title = ...)`. The row action's label is `index.ViewLabel`, defaulting to `labels.Index(index => index.ViewLabel = ...)`, then `"View " + SingularLabel`.
+- Override the page with `Areas/StellarAdmin/Views/{Resource}/View.cshtml`, or a shared `ResourceView.cshtml`. Its model is `ResourceViewPageViewModel`, and `<sa-view-page model="Model" />` renders the standard page, with `pre-page-actions`, `post-page-actions`, `pre-view-fields` and `post-view-fields` slots.
 
 ## Custom create models
 

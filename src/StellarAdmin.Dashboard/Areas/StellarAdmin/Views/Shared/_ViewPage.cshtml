@@ -1,0 +1,39 @@
+@model ResourceViewPageViewModel
+@inject Microsoft.Extensions.Options.IOptions<StellarAdmin.StellarAdminFormsOptions> FormsOptions
+
+@{
+    var layout = Model.SectionLayout ?? FormsOptions.Value.SectionLayout;
+}
+
+<sa-page-container width="PageContainerWidth.Large" class="sa-resource-view" data-form-layout="@layout.GetDataAttributeText()">
+    <sa-page-header class="sa-resource-view-header">
+        <sa-page-header-title>@Model.Title</sa-page-header-title>
+        <sa-page-header-actions>
+            <sa-slot-outlet name="pre-page-actions"/>
+            <sa-linkbutton asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-linkbutton>
+            @if (Model.Delete is { } delete)
+            {
+                <sa-button type="button" variant="ButtonVariant.Destructive"
+                           command="show-modal" commandfor="delete-confirm-dialog">@delete.Title</sa-button>
+            }
+            @if (Model.EditLabel is { } editLabel)
+            {
+                <sa-linkbutton asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-linkbutton>
+            }
+            <sa-slot-outlet name="post-page-actions"/>
+        </sa-page-header-actions>
+    </sa-page-header>
+
+    @Html.ValidationSummary(excludePropertyErrors: true)
+
+    <sa-slot-outlet name="pre-view-fields"/>
+
+    <partial name="_FormFields" for="@Model.Entity"
+             view-data='new ViewDataDictionary(ViewData) { [ViewDataKeys.FormFields] = Array.Empty<FormFieldOptions>(), [ViewDataKeys.FormItems] = Model.Items, [ViewDataKeys.FormColumns] = Model.Columns, [ViewDataKeys.FormSectionLayout] = layout, [ViewDataKeys.DisplayData] = Model.DisplayData }'/>
+
+    <sa-slot-outlet name="post-view-fields"/>
+</sa-page-container>
+@if (Model.Delete is not null)
+{
+    <partial name="_FormDeleteDialog" model="Model.Delete" />
+}

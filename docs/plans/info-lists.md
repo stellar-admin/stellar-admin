@@ -159,6 +159,19 @@ Standard displays (agreed 2026-10-12; 81–89, 91–92 and 99–102 were options
 129. Displays with a handler are not supported in columns: `UseDisplay` throws `NotSupportedException`, since a handler would run once per row; revisit with a batched design. Decided.
 130. `NumberDisplay` columns are right-aligned, header and cells. Decided.
 140. The EF Core index includes the reference navigations on each column's path, as the edit page does for display fields, so `product => product.Category.Name` shows the category. The column's own expression gives the path; collections end it and owned types load with their owner. Decided.
+147. View page (planned 2026-10-13, replaces the deferral in 4): opt-in `AllowView()`/`AllowView(view => ...)` and `AllowView<TModel, THandler>()`, a GET-only `View` action at `/{slug}/view/{id}`, overridable as `Views/{Resource}/View.cshtml` or `ResourceView.cshtml`. Done.
+149. A view with no display fields (empty sections included) fails startup validation; no fallback derived from the edit form. Done.
+150. New `IResourceViewHandler<TModel>` with `FindAsync`; `IResourceEditHandler<TModel>` extends it, so a read-only data source can back a view page. Startup validation checks the data source as for edit. Done.
+151. The EF Core `FindAsync` includes display-field reference paths from both the edit and view configurations (when each uses the entity), since it cannot tell which page calls it. Done.
+152. Navigation: an eye-icon View row action before Edit; the view page header offers Edit and Delete (the existing dialog; a failed delete returns to the view page) and a Back link to the index. Done.
+153. Display handlers run on the view page as on edit. Done.
+154. Labels: `ResourceViewLabelOptions.Title` ("View {singular}"), `ResourceIndexLabelOptions.ViewLabel` and `index.ViewLabel`. The row label defaults to "View {singular}", matching "Edit {singular}", rather than the planned "View". Done.
+156. View builders where every field is a display field: `ResourceViewFieldsBuilder`, `ResourceViewSectionBuilder` and `ResourceViewGroupBuilder` with `Add` (display field), `AddSection`, `AddGroup`, `Columns`, `Clear`, spans, starts and per-section `Layout`; no `AddDisplayField` or `AddDetails`. Supersedes 148 and 157–159. Done.
+160. View sections and groups build `FormSectionOptions`/`FormGroupOptions` and render through `_FormItems`, `_FormSection` and `_FormGroup`, so the layout flexibility (nesting, grids, spans, starts) matches create and edit. Done.
+161. The view builders share the form builders' implementation through an internal `FormScopeBuilder` (container and display-field building) rather than a common base class, since their public return types differ. Done.
+162. On the view page, display fields take the details style (muted label, medium value), not the beside-inputs style of C2; the page marks its context. Done.
+163. `Orientation` is offered on view fields and sections and inherited downward; `Divided` is not offered on view sections for now. Done.
+164. The standard view page renders through a public `<sa-view-page model="Model" />` (`_ViewPage.cshtml`), as `<sa-form-page>` does, with `pre-page-actions`, `post-page-actions`, `pre-view-fields` and `post-view-fields` slots, so an override can reuse it. Done.
 
 ## Prototype
 
@@ -211,6 +224,13 @@ Grid column displays (implemented 2026-10-13, not committed):
 Outstanding: the view page and configured row details (deferred, decisions 4 and 5); the website's inline-example stylesheet still has the old divided rule (single-column demos look the same).
 
 ## Verification
+
+View page (decisions 147–164), completed 2026-10-13:
+
+- Full solution tests: 1209 passed, 0 failed. New: `ResourceViewFieldsBuilderTests` (nested layout, orientation, custom model, validation, blank titles) and a view case in `ResourceBuilderTests`; `ResourceViewPageTests` (nested sections and groups, orientation inheritance, page actions, rejected delete returning to the view page, custom model, display handler, 404s, index row action, labels); EF `ResourceViewTests` (the view's reference paths join in one query; own properties don't).
+- Playground on port 5207, headless Chromium: the Products and Display fields view pages at 1280px and 390px, light and dark, and the Products index with the View row action.
+- `SkillsGenerator`: regenerated (adds `components/view-page.md` and its index row); `--check` reports no drift.
+- Not checked: theme fixtures and density; a custom `View.cshtml` override.
 
 Grid column displays (125–130), completed 2026-10-13:
 

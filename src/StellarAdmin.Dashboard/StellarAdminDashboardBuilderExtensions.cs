@@ -95,6 +95,18 @@ public static partial class StellarAdminDashboardBuilderExtensions
                     "The edit form requires a data source implementing IResourceEditHandler or an explicit edit handler."
                 )
                 .Validate(
+                    options => options.View is null || options.View.Fields.Count > 0,
+                    "The view page requires at least one field."
+                )
+                .Validate(
+                    options =>
+                        options.View is null
+                        || options.ViewLoader is not null
+                        || options.DataSourceType is { } type
+                            && typeof(IResourceViewHandler<TResource>).IsAssignableFrom(type),
+                    "The view page requires a data source implementing IResourceViewHandler or an explicit view handler."
+                )
+                .Validate(
                     options =>
                         options.Delete is null
                         || options.DataSourceType is { } type

@@ -82,4 +82,16 @@ public sealed class ResourceLabelsBuilder
 
         return this;
     }
+
+    /// <summary>
+    ///     Configures default view page text.
+    /// </summary>
+    public ResourceLabelsBuilder View(Action<ResourceViewLabelsBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new(_services));
+
+        return this;
+    }
 }

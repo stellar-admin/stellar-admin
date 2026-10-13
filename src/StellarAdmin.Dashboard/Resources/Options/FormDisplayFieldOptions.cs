@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using StellarAdmin.Dashboard.Resources.Displays;
+using StellarAdmin.TagHelpers;
 
 namespace StellarAdmin.Dashboard.Resources.Options;
 
@@ -30,6 +31,12 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     ///     The property path selected by <see cref="FieldExpression" />.
     /// </summary>
     public string FieldName { get; }
+
+    /// <summary>
+    ///     Whether the label displays above or beside the value, or <c>null</c> to use the
+    ///     orientation of the field's section.
+    /// </summary>
+    public FieldOrientation? Orientation { get; internal set; }
 
     /// <summary>
     ///     The properties selected by <see cref="FieldExpression" />, in order.

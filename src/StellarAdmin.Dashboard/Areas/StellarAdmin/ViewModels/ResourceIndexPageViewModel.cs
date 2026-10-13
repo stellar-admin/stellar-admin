@@ -20,6 +20,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public bool CanEdit { get; init; }
 
     /// <summary>
+    ///     Whether resources can be viewed.
+    /// </summary>
+    public bool CanView { get; init; }
+
+    /// <summary>
     ///     The columns displayed in order.
     /// </summary>
     public required IReadOnlyList<DataGridColumnOptions> Columns { get; init; }
@@ -88,6 +93,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     ///     The page title.
     /// </summary>
     public required string Title { get; init; }
+
+    /// <summary>
+    ///     The view link label.
+    /// </summary>
+    public string? ViewLabel { get; init; }
 
     IEnumerable IResourceIndexPageViewModel.Items => Items;
 

@@ -24,7 +24,7 @@
         white-space: nowrap;
     }
 
-    .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) > .sa-resource-form-header {
+    :is(.sa-resource-form, .sa-resource-view):is([data-form-layout="split"], [data-form-layout="stacked"]) > :is(.sa-resource-form-header, .sa-resource-view-header) {
         border-bottom: var(--sa-border-width) solid var(--sa-color-line);
         padding-bottom: calc(5 * var(--sa-unit));
     }
@@ -39,6 +39,25 @@
     .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) .sa-resource-form-footer {
         border-top: var(--sa-border-width) solid var(--sa-color-line);
         padding-top: calc(5 * var(--sa-unit));
+    }
+
+    /* The view page's display fields are details, not values beside inputs: muted labels, values at their own
+       height, the weight details give them. */
+    .sa-resource-view .sa-field.sa-display-field {
+        row-gap: calc(1 * var(--sa-unit));
+
+        & > .sa-display-field-label {
+            color: var(--sa-color-ink-muted);
+            font-weight: 400;
+        }
+
+        & > .sa-display-field-value {
+            min-height: 0;
+        }
+
+        & > .sa-display-field-value:not([data-empty], [data-kind="text"]) {
+            font-weight: var(--sa-weight-control);
+        }
     }
 
     .sa-resource-form-actions {

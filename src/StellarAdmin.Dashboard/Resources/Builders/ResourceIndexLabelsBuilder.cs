@@ -77,5 +77,18 @@ public sealed class ResourceIndexLabelsBuilder
         }
     }
 
+    /// <summary>
+    ///     The callback that generates the default index view link label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> ViewLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Index.ViewLabel = value);
+        }
+    }
+
     internal ResourceIndexLabelsBuilder(IServiceCollection services) => _services = services;
 }

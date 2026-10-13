@@ -175,6 +175,61 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
+    ///     Enables and configures the view page.
+    /// </summary>
+    public ResourceViewBuilder<TResource> AllowView()
+    {
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.View = new ResourceViewOptions<TResource>();
+            options.ViewLoader = null;
+        });
+
+        return ViewBuilder<TResource>();
+    }
+
+    /// <summary>
+    ///     Enables and configures the view page.
+    /// </summary>
+    public TBuilder AllowView(Action<ResourceViewBuilder<TResource>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(AllowView());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
+    ///     Enables and configures a view page with a custom model and handler.
+    /// </summary>
+    public ResourceViewBuilder<TModel> AllowView<TModel, THandler>()
+        where THandler : class, IResourceViewHandler<TModel>
+    {
+        Services.TryAddScoped<THandler>();
+        Services.Configure<ResourceOptions<TResource>>(options =>
+        {
+            options.View = new ResourceViewOptions<TModel>();
+            options.ViewLoader = async (services, id, cancellationToken) =>
+                await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
+        });
+
+        return ViewBuilder<TModel>();
+    }
+
+    /// <summary>
+    ///     Enables and configures a view page with a custom model and handler.
+    /// </summary>
+    public TBuilder AllowView<TModel, THandler>(Action<ResourceViewBuilder<TModel>> configure)
+        where THandler : class, IResourceViewHandler<TModel>
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        configure(AllowView<TModel, THandler>());
+
+        return (TBuilder)this;
+    }
+
+    /// <summary>
     ///     Requires an authenticated user for the resource's pages.
     /// </summary>
     public TBuilder RequireAuthorization()
@@ -280,6 +335,21 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
                 }
 
                 configure(edit);
+            })
+        );
+
+    private ResourceViewBuilder<TModel> ViewBuilder<TModel>() =>
+        new(configure =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+            {
+                if (options.View is not ResourceViewOptions<TModel> view)
+                {
+                    throw new InvalidOperationException(
+                        "The view builder's model no longer matches the selected view model."
+                    );
+                }
+
+                configure(view);
             })
         );
 }

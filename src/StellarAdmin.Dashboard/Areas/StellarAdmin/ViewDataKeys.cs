@@ -60,6 +60,9 @@ public static class ViewDataKeys
     // The column definitions of the form scope whose items are rendered
     internal const string FormColumns = "StellarAdminFormColumns";
 
+    // The label orientation display fields inherit from their sections
+    internal const string FormOrientation = "StellarAdminFormOrientation";
+
     // The stack level of the create sheet a form renders in, so its lookups bind and open the next level
     internal const string SheetLevel = "StellarAdminSheetLevel";
 }
