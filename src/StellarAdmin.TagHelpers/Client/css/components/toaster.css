@@ -7,6 +7,21 @@
    Replaces: .sa-toast-viewport, .sa-toast, .sa-toast-content, .sa-toast-icon, .sa-toast-text,
    .sa-toast-title, .sa-toast-description, .sa-toast-action, .sa-toast-close */
 
+@layer sa.tokens {
+  .sa-toast {
+    /* The status icon's badge: the status colour as text, clamped dark in light mode and light in dark
+       mode so amber and green stay readable, on a tint of the status colour. */
+    --_status-text: oklch(from var(--_status) min(l, 0.47) c h);
+    --_badge-tint: 15%;
+  }
+  @scope (.dark) to (.light) {
+    :scope .sa-toast {
+      --_status-text: oklch(from var(--_status) max(l, 0.82) c h);
+      --_badge-tint: 22%;
+    }
+  }
+}
+
 @layer sa.components {
   /* A manual popover: reset the popover's UA inset, margin, border, padding, background and overflow. */
   .sa-toast-viewport {
@@ -65,6 +80,14 @@
       transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
       opacity 500ms,
       height var(--sa-motion-fast);
+
+    &[data-type="success"] { --_status: var(--sa-color-success); }
+    &[data-type="info"] { --_status: var(--sa-color-info); }
+    &[data-type="warning"] { --_status: var(--sa-color-warning); }
+    &[data-type="error"] {
+      --_status: var(--sa-color-danger);
+      --_status-text: var(--sa-color-danger-text);
+    }
 
     &:focus-visible {
       border-color: var(--sa-focus-border);
@@ -161,10 +184,20 @@
       width: 1rem;
       height: 1rem;
     }
-    & > [data-toast-icon="success"] { color: var(--sa-color-success); }
-    & > [data-toast-icon="info"] { color: var(--sa-color-info); }
-    & > [data-toast-icon="warning"] { color: var(--sa-color-warning); }
-    & > [data-toast-icon="error"] { color: var(--sa-color-danger); }
+    /* Status toasts: the icon sits in a tinted circle. */
+    .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) & {
+      align-items: center;
+      justify-content: center;
+      width: calc(8 * var(--sa-unit));
+      height: calc(8 * var(--sa-unit));
+      border-radius: var(--sa-radius-round);
+      background: color-mix(in oklab, var(--_status) var(--_badge-tint), var(--sa-color-surface-raised));
+      color: var(--_status-text);
+      & svg:not([class*="size-"]) {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    }
     & > [data-toast-icon="loading"] {
       color: var(--sa-color-ink-muted);
       animation: sa-toast-spin 1s linear infinite;

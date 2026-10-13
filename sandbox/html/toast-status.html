@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toast status treatments</title>
+<!-- Prototype: how success, info, warning and error toasts announce their type, now that the toaster
+     reads our own tokens. A ships today (neutral toast, coloured icon); B to F are candidates. Uses the
+     built library bundle; build it first (npm run build in src/StellarAdmin.TagHelpers/Client). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@300..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+<style>
+  /* ---- Candidate CSS, written as the library would. Each option is scoped by an .opt-* class. ---- */
+  @layer sa.components {
+    /* Shared: the toast's status colour, and that colour as text. The text colour is clamped dark in
+       light mode and light in dark mode, so amber and green titles stay readable (these would become
+       foundation tokens, like danger-text: success-text, warning-text, info-text). */
+    .sa-toast {
+      --_status: var(--sa-color-ink-muted);
+      --_status-text: oklch(from var(--_status) min(l, 0.47) c h);
+      &[data-type="success"] { --_status: var(--sa-color-success); }
+      &[data-type="info"] { --_status: var(--sa-color-info); }
+      &[data-type="warning"] { --_status: var(--sa-color-warning); --_status-text: oklch(from var(--_status) min(l, 0.5) c h); }
+      &[data-type="error"] { --_status: var(--sa-color-danger); --_status-text: var(--sa-color-danger-text); }
+    }
+    .dark .sa-toast:not(.light *) {
+      --_status-text: oklch(from var(--_status) max(l, 0.82) c h);
+      &[data-type="error"] { --_status-text: var(--sa-color-danger-text); }
+    }
+    .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) .sa-toast-icon svg:not([class*="size-"]) {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    /* B: edge stripe. Neutral toast, a 3px stripe of the status colour on the leading edge. */
+    .opt-b .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) {
+      box-shadow: inset calc(0.75 * var(--sa-unit)) 0 0 var(--_status), var(--sa-shadow-overlay);
+      & .sa-toast-content { padding-inline-start: calc(4.75 * var(--sa-unit)); }
+    }
+
+    /* C: soft tint. The status colour washes the surface and the edge; the title takes the status
+       text colour. */
+    .opt-c, .opt-e {
+      & .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) {
+        --_tint: 7%;
+        --_edge: 32%;
+        border-color: color-mix(in oklab, var(--_status) var(--_edge), var(--sa-color-surface-raised));
+        background: color-mix(in oklab, var(--_status) var(--_tint), var(--sa-color-surface-raised));
+        background-clip: padding-box;
+        & .sa-toast-title { color: var(--_status-text); }
+        & .sa-toast-icon { color: var(--_status-text); }
+        & .sa-toast-icon > svg { color: inherit; }
+      }
+      & .sa-toast[data-type="warning"] { --_tint: 11%; --_edge: 45%; }
+      & .dark .sa-toast:not(.light *):is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) {
+        --_tint: 13%;
+        --_edge: 38%;
+      }
+    }
+    .opt-c .sa-toast-icon { align-self: start; }
+    .opt-c .sa-toast-content { align-items: start; }
+
+    /* D: icon badge. Neutral toast; the icon sits in a tinted circle, so the type reads at a glance
+       without colouring the whole toast. */
+    .opt-d .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) {
+      & .sa-toast-icon {
+        align-items: center;
+        justify-content: center;
+        width: calc(8 * var(--sa-unit));
+        height: calc(8 * var(--sa-unit));
+        border-radius: var(--sa-radius-round);
+        background: color-mix(in oklab, var(--_status) 15%, var(--sa-color-surface-raised));
+        color: var(--_status-text);
+      }
+      & .sa-toast-icon > svg { color: inherit; }
+    }
+    .opt-d .dark .sa-toast:not(.light *) .sa-toast-icon { background: color-mix(in oklab, var(--_status) 22%, var(--sa-color-surface-raised)); }
+
+    /* E: tint and stripe. C plus B's stripe: the strongest non-solid option. */
+    .opt-e .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]) {
+      box-shadow: inset calc(0.75 * var(--sa-unit)) 0 0 var(--_status), var(--sa-shadow-overlay);
+      & .sa-toast-content { padding-inline-start: calc(4.75 * var(--sa-unit)); align-items: start; }
+      & .sa-toast-icon { align-self: start; }
+    }
+
+    /* F: escalating. Success and info stay quiet (B's stripe); warning and error are solid fills, the
+       error in danger-fill with on-danger text, the warning in amber with dark ink. */
+    .opt-f .sa-toast:is([data-type="success"], [data-type="info"]) {
+      box-shadow: inset calc(0.75 * var(--sa-unit)) 0 0 var(--_status), var(--sa-shadow-overlay);
+      & .sa-toast-content { padding-inline-start: calc(4.75 * var(--sa-unit)); }
+    }
+    .opt-f .sa-toast:is([data-type="warning"], [data-type="error"]) {
+      border-color: transparent;
+      background: var(--_fill);
+      color: var(--_on-fill);
+      & .sa-toast-icon > svg, & .sa-toast-description { color: inherit; }
+      & .sa-toast-description { opacity: 0.88; }
+      & .sa-button.sa-toast-close { --_fg: var(--_on-fill); --_fg-hover: var(--_on-fill); --_bg-hover: color-mix(in oklab, var(--_on-fill) 14%, transparent); }
+      & .sa-toast-action { --_bg: transparent; --_fg: var(--_on-fill); --_border: color-mix(in oklab, var(--_on-fill) 45%, transparent); --_bg-hover: color-mix(in oklab, var(--_on-fill) 14%, transparent); --_fg-hover: var(--_on-fill); }
+    }
+    .opt-f .sa-toast[data-type="error"] { --_fill: var(--sa-color-danger-fill); --_on-fill: var(--sa-color-on-danger); }
+    .opt-f .sa-toast[data-type="warning"] { --_fill: oklch(from var(--sa-warning) 0.84 0.15 h); --_on-fill: oklch(from var(--sa-warning) 0.27 0.06 h); }
+    .opt-f .dark .sa-toast:not(.light *)[data-type="warning"] { --_fill: oklch(from var(--sa-warning) 0.78 0.15 h); }
+
+    /* G: icon block (GitHub Primer). The icon sits in a solid block of the status colour that fills
+       the toast's leading edge, full height; the card stays neutral. H applies it to errors only and
+       keeps D's badge for the others. */
+    .sa-toast {
+      &[data-type="success"] { --_block: oklch(from var(--sa-color-success) min(l, 0.55) c h); --_on-block: white; }
+      &[data-type="info"] { --_block: oklch(from var(--sa-color-info) min(l, 0.55) c h); --_on-block: white; }
+      &[data-type="warning"] { --_block: oklch(from var(--sa-warning) 0.82 0.15 h); --_on-block: oklch(from var(--sa-warning) 0.27 0.06 h); }
+      &[data-type="error"] { --_block: var(--sa-color-danger-fill); --_on-block: var(--sa-color-on-danger); }
+    }
+    :is(.opt-g .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"], [data-type="error"]), .opt-h .sa-toast[data-type="error"]) {
+      --_pad: calc(4 * var(--sa-unit));
+      --_inner-radius: calc(var(--sa-radius-container) - var(--sa-border-width));
+      & .sa-toast-icon {
+        align-self: stretch;
+        align-items: center;
+        margin-block: calc(-1 * var(--_pad));
+        margin-inline-start: calc(-1 * var(--_pad));
+        padding-inline: calc(3 * var(--sa-unit));
+        border-start-start-radius: var(--_inner-radius);
+        border-end-start-radius: var(--_inner-radius);
+        background: var(--_block);
+        color: var(--_on-block);
+      }
+      & .sa-toast-icon > svg { color: inherit; }
+    }
+    /* H: D's badge for success, info and warning. */
+    .opt-h .sa-toast:is([data-type="success"], [data-type="info"], [data-type="warning"]) {
+      & .sa-toast-icon {
+        align-items: center;
+        justify-content: center;
+        width: calc(8 * var(--sa-unit));
+        height: calc(8 * var(--sa-unit));
+        border-radius: var(--sa-radius-round);
+        background: color-mix(in oklab, var(--_status) 15%, var(--sa-color-surface-raised));
+        color: var(--_status-text);
+      }
+      & .sa-toast-icon > svg { color: inherit; }
+    }
+    .opt-h .dark .sa-toast:not(.light *):is([data-type="success"], [data-type="info"], [data-type="warning"]) .sa-toast-icon { background: color-mix(in oklab, var(--_status) 22%, var(--sa-color-surface-raised)); }
+  }
+
+  /* ---- Prototype scaffolding (not extracted) ---- */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 16px 96px; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 16px; max-width: 90ch; }
+  section { margin-top: 32px; }
+  h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  h2 + p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 10px; max-width: 100ch; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 12px; }
+  .panel { border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-canvas); color: var(--sa-color-ink); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .panel-title { color: var(--sa-color-ink-muted); font-size: 0.75rem; }
+  /* Static toasts: undo the stacking geometry so they lay out in a column. */
+  .static .sa-toast { position: relative; height: auto; transform: none; transition: none; max-width: 24rem; }
+  .static .sa-toast::after { display: none; }
+  .demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .controls {
+    position: fixed; left: 16px; bottom: 16px; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    padding: 8px 12px; border: 1px solid var(--sa-color-line); border-radius: 10px;
+    background: var(--sa-color-surface); box-shadow: var(--sa-shadow-overlay); font-size: 0.8125rem;
+  }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+  @media (width < 40rem) { .controls { right: 16px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Toast status treatments</h1>
+  <p class="lede">How success, info, warning and error toasts show their type. A is what ships: every toast is the same neutral card and only the 16px icon is coloured, so a warning or an error reads like any other toast. B to F are candidates. Default and loading toasts stay neutral in every option. Each option shows light and dark side by side; the live toaster at the top uses the option picked in the control bar.</p>
+
+  <section id="live" class="opt-e">
+    <h2>Live toaster</h2>
+    <p>Fires real toasts through window.stellarAdmin.toast, styled with the option picked in the control bar (bottom left). Hover the stack to expand it.</p>
+    <div class="demo">
+      <button type="button" data-fire="default" class="sa-button sa-button-variant-outline sa-button-size-default">Default</button>
+      <button type="button" data-fire="success" class="sa-button sa-button-variant-outline sa-button-size-default">Success</button>
+      <button type="button" data-fire="info" class="sa-button sa-button-variant-outline sa-button-size-default">Info</button>
+      <button type="button" data-fire="warning" class="sa-button sa-button-variant-outline sa-button-size-default">Warning</button>
+      <button type="button" data-fire="error" class="sa-button sa-button-variant-outline sa-button-size-default">Error</button>
+      <button type="button" data-fire="errorAction" class="sa-button sa-button-variant-outline sa-button-size-default">Error with action</button>
+      <button type="button" data-fire="loading" class="sa-button sa-button-variant-outline sa-button-size-default">Loading</button>
+    </div>
+    <sel-toaster data-slot="toaster" duration="8000" limit="3"><template data-slot="toast-template"><div aria-modal="false" class="sa-toast" data-slot="toast" role="dialog" tabindex="0"><div class="sa-toast-content" data-slot="toast-content"><span class="sa-toast-icon" data-slot="toast-icon"><svg data-toast-icon="success" aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m16 9-5.5 5.5L8 12"></path></svg><svg data-toast-icon="info" aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><svg data-toast-icon="warning" aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><svg data-toast-icon="error" aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><path d="m15 9-6 6"></path><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"></path><path d="m9 9 6 6"></path></svg><svg data-toast-icon="loading" aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></span><div class="sa-toast-text" data-slot="toast-text"><div class="sa-toast-title" data-slot="toast-title"></div><div class="sa-toast-description" data-slot="toast-description"></div></div><a data-slot="toast-action" class="sa-button sa-button-variant-outline sa-button-size-sm sa-toast-action"></a><button type="button" data-slot="toast-close" aria-label="Close toast" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-toast-close"><svg aria-hidden="true" stroke-width="2" fill="none" height="24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" width="24" viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></div></template><div aria-atomic="false" aria-label="Notifications" aria-live="polite" aria-relevant="additions text" class="sa-toast-viewport" data-position="bottom-right" data-slot="toast-viewport" popover="manual" role="region" tabindex="-1"><div aria-live="assertive" class="sr-only" data-slot="toast-announcer"></div></div></sel-toaster>
+  </section>
+
+  <div id="options"></div>
+</div>
+
+<div class="controls">
+  <label>Live option
+    <select id="live-opt">
+      <option value="opt-a">A: ships</option>
+      <option value="opt-b">B: stripe</option>
+      <option value="opt-c">C: soft tint</option>
+      <option value="opt-d">D: icon badge</option>
+      <option value="opt-e" selected>E: tint + stripe</option>
+      <option value="opt-f">F: escalating</option>
+      <option value="opt-g">G: icon block</option>
+      <option value="opt-h">H: D + error block</option>
+    </select>
+  </label>
+  <label>Theme
+    <select id="theme-select">
+      <option value="">Default</option>
+      <option value="ledger">Ledger</option>
+      <option value="ops">Ops</option>
+      <option value="soft">Soft</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="dark"> Dark page</label>
+</div>
+
+<script>
+  const options = [
+    ["opt-a", "A: ships today", "The neutral raised surface for every type; only the 16px icon carries the colour. Warnings and errors read like any other toast."],
+    ["opt-b", "B: edge stripe", "Neutral toast with a 3px stripe of the status colour on the leading edge (an inset shadow, so it follows the radius) and an 18px icon. Quiet, scans well in a stack."],
+    ["opt-c", "C: soft tint", "The status colour washes the surface (7%, 11% for amber; 13% in dark) and the edge (32–45%); the title and icon take a status text colour clamped for contrast. The common Bootstrap / Polaris banner look."],
+    ["opt-d", "D: icon badge", "Neutral toast; the icon sits in a 32px tinted circle in the status text colour. The type reads at a glance without colouring the card, closest to Linear / Vercel."],
+    ["opt-e", "E: tint + stripe", "C with B's stripe: the strongest option that keeps a light surface. Warnings and errors look unmistakably like warnings and errors."],
+    ["opt-f", "F: escalating", "Severity drives loudness: success and info get B's stripe; warning and error become solid fills (danger-fill with on-danger text; amber with dark ink). Loudest; may feel heavy on an admin screen."],
+    ["opt-g", "G: icon block (Primer)", "As GitHub Primer: the icon sits in a solid block of the status colour that fills the leading edge, full height, with a white icon (dark on amber). The card stays neutral."],
+    ["opt-h", "H: D + error block", "D's tinted badge for success, info and warning; errors get G's solid block, so only the error is loud."],
+  ];
+  const toasts = [
+    ["default", "Itinerary archived", "3 bookings moved to archive."],
+    ["success", "Booking confirmed", "Your trip to Lisbon departs 14 October."],
+    ["info", "Fare alert", "Flights to Kyoto dropped 12% this week."],
+    ["warning", "Passport expires soon", "Renew it before your March trip to Cape Town."],
+    ["error", "Payment declined", "Your card ending 4242 was declined."],
+    ["error", "Couldn't sync bookings", "The airline didn't respond.", "Retry"],
+    ["warning", "Seat hold expiring"],
+  ];
+  const template = document.querySelector('template[data-slot="toast-template"]');
+  const build = ([type, title, description, action]) => {
+    const el = template.content.firstElementChild.cloneNode(true);
+    el.dataset.type = type;
+    const icon = el.querySelector(".sa-toast-icon");
+    [...icon.children].forEach(svg => { if (svg.dataset.toastIcon !== type) svg.remove(); });
+    if (!icon.childElementCount) icon.remove();
+    el.querySelector(".sa-toast-title").textContent = title;
+    const desc = el.querySelector(".sa-toast-description");
+    if (description) desc.textContent = description; else desc.remove();
+    const act = el.querySelector(".sa-toast-action");
+    if (action) { act.textContent = action; act.href = "#"; } else act.remove();
+    return el;
+  };
+  const panel = dark => {
+    const div = document.createElement("div");
+    div.className = `panel static ${dark ? "dark" : "light"}`;
+    div.innerHTML = `<div class="panel-title">${dark ? "Dark" : "Light"}</div>`;
+    toasts.forEach(t => div.append(build(t)));
+    return div;
+  };
+  const params = new URLSearchParams(location.search);
+  const only = params.get("only");
+  const host = document.getElementById("options");
+  options.filter(([cls]) => !only || cls === only).forEach(([cls, title, note]) => {
+    const section = document.createElement("section");
+    section.className = cls;
+    section.innerHTML = `<h2>${title}</h2><p>${note}</p>`;
+    const modes = document.createElement("div");
+    modes.className = "modes";
+    modes.append(panel(false), panel(true));
+    section.append(modes);
+    host.append(section);
+  });
+
+  // Live toaster
+  const live = document.getElementById("live");
+  const liveOpt = document.getElementById("live-opt");
+  liveOpt.value = params.get("live") ?? "opt-e";
+  const dark = document.getElementById("dark");
+  // The live section's class picks the option; .dark on <html> darkens the page and the live toasts.
+  const applyLive = () => {
+    live.className = liveOpt.value;
+    document.documentElement.classList.toggle("dark", dark.checked);
+  };
+  liveOpt.addEventListener("change", applyLive);
+  dark.addEventListener("change", applyLive);
+  applyLive();
+  const fire = {
+    default: t => t.add({ title: "Itinerary archived", description: "3 bookings moved to archive." }),
+    success: t => t.success("Booking confirmed", "Your trip to Lisbon departs 14 October."),
+    info: t => t.info("Fare alert", "Flights to Kyoto dropped 12% this week."),
+    warning: t => t.warning("Passport expires soon", "Renew it before your March trip to Cape Town."),
+    error: t => t.error("Payment declined", "Your card ending 4242 was declined."),
+    errorAction: t => t.add({ type: "error", title: "Couldn't sync bookings", description: "The airline didn't respond.", action: { label: "Retry", href: "#" } }),
+    loading: t => t.add({ title: "Checking seat availability…", type: "loading", duration: 3000 }),
+  };
+  document.querySelectorAll("[data-fire]").forEach(b => b.addEventListener("click", () => fire[b.dataset.fire](window.stellarAdmin.toast)));
+
+  // Theme fixture
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (themeSelect.value) link.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else link.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+</script>
+</body>
+</html>
