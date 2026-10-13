@@ -79,11 +79,24 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         var totalCount = await query.LongCountAsync(cancellationToken);
+
+        // Columns read through the references on their paths, such as Category for p => p.Category.Name
+        var entityType = db.Model.FindEntityType(typeof(TEntity))!;
+        var navigations = _resourceOptions
+            .Index.Columns.Select(column =>
+                GetPropertyPath(column.DisplayExpression ?? column.FieldExpression) is { } path
+                    ? FindReferencePath(entityType, path)
+                    : null
+            )
+            .OfType<string>()
+            .Distinct(StringComparer.Ordinal);
+        foreach (var navigation in navigations)
+        {
+            query = query.Include(navigation);
+        }
+
         var parameter = Expression.Parameter(typeof(TEntity), "entity");
-        var keyProperty = db
-            .Model.FindEntityType(typeof(TEntity))!
-            .FindPrimaryKey()!
-            .Properties.Single();
+        var keyProperty = entityType.FindPrimaryKey()!.Properties.Single();
         var key = Expression.Lambda(Expression.Property(parameter, keyProperty.Name), parameter);
 
         if (request.Sort is { } sort)
@@ -225,6 +238,26 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
         }
 
         return query.SingleOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    // The properties a lambda such as p => p.Category.Name reads, or null when it is not a property path
+    private static PropertyInfo[]? GetPropertyPath(LambdaExpression expression)
+    {
+        var properties = new List<PropertyInfo>();
+        var body = expression.Body;
+        while (body is MemberExpression { Member: PropertyInfo property, Expression: { } owner })
+        {
+            properties.Add(property);
+            body = owner;
+        }
+
+        if (body != expression.Parameters[0])
+        {
+            return null;
+        }
+
+        properties.Reverse();
+        return [.. properties];
     }
 
     // The include path of the reference navigations a property path reads through, such as

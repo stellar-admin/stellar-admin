@@ -158,6 +158,7 @@ Standard displays (agreed 2026-10-12; 81–89, 91–92 and 99–102 were options
 128. `Format` leaves the column builder and `DataGridColumnOptions` (as 115–116); the unused `DataGridColumnOptions.Template` is removed. Decided.
 129. Displays with a handler are not supported in columns: `UseDisplay` throws `NotSupportedException`, since a handler would run once per row; revisit with a batched design. Decided.
 130. `NumberDisplay` columns are right-aligned, header and cells. Decided.
+140. The EF Core index includes the reference navigations on each column's path, as the edit page does for display fields, so `product => product.Category.Name` shows the category. The column's own expression gives the path; collections end it and owned types load with their owner. Decided.
 
 ## Prototype
 
@@ -216,6 +217,7 @@ Grid column displays (125–130), completed 2026-10-13:
 - Tests: `StellarAdmin.Dashboard.Tests` 145 passed (new `ResourceColumnBuilderTests`; column cases in `FieldDisplayDefaultsTests`: default for a nested leaf, configured display, built-in rendering, `[UIHint]`); `StellarAdmin.Dashboard.IntegrationTests` 425 passed (new `ResourceColumnDisplayTests` over a `ProductFactsModel` index: every default display, `NumberDisplay` format and right alignment, a custom display's grid template, `[UIHint]`, `UseBuiltInRendering`, empty text); `StellarAdmin.TagHelpers.Tests` 439 passed (new `DataGridColumnTagHelperTests`: `empty-text`, `NullDisplayText`, template metadata, empty values skipping the template); TagHelpers integration 19 and EF integration 82 passed.
 - Playground on port 5207, headless Chromium at 1280px light: the products index right-aligns Id, Category Id and Unit price, headers included.
 - Demos: Dashboard unit 145 and integration 426 passed (new: two columns sharing the Text template keep their own displays); both gallery indexes screenshotted at 1700px light after the fixes.
+- Column references (140), completed 2026-10-13: EF integration 84 passed (new `ResourceColumnTests`: a sortable `Category.Name` column shows each category, sorts descending, and the page query joins Category; columns on own and owned properties join nothing); Dashboard integration 426 passed.
 - Skill validation and `SkillsGenerator --check` pass.
 - Not checked: dark mode, theme fixtures, phone widths; the Users index (behind sign-in) for booleans and email links in the Playground.
 

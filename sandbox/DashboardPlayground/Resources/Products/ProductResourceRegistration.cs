@@ -93,7 +93,14 @@ internal static class ProductResourceRegistration
                 {
                     columns.Add(product => product.Id);
                     columns.Add(product => product.Details.Sku, column => column.Sortable());
-                    columns.Add(product => product.CategoryId, column => column.Sortable());
+                    columns.Add(
+                        product => product.Category!.Name,
+                        column =>
+                        {
+                            column.Title = "Category";
+                            column.Sortable();
+                        }
+                    );
                     columns.Add(
                         product => product.Name,
                         column => column.Sortable(product => product.Name.ToLower())
