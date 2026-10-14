@@ -21,20 +21,9 @@ internal sealed class Renderer(Dictionary<string, EnumInfo> enums)
     /// Renders the markdown for a component. <paramref name="existingContent"/> is the current
     /// on-disk file (or null); its preserved structure region is carried over verbatim.
     /// </summary>
-    public string RenderComponent(
-        ComponentInfo component,
-        string? existingContent,
-        string? package = null
-    )
+    public string RenderComponent(ComponentInfo component, string? existingContent)
     {
         var parts = new List<string> { Frontmatter(component), "# " + component.FolderName };
-
-        if (package is not null)
-        {
-            parts.Add(
-                $"Package: `{package}` (MIT). See [setup](../setup.md#resource-packages) for registration and source availability."
-            );
-        }
 
         if (!string.IsNullOrEmpty(component.Primary.Summary))
             parts.Add(component.Primary.Summary);

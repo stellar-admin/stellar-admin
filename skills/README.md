@@ -1,12 +1,13 @@
 # StellarAdmin consumer skills
 
-StellarAdmin has two products, with a separate consumer skill planned for each, plus a theme skill shared by both:
+StellarAdmin has two products, each with its own consumer skills, plus a theme skill shared by both:
 
 | Product | Skill directory | Status |
 | --- | --- | --- |
 | StellarAdmin.UI — UI library for ASP.NET Core MVC and Razor Pages | [stellar-admin-ui](stellar-admin-ui/SKILL.md) | Available: setup, components, forms, layout, and theming. |
 | Themes — theme files of CSS variables, for either product | [stellar-admin-theme](stellar-admin-theme/SKILL.md) | Available: writing a theme from a description or brand colours, the theme variable reference, worked examples, and theme builder links. |
-| StellarAdmin — integrated admin panel | `stellar-admin/` | Planned: existing [component references](stellar-admin/references/components-index.md) and [setup notes](stellar-admin/references/setup.md) are preserved here, but there is no installable skill yet. |
+| StellarAdmin — integrated admin panel | [stellar-admin-setup](stellar-admin-setup/SKILL.md) | Available: installing the admin panel (packages, registration, routes, protection, theme) and checking that it works. |
+| StellarAdmin — integrated admin panel | [stellar-admin](stellar-admin/SKILL.md) | Available: resources, index pages, columns, forms, fields, editors, relationships, view pages, sidebar, authorization and customization. |
 
 ## Install the UI skill
 
@@ -36,14 +37,25 @@ For an unpublished local checkout, use its absolute path instead of the GitHub s
 npx skills add /path/to/stellar-admin/skills/stellar-admin-ui --skill stellar-admin-ui
 ```
 
+## Install the admin panel skills
+
+Install both admin panel skills to add StellarAdmin to an application and build with it:
+
+```bash
+npx skills add stellar-admin/stellar-admin --skill stellar-admin-setup
+npx skills add stellar-admin/stellar-admin --skill stellar-admin
+```
+
+`stellar-admin-setup` is needed only while installing; `stellar-admin` covers day-to-day work. Pages that use `sa-*` components directly, such as host pages and view overrides, also benefit from the UI skill.
+
 ## Version compatibility
 
-The UI and theme skills are maintained alongside StellarAdmin. Its references follow the repository's default branch and may include changes newer than your installed NuGet package. The skill instructs the agent to check your installed version before applying API examples; this [version guidance](stellar-admin-ui/SKILL.md#version-compatibility) travels with the installed references.
+The skills are maintained alongside StellarAdmin. Their references follow the repository's default branch and may include changes newer than your installed NuGet package. The skill instructs the agent to check your installed version before applying API examples; this [version guidance](stellar-admin-ui/SKILL.md#version-compatibility) travels with the installed references.
 
-The installer does not select guidance based on your installed NuGet version or update your packages. The admin panel skill remains work in progress and is not installable yet.
+The installer does not select guidance based on your installed NuGet version or update your packages.
 
 ## Layout and maintenance
 
-Each skill keeps its own `SKILL.md`, license, and supporting references inside its directory. Admin panel guidance will cover setup, resources, authentication, and customization when those workflows are ready to document. Applications customizing admin panel markup can also use the UI skill; admin panel guidance should not duplicate the UI library reference.
+Each skill keeps its own `SKILL.md`, license, and supporting references inside its directory. Applications customizing admin panel markup can also use the UI skill; admin panel guidance does not duplicate the UI library reference.
 
 These are consumer skills for applications using StellarAdmin. Repository development skills live separately in `.agents/skills/`. See the [maintenance guide](../docs/repos/skills.md) for generation and ownership.

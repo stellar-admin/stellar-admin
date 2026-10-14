@@ -163,7 +163,7 @@ dotnet run --project util/SkillsGenerator
 dotnet run --project util/SkillsGenerator -- --check   # must report no drift
 ```
 
-Under `skills/stellar-admin-ui/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Admin panel components are generated separately under `skills/stellar-admin/references/`. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
+Under `skills/stellar-admin-ui/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
 
 ## Phase 7 — verify and hand over
 

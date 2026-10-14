@@ -1,15 +1,6 @@
 ---
 name: stellar-admin-ui
-description: >-
-  Build ASP.NET Core MVC and Razor Pages UIs with the StellarAdmin.UI
-  library. Covers setup,
-  sa-* Tag Helpers, forms and validation, page layouts and navigation, linking a
-  theme file, dark mode, icons, and
-  client interactivity. Use when building or editing
-  StellarAdmin UI markup, forms, layouts, or styling in .cshtml files, or when
-  the user asks how to use StellarAdmin.UI. Does not cover StellarAdmin
-  admin-panel configuration or resource workflows. Creating or changing a
-  theme is the stellar-admin-theme skill.
+description: "Build ASP.NET Core MVC and Razor Pages UIs with the StellarAdmin.UI library. Covers setup, sa-* Tag Helpers, forms and validation, page layouts and navigation, linking a theme file, dark mode, icons, and client interactivity. Use when building or editing StellarAdmin UI markup, forms, layouts, or styling in .cshtml files, or when the user asks how to use StellarAdmin.UI. Does not cover StellarAdmin admin-panel configuration or resource workflows. Creating or changing a theme is the stellar-admin-theme skill."
 metadata:
   author: StellarAdmin
 ---

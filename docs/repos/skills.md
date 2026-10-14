@@ -8,7 +8,8 @@ Consumer guidance is organized by product; see the [skills overview](../../skill
 
 - [stellar-admin-ui](../../skills/stellar-admin-ui/SKILL.md) teaches applications to use the UI library. Setup, forms, layout, theming, and component documentation live under its `references/` directory and are loaded as needed.
 - [stellar-admin-theme](../../skills/stellar-admin-theme/SKILL.md) creates and changes theme files of CSS variables for either product: the workflow in `SKILL.md`, and `references/theme-variables.md` (the theme variable reference, description-to-theme variables guidance, Ledger, Ops and Soft as worked examples, the theme builder link format). It is handwritten: keep it in step with `src/StellarAdmin.UI/Client/css/theme-variables.json` and the theme fixtures in `util/theme-check/presets/`, and the link format with the website's theme builder. The UI skill's theming guide covers linking a theme, fonts, dark mode and tokens, and names this skill for creating one.
-- `skills/stellar-admin/` preserves admin panel component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
+- [stellar-admin-setup](../../skills/stellar-admin-setup/SKILL.md) installs the admin panel: packages, registration, routes and middleware order, protection, theme and verification, with `references/troubleshooting.md`.
+- [stellar-admin](../../skills/stellar-admin/SKILL.md) teaches day-to-day admin panel work: a task table, one complete EF Core resource, a checklist, namespaces, common mistakes and unsupported features in `SKILL.md`, and one reference per topic under `references/` (resources, index pages, columns, forms, fields, editors, relationships, view pages, sidebar, authorization, customization). It is handwritten from the public API in `src/StellarAdmin` and `src/StellarAdmin.EntityFrameworkCore`; update it with API changes. Its common mistakes and unsupported features come from the evaluation tasks in `build/skill-evals/admin-panel/` and the [admin panel backlog](../plans/admin-panel-backlog.md); rerun the tasks after substantial changes.
 - Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Admin panel consumers customizing UI markup can also use the UI skill; avoid duplicating the UI catalog.
 
 The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation verification and CI closeout are recorded in [consumer skill consolidation](../plans/archive/consumer-skill-consolidation.md).
@@ -16,8 +17,7 @@ The Claude plugin manifests and installation README have been removed. Installat
 ## Source ownership and validation
 
 - `skills/stellar-admin-ui/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.UI`.
-- `skills/stellar-admin/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin`. These currently cover FormPage, IndexPage and ViewPage.
-- `util/SkillsGenerator` generates both product catalogs with curated samples. It retains shared source lookup for inherited attributes and enum values, while routing output by the component's source project.
+- `util/SkillsGenerator` generates the UI catalog with curated samples. The admin panel's page tag helpers (`sa-index-page`, `sa-form-page`, `sa-view-page`) are documented by hand in the stellar-admin skill's `references/customization.md`, not generated.
 - Component regions between `<!-- structure:begin -->` and `<!-- structure:end -->` are hand-authored and preserved by generation.
 - Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs. Forms, layout, and theming remain reference documents within the UI skill.
 

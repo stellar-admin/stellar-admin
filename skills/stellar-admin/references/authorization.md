@@ -1,0 +1,44 @@
+# Authorization
+
+The admin panel is open to everyone until you require authorization. Requirements can be set on the whole panel, on a resource and on a sidebar link, and they accumulate: a user must satisfy every requirement that applies.
+
+```csharp
+builder.Services.AddStellarAdmin(admin =>
+{
+    admin.RequireAuthorization();                                    // every panel page: signed-in users
+
+    admin.AddEfCoreResource<VoyagerDbContext, Customer>(resource => { /* any signed-in user */ });
+
+    admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
+    {
+        resource.RequireAuthorization(policy => policy.RequireRole("Sales"));   // and the Sales role
+    });
+
+    admin.AddSidebarLink("Departures this week", SidebarLinkTarget.Page("/Admin/Departures"), link =>
+        link.RequireAuthorization(policy => policy.RequireRole("Sales")));      // hides the link only
+});
+```
+
+## Where requirements apply
+
+| Call | Protects | Sidebar |
+| --- | --- | --- |
+| `admin.RequireAuthorization(...)` | Every admin panel route | — |
+| `app.MapStellarAdmin().RequireAuthorization(...)` | Every admin panel route (endpoint convention) | — |
+| `resource.RequireAuthorization(...)` | All of the resource's pages and posts: index, create, edit, view, delete, and its lookup create sheet | Hides the resource's item |
+| `link.RequireAuthorization(...)` | **Nothing**: the destination is outside the panel | Hides the link |
+| `[Authorize]` on a host page or controller | That page | — |
+
+All `RequireAuthorization` methods take the same arguments as endpoint `RequireAuthorization`: none (any authenticated user), policy names (`"Sales"`), an `AuthorizationPolicy`, `IAuthorizeData` (`new AuthorizeAttribute { Roles = "Admin" }`) or a policy-builder callback (`policy => policy.RequireRole("Sales")`). A policy name must be registered with `AddAuthorization(options => options.AddPolicy(...))`; a role check needs no registered policy when written as a callback.
+
+## Requirements
+
+- Requirements are endpoint metadata applied by `MapStellarAdmin`, so the app's authentication and authorization middleware must run before it (`UseAuthentication`, `UseAuthorization`).
+- Anonymous users get the authentication challenge; signed-in users who fail get the forbidden response. With cookie authentication both are redirects, to `LoginPath` and `AccessDeniedPath` (`/Account/Login`, `/Account/AccessDenied` by default); make sure those pages exist.
+- `resource.SidebarItem(item => item.Visible = false)` hides an item but leaves its pages reachable.
+- There are no per-action rules (for example, everyone can view but only managers can delete). To restrict an action, leave it disabled for that resource, or enforce the rule in a custom handler or data source and return `ValidationFailed`.
+- Scopes are not access control. Restrict which records a user can see with EF global query filters or a custom data source.
+
+## Checking it
+
+Sign in as a user without the role and request `/stellaradmin/{slug}` and the host page directly: both must be refused (403, or a redirect to the access-denied path with cookie authentication), and the sidebar must not show them. Then sign in with the role and confirm 200.

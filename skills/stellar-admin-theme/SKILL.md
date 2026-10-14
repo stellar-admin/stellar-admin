@@ -1,14 +1,6 @@
 ---
 name: stellar-admin-theme
-description: >-
-  Create or change a StellarAdmin theme: turn a description ("warm, editorial,
-  dense, green accent"), brand colours or a reference look into a theme file of
-  CSS variables for StellarAdmin.UI or the StellarAdmin admin panel, link it,
-  load its fonts, and give a theme builder link to preview and tune it. Use when
-  the user wants a new look, a preset, brand colours, different density,
-  rounder or sharper corners, flatter or deeper surfaces, or other fonts in a
-  StellarAdmin app. Does not cover component markup; use the stellar-admin-ui skill
-  for that.
+description: "Create or change a StellarAdmin theme: turn a description (\"warm, editorial, dense, green accent\"), brand colours or a reference look into a theme file of CSS variables for StellarAdmin.UI or the StellarAdmin admin panel, link it, load its fonts, and give a theme builder link to preview and tune it. Use when the user wants a new look, a preset, brand colours, different density, rounder or sharper corners, flatter or deeper surfaces, or other fonts in a StellarAdmin app. Does not cover component markup; use the stellar-admin-ui skill for that."
 metadata:
   author: StellarAdmin
 ---
