@@ -1,0 +1,5 @@
+@using System.Globalization
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<EmailDisplay>
+
+<a class="sa-display-link" href="@($"mailto:{Convert.ToString(Model, CultureInfo.InvariantCulture)}")">@FormatValue()</a>

@@ -1,0 +1,35 @@
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<DateDisplay>
+
+@{
+    var metadata = ViewData.ModelMetadata;
+    var dateFormat = metadata.DataTypeName switch
+    {
+        nameof(DataType.Date) => "d MMM yyyy",
+        nameof(DataType.Time) => "HH:mm",
+        _ => "d MMM yyyy, HH:mm",
+    };
+
+    // The datetime attribute carries the value in ISO 8601 for machines, whatever the format shown
+    var (machineValue, defaultFormat) = Model switch
+    {
+        DateOnly date => (date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), "d MMM yyyy"),
+        TimeOnly time => (time.ToString("HH:mm:ss", CultureInfo.InvariantCulture), "HH:mm"),
+        DateTimeOffset dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:sszzz", CultureInfo.InvariantCulture), dateFormat),
+        DateTime { Kind: DateTimeKind.Utc } dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture), dateFormat),
+        DateTime dateTime => (dateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture), dateFormat),
+        _ => ((string?)null, (string?)null),
+    };
+    var text = FormatValue(Display.Format ?? (metadata.DisplayFormatString is null ? defaultFormat : null));
+}
+
+@if (machineValue is null)
+{
+    @text
+}
+else
+{
+    <time datetime="@machineValue">@text</time>
+}

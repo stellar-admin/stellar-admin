@@ -1,0 +1,34 @@
+using System.Globalization;
+
+namespace StellarAdmin.UI;
+
+internal sealed class QuestionnaireChoicesContext
+{
+    private int _assigned;
+
+    public QuestionnaireShortcuts? Shortcuts { get; init; }
+
+    /// Hands out the next auto-assigned shortcut, or null when the container assigns none.
+    /// Both runs are capped at what a single key press can reach - letters after Z, numbers
+    /// after 9 - and a longer list simply stops showing badges.
+    public string? TakeNextShortcut()
+    {
+        if (Shortcuts is not { } shortcuts)
+        {
+            return null;
+        }
+
+        var index = _assigned++;
+
+        return shortcuts switch
+        {
+            QuestionnaireShortcuts.Letters => index < 26
+                ? ((char)('A' + index)).ToString(CultureInfo.InvariantCulture)
+                : null,
+            QuestionnaireShortcuts.Numbers => index < 9
+                ? (index + 1).ToString(CultureInfo.InvariantCulture)
+                : null,
+            _ => null,
+        };
+    }
+}

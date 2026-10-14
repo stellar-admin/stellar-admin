@@ -10,17 +10,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" />
 
     <!--
-      Real built library assets, as the Dashboard links them. The grids are the DashboardPlayground
+      Real built library assets, as the Dashboard links them. The grids are the AdminPlayground
       Products index markup (every panel filled from the rowdetail endpoint, htmx
       attributes removed). The playground's own stylesheet supplies the utilities its partials use;
       it is generated and git-ignored, so build the playground once if it is missing.
     -->
-    <link rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css" />
-    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
-    <link rel="stylesheet" href="../DashboardPlayground/wwwroot/css/dashboard.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <link rel="stylesheet" href="../AdminPlayground/wwwroot/css/playground.css" />
     <!-- Theme fixture, swapped from the control bar; empty for the default theme. -->
     <link id="theme-css" rel="stylesheet" />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <style>
       /* ---------------------------------------------------------------------------------------- */
@@ -95,7 +95,7 @@
     <main class="proto-page">
       <h1>Rows that cannot expand</h1>
       <p class="proto-intro">
-        How an index shows rows whose details are not available, for a future <code>ExpandWhen</code>. Each grid is the DashboardPlayground Products index; products under 10.00 (IDs 7, 27 and 1 here) cannot expand. Try the toggles, the expand-all toggle in the header, keyboard Tab, and row click (control bar).
+        How an index shows rows whose details are not available, for a future <code>ExpandWhen</code>. Each grid is the AdminPlayground Products index; products under 10.00 (IDs 7, 27 and 1 here) cannot expand. Try the toggles, the expand-all toggle in the header, keyboard Tab, and row click (control bar).
       </p>
       <nav class="proto-nav">
         <a href="#option-none">1 — No indicator</a>

@@ -8,21 +8,20 @@
   </Folder>
   <Folder Name="/sandbox/">
     <Project Path="sandbox/ComponentPlayground/ComponentPlayground.csproj" />
-    <Project Path="sandbox/DashboardPlayground/DashboardPlayground.csproj" />
+    <Project Path="sandbox/AdminPlayground/AdminPlayground.csproj" />
     <Project Path="sandbox/DataGridSpike/DataGridSpike.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/StellarAdmin.Core/StellarAdmin.Core.csproj" />
-    <Project Path="src/StellarAdmin.Dashboard.EntityFrameworkCore/StellarAdmin.Dashboard.EntityFrameworkCore.csproj" />
-    <Project Path="src/StellarAdmin.Dashboard/StellarAdmin.Dashboard.csproj" />
+    <Project Path="src/StellarAdmin.EntityFrameworkCore/StellarAdmin.EntityFrameworkCore.csproj" />
+    <Project Path="src/StellarAdmin.UI/StellarAdmin.UI.csproj" />
+    <Project Path="src/StellarAdmin/StellarAdmin.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/StellarAdmin.Core.Tests/StellarAdmin.Core.Tests.csproj" />
-    <Project Path="tests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests/StellarAdmin.Dashboard.EntityFrameworkCore.IntegrationTests.csproj" />
-    <Project Path="tests/StellarAdmin.Dashboard.IntegrationTests/StellarAdmin.Dashboard.IntegrationTests.csproj" />
-    <Project Path="tests/StellarAdmin.Dashboard.Tests/StellarAdmin.Dashboard.Tests.csproj" />
-    <Project Path="tests/StellarAdmin.TagHelpers.IntegrationTests/StellarAdmin.TagHelpers.IntegrationTests.csproj" />
-    <Project Path="tests/StellarAdmin.TagHelpers.Tests/StellarAdmin.TagHelpers.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.EntityFrameworkCore.IntegrationTests/StellarAdmin.EntityFrameworkCore.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.IntegrationTests/StellarAdmin.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.Tests/StellarAdmin.Tests.csproj" />
+    <Project Path="tests/StellarAdmin.UI.IntegrationTests/StellarAdmin.UI.IntegrationTests.csproj" />
+    <Project Path="tests/StellarAdmin.UI.Tests/StellarAdmin.UI.Tests.csproj" />
   </Folder>
   <Folder Name="/util/">
     <Project Path="util/SkillsGenerator/SkillsGenerator.csproj" />
@@ -32,5 +31,4 @@
     <File Path=".github/workflows/vrt-comment.yml" />
     <File Path=".github/workflows/vrt.yml" />
   </Folder>
-  <Project Path="src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj" />
 </Solution>

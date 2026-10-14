@@ -1,0 +1,5 @@
+@using StellarAdmin.Areas.StellarAdmin
+@using StellarAdmin.IntegrationTests.Fixtures
+@inherits FieldDisplayView<PriceDisplay>
+
+<span data-custom-display="grid-price">@Display.Currency @FormatValue()</span>

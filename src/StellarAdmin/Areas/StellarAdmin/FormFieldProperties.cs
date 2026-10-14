@@ -1,0 +1,39 @@
+using StellarAdmin.Resources.Editors;
+
+namespace StellarAdmin.Areas.StellarAdmin;
+
+/// <summary>
+///     The configured properties available to a form field's editor.
+/// </summary>
+public sealed record FormFieldProperties
+{
+    /// <summary>
+    ///     The help text shown with the field, or null to use the property's description.
+    /// </summary>
+    public string? Description { get; init; }
+
+    /// <summary>
+    ///     Data prepared for this editor on the current request.
+    /// </summary>
+    public object? EditorData { get; init; }
+
+    /// <summary>
+    ///     The editor's configuration.
+    /// </summary>
+    public FieldEditor Editor { get; init; } = new();
+
+    /// <summary>
+    ///     The field's property path, or null when the editor is not rendered for a configured field.
+    /// </summary>
+    public string? FieldName { get; init; }
+
+    /// <summary>
+    ///     Whether the field is read-only.
+    /// </summary>
+    public bool IsReadOnly { get; init; }
+
+    /// <summary>
+    ///     The field label, or null to use the property's display name.
+    /// </summary>
+    public string? Title { get; init; }
+}

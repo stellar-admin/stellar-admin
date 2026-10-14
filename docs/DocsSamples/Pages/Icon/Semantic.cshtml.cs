@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StellarAdmin.Icons;
+using StellarAdmin.UI.Icons;
 
 namespace DocsSamples.Pages.Icon;
 

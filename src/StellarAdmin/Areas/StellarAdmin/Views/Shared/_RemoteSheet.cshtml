@@ -1,0 +1,34 @@
+@model string
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var sheetLabels = LabelOptions.Value.Sheet;
+}
+
+@* A level of the sheet stack, whose content the button that opened it loads with htmx; the script gives each level its
+   own id in place of the model's *@
+<admin-remote-sheet class="contents">
+    <sa-sheet id="@Model" class="sa-sheet-stack-level">
+        <div id="@($"{Model}-content")" class="contents" data-sheet="content">
+            <partial name="/Areas/StellarAdmin/Views/Shared/_SheetLoading.cshtml" />
+        </div>
+        <template data-sheet="loading">
+            <partial name="/Areas/StellarAdmin/Views/Shared/_SheetLoading.cshtml" />
+        </template>
+        @* Shown by the component when the content fails to load; Retry repeats the request that failed *@
+        <template data-sheet="error">
+            <sa-empty class="border-0">
+                <sa-empty-header>
+                    <sa-empty-media variant="EmptyMediaVariant.Icon">
+                        <sa-icon name="circle-alert" />
+                    </sa-empty-media>
+                    <sa-empty-title>@sheetLabels.ErrorTitle</sa-empty-title>
+                    <sa-empty-description>@sheetLabels.ErrorDescription</sa-empty-description>
+                </sa-empty-header>
+                <sa-empty-content>
+                    <sa-button type="button" variant="ButtonVariant.Outline" size="ButtonSize.Small" data-sheet="retry">@sheetLabels.RetryLabel</sa-button>
+                </sa-empty-content>
+            </sa-empty>
+        </template>
+    </sa-sheet>
+</admin-remote-sheet>

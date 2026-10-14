@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
 namespace DataGridSpike;
 

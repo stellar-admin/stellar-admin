@@ -12,7 +12,7 @@
 // Starts its own DocsSamples instance on the --url port (default 5206 to stay clear of a
 // dev instance on 5205), so that port must be free. Requires dotnet, npm, and a git
 // checkout (the case patches come from git history). Exits 0 on pass, 1 on fail.
-// The working tree's src/StellarAdmin.TagHelpers files must not have uncommitted changes
+// The working tree's src/StellarAdmin.UI files must not have uncommitted changes
 // that conflict with the case patches.
 
 import { spawn, execFileSync } from "node:child_process";
@@ -58,7 +58,7 @@ function applyPatch(commit, reverse) {
 
 function buildCss() {
   execFileSync("npm", ["run", "build:css"], {
-    cwd: join(repoRoot, "src", "StellarAdmin.TagHelpers", "Client"),
+    cwd: join(repoRoot, "src", "StellarAdmin.UI", "Client"),
     stdio: "inherit",
   });
 }

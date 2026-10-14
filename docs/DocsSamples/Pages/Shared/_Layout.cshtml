@@ -16,7 +16,7 @@
     <script>window.saThemeFonts = @Json.Serialize(Themes.ToDictionary(t => t.Name, t => t.GoogleFonts));</script>
     <script src="/js/theme-fonts.js" asp-append-version="true"></script>
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
     @* The theme picker's theme file, one of the theme fixtures (util/theme-check/presets); the default theme has none. *@
     @if (theme == ThemeFixtures.DefaultName)
     {
@@ -28,7 +28,7 @@
     }
     <script src="/js/appearance.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Styles", false)
-    <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
 @RenderBody()

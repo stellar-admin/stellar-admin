@@ -1,0 +1,99 @@
+using StellarAdmin.UI;
+
+namespace StellarAdmin.Resources.Options;
+
+/// <summary>
+///     Configures a resource form.
+/// </summary>
+public class ResourceFormOptions : IFormScope
+{
+    /// <summary>
+    ///     All read-only fields in display order, including fields inside layout containers and
+    ///     details sections.
+    /// </summary>
+    public IReadOnlyList<FormDisplayFieldOptions> DisplayFields =>
+        EnumerateDisplayFields(Items).ToArray();
+
+    /// <summary>
+    ///     All fields in display order, including fields inside layout containers.
+    /// </summary>
+    public IReadOnlyList<FormFieldOptions> Fields => EnumerateFields(Items).ToArray();
+
+    /// <summary>
+    ///     The form's fields and layout containers in display order.
+    /// </summary>
+    public IList<FormItemOptions> Items { get; } = new List<FormItemOptions>();
+
+    /// <summary>
+    ///     The layout of form sections.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to the application's form settings.
+    /// </remarks>
+    public FormSectionLayout? SectionLayout { get; set; }
+
+    /// <summary>
+    ///     The submit button label.
+    /// </summary>
+    public string? SubmitLabel { get; set; }
+
+    /// <summary>
+    ///     The page title.
+    /// </summary>
+    public string? Title { get; set; }
+
+    internal FormGridColumnDefinitions Columns { get; set; }
+
+    FormGridColumnDefinitions IFormScope.Columns
+    {
+        get => Columns;
+        set => Columns = value;
+    }
+
+    internal static IEnumerable<FormDisplayFieldOptions> EnumerateDisplayFields(
+        IEnumerable<FormItemOptions> items
+    )
+    {
+        foreach (var item in items)
+        {
+            switch (item)
+            {
+                case FormDisplayFieldOptions field:
+                    yield return field;
+                    break;
+                case FormDetailsOptions details:
+                    foreach (var field in details.Fields)
+                    {
+                        yield return field;
+                    }
+
+                    break;
+                case FormContainerOptions container:
+                    foreach (var field in EnumerateDisplayFields(container.Items))
+                    {
+                        yield return field;
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    private static IEnumerable<FormFieldOptions> EnumerateFields(IEnumerable<FormItemOptions> items)
+    {
+        foreach (var item in items)
+        {
+            if (item is FormFieldOptions field)
+            {
+                yield return field;
+            }
+            else if (item is FormContainerOptions container)
+            {
+                foreach (var child in EnumerateFields(container.Items))
+                {
+                    yield return child;
+                }
+            }
+        }
+    }
+}

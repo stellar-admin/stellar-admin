@@ -1,0 +1,300 @@
+/* StellarAdmin: the Dashboard's own component rules and the Tailwind utilities its views
+   use, linked after stellar-admin.css, which ships the reset, the tokens and every component.
+
+   Both theme imports are reference-only, so no variables are emitted here:
+   - the default Tailwind theme is inlined, so utilities that the adapter does not map (colours by
+     palette name, larger text sizes) compile to literal values;
+   - the StellarAdmin Tailwind adapter maps spacing, small text, fonts, radii and the shadcn colour
+     names onto the tokens, inline, so those utilities follow density, dark mode and scoped sections. */
+
+@layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
+
+@import "tailwindcss/theme.css" layer(theme) theme(inline reference);
+@import "../../../StellarAdmin.UI/Client/css/tailwind-adapter.css" theme(reference);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "../../Areas/StellarAdmin/Views";
+
+@layer components {
+    .sa-resource-index-grid .sa-data-grid-footer {
+        flex-wrap: wrap;
+    }
+
+    .sa-resource-index-grid .sa-data-grid-range {
+        white-space: nowrap;
+    }
+
+    :is(.sa-resource-form, .sa-resource-view):is([data-form-layout="split"], [data-form-layout="stacked"]) > :is(.sa-resource-form-header, .sa-resource-view-header) {
+        border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+        padding-bottom: calc(5 * var(--sa-unit));
+    }
+
+    .sa-resource-form-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: calc(4 * var(--sa-unit));
+    }
+
+    .sa-resource-form:is([data-form-layout="split"], [data-form-layout="stacked"]) .sa-resource-form-footer {
+        border-top: var(--sa-border-width) solid var(--sa-color-line);
+        padding-top: calc(5 * var(--sa-unit));
+    }
+
+    /* The view page's display fields are details, not values beside inputs: muted labels, values at their own
+       height, the weight details give them. */
+    .sa-resource-view .sa-field.sa-display-field {
+        row-gap: calc(1 * var(--sa-unit));
+
+        & > .sa-display-field-label {
+            color: var(--sa-color-ink-muted);
+            font-weight: 400;
+        }
+
+        & > .sa-display-field-value {
+            min-height: 0;
+        }
+
+        & > .sa-display-field-value:not([data-empty], [data-kind="text"]) {
+            font-weight: var(--sa-weight-control);
+        }
+    }
+
+    .sa-resource-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: calc(2 * var(--sa-unit));
+        margin-inline-start: auto;
+    }
+
+    /* Toggle group editors wrap their separate toggles, and chips take the theme's chip radius, with a check that
+       shows while on. Their avatars, images and codes follow the chip's shape, inset by the toggle's padding. */
+    .sa-toggle-group.sa-toggle-group-wrap {
+        flex-wrap: wrap;
+    }
+
+    .sa-toggle-group.sa-toggle-chips > .sa-toggle-group-item {
+        border-radius: var(--sa-radius-tag);
+    }
+
+    .sa-toggle-chips .sa-toggle-group-item > .sa-choice-media:is([data-media="avatar"], [data-media="image"], [data-media="code"]) {
+        border-radius: max(0px, calc(var(--sa-radius-tag) - 4px));
+
+        & > *,
+        &::after {
+            border-radius: inherit;
+        }
+    }
+
+    .sa-toggle-chips .sa-toggle-chip-check {
+        display: none;
+    }
+
+    .sa-toggle-chips .sa-toggle-group-item:has(:checked) .sa-toggle-chip-check {
+        display: block;
+    }
+
+    /* A chip's check mark takes its media's place while on by default, or sits after the text. */
+    .sa-toggle-chips.sa-toggle-chips-check-replace .sa-toggle-group-item:has(:checked) .sa-choice-media {
+        display: none;
+    }
+
+    .sa-toggle-chips.sa-toggle-chips-check-end .sa-toggle-chip-check {
+        order: 1;
+    }
+
+    /* Item media: the icon, avatar, image or code beside a choice's or lookup item's text. Inline media sits before
+       the text, card media leads a choice card, and lookups size it by whether their items have descriptions. These
+       are component rules, so utilities from ClassNames.Media replace the sizes. */
+    .sa-choice-media {
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+    .sa-choice-media[data-media="icon"] {
+        @apply size-4;
+    }
+
+    .sa-choice-media[data-media="icon"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply size-5;
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="inline"],
+    .sa-choice-media[data-media="image"][data-placement="inline"] {
+        @apply size-5;
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="inline"] .sa-avatar-fallback {
+        @apply text-[0.55rem];
+    }
+
+    .sa-choice-media[data-media="avatar"][data-placement="lookup"],
+    .sa-choice-media[data-media="image"][data-placement="lookup"] {
+        @apply size-6;
+    }
+
+    .sa-choice-media[data-media="avatar"]:is([data-placement="card"], [data-placement="lookup-lg"]),
+    .sa-choice-media[data-media="image"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply size-8;
+    }
+
+    .sa-choice-media[data-media="image"] {
+        @apply rounded-sm object-cover;
+    }
+
+    .sa-choice-media[data-media="image"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply rounded-md;
+    }
+
+    .sa-choice-media[data-media="code"] {
+        @apply bg-muted text-foreground inline-flex items-center justify-center rounded-sm font-mono text-[0.65rem] font-medium;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="inline"] {
+        @apply h-5 px-1.5;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="lookup"] {
+        @apply px-1.5 py-0.5 text-[0.7rem];
+    }
+
+    .sa-choice-media[data-media="code"]:is([data-placement="card"], [data-placement="lookup-lg"]) {
+        @apply rounded-md;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="card"] {
+        @apply size-8;
+    }
+
+    .sa-choice-media[data-media="code"][data-placement="lookup-lg"] {
+        @apply size-7;
+    }
+
+    /* The sheet stack: the script sets data-under on a level's sheet while another level is above it, and
+       --sa-sheet-shift to the number of levels above it, capped at 3 so deep stacks stop moving. Covered levels
+       recede like a card deck and peek out on the left, dimmed; only the bottom level's backdrop shows. A closing
+       level stays in the top layer until its exit animation ends. */
+    dialog.sa-sheet-stack-level {
+        transform-origin: right center;
+        transition:
+            translate 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            scale 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            border-radius 0.35s,
+            opacity 0.3s,
+            display 0.3s allow-discrete,
+            overlay 0.3s allow-discrete;
+    }
+
+    dialog.sa-sheet-stack-level[data-under] {
+        translate: calc(var(--sa-sheet-shift) * -40px) 0;
+        scale: calc(1 - var(--sa-sheet-shift) * 0.045);
+        border-radius: var(--sa-radius-container);
+        overflow: hidden;
+    }
+
+    dialog.sa-sheet-stack-level::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        background: oklch(0 0 0 / 0.16);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    @scope (.dark) to (.light) {
+        :scope dialog.sa-sheet-stack-level::after {
+            background: oklch(0 0 0 / 0.4);
+        }
+    }
+
+    dialog.sa-sheet-stack-level[data-under]::after {
+        opacity: 1;
+    }
+
+    /* A click on the top level's backdrop over a covered level goes back to it */
+    dialog.sa-sheet-stack-level[data-under][data-hover]::after {
+        opacity: 0.4;
+    }
+
+    dialog.sa-sheet-stack-level[data-pointing] {
+        cursor: pointer;
+    }
+
+    admin-remote-sheet ~ admin-remote-sheet dialog.sa-sheet-stack-level::backdrop {
+        background: transparent;
+        backdrop-filter: none;
+    }
+
+    /* Phones: the levels above the first fill the width, and covered levels hide */
+    @media (width < 40rem) {
+        admin-remote-sheet ~ admin-remote-sheet dialog.sa-sheet-stack-level[data-side] {
+            width: 100%;
+            max-width: none;
+        }
+
+        dialog.sa-sheet-stack-level[data-under] {
+            translate: none;
+            scale: none;
+            opacity: 0;
+        }
+    }
+
+    /* Field displays render inside the display field's value, which lays its content out in a row */
+    .sa-text-display {
+        min-width: 0;
+
+        &[data-multiline="true"] {
+            flex-basis: 100%;
+            font-weight: 400;
+            white-space: pre-line;
+        }
+
+        &[data-line-clamp] {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: var(--_line-clamp);
+        }
+    }
+
+    .sa-number-display {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* In a cell, clamped text wraps at a readable width instead of widening its column */
+    [data-slot="table-cell"] > .sa-text-display[data-line-clamp] {
+        max-width: calc(80 * var(--sa-unit));
+    }
+
+    /* Links in cells, styled as a display field's links */
+    .sa-display-link {
+        color: var(--sa-color-accent-text);
+        text-underline-offset: 4px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .sa-boolean-display {
+        display: inline-flex;
+        align-items: center;
+        gap: calc(1.5 * var(--sa-unit));
+
+        & > svg {
+            flex-shrink: 0;
+        }
+
+        &[data-value="true"] > svg {
+            color: var(--sa-color-success);
+        }
+
+        &[data-value="false"] > svg {
+            color: var(--sa-color-ink-muted);
+        }
+    }
+}

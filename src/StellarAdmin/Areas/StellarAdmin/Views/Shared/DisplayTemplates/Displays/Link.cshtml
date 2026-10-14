@@ -1,0 +1,23 @@
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<LinkDisplay>
+
+@{
+    var text = FormatValue();
+
+    // Only web addresses become links, so a stored javascript: URL shows as text
+    var isWebAddress = Uri.TryCreate(Convert.ToString(Model, System.Globalization.CultureInfo.InvariantCulture), UriKind.Absolute, out var uri)
+        && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+}
+
+@if (!isWebAddress)
+{
+    @text
+}
+else if (Display.OpenInNewTab)
+{
+    <a href="@uri!.OriginalString" target="_blank" rel="noopener noreferrer">@text</a>
+}
+else
+{
+    <a href="@uri!.OriginalString">@text</a>
+}

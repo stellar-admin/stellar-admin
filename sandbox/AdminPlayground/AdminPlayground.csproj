@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-DashboardPlayground-b09cb04d-db16-4740-b2ad-865105b47956</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference
+      Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"
+      Version="10.0.11"
+    />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"
+      Version="10.0.11"
+    />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+    <PackageReference
+      Include="Microsoft.EntityFrameworkCore.Design"
+      Version="10.0.11"
+      PrivateAssets="all"
+    />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StellarAdmin\StellarAdmin.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.EntityFrameworkCore\StellarAdmin.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <!-- Client -->
+  <ItemGroup>
+    <Content Update="Client/**/*.*" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClientInput Include="Client/css/**/*.css" />
+    <ClientInput Include="../../src/StellarAdmin.UI/Client/css/tailwind-adapter.css" />
+    <ClientInput Include="Client/package.json" />
+    <ClientInput Include="Resources/**/*.cs" />
+  </ItemGroup>
+
+  <!-- Declared at execution time, as in StellarAdmin, so Rider doesn't strip the
+       item when the generated file is deleted. -->
+  <Target Name="ClientItems">
+    <ItemGroup>
+      <ClientOutput Include="wwwroot/css/playground.css" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Trigger client build -->
+  <Target
+    Name="Client"
+    DependsOnTargets="ClientItems"
+    BeforeTargets="ResolveProjectStaticWebAssets"
+    Inputs="@(ClientInput)"
+    Outputs="@(ClientOutput)"
+  >
+    <Exec
+      Command="npm install"
+      WorkingDirectory="Client"
+      Condition=" !Exists('Client/node_modules') "
+    />
+    <Exec Command="npm run build" WorkingDirectory="Client" />
+
+    <!-- Tailwind skips the write when output is unchanged, leaving it older than the
+         inputs — without this the target never goes up-to-date and re-runs on every build. -->
+    <Touch Files="@(ClientOutput)" />
+
+    <!-- Re-glob what we just generated; the evaluation-time Content glob predates it. -->
+    <ItemGroup>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)" />
+    </ItemGroup>
+  </Target>
+</Project>

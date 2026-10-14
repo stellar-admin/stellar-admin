@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
 namespace ComponentPlayground.Pages.Demo;
 

@@ -1,0 +1,41 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace AdminPlayground.Resources.Users;
+
+public sealed class CreateUserModel
+{
+    [Display(Name = "Department")]
+    public Guid? DepartmentId { get; set; }
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = "";
+
+    [Display(Name = "Email confirmed")]
+    public bool EmailConfirmed { get; set; }
+
+    [Required, StringLength(100)]
+    [Display(Name = "First name")]
+    public required string FirstName { get; set; }
+
+    [Required, StringLength(100)]
+    [Display(Name = "Last name")]
+    public required string LastName { get; set; }
+
+    [Required, DataType(DataType.Password)]
+    public string Password { get; set; } = "";
+
+    [Required, Compare(nameof(Password)), DataType(DataType.Password)]
+    [Display(Name = "Confirm password")]
+    public string PasswordConfirmation { get; set; } = "";
+
+    [StringLength(35)]
+    [Display(Name = "Preferred language")]
+    public string? PreferredLanguage { get; set; }
+
+    [Display(Name = "Roles")]
+    public string[] RoleIds { get; set; } = [];
+
+    [StringLength(35)]
+    [Display(Name = "Time zone")]
+    public string? TimeZoneId { get; set; }
+}

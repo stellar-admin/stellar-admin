@@ -105,7 +105,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
         generatedSource.AppendLine("using System.Collections.Frozen;");
         generatedSource.AppendLine("using System.Collections.Immutable;");
         generatedSource.AppendLine();
-        generatedSource.AppendLine("namespace StellarAdmin.Icons;");
+        generatedSource.AppendLine("namespace StellarAdmin.UI.Icons;");
         generatedSource.AppendLine();
         generatedSource.AppendLine($"internal static class {iconPackName}_{letter}_Icons");
         generatedSource.AppendLine("{");
@@ -152,7 +152,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
         generatedSource.AppendLine("using System.Collections.Frozen;");
         generatedSource.AppendLine("using System.Collections.Immutable;");
         generatedSource.AppendLine();
-        generatedSource.AppendLine("namespace StellarAdmin.Icons;");
+        generatedSource.AppendLine("namespace StellarAdmin.UI.Icons;");
         generatedSource.AppendLine();
         generatedSource.AppendLine($"internal static partial class {iconPackName}Icons");
         generatedSource.AppendLine("{");

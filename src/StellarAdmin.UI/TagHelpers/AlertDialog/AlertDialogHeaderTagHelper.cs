@@ -1,0 +1,24 @@
+using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace StellarAdmin.UI;
+
+/// <summary>
+///     The header region of an alert dialog; typically contains the title and description.
+/// </summary>
+[HtmlTargetElement("sa-alert-dialog-header")]
+public class AlertDialogHeaderTagHelper : StellarAdminTagHelperBase
+{
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "div";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-header");
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-alert-dialog-header", output.GetUserSuppliedClass())
+        );
+
+        return Task.CompletedTask;
+    }
+}

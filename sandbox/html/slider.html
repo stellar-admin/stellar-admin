@@ -19,9 +19,9 @@
     <link
       id="theme-css"
       rel="stylesheet"
-      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css"
+      href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css"
     />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build: only for prototype-authored classes (the new parts, frames, captions). -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -604,7 +604,7 @@
       // Controls ------------------------------------------------------------------------------
       const themeLink = document.getElementById("theme-css");
       document.getElementById("theme").addEventListener("change", (e) => {
-        themeLink.href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${e.target.value}.css`;
+        themeLink.href = `../../src/StellarAdmin.UI/wwwroot/stellar-admin.${e.target.value}.css`;
       });
       themeLink.addEventListener("load", () => requestAnimationFrame(measure));
       document.getElementById("mode").addEventListener("click", (e) => {
@@ -616,7 +616,7 @@
       const params = new URLSearchParams(location.search);
       if (params.get("theme")) {
         document.getElementById("theme").value = params.get("theme");
-        themeLink.href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${params.get("theme")}.css`;
+        themeLink.href = `../../src/StellarAdmin.UI/wwwroot/stellar-admin.${params.get("theme")}.css`;
       }
       if (params.get("mode") === "dark") document.getElementById("mode").click();
 

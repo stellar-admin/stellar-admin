@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Expandable rows prototype — resource index detail concepts</title>
 
-    <!-- Geist + the Parallax fonts (the DashboardPlayground default theme) -->
+    <!-- Geist + the Parallax fonts (the AdminPlayground default theme) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,10 +21,10 @@
     <link
       id="theme-css"
       rel="stylesheet"
-      href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css"
+      href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css"
     />
-    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build — ONLY for prototype-authored utilities. -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -764,7 +764,7 @@
       }
 
       function applyTheme() {
-        document.getElementById("theme-css").href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${state.theme}.css`;
+        document.getElementById("theme-css").href = `../../src/StellarAdmin.UI/wwwroot/stellar-admin.${state.theme}.css`;
         document.documentElement.classList.toggle("dark", state.dark === "on");
       }
 

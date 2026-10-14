@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using StellarAdmin.Icons;
+using StellarAdmin.UI.Icons;
 
 namespace DocsSamples;
 

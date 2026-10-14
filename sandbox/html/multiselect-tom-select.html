@@ -13,8 +13,8 @@
     />
 
     <!-- Real built library assets; nova to start because the generated shadcn themes already carry the combobox rules. Swappable from the control bar. -->
-    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css" />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!-- Tom Select 2.6.2, all plugins; its stylesheet is deliberately NOT loaded -->
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.6.2/dist/js/tom-select.complete.min.js"></script>
@@ -276,7 +276,7 @@
           <p>
             The editor template keeps rendering a real <code>&lt;select multiple name="…"&gt;</code> with the selected options (value + title, media and
             description as <code>data-*</code>), so model binding, validation attributes and no-JS posting stay exactly as they are. A small Lit element (for
-            example <code>&lt;dashboard-multi-lookup&gt;</code>, or a library-level <code>sel-combobox</code>) wraps it, calls
+            example <code>&lt;admin-multi-lookup&gt;</code>, or a library-level <code>sel-combobox</code>) wraps it, calls
             <code>new TomSelect(select, settings)</code> in <code>connectedCallback</code> and <code>destroy()</code> in <code>disconnectedCallback</code> — so
             htmx swaps and the create sheet re-initialise cleanly. Settings come from <code>data-*</code> attributes the tag helper writes (min length, max
             items, create, URL).

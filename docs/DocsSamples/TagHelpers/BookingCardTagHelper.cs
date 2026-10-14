@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
 namespace DocsSamples.TagHelpers;
 

@@ -1,14 +1,13 @@
 using DocsSamples;
 using Microsoft.Extensions.FileProviders;
-using StellarAdmin;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 var repoRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", ".."));
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddStellarAdminUI();
 builder.Services.AddSingleton(ThemeFixtures.Load(repoRoot));
 
 var app = builder.Build();

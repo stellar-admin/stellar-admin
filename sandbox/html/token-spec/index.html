@@ -24,8 +24,8 @@
   if (FRAME) {
     document.documentElement.classList.toggle("dark", mode === "dark");
     const sheets = engine === "bundle"
-      ? [`../../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${PRESETS[preset]}.css`]
-      : ["../../../src/StellarAdmin.TagHelpers/Client/css/tokens.css", "components.css", preset !== "base" && `presets/${preset}.css`].filter(Boolean);
+      ? [`../../../src/StellarAdmin.UI/wwwroot/stellar-admin.${PRESETS[preset]}.css`]
+      : ["../../../src/StellarAdmin.UI/Client/css/tokens.css", "components.css", preset !== "base" && `presets/${preset}.css`].filter(Boolean);
     for (const href of sheets) document.write(`<link rel="stylesheet" href="${href}">`);
   }
 </script>
@@ -513,7 +513,7 @@ if (FRAME) {
     panes.innerHTML = engines.map(e => `
       <div class="demo-pane" data-engine="${e}">
         <header>${e === "bundle"
-          ? `<span><b>Current</b> · stellar-admin.${bundle}.css</span><span data-count="../../../src/StellarAdmin.TagHelpers/Client/css/themes/${bundle}.css">themes/${bundle}.css: … lines</span>`
+          ? `<span><b>Current</b> · stellar-admin.${bundle}.css</span><span data-count="../../../src/StellarAdmin.UI/Client/css/themes/${bundle}.css">themes/${bundle}.css: … lines</span>`
           : `<span><b>Token engine</b> · tokens + components${presetFile ? ` + ${presetFile}` : ""}</span>${presetFile ? `<span data-count="${presetFile}">${presetFile}: … lines</span>` : ""}`}</header>
         <iframe title="${e}" src="?frame=1&engine=${e}&preset=${state.preset}&mode=${state.mode}"></iframe>
       </div>`).join("");

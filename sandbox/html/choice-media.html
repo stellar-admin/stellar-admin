@@ -13,9 +13,9 @@
     />
 
     <!-- Real built library assets; nova to start. Swappable from the control bar. The Dashboard bundle adds the chip rules. -->
-    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css" />
-    <link rel="stylesheet" href="../../src/StellarAdmin.Dashboard/wwwroot/stellar-admin-dashboard.css" />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link rel="stylesheet" href="../../src/StellarAdmin/wwwroot/stellar-admin-panel.css" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -467,7 +467,7 @@
       // ---------------------------------------------------------------- Control bar
       const theme = document.getElementById("theme");
       theme.addEventListener("change", () => {
-        document.getElementById("theme-css").href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${theme.value}.css`;
+        document.getElementById("theme-css").href = `../../src/StellarAdmin.UI/wwwroot/stellar-admin.${theme.value}.css`;
       });
       document.getElementById("dark").addEventListener("click", () => document.documentElement.classList.toggle("dark"));
       const params = new URLSearchParams(location.search);

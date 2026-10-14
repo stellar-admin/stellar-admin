@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
   </ItemGroup>
 </Project>

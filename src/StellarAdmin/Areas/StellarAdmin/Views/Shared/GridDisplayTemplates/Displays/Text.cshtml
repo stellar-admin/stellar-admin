@@ -1,0 +1,12 @@
+@using StellarAdmin.Resources.Displays
+@inherits FieldDisplayView<TextDisplay>
+
+@* A cell keeps to one flow of text, so line breaks only show when the text is clamped *@
+@if (Display.LineClamp is { } lineClamp)
+{
+    <span class="sa-text-display" data-multiline="true" data-line-clamp="@lineClamp" style="--_line-clamp:@lineClamp">@FormatValue()</span>
+}
+else
+{
+    <span class="sa-text-display">@FormatValue()</span>
+}

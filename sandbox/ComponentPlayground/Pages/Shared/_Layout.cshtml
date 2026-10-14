@@ -22,13 +22,13 @@
         <link rel="stylesheet" href="@($"https://fonts.googleapis.com/css2?family={theme.GoogleFonts}&display=swap")"/>
     }
     <!-- stellar-admin.css and the theme for the components, site.css for this app's own markup. -->
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
     @if (theme.Name != ThemeFixtures.DefaultName)
     {
         <link rel="stylesheet" href="@($"/presets/{theme.Name}.css")"/>
     }
     <link rel="stylesheet" href="/css/site.css" asp-append-version="true"/>
-    <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
 <sa-sidebar-wrapper>

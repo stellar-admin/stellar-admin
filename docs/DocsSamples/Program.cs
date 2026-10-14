@@ -2,9 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.FileProviders;
-using StellarAdmin;
-using StellarAdmin.Icons;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
+using StellarAdmin.UI.Icons;
 
 namespace DocsSamples;
 
@@ -23,20 +22,20 @@ public class Program
         );
         builder.Services.AddRazorPages();
         builder.Services.AddSingleton(ThemeFixtures.Load(repoRoot));
-        var stellarAdmin = builder.Services.AddStellarAdmin(sa =>
+        builder.Services.AddStellarAdminUI(ui =>
         {
-            sa.AddIconPack<VoyagerIconPack>().AddTagHelpers();
-            sa.AddIconPack<LucideIconPack>(pack =>
+            ui.AddIconPack<VoyagerIconPack>();
+            ui.AddIconPack<LucideIconPack>(pack =>
             {
                 pack.Prefix = "preview-lucide-";
                 pack.ImportSemanticMappings = false;
             });
-            sa.AddIconPack<TablerOutlineIconPack>(pack =>
+            ui.AddIconPack<TablerOutlineIconPack>(pack =>
             {
                 pack.Prefix = "preview-tabler-outline-";
                 pack.ImportSemanticMappings = false;
             });
-            sa.AddIconPack<TablerFilledIconPack>(pack =>
+            ui.AddIconPack<TablerFilledIconPack>(pack =>
             {
                 pack.Prefix = "preview-tabler-filled-";
                 pack.ImportSemanticMappings = false;

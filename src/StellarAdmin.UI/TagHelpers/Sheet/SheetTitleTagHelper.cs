@@ -1,0 +1,24 @@
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace StellarAdmin.UI;
+
+/// <summary>
+///     The accessible title of a sheet, rendered as a heading in the sheet header.
+/// </summary>
+[HtmlTargetElement("sa-sheet-title")]
+public class SheetTitleTagHelper : StellarAdminTagHelperBase
+{
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "h2";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "sheet-title");
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-sheet-title", output.GetUserSuppliedClass())
+        );
+
+        return Task.CompletedTask;
+    }
+}

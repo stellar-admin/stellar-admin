@@ -1,0 +1,61 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using StellarAdmin.Resources.Editors;
+
+namespace StellarAdmin.Resources.Options;
+
+/// <summary>
+///     A configured field of a form page.
+/// </summary>
+public sealed class FormFieldOptions : FormItemOptions
+{
+    /// <summary>
+    ///     The help text shown with the field, or <c>null</c> to derive it from the property's
+    ///     metadata.
+    /// </summary>
+    public string? Description { get; internal set; }
+
+    /// <summary>
+    ///     The editor's configuration.
+    /// </summary>
+    public FieldEditor Editor { get; internal set; } = new();
+
+    /// <summary>
+    ///     The expression selecting the property the field renders and binds.
+    /// </summary>
+    public LambdaExpression FieldExpression { get; }
+
+    /// <summary>
+    ///     The property path selected by <see cref="FieldExpression" />.
+    /// </summary>
+    public string FieldName { get; }
+
+    /// <summary>
+    ///     Whether the field renders read-only and is excluded from the form's binding
+    ///     allow-list — a posted value for it is ignored.
+    /// </summary>
+    public bool IsReadOnly { get; internal set; }
+
+    /// <summary>
+    ///     The properties selected by <see cref="FieldExpression" />, in order.
+    /// </summary>
+    public IReadOnlyList<PropertyInfo> PropertyPath { get; }
+
+    /// <summary>
+    ///     The field label, or <c>null</c> to derive it from the property's metadata.
+    /// </summary>
+    public string? Title { get; internal set; }
+
+    internal Type? HandlerType { get; set; }
+
+    internal FormFieldOptions(
+        LambdaExpression fieldExpression,
+        string fieldName,
+        PropertyInfo[] propertyPath
+    )
+    {
+        FieldExpression = fieldExpression;
+        FieldName = fieldName;
+        PropertyPath = Array.AsReadOnly((PropertyInfo[])propertyPath.Clone());
+    }
+}

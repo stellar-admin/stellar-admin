@@ -1,0 +1,137 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using StellarAdmin.UI.Icons;
+using FrameworkSelectTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper;
+
+namespace StellarAdmin.UI;
+
+/// <summary>
+///     A styled dropdown for choosing a single option, wrapping a native
+///     <c>&lt;select&gt;</c> element with a custom chevron icon.
+/// </summary>
+[HtmlTargetElement("sa-select")]
+public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
+{
+    private readonly IHtmlGenerator _htmlGenerator;
+    private readonly IconOptions _iconOptions;
+    private FrameworkSelectTagHelper? _frameworkTagHelper;
+
+    public SelectTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
+        : base(htmlGenerator)
+    {
+        _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
+        _iconOptions = iconOptions.Value;
+    }
+
+    /// <summary>
+    ///     The list of options to render, in the same form used by the framework
+    ///     <c>&lt;select&gt;</c> tag helper.
+    /// </summary>
+    [HtmlAttributeName("asp-items")]
+    public IEnumerable<SelectListItem>? Items { get; set; }
+
+    /// <summary>
+    ///     The size of the select.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="SelectSize.Default" />.
+    /// </remarks>
+    [HtmlAttributeName("size")]
+    public SelectSize? Size { get; set; }
+
+    public override void Init(TagHelperContext context)
+    {
+        base.Init(context);
+
+        if (For != null || Items != null)
+        {
+            _frameworkTagHelper = new FrameworkSelectTagHelper(_htmlGenerator)
+            {
+                For = For,
+                Items = Items,
+                ViewContext = ViewContext,
+                Name = Name,
+            };
+            _frameworkTagHelper.Init(context);
+        }
+    }
+
+    protected override async Task<FieldLayout> RenderInput(
+        TagHelperContext context,
+        TagHelperOutput output,
+        IDictionary<string, object?>? htmlAttributes
+    )
+    {
+        var effectiveSize = Size ?? SelectSize.Default;
+        var userSuppliedClass = output.GetUserSuppliedClass();
+
+        /*
+         * Render the select
+         */
+        var selectOutput = new TagHelperOutput(
+            "select",
+            new TagHelperAttributeList(
+                output
+                    .Attributes.Where(a =>
+                        !a.Name.Equals("class", StringComparison.OrdinalIgnoreCase)
+                    )
+                    .Union([
+                        new TagHelperAttribute("data-slot", "native-select"),
+                        new TagHelperAttribute("data-size", effectiveSize.GetDataAttributeText()),
+                        new TagHelperAttribute("class", "sa-native-select"),
+                    ])
+            ),
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+        if ((For != null || Items != null) && _frameworkTagHelper != null)
+        {
+            _frameworkTagHelper.Process(context, selectOutput);
+            selectOutput.Content.SetHtmlContent(await output.GetChildContentAsync());
+        }
+        else
+        {
+            selectOutput.Content.SetHtmlContent(await output.GetChildContentAsync());
+        }
+        ApplyFieldAttributes(context, selectOutput.Attributes, FieldLayout.Stacked);
+        output.Content.AppendHtml(selectOutput);
+
+        /*
+         * Render the icon
+         */
+        var iconTagHelperOutput = new TagHelperOutput(
+            string.Empty,
+            [
+                new TagHelperAttribute("class", "sa-native-select-icon"),
+                new TagHelperAttribute("aria-hidden", "true"),
+                new TagHelperAttribute("data-slot", "native-select-icon"),
+            ],
+            (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
+        );
+        var iconTagHelper = new IconTagHelper(_iconOptions)
+        {
+            Name = _iconOptions.GetSemanticIconName(SemanticIconRole.DropdownIndicator),
+        };
+        await iconTagHelper.ProcessAsync(context, iconTagHelperOutput);
+
+        output.Content.AppendHtml(iconTagHelperOutput);
+
+        /*
+         * Finally, render the wrapper. Everything the author wrote (id, name, disabled, aria-*)
+         * has moved onto the <select>; the wrapper carries only its own attributes and class.
+         */
+        output.Attributes.Clear();
+        output.TagName = "div";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "native-select-wrapper");
+        output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-native-select-wrapper", ClassNames?.Control, userSuppliedClass)
+        );
+
+        return FieldLayout.Stacked;
+    }
+}

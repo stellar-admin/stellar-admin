@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" />
 
-    <!-- Real built library assets; parallax is the DashboardPlayground theme. Swappable from the control bar. -->
-    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css" />
-    <script defer src="../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <!-- Real built library assets; parallax is the AdminPlayground theme. Swappable from the control bar. -->
+    <link id="theme-css" rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!-- Tailwind v4 browser build — only for prototype-authored utilities -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -273,7 +273,7 @@
         <h2 class="text-lg font-semibold">What this means for the library</h2>
         <ul class="text-muted-foreground max-w-3xl list-disc space-y-1 pl-5 text-sm">
           <li>
-            The layout's two fixed placeholders (<code>dashboard-sheet</code>, <code>dashboard-nested-sheet</code>) become a sheet created per level from a template, and the
+            The layout's two fixed placeholders (<code>admin-sheet</code>, <code>admin-nested-sheet</code>) become a sheet created per level from a template, and the
             lookup and create views stop hardcoding which one they target: a field's opener targets “a new level above mine”.
           </li>
           <li>

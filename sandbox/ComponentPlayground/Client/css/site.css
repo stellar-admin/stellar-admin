@@ -6,7 +6,7 @@
   Tailwind adapter, and shadcn-tailwind.css adds the custom utilities (scroll-fade-b, ...) this app's markup uses.
 */
 @import "tailwindcss/theme.css" layer(theme) theme(inline reference);
-@import "../../../../src/StellarAdmin.TagHelpers/Client/css/tailwind-adapter.css" theme(reference);
+@import "../../../../src/StellarAdmin.UI/Client/css/tailwind-adapter.css" theme(reference);
 @import "./shadcn-tailwind.css";
 @import "tailwindcss/utilities.css" layer(utilities);
 

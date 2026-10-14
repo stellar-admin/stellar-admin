@@ -75,7 +75,7 @@ public static partial class ThemeFixtures
         var manifest = Path.Combine(
             repoRoot,
             "src",
-            "StellarAdmin.TagHelpers",
+            "StellarAdmin.UI",
             "Client",
             "css",
             "theme-variables.json"

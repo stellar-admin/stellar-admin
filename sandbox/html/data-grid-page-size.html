@@ -20,9 +20,9 @@
     <link
       id="theme-css"
       rel="stylesheet"
-      href="../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.css"
+      href="../../../stellar-admin/src/StellarAdmin.UI/wwwroot/stellar-admin.css"
     />
-    <script defer src="../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.js"></script>
+    <script defer src="../../../stellar-admin/src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
 
     <!--
       Tailwind v4 browser build — ONLY for prototype-authored utility classes
@@ -509,7 +509,7 @@
       document.querySelectorAll("[data-set-theme]").forEach((btn) =>
         btn.addEventListener("click", () => {
           document.getElementById("theme-css").href =
-            `../../../stellar-admin/src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${btn.dataset.setTheme}.css`;
+            `../../../stellar-admin/src/StellarAdmin.UI/wwwroot/stellar-admin.${btn.dataset.setTheme}.css`;
           mark("[data-set-theme]", btn.dataset.setTheme);
         }),
       );

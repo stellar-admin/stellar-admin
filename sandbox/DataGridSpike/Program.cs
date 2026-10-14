@@ -1,10 +1,9 @@
-using StellarAdmin;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddStellarAdminUI();
 
 var app = builder.Build();
 

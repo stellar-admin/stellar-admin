@@ -1,0 +1,24 @@
+using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace StellarAdmin.UI;
+
+/// <summary>
+///     The descriptive body text of an alert dialog, shown beneath the title.
+/// </summary>
+[HtmlTargetElement("sa-alert-dialog-description")]
+public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
+{
+    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        output.TagName = "p";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        output.Attributes.SetAttribute("data-slot", "alert-dialog-description");
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-alert-dialog-description", output.GetUserSuppliedClass())
+        );
+
+        return Task.CompletedTask;
+    }
+}

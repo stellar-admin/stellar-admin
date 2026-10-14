@@ -226,7 +226,7 @@ internal sealed partial class Generator
     public async Task DownloadThemeVariableManifestAsync(HttpClient client)
     {
         var response = await client.GetAsync(
-            "/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json"
+            "/_content/StellarAdmin.UI/stellar-admin.theme-variables.json"
         );
         response.EnsureSuccessStatusCode();
 

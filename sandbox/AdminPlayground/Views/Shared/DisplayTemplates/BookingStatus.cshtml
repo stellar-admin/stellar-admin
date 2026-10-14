@@ -1,0 +1,16 @@
+@using AdminPlayground.Resources.FormLayouts
+@using StellarAdmin.UI
+@addTagHelper *, StellarAdmin.UI
+@model GalleryBookingStatus
+
+@* A per-value badge is a display template: the [UIHint] applies it wherever the property is displayed *@
+@{
+    var variant = Model switch
+    {
+        GalleryBookingStatus.Confirmed => BadgeVariant.Default,
+        GalleryBookingStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Secondary,
+    };
+}
+
+<sa-badge variant="@variant">@Model</sa-badge>

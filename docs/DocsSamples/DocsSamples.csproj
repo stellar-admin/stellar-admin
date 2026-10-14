@@ -14,7 +14,7 @@
     <_ContentIncludedByDefault Remove="Pages\AsChild\_Step6.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\StellarAdmin.TagHelpers\StellarAdmin.TagHelpers.csproj" />
+    <ProjectReference Include="..\..\src\StellarAdmin.UI\StellarAdmin.UI.csproj" />
   </ItemGroup>
   <Target Name="Tailwind" BeforeTargets="Build">
     <Exec

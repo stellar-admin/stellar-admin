@@ -1,0 +1,106 @@
+using AdminPlayground.Data;
+using AdminPlayground.Resources.Categories;
+using AdminPlayground.Resources.Customers;
+using AdminPlayground.Resources.Departments;
+using AdminPlayground.Resources.FieldEditors;
+using AdminPlayground.Resources.FormLayouts;
+using AdminPlayground.Resources.Products;
+using AdminPlayground.Resources.Roles;
+using AdminPlayground.Resources.Users;
+using Microsoft.EntityFrameworkCore;
+using StellarAdmin;
+using StellarAdmin.Sidebar;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder
+    .Services.AddDefaultIdentity<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+    })
+    .AddRoles<ApplicationRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<CustomerDataSource>();
+builder.Services.AddStellarAdmin(admin =>
+{
+    admin.AddStylesheet(
+        "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap"
+    );
+    admin.AddStylesheet("~/css/playground.css");
+
+    admin.ConfigureResourceLabels(labels =>
+    {
+        labels.Create(create =>
+        {
+            create.Title = resource => $"Add new {resource.SingularLabel}";
+            create.SubmitLabel = resource => $"Add {resource.SingularLabel}";
+        });
+    });
+
+    admin.AddUserResource();
+    admin.AddRoleResource();
+    admin.AddDepartmentResource();
+    admin.AddCustomerResource();
+    admin.AddProductResource();
+    admin.AddCategoryResource();
+    admin.AddFieldEditorGallery();
+    admin.AddFormLayoutGallery();
+
+    admin.AddSidebarLink(
+        "Sales report",
+        SidebarLinkTarget.Page("/Reports"),
+        link =>
+        {
+            link.Group = "Commerce";
+            link.Order = 30;
+        }
+    );
+    admin.AddSidebarLink("Privacy policy", SidebarLinkTarget.Action("Privacy", "Home"));
+    admin.AddSidebarLink(
+        "ASP.NET Core docs",
+        SidebarLinkTarget.Url("https://learn.microsoft.com/aspnet/core/"),
+        link => link.OpenInNewTab = true
+    );
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapStaticAssets();
+app.MapStellarAdmin();
+
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+app.MapRazorPages().WithStaticAssets();
+
+app.Run();

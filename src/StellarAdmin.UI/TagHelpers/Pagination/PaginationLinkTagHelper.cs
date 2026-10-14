@@ -1,0 +1,64 @@
+﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+
+namespace StellarAdmin.UI;
+
+/// <summary>
+///     A link to a specific page within the pagination.
+/// </summary>
+[HtmlTargetElement("sa-pagination-link")]
+public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
+{
+    private readonly IHtmlGenerator _htmlGenerator;
+
+    public PaginationLinkTagHelper(IHtmlGenerator htmlGenerator)
+    {
+        _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
+    }
+
+    /// <summary>
+    ///     Whether this link represents the current page.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>.
+    /// </remarks>
+    [HtmlAttributeName("is-active")]
+    public bool? IsActive { get; set; }
+
+    /// <summary>
+    ///     The size of the rendered pagination button.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ButtonSize.Default" />.
+    /// </remarks>
+    [HtmlAttributeName("size")]
+    public ButtonSize? Size { get; set; }
+
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    {
+        var effectiveIsActive = IsActive ?? false;
+        var effectiveSize = Size ?? ButtonSize.Default;
+
+        output.TagName = "a";
+        output.TagMode = TagMode.StartTagAndEndTag;
+
+        await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
+
+        if (effectiveIsActive)
+        {
+            output.Attributes.SetAttribute("aria-current", "page");
+        }
+        output.Attributes.SetAttribute("data-slot", "pagination-link");
+        output.Attributes.SetAttribute("data-active", effectiveIsActive ? "true" : "false");
+        output.Attributes.SetAttribute(
+            "class",
+            JoinCssClasses("sa-pagination-link", output.GetUserSuppliedClass())
+        );
+
+        ButtonRenderingHelper.RenderAttributes(
+            output,
+            effectiveIsActive ? ButtonVariant.Outline : ButtonVariant.Ghost,
+            effectiveSize
+        );
+    }
+}

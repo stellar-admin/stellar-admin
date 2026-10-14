@@ -1,0 +1,16 @@
+@using AdminPlayground.Resources.FormLayouts
+@using StellarAdmin.UI
+@addTagHelper *, StellarAdmin.UI
+@model GalleryBookingStatus
+
+@* The index cell for [UIHint("BookingStatus")]: a grid display template beside the display template *@
+@{
+    var variant = Model switch
+    {
+        GalleryBookingStatus.Confirmed => BadgeVariant.Default,
+        GalleryBookingStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Secondary,
+    };
+}
+
+<sa-badge variant="@variant">@Model</sa-badge>

@@ -71,7 +71,7 @@ export function controlBar(extra = "") {
   bar.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (btn?.dataset.setTheme) {
-      link.href = `../../src/StellarAdmin.TagHelpers/wwwroot/stellar-admin.${btn.dataset.setTheme}.css`;
+      link.href = `../../src/StellarAdmin.UI/wwwroot/stellar-admin.${btn.dataset.setTheme}.css`;
       mark(btn.dataset.setTheme);
     } else if (btn?.hasAttribute("data-toggle-dark")) {
       document.documentElement.classList.toggle("dark");
