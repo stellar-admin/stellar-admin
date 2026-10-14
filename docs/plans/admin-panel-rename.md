@@ -1,6 +1,6 @@
 # Package rename: StellarAdmin and StellarAdmin.UI
 
-Status: proposed (2026-10-14).
+Status: in progress (phases 1–7 done 2026-10-14; follow-ups wait for the first release).
 
 "Dashboard" suggests observability, while the package is a CRUD admin panel. Instead of renaming it to AdminPanel (the first draft of this plan), the panel takes the brand name: the `StellarAdmin` package is the admin panel, and the component library becomes `StellarAdmin.UI`, absorbing `StellarAdmin.Core`. Applications register the panel with a single `AddStellarAdmin` call, and component-only applications call `AddStellarAdminUI`.
 
@@ -96,6 +96,14 @@ The release workflow switches its publishable set from Core and TagHelpers to `S
 7. **Website** (separate worktree of the website repository, decision 14). Update package names, `@addTagHelper`, `_content` paths and install snippets, re-export docs demos and inline examples, and build the site.
 
 Stop for review after phase 6, and again after phase 7. No commits unless requested.
+
+## Follow-ups
+
+With the panel taking the brand name, StellarAdmin is the admin panel and StellarAdmin.UI is the component layer it builds on, not a sibling product. These places still present the earlier suite of two products and change with the panel's first release, once there is panel documentation to lead with:
+
+1. The website's home page hero describes StellarAdmin as a collection of components. The home page and `/docs` should lead with the admin panel, with `/docs/ui` as a secondary section.
+2. `skills/README.md` opens with "StellarAdmin has two products" and lists the panel skill beside the UI skill. It should present the panel skill first and the UI skill as the component layer.
+3. The product `readme.md` is the StellarAdmin.UI quick start. It should introduce the admin panel first and point to StellarAdmin.UI for component-only applications.
 
 ## Progress
 
