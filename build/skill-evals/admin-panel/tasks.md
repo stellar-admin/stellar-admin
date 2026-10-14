@@ -1,6 +1,6 @@
 # Admin panel evaluation tasks
 
-Five tasks for measuring the admin panel consumer skills: run once without the skills for a baseline, then again with them. Each task runs in its own copy of the Voyager app (see [README](README.md)). The **Prompt** is given to the agent verbatim; the **Checks** are for grading and are never shown to it.
+Six tasks for measuring the admin panel consumer skills: run once without the skills for a baseline, then again with them. Each task runs in its own copy of the Voyager app (see [README](README.md)). The **Prompt** is given to the agent verbatim; the **Checks** are for grading and are never shown to it.
 
 Grade each check as pass, partial or fail, and record the API mistakes behind every non-pass: invented members, wrong namespaces, wrong ordering, configuration that compiles but does nothing, and workarounds where a built-in feature exists.
 
@@ -91,3 +91,19 @@ Starts from: `task-5` (StellarAdmin installed).
 3. An index override view for the resource (under `Areas/StellarAdmin/Views/`) whose model is `ResourceIndexPageViewModel<Booking>` and which renders `<sa-index-page model="Model" />` below the summary, rather than rebuilding the grid.
 4. The admin area view imports register the `StellarAdmin` and `StellarAdmin.UI` tag helpers where the override needs them.
 5. The summary count is correct and the list keeps search, sorting and paging.
+
+## Task 6: branding and user menu
+
+Starts from: `task-6` (StellarAdmin installed).
+
+**Prompt**
+
+> Brand the admin panel as "Voyager Travel". The designers will add a wordmark at wwwroot/img/voyager-wordmark.svg, and a version for dark mode at wwwroot/img/voyager-wordmark-dark.svg; show it at the top of the admin sidebar. In the sidebar's user menu, show each user's role under their name, add a "My bookings" link to the app's /MyBookings page above the log out option, and send users to the app's home page after they log out.
+
+**Checks**
+
+1. `admin.ConfigureBranding(...)` with `Title = "Voyager Travel"` and `Logo = BrandingLogo.Wordmark("~/img/voyager-wordmark.svg", "~/img/voyager-wordmark-dark.svg")`, and no `Subtitle` (a wordmark with a subtitle throws at startup).
+2. `menu.DescriptionClaimType = ClaimTypes.Role`.
+3. "My bookings" added as `UserMenuItem.Page("My bookings", "/MyBookings")` (or `Url`) before the seeded log out item, which is kept: `menu.Items.Insert(0, ...)`, or a replacement list that includes `UserMenuItem.Logout()`.
+4. `menu.Logout(logout => logout.RedirectPath = "~/")`; no hand-written logout endpoint or view override.
+5. Behaviour: signed in through `/dev-login`, the sidebar shows the wordmark images with "Voyager Travel" as their alt text, the role under the name and the "My bookings" link above Log out; Log out lands on `/`, and the user is signed out.

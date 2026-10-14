@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sidebar branding</title>
+<!-- Prototype: the admin panel sidebar's brand header and user menu as ConfigureBranding and
+     ConfigureUserMenu would render them. Each column pairs the builder code with its rendering. Uses the
+     built library bundle; build it first (npm run build in src/StellarAdmin.UI/Client). -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css">
+<link rel="stylesheet" id="theme">
+<script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+<style>
+  /* Candidate: written as the library would write it. */
+  @layer sa.components {
+    .sa-sidebar-brand-mark {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: calc(8 * var(--sa-unit));
+      aspect-ratio: 1;
+      border-radius: var(--sa-radius-item);
+      background: var(--sa-color-accent-fill);
+      color: var(--sa-color-on-accent);
+      & > svg { width: calc(4 * var(--sa-unit)); height: calc(4 * var(--sa-unit)); }
+    }
+
+    .sa-sidebar-brand-logo {
+      flex-shrink: 0;
+      width: calc(8 * var(--sa-unit));
+      height: calc(8 * var(--sa-unit));
+      object-fit: contain;
+    }
+
+    .sa-sidebar-brand-text {
+      display: grid;
+      flex: 1;
+      min-width: 0;
+      line-height: 1.25;
+      text-align: start;
+    }
+
+    .sa-sidebar-brand-title {
+      overflow: hidden;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sa-sidebar-brand-subtitle {
+      overflow: hidden;
+      color: color-mix(in oklab, currentColor 62%, transparent);
+      font-size: var(--sa-text-xs);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* A wordmark replaces the mark and the text; the dark variant swaps in under .dark. */
+    .sa-sidebar-brand-wordmark {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: calc(7 * var(--sa-unit));
+      object-fit: contain;
+      object-position: left center;
+      &[data-scheme="dark"] { display: none; }
+      .dark &[data-scheme="light"]:has(+ [data-scheme="dark"]) { display: none; }
+      .dark &[data-scheme="dark"] { display: block; }
+    }
+
+    .sa-sidebar-user-menu-logout { width: 100%; }
+  }
+
+  /* Prototype scaffolding, not extracted. */
+  body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+  .page { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin: 0 0 4px; }
+  .lede { color: var(--sa-color-ink-muted); font-size: 0.875rem; margin: 0 0 16px; max-width: 90ch; }
+  section { margin-top: 32px; }
+  h2 { font-size: 0.9375rem; font-weight: 600; margin: 0 0 2px; }
+  h2 + p { color: var(--sa-color-ink-muted); font-size: 0.8125rem; margin: 0 0 12px; max-width: 90ch; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 20px; }
+  figure { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .frame { width: 16rem; height: 380px; border: 1px solid var(--sa-color-line); border-radius: 8px; overflow: hidden; }
+  .frame.short { height: auto; }
+  figcaption { font-size: 0.8125rem; font-weight: 600; }
+  figcaption small { display: block; font-weight: 400; color: var(--sa-color-ink-muted); margin-top: 2px; }
+  pre { margin: 0; padding: 10px 12px; border-radius: 6px; background: var(--sa-color-surface-sunken); font: 0.75rem/1.5 "JetBrains Mono", monospace; white-space: pre-wrap; }
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 50; display: flex; gap: 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--sa-color-line); border-radius: 8px; background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay); font-size: 0.8125rem; }
+  .controls label { display: inline-flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Sidebar branding and user menu</h1>
+  <p class="lede">How <code>ConfigureBranding</code> and <code>ConfigureUserMenu</code> would render. With no branding configured, the header shows only the title, the app name made readable ("Voyager.Admin" becomes "Voyager Admin"), with no logo. The user menu shows only when someone is signed in. Open the user menus to see the items and Log out.</p>
+  <div id="sections"></div>
+</div>
+
+<div class="controls">
+  <label>Theme
+    <select id="theme-select">
+      <option value="">Default</option>
+      <option value="ops">Ops</option>
+      <option value="soft">Soft</option>
+      <option value="ledger">Ledger</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="dark"> Dark</label>
+</div>
+
+<script>
+  const svg = d => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const icons = {
+    compass: svg(`<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/>`),
+    dashboard: svg(`<rect height="9" rx="1" width="7" x="3" y="3"/><rect height="5" rx="1" width="7" x="14" y="3"/><rect height="9" rx="1" width="7" x="14" y="12"/><rect height="5" rx="1" width="7" x="3" y="16"/>`),
+    chevrons: svg(`<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>`),
+    badge: svg(`<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/>`),
+    logout: svg(`<path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>`),
+  };
+
+  // Header markup per branding configuration.
+  const brandLink = inner => `
+    <div data-slot="sidebar-header" data-sidebar="header" class="sa-sidebar-header">
+      <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+          <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">${inner}</a>
+        </li>
+      </ul>
+    </div>`;
+  const text = (title, subtitle) => `<span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">${title}</span>${subtitle ? `<span class="sa-sidebar-brand-subtitle">${subtitle}</span>` : ""}</span>`;
+  const brand = {
+    none: () => brandLink(text("Voyager Admin")),
+    title: () => brandLink(text("Voyager Travel")),
+    subtitle: () => brandLink(text("Voyager Travel", "Admin Console")),
+    icon: () => brandLink(`<span class="sa-sidebar-brand-mark" aria-hidden="true">${icons.compass}</span>${text("Voyager Travel", "Admin Console")}`),
+    logo: () => brandLink(`<img class="sa-sidebar-brand-logo" src="sidebar-branding/voyager-mark.svg" alt="">${text("Voyager Travel", "Admin Console")}`),
+    wordmark: () => brandLink(`<img class="sa-sidebar-brand-wordmark" data-scheme="light" src="sidebar-branding/voyager-wordmark.svg" alt="Voyager Travel"><img class="sa-sidebar-brand-wordmark" data-scheme="dark" src="sidebar-branding/voyager-wordmark-dark.svg" alt="Voyager Travel">`),
+  };
+
+  const nav = `
+    <div data-slot="sidebar-content" data-sidebar="content" class="sa-sidebar-content">
+      <div data-slot="sidebar-group" data-sidebar="group" class="sa-sidebar-group">
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="sa-sidebar-group-content">
+          <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+            ${["Dashboard", "Bookings", "Destinations"].map(label => `
+            <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+              <a href="#" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="default" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-default sa-sidebar-menu-button-variant-default">${icons.dashboard}<span>${label}</span></a>
+            </li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    </div>`;
+
+  // Footer markup per signed-in user.
+  let menuId = 0;
+  const avatar = user => `<span data-slot="avatar" data-size="default" class="sa-avatar">${user.picture
+    ? `<img alt="" class="sa-avatar-image" data-slot="avatar-image" src="${user.picture}">`
+    : `<span class="sa-avatar-fallback" data-slot="avatar-fallback">${user.initials}</span>`}</span>`;
+  const userText = user => `<span class="sa-sidebar-brand-text"><span class="sa-sidebar-brand-title">${user.name}</span>${user.email ? `<span class="sa-sidebar-brand-subtitle">${user.email}</span>` : ""}</span>`;
+  const menuItem = (icon, label) => `<a href="#" role="menuitem" tabindex="-1" data-slot="dropdown-menu-item" data-variant="default" class="sa-dropdown-menu-item">${icon}${label}</a>`;
+  const footer = (user, { items = [], logout = true } = {}) => {
+    if (!user) return "";
+    const id = `user-menu-${++menuId}`;
+    return `
+    <div data-slot="sidebar-footer" data-sidebar="footer" class="sa-sidebar-footer">
+      <ul data-slot="sidebar-menu" data-sidebar="menu" class="sa-sidebar-menu">
+        <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="sa-sidebar-menu-item">
+          <button popovertarget="${id}" aria-haspopup="menu" type="button" data-slot="sidebar-menu-button" data-sidebar="menu-button" data-size="lg" class="sa-sidebar-menu-button sa-sidebar-menu-button-size-lg sa-sidebar-menu-button-variant-default">
+            ${avatar(user)}${userText(user)}${icons.chevrons}
+          </button>
+          <sel-dropdown-menu class="sa-dropdown-menu-content sa-dropdown-menu-content-logical anchored-right-span-top" style="width: 14rem" id="${id}" popover="" role="menu" data-slot="dropdown-menu-content" data-anchor-side="right" data-side="right">
+            <div class="sa-dropdown-menu-label" data-slot="dropdown-menu-label" style="display: flex; gap: 8px; align-items: center; font-weight: 400">${avatar(user)}${userText(user)}</div>
+            ${items.length ? `<div role="separator" data-slot="dropdown-menu-separator" class="sa-dropdown-menu-separator"></div>
+            <div role="group" data-slot="dropdown-menu-group">${items.map(([icon, label]) => menuItem(icons[icon], label)).join("")}</div>` : ""}
+            ${logout ? `<div role="separator" data-slot="dropdown-menu-separator" class="sa-dropdown-menu-separator"></div>
+            <form method="post" action="#" onsubmit="event.preventDefault()">
+              <button type="submit" role="menuitem" tabindex="-1" data-slot="dropdown-menu-item" data-variant="destructive" class="sa-dropdown-menu-item sa-sidebar-user-menu-logout">${icons.logout}Log out</button>
+            </form>` : ""}
+          </sel-dropdown-menu>
+        </li>
+      </ul>
+    </div>`;
+  };
+
+  const sidebar = (header, foot = "") => `
+    <div class="sa-sidebar" data-slot="sidebar" style="display: contents">
+      <div class="sa-sidebar-inner" data-slot="sidebar-inner" data-sidebar="sidebar">${header}${nav}<div style="flex: 1"></div>${foot}</div>
+    </div>`;
+
+  const amelia = { name: "Amelia Hart", email: "amelia@voyager.travel", initials: "AH" };
+  const sections = [
+    {
+      title: "1. Brand header",
+      note: "One header per branding configuration. Every column uses the same signed-in user menu.",
+      cols: [
+        ["Nothing configured", "Title only, no logo (decision 5). The title is the prettified app name.", brand.none(), `// no ConfigureBranding call`],
+        ["Title", "", brand.title(), `admin.ConfigureBranding(branding =>
+    branding.Title = "Voyager Travel");`],
+        ["Title and subtitle", "", brand.subtitle(), `admin.ConfigureBranding(branding =>
+{
+    branding.Title = "Voyager Travel";
+    branding.Subtitle = "Admin Console";
+});`],
+        ["Icon", "An icon from the configured icon pack, in an accent tile.", brand.icon(), `admin.ConfigureBranding(branding =>
+{
+    branding.Title = "Voyager Travel";
+    branding.Subtitle = "Admin Console";
+    branding.Logo = BrandingLogo.Icon("compass");
+});`],
+        ["Logo", "A square image replaces the tile; title and subtitle stay.", brand.logo(), `admin.ConfigureBranding(branding =>
+{
+    branding.Title = "Voyager Travel";
+    branding.Subtitle = "Admin Console";
+    branding.Logo = BrandingLogo.Image("~/img/logo.svg");
+});`],
+        ["Wordmark", "One image replaces the mark and the text. Title is the alt text and still sets the browser title. Toggle Dark to see the dark variant.", brand.wordmark(), `admin.ConfigureBranding(branding =>
+{
+    branding.Title = "Voyager Travel";
+    branding.Logo = BrandingLogo.Wordmark(
+        "~/img/wordmark.svg",
+        "~/img/wordmark-dark.svg");
+});`],
+      ].map(([t, s, h, code]) => ({ t, s, html: sidebar(h, footer(amelia, { items: [["badge", "Account"]] })), code })),
+    },
+    {
+      title: "2. User menu",
+      note: "The name, description and picture come from the signed-in user's claims. Items and Log out come from ConfigureUserMenu.",
+      cols: [
+        ["Defaults", "Name and email claims, initials avatar. Log out is built in.", sidebar(brand.subtitle(), footer(amelia)), `// no ConfigureUserMenu call:
+// name from ClaimTypes.Name, email from ClaimTypes.Email,
+// Items = [UserMenuItem.Logout()], posting to the built-in endpoint`],
+        ["Picture claim and items", "", sidebar(brand.subtitle(), footer({ ...amelia, picture: "../../docs/DocsSamples/wwwroot/avatars/avatar-1.jpg" }, { items: [["badge", "Account"]] })), `admin.ConfigureUserMenu(menu =>
+{
+    menu.AvatarClaimType = "picture";
+    menu.Items.Insert(0, UserMenuItem.Page(
+        "Account", "/Account/Manage/Index", "Identity",
+        item => item.Icon = "badge-check"));
+    menu.Items.Insert(1, UserMenuItem.Separator());
+});`],
+        ["No email claim", "The description line drops away.", sidebar(brand.subtitle(), footer({ name: "amelia.hart", initials: "AM" })), `// a principal with only a name claim`],
+        ["Without log out", "The list replaced without a logout item. The menu still shows the user and items.", sidebar(brand.subtitle(), footer(amelia, { items: [["badge", "Account"]], logout: false })), `admin.ConfigureUserMenu(menu =>
+    menu.Items =
+    [
+        UserMenuItem.Page(
+            "Account", "/Account/Manage/Index", "Identity",
+            item => item.Icon = "badge-check"),
+    ]);`],
+        ["Not signed in", "No footer at all.", sidebar(brand.subtitle()), `// anonymous request, or no authentication`],
+      ].map(([t, s, html, code]) => ({ t, s, html, code })),
+    },
+  ];
+
+  const escape = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  document.getElementById("sections").innerHTML = sections.map(section => `
+    <section>
+      <h2>${section.title}</h2><p>${section.note}</p>
+      <div class="cols">${section.cols.map(col => `
+        <figure>
+          <figcaption>${col.t}${col.s ? `<small>${col.s}</small>` : ""}</figcaption>
+          <div class="frame">${col.html}</div>
+          <pre>${escape(col.code)}</pre>
+        </figure>`).join("")}
+      </div>
+    </section>`).join("");
+
+  const params = new URLSearchParams(location.search);
+  const themeSelect = document.getElementById("theme-select");
+  const applyTheme = () => {
+    const link = document.getElementById("theme");
+    if (themeSelect.value) link.href = `../../util/theme-check/presets/${themeSelect.value}.css`;
+    else link.removeAttribute("href");
+  };
+  themeSelect.value = params.get("theme") ?? "";
+  themeSelect.addEventListener("change", applyTheme);
+  applyTheme();
+  const dark = document.getElementById("dark");
+  dark.checked = params.get("mode") === "dark";
+  const applyDark = () => document.documentElement.classList.toggle("dark", dark.checked);
+  dark.addEventListener("change", applyDark);
+  applyDark();
+</script>
+</body>
+</html>

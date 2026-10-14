@@ -41,6 +41,28 @@ builder.Services.AddStellarAdmin(admin =>
     );
     admin.AddStylesheet("~/css/playground.css");
 
+    admin.ConfigureBranding(branding =>
+    {
+        branding.Title = "Voyager Travel";
+        branding.Subtitle = "Admin Playground";
+        branding.Logo = BrandingLogo.Icon("compass");
+    });
+
+    // Log in through Identity UI to see the user menu; Log out signs out of the Identity cookie
+    admin.ConfigureUserMenu(menu =>
+    {
+        menu.Items.Insert(
+            0,
+            UserMenuItem.Page(
+                "Account",
+                "/Account/Manage/Index",
+                "Identity",
+                item => item.Icon = "badge-check"
+            )
+        );
+        menu.Items.Insert(1, UserMenuItem.Separator());
+    });
+
     admin.ConfigureResourceLabels(labels =>
     {
         labels.Create(create =>

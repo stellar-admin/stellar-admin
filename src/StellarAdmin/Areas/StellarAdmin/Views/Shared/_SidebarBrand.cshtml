@@ -1,0 +1,51 @@
+@using StellarAdmin.Sidebar
+@model SidebarBrandModel
+
+@* The sidebar header: a logo and the title. Replace this partial at the same path to render your own header. *@
+<sa-sidebar-menu>
+    <sa-sidebar-menu-item>
+        <sa-sidebar-menu-link href="@Model.Href" size="SidebarMenuLinkSize.Large">
+            @switch (Model.Logo)
+            {
+                case IconBrandingLogo icon:
+                    <span class="sa-sidebar-brand-mark" aria-hidden="true">
+                        <sa-icon name="@icon.Name"/>
+                    </span>
+                    break;
+                case ImageBrandingLogo image:
+                    await RenderImage("sa-sidebar-brand-logo", image.Path, image.DarkPath, "");
+                    break;
+                case WordmarkBrandingLogo wordmark:
+                    await RenderImage("sa-sidebar-brand-wordmark", wordmark.Path, wordmark.DarkPath, Model.Title);
+                    break;
+            }
+            @if (Model.Logo is not WordmarkBrandingLogo)
+            {
+                <span class="sa-sidebar-brand-text">
+                    <span class="sa-sidebar-brand-title">@Model.Title</span>
+                    @if (Model.Subtitle is not null)
+                    {
+                        <span class="sa-sidebar-brand-subtitle">@Model.Subtitle</span>
+                    }
+                </span>
+            }
+        </sa-sidebar-menu-link>
+    </sa-sidebar-menu-item>
+</sa-sidebar-menu>
+
+@{
+    // Dark mode is a class rather than a media query, so a dark variant renders as a second image the
+    // stylesheet swaps in
+    async Task RenderImage(string className, string path, string? darkPath, string alt)
+    {
+        if (darkPath is null)
+        {
+            <img class="@className" src="@Url.Content(path)" alt="@alt"/>
+        }
+        else
+        {
+            <img class="@className" data-scheme="light" src="@Url.Content(path)" alt="@alt"/>
+            <img class="@className" data-scheme="dark" src="@Url.Content(darkPath)" alt="@alt"/>
+        }
+    }
+}

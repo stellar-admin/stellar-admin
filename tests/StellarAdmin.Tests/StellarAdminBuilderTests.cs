@@ -39,4 +39,22 @@ public class StellarAdminBuilderTests
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
     }
+
+    [Test]
+    public async Task ConfigureBranding_WithWordmarkAndSubtitle_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var sut = new ServiceCollection().AddStellarAdmin();
+
+        // Act
+        Action act = () =>
+            sut.ConfigureBranding(branding =>
+            {
+                branding.Subtitle = "Admin Console";
+                branding.Logo = BrandingLogo.Wordmark("~/img/wordmark.svg");
+            });
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+    }
 }

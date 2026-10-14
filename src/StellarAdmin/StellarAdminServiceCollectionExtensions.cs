@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using StellarAdmin.Infrastructure.Routing;
+using StellarAdmin.Sidebar;
 using StellarAdmin.UI;
 
 namespace StellarAdmin;
@@ -22,6 +24,8 @@ public static class StellarAdminServiceCollectionExtensions
                     typeof(LowercaseParameterTransformer)
             );
             services.AddStellarAdminUI();
+            services.TryAddSingleton<BrandingResolver>();
+            services.TryAddSingleton<UserMenuResolver>();
 
             var admin = new StellarAdminBuilder(services, GetOrCreateOptions(services));
             admin.AddApplicationPart(typeof(StellarAdminServiceCollectionExtensions).Assembly);

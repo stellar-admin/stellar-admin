@@ -1,11 +1,12 @@
 @inject StellarAdminOptions ProOptions
+@inject StellarAdmin.Sidebar.BrandingResolver Branding
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@(ViewData["Title"] is string title ? $"{title} - StellarAdmin" : "StellarAdmin")</title>
-    <meta name="description" content="StellarAdmin">
+    <title>@(ViewData["Title"] is string title ? $"{title} - {Branding.Title}" : Branding.Title)</title>
+    <meta name="description" content="@Branding.Title">
     @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
     @foreach (var stylesheet in ProOptions.Stylesheets)
@@ -26,7 +27,7 @@
         <sa-app-header>
             <sa-sidebar-trigger></sa-sidebar-trigger>
             <sa-app-header-separator/>
-            <span class="text-sm font-medium">StellarAdmin</span>
+            <span class="text-sm font-medium">@Branding.Title</span>
         </sa-app-header>
         @RenderBody()
     </sa-sidebar-inset>

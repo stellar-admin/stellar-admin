@@ -39,6 +39,10 @@ All `RequireAuthorization` methods take the same arguments as endpoint `RequireA
 - There are no per-action rules (for example, everyone can view but only managers can delete). To restrict an action, leave it disabled for that resource, or enforce the rule in a custom handler or data source and return `ValidationFailed`.
 - Scopes are not access control. Restrict which records a user can see with EF global query filters or a custom data source.
 
+## Signing out
+
+The sidebar's user menu shows the signed-in user from their claims and ends with a log out item, which posts to the panel's logout endpoint (`/stellaradmin/logout`, protected by an antiforgery token and the panel's own requirements). Without configured schemes it signs out of the default authenticate scheme. An app that signs in through several schemes lists them in sign-out order, local cookies first and OpenID Connect last; see [log out](sidebar.md#log-out) in the sidebar reference, which also covers the claims the menu reads.
+
 ## Checking it
 
 Sign in as a user without the role and request `/stellaradmin/{slug}` and the host page directly: both must be refused (403, or a redirect to the access-denied path with cookie authentication), and the sidebar must not show them. Then sign in with the role and confirm 200.

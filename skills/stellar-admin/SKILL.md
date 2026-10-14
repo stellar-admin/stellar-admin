@@ -28,6 +28,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Foreign keys, lookups, many-to-many, create-from-lookup | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
+| Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
 | Replace or extend a generated page, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureResourceLabels` | [customization](references/customization.md) |
 
@@ -120,7 +121,7 @@ builder.Services.AddStellarAdmin(admin =>
 | `StellarAdmin.Resources.Displays` | StellarAdmin | Displays such as `NumberDisplay`, `BadgeDisplay`, `FieldDisplay` |
 | `StellarAdmin.Resources.Builders` | StellarAdmin | Builder types, for helper methods such as `void BookingFields(ResourceFieldsBuilder<Booking> fields)` |
 | `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult` |
-| `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget` |
+| `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |
 | `StellarAdmin.UI` | StellarAdmin.UI | Shared enums: `FormSectionLayout`, `BadgeVariant`, `FieldOrientation`, `DetailsVariant`, `RadioGroupFlow`, `SliderMarkLabels` |
 
@@ -141,6 +142,8 @@ These come from agents building real tasks without this skill. Each compiled or 
 - **App views in the admin area need their own `_ViewImports.cshtml`.** Create `Areas/StellarAdmin/Views/_ViewImports.cshtml` with `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`, `@addTagHelper *, StellarAdmin.UI` and `@addTagHelper *, StellarAdmin`. Without it `<sa-index-page>` renders as literal text and the page looks empty, with no error.
 - **Override models are public types.** Use `ResourceIndexPageViewModel<T>` from `StellarAdmin.Areas.StellarAdmin.ViewModels`, not interfaces from `.Internal`.
 - **Style admin and host pages with `sa-*` components**, not Tailwind utilities: the shipped CSS contains only the classes its components use, so `p-4`, `text-gray-700` and similar render unstyled. Use `sa-page-container`, `sa-page-header`, `sa-card`, `sa-table`, `sa-alert` and friends (stellar-admin-ui skill).
+- **The user menu needs ASP.NET Core authentication.** It shows only for a signed-in user, from their claims; an app without authentication, or an anonymous request, has no user menu. Don't build a placeholder menu in a view override.
+- **Log out signs out of the default authenticate scheme only.** With several schemes (a cookie and OpenID Connect, or Identity's external cookie), list them in order in `menu.Logout(logout => logout.AuthenticationSchemes.Add(...))`, or point the item at Identity UI's logout with `UserMenuItem.Logout("~/Identity/Account/Logout")` ([sidebar](references/sidebar.md#log-out)).
 - **Host pages join the admin layout with `Layout = StellarAdminLayouts.Default`** and protect themselves with `[Authorize]`; a sidebar link's `RequireAuthorization` only hides the link ([sidebar](references/sidebar.md)).
 - **Read-only form fields are display fields.** Use `AddDisplayField`/`AddDetails`; there is no `ReadOnly()` builder method ([fields](references/fields.md)).
 - **New `DateOnly`/`DateTime` fields default to 0001-01-01**, and generated values (references, codes) don't come from hidden fields: set both in `create.UseFactory(() => new Booking { ... })`.
@@ -155,7 +158,8 @@ Say so rather than inventing an API:
 
 - Custom row or page actions and bulk actions (row actions are view, edit and delete).
 - Index filters other than scope tabs.
-- Icons on sidebar items and links; sidebar group ordering; changing the sidebar's placeholder branding and user menu.
+- Icons on sidebar items and links; sidebar group ordering.
+- Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).
 - File and image upload editors.

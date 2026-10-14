@@ -1,0 +1,106 @@
+@using StellarAdmin.Sidebar
+@model SidebarUserMenuModel
+
+@* The signed-in user and their menu. Replace this partial at the same path to render your own user menu. *@
+<sa-sidebar-menu>
+    <sa-sidebar-menu-item>
+        <sa-dropdown-menu id="sa-user-menu">
+            <sa-sidebar-menu-button size="SidebarMenuButtonSize.Large" popovertarget="sa-user-menu"
+                                     aria-haspopup="menu">
+                @{ await RenderUser(); }
+                <sa-icon name="chevrons-up-down" class="ml-auto"/>
+            </sa-sidebar-menu-button>
+            <sa-dropdown-menu-content class="w-56" position="PositionArea.RightSpanTop">
+                <sa-dropdown-menu-label class="p-0 font-normal">
+                    <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        @{ await RenderUser(); }
+                    </div>
+                </sa-dropdown-menu-label>
+                @if (Model.Items.Count > 0 && Model.Items[0] is not SeparatorUserMenuItem)
+                {
+                    <sa-dropdown-menu-separator/>
+                }
+                @foreach (var item in Model.Items)
+                {
+                    switch (item)
+                    {
+                        case SeparatorUserMenuItem:
+                            <sa-dropdown-menu-separator/>
+                            break;
+                        case UrlUserMenuItem urlItem:
+                            <sa-dropdown-menu-item href="@Url.Content(urlItem.Href)">
+                                @{ await RenderText(urlItem.Icon, urlItem.Text); }
+                            </sa-dropdown-menu-item>
+                            break;
+                        case PageUserMenuItem pageItem:
+                            <sa-dropdown-menu-item asp-page="@pageItem.PageName" asp-area="@(pageItem.Area ?? "")">
+                                @{ await RenderText(pageItem.Icon, pageItem.Text); }
+                            </sa-dropdown-menu-item>
+                            break;
+                        case ActionUserMenuItem actionItem:
+                            <sa-dropdown-menu-item asp-action="@actionItem.ActionName"
+                                                   asp-controller="@actionItem.ControllerName"
+                                                   asp-area="@(actionItem.Area ?? "")">
+                                @{ await RenderText(actionItem.Icon, actionItem.Text); }
+                            </sa-dropdown-menu-item>
+                            break;
+                        case LogoutUserMenuItem logoutItem:
+                            @* The menu dispatches a click for the mouse and the keyboard alike, and the admin panel's
+                               script submits the item's form on that click *@
+                            if (logoutItem.Path is null)
+                            {
+                                <form method="post" asp-area="StellarAdmin" asp-controller="Logout" asp-action="Index">
+                                    @{ await RenderLogout(logoutItem); }
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" action="@Url.Content(logoutItem.Path)" asp-antiforgery="true">
+                                    @{ await RenderLogout(logoutItem); }
+                                </form>
+                            }
+                            break;
+                    }
+                }
+            </sa-dropdown-menu-content>
+        </sa-dropdown-menu>
+    </sa-sidebar-menu-item>
+</sa-sidebar-menu>
+
+@{
+    async Task RenderUser()
+    {
+        @* Razor passes an empty src for null, so the initials fallback needs the attribute left out *@
+        if (Model.AvatarUrl is null)
+        {
+            <sa-avatar name="@Model.Name"/>
+        }
+        else
+        {
+            <sa-avatar name="@Model.Name" src="@Model.AvatarUrl"/>
+        }
+        <div class="grid flex-1 text-left text-sm leading-tight">
+            <span class="truncate font-semibold">@Model.Name</span>
+            @if (Model.Description is not null)
+            {
+                <span class="truncate text-xs text-muted-foreground">@Model.Description</span>
+            }
+        </div>
+    }
+
+    async Task RenderText(string? icon, string text)
+    {
+        if (icon is not null)
+        {
+            <sa-icon name="@icon"/>
+        }
+        @text
+    }
+
+    async Task RenderLogout(LogoutUserMenuItem logout)
+    {
+        <sa-dropdown-menu-item variant="DropdownMenuItemVariant.Destructive" data-user-menu-logout="">
+            @{ await RenderText(logout.Icon, logout.Text); }
+        </sa-dropdown-menu-item>
+    }
+}

@@ -297,4 +297,78 @@
             color: var(--sa-color-ink-muted);
         }
     }
+
+    /* The sidebar header: an icon in an accent tile or a square image beside the title and subtitle, or a wordmark
+       that replaces them. */
+    .sa-sidebar-brand-mark {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: calc(8 * var(--sa-unit));
+        aspect-ratio: 1;
+        border-radius: var(--sa-radius-item);
+        background: var(--sa-color-accent-fill);
+        color: var(--sa-color-on-accent);
+
+        & > svg {
+            width: calc(4 * var(--sa-unit));
+            height: calc(4 * var(--sa-unit));
+        }
+    }
+
+    .sa-sidebar-brand-logo {
+        flex-shrink: 0;
+        width: calc(8 * var(--sa-unit));
+        height: calc(8 * var(--sa-unit));
+        object-fit: contain;
+    }
+
+    .sa-sidebar-brand-text {
+        display: grid;
+        flex: 1;
+        min-width: 0;
+        line-height: 1.25;
+        text-align: start;
+    }
+
+    .sa-sidebar-brand-title {
+        overflow: hidden;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sa-sidebar-brand-subtitle {
+        overflow: hidden;
+        color: color-mix(in oklab, currentColor 62%, transparent);
+        font-size: var(--sa-text-xs);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sa-sidebar-brand-wordmark {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: calc(7 * var(--sa-unit));
+        object-fit: contain;
+        object-position: left center;
+    }
+
+    /* Dark mode is a class, which a picture element's media queries cannot follow, so a logo with a dark variant
+       renders both images and shows one. */
+    :is(.sa-sidebar-brand-logo, .sa-sidebar-brand-wordmark) {
+        &[data-scheme="dark"] {
+            display: none;
+        }
+
+        .dark &[data-scheme="light"] {
+            display: none;
+        }
+
+        .dark &[data-scheme="dark"] {
+            display: block;
+        }
+    }
 }

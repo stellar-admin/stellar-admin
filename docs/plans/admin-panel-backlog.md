@@ -21,7 +21,6 @@ Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmi
 | View page display fields | The view fields builder has no `AddDetails`, unlike the form fields builder. |
 | Localization | Labels are configured through `ConfigureResourceLabels` delegates, without `IStringLocalizer` integration. |
 | Per-action authorization | Requirements apply per panel, resource and link; not per action. Also deferred in [dashboard-authorization](archive/dashboard-authorization.md). |
-| Sidebar branding and user menu | `Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml` hard-codes "Voyager Travel / Admin Console" and a placeholder user, "Amelia Hart", with Account, Billing, Notifications and Log out items; no setting changes them. Found by the skills baseline install run. |
 | Sidebar group order | Groups appear where their label is first registered; there is no group order setting. |
 | Index content slot | `sa-index-page` has no slot between the page header and the grid, so an override adding a summary has to place it above the header. |
 | Global search | The command palette searches navigation labels only, not records. |

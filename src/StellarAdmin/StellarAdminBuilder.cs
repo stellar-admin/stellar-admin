@@ -194,6 +194,29 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
+    ///     Configures the admin panel's name and the sidebar header: its title, subtitle and logo.
+    /// </summary>
+    /// <param name="configure">A callback for configuring the <see cref="BrandingBuilder" />.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="InvalidOperationException">The logo is a wordmark and a subtitle is set.</exception>
+    public StellarAdminBuilder ConfigureBranding(Action<BrandingBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new BrandingBuilder(_options.Branding));
+
+        // A wordmark replaces the title and subtitle, so it has nowhere to show a subtitle
+        if (_options.Branding is { Logo: WordmarkBrandingLogo, Subtitle: not null })
+        {
+            throw new InvalidOperationException(
+                "A wordmark logo replaces the title and cannot be combined with a subtitle."
+            );
+        }
+
+        return this;
+    }
+
+    /// <summary>
     ///     Configures the StellarAdmin UI components the admin panel renders with: icons,
     ///     menu defaults and form defaults.
     /// </summary>
@@ -204,6 +227,23 @@ public class StellarAdminBuilder
         ArgumentNullException.ThrowIfNull(configure);
 
         configure(new StellarAdminUIBuilder(Services));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the sidebar's user menu: the claims it shows, its items and the logout endpoint.
+    /// </summary>
+    /// <remarks>
+    ///     The user menu shows only for an authenticated user, so it requires ASP.NET Core authentication.
+    /// </remarks>
+    /// <param name="configure">A callback for configuring the <see cref="UserMenuBuilder" />.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public StellarAdminBuilder ConfigureUserMenu(Action<UserMenuBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(new UserMenuBuilder(_options.UserMenu));
 
         return this;
     }

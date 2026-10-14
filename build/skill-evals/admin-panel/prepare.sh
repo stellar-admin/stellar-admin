@@ -29,8 +29,8 @@ cat > "$run/nuget.config" <<XML
 </configuration>
 XML
 
-# Task 1 starts without StellarAdmin; tasks 2-5 start with it installed
-for task in 1 2 3 4 5; do
+# Task 1 starts without StellarAdmin; tasks 2-6 start with it installed
+for task in 1 2 3 4 5 6; do
   app="$run/task-$task"
   rm -rf "$app"
   dotnet new webapp -n Voyager -o "$app" --no-https > /dev/null

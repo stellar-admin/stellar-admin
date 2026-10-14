@@ -19,5 +19,9 @@ public class StellarAdminOptions
 
     internal List<object> AuthorizationMetadata { get; } = [];
 
+    internal BrandingOptions Branding { get; } = new();
+
     internal List<SidebarLinkOptions> SidebarLinks { get; } = [];
+
+    internal UserMenuOptions UserMenu { get; } = new();
 }

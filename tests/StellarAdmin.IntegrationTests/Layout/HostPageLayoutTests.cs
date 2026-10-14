@@ -23,7 +23,7 @@ public class HostPageLayoutTests
         var document = await client.GetDocumentAsync("/SalesReport");
 
         // Assert
-        await Assert.That(document.Title).IsEqualTo("Sales report - StellarAdmin");
+        await Assert.That(document.Title).IsEqualTo("Sales report - Stellar Admin Integration Tests");
         await Assert.That(document.QuerySelector("#sales-report")).IsNotNull();
         await Assert.That(document.QuerySelector("#--command-palette")).IsNotNull();
         await Assert.That(document.QuerySelector("template#admin-sheet-template")).IsNotNull();

@@ -24,7 +24,8 @@ Copy this list and tick it off:
 - [ ] 2. builder.Services.AddStellarAdmin(...) with at least one resource
 - [ ] 3. app.MapStellarAdmin() after UseAuthentication/UseAuthorization, with static assets mapped
 - [ ] 4. Sign-in or role protection, if the app has authentication
-- [ ] 5. Built, run, and /stellaradmin checked in a real request
+- [ ] 5. The panel's name (and logo, if the app has one); theme, if wanted
+- [ ] 6. Built, run, and /stellaradmin checked in a real request
 ```
 
 ## 1. Packages
@@ -113,7 +114,24 @@ builder.Services.AddStellarAdmin(admin =>
 
 `RequireAuthorization` takes the same arguments as endpoint `RequireAuthorization`: none, policy names, an `AuthorizationPolicy`, `IAuthorizeData` or a policy-builder callback. `app.MapStellarAdmin().RequireAuthorization("Staff")` works too. Anonymous users get the authentication challenge; signed-in users without access get the forbidden response. With cookie authentication those are redirects to `LoginPath` and `AccessDeniedPath` (`/Account/Login` and `/Account/AccessDenied` by default), so the app needs those pages or other paths configured in `AddCookie(options => ...)`. Per-resource rules are in the stellar-admin skill's authorization reference.
 
-## 5. Theme (optional)
+## 5. Name, logo and theme
+
+The sidebar header, the app header and the browser title show the application name made readable (`Voyager.Web` becomes "Voyager Web"). Set the app's real name, and its logo if it has one:
+
+```csharp
+using StellarAdmin.Sidebar;
+
+builder.Services.AddStellarAdmin(admin =>
+{
+    admin.ConfigureBranding(branding =>
+    {
+        branding.Title = "Voyager Travel";
+        branding.Logo = BrandingLogo.Image("~/img/logo.svg");   // or BrandingLogo.Icon("compass"), or BrandingLogo.Wordmark(...)
+    });
+});
+```
+
+When the app has authentication, the sidebar footer shows the signed-in user with a log out item that signs out of the default authenticate scheme. Apps with several schemes (OpenID Connect) or with Identity UI configure it with `ConfigureUserMenu`; see the stellar-admin skill's sidebar reference.
 
 The panel uses the default theme. To change the look, add a theme file of CSS variables and any web font it needs:
 
@@ -135,10 +153,9 @@ Building is not enough: configuration errors surface on the first request. Run t
 2. `/stellaradmin/{slug}` shows the grid with the configured columns and rows.
 3. `/stellaradmin/{slug}/create` and `/stellaradmin/{slug}/edit/{id}` render and save, for resources that allow them.
 4. The page is styled. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
+5. The sidebar header shows the app's name. When signed in, the sidebar footer shows the user, and Log out signs them out.
 
 Options validation errors (for example `AllowView` without fields, or a default sort on a column that isn't sortable) fail every panel request with a 500 and name the problem in the log.
-
-The sidebar header currently shows placeholder branding and a placeholder user menu, with no setting to change them. This is a known limitation; don't search for an option.
 
 ## Troubleshooting
 
