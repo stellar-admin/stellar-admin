@@ -19,9 +19,13 @@ for project in StellarAdmin.UI StellarAdmin StellarAdmin.EntityFrameworkCore; do
 done
 
 cp "$repo/global.json" "$run/"
+# A run-local package folder: the global cache would keep serving an earlier run's 0.0.1-eval packages
 cat > "$run/nuget.config" <<XML
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
+  <config>
+    <add key="globalPackagesFolder" value="packages" />
+  </config>
   <packageSources>
     <add key="local" value="feed" />
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />

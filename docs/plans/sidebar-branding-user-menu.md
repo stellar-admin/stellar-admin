@@ -1,6 +1,6 @@
 # Sidebar branding and user menu
 
-Status: implemented (2026-10-15); the skill evaluation rerun is outstanding. API and visuals agreed in conversation; see [Implementation notes](#implementation-notes) for where the code differs from the design below.
+Status: implemented and evaluated (2026-10-15). API and visuals agreed in conversation; see [Implementation notes](#implementation-notes) for where the code differs from the design below.
 
 The admin panel's sidebar view (`src/StellarAdmin/Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml`) hard-codes the header ("Voyager Travel / Admin Console" with a compass tile) and a placeholder user menu ("Amelia Hart" with Account, Billing, Notifications and Log out items that do nothing). The layout (`_Layout.cshtml`) hard-codes "StellarAdmin" in the browser title, the description meta and the app header. This plan makes both configurable. It picks up the "Sidebar branding and user menu" item from the [admin panel backlog](admin-panel-backlog.md).
 
@@ -187,6 +187,35 @@ Completed on 2026-10-15:
 Not done:
 
 - The signed-in user menu was not checked in the playground browser, since signing in would write to the tracked `app.db`; the integration tests cover its markup.
-- The admin panel skill evaluation tasks have not been rerun, including the new task 6.
+
+### Skill evaluation rerun
+
+Run on 2026-10-15, as in phase 3 of the [admin panel skills plan](admin-panel-skills.md): fresh run directories from `prepare.sh`, the three skills in each task's `.claude/skills/`, one fresh agent per task on Sonnet 5.5 and Haiku 4.5, and task 6 also without the skills for a baseline. Every app was graded by building, running and probing it with `probe.sh` and curl: form posts for tasks 1 and 3, and for task 6 a sign-in through `/dev-login` and a log out post with the page's antiforgery token.
+
+The first task 6 runs were void: restores took `0.0.1-eval` from the global NuGet cache, filled by the 2026-10-14 run, so the agents got packages without the branding API. `prepare.sh` now writes a run-local `globalPackagesFolder` into the run's `nuget.config`, and task 6 was rerun on fresh packages. Tasks 1–5 kept the 2026-10-14 packages; nothing they use changed since.
+
+| Task | Sonnet with skills | Haiku with skills | Sonnet baseline | Haiku baseline |
+| --- | --- | --- | --- | --- |
+| 1 Install (6) | 6 | 5: booking `CustomerId` left a number input | | |
+| 2 Index (8) | 8 | 8 | | |
+| 3 Forms (7) | 7 | 7 | | |
+| 4 Sidebar and auth (7) | 7 | 7 | | |
+| 5 View and override (5) | 5 | 5 | | |
+| 6 Branding and user menu (5) | 5 | 5 | 5 | 4.5: shows roles through a `roles` claim added to the fixture's `/dev-login`, rather than the role claim |
+| Total (38) | 38 | 37 | | |
+
+| Model | Tool calls per task | Time per task |
+| --- | --- | --- |
+| Sonnet with skills | 8–15 | 0.9–1.6 min |
+| Haiku with skills | 36–82 | 2.0–4.9 min |
+| Sonnet baseline, task 6 | 17 | 1.5 min |
+| Haiku baseline, task 6 | 80 | 6.1 min |
+
+Task 6 barely separates the runs: the package's XML documentation was enough for both baselines, and the skill mainly saves Haiku time. Haiku's task 3 edit page again puts a third section in the two-column grid, so Trip and Customer are not side by side there (a pass against the written check, as in phase 3).
+
+Product findings from the agents' reports, not acted on:
+
+- The description shows the first matching claim only, so a user with two roles shows one. The Sonnet baseline joined the roles with an `IClaimsTransformation`.
+- `UserMenuItem.Page` for a page that doesn't exist renders the item without a link and without a warning; two agents switched to `Url`.
 
 The prototype was rendered in headless Chromium in light and dark on 2026-10-14.
