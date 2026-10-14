@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GenerateRazorAssemblyInfo>false</GenerateRazorAssemblyInfo>
-    <Description>StellarAdmin Dashboard: integrated admin application with navigation, resource management and custom pages for ASP.NET Core MVC and Razor Pages</Description>
-    <PackageTags>admin;dashboard;crud;resources</PackageTags>
+    <Description>StellarAdmin: integrated admin panel with navigation, resource management and custom pages for ASP.NET Core MVC and Razor Pages</Description>
+    <PackageTags>admin;admin-panel;crud;resources</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

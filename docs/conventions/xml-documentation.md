@@ -1,6 +1,6 @@
 # XML documentation conventions
 
-Conventions for XML doc comments in all StellarAdmin libraries. Adopted 2026-08-10, after the identity resource layer refactor forced a pass over every comment in what is now `StellarAdmin.Dashboard.Identity`.
+Conventions for XML doc comments in all StellarAdmin libraries. Adopted 2026-08-10, after the identity resource layer refactor forced a pass over every comment in what was then `StellarAdmin.Dashboard.Identity` (since removed).
 
 ## The rule
 

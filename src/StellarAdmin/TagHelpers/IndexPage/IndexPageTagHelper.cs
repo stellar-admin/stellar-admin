@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.UI;
 
-namespace StellarAdmin.TagHelpers;
+namespace StellarAdmin;
 
 /// <summary>
 ///     Renders the standard index page for the current index view model.

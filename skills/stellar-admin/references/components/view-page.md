@@ -6,7 +6,7 @@ generated: true
 
 # ViewPage
 
-Package: `StellarAdmin.Dashboard` (MIT). See [setup](../setup.md#resource-packages) for registration and source availability.
+Package: `StellarAdmin` (MIT). See [setup](../setup.md#resource-packages) for registration and source availability.
 
 Renders the standard view page for the current view page model.
 

@@ -12,7 +12,7 @@ using StellarAdmin.UI;
 namespace StellarAdmin;
 
 /// <summary>
-///     Provides a fluent API to configure StellarAdmin Dashboard.
+///     Provides a fluent API to configure the StellarAdmin admin panel.
 /// </summary>
 public class StellarAdminBuilder
 {
@@ -57,7 +57,7 @@ public class StellarAdminBuilder
                     return;
                 }
 
-                // The StellarAdmin dashboard assemblies opt out of MVC's automatic application part
+                // The StellarAdmin admin panel assemblies opt out of MVC's automatic application part
                 // discovery (see their AssemblyInfo.cs), so their controllers and compiled
                 // views are registered here.
                 manager.ApplicationParts.Add(new AssemblyPart(assembly));
@@ -209,7 +209,7 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires an authenticated user for every Dashboard page.
+    ///     Requires an authenticated user for every admin panel page.
     /// </summary>
     public StellarAdminBuilder RequireAuthorization()
     {
@@ -217,7 +217,7 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every Dashboard page to satisfy an authorization policy.
+    ///     Requires every admin panel page to satisfy an authorization policy.
     /// </summary>
     /// <param name="policy">The authorization policy.</param>
     /// <exception cref="ArgumentNullException"></exception>
@@ -229,7 +229,7 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every Dashboard page to satisfy an authorization policy built by a delegate.
+    ///     Requires every admin panel page to satisfy an authorization policy built by a delegate.
     /// </summary>
     /// <param name="configurePolicy">The delegate that builds the authorization policy.</param>
     /// <exception cref="ArgumentNullException"></exception>
@@ -243,7 +243,7 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every Dashboard page to satisfy the given authorization data.
+    ///     Requires every admin panel page to satisfy the given authorization data.
     /// </summary>
     /// <param name="authorizeData">
     ///     The authorization data. When empty, an authenticated user is required.
@@ -257,7 +257,7 @@ public class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every Dashboard page to satisfy the named authorization policies.
+    ///     Requires every admin panel page to satisfy the named authorization policies.
     /// </summary>
     /// <param name="policyNames">
     ///     The authorization policy names. When empty, an authenticated user is required.

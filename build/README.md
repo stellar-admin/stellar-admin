@@ -2,17 +2,17 @@
 
 Run the **Release** workflow in GitHub Actions, select the product branch or tag, and enter a package version using SemVer without a leading `v` or build metadata. Leave **publish** unchecked for a dry run. Release orchestration lives directly in [the workflow](../.github/workflows/release.yml), with individual Actions steps.
 
-Every run builds and validates Core, TagHelpers, Dashboard, and EF Core, discovers and runs all solution TUnit unit and integration test projects, runs consumer reference checks, tests a temporary consumer app, and uploads all eight package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
+Every run builds and validates StellarAdmin.UI, StellarAdmin, and StellarAdmin.EntityFrameworkCore, discovers and runs all solution TUnit unit and integration test projects, runs consumer reference checks, tests a temporary consumer app, and uploads all six package/symbol files. Source Link validation remains enabled. `build/smoke-test.sh` contains the consumer test.
 
 ## Test discovery
 
-Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual test-project list or legacy runner step remains. The active suites cover Core, TagHelpers, Dashboard configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. DashboardPlayground demonstrates host-owned Identity resources; the former dedicated Identity package and its playground have been removed. See the [resource redesign baseline](../docs/development.md#resource-redesign-baseline).
+Both [Build and Test](../.github/workflows/ci.yml) and [Release](../.github/workflows/release.yml) use `dotnet test --solution StellarAdmin.slnx --no-build --configuration Release --minimum-expected-tests 1` after building. `global.json` selects Microsoft.Testing.Platform; new TUnit projects added to the solution participate automatically. No individual test-project list or legacy runner step remains. The active suites cover StellarAdmin.UI, the admin panel configuration and HTTP scenarios, and EF Core SQLite HTTP scenarios. AdminPlayground demonstrates host-owned Identity resources; the former dedicated Identity package and its playground have been removed. See the [resource redesign baseline](../docs/development.md#resource-redesign-baseline).
 
 ## Publishing
 
-Check **publish** only for an authorized release. The publishing job downloads the verified build artifact and publishes **StellarAdmin.Core** and **StellarAdmin.TagHelpers**, including their symbols. The Dashboard and EF Core packages remain artifacts. The job creates one product tag at the built SHA and a GitHub release containing only the four published package/symbol files. It uses the product `GITHUB_TOKEN`; no cross-repository App is required. Writes and OIDC permissions are confined to this job.
+Check **publish** only for an authorized release. The publishing job downloads the verified build artifact and publishes **StellarAdmin.UI**, including its symbols. The StellarAdmin and EF Core packages remain artifacts. The job creates one product tag at the built SHA and a GitHub release containing only the two published package/symbol files. It uses the product `GITHUB_TOKEN`; no cross-repository App is required. Writes and OIDC permissions are confined to this job.
 
-Publishing runs are serialized with cancellation disabled. Version checks use SemVer precedence and inspect product tags plus NuGet versions for both published packages. A normal run must advance the version. A draft release reserves the version before the NuGet push, with a hidden marker binding the source SHA, workflow run ID, and immutable package artifact ID. The release becomes public only after package pushes and release-asset uploads succeed. Dry runs create no draft, tag, or NuGet publication.
+Publishing runs are serialized with cancellation disabled. Version checks use SemVer precedence and inspect product tags plus NuGet versions for the published package. A normal run must advance the version. A draft release reserves the version before the NuGet push, with a hidden marker binding the source SHA, workflow run ID, and immutable package artifact ID. The release becomes public only after package pushes and release-asset uploads succeed. Dry runs create no draft, tag, or NuGet publication.
 
 ## Recovering a failed publish
 
@@ -26,7 +26,7 @@ The product repository needs:
 
 - A `nuget-org` GitHub environment, with the intended protection rules.
 - An environment secret `NUGET_USER` naming the NuGet.org user.
-- A NuGet trusted policy for GitHub owner `stellar-admin`, repository `stellar-admin`, workflow `release.yml`, and environment `nuget-org`. Limit its packages to Core and TagHelpers. Core has not previously been published, so allow new package creation as well as new versions. [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+- A NuGet trusted policy for GitHub owner `stellar-admin`, repository `stellar-admin`, workflow `release.yml`, and environment `nuget-org`. Limit its packages to StellarAdmin.UI. StellarAdmin.UI has not previously been published, so allow new package creation as well as new versions. [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
 - Repository variable `RELEASE_PUBLISHING_ENABLED=true`, set only after configuring NuGet trust and disabling the workspace publisher.
 
 The workspace workflow is replaced with a retirement notice and must be disabled in GitHub before enabling this gate. Retain old credentials/trust until confirming they have no remaining consumers; do not use the workspace for new releases. The separate website is not a release input.

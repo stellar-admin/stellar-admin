@@ -1,4 +1,4 @@
-# StellarAdmin Dashboard component catalog
+# StellarAdmin component catalog
 
 | Component | Tags | Summary |
 |-----------|------|---------|

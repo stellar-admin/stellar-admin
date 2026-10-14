@@ -6,17 +6,17 @@ Consumer guidance is organized by product; see the [skills overview](../../skill
 
 ## Product boundaries
 
-- [stellar-admin-tag-helpers](../../skills/stellar-admin-tag-helpers/SKILL.md) teaches applications to use the UI library. Setup, forms, layout, theming, and component documentation live under its `references/` directory and are loaded as needed.
-- [stellar-admin-theme](../../skills/stellar-admin-theme/SKILL.md) creates and changes theme files of CSS variables for either product: the workflow in `SKILL.md`, and `references/theme-variables.md` (the theme variable reference, description-to-theme variables guidance, Ledger, Ops and Soft as worked examples, the theme builder link format). It is handwritten: keep it in step with `src/StellarAdmin.TagHelpers/Client/css/theme-variables.json` and the theme fixtures in `util/theme-check/presets/`, and the link format with the website's theme builder. The Tag Helpers skill's theming guide covers linking a theme, fonts, dark mode and tokens, and names this skill for creating one.
-- `skills/stellar-admin-dashboard/` preserves Dashboard component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
-- Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Dashboard consumers customizing UI markup can also use the Tag Helpers skill; avoid duplicating the UI catalog.
+- [stellar-admin-ui](../../skills/stellar-admin-ui/SKILL.md) teaches applications to use the UI library. Setup, forms, layout, theming, and component documentation live under its `references/` directory and are loaded as needed.
+- [stellar-admin-theme](../../skills/stellar-admin-theme/SKILL.md) creates and changes theme files of CSS variables for either product: the workflow in `SKILL.md`, and `references/theme-variables.md` (the theme variable reference, description-to-theme variables guidance, Ledger, Ops and Soft as worked examples, the theme builder link format). It is handwritten: keep it in step with `src/StellarAdmin.UI/Client/css/theme-variables.json` and the theme fixtures in `util/theme-check/presets/`, and the link format with the website's theme builder. The UI skill's theming guide covers linking a theme, fonts, dark mode and tokens, and names this skill for creating one.
+- `skills/stellar-admin/` preserves admin panel component references and setup notes. It has no `SKILL.md` and is not an installable skill yet. Add its entry point when useful admin-panel workflows are ready to document.
+- Keep each skill self-contained with its own license and references. Do not link to sibling files as required dependencies. Admin panel consumers customizing UI markup can also use the UI skill; avoid duplicating the UI catalog.
 
 The Claude plugin manifests and installation README have been removed. Installation instructions and compatibility guidance live in the [consumer overview](../../skills/README.md). Installation verification and CI closeout are recorded in [consumer skill consolidation](../plans/archive/consumer-skill-consolidation.md).
 
 ## Source ownership and validation
 
-- `skills/stellar-admin-tag-helpers/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.TagHelpers`.
-- `skills/stellar-admin-dashboard/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.Dashboard`. These currently cover FormPage and IndexPage.
+- `skills/stellar-admin-ui/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin.UI`.
+- `skills/stellar-admin/references/components/*.md` and its `components-index.md` are generated only from `StellarAdmin`. These currently cover FormPage, IndexPage and ViewPage.
 - `util/SkillsGenerator` generates both product catalogs with curated samples. It retains shared source lookup for inherited attributes and enum values, while routing output by the component's source project.
 - Component regions between `<!-- structure:begin -->` and `<!-- structure:end -->` are hand-authored and preserved by generation.
 - Other reference guides and `SKILL.md` files are handwritten. Keep them consistent with the website and actual public APIs. Forms, layout, and theming remain reference documents within the UI skill.

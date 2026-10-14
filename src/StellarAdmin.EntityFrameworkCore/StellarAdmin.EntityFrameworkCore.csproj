@@ -5,7 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <GenerateRazorAssemblyInfo>false</GenerateRazorAssemblyInfo>
-    <Description>StellarAdmin Dashboard resource screens for Entity Framework Core</Description>
+    <Description>StellarAdmin admin panel resource screens for Entity Framework Core</Description>
+    <PackageTags>admin;admin-panel;crud;entity-framework-core</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

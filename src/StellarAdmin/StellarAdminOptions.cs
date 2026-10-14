@@ -3,7 +3,7 @@ using StellarAdmin.Sidebar;
 namespace StellarAdmin;
 
 /// <summary>
-///     Options for StellarAdmin Dashboard.
+///     Options for the StellarAdmin admin panel.
 /// </summary>
 public class StellarAdminOptions
 {

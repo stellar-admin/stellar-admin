@@ -15,7 +15,7 @@ A fixture is one file, `util/theme-check/presets/<name>.css`; adding a theme is 
 
 - The header comment's first line is `Theme fixture: <Label>`, with a one-paragraph description under it. The pickers, the docs export and the theme builder read both.
 - Theme variables only, on `:root` inside `@layer sa.theme`. No foundation tokens, no component rules: a look the theme variables cannot express is a missing theme variable (below), not an override.
-- The font is the fixture's `--sa-font-sans`. Use one of the manifest's font choices (`src/StellarAdmin.TagHelpers/Client/css/theme-variables.json`), written exactly as its `value`; that is how the samples and the website find the family to load. Another stack works but loads no web font.
+- The font is the fixture's `--sa-font-sans`. Use one of the manifest's font choices (`src/StellarAdmin.UI/Client/css/theme-variables.json`), written exactly as its `value`; that is how the samples and the website find the family to load. Another stack works but loads no web font.
 - Set dark-mode values only where the dark mode should differ (the `-dark` theme variables); the formulas derive the rest.
 - Contrast is the formulas' job. Don't set `--sa-on-accent` to fix a colour; change the accent.
 
@@ -30,7 +30,7 @@ Add a theme variable only when a design need recurs across themes and no existin
 A theme variable touches:
 
 1. `Client/css/tokens.css`: the theme variable's default, and the foundation tokens it feeds (or the component rules that read it through `var()`, for a structural switch).
-2. `Client/css/theme-variables.json`: its manifest entry (group, label, meaning, type, range or choices, default; `optional` and `follows` for an optional theme variable). `npm run build:css` in `src/StellarAdmin.TagHelpers/Client` fails when the manifest and the stylesheets disagree; run it directly, since `dotnet build` can hide a failed CSS build.
+2. `Client/css/theme-variables.json`: its manifest entry (group, label, meaning, type, range or choices, default; `optional` and `follows` for an optional theme variable). `npm run build:css` in `src/StellarAdmin.UI/Client` fails when the manifest and the stylesheets disagree; run it directly, since `dotnet build` can hide a failed CSS build.
 3. [docs/design/tokens.md](../../../docs/design/tokens.md): its row in the theme variable tables.
 4. The consumer theme skill's [theme variable reference](../../../skills/stellar-admin-theme/references/theme-variables.md), and its description-to-variables table when the theme variable answers a common description.
 5. `util/theme-check/random-theme.mjs`, so the random themes exercise it.

@@ -1,14 +1,14 @@
-﻿# StellarAdmin Tag Helpers
+﻿# StellarAdmin
 
 <div align="center">
     <img src="assets/logo/stellar-admin-logo.svg">
 </div>
 
-StellarAdmin Tag Helpers is a collection of beautifully designed components based on [shadcn/ui](https://ui.shadcn.com/) which you can use to create CRUD screens in [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet) MVC and Razor Pages applications.
+StellarAdmin.UI is a collection of beautifully designed components based on [shadcn/ui](https://ui.shadcn.com/) which you can use to create CRUD screens in [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet) MVC and Razor Pages applications.
 
 <div align="center">
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![NuGet](https://img.shields.io/nuget/v/StellarAdmin.TagHelpers)](https://www.nuget.org/packages/StellarAdmin.TagHelpers/)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![NuGet](https://img.shields.io/nuget/v/StellarAdmin.UI)](https://www.nuget.org/packages/StellarAdmin.UI/)
 
 </div>
 
@@ -16,10 +16,10 @@ StellarAdmin Tag Helpers is a collection of beautifully designed components base
 
 ### 1. Install package
 
-Install the `StellarAdmin.TagHelpers` NuGet package:
+Install the `StellarAdmin.UI` NuGet package:
 
 ```bash
-dotnet add package StellarAdmin.TagHelpers
+dotnet add package StellarAdmin.UI
 ```
 
 ### 2. Register services
@@ -27,19 +27,18 @@ dotnet add package StellarAdmin.TagHelpers
 Update your `Program.cs` (or `Startup.cs`) to register the StellarAdmin services.
 
 ```cs
-using StellarAdmin;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddStellarAdminUI();
 ```
 
 ### 3. Update imports
 
-Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and import the `StellarAdmin.TagHelpers` namespace.
+Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and import the `StellarAdmin.UI` namespace.
 
 ```razor
-@using StellarAdmin.TagHelpers
-@addTagHelper *, StellarAdmin.TagHelpers
+@using StellarAdmin.UI
+@addTagHelper *, StellarAdmin.UI
 ```
 
 ### 4. Link the stylesheet and JavaScript file
@@ -51,8 +50,8 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 <html lang="en">
 <head>
     ...
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-    <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 </head>
 <body>
     ...
@@ -79,23 +78,23 @@ Documentation and code examples for all the Tag Helpers [can be found online](ht
 
 ## Using StellarAdmin with AI agents
 
-The [StellarAdmin Tag Helpers skill](skills/stellar-admin-tag-helpers/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-tag-helpers/references/`. The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours (`--skill stellar-admin-theme`). Dashboard guidance is planned separately; see the [consumer skills overview](skills/README.md).
+The [StellarAdmin UI skill](skills/stellar-admin-ui/SKILL.md) teaches agents how to build MVC and Razor Pages UIs in `.cshtml` files, with component references and workflows for forms, layout, and theming. Its supporting documentation is bundled under `skills/stellar-admin-ui/references/`. The [StellarAdmin theme skill](skills/stellar-admin-theme/SKILL.md) writes theme files from a description or brand colours (`--skill stellar-admin-theme`). Admin panel guidance is planned separately; see the [consumer skills overview](skills/README.md).
 
 From your application's project directory, install the skill with [Vercel's skills CLI](https://github.com/vercel-labs/skills#readme):
 
 ```bash
-npx skills add stellar-admin/stellar-admin --skill stellar-admin-tag-helpers
+npx skills add stellar-admin/stellar-admin --skill stellar-admin-ui
 ```
 
-The skill is maintained alongside StellarAdmin; its references may include changes newer than your installed NuGet package. See [installation and compatibility](skills/README.md#install-the-tag-helpers-skill) for prerequisites, agent selection, and local-checkout installation.
+The skill is maintained alongside StellarAdmin; its references may include changes newer than your installed NuGet package. See [installation and compatibility](skills/README.md#install-the-ui-skill) for prerequisites, agent selection, and local-checkout installation.
 
-`StellarAdmin.Core` supplies the shared `AddStellarAdmin()` entry point, builder, and icon services in `StellarAdmin.Icons`. It is installed transitively with TagHelpers or Dashboard; no separate installation is needed.
+`StellarAdmin.UI` also supplies the icon services in `StellarAdmin.UI.Icons`; configure icons, menus, and forms through `AddStellarAdminUI(ui => ...)`.
 
 ## Resource and admin packages
 
-This repository also contains `StellarAdmin.Dashboard` (admin shell and resource screens) and `StellarAdmin.Dashboard.EntityFrameworkCore` (EF Core resources). Both are MIT licensed. Register the integrated admin application with `AddStellarAdmin().AddDashboard()`. The DashboardPlayground demonstrates Identity user and role management through ordinary resources. There is no paid tier. The packages are available from source; their NuGet publication is a separate release step.
+This repository also contains `StellarAdmin` (the admin panel: admin shell and resource screens) and `StellarAdmin.EntityFrameworkCore` (EF Core resources). Both are MIT licensed. Register the admin panel with `AddStellarAdmin(admin => ...)` and map it with `MapStellarAdmin()`; it registers StellarAdmin.UI itself, and `admin.ConfigureUI(...)` configures it. The AdminPlayground demonstrates Identity user and role management through ordinary resources. There is no paid tier. The packages are available from source; their NuGet publication is a separate release step.
 
-The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, DashboardPlayground, and the Dashboard and EF Core resource integration tests.
+The full solution includes a unified `docs/DocsSamples` app, the website demo exporter, AdminPlayground, and the admin panel and EF Core resource integration tests.
 
 ## Contributing
 

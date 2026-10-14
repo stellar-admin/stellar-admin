@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Smoke-tests the three active packed StellarAdmin packages as a consumer:
-# scaffolds a throwaway Razor Pages app, installs the package from a folder feed, renders
+# Smoke-tests the packed StellarAdmin.UI and StellarAdmin packages as a consumer:
+# scaffolds a throwaway Razor Pages app, installs the packages from a folder feed, renders
 # a page with tag helpers, and asserts the page and the RCL static web assets are served.
 #
 # Usage: build/smoke-test.sh <version> <artifacts-dir> [port]
@@ -13,7 +13,7 @@ set -euo pipefail
 VERSION="${1:?usage: smoke-test.sh <version> <artifacts-dir> [port]}"
 ARTIFACTS="$(cd "${2:?usage: smoke-test.sh <version> <artifacts-dir> [port]}" && pwd)"
 PORT="${3:-5299}"
-PACKAGES=(StellarAdmin.Core StellarAdmin.TagHelpers StellarAdmin.Dashboard)
+PACKAGES=(StellarAdmin.UI StellarAdmin)
 
 WORK="$(mktemp -d)"
 APP="$WORK/SmokeApp"
@@ -47,7 +47,7 @@ fi
 step "Scaffolding consumer app in $APP"
 dotnet new webapp --name SmokeApp --output "$APP" --no-restore
 
-# Package sources: the folder feed for the package under test, nuget.org for everything
+# Package sources: the folder feed for the packages under test, nuget.org for everything
 # else. Isolated from the user's global NuGet.Config so only these two sources apply.
 cat > "$APP/nuget.config" <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -58,41 +58,37 @@ cat > "$APP/nuget.config" <<XML
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
   <packageSourceMapping>
-    <packageSource key="artifacts"><package pattern="StellarAdmin.*" /></packageSource>
+    <packageSource key="artifacts"><package pattern="StellarAdmin" /><package pattern="StellarAdmin.*" /></packageSource>
     <packageSource key="nuget.org"><package pattern="*" /></packageSource>
   </packageSourceMapping>
 </configuration>
 XML
 
 for PACKAGE in "${PACKAGES[@]}"; do
-  [[ "$PACKAGE" == StellarAdmin.Core ]] && continue
   step "Adding $PACKAGE $VERSION from the folder feed"
   dotnet add "$APP" package "$PACKAGE" --version "$VERSION" --no-restore
 done
 
-# Wire the package up exactly as the readme's quick start describes.
+# Wire the packages up exactly as the readme's quick start describes.
 cat > "$APP/Program.cs" <<'CS'
 using StellarAdmin;
-using StellarAdmin.Icons;
-using StellarAdmin.TagHelpers;
-using StellarAdmin.Dashboard;
+using StellarAdmin.UI;
+using StellarAdmin.UI.Icons;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
-builder.Services.AddStellarAdmin()
-    .ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Stacked)
-    .AddTagHelpers();
-builder.Services.AddStellarAdmin().AddDashboard();
+builder.Services.AddStellarAdmin(admin =>
+    admin.ConfigureUI(ui => ui.ConfigureForms(forms => forms.SectionLayout = FormSectionLayout.Stacked)));
 
 var app = builder.Build();
 if (app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<StellarAdminFormsOptions>>()
     .Value.SectionLayout != FormSectionLayout.Stacked)
     throw new InvalidOperationException("Form configuration was not applied.");
 var icons = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<IconOptions>>().Value;
-if (typeof(IconOptions).Assembly.GetName().Name != "StellarAdmin.Core"
+if (typeof(IconOptions).Assembly.GetName().Name != "StellarAdmin.UI"
     || !icons.TryGetIcon("check", out var checkIcon)
     || checkIcon!.Shapes.Count == 0)
-    throw new InvalidOperationException("Core icon definitions were not packaged correctly.");
+    throw new InvalidOperationException("Icon definitions were not packaged correctly.");
 app.UseStaticFiles();
 app.UseRouting();
 app.MapRazorPages();
@@ -100,9 +96,9 @@ app.Run();
 CS
 
 cat >> "$APP/Pages/_ViewImports.cshtml" <<'RAZOR'
-@using StellarAdmin.TagHelpers
-@addTagHelper *, StellarAdmin.TagHelpers
-@addTagHelper *, StellarAdmin.Dashboard
+@using StellarAdmin.UI
+@addTagHelper *, StellarAdmin.UI
+@addTagHelper *, StellarAdmin
 RAZOR
 
 cat > "$APP/Pages/Shared/_Layout.cshtml" <<'RAZOR'
@@ -111,9 +107,9 @@ cat > "$APP/Pages/Shared/_Layout.cshtml" <<'RAZOR'
 <head>
     <meta charset="utf-8" />
     <title>Smoke</title>
-    <link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" />
-    <link rel="stylesheet" href="/_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css" />
-    <script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js"></script>
+    <link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" />
+    <link rel="stylesheet" href="/_content/StellarAdmin/stellar-admin-panel.css" />
+    <script defer src="/_content/StellarAdmin.UI/stellar-admin.js"></script>
 </head>
 <body>
     @RenderBody()
@@ -126,7 +122,7 @@ cat > "$APP/Pages/Index.cshtml" <<'RAZOR'
 @model IndexModel
 <sa-alert id="smoke-alert">
     <sa-alert-title>Smoke test alert</sa-alert-title>
-    <sa-alert-description>Rendered from the packed StellarAdmin.TagHelpers.</sa-alert-description>
+    <sa-alert-description>Rendered from the packed StellarAdmin.UI.</sa-alert-description>
 </sa-alert>
 <sa-button id="smoke-button">Smoke button</sa-button>
 <sa-data-grid items='@(new[] { new { Name = "Smoke row" } })'>
@@ -138,7 +134,7 @@ step "Restoring and building"
 dotnet restore "$APP"
 dotnet build "$APP" --no-restore -c Release
 
-# Confirm the restore really resolved the package under test at the requested version.
+# Confirm the restore really resolved each package under test at the requested version.
 for PACKAGE in "${PACKAGES[@]}"; do
   grep -q "\"$PACKAGE/$VERSION\"" "$APP/obj/project.assets.json" \
     || fail "project.assets.json does not reference $PACKAGE/$VERSION"
@@ -183,11 +179,11 @@ assert_asset() {
   fi
   echo "ok $path ($(wc -c <"$file") bytes)"
 }
-assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.css "--sa-color-"
-assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json "--sa-accent"
-assert_asset /_content/StellarAdmin.TagHelpers/stellar-admin.js "function"
-assert_asset /_content/StellarAdmin.Dashboard/stellar-admin-dashboard.css "sa-resource-form"
-assert_asset /_content/StellarAdmin.Dashboard/htmx.min.js "htmx"
+assert_asset /_content/StellarAdmin.UI/stellar-admin.css "--sa-color-"
+assert_asset /_content/StellarAdmin.UI/stellar-admin.theme-variables.json "--sa-accent"
+assert_asset /_content/StellarAdmin.UI/stellar-admin.js "function"
+assert_asset /_content/StellarAdmin/stellar-admin-panel.css "sa-resource-form"
+assert_asset /_content/StellarAdmin/htmx.min.js "htmx"
 
 echo
-echo "SMOKE OK: all three packages at $VERSION restore; tag helpers and data grid render with static assets"
+echo "SMOKE OK: both packages at $VERSION restore; tag helpers and data grid render with static assets"

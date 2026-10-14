@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     Supplies items for the Dashboard sidebar.
+///     Supplies items for the admin panel sidebar.
 /// </summary>
 public interface ISidebarItemsProvider
 {

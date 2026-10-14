@@ -11,7 +11,7 @@ The region that shows toast notifications. Place one in the layout, outside any 
 <!-- structure:begin -->
 ## Composition and behavior
 
-Put one `<sa-toaster />` in the layout, outside any region that htmx or another AJAX library swaps (including the body with `hx-boost`). `AddTagHelpers()` registers the rest; there is no setup call or middleware. Toasts come from two places:
+Put one `<sa-toaster />` in the layout, outside any region that htmx or another AJAX library swaps (including the body with `hx-boost`). `AddStellarAdminUI()` registers the rest; there is no setup call or middleware. Toasts come from two places:
 
 - **Server:** inject `IToastNotifier` into a controller, page model or service and call `Success`, `Info`, `Warning` or `Error(title, description?)`, or `Add(new Toast { Title, Description, Type = ToastType.X, Duration, Action = ToastAction.Link(label, href) })`. Only link actions are possible from the server.
 - **Browser:** `window.stellarAdmin.toast` (see javascript.md).

@@ -1,36 +1,36 @@
-# Dashboard setup notes
+# StellarAdmin setup notes
 
-These preserved notes support the generated component references; full Dashboard guidance is still planned.
+These preserved notes support the generated component references; full admin panel guidance is still planned.
 
 ## Resource packages
 
-The resource page helpers live in `StellarAdmin.Dashboard`, which is MIT licensed alongside the rest of StellarAdmin. These packages are currently available from the source repository; NuGet publication is a separate release step. Keep `StellarAdmin.TagHelpers` registered, reference the `StellarAdmin.Dashboard` project, add `using StellarAdmin.Dashboard;` in startup, and call `.AddDashboard()` on the `StellarAdminBuilder`. In `_ViewImports.cshtml`, add `@using StellarAdmin.Dashboard.TagHelpers` and `@addTagHelper *, StellarAdmin.Dashboard`.
+The resource page helpers live in `StellarAdmin`, which is MIT licensed alongside the rest of StellarAdmin. These packages are currently available from the source repository; NuGet publication is a separate release step. Reference the `StellarAdmin` project, add `using StellarAdmin;` in startup, and call `AddStellarAdmin(...)`, which also registers StellarAdmin.UI. In `_ViewImports.cshtml`, add `@using StellarAdmin` and `@addTagHelper *, StellarAdmin`.
 
-## Dashboard theme
+## Admin panel theme
 
-Dashboard uses the default theme: its layout links `stellar-admin.css`. For another look, add a theme file of CSS variables (written by hand or downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)) and any web font it needs as stylesheets in `Program.cs`:
+The admin panel uses the default theme: its layout links `stellar-admin.css`. For another look, add a theme file of CSS variables (written by hand or downloaded from the [theme builder](https://www.stellaradmin.com/theme-builder)) and any web font it needs as stylesheets in `Program.cs`:
 
 ```csharp
-builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+builder.Services.AddStellarAdmin(admin =>
 {
-    dashboard.AddStylesheet("https://fonts.googleapis.com/css2?family=Lexend:wght@400..700&display=swap");
-    dashboard.AddStylesheet("~/css/theme.css");
+    admin.AddStylesheet("https://fonts.googleapis.com/css2?family=Lexend:wght@400..700&display=swap");
+    admin.AddStylesheet("~/css/theme.css");
 });
 ```
 
-The layout links `stellar-admin.css` first, then the registered stylesheets in registration order. A theme file sets its variables in `@layer sa.theme`, so it outranks the Dashboard's own stylesheet whatever the order. Dashboard makes no font requests unless a font stylesheet is registered; without one, the theme's font stacks fall back to native fonts. The theme applies to the whole Dashboard; it does not add a visitor theme picker. The stellar-admin-theme skill writes theme files; the Tag Helpers skill's theming guide covers fonts and dark mode.
+The layout links `stellar-admin.css` first, then the registered stylesheets in registration order. A theme file sets its variables in `@layer sa.theme`, so it outranks the admin panel's own stylesheet whatever the order. The admin panel makes no font requests unless a font stylesheet is registered; without one, the theme's font stacks fall back to native fonts. The theme applies to the whole admin panel; it does not add a visitor theme picker. The stellar-admin-theme skill writes theme files; the stellar-admin-ui skill's theming guide covers fonts and dark mode.
 
 ## Resource registration
 
-Register a resource through the Dashboard builder:
+Register a resource through the `StellarAdminBuilder`:
 
 ```csharp
-using StellarAdmin.Dashboard;
-using StellarAdmin.Dashboard.Resources.Displays;
+using StellarAdmin;
+using StellarAdmin.Resources.Displays;
 
-builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+builder.Services.AddStellarAdmin(admin =>
 {
-    dashboard.AddResource<Product>(resource =>
+    admin.AddResource<Product>(resource =>
     {
         resource.UseDataSource<ProductDataSource>();
         resource.AllowCreate(create => create.Fields(fields =>
@@ -48,7 +48,7 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
             });
         }));
     });
-    dashboard.AddResource<ProductCategory>(resource =>
+    admin.AddResource<ProductCategory>(resource =>
     {
         resource.SingularLabel = "Category";
         resource.PluralLabel = "Catalog";
@@ -56,43 +56,43 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 });
 ```
 
-Call `app.MapStellarAdmin()` to map Dashboard routes. The example's Product index is available at `/stellaradmin/products`. The route uses the resource's slug, which defaults to the kebab-case plural of the type name (`OrderItem` becomes `order-items`) independently of its display labels. Pass a slug to `AddResource<T>("catalog")` or `AddEfCoreResource<TContext, T>("catalog")` to override it; slugs use lowercase letters and digits separated by single hyphens and must be unique. Generated Dashboard URLs use lowercase action segments; requests match case-insensitively. Resource-specific view overrides live in `Areas/StellarAdmin/Views/{slug}/` and keep PascalCase action file names such as `Create.cshtml`. Register a data source and columns for each resource whose index you want to display. Register `.AllowCreate(...)` to enable `/stellaradmin/products/create`. Register `.AllowEdit(...)` and configure a key with `resource.UseKey(product => product.Id)` to enable `/stellaradmin/products/edit/{id}`. Register `.AllowDelete()` or `.AllowDelete(...)` to enable deletion through an antiforgery-protected POST with confirmation on the index and edit pages; deletion also requires a key. A rejected delete from the edit page returns to Edit with its errors, while a rejected index delete redisplays the index. Each resource adds a sidebar link to its index, configurable through `resource.SidebarItem(...)`.
+Call `app.MapStellarAdmin()` to map the admin panel routes. The example's Product index is available at `/stellaradmin/products`. The route uses the resource's slug, which defaults to the kebab-case plural of the type name (`OrderItem` becomes `order-items`) independently of its display labels. Pass a slug to `AddResource<T>("catalog")` or `AddEfCoreResource<TContext, T>("catalog")` to override it; slugs use lowercase letters and digits separated by single hyphens and must be unique. Generated admin panel URLs use lowercase action segments; requests match case-insensitively. Resource-specific view overrides live in `Areas/StellarAdmin/Views/{slug}/` and keep PascalCase action file names such as `Create.cshtml`. Register a data source and columns for each resource whose index you want to display. Register `.AllowCreate(...)` to enable `/stellaradmin/products/create`. Register `.AllowEdit(...)` and configure a key with `resource.UseKey(product => product.Id)` to enable `/stellaradmin/products/edit/{id}`. Register `.AllowDelete()` or `.AllowDelete(...)` to enable deletion through an antiforgery-protected POST with confirmation on the index and edit pages; deletion also requires a key. A rejected delete from the edit page returns to Edit with its errors, while a rejected index delete redisplays the index. Each resource adds a sidebar link to its index, configurable through `resource.SidebarItem(...)`.
 
-`ProductDataSource` implements `IResourceCrudDataSource<Product>` from `StellarAdmin.Dashboard.Resources` for all CRUD operations. The combined interface includes `IResourceDataSource<Product>` (`ListAsync`), `IResourceCreateHandler<Product>` (`CreateAsync`), `IResourceEditHandler<Product>` (`FindAsync` and `UpdateAsync`), and `IResourceDeleteHandler<Product>` (`DeleteAsync`). A source can instead implement just the individual interfaces it supports. The shared controller forwards the request cancellation token. Unregistered actions have no buttons and direct requests are rejected, even when the data source implements the corresponding handler. Configuring a form or deletion without a matching implementation produces an options validation error. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
+`ProductDataSource` implements `IResourceCrudDataSource<Product>` from `StellarAdmin.Resources` for all CRUD operations. The combined interface includes `IResourceDataSource<Product>` (`ListAsync`), `IResourceCreateHandler<Product>` (`CreateAsync`), `IResourceEditHandler<Product>` (`FindAsync` and `UpdateAsync`), and `IResourceDeleteHandler<Product>` (`DeleteAsync`). A source can instead implement just the individual interfaces it supports. The shared controller forwards the request cancellation token. Unregistered actions have no buttons and direct requests are rejected, even when the data source implements the corresponding handler. Configuring a form or deletion without a matching implementation produces an options validation error. `UseDataSource<TDataSource>()` registers the concrete source as scoped unless the application already registered it. Resolve its dependencies through its constructor. An existing concrete registration's lifetime is preserved. Repeated `UseDataSource` calls select the last source.
 
 Index columns start empty. `Add` appends and `Clear` removes the configured columns. `Add(selector)` returns the column builder. `Add(selector, configure)` returns the columns builder. Column `Title` and `EmptyText` are setter-only. Omitted titles use the selected property's display metadata/name. A column renders its cells with the same displays as a display field (see [Display fields](#display-fields)): through `UseDisplay<TDisplay>(display => ...)`; as the grid's plain text after `UseBuiltInRendering()`, formatted with `[DisplayFormat]`; through the grid display template its `[UIHint("Status")]` names, the view `GridDisplayTemplates/Status`; or through the default display for its type. A display's template in a cell is `GridDisplayTemplates/{TemplateName}`, so a custom display used in a column needs one, and an override goes at a path such as `Areas/StellarAdmin/Views/Shared/GridDisplayTemplates/Displays/Boolean.cshtml`. In a cell, `TextDisplay` ignores line breaks unless `LineClamp` is set, and a `NumberDisplay` column is right-aligned. Displays with a handler are not supported in columns and throw. A column can read through references, such as `product => product.Category.Name`; an EF Core resource's index loads the references on each column's path with the page, in the same query. An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then an empty cell. Set `index.Title` to override the page title, which otherwise uses the current resource plural label. Empty results display an empty state. Paging, sortable columns, and search are opt-in index features.
 
-To customize a resource's index, add `Areas/StellarAdmin/Views/Product/Index.cshtml` to the application. The controller first searches for `Index` using normal MVC view lookup, including shared locations and configured view-location expanders, then falls back to `ResourceIndex` when no view is found. The built-in fallback lives in `Areas/StellarAdmin/Views/Shared/ResourceIndex.cshtml` and can also be overridden by the application. A custom view can use `ResourceIndexPageViewModel<Product>` from `StellarAdmin.Dashboard.Areas.StellarAdmin.ViewModels` and render `<sa-index-page model="Model" />` or supply its own markup.
+To customize a resource's index, add `Areas/StellarAdmin/Views/Product/Index.cshtml` to the application. The controller first searches for `Index` using normal MVC view lookup, including shared locations and configured view-location expanders, then falls back to `ResourceIndex` when no view is found. The built-in fallback lives in `Areas/StellarAdmin/Views/Shared/ResourceIndex.cshtml` and can also be overridden by the application. A custom view can use `ResourceIndexPageViewModel<Product>` from `StellarAdmin.Areas.StellarAdmin.ViewModels` and render `<sa-index-page model="Model" />` or supply its own markup.
 
 The singular label defaults to the readable type name (`ProductCategory` becomes `Product category`). The plural defaults to its English plural (`Product categories`). Setting only `SingularLabel` also changes the inferred plural. An explicit `PluralLabel` takes precedence regardless of assignment order. Labels must be nonblank. Set both labels for other languages or domain-specific wording. Naming uses [Humanizer](https://github.com/Humanizr/Humanizer).
 
-Resolve configuration through `IOptions<ResourceOptions<Product>>` (`Microsoft.Extensions.Options` and `StellarAdmin.Dashboard.Resources.Options`). The builder callback executes during registration. Its setter-only properties register configuration actions, which execute when options resolve. Each resource type and service provider gets its own options instance. Repeated `AddResource` registrations compose in assignment order, and later assignments to the same property win. A no-argument `AddResource` registration preserves existing configuration. Registering the same resource again under a different slug throws. Each `AllowCreate`, `AllowEdit`, or `AllowDelete` call replaces that action’s previous configuration; setters and field calls on the returned builder compose. Standard Configure, PostConfigure, and options validation remain available. This allows an integration to register defaults first and application code to override them afterwards.
+Resolve configuration through `IOptions<ResourceOptions<Product>>` (`Microsoft.Extensions.Options` and `StellarAdmin.Resources.Options`). The builder callback executes during registration. Its setter-only properties register configuration actions, which execute when options resolve. Each resource type and service provider gets its own options instance. Repeated `AddResource` registrations compose in assignment order, and later assignments to the same property win. A no-argument `AddResource` registration preserves existing configuration. Registering the same resource again under a different slug throws. Each `AllowCreate`, `AllowEdit`, or `AllowDelete` call replaces that action’s previous configuration; setters and field calls on the returned builder compose. Standard Configure, PostConfigure, and options validation remain available. This allows an integration to register defaults first and application code to override them afterwards.
 
-The no-callback overload returns the resource builder. The callback overload returns the Dashboard builder:
+The no-callback overload returns the resource builder. The callback overload returns the `StellarAdminBuilder`:
 
 ```csharp
-var resource = dashboard.AddResource<Product>();
+var resource = admin.AddResource<Product>();
 resource.SingularLabel = "Item";
 resource.PluralLabel = "Inventory";
 ```
 
 ## Authorization
 
-Dashboard pages are open unless the application requires authorization. Call `RequireAuthorization` on the Dashboard builder to protect every page, or on a resource builder to protect one resource:
+Admin panel pages are open unless the application requires authorization. Call `RequireAuthorization` on the `StellarAdminBuilder` to protect every page, or on a resource builder to protect one resource:
 
 ```csharp
-builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+builder.Services.AddStellarAdmin(admin =>
 {
-    dashboard.RequireAuthorization();
+    admin.RequireAuthorization();
 
-    dashboard.AddResource<Product>(resource =>
+    admin.AddResource<Product>(resource =>
     {
         resource.RequireAuthorization(policy => policy.RequireRole("Catalog"));
     });
 });
 ```
 
-Both builders accept the same overloads as the framework's endpoint `RequireAuthorization`: no arguments for any authenticated user, policy names, `IAuthorizeData` such as `new AuthorizeAttribute { Roles = "Admin" }`, an `AuthorizationPolicy`, or a policy-builder callback. Requirements accumulate. A user must satisfy every Dashboard requirement, every requirement of the resource, and every repeated call. EF Core resource builders provide the same methods.
+Both builders accept the same overloads as the framework's endpoint `RequireAuthorization`: no arguments for any authenticated user, policy names, `IAuthorizeData` such as `new AuthorizeAttribute { Roles = "Admin" }`, an `AuthorizationPolicy`, or a policy-builder callback. Requirements accumulate. A user must satisfy every admin panel requirement, every requirement of the resource, and every repeated call. EF Core resource builders provide the same methods.
 
 Requirements are applied as endpoint metadata when `app.MapStellarAdmin()` maps the routes, so the application's authentication and authorization middleware enforce them for page requests and form posts alike. Anonymous users receive the authentication challenge and signed-in users without access receive the forbidden response. `MapStellarAdmin()` also returns the route's convention builder, so standard conventions such as `app.MapStellarAdmin().RequireAuthorization("Admin")` or `RequireHost(...)` can be added there.
 
@@ -103,20 +103,20 @@ The sidebar hides a resource's link when the current user does not satisfy that 
 Add links to the application's own Razor Pages, MVC actions or any URL with `AddSidebarLink`:
 
 ```csharp
-using StellarAdmin.Dashboard.Sidebar;
+using StellarAdmin.Sidebar;
 
-builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
+builder.Services.AddStellarAdmin(admin =>
 {
-    dashboard.AddSidebarLink("Overview", SidebarLinkTarget.Page("/Overview"));
+    admin.AddSidebarLink("Overview", SidebarLinkTarget.Page("/Overview"));
 
-    dashboard.AddSidebarLink("Invoices", SidebarLinkTarget.Action("Index", "Invoices"), link =>
+    admin.AddSidebarLink("Invoices", SidebarLinkTarget.Action("Index", "Invoices"), link =>
     {
         link.Group = "Commerce";
         link.Order = 30;
         link.RequireAuthorization("Finance");
     });
 
-    dashboard.AddSidebarLink("Status page", SidebarLinkTarget.Url("https://status.voyager.travel"), link =>
+    admin.AddSidebarLink("Status page", SidebarLinkTarget.Url("https://status.voyager.travel"), link =>
     {
         link.Group = "Help";
         link.OpenInNewTab = true;
@@ -124,13 +124,13 @@ builder.Services.AddStellarAdmin().AddDashboard(dashboard =>
 });
 ```
 
-`SidebarLinkTarget.Page(page, area)` and `SidebarLinkTarget.Action(action, controller, area)` link outside any area unless an area is given, so they reach the host application's pages rather than the Dashboard's. `SidebarLinkTarget.Url(url)` accepts absolute URLs and app-relative `~/` paths. Each link also appears in the command palette, which searches link labels and group names.
+`SidebarLinkTarget.Page(page, area)` and `SidebarLinkTarget.Action(action, controller, area)` link outside any area unless an area is given, so they reach the host application's pages rather than the admin panel's. `SidebarLinkTarget.Url(url)` accepts absolute URLs and app-relative `~/` paths. Each link also appears in the command palette, which searches link labels and group names.
 
 A link without a `Group` appears at the top level, without a heading. Links join a resource group with the same label, so the Invoices link above sits in the Commerce group with Commerce resources. Groups with the same label from any `ISidebarItemsProvider` merge into one, positioned where the label first appears. Links in a group sort by `Order`, which defaults to 0. With equal `Order` values, resource links and custom links do not interleave in call order: all resource links come before all custom links when the first `AddResource` call precedes the first `AddSidebarLink` call, and after them otherwise. Set `Order` to place a link among resources. `OpenInNewTab` opens the link in a new browser tab.
 
-`RequireAuthorization` accepts the same overloads as the Dashboard builder and hides the link from users who do not satisfy it. It does not protect the destination: host pages and actions are outside the Dashboard's routes, so protect them with the application's own authorization. Linked host pages render with the application's layout unless they opt into the Dashboard's.
+`RequireAuthorization` accepts the same overloads as the `StellarAdminBuilder` and hides the link from users who do not satisfy it. It does not protect the destination: host pages and actions are outside the admin panel's routes, so protect them with the application's own authorization. Linked host pages render with the application's layout unless they opt into the admin panel's.
 
-To render a host Razor Page or MVC view inside the Dashboard shell, with its sidebar, header, theme, command palette and sheets, set `Layout = StellarAdminLayouts.Dashboard;` (namespace `StellarAdmin.Dashboard`) in the page or in a `_ViewStart.cshtml` beside it. The page keeps its own URL and authorization. `ViewData["Title"]` sets the browser title as `{title} - StellarAdmin`. Add `@addTagHelper *, StellarAdmin.TagHelpers` to the page's `_ViewImports.cshtml` to use components such as `sa-page-container` and `sa-page-header` so the body matches Dashboard pages. A sidebar link to the page is marked active while it is open.
+To render a host Razor Page or MVC view inside the admin panel shell, with its sidebar, header, theme, command palette and sheets, set `Layout = StellarAdminLayouts.Default;` (namespace `StellarAdmin`) in the page or in a `_ViewStart.cshtml` beside it. The page keeps its own URL and authorization. `ViewData["Title"]` sets the browser title as `{title} - StellarAdmin`. Add `@addTagHelper *, StellarAdmin.UI` to the page's `_ViewImports.cshtml` to use components such as `sa-page-container` and `sa-page-header` so the body matches admin panel pages. A sidebar link to the page is marked active while it is open.
 
 ## Index sorting
 
@@ -162,9 +162,9 @@ resource.Index(index => index.EnableSearch(search =>
     search.Placeholder = "Search product names..."));
 ```
 
-The default placeholder is generated by `ResourceLabelOptions.Index.SearchPlaceholder` as `Search {PluralLabel}...`. Override it globally through `dashboard.ConfigureResourceLabels(labels => labels.Index(index => index.SearchPlaceholder = resource => $"Find {resource.PluralLabel}"))`, or locally through the search builder. The no-callback `EnableSearch()` overload returns the search builder.
+The default placeholder is generated by `ResourceLabelOptions.Index.SearchPlaceholder` as `Search {PluralLabel}...`. Override it globally through `admin.ConfigureResourceLabels(labels => labels.Index(index => index.SearchPlaceholder = resource => $"Find {resource.PluralLabel}"))`, or locally through the search builder. The no-callback `EnableSearch()` overload returns the search builder.
 
-The controller passes trimmed text in `ResourceListRequest.Search`; blank text and disabled search produce null. The data source decides how to match records. Filter before counting and paging so `ResourceListResult.TotalCount` describes all matching records. DashboardPlayground demonstrates case-insensitive product-name matching.
+The controller passes trimmed text in `ResourceListRequest.Search`; blank text and disabled search produce null. The data source decides how to match records. Filter before counting and paging so `ResourceListResult.TotalCount` describes all matching records. AdminPlayground demonstrates case-insensitive product-name matching.
 
 The search input updates the grid through HTMX after a 400 ms typing delay and updates browser history. Searching and clearing reset paging while retaining explicitly selected page size and sorting. Paging, sorting, and deletion preserve search. Configured defaults are not added to navigation URLs.
 
@@ -219,7 +219,7 @@ The configure callback receives `ResourceRowDetailsBuilder<TResource>`, with `An
 
 ## Create forms
 
-Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. `AddDisplayField` and `AddDetails` show read-only values; see [Display fields](#display-fields). Global label delegates configured through `dashboard.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
+Configure the create page through `resource.AllowCreate(create => ...)`. `create.Title` and `create.SubmitLabel` are optional setter-only properties, each defaulting to `"Create " + SingularLabel`. Fields start empty. `create.Fields(fields => ...)` configures them with typed selectors. `fields.Add(product => product.Name)` returns a field builder with a setter-only `Title`. The callback overload returns the fields builder. `Clear()` removes earlier fields. Labels and editor templates otherwise come from property metadata and types. Use `AddSection` and `AddGroup` for nested layouts, and see [Form layout](#form-layout) for columns and spans. `AddDisplayField` and `AddDetails` show read-only values; see [Display fields](#display-fields). Global label delegates configured through `admin.ConfigureResourceLabels(...)` supply defaults, and page-level labels override them.
 
 The form model should be a mutable reference type. By default, the controller uses its public parameterless constructor. Use `create.UseFactory(() => new Product(...))` for explicit initialization or models without a parameterless constructor. Field selectors must name direct properties with public getters and setters. The controller constructs a resource for both GET and POST and binds only configured properties, using input names such as `Entity.Name`. ASP.NET Core model validation applies, including data annotations. Invalid submissions redisplay entered values and errors without calling the data source. POST requires an antiforgery token. A successful `CreateAsync` redirects to the index. The data source assigns generated values such as IDs. Write operations return `ResourceOperationResult.Success()`, `NotFound()`, or `ValidationFailed(...)`; a create handler whose model isn't the resource can return `Success(key)` so a lookup can select what it created. Field error names are unprefixed model property names. Use null for summary errors. Errors for fields outside the form also appear in the summary. Rejected writes must not persist changes. Unexpected failures should throw.
 
@@ -292,7 +292,7 @@ edit.Fields(fields =>
 - `AddDisplayField` and `details.Add` return a display field builder with setter-only `Title` and `EmptyText`, `UseDisplay<TDisplay>()`, `UseBuiltInRendering()`, and the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart` methods as a field. The callback overloads return the fields or details builder.
 - An empty value shows `EmptyText`, then `[DisplayFormat(NullDisplayText)]`, then a dash, and no display or template runs for it.
 - A value renders, in order of precedence, through the display set with `UseDisplay<TDisplay>(display => ...)` (as `UseEditor` does for inputs); through `<sa-display-field>`'s own rendering after `UseBuiltInRendering()`; through the template its `[UIHint("Status")]` names, the view `DisplayTemplates/Status` with the value as its model (a missing template throws); or through the default display for its data type, then its type. Values with no default display, such as collections and GUIDs, use `<sa-display-field>`'s rendering, which joins collections with commas and applies `[DisplayFormat]`.
-- Displays are in `StellarAdmin.Dashboard.Resources.Displays`. The built-in displays, and the properties they are the default for:
+- Displays are in `StellarAdmin.Resources.Displays`. The built-in displays, and the properties they are the default for:
   - `EmailDisplay`, for `[EmailAddress]`: a `mailto:` link.
   - `LinkDisplay`, for `[Url]`: a link for `http` and `https` addresses, and text otherwise. `OpenInNewTab` (default `true`).
   - `PhoneDisplay`, for `[Phone]`: a `tel:` link that dials the digits.
@@ -312,14 +312,14 @@ details.Add(booking => booking.Cabin).UseDisplay<BadgeDisplay>(badge => badge.Va
 
 ```razor
 @* Views/Shared/DisplayTemplates/BookingStatus.cshtml, for [UIHint("BookingStatus")] *@
-@using StellarAdmin.TagHelpers
+@using StellarAdmin.UI
 @model BookingStatus
-@addTagHelper *, StellarAdmin.TagHelpers
+@addTagHelper *, StellarAdmin.UI
 
 <sa-badge variant="@(Model switch { BookingStatus.Confirmed => BadgeVariant.Default, BookingStatus.Cancelled => BadgeVariant.Destructive, _ => BadgeVariant.Secondary })">@Model</sa-badge>
 ```
 
-- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Dashboard.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings, the model is the value, and `FormatValue(format)` formats it with a format string, then `[DisplayFormat]`, with enum members by their `[Display]` names. A display that needs request data, such as a record looked up by a key that has no navigation, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
+- A custom display derives from `FieldDisplay`, adds its own settings and names its template through `TemplateName`. The template, `DisplayTemplates/{TemplateName}`, inherits `StellarAdmin.Areas.StellarAdmin.FieldDisplayView<TDisplay>`: `Display` holds the configured settings, the model is the value, and `FormatValue(format)` formats it with a format string, then `[DisplayFormat]`, with enum members by their `[Display]` names. A display that needs request data, such as a record looked up by a key that has no navigation, also implements `IFieldDisplay<THandler>`; the handler derives from `FieldDisplayHandler<TDisplay>`, takes services through its constructor, and returns the data from `PrepareAsync`, which the template reads as `DisplayData`.
 
 - A details section takes `Description`, `Layout`, `ColumnSpan` and `ColumnStart` like `AddSection`, and `Columns`, `Orientation` (`FieldOrientation`) and `Variant` (`DetailsVariant`) from `<sa-details>`.
 - Display fields work on create pages too, where a value that isn't set yet shows its empty text.
@@ -382,7 +382,7 @@ resource.AllowEdit(edit => edit.Fields(fields => fields.Add(customer => customer
 
 Each create registration starts fresh, including fields, factory, page labels, and section layout. Calling ordinary `AllowCreate(...)` selects the resource model and data source again. A previously obtained typed builder cannot configure a different model after that selection changes.
 
-DashboardPlayground includes ordinary Product CRUD and a Customer resource with separate custom create and edit models. Its passwords demonstrate form-only validation and are not stored or used to create authentication accounts.
+AdminPlayground includes ordinary Product CRUD and a Customer resource with separate custom create and edit models. Its passwords demonstrate form-only validation and are not stored or used to create authentication accounts.
 
 
 ## Custom edit models
@@ -411,12 +411,12 @@ Typed fields, layouts, resource label defaults, page overrides, model and handle
 
 ## Form field editors
 
-Fields without `UseEditor` use MVC metadata-based editor template selection. The Dashboard's data-type templates forward to the built-in editors below and apply the same inference, so most properties need no editor configuration. Strings, GUIDs and numbers render a text input, `[DataType(DataType.MultilineText)]` renders a text area, dates and times render the matching date or time input, a `bool` renders a checkbox, a `bool?` renders a Yes, No and Not set select, and a non-flags enum renders a select. Flags enums render a text input.
+Fields without `UseEditor` use MVC metadata-based editor template selection. The admin panel's data-type templates forward to the built-in editors below and apply the same inference, so most properties need no editor configuration. Strings, GUIDs and numbers render a text input, `[DataType(DataType.MultilineText)]` renders a text area, dates and times render the matching date or time input, a `bool` renders a checkbox, a `bool?` renders a Yes, No and Not set select, and a non-flags enum renders a select. Flags enums render a text input.
 
-Select a built-in editor and its settings with `UseEditor<TEditor>()` or `UseEditor<TEditor>(editor => { ... })`. The editors are in `StellarAdmin.Dashboard.Resources.Editors`:
+Select a built-in editor and its settings with `UseEditor<TEditor>()` or `UseEditor<TEditor>(editor => { ... })`. The editors are in `StellarAdmin.Resources.Editors`:
 
 ```csharp
-using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.Resources.Editors;
 
 edit.Fields(fields =>
 {
@@ -503,19 +503,19 @@ public sealed class AirportLookupSource(AppDbContext db) : ILookupSource<Airport
 }
 ```
 
-`UseDescription` adds secondary text below each item's title. `UseCode(...)` displays a short code chip beside the title, `UseAvatar(...)` an avatar from an image URL, with the title's initials when the URL is null, `UseImage(...)` a square image, and `UseIcon(...)` a registered icon; a null or empty code, image URL or icon name leaves the item without media, and the last one called wins. `ClassNames.Media` adds classes to the media of the selection and the results. Custom `LookupItems` return each item as a `ChoiceItem`, with its value formatted in the current culture, its title as `Text`, and `Media`; lookups ignore `Disabled` and `Group`. Their `FindAsync` returns the selected items in the order of the field's values, and an empty list when nothing is selected. Their `MediaType` is the `ItemMedia` type the items display, such as `typeof(ItemMedia.Code)`, which shapes the loading rows. The editor's `Layout` is `LookupSheetEditorLayout.Card` when the items have a description and `Input` otherwise; a card shows the description, an input does not. `ShowMedia = false` on `Editor(...)` or `Sheet(...)` hides the media in the form or the results. A value the source cannot find is displayed as the value itself. The lookup's fixed text, such as "Choose {field}", "New", "None", "Load more" and the sheet's messages, comes from the callbacks on `labels.Lookup(...)` inside `dashboard.ConfigureResourceLabels(...)`, for example `labels.Lookup(lookup => lookup.ChooseLabel = context => $"Select {context.FieldLabel}")`; each receives a `LookupLabelContext` with `FieldLabel`, `MinimumSearchLength` and `Term`. `EmptyText`, `Title` and `SearchPlaceholder` still override them per field.
+`UseDescription` adds secondary text below each item's title. `UseCode(...)` displays a short code chip beside the title, `UseAvatar(...)` an avatar from an image URL, with the title's initials when the URL is null, `UseImage(...)` a square image, and `UseIcon(...)` a registered icon; a null or empty code, image URL or icon name leaves the item without media, and the last one called wins. `ClassNames.Media` adds classes to the media of the selection and the results. Custom `LookupItems` return each item as a `ChoiceItem`, with its value formatted in the current culture, its title as `Text`, and `Media`; lookups ignore `Disabled` and `Group`. Their `FindAsync` returns the selected items in the order of the field's values, and an empty list when nothing is selected. Their `MediaType` is the `ItemMedia` type the items display, such as `typeof(ItemMedia.Code)`, which shapes the loading rows. The editor's `Layout` is `LookupSheetEditorLayout.Card` when the items have a description and `Input` otherwise; a card shows the description, an input does not. `ShowMedia = false` on `Editor(...)` or `Sheet(...)` hides the media in the form or the results. A value the source cannot find is displayed as the value itself. The lookup's fixed text, such as "Choose {field}", "New", "None", "Load more" and the sheet's messages, comes from the callbacks on `labels.Lookup(...)` inside `admin.ConfigureResourceLabels(...)`, for example `labels.Lookup(lookup => lookup.ChooseLabel = context => $"Select {context.FieldLabel}")`; each receives a `LookupLabelContext` with `FieldLabel`, `MinimumSearchLength` and `Term`. `EmptyText`, `Title` and `SearchPlaceholder` still override them per field.
 
 `EnableCreate()` adds a New button beside Choose while nothing is selected. It opens, in a sheet, the create form of the resource registered for the items' type (the `TEntity` of `UseItems`); `EnableCreate<TResource>()` names the resource instead, which custom `LookupItems` that don't override `ItemType` require. Saving closes the sheet and selects the new item, so the lookup's value must be that resource's key. The key comes from the resource's key selector when the create form uses the resource type, as EF Core resources do, or from `ResourceOperationResult.Success(key)` returned by a create handler with its own model; without a key, the sheet closes and nothing is selected. Rendering the form throws when no resource is registered for the type or the resource has no create form, and users the resource's authorization rejects don't see the button. A rejected save shows its errors in the sheet, and lookups inside that form open a second sheet over it, without a New button. The message shown when the form can't be posted comes from `labels.Sheet(sheet => sheet.SaveErrorDescription = "...")`.
 
-For a custom form editor, create an editor class derived from `FieldEditor` (in `StellarAdmin.Dashboard.Resources.Editors`) that implements `IFieldEditor<MyEditorHandler>`. The editor holds the settings. Create a handler that implements `IFieldEditorHandler<MyEditor>`, or derives from `FieldEditorHandler<MyEditor>` when it loads no request data, and accept `MyEditor` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The handler's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`. Its `PrepareAsync` can load request data. The template reads the configured editor from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`.
+For a custom form editor, create an editor class derived from `FieldEditor` (in `StellarAdmin.Resources.Editors`) that implements `IFieldEditor<MyEditorHandler>`. The editor holds the settings. Create a handler that implements `IFieldEditorHandler<MyEditor>`, or derives from `FieldEditorHandler<MyEditor>` when it loads no request data, and accept `MyEditor` plus any services it needs in its constructor. Select it with `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { /* settings */ });`. The handler's `TemplateName` selects an MVC editor template in `Views/Shared/EditorTemplates`. Its `PrepareAsync` can load request data. The template reads the configured editor from `FormFieldProperties.Editor` and request data from `FormFieldProperties.EditorData` in `ViewData[ViewDataKeys.FormFieldProperties]`.
 
 ## EF Core resources
 
-Reference `StellarAdmin.Dashboard.EntityFrameworkCore` and import its namespace to register an EF entity through the shared resource controller and views:
+Reference `StellarAdmin.EntityFrameworkCore` and import its namespace to register an EF entity through the shared resource controller and views:
 
 ```csharp
-using StellarAdmin.Dashboard.EntityFrameworkCore;
-using StellarAdmin.Dashboard.Resources.Editors;
+using StellarAdmin.EntityFrameworkCore;
+using StellarAdmin.Resources.Editors;
 
 Action<SelectEditor> categoryItems = editor =>
     editor.UseItems<AppDbContext, Category, int>(
@@ -523,7 +523,7 @@ Action<SelectEditor> categoryItems = editor =>
         category => category.Name,
         items => items.OrderBy(category => category.Name));
 
-dashboard.AddEfCoreResource<AppDbContext, Product>(resource =>
+admin.AddEfCoreResource<AppDbContext, Product>(resource =>
 {
     resource.Index(index =>
     {
@@ -568,7 +568,7 @@ Register AppDbContext with the application's chosen EF provider before serving r
 
 EF scopes accept an optional predicate on each entry. Omitting it leaves that scope unfiltered while retaining EF global query filters. The selected predicate combines with search before counting and paging. Scope predicates must translate through the chosen provider. The no-callback `EnableScopes()` overload returns the EF scopes builder. Repeated calls replace the entries and default selection. Scope identifiers, default selection, tabs, and navigation follow the shared scope behavior described above.
 
-EF row details can also project the row's entity when they load, in one untracked query that honors global query filters: `index.EnableRowDetails("_ProductPricing", product => new ProductPricing(product.Name, product.Price))`, or `panels.Add("Pricing", "_ProductPricing", product => new ProductPricing(...))` inside `EnableRowDetails(panels => ...)`, where the EF index builder supplies `EfCoreRowDetailPanelsBuilder<TContext, TEntity>`. A missing or filtered entity shows that the record no longer exists. The projection must translate through the chosen provider. DashboardPlayground's Products index combines a projected Pricing panel, an inline Overview panel and a handler-loaded Related panel.
+EF row details can also project the row's entity when they load, in one untracked query that honors global query filters: `index.EnableRowDetails("_ProductPricing", product => new ProductPricing(product.Name, product.Price))`, or `panels.Add("Pricing", "_ProductPricing", product => new ProductPricing(...))` inside `EnableRowDetails(panels => ...)`, where the EF index builder supplies `EfCoreRowDetailPanelsBuilder<TContext, TEntity>`. A missing or filtered entity shows that the record no longer exists. The projection must translate through the chosen provider. AdminPlayground's Products index combines a projected Pricing panel, an inline Overview panel and a handler-loaded Related panel.
 
 Use `column.Sortable()` to enable ordering by the column's field, or `column.Sortable(selector)` to use a different ordering expression. The shared column builder stores the selector, and the data source decides how to apply it. EF translates it through the chosen provider. Both default and requested sorting use the override, with primary-key ordering breaking ties. Repeated calls replace the sorting configuration. Calling `Sortable()` after an override restores field ordering.
 
@@ -592,4 +592,4 @@ Search matches any `SearchOn` expression (the title by default) ignoring case, o
 
 The EF data source implements the shared create, edit, and delete handler interfaces. Actions remain disabled until `AllowCreate`, `AllowEdit`, or `AllowDelete` is called. The shared controller handles form binding, validation, antiforgery, and redirects. The EF source creates entities from the configured form model or factory. Edit forms load an untracked entity; saving reloads the tracked entity and copies only configured editable fields. EF form fields must be mapped scalar properties that are not keys, generated values, or concurrency tokens. A custom create or edit model still requires a custom handler through the shared generic `AllowCreate<TModel, THandler>` or `AllowEdit<TModel, THandler>` overload. Select item queries honor EF query filters or a custom provider's own data access rules. Missing records produce not-found results. A database concurrency conflict during save produces a general validation error when the record still exists, or not-found when it disappeared. This does not detect edits made between displaying a form and submitting it; that requires an application-specific handler or a future concurrency workflow. Other database exceptions propagate so applications can translate known failures through their own handlers or a future callback API.
 
-Query transformations, event callbacks, and richer editor behaviors remain deferred. DashboardPlayground demonstrates CRUD and a Product–Category lookup that creates categories, using its shared `ApplicationDbContext` and `app.db`. Product prices are mapped to integer cents so sorting executes in SQLite.
+Query transformations, event callbacks, and richer editor behaviors remain deferred. AdminPlayground demonstrates CRUD and a Product–Category lookup that creates categories, using its shared `ApplicationDbContext` and `app.db`. Product prices are mapped to integer cents so sorting executes in SQLite.

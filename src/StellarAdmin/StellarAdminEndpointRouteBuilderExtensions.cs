@@ -9,17 +9,17 @@ using StellarAdmin.Resources;
 namespace StellarAdmin;
 
 /// <summary>
-///     Maps the StellarAdmin Dashboard routes.
+///     Maps the StellarAdmin admin panel routes.
 /// </summary>
 public static class StellarAdminEndpointRouteBuilderExtensions
 {
     extension(IEndpointRouteBuilder endpoints)
     {
         /// <summary>
-        ///     Maps the Dashboard under <c>/stellaradmin</c>.
+        ///     Maps the admin panel under <c>/stellaradmin</c>.
         /// </summary>
         /// <returns>
-        ///     A builder for adding conventions to the Dashboard endpoints.
+        ///     A builder for adding conventions to the admin panel endpoints.
         /// </returns>
         public ControllerActionEndpointConventionBuilder MapStellarAdmin()
         {
@@ -27,11 +27,11 @@ public static class StellarAdminEndpointRouteBuilderExtensions
         }
 
         /// <summary>
-        ///     Maps the Dashboard under the given path.
+        ///     Maps the admin panel under the given path.
         /// </summary>
-        /// <param name="stellarAdminPath">The path the Dashboard is served from.</param>
+        /// <param name="stellarAdminPath">The path the admin panel is served from.</param>
         /// <returns>
-        ///     A builder for adding conventions to the Dashboard endpoints.
+        ///     A builder for adding conventions to the admin panel endpoints.
         /// </returns>
         public ControllerActionEndpointConventionBuilder MapStellarAdmin(
             PathString stellarAdminPath

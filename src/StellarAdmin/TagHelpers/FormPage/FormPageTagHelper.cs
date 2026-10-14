@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.UI;
 
-namespace StellarAdmin.TagHelpers;
+namespace StellarAdmin;
 
 /// <summary>
 ///     Renders the standard form page for the current form view model.

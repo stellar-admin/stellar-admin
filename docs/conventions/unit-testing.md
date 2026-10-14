@@ -6,15 +6,15 @@ Conventions for new and migrated .NET tests in this repository. Existing executa
 
 Place unit tests in `tests/<ProductionProject>.Tests/` and mirror the SUT's directory within its production project. Use the test project and folder for the namespace, even when the production namespace differs from the project name.
 
-For example, `src/StellarAdmin.Core/Icons/IconOptions.cs` maps to `tests/StellarAdmin.Core.Tests/Icons/`, with namespace `StellarAdmin.Core.Tests.Icons`. Reference the owning production project directly. Core unit tests must not depend on TagHelpers just to reach Core transitively.
+For example, `src/StellarAdmin.UI/Icons/IconOptions.cs` maps to `tests/StellarAdmin.UI.Tests/Icons/`, with namespace `StellarAdmin.UI.Tests.Icons`. Reference the owning production project directly.
 
-Place each test according to the behavior it verifies. Icon registration and mapping belong with `IconOptions`; builder and DI registration behavior belongs with the relevant Core registration type; rendered pagination icons belong with `PaginationEllipsisTagHelper` in the corresponding TagHelpers folder. A feature spanning projects does not justify a single feature-wide test class.
+Place each test according to the behavior it verifies. Icon registration and mapping belong with `IconOptions`; builder and DI registration behavior belongs with the relevant registration type; rendered pagination icons belong with `PaginationEllipsisTagHelper` in the corresponding `TagHelpers` folder. A feature spanning projects does not justify a single feature-wide test class.
 
 Tests requiring an application host, database, or HTTP boundary belong in explicitly named `<ProductionProject>.IntegrationTests` projects and use the same TUnit and arrange–act–assert conventions. Organize integration tests by feature and scenario rather than mirroring production types. Document their environment and execution requirements separately. Keep host/database state private to each test; do not use process-wide environment overrides or static SQL interceptors. A resource-based parallelism limit is appropriate for hosted integration tests, but must not compensate for shared mutable test state. Using a small, in-memory service collection to test registration does not by itself require a hosted integration test.
 
-## Dashboard test strategy
+## Admin panel test strategy
 
-For Dashboard resource features, prefer HTTP integration tests configured through the public builders. Verify rendered pages, binding, validation, persistence, redirects, and real application view overrides together. Extend an existing scenario when it can prove a new contract clearly. Do not add matching options, builder, and controller unit tests for behavior already covered through HTTP.
+For admin panel resource features, prefer HTTP integration tests configured through the public builders. Verify rendered pages, binding, validation, persistence, redirects, and real application view overrides together. Extend an existing scenario when it can prove a new contract clearly. Do not add matching options, builder, and controller unit tests for behavior already covered through HTTP.
 
 Keep focused unit tests for contracts that HTTP cannot express clearly, such as rejected builder expressions, invalid configuration, application-selected DI lifetimes, and isolation between providers built from the same registration. Avoid retesting framework options plumbing, third-party naming rules, trivial setters, or builder return values. Test factory callbacks and global label templates through their observable form behavior when those features are introduced.
 
@@ -23,7 +23,7 @@ Keep focused unit tests for contracts that HTTP cannot express clearly, such as 
 For unit tests, name the test class `<SutType>Tests`. Start with `<SutType>Tests.cs`; when behavioral subdivisions help navigation, use a partial class and dot-separated file names:
 
 ```text
-tests/StellarAdmin.Core.Tests/
+tests/StellarAdmin.UI.Tests/
   Icons/
     IconOptionsTests.cs
     IconOptionsTests.IconPacks.cs
@@ -44,7 +44,7 @@ Follow [C# file organization](csharp-file-organization.md) within each partial f
 
 Group integration tests by feature, using scenario-oriented classes such as `Resources/ResourceIndexTests.cs`, `ResourceCreateTests.cs`, `ResourceConfigurationTests.cs`, and `ResourceViewOverrideTests.cs`. Match namespaces to these folders. Name methods `Scenario_ExpectedOutcome`, for example `InvalidSubmission_RedisplaysValuesAndDoesNotPersist`. Do not prefix every method with the controller action already conveyed by the class.
 
-Keep shared host setup in `Infrastructure/DashboardTestHost.cs` and sample models, data sources, and state in `Fixtures/`, with fresh mutable state per test. Extract only shared setup, leaving scenario configuration, requests, and assertions visible in the tests. Helpers used by one scenario class can remain private in that class. Real Razor fixtures retain MVC's `Areas/StellarAdmin/Views/...` structure. Avoid a general-purpose test base class.
+Keep shared host setup in `Infrastructure/StellarAdminTestHost.cs` and sample models, data sources, and state in `Fixtures/`, with fresh mutable state per test. Extract only shared setup, leaving scenario configuration, requests, and assertions visible in the tests. Helpers used by one scenario class can remain private in that class. Real Razor fixtures retain MVC's `Areas/StellarAdmin/Views/...` structure. Avoid a general-purpose test base class.
 
 ## Framework
 
@@ -59,11 +59,11 @@ Every test method must contain one arrange–act–assert sequence with the exac
 Keep the operation under test visible in the method. Setup may call other SUT operations to establish the scenario. Observing the resulting state in Assert is appropriate; do not continue mutating the SUT through unrelated scenarios there. Use `sut` for the primary object under test and descriptive names for inputs and results. Explicit locals that clarify these sections take precedence over the general preference to inline single-use locals.
 
 ```csharp
-using StellarAdmin.Icons;
+using StellarAdmin.UI.Icons;
 using TUnit.Assertions;
 using TUnit.Core;
 
-namespace StellarAdmin.Core.Tests.Icons;
+namespace StellarAdmin.UI.Tests.Icons;
 
 public partial class IconOptionsTests
 {

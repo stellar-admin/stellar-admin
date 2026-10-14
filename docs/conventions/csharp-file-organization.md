@@ -66,7 +66,7 @@ builder.Services.AddSingleton<ISidebarItemsProvider>(
 
 var controller = typeof(EfCoreResourceController<TContext, TEntity>);
 builder
-    .AddApplicationPart(typeof(StellarAdminDashboardBuilderExtensions).Assembly)
+    .AddApplicationPart(typeof(StellarAdminBuilderExtensions).Assembly)
     .AddController(controller, name);
 ```
 

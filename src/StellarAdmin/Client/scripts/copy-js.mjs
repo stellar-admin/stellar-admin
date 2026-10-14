@@ -1,4 +1,4 @@
-// Copies vendored scripts from node_modules, and the Dashboard's own script, into wwwroot. Add an entry per file.
+// Copies vendored scripts from node_modules, and the admin panel's own script, into wwwroot. Add an entry per file.
 import { copyFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

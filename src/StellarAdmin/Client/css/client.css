@@ -1,4 +1,4 @@
-/* StellarAdmin: the Dashboard's own component rules and the Tailwind utilities its views
+/* StellarAdmin: the admin panel's own component rules and the Tailwind utilities its views
    use, linked after stellar-admin.css, which ships the reset, the tokens and every component.
 
    Both theme imports are reference-only, so no variables are emitted here:

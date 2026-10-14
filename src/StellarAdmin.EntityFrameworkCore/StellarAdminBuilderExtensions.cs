@@ -32,7 +32,7 @@ public static class StellarAdminBuilderExtensions
     /// <summary>
     ///     Adds an EF Core resource under the specified URL slug.
     /// </summary>
-    /// <param name="builder">The Dashboard builder.</param>
+    /// <param name="builder">The StellarAdmin builder.</param>
     /// <param name="slug">
     ///     The resource's URL segment: lowercase letters and digits, optionally separated by
     ///     single hyphens.
@@ -71,7 +71,7 @@ public static class StellarAdminBuilderExtensions
     /// <summary>
     ///     Adds and configures an EF Core resource under the specified URL slug.
     /// </summary>
-    /// <param name="builder">The Dashboard builder.</param>
+    /// <param name="builder">The StellarAdmin builder.</param>
     /// <param name="slug">
     ///     The resource's URL segment: lowercase letters and digits, optionally separated by
     ///     single hyphens.

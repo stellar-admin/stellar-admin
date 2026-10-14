@@ -1,22 +1,22 @@
 ---
-name: stellar-admin-tag-helpers
+name: stellar-admin-ui
 description: >-
-  Build ASP.NET Core MVC and Razor Pages UIs with the StellarAdmin.TagHelpers
-  UI library. Covers setup,
+  Build ASP.NET Core MVC and Razor Pages UIs with the StellarAdmin.UI
+  library. Covers setup,
   sa-* Tag Helpers, forms and validation, page layouts and navigation, linking a
   theme file, dark mode, icons, and
   client interactivity. Use when building or editing
   StellarAdmin UI markup, forms, layouts, or styling in .cshtml files, or when
-  the user asks how to use StellarAdmin Tag Helpers. Does not cover Dashboard
+  the user asks how to use StellarAdmin.UI. Does not cover StellarAdmin
   admin-panel configuration or resource workflows. Creating or changing a
   theme is the stellar-admin-theme skill.
 metadata:
   author: StellarAdmin
 ---
 
-# Building UIs with StellarAdmin Tag Helpers
+# Building UIs with StellarAdmin.UI
 
-StellarAdmin Tag Helpers is a library of **ASP.NET Core Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/), for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.TagHelpers` NuGet package. Every component is a server-rendered `<sa-*>` element. Interactivity that HTML and CSS can't do alone comes from small bundled web components (`<sel-*>`), which you never write by hand — the tag helpers emit them.
+StellarAdmin.UI is a library of **ASP.NET Core Tag Helpers** that mirror [shadcn/ui](https://ui.shadcn.com/), for building MVC / Razor Pages UIs. It ships as the `StellarAdmin.UI` NuGet package. Every component is a server-rendered `<sa-*>` element. Interactivity that HTML and CSS can't do alone comes from small bundled web components (`<sel-*>`), which you never write by hand — the tag helpers emit them.
 
 Use this skill when writing or editing StellarAdmin markup in MVC or Razor Pages `.cshtml` files. ASP.NET Core Tag Helpers are not supported in Blazor `.razor` components.
 

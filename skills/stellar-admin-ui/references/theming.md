@@ -7,7 +7,7 @@
 With no theme file, the app gets the default theme: a blue accent, near-neutral greys, 6px corners and Inter (falling back to system fonts). That is a complete, supported look; don't add a theme file unless the user wants something different.
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
 ```
 
 ## A theme file
@@ -27,11 +27,11 @@ A theme file sets variables in the `sa.theme` cascade layer, on `:root`:
 Save it in the app (for example `wwwroot/css/theme.css`) and link it **after** `stellar-admin.css`:
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
 ```
 
-Set only the variables that differ from the default; leave the rest out. Dark mode is derived from the same variables, so a theme normally sets nothing for `.dark` (the optional `-dark` variables exist for when it should differ). The installed package lists every variable, with its meaning and range, in `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json`).
+Set only the variables that differ from the default; leave the rest out. Dark mode is derived from the same variables, so a theme normally sets nothing for `.dark` (the optional `-dark` variables exist for when it should differ). The installed package lists every variable, with its meaning and range, in `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.UI/stellar-admin.theme-variables.json`).
 
 To switch themes, switch the theme file's `<link>`. To go back to the default, remove it.
 
@@ -134,7 +134,7 @@ Read the tokens; don't set them. A theme sets the theme variables. A token name 
 @import "<path>/stellar-admin.tailwind.css";
 ```
 
-Copy `stellar-admin.tailwind.css` from the package's static assets (`_content/StellarAdmin.TagHelpers/stellar-admin.tailwind.css`) into the project, or reference it where the build can read it. It maps Tailwind's theme onto the tokens: spacing follows density, and the fonts, the small text sizes, the radius steps and the colours by their shadcn names (`bg-primary`, `text-muted-foreground`, `bg-card`, `border-border`, …) follow the theme and dark mode. The layer order keeps Tailwind's preflight below the components and your utilities above them. Keep linking `stellar-admin.css`; the adapter adds no rules.
+Copy `stellar-admin.tailwind.css` from the package's static assets (`_content/StellarAdmin.UI/stellar-admin.tailwind.css`) into the project, or reference it where the build can read it. It maps Tailwind's theme onto the tokens: spacing follows density, and the fonts, the small text sizes, the radius steps and the colours by their shadcn names (`bg-primary`, `text-muted-foreground`, `bg-card`, `border-border`, …) follow the theme and dark mode. The layer order keeps Tailwind's preflight below the components and your utilities above them. Keep linking `stellar-admin.css`; the adapter adds no rules.
 
 ```razor
 <!-- good: adapts to the theme and dark mode -->
@@ -146,14 +146,12 @@ Copy `stellar-admin.tailwind.css` from the package's static assets (`_content/St
 
 ## Menu surfaces (`Program.cs`)
 
-Floating menu surfaces — Dropdown Menu content and sub-menus — have three app-wide appearance settings, configured once by chaining `ConfigureMenu` off `AddTagHelpers()`:
+Floating menu surfaces — Dropdown Menu content and sub-menus — have three app-wide appearance settings, configured once by chaining `ConfigureMenu` off `AddStellarAdminUI()`:
 
 ```csharp
-using StellarAdmin;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin()
-    .AddTagHelpers()
+builder.Services.AddStellarAdminUI()
     .ConfigureMenu(menu =>
     {
         menu.Color = MenuColor.Inverted;              // Default | Inverted
@@ -172,7 +170,7 @@ Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle` — only call 
 
 ## Upgrading from theme bundles
 
-Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, `stellar-admin.shadcn.nova.css`, …), Dashboard's `ConfigureTheme`, and shadcn-named variables (`--primary`, `--radius`) for customization. If the installed package still has those bundles, follow that version's documentation instead of this guide. When upgrading, link `stellar-admin.css` instead, move any customization to variables in a theme file, and replace overrides of `--primary`, `--background` and the other shadcn variables, which the components no longer read, with the matching variables (`--sa-accent`, `--sa-neutral-hue`, …). The former themes are not reproduced; pick the closest look in the theme builder.
+Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, `stellar-admin.shadcn.nova.css`, …), the admin panel's `ConfigureTheme`, and shadcn-named variables (`--primary`, `--radius`) for customization. If the installed package still has those bundles, follow that version's documentation instead of this guide. When upgrading, link `stellar-admin.css` instead, move any customization to variables in a theme file, and replace overrides of `--primary`, `--background` and the other shadcn variables, which the components no longer read, with the matching variables (`--sa-accent`, `--sa-neutral-hue`, …). The former themes are not reproduced; pick the closest look in the theme builder.
 
 ## Rules
 
@@ -182,4 +180,4 @@ Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, 
 4. Load web fonts from the app layout; the stylesheet never fetches them.
 5. Enable dark mode with the `dark` class on an ancestor, with `color-scheme` alongside it; don't write dark CSS of your own.
 6. In your own CSS, read the `--sa-color-*`, `--sa-radius-*` and `--sa-space-*` tokens instead of hard-coded colours and sizes. Tailwind utilities need the app's own Tailwind build plus the adapter.
-7. Configure menu options once via `ConfigureMenu`, chained off `.AddTagHelpers()`.
+7. Configure menu options once via `ConfigureMenu`, chained off `AddStellarAdminUI()`.

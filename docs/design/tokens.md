@@ -1,6 +1,6 @@
 # Theme tokens
 
-The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/archive/theme-token-migration.md); `src/StellarAdmin.TagHelpers/Client/css/tokens.css` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal. The theme variables are also listed for tools in `Client/css/theme-variables.json` (shipped as `stellar-admin.theme-variables.json`), which the CSS build checks against `tokens.css`.
+The public theming vocabulary of `stellar-admin.css`. Approved in phase 1 of the [theme token migration](../plans/archive/theme-token-migration.md); `src/StellarAdmin.UI/Client/css/tokens.css` implements it. Names here are public API once released. A name not listed here, and anything starting `--_`, is internal. The theme variables are also listed for tools in `Client/css/theme-variables.json` (shipped as `stellar-admin.theme-variables.json`), which the CSS build checks against `tokens.css`.
 
 ## Tiers
 

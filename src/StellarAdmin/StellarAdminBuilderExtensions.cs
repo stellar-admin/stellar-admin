@@ -12,7 +12,7 @@ using StellarAdmin.Sidebar;
 namespace StellarAdmin;
 
 /// <summary>
-///     Registers Dashboard resources.
+///     Registers admin panel resources.
 /// </summary>
 public static partial class StellarAdminBuilderExtensions
 {

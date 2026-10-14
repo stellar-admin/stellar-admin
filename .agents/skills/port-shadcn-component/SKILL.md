@@ -1,7 +1,7 @@
 ---
 name: port-shadcn-component
 description: >-
-  End-to-end workflow for porting a shadcn/ui component into StellarAdmin.TagHelpers: research the
+  End-to-end workflow for porting a shadcn/ui component into StellarAdmin.UI: research the
   upstream source, translate its classes into token-driven CSS, write the tag helpers, add
   DocsSamples demos, the website docs page and the generated skills reference. Use whenever adding
   or porting a component that already exists upstream — "port the X component", "add the X
@@ -84,14 +84,14 @@ When upstream's look needs a decision the tokens don't make (an outline only som
 Build the CSS directly; it fails loudly where `dotnet build` can succeed over a silently failed CSS build:
 
 ```bash
-cd src/StellarAdmin.TagHelpers/Client && npm run build:css
+cd src/StellarAdmin.UI/Client && npm run build:css
 ```
 
 Then check the component in DocsSamples (Phase 4) in the default theme against upstream, and in the theme fixtures (`?theme=ledger|ops|soft`, light and dark), which move radius, density, outlines and elevation the furthest. Run `util/theme-check/contrast.mjs` on its page (see its README): no text failures, and no new faint parts or pill corners.
 
 ## Phase 3 — tag helpers
 
-`src/StellarAdmin.TagHelpers/TagHelpers/<Component>/`, one file per type. Pattern reference: `TagHelpers/Bubble/`.
+`src/StellarAdmin.UI/TagHelpers/<Component>/`, one file per type. Pattern reference: `TagHelpers/Bubble/`.
 
 **Naming: component prefix first, element role last** — `sa-bubble-link-content`, `sa-sidebar-menu-button`, `sa-item-link`, with class names to match. `sa-linkbutton` is a deliberate exception: standalone, not part of a `sa-button` compound.
 
@@ -109,9 +109,9 @@ Then check the component in DocsSamples (Phase 4) in the default theme against u
 Build, then format only the folder you touched. Expect 0 warnings.
 
 ```bash
-dotnet build src/StellarAdmin.TagHelpers/StellarAdmin.TagHelpers.csproj
+dotnet build src/StellarAdmin.UI/StellarAdmin.UI.csproj
 # From the product repository root, after dotnet tool restore:
-dotnet csharpier format src/StellarAdmin.TagHelpers/TagHelpers/<Component>
+dotnet csharpier format src/StellarAdmin.UI/TagHelpers/<Component>
 ```
 
 ## Phase 4 — DocsSamples
@@ -163,7 +163,7 @@ dotnet run --project util/SkillsGenerator
 dotnet run --project util/SkillsGenerator -- --check   # must report no drift
 ```
 
-Under `skills/stellar-admin-tag-helpers/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Dashboard components are generated separately under `skills/stellar-admin-dashboard/references/`. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
+Under `skills/stellar-admin-ui/references/`, `components/*.md` and `components-index.md` are generated from the UI library. Admin panel components are generated separately under `skills/stellar-admin/references/`. Only marked `<!-- structure:begin -->` / `<!-- structure:end -->` regions inside component files are hand-authored and preserved. The other reference guides are handwritten; keep them consistent with the public docs.
 
 ## Phase 7 — verify and hand over
 

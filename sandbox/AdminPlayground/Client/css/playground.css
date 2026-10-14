@@ -1,5 +1,5 @@
 /* AdminPlayground: utilities for class names set in resource registrations and the row details
-   partials, linked after stellar-admin.css and the Dashboard stylesheet, which already ship the
+   partials, linked after stellar-admin.css and the admin panel stylesheet, which already ship the
    reset, the tokens and every component rule, so this file emits utilities only.
 
    Both theme imports are reference-only, so no variables are emitted here; the StellarAdmin Tailwind

@@ -32,16 +32,8 @@ var repoRoot = GetRepoRootFolder();
 // Sources, samples, and consumer references belong to this checkout.
 var products = new[]
 {
-    (
-        Package: "StellarAdmin.TagHelpers",
-        Skill: "stellar-admin-tag-helpers",
-        Title: "StellarAdmin Tag Helpers"
-    ),
-    (
-        Package: "StellarAdmin.Dashboard",
-        Skill: "stellar-admin-dashboard",
-        Title: "StellarAdmin Dashboard"
-    ),
+    (Package: "StellarAdmin.UI", Skill: "stellar-admin-ui", Title: "StellarAdmin.UI"),
+    (Package: "StellarAdmin", Skill: "stellar-admin", Title: "StellarAdmin"),
 };
 var tagHelpersRoots = products
     .Select(product => Path.Combine(repoRoot, "src", product.Package, "TagHelpers"))
@@ -82,7 +74,7 @@ foreach (var product in products)
             Extractor.ToKebabCase(component.FolderName) + ".md"
         );
         var existing = File.Exists(path) ? File.ReadAllText(path) : null;
-        var package = product.Package == "StellarAdmin.TagHelpers" ? null : product.Package;
+        var package = product.Package == "StellarAdmin.UI" ? null : product.Package;
         outputs[path] = renderer.RenderComponent(component, existing, package);
     }
     outputs[Path.Combine(referencesDir, "components-index.md")] = Renderer.RenderIndex(

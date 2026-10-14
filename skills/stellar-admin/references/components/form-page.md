@@ -6,7 +6,7 @@ generated: true
 
 # FormPage
 
-Package: `StellarAdmin.Dashboard` (MIT). See [setup](../setup.md#resource-packages) for registration and source availability.
+Package: `StellarAdmin` (MIT). See [setup](../setup.md#resource-packages) for registration and source availability.
 
 Renders the standard form page for the current form view model.
 

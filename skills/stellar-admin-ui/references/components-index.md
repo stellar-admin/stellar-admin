@@ -1,4 +1,4 @@
-# StellarAdmin Tag Helpers component catalog
+# StellarAdmin.UI component catalog
 
 | Component | Tags | Summary |
 |-----------|------|---------|

@@ -5,7 +5,7 @@ StellarAdmin leans on the web platform wherever it can, so most components are p
 ## The `stellar-admin.js` bundle
 
 ```razor
-<script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+<script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 ```
 
 It contains three things:

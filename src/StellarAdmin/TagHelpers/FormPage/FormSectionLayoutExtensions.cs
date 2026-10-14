@@ -1,6 +1,6 @@
 using StellarAdmin.UI;
 
-namespace StellarAdmin.TagHelpers;
+namespace StellarAdmin;
 
 internal static class FormSectionLayoutExtensions
 {

@@ -70,7 +70,7 @@
   }
 }
 
-/* Responsive grids (ResponsiveGrid.cs): the tag helpers and the Dashboard write a grid's column and
+/* Responsive grids (ResponsiveGrid.cs): the tag helpers and the admin panel write a grid's column and
    row counts and each item's span and start per container breakpoint as inline variables, leaving
    out values at their initial value. The variables don't inherit, so a nested grid or item never
    picks up its parent's values. */

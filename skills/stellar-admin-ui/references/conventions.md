@@ -14,7 +14,7 @@ Attributes backed by a C# enum take the **fully-qualified enum value**, not a lo
 <sa-button variant="outline">Save</sa-button>
 ```
 
-Each component reference lists the enum type and its allowed members. When an enum attribute is omitted, the component's documented default applies. This works because `_ViewImports.cshtml` carries `@using StellarAdmin.TagHelpers` (see `setup.md`).
+Each component reference lists the enum type and its allowed members. When an enum attribute is omitted, the component's documented default applies. This works because `_ViewImports.cshtml` carries `@using StellarAdmin.UI` (see `setup.md`).
 
 ## 2. Attributes are kebab-case
 

@@ -2,7 +2,7 @@
 
 ## Built-in icons
 
-StellarAdmin ships the [Lucide](https://lucide.dev/) icon set. It is registered by `AddStellarAdmin()`, so every Lucide icon is available from `<sa-icon>` by name with no further setup:
+StellarAdmin ships the [Lucide](https://lucide.dev/) icon set. It is registered by `AddStellarAdminUI()`, so every Lucide icon is available from `<sa-icon>` by name with no further setup:
 
 ```razor
 <sa-icon name="plane"/>
@@ -20,7 +20,7 @@ Icons compose naturally inside other components:
 
 ## Adding your own icons
 
-Custom icons are registered on the builder returned by `AddStellarAdmin()`, then used exactly like the built-in ones. An icon is an `IconDefinition`: the attributes for the `<svg>` element plus the ordered list of shapes (`path`, `circle`, `rect`, …) drawn inside it.
+Custom icons are registered on the builder returned by `AddStellarAdminUI()` (in an admin panel app, inside `admin.ConfigureUI(ui => ...)`), then used exactly like the built-in ones. An icon is an `IconDefinition`: the attributes for the `<svg>` element plus the ordered list of shapes (`path`, `circle`, `rect`, …) drawn inside it.
 
 Draw on the same 24 x 24 grid with a 2 px `currentColor` stroke to stay visually consistent with Lucide. Any attribute you put on `<sa-icon>` (such as `class` or `stroke-width`) takes precedence over the definition's attributes.
 
@@ -28,9 +28,10 @@ Draw on the same 24 x 24 grid with a 2 px `currentColor` stroke to stay visually
 
 ```csharp
 using System.Collections.Immutable;
-using StellarAdmin.Icons;
+using StellarAdmin.UI;
+using StellarAdmin.UI.Icons;
 
-builder.Services.AddStellarAdmin()
+builder.Services.AddStellarAdminUI()
     .AddIcon("voyager-suitcase", new IconDefinition(
         new Dictionary<string, string>
         {
@@ -53,8 +54,7 @@ builder.Services.AddStellarAdmin()
             {
                 ["d"] = "M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
             }.ToImmutableDictionary()),
-        ]))
-    .AddTagHelpers();
+        ]));
 ```
 
 ```razor
@@ -103,21 +103,20 @@ public class VoyagerIconPack : IIconPack
 ```
 
 ```csharp
-builder.Services.AddStellarAdmin()
-    .AddIconPack<VoyagerIconPack>()
-    .AddTagHelpers();
+builder.Services.AddStellarAdminUI()
+    .AddIconPack<VoyagerIconPack>();
 ```
 
 `TIconPack` must have a parameterless constructor. Packs are read when icon options are first resolved. Each service provider has its own icon options; configure icons before building the application.
 
-Icon registration uses `IconOptions` in `StellarAdmin.Icons`. Configure it through `services.Configure<IconOptions>(...)` using `AddIcon`, `AddIconPack<TIconPack>`, `RemoveIcon`, and `ClearIcons`. Use `GetIconNames` to list registered names and `TryGetIcon` to look up a definition. Tag helpers read the configured options directly. Treat the options and icon definitions as read-only after startup.
+Icon registration uses `IconOptions` in `StellarAdmin.UI.Icons`. Configure it through `services.Configure<IconOptions>(...)` using `AddIcon`, `AddIconPack<TIconPack>`, `RemoveIcon`, and `ClearIcons`. Use `GetIconNames` to list registered names and `TryGetIcon` to look up a definition. Tag helpers read the configured options directly. Treat the options and icon definitions as read-only after startup.
 
 ### Prefixing an icon pack
 
 Use the registration callback to keep a pack's icon names separate from other packs:
 
 ```csharp
-builder.Services.AddStellarAdmin()
+builder.Services.AddStellarAdminUI()
     .AddIconPack<VoyagerIconPack>(pack =>
     {
         pack.Prefix = "voyager:";
@@ -192,7 +191,7 @@ To replace Lucide completely, configure `IconOptions` with `ClearIcons()` follow
 | `BooleanTrue` | `check` |
 | `BooleanFalse` | `x` |
 
-Supply glyphs compatible with component styling: the accordion indicator points down when closed and rotates 180 degrees when open, the row detail indicator points right when collapsed and rotates 90 degrees when expanded, loading icons rotate continuously, carousel navigation adapts to orientation and text direction, and `ScrollToEnd` rotates for scrolling to the start. Dashboard view icons and application-selected icon names are outside this semantic mapping.
+Supply glyphs compatible with component styling: the accordion indicator points down when closed and rotates 180 degrees when open, the row detail indicator points right when collapsed and rotates 90 degrees when expanded, loading icons rotate continuously, carousel navigation adapts to orientation and text direction, and `ScrollToEnd` rotates for scrolling to the start. Admin panel view icons and application-selected icon names are outside this semantic mapping.
 
 ## API reference
 
@@ -209,4 +208,4 @@ Supply glyphs compatible with component styling: the accordion indicator points 
 | `SvgShape.Name` | The SVG element name — `path`, `circle`, `rect`, `line`, `polyline`. |
 | `SvgShape.Attributes` | Attributes on the shape element — `d`, `cx`, `cy`, `r` (`IImmutableDictionary<string, string>`). |
 
-Types live in the `StellarAdmin.Icons` namespace.
+Types live in the `StellarAdmin.UI.Icons` namespace.

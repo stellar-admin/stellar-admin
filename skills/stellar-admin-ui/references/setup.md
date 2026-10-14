@@ -1,6 +1,6 @@
-# Setting up StellarAdmin Tag Helpers
+# Setting up StellarAdmin.UI
 
-StellarAdmin Tag Helpers ships as the **`StellarAdmin.TagHelpers`** NuGet package. A project needs four things wired up before any `<sa-*>` tag helper renders correctly. If components render as plain, unstyled HTML, one of these steps is missing (usually 3 or 4).
+StellarAdmin.UI ships as the **`StellarAdmin.UI`** NuGet package. A project needs four things wired up before any `<sa-*>` tag helper renders correctly. If components render as plain, unstyled HTML, one of these steps is missing (usually 3 or 4).
 
 ## Choose the installation scope
 
@@ -18,41 +18,40 @@ Wait for the choice before making installation changes; an unanswered question d
 ## 1. Install the package
 
 ```bash
-dotnet add package StellarAdmin.TagHelpers
+dotnet add package StellarAdmin.UI
 ```
 
 ## 2. Register services (`Program.cs`)
 
 ```csharp
-using StellarAdmin;
-using StellarAdmin.TagHelpers;
+using StellarAdmin.UI;
 
-builder.Services.AddStellarAdmin().AddTagHelpers();
+builder.Services.AddStellarAdminUI();
 ```
 
-`AddStellarAdmin()` (namespace `StellarAdmin`) comes from `StellarAdmin.Core`, which is installed transitively with `StellarAdmin.TagHelpers`. It creates the shared builder and registers `IconOptions`, with the **Lucide** icon pack as the default. `.AddTagHelpers()` (namespace `StellarAdmin.TagHelpers`) comes from `StellarAdmin.TagHelpers` and registers the tag helper options. Keep both calls in the registration chain.
+`AddStellarAdminUI()` (namespace `StellarAdmin.UI`) registers the tag helper services and `IconOptions`, with the **Lucide** icon pack as the default. It returns a `StellarAdminUIBuilder` for icons, menu and form defaults; `AddStellarAdminUI(ui => ...)` takes the same settings as a callback. An application that uses the `StellarAdmin` admin panel calls `AddStellarAdmin(...)` instead, which registers the UI for it.
 
-No separate Core package installation is needed. Theme selection is **not** part of registration: the theme is whichever stylesheets the layout links (step 4).
+Theme selection is **not** part of registration: the theme is whichever stylesheets the layout links (step 4).
 
 ## 3. Register the tag helpers (`_ViewImports.cshtml`)
 
 ```razor
-@using StellarAdmin.TagHelpers
+@using StellarAdmin.UI
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@addTagHelper *, StellarAdmin.TagHelpers
+@addTagHelper *, StellarAdmin.UI
 ```
 
-Without `@addTagHelper *, StellarAdmin.TagHelpers`, Razor treats `<sa-*>` as unknown HTML and emits it verbatim — no styling, no behavior. The `@using` is what lets you write enum values like `ButtonVariant.Outline` unqualified.
+Without `@addTagHelper *, StellarAdmin.UI`, Razor treats `<sa-*>` as unknown HTML and emits it verbatim — no styling, no behavior. The `@using` is what lets you write enum values like `ButtonVariant.Outline` unqualified.
 
 Keep the framework's own line (`Microsoft.AspNetCore.Mvc.TagHelpers`) — the default project templates already include it. StellarAdmin builds on it: `asp-for`, `asp-page`, `asp-route-*`, `asp-items` and `asp-append-version` are resolved by the framework's tag helpers, so without that line they render as literal attributes and model binding silently does nothing.
 
 ## 4. Reference the CSS and JS assets (your layout, e.g. `_Layout.cshtml`)
 
-The assets are served from the package as static web assets under `_content/StellarAdmin.TagHelpers/`. `stellar-admin.css` carries every component and the default theme:
+The assets are served from the package as static web assets under `_content/StellarAdmin.UI/`. `stellar-admin.css` carries every component and the default theme:
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
-<script defer src="/_content/StellarAdmin.TagHelpers/stellar-admin.js" asp-append-version="true"></script>
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
+<script defer src="/_content/StellarAdmin.UI/stellar-admin.js" asp-append-version="true"></script>
 ```
 
 - The **CSS** carries all component styling and the default theme. Missing it → unstyled components. Another theme is an optional file of CSS variables linked after it; see [theming](theming.md).
@@ -73,7 +72,7 @@ For basic installation, retain Bootstrap and explain that CSS resets and overlap
 The default theme needs nothing more. For another look, write a theme file of CSS variables (or download one from the [theme builder](https://www.stellaradmin.com/theme-builder)) and link it after `stellar-admin.css`:
 
 ```razor
-<link rel="stylesheet" href="/_content/StellarAdmin.TagHelpers/stellar-admin.css" asp-append-version="true"/>
+<link rel="stylesheet" href="/_content/StellarAdmin.UI/stellar-admin.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true"/>
 ```
 

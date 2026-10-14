@@ -59,7 +59,7 @@ public abstract class SidebarLinkTarget
 
     internal abstract SidebarLinkItemBase CreateItem(string label);
 
-    // Dashboard pages render in the StellarAdmin area, which link generation keeps as an ambient
+    // Admin panel pages render in the StellarAdmin area, which link generation keeps as an ambient
     // value unless the link names another area. An empty area links outside any area.
     private sealed class ActionTarget(string action, string controller, string? area)
         : SidebarLinkTarget

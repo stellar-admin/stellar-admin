@@ -2,7 +2,7 @@
 
 The variables a theme file sets, how to turn a description into variable values, three complete themes as worked examples, and how to link the result to the theme builder. How to write, link and load a theme file is in the [skill's workflow](../SKILL.md#workflow).
 
-The package also ships this list as `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.TagHelpers/stellar-admin.theme-variables.json`), for the installed version. If a variable below is missing from the app's copy, the app's package predates it: don't use it.
+The package also ships this list as `stellar-admin.theme-variables.json` (served at `/_content/StellarAdmin.UI/stellar-admin.theme-variables.json`), for the installed version. If a variable below is missing from the app's copy, the app's package predates it: don't use it.
 
 ## The variables
 
