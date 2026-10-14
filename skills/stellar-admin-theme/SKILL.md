@@ -83,4 +83,4 @@ Dark mode is the `dark` class on an ancestor, usually `<html>`; a theme needs no
 ## Online tools
 
 - Theme builder: <https://www.stellaradmin.com/theme-builder>
-- Theming documentation: <https://www.stellaradmin.com/docs/tag-helpers/theming>
+- Theming documentation: <https://www.stellaradmin.com/docs/ui/theming>

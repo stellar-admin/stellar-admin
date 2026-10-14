@@ -82,14 +82,14 @@ internal sealed partial class Generator
         DocsProjectRootFolder,
         "public",
         "demo",
-        "tag-helpers"
+        "ui"
     );
 
     private static readonly string PagesSourceCodeOutputFolder = Path.Combine(
         DocsProjectRootFolder,
         "content",
         "docs",
-        "tag-helpers",
+        "ui",
         "components",
         "_include"
     );
@@ -98,7 +98,7 @@ internal sealed partial class Generator
         DocsProjectRootFolder,
         "public",
         "demo",
-        "tag-helpers",
+        "ui",
         "assets"
     );
 
@@ -358,7 +358,7 @@ internal sealed partial class Generator
         {
             input = input.Replace(
                 $"src=\"{url}\"",
-                $"src=\"/demo/tag-helpers/assets/{Path.GetFileName(url)}\""
+                $"src=\"/demo/ui/assets/{Path.GetFileName(url)}\""
             );
         }
 
@@ -366,7 +366,7 @@ internal sealed partial class Generator
             .Replace(
                 input,
                 match =>
-                    $"{match.Groups["tag"].Value}/demo/tag-helpers/assets/{match.Groups["filename"].Value}"
+                    $"{match.Groups["tag"].Value}/demo/ui/assets/{match.Groups["filename"].Value}"
             );
 
         // Sync the demo with the docs website's light/dark selection. Injected here rather than in the

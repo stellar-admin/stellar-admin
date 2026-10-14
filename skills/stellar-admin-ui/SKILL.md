@@ -59,4 +59,4 @@ Those are emitted by the tag helpers and driven by the bundled script. Your job 
 
 ## Online documentation
 
-<https://www.stellaradmin.com/docs/tag-helpers>
+<https://www.stellaradmin.com/docs/ui>

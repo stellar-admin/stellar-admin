@@ -10,7 +10,7 @@ There is no example route or homepage import. The experimental `/examples/inline
 
 ## Export and build
 
-`../website/scripts/export-inline-example.mjs` is a temporary adapter for the two existing docs exports. It reads `public/demo/tag-helpers/*-intro.html`, extracts the preview content with parse5, removes the outer sample wrapper, prefixes IDs and recognized references with an instance placeholder, adjusts the sample width and uses a local image. It records the exported JavaScript bundle's current filename in `assets.json`.
+`../website/scripts/export-inline-example.mjs` is a temporary adapter for the two existing docs exports. It reads `public/demo/ui/*-intro.html`, extracts the preview content with parse5, removes the outer sample wrapper, prefixes IDs and recognized references with an instance placeholder, adjusts the sample width and uses a local image. It records the exported JavaScript bundle's current filename in `assets.json`.
 
 The adapter parses the exported `stellar-admin.css` with PostCSS. It scopes document and component selectors to `.sa-inline-example`, adapts dark tokens and `.dark` component rules to the website's ancestor `.dark`, namespaces keyframes and Tailwind internal properties, and leaves the surrounding card responsible for its background. Nested selectors retain their parent relationship. The full theme is retained; this is not CSS dead-code elimination. The website's own Tailwind scan supplies utility classes from the generated HTML, so retained snippets may contribute utilities even when no route imports the component. The wrapper and scoped theme themselves must remain absent from page bundles until imported.
 

@@ -127,7 +127,7 @@ util/theme-check/presets/<name>.css
 │   │                         _NavigationLayout render the picker, the theme link and
 │   │                         window.saThemeFonts (read by theme-fonts.js)
 │   ├── ComponentPlayground   same reader (linked Compile); serves /presets/, renders its picker
-│   └── DocsSamplesGenerator  exports into the website's public/demo/tag-helpers/:
+│   └── DocsSamplesGenerator  exports into the website's public/demo/ui/:
 │                               assets/presets/<name>.css   (fetched from /presets/)
 │                               assets/presets/presets.json (name, label, description)
 │                               *.html, default theme only (light/dark sync, default font)

@@ -20,7 +20,7 @@ def git(*args):
 try:
     if Path(os.fsdecode(git('rev-parse', '--show-toplevel')).strip()).resolve() != repo:
         raise ValueError('Pass the website repository root, not a subdirectory.')
-    paths = ['public/demo', 'content/docs/tag-helpers/components/_include']
+    paths = ['public/demo', 'content/docs/ui/components/_include']
     changed = git('diff', '--name-only', '--no-renames', '-z', 'HEAD', '--', *paths)
     untracked = git('ls-files', '--others', '--exclude-standard', '-z', '--', *paths)
     names = sorted(set(os.fsdecode(p) for p in (changed + untracked).split(b'\0') if p))

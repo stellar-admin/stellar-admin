@@ -43,7 +43,7 @@ Update your `_ViewImports.cshtml` to register the StellarAdmin Tag Helpers and i
 
 ### 4. Link the stylesheet and JavaScript file
 
-Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/tag-helpers/javascript) to your Razor page or layout.
+Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://www.stellaradmin.com/docs/ui/javascript) to your Razor page or layout.
 
 ```razor
 <!DOCTYPE html>
@@ -60,7 +60,7 @@ Add the StellarAdmin stylesheet and the [StellarAdmin JavaScript file](https://w
 ```
 
 > [!TIP]
-> To change the default theme, create a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder) and link it after the stylesheet. The [Theming page](https://www.stellaradmin.com/docs/tag-helpers/theming) provides more information on theming. 
+> To change the default theme, create a theme file in the [theme builder](https://www.stellaradmin.com/theme-builder) and link it after the stylesheet. The [Theming page](https://www.stellaradmin.com/docs/ui/theming) provides more information on theming. 
 
 ### 5. Start using the Tag Helpers
 
@@ -74,7 +74,7 @@ Start using the StellarAdmin Tag Helpers inside your Razor Pages or MVC Views. F
 
 ## Documentation
 
-Documentation and code examples for all the Tag Helpers [can be found online](https://www.stellaradmin.com/docs/tag-helpers).
+Documentation and code examples for all the Tag Helpers [can be found online](https://www.stellaradmin.com/docs/ui).
 
 ## Using StellarAdmin with AI agents
 

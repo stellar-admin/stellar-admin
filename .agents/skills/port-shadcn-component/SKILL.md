@@ -16,7 +16,7 @@ Touches the product repository and the website. Upstream settles the anatomy, th
 
 For an authorized end-to-end port, carry the work through CSS, tag helpers, DocsSamples demos, website docs, and consumer references. Make routine Phase 0 decisions using the defaults below and report them. Respect a narrower user request (such as analysis only), explicit review checkpoints, and existing authorization; this skill does not authorize commits or publishing. Ask about a consequential unresolved design choice only when it blocks the next step.
 
-Worked example — the Bubble port, as shipped: `TagHelpers/Bubble/`, `docs/DocsSamples/Pages/Bubble/`, `../website/content/docs/tag-helpers/components/bubble.mdx`.
+Worked example — the Bubble port, as shipped: `TagHelpers/Bubble/`, `docs/DocsSamples/Pages/Bubble/`, `../website/content/docs/ui/components/bubble.mdx`.
 
 ## The fidelity rule
 
@@ -143,7 +143,7 @@ dotnet run --project docs/DocsSamplesGenerator
 
 The generator regenerates all demos, and SVG attribute order plus antiforgery tokens can differ between runs. Record pre-existing edits first. Run `bash .agents/skills/port-shadcn-component/scripts/classify-generator-output.sh ../website` from the product repository for a read-only classification, then review the actual diffs. Normalized equality can hide real SVG edits and must never trigger automatic restores. Use isolated worktrees or a pre-generation snapshot if output cleanup is needed; preserve existing edits. Check that the exported `stellar-admin.css` changed only by the new component's rules.
 
-Write `../website/content/docs/tag-helpers/components/<component>.mdx` by hand and add its slug to `meta.json` under the right group. Structure, per `bubble.mdx`:
+Write `../website/content/docs/ui/components/<component>.mdx` by hand and add its slug to `meta.json` under the right group. Structure, per `bubble.mdx`:
 
 - Frontmatter `title` / `description`, then `import { Demo } from "@/components/demo";`
 - Intro demo → `## Usage` with the composition skeleton → `## Examples`, one `###` per demo (prose paragraph + `<Demo>` + `<include>`).

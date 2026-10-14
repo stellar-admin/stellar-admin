@@ -111,4 +111,4 @@ Drop this on a page; if it renders as a styled alert, setup is correct:
 
 ## Online documentation
 
-Full component docs and live examples: <https://www.stellaradmin.com/docs/tag-helpers>
+Full component docs and live examples: <https://www.stellaradmin.com/docs/ui>
