@@ -251,18 +251,16 @@ public class ResourceCrudTests
     public async Task PrimaryKeyAsCreateField_RejectsConfiguration()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.AllowCreate(create =>
-                create.Fields(fields => fields.Add(product => product.Number))
-            )
-        );
-        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>();
 
         // Act
-        Action act = () =>
+        async Task act()
         {
-            _ = options.Value;
-        };
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.AllowCreate(create =>
+                    create.Fields(fields => fields.Add(product => product.Number))
+                )
+            );
+        }
 
         // Assert
         await Assert.That(act).Throws<InvalidOperationException>();
@@ -272,18 +270,16 @@ public class ResourceCrudTests
     public async Task ConcurrencyTokenAsEditField_RejectsConfiguration()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.AllowEdit(edit =>
-                edit.Fields(fields => fields.Add(product => product.Version))
-            )
-        );
-        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>();
 
         // Act
-        Action act = () =>
+        async Task act()
         {
-            _ = options.Value;
-        };
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.Version))
+                )
+            );
+        }
 
         // Assert
         await Assert.That(act).Throws<InvalidOperationException>();
@@ -293,18 +289,16 @@ public class ResourceCrudTests
     public async Task GeneratedValueAsEditField_RejectsConfiguration()
     {
         // Arrange
-        await using var sut = await EfCoreTestHost.CreateAsync(resource =>
-            resource.AllowEdit(edit =>
-                edit.Fields(fields => fields.Add(product => product.GeneratedCode))
-            )
-        );
-        var options = sut.Services.GetRequiredService<IOptions<ResourceOptions<Product>>>();
 
         // Act
-        Action act = () =>
+        async Task act()
         {
-            _ = options.Value;
-        };
+            await using var sut = await EfCoreTestHost.CreateAsync(resource =>
+                resource.AllowEdit(edit =>
+                    edit.Fields(fields => fields.Add(product => product.GeneratedCode))
+                )
+            );
+        }
 
         // Assert
         await Assert.That(act).Throws<InvalidOperationException>();

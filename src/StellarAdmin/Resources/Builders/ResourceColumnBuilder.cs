@@ -32,6 +32,43 @@ public sealed class ResourceColumnBuilder<TResource>
     internal ResourceColumnBuilder(LambdaExpression field) => _field = field;
 
     /// <summary>
+    ///     Names the form field the column edits in an inline row, when it shows a different
+    ///     property than the field binds.
+    /// </summary>
+    /// <remarks>
+    ///     Without it, the column edits the field with the same name as its property path.
+    /// </remarks>
+    public ResourceColumnBuilder<TResource> EditsField<TProperty>(
+        Expression<Func<TResource, TProperty>> field
+    )
+    {
+        ArgumentNullException.ThrowIfNull(field);
+        if (ResourcePropertyPath.GetProperties(field) is not { } properties)
+        {
+            throw new ArgumentException("Select a property path.", nameof(field));
+        }
+
+        return EditsField(ResourcePropertyPath.GetName(properties));
+    }
+
+    /// <summary>
+    ///     Names the form field the column edits in an inline row, when it shows a different
+    ///     property than the field binds.
+    /// </summary>
+    /// <param name="fieldName">
+    ///     The field's property path, such as <c>CountryId</c>, which may name a property of a
+    ///     separate edit or create model.
+    /// </param>
+    public ResourceColumnBuilder<TResource> EditsField(string fieldName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fieldName);
+
+        _configuration.Add(options => options.EditsFieldName = fieldName);
+
+        return this;
+    }
+
+    /// <summary>
     ///     Enables sorting by the column's field.
     /// </summary>
     public ResourceColumnBuilder<TResource> Sortable()

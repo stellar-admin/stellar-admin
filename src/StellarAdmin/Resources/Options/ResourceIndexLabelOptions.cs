@@ -6,6 +6,11 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceIndexLabelOptions
 {
     /// <summary>
+    ///     The callback that generates the default inline row cancel button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> CancelLabel { get; set; } = resource => "Cancel";
+
+    /// <summary>
     ///     The callback that generates the default index create button label.
     /// </summary>
     public Func<ResourceLabelContext, string> CreateLabel { get; set; } = resource => "Create";
@@ -21,6 +26,11 @@ public sealed class ResourceIndexLabelOptions
     /// </summary>
     public Func<ResourceLabelContext, string> EditLabel { get; set; } =
         resource => $"Edit {resource.SingularLabel}";
+
+    /// <summary>
+    ///     The callback that generates the default inline row save button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> SaveLabel { get; set; } = resource => "Save";
 
     /// <summary>
     ///     The callback that generates the default index search placeholder.

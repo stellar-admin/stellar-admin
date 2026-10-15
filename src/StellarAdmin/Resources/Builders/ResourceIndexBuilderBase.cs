@@ -12,6 +12,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     where TBuilder : ResourceIndexBuilderBase<TResource, TBuilder>
 {
     /// <summary>
+    ///     The inline row cancel button label.
+    /// </summary>
+    public string? CancelLabel
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.CancelLabel = value
+            );
+    }
+
+    /// <summary>
     ///     The create button label.
     /// </summary>
     public string? CreateLabel
@@ -41,6 +52,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         set =>
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Index.EditLabel = value
+            );
+    }
+
+    /// <summary>
+    ///     The inline row save button label.
+    /// </summary>
+    public string? SaveLabel
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.SaveLabel = value
             );
     }
 

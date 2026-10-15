@@ -60,4 +60,36 @@ public sealed class ResourceCreateBuilder<TModel>
 
         return this;
     }
+
+    /// <summary>
+    ///     Adds resources as new rows in the index grid instead of on the create page.
+    /// </summary>
+    /// <remarks>
+    ///     Every field must match an index column, by name or through the column's
+    ///     <c>EditsField</c>, and every <c>[Required]</c> model property must be a field. The
+    ///     create page is not available.
+    /// </remarks>
+    public ResourceInlineCreateBuilder UseInlineRow()
+    {
+        _configure(options => options.InlineRow ??= new());
+
+        return new(configure => _configure(options => configure(options.InlineRow ??= new())));
+    }
+
+    /// <summary>
+    ///     Adds resources as new rows in the index grid instead of on the create page.
+    /// </summary>
+    /// <remarks>
+    ///     Every field must match an index column, by name or through the column's
+    ///     <c>EditsField</c>, and every <c>[Required]</c> model property must be a field. The
+    ///     create page is not available.
+    /// </remarks>
+    public ResourceCreateBuilder<TModel> UseInlineRow(Action<ResourceInlineCreateBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(UseInlineRow());
+
+        return this;
+    }
 }

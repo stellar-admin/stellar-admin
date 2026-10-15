@@ -5,7 +5,7 @@ using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Builders;
 
-public class ResourceBuilderTests
+public partial class ResourceBuilderTests
 {
     [Test]
     [Arguments("duplicate")]

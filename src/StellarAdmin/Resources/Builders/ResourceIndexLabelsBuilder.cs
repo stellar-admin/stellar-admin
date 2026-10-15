@@ -11,6 +11,19 @@ public sealed class ResourceIndexLabelsBuilder
     private readonly IServiceCollection _services;
 
     /// <summary>
+    ///     The callback that generates the default inline row cancel button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> CancelLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Index.CancelLabel = value);
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default index create button label.
     /// </summary>
     public Func<ResourceLabelContext, string> CreateLabel
@@ -46,6 +59,19 @@ public sealed class ResourceIndexLabelsBuilder
             ArgumentNullException.ThrowIfNull(value);
 
             _services.Configure<ResourceLabelOptions>(options => options.Index.EditLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default inline row save button label.
+    /// </summary>
+    public Func<ResourceLabelContext, string> SaveLabel
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options => options.Index.SaveLabel = value);
         }
     }
 

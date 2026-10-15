@@ -79,6 +79,33 @@ public class ResourceColumnBuilderTests
         await Assert.That(options.EmptyText).IsEqualTo("Unnamed");
     }
 
+    [Test]
+    public async Task EditsField_WithPropertyPath_UsesPathAsFieldName()
+    {
+        // Arrange
+        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+
+        // Act
+        sut.EditsField(product => product.Name.Length);
+        var options = sut.Build();
+
+        // Assert
+        await Assert.That(options.EditsFieldName).IsEqualTo("Name.Length");
+    }
+
+    [Test]
+    public async Task EditsField_WithComputedValue_Throws()
+    {
+        // Arrange
+        var sut = new ResourceColumnBuilder<Product>((Product product) => product.Name);
+
+        // Act
+        Action act = () => sut.EditsField(product => product.Name.ToUpperInvariant());
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
     public sealed class Product
     {
         public string Name { get; set; } = "";

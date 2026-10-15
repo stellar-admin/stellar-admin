@@ -48,4 +48,34 @@ public sealed class ResourceEditBuilder<TModel>
 
         return this;
     }
+
+    /// <summary>
+    ///     Edits resources in their index grid row instead of on the edit page.
+    /// </summary>
+    /// <remarks>
+    ///     Every field must match an index column, by name or through the column's
+    ///     <c>EditsField</c>. The edit page is not available.
+    /// </remarks>
+    public ResourceInlineEditBuilder UseInlineRow()
+    {
+        _configure(options => options.InlineRow ??= new());
+
+        return new(configure => _configure(options => configure(options.InlineRow ??= new())));
+    }
+
+    /// <summary>
+    ///     Edits resources in their index grid row instead of on the edit page.
+    /// </summary>
+    /// <remarks>
+    ///     Every field must match an index column, by name or through the column's
+    ///     <c>EditsField</c>. The edit page is not available.
+    /// </remarks>
+    public ResourceEditBuilder<TModel> UseInlineRow(Action<ResourceInlineEditBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        configure(UseInlineRow());
+
+        return this;
+    }
 }

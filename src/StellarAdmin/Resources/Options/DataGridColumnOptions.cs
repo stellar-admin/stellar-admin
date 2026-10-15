@@ -21,6 +21,12 @@ public sealed class DataGridColumnOptions
     public string? EmptyText { get; internal set; }
 
     /// <summary>
+    ///     The name of the form field the column edits in an inline row, or <c>null</c> to match
+    ///     the field by <see cref="FieldName" />.
+    /// </summary>
+    public string? EditsFieldName { get; internal set; }
+
+    /// <summary>
     ///     The expression selecting the property that provides the column's cell
     ///     values.
     /// </summary>

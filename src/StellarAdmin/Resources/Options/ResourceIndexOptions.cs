@@ -6,6 +6,14 @@ namespace StellarAdmin.Resources.Options;
 public class ResourceIndexOptions
 {
     /// <summary>
+    ///     The inline row cancel button label.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? CancelLabel { get; set; }
+
+    /// <summary>
     ///     The columns displayed in order.
     /// </summary>
     public IList<DataGridColumnOptions> Columns { get; } = new List<DataGridColumnOptions>();
@@ -42,6 +50,14 @@ public class ResourceIndexOptions
     ///     The row details settings, or null when rows do not expand.
     /// </summary>
     public ResourceRowDetailsOptions? RowDetails { get; set; }
+
+    /// <summary>
+    ///     The inline row save button label.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? SaveLabel { get; set; }
 
     /// <summary>
     ///     The scope settings, or null when scopes are disabled.

@@ -35,7 +35,10 @@ public class ResourceController<TResource>(
     private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
-    private bool CanCreate => _resourceOptions.Create is not null;
+    // An inline operation has no page, so neither its links nor its routes are available
+    private bool HasCreatePage => _resourceOptions.Create is { InlineRow: null };
+    private bool HasEditPage =>
+        _resourceOptions.Edit is { InlineRow: null } && _resourceOptions.KeySelector is not null;
 
     /// <summary>
     ///     Displays the create form.
@@ -43,7 +46,7 @@ public class ResourceController<TResource>(
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
-        return _resourceOptions.Create is { } create
+        return _resourceOptions.Create is { InlineRow: null } create
             ? await CreateView(create.CreateModel(), cancellationToken)
             : NotFound();
     }
@@ -56,7 +59,7 @@ public class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreatePost(CancellationToken cancellationToken)
     {
-        if (_resourceOptions.Create is null)
+        if (!HasCreatePage)
         {
             return NotFound();
         }
@@ -216,7 +219,7 @@ public class ResourceController<TResource>(
     )
     {
         if (
-            _resourceOptions.Edit is null
+            _resourceOptions.Edit is not { InlineRow: null }
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -250,7 +253,7 @@ public class ResourceController<TResource>(
     )
     {
         if (
-            _resourceOptions.Edit is null
+            _resourceOptions.Edit is not { InlineRow: null }
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -612,9 +615,9 @@ public class ResourceController<TResource>(
             {
                 Delete = CreateDeleteDialog(id, "view", labels),
                 DisplayData = await PrepareDisplaysAsync(fields, resource, cancellationToken),
-                EditLabel = _resourceOptions.Edit is null
-                    ? null
-                    : _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
+                EditLabel = HasEditPage
+                    ? _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels)
+                    : null,
                 Entity = resource,
                 EntityId = id,
                 Fields = fields,
@@ -1054,9 +1057,8 @@ public class ResourceController<TResource>(
             nameof(Index),
             new ResourceIndexPageViewModel<TResource>
             {
-                CanCreate = CanCreate,
-                CanEdit =
-                    _resourceOptions.Edit is not null && _resourceOptions.KeySelector is not null,
+                CanCreate = HasCreatePage,
+                CanEdit = HasEditPage,
                 CanView =
                     _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
                 Columns = _resourceOptions.Index.Columns.ToArray(),

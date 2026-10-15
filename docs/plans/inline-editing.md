@@ -1,6 +1,6 @@
 # Inline editing on the resource index
 
-Status: proposed (2026-10-15). Decisions recorded; no code written. Prototypes: `sandbox/html/inline-editing.html` (six concepts compared, with complexity ratings) and `sandbox/html/inline-row-edit.html` (row edit mode, inline add and the edit sheet). The row edit prototype follows the either/or decisions below; the sheet stands in for the form.
+Status: in progress (2026-10-15). Phase 1 done; phases 2–5 outstanding. Prototypes: `sandbox/html/inline-editing.html` (six concepts compared, with complexity ratings) and `sandbox/html/inline-row-edit.html` (row edit mode, inline add and the edit sheet). The row edit prototype follows the either/or decisions below; the sheet stands in for the form.
 
 ## Goal
 
@@ -79,6 +79,15 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
 Each phase ends at a checkpoint for review before the next starts.
 
 1. **Configuration and startup checks** (StellarAdmin, no UI). `UseInlineRow(...)` on `ResourceEditBuilder` and `ResourceCreateBuilder` with their settings builders, the `InlineCreatePosition` and `InlineAddButton` enums, and `EditsField(...)` on `ResourceColumnBuilder`. Startup checks: every field of an inline operation matches a column (by name or `EditsField`), and every `[Required]` create model property has a column. For an inline operation, `Edit`/`Create` return 404, the grid's Edit links and the View page's Edit button go, and the header Add follows `AddButton`. Save and Cancel index labels. Unit tests for the builders and the checks.
+   Done 2026-10-15, with these choices made during the phase:
+   - The header Create link is hidden for inline create, and the Add buttons (header and grid, following `AddButton`) arrive in phase 4 with their behaviour, so no button leads to a missing page.
+   - A lookup field elsewhere that creates items of an inline-create resource still opens that resource's create sheet; the sheet belongs to the lookup, not the create page.
+   - Read-only fields are left out of the column match.
+   - `EditsField` also takes a field name, for a property of a separate edit or create model that the resource does not have.
+   - The checks are an options validator (`InlineRowOptionsValidator`) that names each field it rejects. Resource options now use `ValidateOnStart()`, so these and the existing resource checks fail when the application starts rather than on the first request; three EF Core configuration tests now expect the failure from host start.
+   - Save and Cancel labels: `CancelLabel` and `SaveLabel` on the index builder and on `ConfigureResourceLabels` index labels.
+
+   Verified: admin panel unit tests (178), HTTP integration tests (464, including `ResourceInlineRowTests`) and EF Core integration tests (86) pass, and AdminPlayground starts with startup validation.
 2. **Grid editor templates.** Resolve an editor's `TemplateName` in `GridEditorTemplates/` for cells, with the development error and the empty production cell. Grid templates for the v1 editors (decision 14). The cell CSS from the prototype moves into the library: `.sa-cell-editor`, `.sa-cell-switch`, the lookup trigger, `.sa-cell-error`, the editing row, the row message, the add row and the saved flash.
 3. **Server endpoints.** `EditRow` and `CreateRow` (GET renders the editing row; POST binds only the rendered fields through the existing loader and handlers, and returns the display row, or the editing row with cell errors and a row message). The row posts with htmx (`hx-include="closest tr"`), since a `<form>` cannot sit inside a `<tr>`; the antiforgery token goes in a request header. Rendering a single row needs rows to carry their key; how the grid renders one row (a single-item grid with the row selected by key, or a body-rows mode on `sa-data-grid`) is to be discussed when this phase starts.
 4. **Grid script and behaviour.** One editing row at a time, Enter and Escape, column widths held while editing, dimming, collapsing the row's details, the Add buttons scrolling to and focusing the new row, discarding an unsaved row on reload, the saved flash and toast, and the lookup sheet opening from a cell.

@@ -112,7 +112,14 @@ public static partial class StellarAdminBuilderExtensions
                         || options.DataSourceType is { } type
                             && typeof(IResourceDeleteHandler<TResource>).IsAssignableFrom(type),
                     "Delete configuration requires a data source implementing IResourceDeleteHandler."
-                );
+                )
+                .ValidateOnStart();
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
+                    InlineRowOptionsValidator<TResource>
+                >()
+            );
             builder.AddController(typeof(ResourceController<TResource>), slug);
 
             builder.Services.TryAddEnumerable(
