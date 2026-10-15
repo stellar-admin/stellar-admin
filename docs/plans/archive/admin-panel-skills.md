@@ -1,6 +1,6 @@
 # Admin panel consumer skills
 
-Status: done (2026-10-14). An Opus rerun with the skills was not made; see phase 3.
+Status: completed (2026-10-14); Opus rerun with the skills on 2026-10-15.
 
 ## Summary
 
@@ -27,7 +27,7 @@ Common admin panel topics across Filament, Nova, Avo, ActiveAdmin and react-admi
 4. Write the editor and display tables by hand for now; generating them from the C# classes through `util/SkillsGenerator` can follow later if they drift. Settled 2026-10-14.
 5. Drop the three generated admin component stubs (`form-page.md`, `index-page.md`, `view-page.md`) and cover `sa-index-page`, `sa-form-page` and `sa-view-page` in `customization.md`. Settled 2026-10-14; the generator's admin output must stop producing them.
 6. The website's future admin panel docs stay separate from the skill. Settled 2026-10-14.
-7. The product gaps are recorded as one backlog record, [admin-panel-backlog](admin-panel-backlog.md), not as individual plans. Settled 2026-10-14.
+7. The product gaps are recorded as one backlog record, [admin-panel-backlog](../admin-panel-backlog.md), not as individual plans. Settled 2026-10-14.
 
 ## Target layout
 
@@ -84,7 +84,7 @@ Writing rules: one sentence of intent, a snippet, then the option table; behavio
 
 ## Unsupported features
 
-The skill must state these as unavailable. Source of the list: the API survey of 2026-10-14; the product side is tracked in [admin-panel-backlog](admin-panel-backlog.md).
+The skill must state these as unavailable. Source of the list: the API survey of 2026-10-14; the product side is tracked in [admin-panel-backlog](../admin-panel-backlog.md).
 
 - Bulk actions and custom row or page actions (row actions are view, edit and delete only).
 - Filters beyond scopes.
@@ -95,14 +95,14 @@ The skill must state these as unavailable. Source of the list: the API survey of
 - A fluent read-only field option (`[ReadOnly]` / `[Editable(false)]` metadata only).
 - Before/after save hooks.
 - Search and scope predicates for non-EF data sources (the data source interprets `Search` and `Scope`).
-- Displays with handlers in index columns (they throw; see [display-defaults](display-defaults.md)).
+- Displays with handlers in index columns (they throw; see [display-defaults](../display-defaults.md)).
 - Localization through `IStringLocalizer` (labels are configured through `ConfigureResourceLabels`).
 
 ## Phases
 
 ### Phase 1: evaluation tasks and baseline
 
-The tasks, grading checks and fixtures live in [`build/skill-evals/admin-panel/`](../../build/skill-evals/admin-panel/README.md), outside the shipped skill. Five tasks:
+The tasks, grading checks and fixtures live in [`build/skill-evals/admin-panel/`](../../../build/skill-evals/admin-panel/README.md), outside the shipped skill. Five tasks:
 
 1. Install the admin panel into a fresh ASP.NET Core app with EF Core and expose one entity.
 2. Add a Bookings resource: index with customer and status columns (status as a badge), search on reference, a scope per status, default sort by date.
@@ -171,7 +171,7 @@ Knowledge the agents had to decompile, guess or discover by failure (seed for "C
 - `Allow*` calls don't chain (each returns its page builder); `AllowView` without fields fails every admin request with a 500; `ChoiceEditor` is abstract.
 - Host pages in the admin shell use `Layout = StellarAdminLayouts.Default` and their own `[Authorize]`, rather than controllers added to the admin area.
 
-Product findings, added to [admin-panel-backlog](admin-panel-backlog.md): the sidebar view hard-codes "Voyager Travel / Admin Console" and a placeholder user, "Amelia Hart", with no setting to change them; sidebar groups cannot be ordered; the index page has no slot between its header and the grid.
+Product findings, added to [admin-panel-backlog](../admin-panel-backlog.md): the sidebar view hard-codes "Voyager Travel / Admin Console" and a placeholder user, "Amelia Hart", with no setting to change them; sidebar groups cannot be ordered; the index page has no slot between its header and the grid.
 ### Phase 2
 
 Written on 2026-10-14 from current source (`src/StellarAdmin`, `src/StellarAdmin.EntityFrameworkCore`), the removed `setup.md` and the working Opus baseline solutions.
@@ -227,4 +227,21 @@ Skill fixes from the rerun reports, applied after the runs (Haiku ran with the e
 
 After the fixes: `npm test` (8 pass) and `npm run check` (4 skills, 84 files) in `build/skill-validation`; `SkillsGenerator --check` no drift. `SKILL.md`: 168 (stellar-admin) and 145 (setup) lines; descriptions 447–566 characters.
 
-Outstanding: an Opus rerun with the skills to measure tool calls and time against its baseline (Opus already passed every check without them); a rerun after the fixes above if the eval is to be re-baselined.
+**Opus rerun with the skills** (2026-10-15). The skills by then included the sidebar branding and user menu work and task 6 ([sidebar-branding-user-menu](sidebar-branding-user-menu.md)). Same procedure: fresh run directory from `prepare.sh`, the three skills in each task's `.claude/skills/`, one fresh Opus 5.5 agent per task, graded by building, running and probing each app (`probe.sh`, curl, form posts for tasks 1 and 3, role matrix for task 4, sign-in and log out post for task 6).
+
+| Task | Opus with skills | Tool calls | Time |
+| --- | --- | --- | --- |
+| 1 Install (6) | 6 | 17 | 2.2 min |
+| 2 Index (8) | 8 | 9 | 1.0 min |
+| 3 Forms (7) | 7 | 15 | 1.5 min |
+| 4 Sidebar and auth (7) | 7 | 12 | 1.2 min |
+| 5 View and override (5) | 5 | 12 | 1.1 min |
+| 6 Branding and user menu (5) | 5 | 9 | 1.0 min |
+| Total (38) | 38 | | |
+
+| Model | Tool calls per task | Time per task |
+| --- | --- | --- |
+| Opus baseline (tasks 1–5) | 18–37 | 2.6–4.7 min |
+| Opus with skills | 9–17 | 1.0–2.2 min |
+
+With the skills Opus used about half the tool calls and well under half the time. Its task 3 edit page spans the read-only section across both columns (`ColumnSpanFull`), so Trip and Customer stay side by side, which the Haiku runs did not. Task 6 points at `/MyBookings`, which the fixture doesn't have, so the item now shows as a link problem ("No page /MyBookings") in Development; the agent noticed and left the page to the app, as the prompt describes it as existing. Graded as a pass against the written check. Afterwards the fixture gained a stub `Pages/MyBookings.cshtml` (in `fixtures/fresh`, so every task's app has it) so the link resolves in later runs. Not exercised by grading: saving a customer from the lookup's New sheet (task 3) and visual layout in a browser.

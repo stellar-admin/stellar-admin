@@ -1,6 +1,6 @@
 # Admin panel skill evaluations
 
-Evaluation tasks for the admin panel consumer skills, from the [admin panel skills plan](../../../docs/plans/admin-panel-skills.md). Tasks and grading checks are in [tasks.md](tasks.md).
+Evaluation tasks for the admin panel consumer skills, from the [admin panel skills plan](../../../docs/plans/archive/admin-panel-skills.md). Tasks and grading checks are in [tasks.md](tasks.md).
 
 Each run uses Voyager, a small Razor Pages app with EF Core and SQLite, consuming StellarAdmin as NuGet packages packed from this checkout into a local feed. Agents see only what an application developer would: the packages, their XML documentation and, for the "with skills" runs, the installed skills. They do not see this repository.
 

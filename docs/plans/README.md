@@ -9,9 +9,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | Record | Status | Current assessment |
 | --- | --- | --- |
 | [admin-panel-rename](admin-panel-rename.md) | in progress (phases 1–7 done) | Rename the packages before the first release: the panel becomes `StellarAdmin` (from Dashboard) and Core and TagHelpers merge into `StellarAdmin.UI`. |
-| [admin-panel-skills](admin-panel-skills.md) | done | Replace the admin panel's preserved setup notes with installable `stellar-admin` and `stellar-admin-setup` consumer skills, organised by task with one reference per topic, measured against evaluation tasks. |
 | [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, uploads and others). Unscheduled; an item becomes a plan when picked up. |
-| [sidebar-branding-user-menu](sidebar-branding-user-menu.md) | implemented and evaluated | Configurable sidebar header (title, subtitle, icon, image or wordmark logo) and a claims-driven user menu with ordered items and a built-in logout endpoint, through `ConfigureBranding` and `ConfigureUserMenu`. Prototype in `sandbox/html/sidebar-branding.html`. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
 | [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |
@@ -24,6 +22,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 
 | Record | Current status |
 | --- | --- |
+| [admin-panel-skills](archive/admin-panel-skills.md) | completed; installable `stellar-admin` and `stellar-admin-setup` consumer skills organised by task with one reference per topic, measured against six evaluation tasks in `build/skill-evals/admin-panel`. With the skills, Sonnet, Haiku and Opus passed every check; Opus used about half the tool calls and time of its baseline. |
 | [aurora-theme](archive/aurora-theme.md) | completed |
 | [carousel](oss/archive/carousel.md) | completed |
 | [chip](oss/archive/chip.md) | completed |
@@ -88,6 +87,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [shadcn-theme-fonts](archive/shadcn-theme-fonts.md) | completed |
 | [shadcn-theme-namespace](archive/shadcn-theme-namespace.md) | completed |
 | [sheet-stack](archive/sheet-stack.md) | completed; Dashboard sheets stack to any depth from one template, with covered levels receding behind the top one, Esc closing one level, click-back to a covered level, a phone layout, a `sel-dialog` scroll lock that holds while any modal is open, per-level create form prefixes with New at every level, and a `lookup-created` event that hands a created key to the editor below. A breadcrumb trail, a depth limit, New in the search sheet and turning New off per field are unscheduled. |
+| [sidebar-branding-user-menu](archive/sidebar-branding-user-menu.md) | completed; `ConfigureBranding` (title, subtitle, icon, image or wordmark logo) and a claims-driven `ConfigureUserMenu` with ordered items and a built-in logout endpoint, joined multi-value description claims, link problems shown in Development and hidden elsewhere for sidebar and user menu links whose page or action doesn't exist, and sidebar icons for resources and links. Prototype in `sandbox/html/sidebar-branding.html`. |
 | [slider-value-display](archive/slider-value-display.md) | completed; composable `sa-slider-value` and `sa-slider-marks`, `SliderEditor` value and mark settings, website docs and tests. A field-level `aria-describedby` fix is a follow-up. |
 | [toast](oss/archive/toast.md) | completed; `<sa-toaster>`, `window.stellarAdmin.toast` and the TempData-backed `IToastNotifier` with page-load, redirect and `SA-Toasts` header delivery, across all themes, with demos, website docs, skills reference and tests. Dashboard use is a separate task. |
 | [table-row-details](oss/archive/table-row-details.md) | completed; expandable table rows at the `sa-table-*` level and the `sa-data-grid-row-detail` layer, with demos, website docs and skills references; visuals in `sandbox/html/expandable-rows.html` |

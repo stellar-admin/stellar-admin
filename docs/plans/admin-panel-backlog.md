@@ -2,7 +2,7 @@
 
 Status: backlog (2026-10-14).
 
-Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmin, react-admin) offer and StellarAdmin does not. Recorded during the [admin panel skills](admin-panel-skills.md) research so the consumer skill can name them as unsupported. None is scheduled; an item becomes a plan when it is picked up. Source: the API survey of 2026-10-14. Sidebar icons were removed from the table when they were implemented (2026-10-15, recorded in [sidebar-branding-user-menu](sidebar-branding-user-menu.md)).
+Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmin, react-admin) offer and StellarAdmin does not. Recorded during the [admin panel skills](archive/admin-panel-skills.md) research so the consumer skill can name them as unsupported. None is scheduled; an item becomes a plan when it is picked up. Source: the API survey of 2026-10-14. Sidebar icons were removed from the table when they were implemented (2026-10-15, recorded in [sidebar-branding-user-menu](archive/sidebar-branding-user-menu.md)).
 
 | Feature | Current state |
 | --- | --- |

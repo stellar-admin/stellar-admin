@@ -1,8 +1,8 @@
 # Sidebar branding and user menu
 
-Status: implemented and evaluated (2026-10-15). API and visuals agreed in conversation; see [Implementation notes](#implementation-notes) for where the code differs from the design below.
+Status: completed (2026-10-15). API and visuals agreed in conversation; see [Implementation notes](#implementation-notes) for where the code differs from the design below.
 
-The admin panel's sidebar view (`src/StellarAdmin/Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml`) hard-codes the header ("Voyager Travel / Admin Console" with a compass tile) and a placeholder user menu ("Amelia Hart" with Account, Billing, Notifications and Log out items that do nothing). The layout (`_Layout.cshtml`) hard-codes "StellarAdmin" in the browser title, the description meta and the app header. This plan makes both configurable. It picks up the "Sidebar branding and user menu" item from the [admin panel backlog](admin-panel-backlog.md).
+The admin panel's sidebar view (`src/StellarAdmin/Areas/StellarAdmin/Views/Shared/Components/Sidebar/Default.cshtml`) hard-codes the header ("Voyager Travel / Admin Console" with a compass tile) and a placeholder user menu ("Amelia Hart" with Account, Billing, Notifications and Log out items that do nothing). The layout (`_Layout.cshtml`) hard-codes "StellarAdmin" in the browser title, the description meta and the app header. This plan makes both configurable. It picks up the "Sidebar branding and user menu" item from the [admin panel backlog](../admin-panel-backlog.md).
 
 Prototype: `sandbox/html/sidebar-branding.html` (assets in `sandbox/html/sidebar-branding/`), each configuration rendered beside its builder code, light and dark.
 
@@ -156,7 +156,7 @@ Split the sidebar view into `_SidebarBrand.cshtml` and `_SidebarUserMenu.cshtml`
    - `skills/stellar-admin/references/authorization.md`: the logout endpoint, its scheme order, and the claims the menu reads.
    - `skills/stellar-admin-setup/SKILL.md`: replace the "placeholder branding … known limitation" paragraph with a setup step setting `Title` (and a logo if the app has one), and a verify check that the header shows the app's name and the footer the signed-in user.
    - `build/skill-evals/admin-panel/tasks.md`: a task covering branding, a wordmark with a dark variant, an extra menu item and OpenID Connect logout; rerun the tasks after the skill changes.
-   - Remove the item from the [admin panel backlog](admin-panel-backlog.md) when done.
+   - Remove the item from the [admin panel backlog](../admin-panel-backlog.md) when done.
 
 ## Implementation notes
 
@@ -186,7 +186,7 @@ Completed on 2026-10-15:
 
 Not done:
 
-- The signed-in user menu was not checked in the playground browser, since signing in would write to the tracked `app.db`; the integration tests cover its markup.
+- The signed-in user menu was not checked in the playground browser at the time, since signing in would write to the tracked `app.db`; the integration tests cover its markup. Jerrie checked it in a browser on 2026-10-15.
 
 ### Skill evaluation rerun
 
@@ -213,7 +213,7 @@ The first task 6 runs were void: restores took `0.0.1-eval` from the global NuGe
 
 Task 6 barely separates the runs: the package's XML documentation was enough for both baselines, and the skill mainly saves Haiku time. Haiku's task 3 edit page again puts a third section in the two-column grid, so Trip and Customer are not side by side there (a pass against the written check, as in phase 3).
 
-Skill fix afterwards: Haiku left `CustomerId` a number input although `stellar-admin` lists it as a common mistake, and the setup skill only pointed at the relationships reference. `stellar-admin-setup` now has a Foreign keys subsection under Register the panel with a `SelectEditor` + EF `UseItems` example, and the point is in its checklist (step 2) and verification (step 3). Checked with `npm test` and `npm run check` in `build/skill-validation`; not re-evaluated.
+Skill fix afterwards: Haiku left `CustomerId` a number input although `stellar-admin` lists it as a common mistake, and the setup skill only pointed at the relationships reference. `stellar-admin-setup` now has a Foreign keys subsection under Register the panel with a `SelectEditor` + EF `UseItems` example, and the point is in its checklist (step 2) and verification (step 3). Checked with `npm test` and `npm run check` in `build/skill-validation`. Re-evaluated on 2026-10-15 with a fresh Haiku 4.5 agent on task 1 only: 6 of 6, with `CustomerId` as a `SelectEditor` with EF `UseItems` (63 tool calls, 3.4 min). The create and edit form posts saved.
 
 Product findings from the agents' reports, not acted on:
 
@@ -226,4 +226,4 @@ The prototype was rendered in headless Chromium in light and dark on 2026-10-14.
 
 Added on 2026-10-15 after the evaluation (decisions 49–52): `resource.SidebarItem(item => item.Icon = "plane")`, `SidebarLinkBuilder.Icon`, and `SidebarLinkItemBase.Icon` for custom providers. The icon renders as `<sa-icon>` before the label in the sidebar and the command palette. There is no default or fallback icon, and an item without one reserves no space. Icons are set through the builders only, and the collapsed icon-only sidebar is out of scope. A blank icon name throws.
 
-Tests: `ResourceSidebarTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, `SidebarLinkTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, and blank-icon cases in `StellarAdminBuilderTests` and `StellarAdminBuilderExtensionsTests`. The playground's Identity and Commerce items and the Sales report link have icons; the gallery groups have none. A headless Chromium screenshot of `/stellaradmin/products` in the playground (Development, anonymous) showed the icons in the sidebar. The command palette and the signed-in Identity group were not checked visually.
+Tests: `ResourceSidebarTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, `SidebarLinkTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, and blank-icon cases in `StellarAdminBuilderTests` and `StellarAdminBuilderExtensionsTests`. The playground's Identity and Commerce items and the Sales report link have icons; the gallery groups have none. A headless Chromium screenshot of `/stellaradmin/products` in the playground (Development, anonymous) showed the icons in the sidebar. Jerrie checked the signed-in user menu, its link problem item, the Identity group's icons and the command palette's icons in a browser on 2026-10-15.
