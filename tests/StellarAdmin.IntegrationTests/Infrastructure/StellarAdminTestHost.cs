@@ -16,14 +16,15 @@ internal static class StellarAdminTestHost
         Action<StellarAdminBuilder>? configureAdmin = null,
         Action<IServiceCollection>? configureServices = null,
         Action<ControllerActionEndpointConventionBuilder>? configureRoute = null,
-        Action<WebApplication>? configureApp = null
+        Action<WebApplication>? configureApp = null,
+        string environmentName = "Development"
     )
     {
         var builder = WebApplication.CreateBuilder(
             new WebApplicationOptions
             {
                 ApplicationName = typeof(StellarAdminTestHost).Assembly.GetName().Name,
-                EnvironmentName = "Development",
+                EnvironmentName = environmentName,
             }
         );
         builder.WebHost.UseTestServer();

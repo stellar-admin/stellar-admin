@@ -215,7 +215,7 @@ Task 6 barely separates the runs: the package's XML documentation was enough for
 
 Product findings from the agents' reports, not acted on:
 
-- The description shows the first matching claim only, so a user with two roles shows one. The Sonnet baseline joined the roles with an `IClaimsTransformation`.
-- `UserMenuItem.Page` for a page that doesn't exist renders the item without a link and without a warning; two agents switched to `Url`.
+- The description showed the first matching claim only, so a user with two roles showed one. The Sonnet baseline joined the roles with an `IClaimsTransformation`. Fixed afterwards: a configured `DescriptionClaimType` with several claims joins their distinct values ("Sales, Finance"); the default email lookup still takes the first. Covered by `UserMenuTests.DescriptionClaimWithSeveralValues_ShowsThemAll`.
+- `UserMenuItem.Page` for a page that doesn't exist renders the item without a link and without a warning; two agents switched to `Url`. Fixed afterwards (decisions 43 and 46): a user menu item or sidebar link whose page or action doesn't exist renders in Development as a disabled destructive item with the problem as a second line ("No page /Account/Manage/Index in area Identity"); elsewhere it is hidden and logged once as a warning, and the command palette always leaves it out. `LinkChecker` looks the page or action up in the action descriptors as well as generating its URL, because with a conventional route a missing page still gets a URL (`/?page=%2FMissing`). Covered by `SidebarLinkTests.LinksWithoutPageOrAction_ShowProblemInDevelopmentOnly` (with a conventional route) and `UserMenuTests.ItemWithoutRoute_ShowsProblemInDevelopmentOnly`; checked in the playground with a temporary `Page("/OldReport")` link in both environments.
 
 The prototype was rendered in headless Chromium in light and dark on 2026-10-14.

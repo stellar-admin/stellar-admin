@@ -1,5 +1,6 @@
 @using StellarAdmin.Sidebar
 @model SidebarUserMenuModel
+@inject LinkChecker Links
 
 @* The signed-in user and their menu. Replace this partial at the same path to render your own user menu. *@
 <sa-sidebar-menu>
@@ -22,6 +23,16 @@
                 }
                 @foreach (var item in Model.Items)
                 {
+                    if (Links.FindProblem(Url, item) is { } problem)
+                    {
+                        if (Links.ShowsProblems)
+                        {
+                            await RenderProblem(item, problem);
+                        }
+
+                        continue;
+                    }
+
                     switch (item)
                     {
                         case SeparatorUserMenuItem:
@@ -95,6 +106,25 @@
             <sa-icon name="@icon"/>
         }
         @text
+    }
+
+    @* Shown in development only, for a page or action item that has no route *@
+    async Task RenderProblem(UserMenuItem item, string problem)
+    {
+        var text = item switch
+        {
+            PageUserMenuItem pageItem => pageItem.Text,
+            ActionUserMenuItem actionItem => actionItem.Text,
+            _ => "",
+        };
+        <sa-dropdown-menu-item variant="DropdownMenuItemVariant.Destructive" disabled="true" title="@problem"
+                               data-link-problem="">
+            <sa-icon name="circle-alert"/>
+            <span class="grid flex-1 leading-tight">
+                <span class="truncate">@text</span>
+                <span class="truncate text-xs">@problem</span>
+            </span>
+        </sa-dropdown-menu-item>
     }
 
     async Task RenderLogout(LogoutUserMenuItem logout)

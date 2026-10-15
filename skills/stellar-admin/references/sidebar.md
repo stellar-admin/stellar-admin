@@ -65,6 +65,7 @@ admin.AddSidebarLink("Help centre", SidebarLinkTarget.Url("https://help.voyager.
 - Link builder: `Group`, `Order`, `OpenInNewTab`, `RequireAuthorization(...)`.
 - `link.RequireAuthorization` hides the link from users who don't satisfy it. It **does not protect the destination**; protect host pages with `[Authorize]`.
 - Links appear in the command palette too.
+- A `Page` or `Action` target that doesn't exist shows in Development as a red, disabled item with the reason ("No page /Admin/Departures"). In other environments it is hidden and a warning is logged; it is never in the command palette. User menu items behave the same way.
 
 ## Groups and order
 
@@ -118,7 +119,7 @@ admin.ConfigureUserMenu(menu =>
 | Property | Default |
 | --- | --- |
 | `NameClaimType` | The identity's name (`User.Identity.Name`), then the `ClaimTypes.Name` and `name` claims. |
-| `DescriptionClaimType` | The `ClaimTypes.Email`, then `email` claim. Without the claim, the name shows alone. |
+| `DescriptionClaimType` | The `ClaimTypes.Email`, then `email` claim. Without the claim, the name shows alone. A configured claim type with several claims, such as `ClaimTypes.Role` for a user in two roles, shows them all: "Sales, Finance". |
 | `AvatarClaimType` | `picture`, a URL. Without it, the avatar shows initials from the name. |
 | `Items` | One `UserMenuItem.Logout()`. |
 

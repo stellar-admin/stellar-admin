@@ -18,7 +18,7 @@ internal sealed class UserMenuResolver(StellarAdminOptions options)
             ? Claim(user, nameClaimType)
             : Nonblank(user.Identity.Name) ?? Claim(user, ClaimTypes.Name, "name");
         var description = menu.DescriptionClaimType is { } descriptionClaimType
-            ? Claim(user, descriptionClaimType)
+            ? JoinedClaims(user, descriptionClaimType)
             : Claim(user, ClaimTypes.Email, "email");
         var avatarUrl = Claim(user, menu.AvatarClaimType ?? DefaultAvatarClaimType);
 
@@ -35,6 +35,18 @@ internal sealed class UserMenuResolver(StellarAdminOptions options)
         claimTypes
             .Select(claimType => Nonblank(user.FindFirst(claimType)?.Value))
             .FirstOrDefault(value => value is not null);
+
+    // A claim type with several values, such as one role claim per role, shows them all
+    private static string? JoinedClaims(ClaimsPrincipal user, string claimType) =>
+        Nonblank(
+            string.Join(
+                ", ",
+                user.FindAll(claimType)
+                    .Select(claim => claim.Value.Trim())
+                    .Where(value => value.Length > 0)
+                    .Distinct()
+            )
+        );
 
     private static string? Nonblank(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value;

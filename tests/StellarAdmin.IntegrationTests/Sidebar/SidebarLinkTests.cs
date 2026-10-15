@@ -140,6 +140,57 @@ public class SidebarLinkTests
     }
 
     [Test]
+    [Arguments(
+        "Development",
+        new[]
+        {
+            "Missing report",
+            "No page /Missing",
+            "Missing invoices",
+            "No action Missing.Index",
+        }
+    )]
+    [Arguments("Production", new string[0])]
+    public async Task LinksWithoutPageOrAction_ShowProblemInDevelopmentOnly(
+        string environmentName,
+        string[] expectedText
+    )
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+            {
+                admin.AddSidebarLink("Missing report", SidebarLinkTarget.Page("/Missing"));
+                admin.AddSidebarLink(
+                    "Missing invoices",
+                    SidebarLinkTarget.Action("Index", "Missing")
+                );
+                admin.AddSidebarLink("Reports", SidebarLinkTarget.Page("/Reports"));
+            },
+            // The conventional route generates a URL even for a missing page or controller
+            configureApp: app =>
+            {
+                app.MapRazorPages();
+                app.MapDefaultControllerRoute();
+            },
+            environmentName: environmentName
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        await Assert
+            .That(document.TextContents("[data-link-problem] .truncate"))
+            .IsEquivalentTo(expectedText, CollectionOrdering.Matching);
+        await Assert
+            .That(document.TextContents(CommandItems))
+            .IsEquivalentTo(["Reports", "Products"], CollectionOrdering.Matching);
+    }
+
+    [Test]
     public async Task OpenInNewTab_RendersTargetAndRel()
     {
         // Arrange

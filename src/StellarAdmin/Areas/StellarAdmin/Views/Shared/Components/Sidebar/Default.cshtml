@@ -2,6 +2,7 @@
 @model List<StellarAdmin.Sidebar.SidebarItem>
 @inject BrandingResolver Branding
 @inject UserMenuResolver UserMenus
+@inject LinkChecker Links
 
 <sa-sidebar>
     <sa-sidebar-header>
@@ -62,6 +63,16 @@
 @{
     async Task RenderSidebarItem(SidebarItem sidebarItem)
     {
+        if (sidebarItem is SidebarLinkItemBase checkedItem && Links.FindProblem(Url, checkedItem) is { } problem)
+        {
+            if (Links.ShowsProblems)
+            {
+                await RenderSidebarProblemItem(checkedItem, problem);
+            }
+
+            return;
+        }
+
         switch (sidebarItem)
         {
             case SidebarGroupItem groupItem: await RenderSidebarGroupItem(groupItem); break;
@@ -113,6 +124,21 @@
                                    target="@Target(pageLinkItem)" rel="@Rel(pageLinkItem)">
                 <span>@pageLinkItem.Label</span>
             </sa-sidebar-menu-link>
+        </sa-sidebar-menu-item>
+    }
+
+    @* Shown in development only, for a page or action link that has no route *@
+    async Task RenderSidebarProblemItem(SidebarLinkItemBase linkItem, string problem)
+    {
+        <sa-sidebar-menu-item>
+            <sa-sidebar-menu-button size="SidebarMenuButtonSize.Large" aria-disabled="true" title="@problem"
+                                     class="text-destructive" data-link-problem="">
+                <sa-icon name="circle-alert"/>
+                <span class="grid flex-1 text-left leading-tight">
+                    <span class="truncate">@linkItem.Label</span>
+                    <span class="truncate text-xs">@problem</span>
+                </span>
+            </sa-sidebar-menu-button>
         </sa-sidebar-menu-item>
     }
 

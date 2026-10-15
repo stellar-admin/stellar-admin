@@ -117,6 +117,28 @@ public class UserMenuTests
     }
 
     [Test]
+    public async Task DescriptionClaimWithSeveralValues_ShowsThemAll()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+                admin.ConfigureUserMenu(menu => menu.DescriptionClaimType = ClaimTypes.Role),
+            configureServices: TestAuthenticationHandler.Register
+        );
+        using var client = sut.GetTestClient();
+        TestAuthenticationHandler.SignIn(client, "Ada Lovelace", "Sales", "Finance", "Sales");
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        await Assert
+            .That(document.TextContents($"{Footer} [data-slot='sidebar-menu-button'] .grid > span"))
+            .IsEquivalentTo(["Ada Lovelace", "Sales, Finance"], CollectionOrdering.Matching);
+    }
+
+    [Test]
     public async Task DefaultClaims_ShowEmailUnderName()
     {
         // Arrange
@@ -211,6 +233,46 @@ public class UserMenuTests
         await Assert
             .That(form.QuerySelector("input[name='__RequestVerificationToken']"))
             .IsNotNull();
+    }
+
+    [Test]
+    [Arguments(
+        "Development",
+        new[] { "", "Account", "No page /Account/Manage/Index in area Identity", "Log out" }
+    )]
+    [Arguments("Production", new[] { "", "Log out" })]
+    public async Task ItemWithoutRoute_ShowsProblemInDevelopmentOnly(
+        string environmentName,
+        string[] expectedEntries
+    )
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+                admin.ConfigureUserMenu(menu =>
+                    menu.Items.Insert(
+                        0,
+                        UserMenuItem.Page("Account", "/Account/Manage/Index", "Identity")
+                    )
+                ),
+            configureServices: TestAuthenticationHandler.Register,
+            environmentName: environmentName
+        );
+        using var client = sut.GetTestClient();
+        TestAuthenticationHandler.SignIn(client, "ada");
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        await Assert
+            .That(
+                document.TextContents(
+                    "#sa-user-menu [data-slot='dropdown-menu-separator'], #sa-user-menu [data-link-problem] .truncate, #sa-user-menu [data-user-menu-logout]"
+                )
+            )
+            .IsEquivalentTo(expectedEntries, CollectionOrdering.Matching);
     }
 
     [Test]

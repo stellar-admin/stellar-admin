@@ -1,7 +1,14 @@
 @using StellarAdmin.Sidebar
 @model List<SidebarItem>
+@inject LinkChecker Links
 @{
-    var ungroupedItems = Model.OfType<SidebarLinkItemBase>().ToList();
+    // Links without a route are left out; the sidebar shows them as errors in development
+    var ungroupedItems = Model.OfType<SidebarLinkItemBase>().Where(Resolves).ToList();
+    var groups = Model
+        .OfType<SidebarGroupItem>()
+        .Select(group => (group.Label, Items: group.Items.Where(Resolves).ToList()))
+        .Where(group => group.Items.Count > 0)
+        .ToList();
 }
 
 <sa-command-dialog id="--command-palette" title="Search" description="Search for a page to open.">
@@ -18,7 +25,7 @@
                     }
                 </sa-command-group>
             }
-            @foreach (var group in Model.OfType<SidebarGroupItem>())
+            @foreach (var group in groups)
             {
                 <sa-command-group heading="@group.Label">
                     @foreach (var item in group.Items)
@@ -83,6 +90,8 @@
                 break;
         }
     }
+
+    bool Resolves(SidebarLinkItemBase item) => Links.FindProblem(Url, item) is null;
 
     string? Target(SidebarLinkItemBase linkItem) => linkItem.OpenInNewTab ? "_blank" : null;
 

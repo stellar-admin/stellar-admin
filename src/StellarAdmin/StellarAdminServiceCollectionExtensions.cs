@@ -26,6 +26,7 @@ public static class StellarAdminServiceCollectionExtensions
             services.AddStellarAdminUI();
             services.TryAddSingleton<BrandingResolver>();
             services.TryAddSingleton<UserMenuResolver>();
+            services.TryAddSingleton<LinkChecker>();
 
             var admin = new StellarAdminBuilder(services, GetOrCreateOptions(services));
             admin.AddApplicationPart(typeof(StellarAdminServiceCollectionExtensions).Assembly);
