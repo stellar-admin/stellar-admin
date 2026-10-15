@@ -1,0 +1,10 @@
+@using StellarAdmin.Areas.StellarAdmin
+@using StellarAdmin.Resources.Options
+@model object
+@{
+    ViewData.TemplateInfo.HtmlFieldPrefix = "Entity";
+}
+@foreach (var field in (IReadOnlyList<FormFieldOptions>)ViewData["GridFields"]!)
+{
+    <td data-field="@field.FieldName">@await Html.GridEditorAsync(field)</td>
+}

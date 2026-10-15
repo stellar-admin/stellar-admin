@@ -1,6 +1,6 @@
 # Inline editing on the resource index
 
-Status: in progress (2026-10-15). Phase 1 done; phases 2–5 outstanding. Prototypes: `sandbox/html/inline-editing.html` (six concepts compared, with complexity ratings) and `sandbox/html/inline-row-edit.html` (row edit mode, inline add and the edit sheet). The row edit prototype follows the either/or decisions below; the sheet stands in for the form.
+Status: in progress (2026-10-15). Phases 1 and 2 done; phases 3–5 outstanding. Prototypes: `sandbox/html/inline-editing.html` (six concepts compared, with complexity ratings) and `sandbox/html/inline-row-edit.html` (row edit mode, inline add and the edit sheet). The row edit prototype follows the either/or decisions below; the sheet stands in for the form.
 
 ## Goal
 
@@ -89,6 +89,15 @@ Each phase ends at a checkpoint for review before the next starts.
 
    Verified: admin panel unit tests (178), HTTP integration tests (464, including `ResourceInlineRowTests`) and EF Core integration tests (86) pass, and AdminPlayground starts with startup validation.
 2. **Grid editor templates.** Resolve an editor's `TemplateName` in `GridEditorTemplates/` for cells, with the development error and the empty production cell. Grid templates for the v1 editors (decision 14). The cell CSS from the prototype moves into the library: `.sa-cell-editor`, `.sa-cell-switch`, the lookup trigger, `.sa-cell-error`, the editing row, the row message, the add row and the saved flash.
+   Done 2026-10-15, with these choices made during the phase:
+   - `Html.GridEditorAsync(field)` (public, hidden from IntelliSense like the other view support types) renders a field's cell editor, as `Html.Editor` does for a form, so the phase 3 row view and application overrides can use it. It prepares the editor's data itself and appends the field's error (`.sa-cell-error`) under the editor; `FieldEditorView.CellErrorId` gives grid templates the id for `aria-describedby`.
+   - A field without an editor resolves its grid template by the property's `[UIHint]`, `[DataType]` and type, as MVC does for forms, so `GridEditorTemplates/` also has the type templates (`String`, `Int32`, `Boolean`, `Enum`, `DateOnly` and the rest). A `[DataType(MultilineText)]` property falls back to the `String` template, a text input; only an explicit `TextareaEditor` shows the missing template.
+   - Cells ignore the editor's form class names.
+   - A lookup in a cell is a single trigger button (the selection, or the choose text) that opens the form's lookup sheet; it has no Clear or New button. Phase 3 sets which form's lookup it opens (`ViewDataKeys.LookupForm`).
+   - Text inputs keep the default control height, as in the prototype; selects, switches and the lookup trigger are small.
+   - CSS names: `.sa-cell-check` holds a checkbox or a switch (the prototype's `.sa-cell-switch`); the grid asks for dimming with `data-inline-dim`.
+
+   Verified: admin panel unit tests (178), HTTP integration tests (471, including `GridEditorTests`, which render cells through a `grid-cells` view override), EF Core integration tests (86) and UI unit tests (513) pass. No browser check yet: nothing renders an inline row until phase 3.
 3. **Server endpoints.** `EditRow` and `CreateRow` (GET renders the editing row; POST binds only the rendered fields through the existing loader and handlers, and returns the display row, or the editing row with cell errors and a row message). The row posts with htmx (`hx-include="closest tr"`), since a `<form>` cannot sit inside a `<tr>`; the antiforgery token goes in a request header. Rendering a single row needs rows to carry their key; how the grid renders one row (a single-item grid with the row selected by key, or a body-rows mode on `sa-data-grid`) is to be discussed when this phase starts.
 4. **Grid script and behaviour.** One editing row at a time, Enter and Escape, column widths held while editing, dimming, collapsing the row's details, the Add buttons scrolling to and focusing the new row, discarding an unsaved row on reload, the saved flash and toast, and the lookup sheet opening from a cell.
 5. **Samples, docs and verification.** An inline resource in AdminPlayground, docs pages and regenerated consumer skills, and browser checks of the flows across the theme fixtures at desktop and phone widths.

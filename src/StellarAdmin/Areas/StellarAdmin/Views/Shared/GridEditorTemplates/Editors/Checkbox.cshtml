@@ -1,0 +1,10 @@
+@inherits FieldEditorView<CheckboxEditor>
+
+@{
+    BooleanProperty.Ensure(Editor, ViewData.ModelMetadata);
+}
+
+<span class="sa-cell-check">
+    <sa-input type="checkbox" render-field="false" asp-for="@Model" disabled="@IsReadOnly"
+              aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />
+</span>

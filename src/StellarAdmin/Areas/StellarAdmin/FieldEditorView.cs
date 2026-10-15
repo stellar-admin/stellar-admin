@@ -16,6 +16,12 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     public string? Description => Field?.Description;
 
     /// <summary>
+    ///     The id of the error shown under the editor in a grid cell, or null while the field has
+    ///     no error. A grid template points the editor's <c>aria-describedby</c> at it.
+    /// </summary>
+    public string? CellErrorId => GridEditorRenderer.GetErrorId(ViewData);
+
+    /// <summary>
     ///     The field's editor configuration. A field without one gets default settings.
     /// </summary>
     public TEditor Editor => field ??= ResolveEditor();

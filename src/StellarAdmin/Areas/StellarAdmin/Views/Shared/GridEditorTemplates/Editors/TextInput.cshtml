@@ -1,0 +1,33 @@
+@inherits FieldEditorView<TextInputEditor>
+
+@{
+    var attributes = Editor.ResolveAttributes(ViewData.ModelMetadata);
+    var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
+}
+
+@if (Editor.Prefix is null && Editor.Suffix is null)
+{
+    <sa-input class="sa-cell-editor" render-field="false" asp-for="@Model" type="@attributes.Type" step="@attributes.Step" min="@attributes.Min" max="@attributes.Max"
+              placeholder="@Editor.Placeholder" readonly="@IsReadOnly" aria-label="@label" aria-describedby="@CellErrorId" />
+}
+else
+{
+    <sa-input-group class="sa-cell-editor">
+        @if (Editor.Prefix is not null)
+        {
+            <sa-input-group-addon>
+                <sa-input-group-text>@Editor.Prefix</sa-input-group-text>
+            </sa-input-group-addon>
+        }
+
+        <sa-input-group-input asp-for="@Model" type="@attributes.Type" step="@attributes.Step" min="@attributes.Min" max="@attributes.Max"
+                              placeholder="@Editor.Placeholder" readonly="@IsReadOnly" aria-label="@label" aria-describedby="@CellErrorId" />
+
+        @if (Editor.Suffix is not null)
+        {
+            <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+                <sa-input-group-text>@Editor.Suffix</sa-input-group-text>
+            </sa-input-group-addon>
+        }
+    </sa-input-group>
+}

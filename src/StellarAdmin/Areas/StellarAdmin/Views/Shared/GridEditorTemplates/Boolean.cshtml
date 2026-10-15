@@ -1,0 +1,10 @@
+@model object?
+
+@if (ViewData.ModelMetadata.IsNullableValueType)
+{
+    @await Html.PartialAsync("GridEditorTemplates/Editors/Select", Model, ViewData)
+}
+else
+{
+    @await Html.PartialAsync("GridEditorTemplates/Editors/Checkbox", Model, ViewData)
+}

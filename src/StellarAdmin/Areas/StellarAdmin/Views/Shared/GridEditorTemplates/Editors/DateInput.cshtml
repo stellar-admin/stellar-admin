@@ -1,0 +1,9 @@
+@inherits FieldEditorView<DateInputEditor>
+
+@{
+    var attributes = Editor.ResolveAttributes(ViewData.ModelMetadata);
+}
+
+<sa-input class="sa-cell-editor" render-field="false" asp-for="@Model" type="@attributes.Type" asp-format="@attributes.Format"
+          step="@attributes.Step" min="@attributes.Min" max="@attributes.Max" readonly="@IsReadOnly"
+          aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />

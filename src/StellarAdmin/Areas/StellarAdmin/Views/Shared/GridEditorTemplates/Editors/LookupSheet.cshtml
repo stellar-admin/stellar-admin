@@ -1,0 +1,53 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@using StellarAdmin.Resources
+@inherits FieldEditorView<LookupSheetEditor>
+@inject Microsoft.Extensions.Options.IOptions<ResourceLabelOptions> LabelOptions
+
+@{
+    var data = (LookupSheetEditorData?)EditorData;
+    var item = data?.Item;
+    var label = Title ?? ViewData.ModelMetadata.GetDisplayName();
+    var canLookUp = !IsReadOnly && Field?.FieldName is not null;
+    var isInvalid = ViewData.ModelState.GetFieldValidationState(Html.NameForModel()) == ModelValidationState.Invalid;
+    // A cell always shows the selection on one line, whatever the form's layout
+    var selection = new LookupSelectionViewModel(item, LookupSheetEditorLayout.Input, Editor.FieldOptions.ShowMedia, !canLookUp, Editor.ClassNames.Media);
+    var labels = LabelOptions.Value;
+    var labelContext = new LookupLabelContext(label, Editor.SheetOptions.MinimumSearchLength, null);
+    var chooseText = Editor.FieldOptions.EmptyText ?? labels.Lookup.ChooseLabel(labelContext);
+
+    // The selection and the empty buttons are both rendered, and the script shows one; the hidden input carries the posted value
+    var id = Html.IdForModel();
+    var form = ViewData[ViewDataKeys.LookupForm] as string ?? ViewContext.RouteData.Values["action"]?.ToString()?.ToLowerInvariant();
+    var sheetUrl = canLookUp
+        ? Url.Action("LookupSheet", new { id = (string?)null, form, field = Field!.FieldName, @for = id })
+        : null;
+}
+
+<admin-lookup-sheet-editor class="contents">
+    <input type="hidden" asp-for="@Model" data-lookup="value" />
+
+    @if (!canLookUp)
+    {
+        <span class="flex min-w-0 items-center gap-2">
+            <partial name="_LookupSelection" model="selection" />
+        </span>
+    }
+    else
+    {
+        <div data-lookup="selected" hidden="@(item is null)">
+            <sa-button type="button" id="@($"{id}-change")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
+                       aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open">
+                <span class="sr-only">@labels.Lookup.ChangeLabel(labelContext) @label, </span>
+                <partial name="_LookupSelection" model="selection" />
+                <sa-icon name="chevrons-up-down" />
+            </sa-button>
+        </div>
+        <div data-lookup="empty" hidden="@(item is not null)">
+            <sa-button type="button" id="@($"{id}-choose")" variant="ButtonVariant.Outline" size="ButtonSize.Small" class="sa-cell-editor sa-lookup-trigger"
+                       data-empty aria-invalid="@(isInvalid ? "true" : null)" aria-describedby="@CellErrorId" data-sheet-open="@sheetUrl" data-lookup="open">
+                <span class="truncate">@chooseText</span>
+                <sa-icon name="search" />
+            </sa-button>
+        </div>
+    }
+</admin-lookup-sheet-editor>

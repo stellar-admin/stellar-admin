@@ -1,0 +1,14 @@
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@model StellarAdmin.Areas.StellarAdmin.ViewModels.ResourceFormPageViewModel
+@{
+    Layout = null;
+    var cellsViewData = new ViewDataDictionary(ViewData) { ["GridFields"] = Model.Fields };
+}
+@Html.AntiForgeryToken()
+<table>
+    <tbody>
+        <tr data-editing>
+            @await Html.PartialAsync("_GridCells", Model.Entity, cellsViewData)
+        </tr>
+    </tbody>
+</table>

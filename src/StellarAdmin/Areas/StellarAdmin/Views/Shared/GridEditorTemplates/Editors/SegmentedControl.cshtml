@@ -1,0 +1,22 @@
+@inherits FieldEditorView<SegmentedControlEditor>
+
+@{
+    var choices = Editor.ResolveChoices(EditorData, ViewData.ModelMetadata, Model);
+    var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
+}
+
+<sa-segmented-control class="sa-cell-segmented" render-field="false" asp-for="@Model" disabled="@IsReadOnly"
+                      aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId">
+    @foreach (var choice in choices)
+    {
+        bool? selected = emptySelected && choice.Value == "" ? true : null;
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
+        <sa-segmented-control-item value="@choice.Value" selected="@selected" disabled="@choice.Disabled">
+            @if (media is not null)
+            {
+                <partial name="_ItemMedia" model="media" />
+            }
+            @choice.Text
+        </sa-segmented-control-item>
+    }
+</sa-segmented-control>
