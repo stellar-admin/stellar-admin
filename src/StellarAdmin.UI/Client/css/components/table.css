@@ -1,5 +1,5 @@
 /* Table: rows divided by lines, column heads on a band, an optional footer and caption, selected
-   rows (sel-table-selection) and expandable row details (sel-table-row-details).
+   rows and expandable row details (both driven by sel-table).
    Replaces: .sa-table-container, .sa-table, .sa-table-header, .sa-table-body, .sa-table-footer,
    .sa-table-row, .sa-table-head, .sa-table-cell, .sa-table-caption, .sa-table-row-details,
    .sa-table-row-detail, .sa-table-row-detail-cell, .sa-table-row-detail-reveal,
@@ -68,7 +68,7 @@
     font-size: var(--sa-text-sm);
   }
 
-  /* Row details. sel-table-row-details publishes --sa-table-row-detail-width (the container's
+  /* Row details. sel-table publishes --sa-table-row-detail-width (the container's
      visible width) and --sa-table-row-detail-inset-start/-end (measured from the row's cells, so the
      content lines up with the cell padding); the fallbacks apply until the script runs. */
   .sa-table-row-details {

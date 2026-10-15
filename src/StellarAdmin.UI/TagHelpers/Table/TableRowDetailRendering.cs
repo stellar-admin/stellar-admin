@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The row details settings rendered on the <c>sel-table-row-details</c> element.
+///     The row details settings rendered on the <c>sel-table</c> element.
 /// </summary>
 internal sealed record TableRowDetailSettings(
     bool RowClick,
@@ -17,7 +17,7 @@ internal sealed record TableRowDetailSettings(
 );
 
 /// <summary>
-///     Markup shared by the table row details tag helpers and the data grid, so a grid's
+///     Markup shared by the table row details tag helpers, <c>sa-table</c> and the data grid, so a grid's
 ///     generated row details render exactly like hand-written ones.
 /// </summary>
 internal static class TableRowDetailRendering
@@ -26,7 +26,7 @@ internal static class TableRowDetailRendering
         TableRowDetailSettings settings
     )
     {
-        yield return new("data-slot", "table-row-details");
+        yield return new("data-row-details", "");
         yield return new("data-expand-mode", settings.ExpandMode.GetDataAttributeText());
         yield return new("data-emphasis", settings.Emphasis.GetDataAttributeText());
         yield return new("data-divider", settings.Divider.GetDataAttributeText());

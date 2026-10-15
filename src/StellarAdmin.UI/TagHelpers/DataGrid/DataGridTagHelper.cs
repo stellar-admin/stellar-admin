@@ -90,45 +90,36 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         containerBuilder.Attributes.Add("class", "sa-table-container");
         containerBuilder.InnerHtml.AppendHtml(tableBuilder);
 
-        // Optionally places the table inside the row details web component, which
-        // expands and collapses the detail rows
-        IHtmlContent tableContent = containerBuilder;
-        if (gridContext.RowDetail is { } rowDetail)
+        // Places the table inside the table web component, which adds the row selection and
+        // row details behaviors
+        var selection = gridContext.Selection;
+        var rowDetail = gridContext.RowDetail;
+        if (selection is not null || rowDetail is not null)
         {
-            var detailsBuilder = new TagBuilder("sel-table-row-details");
+            var tableElementBuilder = new TagBuilder("sel-table");
             foreach (
-                var (name, value) in TableRowDetailRendering.GetWrapperAttributes(
-                    rowDetail.Settings
+                var (name, value) in TableElementRendering.GetAttributes(
+                    selection is not null,
+                    rowDetail?.Settings
                 )
             )
             {
-                detailsBuilder.Attributes.Add(name, value);
+                tableElementBuilder.Attributes[name] = value;
             }
-            detailsBuilder.Attributes.Add("class", "sa-table-row-details");
-            detailsBuilder.InnerHtml.AppendHtml(containerBuilder);
-            tableContent = detailsBuilder;
-        }
-
-        // Optionally places table inside table selection web component which
-        // assists with managing table selection state
-        if (gridContext.Selection is { } selection)
-        {
-            var selectionBuilder = new TagBuilder("sel-table-selection");
-            selectionBuilder.Attributes.Add("data-slot", "table-selection");
-            if (selection.Id is not null)
+            if (selection?.Id is not null)
             {
-                selectionBuilder.Attributes.Add("id", selection.Id);
+                tableElementBuilder.Attributes["id"] = selection.Id;
             }
-            if (selection.CssClass is not null)
+            if (selection?.CssClass is not null)
             {
-                selectionBuilder.Attributes.Add("class", selection.CssClass);
+                tableElementBuilder.AddCssClass(selection.CssClass);
             }
-            selectionBuilder.InnerHtml.AppendHtml(tableContent);
-            output.Content.AppendHtml(selectionBuilder);
+            tableElementBuilder.InnerHtml.AppendHtml(containerBuilder);
+            output.Content.AppendHtml(tableElementBuilder);
         }
         else
         {
-            output.Content.AppendHtml(tableContent);
+            output.Content.AppendHtml(containerBuilder);
         }
 
         // If we have a pager, add a footer with the rendered pager
@@ -316,6 +307,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                     var checkboxAttributes = new List<TagHelperAttribute>
                     {
                         new TagHelperAttribute("type", "checkbox"),
+                        new TagHelperAttribute("data-row-select"),
                         new TagHelperAttribute("value", key),
                         new TagHelperAttribute("aria-label", $"Select row {key}"),
                     };

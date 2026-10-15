@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How many rows of a <c>&lt;sa-table-row-details&gt;</c> table can be expanded at once.
+///     How many rows of a table with row details can be expanded at once.
 /// </summary>
 public enum TableRowDetailExpandMode
 {

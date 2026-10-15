@@ -5,7 +5,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Adds row selection to the data grid: a leading checkbox column with a select-all
 ///     checkbox in the header. Renders nothing itself — the grid wraps its table in the
-///     <c>sel-table-selection</c> web component, to which an <c>id</c> and <c>class</c> set
+///     <c>sel-table</c> web component, to which an <c>id</c> and <c>class</c> set
 ///     here are transferred. Read the current selection from the element's
 ///     <c>selectedValues</c> property, or listen for its bubbling <c>selection-change</c>
 ///     event; with a <c>name</c> the selection also posts as ordinary checkbox form data.

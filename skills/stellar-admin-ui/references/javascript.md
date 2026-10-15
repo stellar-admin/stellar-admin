@@ -27,17 +27,17 @@ A handful of tag helpers render a custom element around or in place of their mar
 | `<sa-questionnaire>` | `<sel-questionnaire>` | Shortcut keys for the choices; arrow keys that move between a question's answers and wrap at either end; a free-text answer and the choices standing in for each other, keeping only one of the two in the form. |
 | `<sa-sidebar-wrapper>` | `<sel-sidebar>` | Tracks expanded/collapsed on desktop and the drawer state on mobile; handles `--toggle-sidebar`, `--open-mobile`, `--close-mobile`. |
 | `<sa-slider>` | `<sel-slider>` | Pointer and keyboard interaction for the thumbs; keeps the range fill, `aria-valuenow` and hidden form inputs in sync. |
-| `<sa-table-selection>` | `<sel-table-selection>` | Select-all / indeterminate handling and the `data-state="selected"` row highlight. |
+| `<sa-table selection="true">`, `<sa-table row-details="true">`, `<sa-data-grid>` | `<sel-table>` | One element per table, rendered only when selection or row details are used, with the behaviors switched on: select-all / indeterminate handling and the `data-state="selected"` row highlight (`data-selection`); expanding and collapsing row details (`data-row-details`). |
 | `<sa-toaster>` | `<sel-toaster>` | Shows, stacks, times and closes toasts; renders toasts queued on the server; exposes the element that `window.stellarAdmin.toast` drives. |
 
 All of these render in the **light DOM** — there is no shadow root, so the server-rendered markup stays visible to CSS, to Tailwind utilities and to your own scripts, and the elements participate in layout like any other.
 
-Where a component can degrade gracefully it does: a `<sa-table-selection>` table still posts its checked rows without the script, and a `<sa-dialog>` still opens from a plain `command="show-modal"` button.
+Where a component can degrade gracefully it does: a `<sa-table selection="true">` table still posts its checked rows without the script, and a `<sa-dialog>` still opens from a plain `command="show-modal"` button.
 
-Custom elements are upgraded when the script runs, which with `defer` is after the document is parsed. If your own code needs to touch one — reading `selectedValues` off a `<sel-table-selection>`, say — wait for it first:
+Custom elements are upgraded when the script runs, which with `defer` is after the document is parsed. If your own code needs to touch one — reading `selectedValues` off a `<sel-table>`, say — wait for it first:
 
 ```js
-await customElements.whenDefined("sel-table-selection");
+await customElements.whenDefined("sel-table");
 ```
 
 ## Invoker Commands

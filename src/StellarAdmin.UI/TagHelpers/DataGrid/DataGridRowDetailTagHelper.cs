@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Lets the data grid's rows expand to show details. The content is a row template,
 ///     rendered once per data row with the current item available through
 ///     <c>Html.GridItem&lt;T&gt;()</c>, below its row and spanning every column. The grid adds a
-///     toggle column and wraps its table in the <c>sel-table-row-details</c> web component,
+///     toggle column and wraps its table in the <c>sel-table</c> web component,
 ///     which raises bubbling <c>row-detail-expand</c> and <c>row-detail-collapse</c> events on
 ///     the detail row, so htmx can load a row's details when it first expands.
 /// </summary>

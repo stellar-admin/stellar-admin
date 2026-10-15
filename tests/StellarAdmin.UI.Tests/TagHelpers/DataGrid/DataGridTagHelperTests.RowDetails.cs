@@ -17,7 +17,7 @@ public partial class DataGridTagHelperTests
         using var html = await TagHelperRenderer.RenderAsync(sut, RowDetailChildren(rowDetail));
 
         // Assert
-        var details = html.QuerySelector("sel-table-row-details[data-slot=table-row-details]");
+        var details = html.QuerySelector("sel-table[data-row-details]");
         await Assert.That(details?.QuerySelector("[data-slot=table-container]")).IsNotNull();
         await Assert
             .That(
@@ -108,8 +108,9 @@ public partial class DataGridTagHelperTests
                     ?.GetAttribute("colspan")
             )
             .IsEqualTo("2");
+        await Assert.That(html.QuerySelectorAll("sel-table").Length).IsEqualTo(1);
         await Assert
-            .That(html.QuerySelector("sel-table-selection > sel-table-row-details"))
+            .That(html.QuerySelector("sel-table[data-selection][data-row-details]"))
             .IsNotNull();
     }
 
@@ -152,7 +153,7 @@ public partial class DataGridTagHelperTests
         using var html = await TagHelperRenderer.RenderAsync(sut, RowDetailChildren(rowDetail));
 
         // Assert
-        var details = html.QuerySelector("sel-table-row-details");
+        var details = html.QuerySelector("sel-table[data-row-details]");
         await Assert.That(details?.GetAttribute("data-row-click")).IsEqualTo("true");
         await Assert.That(details?.GetAttribute("data-expand-mode")).IsEqualTo("single");
         await Assert.That(details?.GetAttribute("data-emphasis")).IsEqualTo("rail");

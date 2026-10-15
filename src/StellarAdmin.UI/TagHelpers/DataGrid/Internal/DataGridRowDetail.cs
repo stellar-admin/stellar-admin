@@ -6,7 +6,7 @@ internal sealed class DataGridRowDetail
     /// <summary>Where the grid places the toggle buttons.</summary>
     public required DataGridRowDetailToggle Toggle { get; init; }
 
-    /// <summary>The settings rendered on the <c>sel-table-row-details</c> element.</summary>
+    /// <summary>The settings rendered on the <c>sel-table</c> element.</summary>
     public required TableRowDetailSettings Settings { get; init; }
 
     /// <summary>The row item property compared against <see cref="ExpandedKeys" />.</summary>

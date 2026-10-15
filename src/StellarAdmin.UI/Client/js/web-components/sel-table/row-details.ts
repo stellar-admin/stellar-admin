@@ -1,6 +1,3 @@
-import { LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
-
 const DETAIL_ROW = 'tr[data-slot="table-row-detail"]';
 const TOGGLE = '[data-slot="table-row-detail-toggle"]';
 
@@ -15,18 +12,18 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
 }
 
 /**
- * Table row-details web component. Wrap it around a table in which an expandable
+ * Row details for a `sel-table` with `data-row-details`. In the table, an expandable
  * row is followed by a `tr[data-slot="table-row-detail"]`, and a toggle button
  * (`[data-slot="table-row-detail-toggle"]`) sits in a cell of the row. A toggle
  * with `aria-controls` controls that detail row instead; a toggle with
  * `data-all` expands or collapses every row.
  *
  * All state lives in the DOM — `hidden` and `data-state="open|closed"` on the
- * detail row, `aria-expanded` on the toggles — and the component listens on
- * itself only. Rows that htmx (or any script) adds, replaces or removes need no
- * re-initialization, and server-rendered expanded rows are respected.
+ * detail row, `aria-expanded` on the toggles — and the behavior listens on
+ * the table element only. Rows that htmx (or any script) adds, replaces or removes need
+ * no re-initialization, and server-rendered expanded rows are respected.
  *
- * Settings are read from the element's data attributes on every interaction:
+ * Settings are read from the table element's data attributes on every interaction:
  *   - data-expand-mode="single|multiple"
  *   - data-row-click="true|false"
  *   - data-inset="aligned|bleed"  (aligned starts the content at the column after
@@ -39,8 +36,8 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
  * row, htmx attributes on that row need no `from:` modifier:
  * `hx-get="…" hx-trigger="row-detail-expand once" hx-target="find [data-slot=table-row-detail-content]"`.
  */
-@customElement("sel-table-row-details")
-export class TableRowDetails extends LitElement {
+export class TableRowDetails {
+  #host: HTMLElement;
   // Re-syncs when rows are added or removed, or when a script shows or hides a detail row.
   // Attribute changes elsewhere (including the component's own writes) are ignored, so a
   // sync never triggers another.
@@ -58,33 +55,31 @@ export class TableRowDetails extends LitElement {
   #resizeObserver = new ResizeObserver(() => this.#measure());
   #syncScheduled = false;
 
-  override createRenderRoot() {
-    return this;
+  constructor(host: HTMLElement) {
+    this.#host = host;
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener("click", this.#onClick);
-    this.#mutationObserver.observe(this, {
+  connect() {
+    this.#host.addEventListener("click", this.#onClick);
+    this.#mutationObserver.observe(this.#host, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ["hidden"],
     });
-    this.#resizeObserver.observe(this);
+    this.#resizeObserver.observe(this.#host);
     this.#sync();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener("click", this.#onClick);
+  disconnect() {
+    this.#host.removeEventListener("click", this.#onClick);
     this.#mutationObserver.disconnect();
     this.#resizeObserver.disconnect();
   }
 
   /** The detail rows this element controls (excluding those of nested tables). */
   get detailRows(): HTMLTableRowElement[] {
-    return Array.from(this.querySelectorAll<HTMLTableRowElement>(DETAIL_ROW)).filter((row) =>
+    return Array.from(this.#host.querySelectorAll<HTMLTableRowElement>(DETAIL_ROW)).filter((row) =>
       this.#owns(row),
     );
   }
@@ -120,11 +115,11 @@ export class TableRowDetails extends LitElement {
   }
 
   get #single() {
-    return this.dataset.expandMode === "single";
+    return this.#host.dataset.expandMode === "single";
   }
 
   #owns(element: Element) {
-    return element.closest("sel-table-row-details") === this;
+    return element.closest("sel-table") === this.#host;
   }
 
   #isOpen(detailRow: HTMLTableRowElement) {
@@ -166,7 +161,7 @@ export class TableRowDetails extends LitElement {
       return;
     }
 
-    if (this.dataset.rowClick !== "true") return;
+    if (this.#host.dataset.rowClick !== "true") return;
     if (target.closest(INTERACTIVE)) return;
     if (window.getSelection()?.toString()) return;
 
@@ -260,7 +255,7 @@ export class TableRowDetails extends LitElement {
 
   #syncToggles() {
     const rows = this.detailRows;
-    for (const toggle of this.querySelectorAll<HTMLElement>(TOGGLE)) {
+    for (const toggle of this.#host.querySelectorAll<HTMLElement>(TOGGLE)) {
       if (!this.#owns(toggle)) continue;
       if (toggle.hasAttribute("data-all")) {
         if (toggle.hidden !== this.#single) toggle.hidden = this.#single;
@@ -285,10 +280,16 @@ export class TableRowDetails extends LitElement {
    * cell padding and any edge padding the table's container adds.
    */
   #measure() {
-    const container = this.querySelector<HTMLElement>('[data-slot="table-container"]') ?? this;
-    this.style.setProperty("--sa-table-row-detail-width", `${container.clientWidth}px`);
+    const container =
+      this.#host.querySelector<HTMLElement>('[data-slot="table-container"]') ?? this.#host;
+    this.#host.style.setProperty("--sa-table-row-detail-width", `${container.clientWidth}px`);
 
-    const detailRow = this.detailRows[0];
+    // Measured from the first row that has a toggle: a row without one (a row a script
+    // replaced, say) has no toggle column to align with.
+    const detailRows = this.detailRows;
+    const detailRow =
+      detailRows.find((candidate) => this.#rowFor(candidate)?.querySelector(TOGGLE)) ??
+      detailRows[0];
     const row = detailRow && this.#rowFor(detailRow);
     const detailCell = detailRow?.cells[0];
     const firstCell = row?.cells[0];
@@ -301,7 +302,7 @@ export class TableRowDetails extends LitElement {
     const cells = Array.from(row.cells);
     const toggleIndex = cells.findIndex((cell) => cell.querySelector(TOGGLE));
     const alignedCell =
-      this.dataset.inset === "aligned" && toggleIndex >= 0
+      this.#host.dataset.inset === "aligned" && toggleIndex >= 0
         ? (cells[toggleIndex + 1] ?? null)
         : null;
     const startCell = alignedCell ?? firstCell;
@@ -312,7 +313,7 @@ export class TableRowDetails extends LitElement {
     const end =
       parseFloat(getComputedStyle(lastCell).paddingRight) - parseFloat(detailStyle.paddingRight);
 
-    this.style.setProperty("--sa-table-row-detail-inset-start", `${Math.max(start, 0)}px`);
-    this.style.setProperty("--sa-table-row-detail-inset-end", `${Math.max(end, 0)}px`);
+    this.#host.style.setProperty("--sa-table-row-detail-inset-start", `${Math.max(start, 0)}px`);
+    this.#host.style.setProperty("--sa-table-row-detail-inset-end", `${Math.max(end, 0)}px`);
   }
 }

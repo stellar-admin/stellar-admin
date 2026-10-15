@@ -54,7 +54,7 @@
         const syncButton = () => deleteButton.hidden = selection.selectedValues.length === 0;
 
         selection.addEventListener("selection-change", syncButton);
-        customElements.whenDefined("sel-table-selection").then(syncButton);
+        customElements.whenDefined("sel-table").then(syncButton);
 
         deleteButton.addEventListener("click", () =>
             alert(`Delete bookings:\n${selection.selectedValues.join("\n")}`));

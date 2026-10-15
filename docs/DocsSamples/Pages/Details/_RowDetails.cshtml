@@ -1,41 +1,39 @@
 <div class="w-full overflow-hidden rounded-lg border">
     <!-- code begin -->
-    <sa-table-row-details>
-        <sa-table>
-            <sa-table-header>
+    <sa-table row-details="true">
+        <sa-table-header>
+            <sa-table-row>
+                <sa-table-head class="w-px">
+                    <sa-table-row-detail-toggle all="true"/>
+                </sa-table-head>
+                <sa-table-head>Booking #</sa-table-head>
+                <sa-table-head>Destination</sa-table-head>
+                <sa-table-head class="text-right">Amount</sa-table-head>
+            </sa-table-row>
+        </sa-table-header>
+        <sa-table-body>
+            @foreach (var booking in StaticData.Bookings.Take(3))
+            {
+                var details = StaticData.DetailsFor(booking.Id);
                 <sa-table-row>
-                    <sa-table-head class="w-px">
-                        <sa-table-row-detail-toggle all="true"/>
-                    </sa-table-head>
-                    <sa-table-head>Booking #</sa-table-head>
-                    <sa-table-head>Destination</sa-table-head>
-                    <sa-table-head class="text-right">Amount</sa-table-head>
+                    <sa-table-cell class="w-px">
+                        <sa-table-row-detail-toggle aria-label="Show details for @booking.Id"/>
+                    </sa-table-cell>
+                    <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
+                    <sa-table-cell>@booking.Destination</sa-table-cell>
+                    <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
                 </sa-table-row>
-            </sa-table-header>
-            <sa-table-body>
-                @foreach (var booking in StaticData.Bookings.Take(3))
-                {
-                    var details = StaticData.DetailsFor(booking.Id);
-                    <sa-table-row>
-                        <sa-table-cell class="w-px">
-                            <sa-table-row-detail-toggle aria-label="Show details for @booking.Id"/>
-                        </sa-table-cell>
-                        <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
-                        <sa-table-cell>@booking.Destination</sa-table-cell>
-                        <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
-                    </sa-table-row>
-                    <sa-table-row-detail expanded="@(booking.Id == "TRP-4822")">
-                        <sa-details columns="4">
-                            <sa-display-field asp-for="@booking.Status" />
-                            <sa-display-field asp-for="@details.Traveller" label="Lead traveller" />
-                            <sa-display-field asp-for="@details.Email" href="mailto:@details.Email" />
-                            <sa-display-field asp-for="@details.Party" />
-                            <sa-display-field asp-for="@details.Notes" column-span="full" />
-                        </sa-details>
-                    </sa-table-row-detail>
-                }
-            </sa-table-body>
-        </sa-table>
-    </sa-table-row-details>
+                <sa-table-row-detail expanded="@(booking.Id == "TRP-4822")">
+                    <sa-details columns="4">
+                        <sa-display-field asp-for="@booking.Status" />
+                        <sa-display-field asp-for="@details.Traveller" label="Lead traveller" />
+                        <sa-display-field asp-for="@details.Email" href="mailto:@details.Email" />
+                        <sa-display-field asp-for="@details.Party" />
+                        <sa-display-field asp-for="@details.Notes" column-span="full" />
+                    </sa-details>
+                </sa-table-row-detail>
+            }
+        </sa-table-body>
+    </sa-table>
     <!-- code end -->
 </div>
