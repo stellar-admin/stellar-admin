@@ -27,7 +27,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
 | Foreign keys, lookups, many-to-many, create-from-lookup | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
-| Sidebar groups, order, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
+| Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
 | Panel name, logo, user menu items and log out | `ConfigureBranding`, `BrandingLogo`, `ConfigureUserMenu`, `UserMenuItem` | [sidebar](references/sidebar.md#branding) |
 | Sign-in, roles, per-resource and per-link access | `RequireAuthorization` | [authorization](references/authorization.md) |
 | Replace or extend a generated page, global labels, template overrides | `Areas/StellarAdmin/Views/{slug}/Index.cshtml`, `sa-index-page`, `ConfigureResourceLabels` | [customization](references/customization.md) |
@@ -107,7 +107,7 @@ builder.Services.AddStellarAdmin(admin =>
 - [ ] UseFactory for defaults (dates, generated references) instead of hidden fields
 - [ ] AllowView with at least one field, if a detail page is wanted
 - [ ] AllowDelete, if wanted
-- [ ] Sidebar group/order, and RequireAuthorization if it differs from the panel's
+- [ ] Sidebar group/order/icon (icons on every item in the group, or none), and RequireAuthorization if it differs from the panel's
 - [ ] Run the app and load /stellaradmin/{slug}, create, edit and view in real requests
 ```
 

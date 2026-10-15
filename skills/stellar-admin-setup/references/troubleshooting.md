@@ -14,6 +14,7 @@ Match the symptom from a real request (not just a successful build) to its cause
 | `/stellaradmin/{slug}` 404 for one resource | The slug differs from the guess: it is the kebab-case plural of the type name (`OrderItem` → `order-items`) unless one was passed to `AddEfCoreResource` or `AddResource`. |
 | Every page is a 500 mentioning page sizes | `paging.PageSize` isn't one of `paging.PageSizes` (default 10, 25, 50, 100). |
 | Signed-in users without access land on a 404 | Cookie authentication redirects them to `/Account/AccessDenied`; add that page or set `AccessDeniedPath`. |
+| A sidebar or user menu link shows red with "No page …" or "No action …" (Development), or is missing in production with a warning in the log | The `Page` or `Action` target doesn't exist: check the page name, the controller and action, and the area (targets resolve outside any area unless one is given). See the stellar-admin skill's sidebar reference. |
 | Create or Edit button missing | `AllowCreate` or `AllowEdit` not called for that resource. |
 | Date fields show 0001-01-01 on create | Set defaults in `create.UseFactory(() => new Booking { ... })`. |
 
