@@ -1,8 +1,7 @@
 /**
  * Row selection for a `sel-table` with `data-selection`. The checkbox inside `thead` is
- * the select-all; the checkboxes inside `tbody` select their row. When any row checkbox
- * is marked `data-row-select`, only the marked ones select rows, so other checkboxes in
- * the cells (a switch editor, say) are left alone.
+ * the select-all; the checkboxes inside `tbody` marked `data-row-select` select their row.
+ * Other checkboxes in the cells (a switch editor, say) are left alone.
  *
  * The behavior keeps three things in sync as checkboxes toggle:
  *   - the select-all checkbox's checked/indeterminate state
@@ -51,11 +50,11 @@ export class TableSelection {
   }
 
   get #rowCheckboxes(): HTMLInputElement[] {
-    const checkboxes = Array.from(
-      this.#host.querySelectorAll<HTMLInputElement>('tbody input[type="checkbox"]'),
+    return Array.from(
+      this.#host.querySelectorAll<HTMLInputElement>(
+        'tbody input[type="checkbox"][data-row-select]',
+      ),
     ).filter((checkbox) => this.#owns(checkbox));
-    const marked = checkboxes.filter((checkbox) => checkbox.hasAttribute("data-row-select"));
-    return marked.length > 0 ? marked : checkboxes;
   }
 
   /**

@@ -84,11 +84,10 @@ public class TableTagHelper : StellarAdminTagHelperBase
     public bool RowDetails { get; set; }
 
     /// <summary>
-    ///     Adds row selection. The checkbox in the header row acts as the select-all; a
-    ///     checkbox in a body row selects that row. When any row checkbox is marked
-    ///     <c>data-row-select</c>, only the marked ones select rows, so other checkboxes in the
-    ///     cells are left alone. Selected rows get <c>data-state="selected"</c>, and the
-    ///     selection posts as ordinary checkbox form data. Read the current selection from the
+    ///     Adds row selection: an <c>sa-table-selection-head</c> in the header row selects or
+    ///     clears every row, and an <c>sa-table-selection-cell</c> in each body row selects that
+    ///     row. Selected rows get <c>data-state="selected"</c>, and the selection posts as
+    ///     ordinary checkbox form data. Read the current selection from the
     ///     <c>sel-table</c> element's <c>selectedValues</c> property, or listen for its bubbling
     ///     <c>selection-change</c> event (with the values in <c>event.detail.values</c>).
     /// </summary>

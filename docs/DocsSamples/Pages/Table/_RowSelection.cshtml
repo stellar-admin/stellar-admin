@@ -1,9 +1,7 @@
 ﻿<sa-table id="booking-selection" selection="true">
     <sa-table-header>
         <sa-table-row>
-            <sa-table-head class="w-12">
-                <sa-input type="checkbox" aria-label="Select all bookings"/>
-            </sa-table-head>
+            <sa-table-selection-head label="Select all bookings"/>
             <sa-table-head class="w-[100px]">Booking #</sa-table-head>
             <sa-table-head>Status</sa-table-head>
             <sa-table-head>Destination</sa-table-head>
@@ -14,11 +12,9 @@
         @foreach (var booking in StaticData.Bookings)
         {
             <sa-table-row>
-                <sa-table-cell>
-                    <sa-input type="checkbox" name="selectedBookings" value="@booking.Id" data-row-select
-                              checked="@(booking.Status == BookingStatus.Pending)"
-                              aria-label="Select booking @booking.Id"/>
-                </sa-table-cell>
+                <sa-table-selection-cell name="selectedBookings" value="@booking.Id"
+                                         checked="@(booking.Status == BookingStatus.Pending)"
+                                         label="Select booking @booking.Id"/>
                 <sa-table-cell class="font-medium">@booking.Id</sa-table-cell>
                 <sa-table-cell>@booking.Status.ToString()</sa-table-cell>
                 <sa-table-cell>@booking.Destination</sa-table-cell>

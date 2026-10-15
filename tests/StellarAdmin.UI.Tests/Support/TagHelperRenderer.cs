@@ -86,6 +86,25 @@ internal static class TagHelperRenderer
         return Serialize(output);
     }
 
+    /// <summary>
+    ///     Renders a table cell tag helper inside a table row, since an HTML parser drops a cell
+    ///     found outside a table.
+    /// </summary>
+    public static async Task<IHtmlDocument> RenderInTableRowAsync(
+        TagHelper sut,
+        IEnumerable<TagHelperAttribute>? outputAttributes = null
+    )
+    {
+        var parent = new TagHelperContext(
+            new TagHelperAttributeList(),
+            new Dictionary<object, object>(),
+            Guid.NewGuid().ToString()
+        );
+        var cell = await RenderChildAsync(sut, parent, outputAttributes: outputAttributes);
+
+        return new HtmlParser().ParseDocument($"<table><tbody><tr>{cell}</tr></tbody></table>");
+    }
+
     private static string Serialize(TagHelperOutput output)
     {
         using var writer = new StringWriter();

@@ -1,6 +1,6 @@
 ---
 component: Table
-tags: [sa-table, sa-table-body, sa-table-caption, sa-table-cell, sa-table-footer, sa-table-head, sa-table-header, sa-table-row, sa-table-row-detail, sa-table-row-detail-toggle]
+tags: [sa-table, sa-table-body, sa-table-caption, sa-table-cell, sa-table-footer, sa-table-head, sa-table-header, sa-table-row, sa-table-row-detail, sa-table-row-detail-toggle, sa-table-selection-cell, sa-table-selection-head]
 generated: true
 ---
 
@@ -22,6 +22,8 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 | `<sa-table-row>` | A row within a table, rendered as a `<tr>`. |
 | `<sa-table-row-detail>` | The details of the table row before it, rendered as a `<tr>` with one cell spanning every column. It is collapsed until the row's `sa-table-row-detail-toggle` expands it. |
 | `<sa-table-row-detail-toggle>` | The button that expands and collapses a row's details, placed in any cell of the row. It controls the `sa-table-row-detail` after its row, or the one named by an `aria-controls` attribute. Renders a chevron when it has no content. |
+| `<sa-table-selection-cell>` | A cell with the checkbox that selects its row, for an `sa-table` with `selection`. The checked checkboxes post their values under `name`. |
+| `<sa-table-selection-head>` | A header cell with the checkbox that selects or clears every row, for an `sa-table` with `selection`. It heads the column of `sa-table-selection-cell` cells. |
 
 ## Attributes
 
@@ -54,6 +56,24 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `all` | `bool` | `false` | `true`, `false` |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-table-selection-cell>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `checked` | `bool` | `false` | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `label` | `string` | — | — |
+| `name` | `string` | — | — |
+| `value` | `string` | — | — |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-table-selection-head>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `label` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples
