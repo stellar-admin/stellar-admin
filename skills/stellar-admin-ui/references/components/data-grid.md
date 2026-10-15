@@ -1,19 +1,20 @@
 ---
 component: DataGrid
-tags: [sa-data-grid, sa-data-grid-column, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
+tags: [sa-data-grid, sa-data-grid-column, sa-data-grid-edit-template, sa-data-grid-empty, sa-data-grid-header-template, sa-data-grid-item-template, sa-data-grid-pager, sa-data-grid-row-detail, sa-data-grid-selection, sa-data-grid-sort]
 generated: true
 ---
 
 # DataGrid
 
-A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, and an `sa-data-grid-selection` child to render a row-selection checkbox column. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given.
+A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, and an `sa-data-grid-selection` child to render a row-selection checkbox column. Rows listed in `editing-keys`, and a `new-item`, render in edit mode with their columns' `sa-data-grid-edit-template`s. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-data-grid>` | A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, and an `sa-data-grid-selection` child to render a row-selection checkbox column. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given. |
-| `<sa-data-grid-column>` | Defines a column of a data grid. The cell value comes from, in order of precedence: a nested `sa-data-grid-item-template`, plain child content (re-rendered per row), or the property named by `field` or selected by `field-for`. An empty field value shows `empty-text`; otherwise a field cell renders through a grid display template when the column declares a `template` or the field property carries a `[UIHint]`. The header renders a nested `sa-data-grid-header-template` when present, otherwise `title`, otherwise a field column derives its header from the field's display name. A `class` attribute is applied to both the header and body cells of the column. |
+| `<sa-data-grid>` | A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, and an `sa-data-grid-selection` child to render a row-selection checkbox column. Rows listed in `editing-keys`, and a `new-item`, render in edit mode with their columns' `sa-data-grid-edit-template`s. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given. |
+| `<sa-data-grid-column>` | Defines a column of a data grid. The cell value comes from, in order of precedence: a nested `sa-data-grid-item-template`, plain child content (re-rendered per row), or the property named by `field` or selected by `field-for`. An empty field value shows `empty-text`; otherwise a field cell renders through a grid display template when the column declares a `template` or the field property carries a `[UIHint]`. The header renders a nested `sa-data-grid-header-template` when present, otherwise `title`, otherwise a field column derives its header from the field's display name. A `class` attribute is applied to both the header and body cells of the column. In a row the grid renders in edit mode, a nested `sa-data-grid-edit-template` renders instead. |
+| `<sa-data-grid-edit-template>` | The editor of a data grid column, rendered instead of the column's display in the rows the grid renders in edit mode, with the current item available through `Html.GridItem<T>()`. Field names get the row's prefix, `rows[key]`, so `asp-for="@Html.GridItem<Booking>().Destination"` posts as `rows[24817].Destination`. A column without an edit template keeps its display in an editing row. |
 | `<sa-data-grid-empty>` | Custom content for the data grid's empty state, shown as a single full-width row when the grid has no items. When omitted, the grid renders a default "No records found." message. |
 | `<sa-data-grid-header-template>` | Custom header content for a data grid column, rendered once and taking precedence over the column's `title` attribute. |
 | `<sa-data-grid-item-template>` | The row template of a data grid column, re-rendered once per data row with the current item available through `Html.GridItem<T>()`. Unlike plain child content, the template is never executed during the grid's collect pass, so it can safely dereference the item unconditionally. |
@@ -30,6 +31,9 @@ A data grid that renders a full table from declarative column definitions and a 
 |-----------|------|---------|--------|
 | `items` | `IEnumerable` | — | — |
 | `key-field` | `string` | — | — |
+| `editing-keys` | `IEnumerable` | — | — |
+| `new-item` | `object` | — | — |
+| `rows-only` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

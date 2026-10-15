@@ -1,5 +1,6 @@
 /* Table: rows divided by lines, column heads on a band, an optional footer and caption, selected
-   rows and expandable row details (both driven by sel-table).
+   rows and expandable row details (both driven by sel-table), and rows in edit mode with their
+   cell editors (.sa-cell-editor, .sa-cell-check, .sa-cell-error).
    Replaces: .sa-table-container, .sa-table, .sa-table-header, .sa-table-body, .sa-table-footer,
    .sa-table-row, .sa-table-head, .sa-table-cell, .sa-table-caption, .sa-table-row-details,
    .sa-table-row-detail, .sa-table-row-detail-cell, .sa-table-row-detail-reveal,
@@ -163,5 +164,44 @@
     @media (prefers-reduced-motion: reduce) {
       & > svg { transition: none; }
     }
+  }
+
+  /* A row in edit mode (data-editing), marked by a band and an accent line at its start. */
+  .sa-table-row[data-editing] {
+    background: var(--sa-color-surface-subtle);
+    & > :first-child { box-shadow: inset 2px 0 0 var(--sa-color-accent-fill); }
+    & > td {
+      position: relative;
+      vertical-align: top;
+    }
+  }
+  .sa-table-body > .sa-table-row[data-editing]:hover { background: var(--sa-color-surface-subtle); }
+
+  /* Editors fill their cells, reaching half the cell padding into it on each side and half a unit
+     above and below, so the row keeps its height. */
+  .sa-cell-editor {
+    display: block;
+    width: calc(100% + var(--sa-space-cell-x));
+    min-width: 7rem;
+    margin-block: calc(-0.5 * var(--sa-unit));
+    margin-inline: calc(-0.5 * var(--sa-space-cell-x));
+    &.sa-button { display: flex; }
+  }
+
+  /* A checkbox or switch sits centred on the row's control line. */
+  .sa-cell-check {
+    display: flex;
+    align-items: center;
+    height: var(--sa-control-h-sm);
+    margin-block: calc(-0.5 * var(--sa-unit));
+  }
+
+  /* A field's error under its editor. */
+  .sa-cell-error {
+    display: block;
+    margin-top: var(--sa-unit);
+    color: var(--sa-color-danger-text);
+    font-size: var(--sa-text-xs);
+    white-space: normal;
   }
 }

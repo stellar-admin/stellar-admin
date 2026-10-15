@@ -21,7 +21,8 @@ namespace StellarAdmin.UI;
 ///     <c>[UIHint]</c>. The header renders a nested
 ///     <c>sa-data-grid-header-template</c> when present, otherwise <c>title</c>, otherwise a
 ///     field column derives its header from the field's display name. A <c>class</c>
-///     attribute is applied to both the header and body cells of the column.
+///     attribute is applied to both the header and body cells of the column. In a row the grid
+///     renders in edit mode, a nested <c>sa-data-grid-edit-template</c> renders instead.
 /// </summary>
 [HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid")]
 public class DataGridColumnTagHelper : StellarAdminTagHelperBase
@@ -158,7 +159,16 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
                     : null
             );
 
-        var columnContext = new DataGridColumnContext { CurrentRow = gridContext.CurrentRow };
+        // In a row pass, the column's definition is the one registered at the position of the
+        // cell it is about to add.
+        var editing =
+            gridContext.CurrentRow is { Editing: true } row
+            && gridContext.Columns.ElementAtOrDefault(row.Cells.Count) is { HasEditTemplate: true };
+        var columnContext = new DataGridColumnContext
+        {
+            CurrentRow = gridContext.CurrentRow,
+            Editing = editing,
+        };
         SetContext(context, columnContext);
 
         var childContent = await output.GetChildContentAsync(useCachedResult: false);
@@ -211,6 +221,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
                         : null,
                     Sortable = effectiveSortable,
                     SortField = sortField,
+                    HasEditTemplate = columnContext.HasEditTemplate,
                 }
             );
 
@@ -219,7 +230,11 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
         }
 
         string cellHtml;
-        if (columnContext.ItemContent is not null)
+        if (editing)
+        {
+            cellHtml = columnContext.EditContent ?? "";
+        }
+        else if (columnContext.ItemContent is not null)
         {
             cellHtml = columnContext.ItemContent;
         }

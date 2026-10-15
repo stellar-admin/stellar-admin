@@ -14,7 +14,7 @@ public class DataGridItemTemplateTagHelper : StellarAdminTagHelperBase
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columnContext = GetContext<DataGridColumnContext>(context);
-        if (columnContext is { Collecting: false })
+        if (columnContext is { Collecting: false, Editing: false })
         {
             columnContext.ItemContent = (
                 await output.GetChildContentAsync(useCachedResult: false)

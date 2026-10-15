@@ -13,6 +13,32 @@ internal static class TagHelperRenderer
         IEnumerable<TagHelperAttribute>? outputAttributes = null
     )
     {
+        return new HtmlParser().ParseDocument(
+            await RenderToStringAsync(sut, children, outputAttributes)
+        );
+    }
+
+    /// <summary>
+    ///     Renders a tag helper that outputs table rows inside a table body, since an HTML parser
+    ///     drops a row found outside a table.
+    /// </summary>
+    public static async Task<IHtmlDocument> RenderInTableBodyAsync(
+        TagHelper sut,
+        Func<TagHelperContext, Task<string>>? children = null,
+        IEnumerable<TagHelperAttribute>? outputAttributes = null
+    )
+    {
+        var rows = await RenderToStringAsync(sut, children, outputAttributes);
+
+        return new HtmlParser().ParseDocument($"<table><tbody>{rows}</tbody></table>");
+    }
+
+    private static async Task<string> RenderToStringAsync(
+        TagHelper sut,
+        Func<TagHelperContext, Task<string>>? children,
+        IEnumerable<TagHelperAttribute>? outputAttributes
+    )
+    {
         var attributes = new TagHelperAttributeList();
         if (sut is InputTagHelper { InputTypeName: not null } input)
         {
@@ -54,7 +80,7 @@ internal static class TagHelperRenderer
             output.Content.SetHtmlContent(await output.GetChildContentAsync());
         }
 
-        return new HtmlParser().ParseDocument(Serialize(output));
+        return Serialize(output);
     }
 
     public static async Task<string> RenderChildAsync(

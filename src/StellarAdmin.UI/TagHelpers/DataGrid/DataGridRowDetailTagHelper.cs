@@ -101,6 +101,12 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
 
         if (gridContext.CurrentRow is { } currentRow)
         {
+            // An editing row has no details row.
+            if (currentRow.Editing)
+            {
+                return;
+            }
+
             // Row pass: render the template for this row's item.
             currentRow.DetailHtml = (
                 await output.GetChildContentAsync(useCachedResult: false)

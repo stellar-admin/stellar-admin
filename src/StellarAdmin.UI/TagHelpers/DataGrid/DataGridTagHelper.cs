@@ -17,7 +17,8 @@ namespace StellarAdmin.UI;
 ///     render a footer bar with paging links and a record-range summary, an
 ///     <c>sa-data-grid-sort</c> child to render sort links on the sortable columns' headers,
 ///     and an <c>sa-data-grid-selection</c> child to render a row-selection checkbox column.
-///     Querying, sorting, and paging the data remain the application's responsibility — the
+///     Rows listed in <c>editing-keys</c>, and a <c>new-item</c>, render in edit mode with their
+///     columns' <c>sa-data-grid-edit-template</c>s. Querying, sorting, and paging the data remain the application's responsibility — the
 ///     grid renders the items it is given.
 /// </summary>
 [HtmlTargetElement("sa-data-grid")]
@@ -51,15 +52,47 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("key-field")]
     public string? KeyField { get; set; }
 
+    /// <summary>
+    ///     The keys of the rows to render in edit mode, with their columns' edit templates.
+    ///     Requires <c>key-field</c>.
+    /// </summary>
+    [HtmlAttributeName("editing-keys")]
+    public IEnumerable? EditingKeys { get; set; }
+
+    /// <summary>
+    ///     An item to render in edit mode above the other rows, with the key <c>new</c>.
+    ///     Requires <c>key-field</c>.
+    /// </summary>
+    [HtmlAttributeName("new-item")]
+    public object? NewItem { get; set; }
+
+    /// <summary>
+    ///     Renders only the rows, without the grid, its table and its header, for a response
+    ///     that replaces rows in the page. A row in edit mode renders without its details row.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>.
+    /// </remarks>
+    [HtmlAttributeName("rows-only")]
+    public bool RowsOnly { get; set; }
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        if ((EditingKeys is not null || NewItem is not null) && KeyField is null)
+        {
+            throw new InvalidOperationException(
+                "<sa-data-grid> requires the key-field attribute when editing-keys or new-item "
+                    + "is set."
+            );
+        }
+
         // Ensures we work with a list which has better performance that an enumerable
         var items = Items?.Cast<object?>().ToList() ?? [];
 
         // Set contexts
         var gridContext = new DataGridContext
         {
-            ItemType = items.Find(item => item is not null)?.GetType(),
+            ItemType = (NewItem ?? items.Find(item => item is not null))?.GetType(),
             KeyField = KeyField,
         };
         SetContext(context, gridContext);
@@ -69,6 +102,15 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         // Collect pass (CurrentRow is null): columns register their definitions and produce
         // no output.
         await output.GetChildContentAsync(useCachedResult: false);
+
+        if (RowsOnly)
+        {
+            output.TagName = null;
+            output.Content.SetHtmlContent(
+                await RenderRows(context, output, gridContext, items, idDiscriminator)
+            );
+            return;
+        }
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -251,18 +293,11 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         UniqueIdDiscriminator idDiscriminator
     )
     {
-        // The details rows' ids start with the grid's id, or the id of its source tag
-        var gridId =
-            output.Attributes.TryGetAttribute("id", out var idAttribute)
-            && idAttribute.Value?.ToString() is { Length: > 0 } id
-                ? id
-                : context.UniqueId;
-
         var bodyBuilder = new TagBuilder("tbody");
         bodyBuilder.Attributes.Add("data-slot", "table-body");
         bodyBuilder.Attributes.Add("class", "sa-table-body");
 
-        if (items.Count == 0)
+        if (items.Count == 0 && NewItem is null)
         {
             var columnCount = GetColumnCount(gridContext);
 
@@ -293,22 +328,76 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             return bodyBuilder;
         }
 
+        bodyBuilder.InnerHtml.AppendHtml(
+            await RenderRows(context, output, gridContext, items, idDiscriminator)
+        );
+        return bodyBuilder;
+    }
+
+    /// <summary>
+    ///     Renders a row per item, after the new item's row, with each display row's details
+    ///     row.
+    /// </summary>
+    private async Task<IHtmlContent> RenderRows(
+        TagHelperContext context,
+        TagHelperOutput output,
+        DataGridContext gridContext,
+        List<object?> items,
+        UniqueIdDiscriminator idDiscriminator
+    )
+    {
+        // The details rows' ids start with the grid's id, or the id of its source tag
+        var gridId =
+            output.Attributes.TryGetAttribute("id", out var idAttribute)
+            && idAttribute.Value?.ToString() is { Length: > 0 } id
+                ? id
+                : context.UniqueId;
+
+        var editingKeys = (EditingKeys?.Cast<object?>() ?? [])
+            .Select(key => Convert.ToString(key, CultureInfo.InvariantCulture))
+            .OfType<string>()
+            .ToHashSet();
+        var rows = new List<(object? Item, string? Key, bool Editing)>();
+        if (NewItem is not null)
+        {
+            rows.Add((NewItem, "new", true));
+        }
+        foreach (var item in items)
+        {
+            var key = KeyField is null ? null : DataGridFieldGetters.GetKey(item, KeyField);
+            rows.Add((item, key, key is not null && editingKeys.Contains(key)));
+        }
+
+        var rowsBuilder = new HtmlContentBuilder();
+
         // Preserve any outer value so nested grids restore correctly.
         var priorItem = ViewContext.ViewData[DataGridConsts.ItemKey];
+        var templateInfo = ViewContext.ViewData.TemplateInfo;
+        var priorPrefix = templateInfo.HtmlFieldPrefix;
         try
         {
-            for (var i = 0; i < items.Count; i++)
+            for (var i = 0; i < rows.Count; i++)
             {
-                var currentRow = new DataGridRowContext { Item = items[i], RowIndex = i };
+                var (item, rowKey, editing) = rows[i];
+                var currentRow = new DataGridRowContext
+                {
+                    Item = item,
+                    RowIndex = i,
+                    Editing = editing,
+                };
                 gridContext.CurrentRow = currentRow;
-                ViewContext.ViewData[DataGridConsts.ItemKey] = items[i];
-                var rowKey = KeyField is null
-                    ? null
-                    : DataGridFieldGetters.GetKey(items[i], KeyField);
+                ViewContext.ViewData[DataGridConsts.ItemKey] = item;
                 idDiscriminator.Value = rowKey is null ? $"r{i}" : ToIdPart(rowKey);
+
+                // An editing row's fields are named rows[key].Field, so several editing rows
+                // post apart.
+                templateInfo.HtmlFieldPrefix = editing
+                    ? templateInfo.GetFullHtmlFieldName($"rows[{rowKey}]")
+                    : priorPrefix;
 
                 // Row pass: re-execute the grid's child content; columns deposit their cells.
                 await output.GetChildContentAsync(useCachedResult: false);
+                templateInfo.HtmlFieldPrefix = priorPrefix;
 
                 var rowBuilder = new TagBuilder("tr");
                 rowBuilder.Attributes.Add("data-slot", "table-row");
@@ -317,8 +406,17 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 {
                     rowBuilder.Attributes.Add("data-key", rowKey);
                 }
+                if (editing)
+                {
+                    rowBuilder.Attributes.Add("data-editing", "");
+                }
 
-                if (gridContext.Selection is { } selection)
+                // An editing row has no selection checkbox.
+                if (gridContext.Selection is not null && editing)
+                {
+                    rowBuilder.InnerHtml.AppendHtml(BuildCell());
+                }
+                else if (gridContext.Selection is { } selection)
                 {
                     var key = rowKey ?? "";
 
@@ -334,9 +432,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                         checkboxAttributes.Add(new TagHelperAttribute("name", selection.Name));
                     }
 
-                    var selectCellBuilder = new TagBuilder("td");
-                    selectCellBuilder.Attributes.Add("data-slot", "table-cell");
-                    selectCellBuilder.Attributes.Add("class", "sa-table-cell");
+                    var selectCellBuilder = BuildCell();
                     selectCellBuilder.InnerHtml.AppendHtml(
                         await RenderCheckbox(context, checkboxAttributes)
                     );
@@ -357,19 +453,15 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                             "sa-table-cell",
                             all: false,
                             expanded,
-                            detailRowId
+                            detailRowId,
+                            hidden: editing
                         )
                     );
                 }
 
                 foreach (var cell in currentRow.Cells)
                 {
-                    var cellBuilder = new TagBuilder("td");
-                    cellBuilder.Attributes.Add("data-slot", "table-cell");
-                    cellBuilder.Attributes.Add(
-                        "class",
-                        JoinCssClasses("sa-table-cell", cell.CssClass)
-                    );
+                    var cellBuilder = BuildCell(cell.CssClass);
                     cellBuilder.InnerHtml.AppendHtml(cell.Html);
                     rowBuilder.InnerHtml.AppendHtml(cellBuilder);
                 }
@@ -384,14 +476,16 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                             "sa-table-cell",
                             all: false,
                             expanded,
-                            detailRowId
+                            detailRowId,
+                            hidden: editing
                         )
                     );
                 }
 
-                bodyBuilder.InnerHtml.AppendHtml(rowBuilder);
+                rowsBuilder.AppendHtml(rowBuilder);
 
-                if (rowDetail is not null)
+                // An editing row has no details row: the page keeps the one it had.
+                if (rowDetail is not null && !editing)
                 {
                     var detailRowBuilder = new TagBuilder("tr");
                     foreach (
@@ -411,7 +505,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                             GetColumnCount(gridContext)
                         )
                     );
-                    bodyBuilder.InnerHtml.AppendHtml(detailRowBuilder);
+                    rowsBuilder.AppendHtml(detailRowBuilder);
                 }
             }
         }
@@ -426,11 +520,20 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 ViewContext.ViewData[DataGridConsts.ItemKey] = priorItem;
             }
 
+            templateInfo.HtmlFieldPrefix = priorPrefix;
             gridContext.CurrentRow = null;
             idDiscriminator.Value = null;
         }
 
-        return bodyBuilder;
+        return rowsBuilder;
+    }
+
+    private static TagBuilder BuildCell(string? cssClass = null)
+    {
+        var cellBuilder = new TagBuilder("td");
+        cellBuilder.Attributes.Add("data-slot", "table-cell");
+        cellBuilder.Attributes.Add("class", JoinCssClasses("sa-table-cell", cssClass));
+        return cellBuilder;
     }
 
     /// <summary>
@@ -458,7 +561,8 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         string cssClass,
         bool all,
         bool expanded = false,
-        string? controls = null
+        string? controls = null,
+        bool hidden = false
     )
     {
         var toggleOutput = new TagHelperOutput(
@@ -474,6 +578,13 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         if (controls is not null)
         {
             toggleOutput.Attributes.SetAttribute("aria-controls", controls);
+        }
+
+        // An editing row keeps its toggle, hidden: the details indent is measured from the
+        // toggle's column.
+        if (hidden)
+        {
+            toggleOutput.Attributes.SetAttribute("hidden", "hidden");
         }
 
         var cellBuilder = new TagBuilder(tagName);

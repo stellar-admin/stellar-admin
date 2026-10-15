@@ -67,7 +67,7 @@ public class ResourceRowDetailsTests
         var document = await client.GetDocumentAsync("/stellaradmin/products");
 
         // Assert
-        var rowDetails = document.RequiredElement("[data-slot='table-row-details']");
+        var rowDetails = document.RequiredElement("[data-slot='table-interactivity']");
         await Assert.That(rowDetails.GetAttribute("data-row-click")).IsEqualTo("true");
         await Assert.That(rowDetails.GetAttribute("data-expand-mode")).IsEqualTo("single");
         await Assert.That(rowDetails.GetAttribute("data-emphasis")).IsEqualTo("rail");

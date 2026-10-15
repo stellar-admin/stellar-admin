@@ -15,6 +15,16 @@ internal sealed class DataGridColumnContext
     /// <summary>True during the collect pass — derived from <see cref="CurrentRow" />.</summary>
     public bool Collecting => CurrentRow is null;
 
+    /// <summary>
+    ///     Whether this row pass renders the column's edit template instead of its display.
+    /// </summary>
+    public bool Editing { get; init; }
+
+    /// <summary>Set during the collect pass when the column has an edit template.</summary>
+    public bool HasEditTemplate { get; set; }
+
+    public string? EditContent { get; set; }
+
     public string? HeaderContent { get; set; }
 
     public string? ItemContent { get; set; }

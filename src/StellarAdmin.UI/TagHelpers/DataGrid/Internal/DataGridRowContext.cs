@@ -14,6 +14,9 @@ internal sealed class DataGridRowContext
     /// <summary>The zero-based index of this row.</summary>
     public required int RowIndex { get; init; }
 
+    /// <summary>Whether the row renders its columns' edit templates.</summary>
+    public bool Editing { get; init; }
+
     /// <summary>Cells deposited by the columns during this row pass, in document order.</summary>
     public List<DataGridCell> Cells { get; } = [];
 

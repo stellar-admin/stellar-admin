@@ -270,28 +270,6 @@
         max-width: calc(80 * var(--sa-unit));
     }
 
-    /* Inline rows: editors fill their cells, reaching half the cell padding into it on each side and half a unit
-       above and below, so the row keeps its height */
-    .sa-cell-editor {
-        display: block;
-        width: calc(100% + var(--sa-space-cell-x));
-        min-width: 7rem;
-        margin-block: calc(-0.5 * var(--sa-unit));
-        margin-inline: calc(-0.5 * var(--sa-space-cell-x));
-
-        &.sa-button {
-            display: flex;
-        }
-    }
-
-    /* A checkbox or switch sits centred on the row's control line */
-    .sa-cell-check {
-        display: flex;
-        align-items: center;
-        height: var(--sa-control-h-sm);
-        margin-block: calc(-0.5 * var(--sa-unit));
-    }
-
     .sa-cell-segmented {
         margin-block: calc(-0.5 * var(--sa-unit));
     }
@@ -323,39 +301,14 @@
         }
     }
 
-    /* The row being edited or added */
-    .sa-table-row[data-editing] {
-        background: var(--sa-color-surface-subtle);
-
-        & > :first-child {
-            box-shadow: inset 2px 0 0 var(--sa-color-accent-fill);
-        }
-
-        & > td {
-            position: relative;
-            vertical-align: top;
-        }
-    }
-
-    .sa-table-body > .sa-table-row[data-editing]:hover {
-        background: var(--sa-color-surface-subtle);
-    }
-
     /* The other rows step back while one is edited or added, when the grid asks for it */
     [data-inline-dim] .sa-table-body:has(> [data-editing]) > .sa-table-row:not([data-editing], .sa-row-message, .sa-table-add-row) {
         opacity: 0.55;
         transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
     }
 
-    /* A field's error under its cell, and a message under the row for errors no cell can show */
-    .sa-cell-error {
-        display: block;
-        margin-top: var(--sa-unit);
-        color: var(--sa-color-danger-text);
-        font-size: var(--sa-text-xs);
-        white-space: normal;
-    }
-
+    /* A message under the row for errors no cell can show (the cell editors and their errors are styled by
+       StellarAdmin.UI) */
     .sa-row-message > td {
         padding-top: 0;
         background: var(--sa-color-surface-subtle);
