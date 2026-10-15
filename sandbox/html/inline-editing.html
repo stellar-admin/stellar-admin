@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inline editing concepts</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      Real built library assets. The grids reproduce the markup _IndexDataGrid emits (sa-data-grid,
+      sa-table, outline icon action buttons); the script below renders them from a small Voyager
+      Travel "Tours" data set so every concept is interactive. Saves are simulated (~500ms).
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <!-- Theme fixture, swapped from the control bar; empty for the default theme. -->
+    <link id="theme-css" rel="stylesheet" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body {
+        margin: 0;
+        background: var(--sa-color-canvas);
+        color: var(--sa-color-ink);
+        font-family: var(--sa-font-sans);
+      }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 200px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 8px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 90ch; }
+      .proto-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 32px; font-size: 14px; }
+      .proto-nav a { color: var(--sa-color-ink-muted); }
+      .proto-section { margin-bottom: 64px; scroll-margin-top: 16px; }
+      .proto-section-head h2 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+      .proto-section-head p { margin: 0 0 6px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section-head ul { margin: 0 0 12px; padding-left: 18px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section-head li { margin: 2px 0; }
+      .proto-section-head strong { color: var(--sa-color-ink); font-weight: 600; }
+      .proto-options { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin: 0 0 12px; font-size: 13px; color: var(--sa-color-ink-muted); }
+      .proto-options .group { display: inline-flex; gap: 4px; align-items: center; }
+      .proto-options button, .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: transparent; border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-options button[aria-pressed="true"], .proto-controls button[aria-pressed="true"] {
+        background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent;
+      }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center;
+        padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container);
+        box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+      .proto-hint { font-size: 12px; color: var(--sa-color-ink-muted); margin-top: 8px; }
+      .proto-hint .sa-kbd { margin-inline: 1px; }
+
+
+      /* Effort ratings (prototype only). */
+      .proto-rating { display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; }
+      .proto-rating i { width: 10px; height: 10px; border-radius: 50%; background: var(--sa-color-tint); box-shadow: inset 0 0 0 1px var(--sa-color-line); }
+      .proto-rating i.on { background: var(--sa-color-accent-fill); box-shadow: none; }
+      .proto-rating i.half { background: linear-gradient(90deg, var(--sa-color-accent-fill) 50%, var(--sa-color-tint) 50%); box-shadow: none; }
+      .proto-rating b { margin-left: 6px; font-size: 12px; font-weight: 600; color: var(--sa-color-ink); }
+      .proto-effort {
+        margin: 4px 0 14px; padding: 10px 14px; max-width: 95ch; font-size: 13px;
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-box);
+        background: var(--sa-color-surface);
+      }
+      .proto-effort summary { cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+      .proto-effort summary .proto-reuse { font-weight: 400; color: var(--sa-color-ink-muted); }
+      .proto-effort ul, .proto-section-head ul { list-style: disc; }
+      .proto-effort ul { margin: 8px 0 2px; padding-left: 18px; color: var(--sa-color-ink-muted); }
+      .proto-effort li { margin: 3px 0; }
+      .proto-effort strong { color: var(--sa-color-ink); font-weight: 600; }
+      .proto-effort code { font-size: 12px; }
+      .proto-overview { margin: 0 0 40px; }
+      .proto-overview h2 { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+      .proto-overview table { border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+      .proto-overview th, .proto-overview td { text-align: left; padding: 6px 16px 6px 0; border-bottom: var(--sa-border-width) solid var(--sa-color-line); vertical-align: middle; }
+      .proto-overview th { color: var(--sa-color-ink-muted); font-weight: 500; }
+      .proto-overview a { color: inherit; }
+
+      /* Shared display bits inside the grid (prototype stand-ins for display templates). */
+      .proto-muted { color: var(--sa-color-ink-muted); }
+      .proto-bool { display: inline-flex; color: var(--sa-color-ink); }
+      .proto-bool svg { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+      .proto-actions { display: inline-flex; gap: calc(1 * var(--sa-unit)); }
+      .sa-table-head.text-right, .sa-table-cell.text-right { text-align: right; }
+      .w-px { width: 1px; }
+      .whitespace-nowrap { white-space: nowrap; }
+
+      /* ======================================================================================== */
+      /* Candidate CSS, written as the library would (tokens only)                                 */
+      /* ======================================================================================== */
+      @layer sa.components {
+        /* Shared: the in-cell editor. Its text lines up with the display text it replaces, and the
+           row keeps its height (a small control inside the cell's own padding). */
+        .sa-cell-editor {
+          display: block;
+          margin-block: calc(-0.5 * var(--sa-unit));
+          margin-inline: calc(-1 * (var(--sa-control-px) + var(--sa-border-width)));
+          width: calc(100% + 2 * (var(--sa-control-px) + var(--sa-border-width)));
+        }
+        /* Side by side (a row or the whole grid in fields), the fields keep half the cell padding
+           apart instead of lining their text up with the display text. */
+        :is([data-concept="row"], [data-concept="sheet"]) .sa-cell-editor {
+          margin-inline: calc(-0.5 * var(--sa-space-cell-x));
+          width: calc(100% + var(--sa-space-cell-x));
+        }
+        :is([data-concept="row"], [data-concept="sheet"]) .sa-cell-editor.sa-native-select-wrapper { width: calc(100% + var(--sa-space-cell-x)); }
+        .sa-cell-editor.sa-input,
+        .sa-cell-editor .sa-native-select { height: var(--sa-control-h-sm); border-radius: var(--sa-radius-control-sm); }
+        .sa-cell-editor.sa-native-select-wrapper { width: calc(100% + 2 * (var(--sa-control-px) + var(--sa-border-width))); }
+        .text-right > .sa-cell-editor.sa-input { text-align: right; }
+        .sa-cell-editor.sa-input[type="number"] { appearance: textfield; }
+        .sa-cell-editor.sa-input[type="number"]::-webkit-inner-spin-button { appearance: none; margin: 0; }
+
+        /* Shared: the cell's save state. */
+        .sa-table-cell[data-edit-state] { position: relative; }
+        .sa-table-cell[data-edit-state="saving"] { color: var(--sa-color-ink-muted); }
+        .sa-table-cell[data-edit-state="saved"] {
+          animation: sa-cell-saved 1.4s var(--sa-motion-ease);
+        }
+        .sa-cell-status {
+          position: absolute; inset-block: 0; inset-inline-end: calc(1 * var(--sa-unit));
+          display: flex; align-items: center; pointer-events: none; color: var(--sa-color-ink-muted);
+        }
+        .text-right > .sa-cell-status { inset-inline-end: auto; inset-inline-start: calc(1 * var(--sa-unit)); }
+        .sa-cell-message {
+          position: absolute; z-index: 5; inset-inline-start: 0; top: calc(100% - 2px);
+          padding: calc(1 * var(--sa-unit)) calc(2 * var(--sa-unit));
+          border-radius: var(--sa-radius-control-sm);
+          background: var(--sa-color-danger-fill); color: var(--sa-color-on-danger);
+          font-size: var(--sa-text-xs); white-space: nowrap; box-shadow: var(--sa-shadow-overlay);
+        }
+        @keyframes sa-cell-saved {
+          0%, 30% { background: color-mix(in oklab, var(--sa-color-success) 18%, transparent); }
+          100% { background: transparent; }
+        }
+
+        /* 1 — Click to edit a cell: the affordance on editable cells. */
+        [data-concept="cell"] .sa-table-cell[data-editable]:not([data-editing]) { cursor: text; }
+        [data-concept="cell"][data-affordance="outline"] .sa-table-cell[data-editable]:not([data-editing]):hover {
+          box-shadow: inset 0 0 0 var(--sa-border-width) var(--sa-color-line-control-hover);
+          border-radius: var(--sa-radius-control-sm);
+        }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-cell[data-editable]:not([data-editing]) { position: relative; padding-inline-end: calc(var(--sa-space-cell-x) + 1.25rem); }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-cell[data-editable].text-right:not([data-editing]) { padding-inline: calc(var(--sa-space-cell-x) + 1.25rem) var(--sa-space-cell-x); }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-cell[data-editable]:not([data-editing])::after {
+          content: ""; position: absolute; top: 50%; inset-inline-end: var(--sa-space-cell-x);
+          width: 0.8rem; height: 0.8rem; translate: 0 -50%; opacity: 0;
+          background: var(--sa-color-ink-muted);
+          mask: var(--proto-pencil) center / contain no-repeat;
+          transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+        }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-cell[data-editable].text-right:not([data-editing])::after { inset-inline: var(--sa-space-cell-x) auto; }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-row:hover > .sa-table-cell[data-editable]::after { opacity: 0.6; }
+        [data-concept="cell"][data-affordance="pencil"] .sa-table-cell[data-editable]:hover::after { opacity: 1; }
+        [data-concept="cell"][data-affordance="underline"] .sa-table-cell[data-editable]:not([data-editing]) > .proto-value {
+          text-decoration: underline dashed color-mix(in oklab, var(--sa-color-ink-muted) 60%, transparent);
+          text-underline-offset: 4px;
+        }
+        [data-concept="cell"] .sa-table-cell[data-editable]:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--sa-color-accent); }
+
+        /* 2 — Row edit mode: the row being edited is set apart. */
+        [data-concept="row"] .sa-table-row[data-editing] { background: var(--sa-color-surface-subtle); }
+        [data-concept="row"] .sa-table-row[data-editing]:hover { background: var(--sa-color-surface-subtle); }
+        [data-concept="row"] .sa-table-row[data-editing] > :first-child { box-shadow: inset 2px 0 0 var(--sa-color-accent-fill); }
+        [data-concept="row"] .sa-table-body:has([data-editing]) > .sa-table-row:not([data-editing]) { opacity: 0.55; }
+
+        /* 3 — Popover editor. */
+        [data-concept="popover"] .sa-table-cell[data-editable] { cursor: pointer; }
+        [data-concept="popover"] .sa-table-cell[data-editable]:hover > .proto-value,
+        [data-concept="popover"] .sa-table-cell[data-editing] > .proto-value {
+          text-decoration: underline; text-decoration-color: var(--sa-color-ink-muted); text-underline-offset: 4px;
+        }
+        [data-concept="popover"] .sa-table-cell[data-editing] { background: var(--sa-color-selected); }
+        .sa-cell-popover { width: 20rem; display: grid; gap: calc(3 * var(--sa-unit)); }
+        .sa-cell-popover:not(:popover-open) { display: none; }
+        .sa-cell-popover-footer { display: flex; justify-content: flex-end; gap: calc(2 * var(--sa-unit)); }
+
+        /* 4 — Grid edit mode. */
+        .sa-grid-toolbar {
+          display: flex; align-items: center; justify-content: space-between; gap: calc(2 * var(--sa-unit));
+          padding: calc(2 * var(--sa-unit)) var(--sa-space-cell-x);
+          border-bottom: var(--sa-border-width) solid var(--sa-color-line);
+          font-size: var(--sa-text-body);
+        }
+        .sa-grid-toolbar-status { color: var(--sa-color-ink-muted); }
+        [data-concept="sheet"] .sa-table-cell[data-dirty] { background: color-mix(in oklab, var(--sa-color-warning) 12%, transparent); }
+        [data-concept="sheet"] .sa-table-cell[data-dirty]::before {
+          content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 6px; height: 6px;
+          border-radius: var(--sa-radius-round); background: var(--sa-color-warning);
+        }
+        [data-concept="sheet"] .sa-table-cell { position: relative; }
+        /* Flush fields: the grid reads as a sheet, the field appears on hover and focus. */
+        [data-concept="sheet"][data-fields="flush"] .sa-cell-editor:is(.sa-input, .sa-native-select-wrapper > .sa-native-select):not(:hover, :focus, [aria-invalid="true"]) {
+          border-color: transparent; background: transparent; box-shadow: none;
+        }
+        [data-concept="sheet"][data-fields="flush"] .sa-cell-editor.sa-native-select-wrapper:not(:hover, :focus-within) .sa-native-select-icon { opacity: 0; }
+        .sa-grid-savebar {
+          position: sticky; bottom: calc(3 * var(--sa-unit)); z-index: 4;
+          display: flex; align-items: center; gap: calc(2 * var(--sa-unit));
+          width: fit-content; margin: calc(3 * var(--sa-unit)) auto 0;
+          padding: calc(1.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(1.5 * var(--sa-unit)) calc(4 * var(--sa-unit));
+          border: var(--sa-border-width) solid var(--sa-color-line);
+          border-radius: var(--sa-radius-overlay);
+          background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay);
+          font-size: var(--sa-text-body);
+        }
+        .sa-grid-savebar[hidden] { display: none; }
+
+        /* 5 — Edit in the row details. */
+        .sa-row-edit-form { display: grid; gap: calc(4 * var(--sa-unit)); max-width: 52rem; }
+        .sa-row-edit-form-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: calc(4 * var(--sa-unit)); }
+        .sa-row-edit-form-fields .sa-field-wide { grid-column: span 2; }
+        .sa-row-edit-form-footer { display: flex; gap: calc(2 * var(--sa-unit)); }
+        .sa-row-edit-form .sa-native-select-wrapper { width: 100%; }
+        [data-concept="detail"] .sa-table-row-details tr:has(+ .sa-table-row-detail[data-state="open"]) { background: var(--sa-color-surface-subtle); }
+        [data-concept="detail"] .sa-table-row-detail[data-state="open"] { background: var(--sa-color-surface-subtle); }
+
+        /* 6 — Direct controls: the status picker drawn as a badge. */
+        .sa-badge-select { position: relative; display: inline-flex; align-items: center; }
+        .sa-badge-select > select {
+          position: absolute; inset: 0; opacity: 0; cursor: pointer; font: inherit;
+        }
+        .sa-badge-select > .sa-badge { gap: 2px; padding-inline-end: calc(1 * var(--sa-unit)); }
+        .sa-badge-select > .sa-badge svg { width: 0.75rem; height: 0.75rem; }
+        .sa-badge-select:has(select:focus-visible) > .sa-badge { box-shadow: var(--sa-focus-shadow); }
+        [data-concept="direct"] .sa-table-cell .sa-switch-wrapper { vertical-align: middle; }
+        .sa-undo-bar {
+          position: fixed; left: 16px; bottom: 16px; z-index: 60;
+          display: flex; align-items: center; gap: calc(3 * var(--sa-unit));
+          padding: calc(2 * var(--sa-unit)) calc(2 * var(--sa-unit)) calc(2 * var(--sa-unit)) calc(4 * var(--sa-unit));
+          border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-overlay);
+          background: var(--sa-color-surface-raised); box-shadow: var(--sa-shadow-overlay);
+          font-size: var(--sa-text-body);
+        }
+        .sa-undo-bar[hidden] { display: none; }
+      }
+      :root {
+        --proto-pencil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3C/svg%3E");
+      }
+    </style>
+  </head>
+  <body>
+    <main class="proto-page">
+      <h1>Inline editing on index grids</h1>
+      <p class="proto-intro">
+        Six ways to change a record without leaving the index page. Every grid works: edit, tab, press Enter or Escape. Saves are simulated with a short delay. Validation to try: an empty <em>Name</em>, a <em>Price</em> of 0 or less, or a non-whole <em>Seats</em> value. The concepts are not exclusive; a resource could combine, for example, 1 or 2 with 6.
+      </p>
+      <nav class="proto-nav">
+        <a href="#effort">Complexity and work</a>
+        <a href="#concept-cell">1 — Click a cell</a>
+        <a href="#concept-row">2 — Row edit mode</a>
+        <a href="#concept-popover">3 — Popover editor</a>
+        <a href="#concept-sheet">4 — Grid edit mode (batch)</a>
+        <a href="#concept-detail">5 — Form in the row details</a>
+        <a href="#concept-direct">6 — Direct controls only</a>
+      </nav>
+
+      <section class="proto-overview" id="effort">
+        <h2>Complexity and work</h2>
+        <p class="proto-intro">Estimated from the current <code>ResourceController</code> and <code>_IndexDataGrid</code>, not from a spike. 1 is the least work, 5 the most. Each concept below has its own breakdown.</p>
+        <table>
+          <thead><tr><th>Concept</th><th>Complexity</th><th>Uses the shared groundwork?</th></tr></thead>
+          <tbody><tr><td><a href="#concept-direct">6 — Direct controls only</a></td><td><span class="proto-rating" aria-label="Complexity 2 / 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><b>2 / 5</b></span></td><td>A small part of the groundwork</td></tr><tr><td><a href="#concept-detail">5 — Form in the row details</a></td><td><span class="proto-rating" aria-label="Complexity 2.5 / 5"><i class="on"></i><i class="on"></i><i class="half"></i><i></i><i></i><b>2.5 / 5</b></span></td><td>Barely; reuses the edit form</td></tr><tr><td><a href="#concept-row">2 — Row edit mode</a></td><td><span class="proto-rating" aria-label="Complexity 3 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><b>3 / 5</b></span></td><td>Shared groundwork</td></tr><tr><td><a href="#concept-popover">3 — Popover editor</a></td><td><span class="proto-rating" aria-label="Complexity 3 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><b>3 / 5</b></span></td><td>Shared groundwork</td></tr><tr><td><a href="#concept-cell">1 — Click a cell</a></td><td><span class="proto-rating" aria-label="Complexity 3.5 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="half"></i><i></i><b>3.5 / 5</b></span></td><td>Shared groundwork + the most browser-side work</td></tr><tr><td><a href="#concept-sheet">4 — Grid edit mode (batch)</a></td><td><span class="proto-rating" aria-label="Complexity 4.5 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="half"></i><b>4.5 / 5</b></span></td><td>Shared groundwork + a new batch save</td></tr></tbody>
+        </table>
+        <details class="proto-effort" open>
+          <summary>Shared groundwork <span class="proto-reuse">· needed once by 1, 2, 3 and 4, partly by 6</span></summary>
+          <ul>
+            <li><strong>Settings for what can be edited.</strong> A column opts in to inline editing and maps to a field on the edit form. Edit can use a different model type from the index (<code>ResourceEditOptions.ModelType</code>, <code>EditLoader</code>) and columns can be nested paths (<code>Details.Sku</code>), so a column is only editable when its name matches an edit field; checked at startup with a clear error.</li>
+            <li><strong>A save endpoint for some of the fields.</strong> Loads the record as <code>EditPost</code> does, binds only the submitted fields, validates and calls the existing <code>EditHandler</code>/<code>UpdateAsync</code>. Mostly restructuring: <code>TryBindConfiguredFieldsAsync</code> already binds a set of fields, so the data source doesn’t change.</li>
+            <li><strong>Showing the saved row again</strong> through its display templates: either re-request the index with the current query and select just that row (cheap), or render a single grid row on its own, which the data grid tag helper doesn’t do today (real work).</li>
+            <li><strong>Compact editors.</strong> The editor templates are built for the form (label, description, full size). Cells need a small, label-less version with errors on the cell. Text, numbers, select, switch and date are straightforward; lookups (<code>LookupSheet</code>, <code>MultiLookupSheet</code>) don’t fit in a cell and would be left out at first.</li>
+            <li><strong>Permissions and token.</strong> Respect <code>CanEdit</code>, include the anti-forgery token, and keep working with the htmx swaps the index already does for search, scopes, paging and delete.</li>
+          </ul>
+        </details>
+        <p class="proto-intro"><strong>Suggested order:</strong> start with 5 or 6 (least cost, most reuse); 2 next, since it builds most of the groundwork 1 and 3 reuse; hold 4 until someone needs bulk editing.</p>
+      </section>
+
+      <section id="concept-cell" class="proto-section">
+        <header class="proto-section-head">
+          <h2>1 — Click a cell to edit it</h2>
+          <p>Spreadsheet-like. A cell becomes a field in place; each cell saves on its own.</p>
+          <ul>
+            <li><strong>Commit:</strong> <span class="sa-kbd">Enter</span> or clicking away saves; <span class="sa-kbd">Esc</span> cancels; <span class="sa-kbd">Tab</span> saves and opens the next editable cell. Errors keep the field open with a message under it.</li>
+            <li><strong>Best for:</strong> quick corrections to one value. <strong>Weak at:</strong> discoverability, fields that depend on each other, touch.</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 3.5 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="half"></i><i></i><b>3.5 / 5</b></span> <span class="proto-reuse">· Shared groundwork + the most browser-side work</span></summary>
+            <ul><li>Same server side as 2, but one request per cell.</li><li>Opening on click or double-click, with the editable-cell hint (outline, pencil or underline).</li><li>Saving on blur without racing clicks and htmx swaps; Tab moving across cells and rows while a save is still in flight.</li><li>Putting focus back after the cell swaps; showing errors without the layout jumping.</li><li>Fields that depend on each other can’t be validated properly one cell at a time.</li><li><strong>Risk:</strong> fiddly to get right and to test.</li></ul>
+          </details>
+        </header>
+        <div class="proto-options" data-for="cell">
+          <span class="group">Affordance:
+            <button data-set="affordance" data-value="outline" aria-pressed="true">Hover outline</button>
+            <button data-set="affordance" data-value="pencil" aria-pressed="false">Pencil on hover</button>
+            <button data-set="affordance" data-value="underline" aria-pressed="false">Dashed underline</button>
+          </span>
+          <span class="group">Opens on:
+            <button data-set="activate" data-value="click" aria-pressed="true">Click</button>
+            <button data-set="activate" data-value="dblclick" aria-pressed="false">Double-click</button>
+          </span>
+        </div>
+        <div class="proto-grid" data-concept="cell" data-affordance="outline" data-activate="click"></div>
+      </section>
+
+      <section id="concept-row" class="proto-section">
+        <header class="proto-section-head">
+          <h2>2 — Row edit mode</h2>
+          <p>The existing Edit action turns the whole row into fields; the action buttons become Save and Cancel. One row at a time, the rest dim.</p>
+          <ul>
+            <li><strong>Commit:</strong> Save or <span class="sa-kbd">Enter</span>; Cancel or <span class="sa-kbd">Esc</span>. The row saves as one request, so cross-field validation works.</li>
+            <li><strong>Best for:</strong> records whose list columns are most of what matters. <strong>Weak at:</strong> wide grids (fields squeeze), columns not shown in the grid.</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 3 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><b>3 / 5</b></span> <span class="proto-reuse">· Shared groundwork</span></summary>
+            <ul><li>Render a row in edit mode: compact editors in editable columns, plain text in the rest, Save and Cancel in place of the actions.</li><li>One request per row, so cross-field validation works as on the edit page.</li><li>Re-rendering a single row after save (see the shared groundwork).</li><li>Freezing column widths while editing (the prototype does this); one row at a time; Enter and Esc.</li><li><strong>Bonus:</strong> builds most of the shared groundwork that 1 and 3 would reuse.</li></ul>
+          </details>
+        </header>
+        <div class="proto-options" data-for="row">
+          <span class="group">Dim other rows:
+            <button data-set="dim" data-value="on" aria-pressed="true">On</button>
+            <button data-set="dim" data-value="off" aria-pressed="false">Off</button>
+          </span>
+        </div>
+        <div class="proto-grid" data-concept="row" data-dim="on"></div>
+      </section>
+
+      <section id="concept-popover" class="proto-section">
+        <header class="proto-section-head">
+          <h2>3 — Popover editor</h2>
+          <p>Clicking a value opens a small form anchored to the cell: label, field, help or error text, Cancel and Save. The grid itself never changes shape.</p>
+          <ul>
+            <li><strong>Commit:</strong> Save or <span class="sa-kbd">Enter</span>; <span class="sa-kbd">Esc</span> or clicking outside cancels.</li>
+            <li><strong>Best for:</strong> fields that need room (long text, lookups, a date picker) or explanation. Reuses the field editor templates as-is. <strong>Weak at:</strong> many edits in a row (one popover per value).</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 3 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><b>3 / 5</b></span> <span class="proto-reuse">· Shared groundwork</span></summary>
+            <ul><li>An endpoint that renders one field’s editor in a popover; the editor can be close to the full-size form editor (label, description, error), so less compact-editor work than 1 and 2.</li><li>The library’s popover anchoring already exists.</li><li>Focus returns to the cell when the popover closes.</li><li><strong>Open question:</strong> lookups would open a sheet from inside a popover (stacking and focus).</li></ul>
+          </details>
+        </header>
+        <div class="proto-grid" data-concept="popover"></div>
+      </section>
+
+      <section id="concept-sheet" class="proto-section">
+        <header class="proto-section-head">
+          <h2>4 — Grid edit mode (batch)</h2>
+          <p>An “Edit grid” toggle turns every editable cell on the page into a field. Changed cells are marked; a save bar counts the changes and saves them all at once (or discards them).</p>
+          <ul>
+            <li><strong>Commit:</strong> Save all. <span class="sa-kbd">Enter</span> moves down a column, <span class="sa-kbd">Tab</span> across. Leaving with unsaved changes would warn.</li>
+            <li><strong>Best for:</strong> bulk updates (prices, stock, statuses). <strong>Weak at:</strong> paging and sorting mid-edit; partial failures need per-cell errors.</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 4.5 / 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="half"></i><b>4.5 / 5</b></span> <span class="proto-reuse">· Shared groundwork + a new batch save</span></summary>
+            <ul><li>Everything from 2, for every row at once.</li><li>Tracking which cells changed; the save bar.</li><li>Binding many rows in one post (form names prefixed per row).</li><li>A batch save, and a decision on partial failure (all-or-nothing vs per-row); errors mapped back to the right cells.</li><li>An unsaved-changes guard that also covers paging, sorting, search and scopes, which all swap the grid through htmx.</li><li><strong>API impact:</strong> probably a new batch-update method or handler on the data source.</li></ul>
+          </details>
+        </header>
+        <div class="proto-options" data-for="sheet">
+          <span class="group">Fields:
+            <button data-set="fields" data-value="boxed" aria-pressed="true">Boxed</button>
+            <button data-set="fields" data-value="flush" aria-pressed="false">Flush (appear on hover/focus)</button>
+          </span>
+        </div>
+        <div class="proto-grid" data-concept="sheet" data-fields="boxed"></div>
+      </section>
+
+      <section id="concept-detail" class="proto-section">
+        <header class="proto-section-head">
+          <h2>5 — Form in the row details</h2>
+          <p>Edit opens a form under the row, in the row details band, with every editable field (including ones not shown as columns, such as Description). It is the edit page's form, loaded on demand.</p>
+          <ul>
+            <li><strong>Commit:</strong> Save or Cancel buttons, like the edit page. The row updates in place after saving.</li>
+            <li><strong>Best for:</strong> full edits without losing your place in the list; reuses the form page's layout and validation. <strong>Weak at:</strong> very quick single-value changes.</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 2.5 / 5"><i class="on"></i><i class="on"></i><i class="half"></i><i></i><i></i><b>2.5 / 5</b></span> <span class="proto-reuse">· Barely; reuses the edit form</span></summary>
+            <ul><li>Reuses the most: row details already load on demand (<code>RowDetail</code>, <code>hx-get</code>), and <code>_FormFields</code> already renders the edit form with its sections, groups, lookups and validation.</li><li>New: an endpoint that returns the edit form inside the row details, and a save that either returns the form with errors or closes the details and updates the row.</li><li>Decide how it coexists with resources that already have row detail panels.</li><li>Mostly server and Razor work, little new JavaScript.</li><li><strong>Risk:</strong> wide multi-column form layouts inside the table.</li></ul>
+          </details>
+        </header>
+        <div class="proto-grid" data-concept="detail"></div>
+      </section>
+
+      <section id="concept-direct" class="proto-section">
+        <header class="proto-section-head">
+          <h2>6 — Direct controls only</h2>
+          <p>Only the values that are a single choice are editable, and their control is always there: a switch for Featured, a badge that opens a status picker. Changes save immediately with an Undo.</p>
+          <ul>
+            <li><strong>Best for:</strong> publish/feature/active toggles and workflow states. Smallest API and the lowest risk. <strong>Weak at:</strong> anything typed.</li>
+          </ul>
+          <details class="proto-effort" open>
+            <summary>Complexity <span class="proto-rating" aria-label="Complexity 2 / 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><b>2 / 5</b></span> <span class="proto-reuse">· A small part of the groundwork</span></summary>
+            <ul><li>Limited to booleans and enums or selects.</li><li>A switch or badge picker in the cell that posts on change through the partial-save endpoint.</li><li>Undo through the toast, re-posting the previous value.</li><li>No editing mode, keyboard handling or layout changes: least work, least risk.</li><li>New: the badge-shaped picker, as a small component or a Select variant.</li></ul>
+          </details>
+        </header>
+        <div class="proto-grid" data-concept="direct"></div>
+      </section>
+    </main>
+
+    <div class="sa-undo-bar" hidden role="status">
+      <span class="sa-undo-text"></span>
+      <button type="button" class="sa-button sa-button-variant-ghost sa-button-size-sm" data-slot="button" data-undo>Undo</button>
+    </div>
+
+    <aside class="proto-controls" aria-label="Prototype controls">
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="ops" aria-pressed="false">Ops</button>
+        <button data-value="soft" aria-pressed="false">Soft</button>
+        <button data-value="ledger" aria-pressed="false">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light" aria-pressed="true">Light</button>
+        <button data-value="dark" aria-pressed="false">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact" aria-pressed="false">Compact</button>
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+      </div>
+    </aside>
+
+    <script>
+      /* ------------------------------------------------------------------------------------------ */
+      /* Data and columns                                                                            */
+      /* ------------------------------------------------------------------------------------------ */
+      const SEED = [
+        { id: 101, name: "Northern Lights Escape", destination: "Tromsø, Norway", category: "Adventure", price: 2490, seats: 6, status: "Published", featured: true, description: "Five nights chasing the aurora with a husky-sled day." },
+        { id: 102, name: "Kyoto Temples & Tea", destination: "Kyoto, Japan", category: "Cultural", price: 1875, seats: 12, status: "Published", featured: false, description: "Guided temple walks, a tea ceremony and a ryokan stay." },
+        { id: 103, name: "Amalfi Coast Drift", destination: "Positano, Italy", category: "Beach", price: 2150, seats: 0, status: "Sold out", featured: true, description: "A week of boat days and lemon groves." },
+        { id: 104, name: "Patagonia Trek", destination: "El Chaltén, Argentina", category: "Adventure", price: 3320, seats: 4, status: "Draft", featured: false, description: "Eight days on the Fitz Roy and Cerro Torre trails." },
+        { id: 105, name: "Fjords by Sea", destination: "Bergen, Norway", category: "Cruise", price: 2780, seats: 18, status: "Published", featured: false, description: "A coastal voyage through the western fjords." },
+      ];
+      const CATEGORIES = ["Adventure", "Beach", "Cruise", "Cultural"];
+      const STATUSES = ["Draft", "Published", "Sold out"];
+      const COLUMNS = [
+        { key: "name", title: "Name", type: "text", required: true },
+        { key: "destination", title: "Destination", type: "text" },
+        { key: "category", title: "Category", type: "select", options: CATEGORIES },
+        { key: "price", title: "Price", type: "number", align: "right" },
+        { key: "seats", title: "Seats left", type: "integer", align: "right" },
+        { key: "status", title: "Status", type: "status", options: STATUSES },
+        { key: "featured", title: "Featured", type: "bool" },
+      ];
+      const EXTRA_FIELDS = [{ key: "description", title: "Description", type: "textarea" }];
+
+      function validate(col, value) {
+        if (col.required && String(value).trim() === "") return `${col.title} is required.`;
+        if (col.type === "number" && !(Number(value) > 0)) return "Price must be greater than 0.";
+        if (col.type === "integer" && !(Number.isInteger(Number(value)) && Number(value) >= 0 && String(value).trim() !== ""))
+          return "Seats must be a whole number, 0 or more.";
+        return null;
+      }
+      function parse(col, raw) {
+        if (col.type === "number" || col.type === "integer") return Number(raw);
+        if (col.type === "bool") return !!raw;
+        return raw;
+      }
+      const fakeSave = (ms = 500) => new Promise((r) => setTimeout(r, ms));
+
+      /* ------------------------------------------------------------------------------------------ */
+      /* Markup helpers: the classes the tag helpers emit                                            */
+      /* ------------------------------------------------------------------------------------------ */
+      const svg = (paths, cls = "") =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${cls ? `class="${cls}"` : ""} aria-hidden="true">${paths}</svg>`;
+      const ICON = {
+        eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+        pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
+        trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+        chevron: '<path d="m6 9 6 6 6-6"/>',
+        spin: '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+        grid: '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+      };
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      const money = (n) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+      const STATUS_VARIANT = { Draft: "secondary", Published: "default", "Sold out": "outline" };
+
+      function displayHtml(col, v) {
+        switch (col.type) {
+          case "number": return money(v);
+          case "status": return `<span class="sa-badge sa-badge-variant-${STATUS_VARIANT[v]}" data-slot="badge">${esc(v)}</span>`;
+          case "bool": return v ? `<span class="proto-bool" aria-label="Yes">${svg(ICON.check)}</span>` : `<span class="proto-muted">—</span>`;
+          default: return v === "" ? `<span class="proto-muted">—</span>` : esc(v);
+        }
+      }
+      const button = (variant, size, inner, attrs = "") =>
+        `<button type="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}" data-slot="button" ${attrs}>${inner}</button>`;
+
+      function editorHtml(col, v, { inCell = true, id = "", size = "sm" } = {}) {
+        const cellCls = inCell ? " sa-cell-editor" : "";
+        const idAttr = id ? `id="${id}"` : "";
+        const name = `name="${col.key}"`;
+        if (col.type === "select" || col.type === "status") {
+          return `<div class="sa-native-select-wrapper${cellCls}" data-slot="native-select-wrapper">
+            <select class="sa-native-select" data-slot="native-select" ${size === "sm" ? 'data-size="sm"' : ""} ${idAttr} ${name}>
+              ${col.options.map((o) => `<option ${o === v ? "selected" : ""}>${esc(o)}</option>`).join("")}
+            </select>${svg(ICON.chevron, "sa-native-select-icon")}</div>`;
+        }
+        if (col.type === "bool") {
+          return `<span class="sa-switch-wrapper" data-slot="switch-wrapper" ${size === "sm" ? 'data-size="sm"' : ""}><input type="checkbox" role="switch" class="sa-switch" data-slot="switch" ${idAttr} ${name} ${v ? "checked" : ""}><span class="sa-switch-thumb" data-slot="switch-thumb"></span></span>`;
+        }
+        if (col.type === "textarea") {
+          return `<textarea class="sa-textarea" data-slot="textarea" rows="2" ${idAttr} ${name}>${esc(v)}</textarea>`;
+        }
+        const type = col.type === "number" || col.type === "integer" ? "number" : "text";
+        const step = col.type === "integer" ? 'step="1"' : col.type === "number" ? 'step="any"' : "";
+        return `<input class="sa-input${cellCls}" data-slot="input" type="${type}" ${step} ${idAttr} ${name} value="${esc(v)}" ${size === "sm" ? 'data-size="sm"' : ""} autocomplete="off">`;
+      }
+      const readEditor = (col, root) => {
+        const el = root.querySelector("input, select, textarea");
+        return col.type === "bool" ? el.checked : el.value;
+      };
+
+      /* ------------------------------------------------------------------------------------------ */
+      /* Grid                                                                                        */
+      /* ------------------------------------------------------------------------------------------ */
+      class Grid {
+        constructor(host) {
+          this.host = host;
+          this.concept = host.dataset.concept;
+          this.rows = structuredClone(SEED);
+          this.render();
+        }
+        get editableTypes() {
+          return this.concept === "direct" ? ["status", "bool"] : COLUMNS.map((c) => c.type);
+        }
+        isEditable(col) { return this.editableTypes.includes(col.type); }
+
+        render() {
+          const c = this.concept;
+          const head = COLUMNS.map((col) => `<th class="sa-table-head${col.align === "right" ? " text-right" : ""}" data-slot="table-head">${col.title}</th>`).join("");
+          const toolbar = c === "sheet"
+            ? `<div class="sa-grid-toolbar"><span class="sa-grid-toolbar-status">5 tours</span>${button("outline", "sm", `${svg(ICON.grid)}<span>Edit grid</span>`, 'data-icon="inline-start" data-sheet-toggle aria-pressed="false"')}</div>`
+            : "";
+          const table = `<table class="sa-table" data-slot="table">
+              <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">${head}<th class="sa-table-head w-px whitespace-nowrap" data-slot="table-head"></th></tr></thead>
+              <tbody class="sa-table-body" data-slot="table-body">${this.rows.map((r) => this.rowHtml(r)).join("")}</tbody>
+            </table>`;
+          const body = c === "detail"
+            ? `<div class="sa-table-row-details" data-slot="table-row-details" data-emphasis="none" data-animate="true"><div class="sa-table-container" data-slot="table-container">${table}</div></div>`
+            : `<div class="sa-table-container" data-slot="table-container">${table}</div>`;
+          this.host.innerHTML = `<div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid">${toolbar}${body}</div>${
+            c === "sheet" ? `<div class="sa-grid-savebar" hidden role="status"><span data-count></span>${button("ghost", "sm", "Discard", "data-discard")}${button("default", "sm", "Save all", "data-save-all")}</div>` : ""
+          }${c === "sheet" ? `<p class="proto-hint">Turn on <strong>Edit grid</strong>, change a few values, then <strong>Save all</strong>.</p>` : ""}`;
+          this.wire();
+        }
+
+        rowHtml(r) {
+          const cells = COLUMNS.map((col) => this.cellHtml(r, col)).join("");
+          return `<tr class="sa-table-row" data-slot="table-row" data-id="${r.id}">${cells}<td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell">${this.actionsHtml(r)}</td></tr>`;
+        }
+
+        cellHtml(r, col) {
+          const align = col.align === "right" ? " text-right" : "";
+          const editable = this.isEditable(col);
+          let inner = `<span class="proto-value">${displayHtml(col, r[col.key])}</span>`;
+          if (this.concept === "direct" && col.type === "bool") {
+            inner = editorHtml(col, r[col.key], { inCell: false, size: "sm" }).replace("<input", `<input aria-label="Featured: ${esc(r.name)}"`);
+          }
+          if (this.concept === "direct" && col.type === "status") {
+            inner = `<span class="sa-badge-select"><span class="sa-badge sa-badge-variant-${STATUS_VARIANT[r.status]}" data-slot="badge">${esc(r.status)}${svg(ICON.chevron)}</span><select aria-label="Status: ${esc(r.name)}">${STATUSES.map((o) => `<option ${o === r.status ? "selected" : ""}>${o}</option>`).join("")}</select></span>`;
+          }
+          if (this.concept === "sheet" && this.sheetOn) {
+            const v = this.pending?.[r.id]?.[col.key] ?? r[col.key];
+            const isBool = col.type === "bool";
+            inner = editorHtml(col, v, { inCell: !isBool }).replace(/<(input|select)/, `<$1 aria-label="${col.title}: ${esc(r.name)}"`);
+          }
+          const tab = editable && (this.concept === "cell" || this.concept === "popover") ? 'tabindex="0"' : "";
+          const dirty = this.concept === "sheet" && this.pending?.[r.id] && col.key in this.pending[r.id] ? "data-dirty" : "";
+          return `<td class="sa-table-cell${align}" data-slot="table-cell" data-key="${col.key}" ${editable ? "data-editable" : ""} ${tab} ${dirty}>${inner}</td>`;
+        }
+
+        actionsHtml(r, editing = false) {
+          if (editing) {
+            return `<span class="proto-actions">${button("default", "icon-sm", svg(ICON.check), 'aria-label="Save" data-row-save')}${button("outline", "icon-sm", svg(ICON.x), 'aria-label="Cancel" data-row-cancel')}</span>`;
+          }
+          return `<span class="proto-actions">${button("outline", "icon-sm", svg(ICON.eye), 'aria-label="View"')}${button("outline", "icon-sm", svg(ICON.pen), 'aria-label="Edit" data-edit')}${button("outline", "icon-sm", svg(ICON.trash), 'aria-label="Delete"')}</span>`;
+        }
+
+        /* Columns keep their widths while fields are open, so editing never reflows the grid. */
+        freeze() {
+          this.host.querySelectorAll("thead th").forEach((th) => (th.style.width = `${th.getBoundingClientRect().width}px`));
+        }
+        unfreeze() {
+          if (this.host.querySelector("[data-editing]") || this.sheetOn) return;
+          this.host.querySelectorAll("thead th").forEach((th) => (th.style.width = ""));
+        }
+        row(id) { return this.rows.find((r) => r.id === Number(id)); }
+        tr(id) { return this.host.querySelector(`tr[data-id="${id}"]`); }
+        refreshRow(id) {
+          const tr = this.tr(id);
+          const tmp = document.createElement("tbody");
+          tmp.innerHTML = this.rowHtml(this.row(id));
+          tr.replaceWith(tmp.firstElementChild);
+          return this.tr(id);
+        }
+        flash(td) {
+          td.dataset.editState = "saved";
+          setTimeout(() => { if (td.dataset.editState === "saved") delete td.dataset.editState; }, 1400);
+        }
+
+        wire() {
+          const h = this.host;
+          ({ cell: () => this.wireCell(), row: () => this.wireRow(), popover: () => this.wirePopover(), sheet: () => this.wireSheet(), detail: () => this.wireDetail(), direct: () => this.wireDirect() })[this.concept]();
+        }
+
+        /* --- 1: click a cell ---------------------------------------------------------------------- */
+        wireCell() {
+          const open = (td) => {
+            if (!td || td.hasAttribute("data-editing") || td.dataset.editState === "saving") return;
+            this.openCell(td);
+          };
+          this.host.addEventListener("click", (e) => { if (this.host.dataset.activate === "click") open(e.target.closest("td[data-editable]")); });
+          this.host.addEventListener("dblclick", (e) => { if (this.host.dataset.activate === "dblclick") open(e.target.closest("td[data-editable]")); });
+          this.host.addEventListener("keydown", (e) => {
+            const td = e.target.closest("td[data-editable]");
+            if (td && e.target === td && (e.key === "Enter" || e.key === "F2")) { e.preventDefault(); open(td); }
+          });
+        }
+        openCell(td) {
+          const id = td.closest("tr").dataset.id;
+          const col = COLUMNS.find((c) => c.key === td.dataset.key);
+          const r = this.row(id);
+          this.freeze();
+          td.setAttribute("data-editing", "");
+          td.innerHTML = col.type === "bool" ? editorHtml(col, r[col.key], { inCell: false }) : editorHtml(col, r[col.key]);
+          const field = td.querySelector("input, select");
+          field.setAttribute("aria-label", col.title);
+          field.focus();
+          field.select?.();
+          let done = false;
+          const close = async (commit, move) => {
+            if (done) return;
+            const raw = readEditor(col, td);
+            if (commit) {
+              const err = validate(col, raw);
+              if (err) { this.showError(td, field, err); return; }
+            }
+            done = true;
+            td.removeAttribute("data-editing");
+            if (!move) this.unfreeze();
+            const changed = commit && parse(col, raw) !== r[col.key];
+            if (changed) {
+              r[col.key] = parse(col, raw);
+              td.innerHTML = `<span class="proto-value">${displayHtml(col, r[col.key])}</span><span class="sa-cell-status">${svg(ICON.spin, "sa-spinner")}</span>`;
+              td.dataset.editState = "saving";
+              const next = move ? this.adjacentCell(td, move) : null;
+              if (next) this.openCell(next);
+              else td.focus();
+              await fakeSave();
+              td.innerHTML = `<span class="proto-value">${displayHtml(col, r[col.key])}</span>`;
+              this.flash(td);
+            } else {
+              td.innerHTML = `<span class="proto-value">${displayHtml(col, r[col.key])}</span>`;
+              delete td.dataset.editState;
+              const next = move ? this.adjacentCell(td, move) : null;
+              if (next) this.openCell(next);
+              else td.focus();
+            }
+          };
+          field.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); close(true); }
+            else if (e.key === "Escape") { e.preventDefault(); close(false); }
+            else if (e.key === "Tab") { e.preventDefault(); close(true, e.shiftKey ? -1 : 1); }
+          });
+          field.addEventListener("blur", () => setTimeout(() => { if (!td.contains(document.activeElement)) close(true); }, 0));
+          if (col.type === "bool") field.addEventListener("change", () => close(true));
+        }
+        adjacentCell(td, dir) {
+          const cells = [...this.host.querySelectorAll("td[data-editable]")];
+          return cells[cells.indexOf(td) + dir] ?? null;
+        }
+        showError(td, field, msg) {
+          td.dataset.editState = "error";
+          field.setAttribute("aria-invalid", "true");
+          td.querySelector(".sa-cell-message")?.remove();
+          td.insertAdjacentHTML("beforeend", `<span class="sa-cell-message" role="alert">${esc(msg)}</span>`);
+          field.addEventListener("input", () => { delete td.dataset.editState; field.removeAttribute("aria-invalid"); td.querySelector(".sa-cell-message")?.remove(); }, { once: true });
+          field.focus();
+        }
+
+        /* --- 2: row edit mode --------------------------------------------------------------------- */
+        wireRow() {
+          this.host.addEventListener("click", (e) => {
+            const tr = e.target.closest("tr[data-id]");
+            if (!tr) return;
+            if (e.target.closest("[data-edit]")) this.openRow(tr);
+            else if (e.target.closest("[data-row-save]")) this.saveRow(tr);
+            else if (e.target.closest("[data-row-cancel]")) this.cancelRow(tr);
+          });
+          this.host.addEventListener("keydown", (e) => {
+            const tr = e.target.closest("tr[data-editing]");
+            if (!tr) return;
+            if (e.key === "Enter" && e.target.matches("input:not([type=checkbox])")) { e.preventDefault(); this.saveRow(tr); }
+            if (e.key === "Escape") { e.preventDefault(); this.cancelRow(tr); }
+          });
+        }
+        openRow(tr) {
+          const open = this.host.querySelector("tr[data-editing]");
+          if (open) this.cancelRow(open);
+          tr = this.tr(tr.dataset.id);
+          const r = this.row(tr.dataset.id);
+          this.freeze();
+          tr.setAttribute("data-editing", "");
+          COLUMNS.forEach((col) => {
+            const td = tr.querySelector(`td[data-key="${col.key}"]`);
+            td.innerHTML = col.type === "bool" ? editorHtml(col, r[col.key], { inCell: false }) : editorHtml(col, r[col.key]);
+            td.querySelector("input, select").setAttribute("aria-label", col.title);
+          });
+          tr.lastElementChild.innerHTML = this.actionsHtml(r, true);
+          tr.querySelector("input").focus();
+        }
+        async saveRow(tr) {
+          const r = this.row(tr.dataset.id);
+          let firstBad = null;
+          const values = {};
+          COLUMNS.forEach((col) => {
+            const td = tr.querySelector(`td[data-key="${col.key}"]`);
+            const raw = readEditor(col, td);
+            const err = validate(col, raw);
+            td.querySelector(".sa-cell-message")?.remove();
+            const field = td.querySelector("input, select");
+            if (err) {
+              field.setAttribute("aria-invalid", "true");
+              td.style.position = "relative";
+              td.insertAdjacentHTML("beforeend", `<span class="sa-cell-message" role="alert">${esc(err)}</span>`);
+              firstBad ??= field;
+            } else field.removeAttribute("aria-invalid");
+            values[col.key] = parse(col, raw);
+          });
+          if (firstBad) { firstBad.focus(); return; }
+          const save = tr.querySelector("[data-row-save]");
+          save.innerHTML = svg(ICON.spin, "sa-spinner");
+          save.disabled = true;
+          await fakeSave();
+          Object.assign(r, values);
+          const fresh = this.refreshRow(r.id);
+          this.unfreeze();
+          fresh.querySelectorAll("td[data-key]").forEach((td) => this.flash(td));
+          fresh.querySelector("[data-edit]").focus();
+        }
+        cancelRow(tr) {
+          const fresh = this.refreshRow(tr.dataset.id);
+          this.unfreeze();
+          fresh.querySelector("[data-edit]").focus();
+        }
+
+        /* --- 3: popover editor -------------------------------------------------------------------- */
+        wirePopover() {
+          const pop = document.createElement("div");
+          pop.className = "sa-popover-content sa-cell-popover";
+          pop.setAttribute("popover", "auto");
+          pop.dataset.slot = "popover-content";
+          document.body.append(pop);
+          this.pop = pop;
+          // Placed once when it opens (the library would anchor it), so scrolling closes it.
+          addEventListener("scroll", () => pop.matches(":popover-open") && pop.hidePopover(), { passive: true });
+          pop.addEventListener("toggle", (e) => {
+            if (e.newState === "closed") {
+              const td = this.host.querySelector("td[data-editing]");
+              td?.removeAttribute("data-editing");
+              td?.focus();
+            }
+          });
+          const open = (td) => td && this.openPopover(td);
+          this.host.addEventListener("click", (e) => open(e.target.closest("td[data-editable]")));
+          this.host.addEventListener("keydown", (e) => {
+            const td = e.target.closest("td[data-editable]");
+            if (td && e.target === td && (e.key === "Enter" || e.key === "F2")) { e.preventDefault(); open(td); }
+          });
+        }
+        openPopover(td) {
+          const pop = this.pop;
+          const id = td.closest("tr").dataset.id;
+          const col = COLUMNS.find((c) => c.key === td.dataset.key);
+          const r = this.row(id);
+          this.host.querySelector("td[data-editing]")?.removeAttribute("data-editing");
+          td.setAttribute("data-editing", "");
+          const fid = `pop-${col.key}`;
+          const help = { price: "Per person, in USD.", seats: "Set to 0 to mark the tour sold out.", status: "Draft tours are hidden from the site." }[col.key];
+          const fieldHtml = col.type === "bool"
+            ? `<label class="sa-field" data-slot="field" data-orientation="horizontal" style="display:flex;gap:8px;align-items:center">${editorHtml(col, r[col.key], { inCell: false, id: fid, size: "default" })}<span class="sa-label" data-slot="label">Featured on the home page</span></label>`
+            : `<div class="sa-field" data-slot="field" data-orientation="vertical">
+                 <label class="sa-label sa-field-label" data-slot="field-label" for="${fid}">${col.title}</label>
+                 ${editorHtml(col, r[col.key], { inCell: false, id: fid, size: "default" })}
+                 ${help ? `<p class="sa-field-description" data-slot="field-description">${help}</p>` : ""}
+                 <p class="sa-field-error" data-slot="field-error" role="alert" hidden></p>
+               </div>`;
+          pop.innerHTML = `<form style="display:grid;gap:inherit">
+              <div class="sa-popover-header" data-slot="popover-header"><div class="sa-popover-title" data-slot="popover-title">${esc(r.name)}</div></div>
+              ${fieldHtml}
+              <div class="sa-cell-popover-footer">${button("outline", "sm", "Cancel", "data-pop-cancel")}<button type="submit" class="sa-button sa-button-variant-default sa-button-size-sm" data-slot="button">Save</button></div>
+            </form>`;
+          pop.querySelectorAll(".sa-native-select-wrapper").forEach((w) => (w.style.width = "100%"));
+          pop.showPopover();
+          const rect = td.getBoundingClientRect();
+          const pw = pop.offsetWidth, ph = pop.offsetHeight;
+          let left = col.align === "right" ? rect.right - pw : rect.left;
+          left = Math.max(8, Math.min(left, innerWidth - pw - 8));
+          let top = rect.bottom + 6;
+          if (top + ph > innerHeight - 8) top = rect.top - ph - 6;
+          Object.assign(pop.style, { position: "fixed", left: `${left}px`, top: `${top}px` });
+          const field = pop.querySelector("input, select");
+          field.focus();
+          field.select?.();
+          pop.querySelector("[data-pop-cancel]").onclick = () => pop.hidePopover();
+          pop.querySelector("form").onsubmit = async (e) => {
+            e.preventDefault();
+            const raw = readEditor(col, pop);
+            const err = validate(col, raw);
+            const errEl = pop.querySelector(".sa-field-error");
+            if (err) {
+              field.setAttribute("aria-invalid", "true");
+              errEl.textContent = err;
+              errEl.hidden = false;
+              pop.querySelector(".sa-field-description")?.setAttribute("hidden", "");
+              field.focus();
+              return;
+            }
+            const btn = pop.querySelector("button[type=submit]");
+            btn.innerHTML = `${svg(ICON.spin, "sa-spinner")}Saving`;
+            btn.disabled = true;
+            await fakeSave();
+            r[col.key] = parse(col, raw);
+            pop.hidePopover();
+            const cell = this.tr(id).querySelector(`td[data-key="${col.key}"]`);
+            cell.innerHTML = `<span class="proto-value">${displayHtml(col, r[col.key])}</span>`;
+            this.flash(cell);
+          };
+        }
+
+        /* --- 4: grid edit mode -------------------------------------------------------------------- */
+        wireSheet() {
+          this.pending = {};
+          this.host.addEventListener("click", async (e) => {
+            if (e.target.closest("[data-sheet-toggle]")) {
+              if (this.sheetOn && this.dirtyCount() > 0) return; // would ask to save or discard
+              if (!this.sheetOn) this.freeze();
+              this.sheetOn = !this.sheetOn;
+              this.renderBody();
+              this.unfreeze();
+            } else if (e.target.closest("[data-discard]")) {
+              this.pending = {};
+              this.renderBody();
+            } else if (e.target.closest("[data-save-all]")) {
+              await this.saveAll(e.target.closest("[data-save-all]"));
+            }
+          });
+          const onChange = (e) => {
+            const td = e.target.closest("td[data-key]");
+            if (!td || !this.sheetOn) return;
+            const id = td.closest("tr").dataset.id;
+            const col = COLUMNS.find((c) => c.key === td.dataset.key);
+            const raw = readEditor(col, td);
+            const v = parse(col, raw);
+            const orig = this.row(id)[col.key];
+            const dirty = col.type === "bool" ? v !== orig : String(raw) !== String(orig);
+            this.pending[id] ??= {};
+            if (dirty) this.pending[id][col.key] = col.type === "bool" ? v : raw;
+            else delete this.pending[id][col.key];
+            if (!Object.keys(this.pending[id]).length) delete this.pending[id];
+            td.toggleAttribute("data-dirty", dirty);
+            const field = td.querySelector("input, select");
+            if (field.getAttribute("aria-invalid")) { field.removeAttribute("aria-invalid"); td.querySelector(".sa-cell-message")?.remove(); }
+            this.updateSavebar();
+          };
+          this.host.addEventListener("input", onChange);
+          this.host.addEventListener("change", onChange);
+          this.host.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" || !e.target.matches("td input:not([type=checkbox])")) return;
+            e.preventDefault();
+            const td = e.target.closest("td");
+            const below = td.closest("tr").nextElementSibling?.querySelector(`td[data-key="${td.dataset.key}"] input`);
+            below?.focus(); below?.select();
+          });
+        }
+        dirtyCount() { return Object.values(this.pending).reduce((n, p) => n + Object.keys(p).length, 0); }
+        renderBody() {
+          this.host.querySelector("tbody").innerHTML = this.rows.map((r) => this.rowHtml(r)).join("");
+          const t = this.host.querySelector("[data-sheet-toggle]");
+          t.setAttribute("aria-pressed", String(!!this.sheetOn));
+          t.className = `sa-button sa-button-variant-${this.sheetOn ? "secondary" : "outline"} sa-button-size-sm`;
+          t.querySelector("span").textContent = this.sheetOn ? "Done editing" : "Edit grid";
+          this.host.querySelector(".sa-grid-toolbar-status").textContent = this.sheetOn ? "Editing 5 tours" : "5 tours";
+          this.updateSavebar();
+        }
+        updateSavebar() {
+          const n = this.dirtyCount();
+          const bar = this.host.querySelector(".sa-grid-savebar");
+          bar.hidden = n === 0;
+          bar.querySelector("[data-count]").textContent = `${n} unsaved change${n === 1 ? "" : "s"}`;
+          this.host.querySelector("[data-sheet-toggle]").disabled = n > 0;
+        }
+        async saveAll(btn) {
+          let bad = null;
+          for (const [id, changes] of Object.entries(this.pending)) {
+            for (const [key, raw] of Object.entries(changes)) {
+              const col = COLUMNS.find((c) => c.key === key);
+              const err = col.type === "bool" ? null : validate(col, raw);
+              const td = this.tr(id).querySelector(`td[data-key="${key}"]`);
+              td.querySelector(".sa-cell-message")?.remove();
+              if (err) {
+                const f = td.querySelector("input, select");
+                f.setAttribute("aria-invalid", "true");
+                td.insertAdjacentHTML("beforeend", `<span class="sa-cell-message" role="alert">${esc(err)}</span>`);
+                bad ??= f;
+              }
+            }
+          }
+          if (bad) { bad.focus(); return; }
+          btn.innerHTML = `${svg(ICON.spin, "sa-spinner")}Saving`;
+          btn.disabled = true;
+          await fakeSave(700);
+          const saved = Object.entries(this.pending);
+          for (const [id, changes] of saved)
+            for (const [key, raw] of Object.entries(changes)) this.row(id)[key] = parse(COLUMNS.find((c) => c.key === key), raw);
+          this.pending = {};
+          this.renderBody();
+          btn.innerHTML = "Save all";
+          btn.disabled = false;
+          for (const [id, changes] of saved)
+            for (const key of Object.keys(changes)) this.flash(this.tr(id).querySelector(`td[data-key="${key}"]`));
+        }
+
+        /* --- 5: form in the row details ----------------------------------------------------------- */
+        wireDetail() {
+          this.host.addEventListener("click", async (e) => {
+            const edit = e.target.closest("[data-edit]");
+            if (edit) return this.toggleDetail(edit.closest("tr"));
+            if (e.target.closest("[data-detail-cancel]")) return this.closeDetail(e.target.closest("tr").previousElementSibling);
+          });
+          this.host.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const tr = form.closest("tr").previousElementSibling;
+            const r = this.row(tr.dataset.id);
+            let bad = null;
+            const values = {};
+            for (const col of [...COLUMNS, ...EXTRA_FIELDS]) {
+              const wrap = form.querySelector(`[data-field="${col.key}"]`);
+              const raw = readEditor(col, wrap);
+              const err = col.type === "bool" || col.type === "textarea" ? null : validate(col, raw);
+              const f = wrap.querySelector("input, select, textarea");
+              const errEl = wrap.querySelector(".sa-field-error");
+              if (errEl) { errEl.hidden = !err; errEl.textContent = err ?? ""; }
+              f.toggleAttribute("aria-invalid", !!err);
+              if (err) bad ??= f;
+              values[col.key] = parse(col, raw);
+            }
+            if (bad) { bad.focus(); return; }
+            const btn = form.querySelector("button[type=submit]");
+            btn.innerHTML = `${svg(ICON.spin, "sa-spinner")}Saving`;
+            btn.disabled = true;
+            await fakeSave();
+            Object.assign(r, values);
+            await this.closeDetail(tr);
+            const fresh = this.tr(r.id);
+            fresh.querySelectorAll("td[data-key]").forEach((td) => this.flash(td));
+          });
+        }
+        detailHtml(r) {
+          const field = (col, wide) => {
+            const fid = `detail-${r.id}-${col.key}`;
+            if (col.type === "bool")
+              return `<div class="sa-field" data-slot="field" data-field="${col.key}" data-orientation="horizontal" style="display:flex;gap:8px;align-items:center;align-self:end;min-height:var(--sa-control-h)">${editorHtml(col, r[col.key], { inCell: false, id: fid, size: "default" })}<label class="sa-label" data-slot="label" for="${fid}">${col.title}</label></div>`;
+            return `<div class="sa-field${wide ? " sa-field-wide" : ""}" data-slot="field" data-field="${col.key}" data-orientation="vertical">
+                <label class="sa-label sa-field-label" data-slot="field-label" for="${fid}">${col.title}</label>
+                ${editorHtml(col, r[col.key], { inCell: false, id: fid, size: "default" })}
+                <p class="sa-field-error" data-slot="field-error" role="alert" hidden></p></div>`;
+          };
+          return `<form class="sa-row-edit-form" novalidate>
+              <div class="sa-row-edit-form-fields">
+                ${field(COLUMNS[0], true)}${field(COLUMNS[1], false)}${field(COLUMNS[2])}${field(COLUMNS[3])}${field(COLUMNS[4])}${field(COLUMNS[5])}${field(COLUMNS[6])}
+                ${field(EXTRA_FIELDS[0], true)}
+              </div>
+              <div class="sa-row-edit-form-footer">
+                <button type="submit" class="sa-button sa-button-variant-default sa-button-size-default" data-slot="button">Save</button>
+                ${button("outline", "default", "Cancel", "data-detail-cancel")}
+              </div>
+            </form>`;
+        }
+        toggleDetail(tr) {
+          const next = tr.nextElementSibling;
+          if (next?.classList.contains("sa-table-row-detail")) return this.closeDetail(tr);
+          const open = this.host.querySelector(".sa-table-row-detail");
+          if (open) this.closeDetail(open.previousElementSibling, true);
+          const r = this.row(tr.dataset.id);
+          tr.insertAdjacentHTML("afterend", `<tr class="sa-table-row-detail" data-slot="table-row-detail" data-state="closed"><td class="sa-table-row-detail-cell" colspan="${COLUMNS.length + 1}" data-slot="table-row-detail-cell"><div class="sa-table-row-detail-reveal"><div class="sa-table-row-detail-clip"><div class="sa-table-row-detail-content" data-slot="table-row-detail-content">${this.detailHtml(r)}</div></div></div></td></tr>`);
+          const detail = tr.nextElementSibling;
+          tr.querySelector("[data-edit]").setAttribute("aria-expanded", "true");
+          requestAnimationFrame(() => requestAnimationFrame(() => { detail.dataset.state = "open"; detail.querySelector("input").focus({ preventScroll: true }); }));
+        }
+        closeDetail(tr, instant = false) {
+          const detail = tr.nextElementSibling;
+          if (!detail?.classList.contains("sa-table-row-detail")) return;
+          detail.dataset.state = "closed";
+          return new Promise((res) => setTimeout(() => {
+            detail.remove();
+            const fresh = this.refreshRow(tr.dataset.id);
+            fresh.querySelector("[data-edit]").focus({ preventScroll: true });
+            res();
+          }, instant ? 0 : 220));
+        }
+
+        /* --- 6: direct controls ------------------------------------------------------------------- */
+        wireDirect() {
+          this.host.addEventListener("change", async (e) => {
+            const td = e.target.closest("td[data-key]");
+            if (!td) return;
+            const id = td.closest("tr").dataset.id;
+            const r = this.row(id);
+            const key = td.dataset.key;
+            const before = r[key];
+            r[key] = key === "featured" ? e.target.checked : e.target.value;
+            if (key === "status") {
+              const badge = td.querySelector(".sa-badge");
+              badge.className = `sa-badge sa-badge-variant-${STATUS_VARIANT[r.status]}`;
+              badge.firstChild.textContent = r.status;
+            }
+            td.dataset.editState = "saving";
+            await fakeSave(350);
+            this.flash(td);
+            const label = key === "featured" ? `${r.name} ${r.featured ? "featured" : "no longer featured"}.` : `${r.name} set to ${r.status}.`;
+            showUndo(label, () => { r[key] = before; const cell = this.refreshRow(id).querySelector(`td[data-key="${key}"]`); this.flash(cell); });
+          });
+        }
+      }
+
+      let undoTimer;
+      function showUndo(text, undo) {
+        const bar = document.querySelector(".sa-undo-bar");
+        bar.querySelector(".sa-undo-text").textContent = text;
+        bar.hidden = false;
+        bar.querySelector("[data-undo]").onclick = () => { undo(); bar.hidden = true; };
+        clearTimeout(undoTimer);
+        undoTimer = setTimeout(() => (bar.hidden = true), 6000);
+      }
+
+      document.querySelectorAll(".proto-grid").forEach((host) => new Grid(host));
+
+      /* Per-concept option strips. */
+      document.querySelectorAll(".proto-options").forEach((strip) => {
+        const host = document.querySelector(`.proto-grid[data-concept="${strip.dataset.for}"]`);
+        strip.addEventListener("click", (e) => {
+          const b = e.target.closest("button[data-set]");
+          if (!b) return;
+          host.dataset[b.dataset.set] = b.dataset.value;
+          strip.querySelectorAll(`button[data-set="${b.dataset.set}"]`).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        });
+      });
+      /* Concept 2's dimming switch. */
+      const dimStyle = document.createElement("style");
+      dimStyle.textContent = `[data-concept="row"][data-dim="off"] .sa-table-body:has([data-editing]) > .sa-table-row:not([data-editing]) { opacity: 1; }`;
+      document.head.append(dimStyle);
+
+      /* ------------------------------------------------------------------------------------------ */
+      /* Control bar                                                                                 */
+      /* ------------------------------------------------------------------------------------------ */
+      const params = new URLSearchParams(location.search);
+      const state = { theme: params.get("theme") ?? "default", mode: params.get("mode") ?? "light", density: params.get("density") ?? "default" };
+      function apply() {
+        document.getElementById("theme-css").href = state.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${state.theme}.css`;
+        document.documentElement.classList.toggle("dark", state.mode === "dark");
+        if (state.density === "default") document.querySelector("main").removeAttribute("data-sa-density");
+        else document.querySelector("main").setAttribute("data-sa-density", state.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === state[g.dataset.control]))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        state[b.closest("[data-control]").dataset.control] = b.dataset.value;
+        apply();
+      });
+      apply();
+    </script>
+  </body>
+</html>
