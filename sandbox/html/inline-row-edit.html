@@ -120,8 +120,9 @@
         .sa-row-message-body { display: flex; flex-wrap: wrap; align-items: center; gap: calc(1 * var(--sa-unit)) calc(2 * var(--sa-unit)); color: var(--sa-color-danger-text); font-size: var(--sa-text-sm); white-space: normal; }
         .sa-table-row:has(+ .sa-row-message) { border-bottom-color: transparent; }
 
-        /* The "Add" row at the bottom of the grid. */
+        /* The grid's own "Add" row, first or last. */
         .sa-table-add-row > td { padding-block: calc(1.5 * var(--sa-unit)); }
+        .sa-table-body > .sa-table-add-row:hover { background: transparent; }
         .sa-table-add-row .sa-button { margin-inline-start: calc(-1 * var(--sa-space-cell-x) + var(--sa-unit)); color: var(--sa-color-ink-muted); }
         .sa-table-add-row .sa-button:hover { color: var(--sa-color-ink); }
         .sa-table-body:has(> [data-editing]) > .sa-table-add-row { display: none; }
@@ -165,8 +166,8 @@
 
         <span class="label">5 · Inline add</span>
         <div class="group" data-strip="add">
-          <button data-value="top">New row at the top</button>
-          <button data-value="bottom">“Add” row at the bottom</button>
+          <button data-value="top">Add row at the top</button>
+          <button data-value="bottom">Add row at the bottom</button>
         </div>
         <p class="note" data-note="add"></p>
 
@@ -193,7 +194,7 @@
       </div>
       <ul class="proto-try">
         <li><strong>Edit</strong> a row; <span class="kbd">Enter</span> saves, <span class="kbd">Esc</span> cancels. Click the Country cell to open the lookup sheet.</li>
-        <li><strong>Add</strong> a destination; Name and Country are required.</li>
+        <li><strong>Add</strong> a destination with the grid’s own Add button; Name and Country are required. The page header’s Add destination goes to the create page.</li>
         <li><strong>A rule the row can’t show:</strong> active destinations need a description, which isn’t a column. Turn on Active for Marrakech or Cusco (no description) and save the row to see how each option handles it.</li>
       </ul>
       <div class="proto-stage" data-width="full"><iframe title="Demo" id="demo"></iframe></div>
@@ -228,7 +229,7 @@
         <div class="sa-page-header" data-slot="page-header">
           <h1 class="sa-page-header-title" data-slot="page-header-title">Destinations</h1>
           <div class="sa-page-header-actions" data-slot="page-header-actions">
-            <button type="button" class="sa-button sa-button-variant-default sa-button-size-default" data-slot="button" data-add>Add destination</button>
+            <button type="button" class="sa-button sa-button-variant-default sa-button-size-default" data-slot="button" data-add-page>Add destination</button>
           </div>
         </div>
         <div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid">
@@ -315,8 +316,8 @@
             sheetFirst: "Edit and Add open the sheet; double-clicking a row edits it in place.",
           },
           add: {
-            top: "Add destination (page header) inserts an editing row at the top of the grid.",
-            bottom: "The grid ends with an “Add destination” row; it and the header button both add an editing row at the bottom.",
+            top: "The grid starts with its own “Add destination” button, which inserts an editing row at the top. The page header’s Add destination always opens the create page.",
+            bottom: "The grid ends with its own “Add destination” button, which inserts an editing row at the bottom. The page header’s Add destination always opens the create page.",
           },
           dim: {
             on: "While a row is being edited or added, the other rows fade back.",
@@ -464,18 +465,21 @@
             <td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell"><span class="proto-actions">${actions}</span></td>
           </tr>`;
         }
+        // Inline add is only on where Add works in the row (A, C and D).
+        const inlineAdd = mode.add === "row";
         const addRowHtml = () =>
-          settings.add === "bottom"
+          inlineAdd
             ? `<tr class="sa-table-row sa-table-add-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}">${button("ghost", "sm", `${svg(ICON.plus)}Add destination`, 'data-icon="inline-start" data-add')}</td></tr>`
             : "";
 
         function render() {
-          tbody.innerHTML = rows.map(displayRow).join("") + addRowHtml();
+          const top = settings.add === "top";
+          tbody.innerHTML = (top ? addRowHtml() : "") + rows.map(displayRow).join("") + (top ? "" : addRowHtml());
           const hint = {
-            row: "Edit and Add work in the row.",
+            row: "Edit and the grid’s Add work in the row. The header’s Add opens the create page.",
             sheet: "Edit and Add open the sheet.",
-            rowFirst: "Edit and Add work in the row; the expand button in the editing row moves to the sheet.",
-            twoActions: "Pencil: edit in the row. Panel: edit in the sheet.",
+            rowFirst: "Edit and the grid’s Add work in the row; the expand button in the editing row moves to the sheet. The header’s Add opens the create page.",
+            twoActions: "Pencil: edit in the row. Panel: edit in the sheet. The header’s Add opens the create page.",
             sheetFirst: "Edit opens the sheet. Double-click a row to edit it in place.",
           }[settings.mode];
           document.querySelector("[data-hint]").textContent = narrow() ? `${hint} (Narrow: the sheet is used at this width.)` : hint;
@@ -522,12 +526,12 @@
           cancelOpenRow();
           freeze();
           const t = document.createElement("tbody");
-          t.innerHTML = editingRow({ name: "", country: "", season: "Year-round", active: true }, true);
+          t.innerHTML = editingRow({ name: "", country: "", season: "Year-round", active: false }, true);
           const el = t.firstElementChild;
-          if (settings.add === "bottom") {
-            const addRow = tbody.querySelector(".sa-table-add-row");
-            addRow ? addRow.before(el) : tbody.append(el);
-          } else tbody.prepend(el);
+          // The add row hides while a row is being edited, so the new row takes its place.
+          const addRow = tbody.querySelector(".sa-table-add-row");
+          if (settings.add === "bottom") addRow ? addRow.before(el) : tbody.append(el);
+          else addRow ? addRow.after(el) : tbody.prepend(el);
           el.scrollIntoView({ block: "nearest" });
           el.querySelector("input").focus();
         }
@@ -721,7 +725,10 @@
         document.addEventListener("click", (e) => {
           const t = e.target;
           if (t.closest("[data-lookup]")) return openLookup(t.closest("[data-lookup]"));
-          if (t.closest("[data-add]")) return addTarget() === "sheet" ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: true, description: "" })) : startRowAdd();
+          if (t.closest("[data-add-page]")) return addTarget() === "sheet" || !inlineAdd
+            ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: false, description: "" }))
+            : toast("Would open the create page", "The header’s Add always goes to the create page.");
+          if (t.closest("[data-add]")) return addTarget() === "sheet" ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: false, description: "" })) : startRowAdd();
           const editTr = t.closest("tr[data-editing]");
           if (editTr) {
             if (t.closest("[data-row-save]")) return saveRow(editTr);
