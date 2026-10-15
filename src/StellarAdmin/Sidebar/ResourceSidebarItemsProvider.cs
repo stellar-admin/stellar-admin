@@ -45,6 +45,7 @@ internal sealed class ResourceSidebarItemsProvider(
                                         "StellarAdmin"
                                     )
                                     {
+                                        Icon = entry.Item.Icon,
                                         Order = entry.Item.Order,
                                     }
                             )

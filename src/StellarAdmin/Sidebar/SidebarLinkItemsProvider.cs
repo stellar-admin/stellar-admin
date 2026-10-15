@@ -19,6 +19,7 @@ internal sealed class SidebarLinkItemsProvider(StellarAdminOptions options) : IS
 
             var item = link.Target.CreateItem(link.Label) with
             {
+                Icon = link.Icon,
                 OpenInNewTab = link.OpenInNewTab,
                 Order = link.Order,
             };

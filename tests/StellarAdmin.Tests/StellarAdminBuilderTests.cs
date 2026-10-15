@@ -28,6 +28,26 @@ public class StellarAdminBuilderTests
     [Test]
     [Arguments("")]
     [Arguments(" ")]
+    public async Task AddSidebarLink_WithBlankIcon_ThrowsArgumentException(string icon)
+    {
+        // Arrange
+        var sut = new ServiceCollection().AddStellarAdmin();
+
+        // Act
+        Action act = () =>
+            sut.AddSidebarLink(
+                "Reports",
+                SidebarLinkTarget.Url("/reports"),
+                link => link.Icon = icon
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments("")]
+    [Arguments(" ")]
     public async Task AddSidebarLink_WithBlankLabel_ThrowsArgumentException(string label)
     {
         // Arrange

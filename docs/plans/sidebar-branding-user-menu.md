@@ -213,9 +213,17 @@ The first task 6 runs were void: restores took `0.0.1-eval` from the global NuGe
 
 Task 6 barely separates the runs: the package's XML documentation was enough for both baselines, and the skill mainly saves Haiku time. Haiku's task 3 edit page again puts a third section in the two-column grid, so Trip and Customer are not side by side there (a pass against the written check, as in phase 3).
 
+Skill fix afterwards: Haiku left `CustomerId` a number input although `stellar-admin` lists it as a common mistake, and the setup skill only pointed at the relationships reference. `stellar-admin-setup` now has a Foreign keys subsection under Register the panel with a `SelectEditor` + EF `UseItems` example, and the point is in its checklist (step 2) and verification (step 3). Checked with `npm test` and `npm run check` in `build/skill-validation`; not re-evaluated.
+
 Product findings from the agents' reports, not acted on:
 
 - The description showed the first matching claim only, so a user with two roles showed one. The Sonnet baseline joined the roles with an `IClaimsTransformation`. Fixed afterwards: a configured `DescriptionClaimType` with several claims joins their distinct values ("Sales, Finance"); the default email lookup still takes the first. Covered by `UserMenuTests.DescriptionClaimWithSeveralValues_ShowsThemAll`.
 - `UserMenuItem.Page` for a page that doesn't exist renders the item without a link and without a warning; two agents switched to `Url`. Fixed afterwards (decisions 43 and 46): a user menu item or sidebar link whose page or action doesn't exist renders in Development as a disabled destructive item with the problem as a second line ("No page /Account/Manage/Index in area Identity"); elsewhere it is hidden and logged once as a warning, and the command palette always leaves it out. `LinkChecker` looks the page or action up in the action descriptors as well as generating its URL, because with a conventional route a missing page still gets a URL (`/?page=%2FMissing`). Covered by `SidebarLinkTests.LinksWithoutPageOrAction_ShowProblemInDevelopmentOnly` (with a conventional route) and `UserMenuTests.ItemWithoutRoute_ShowsProblemInDevelopmentOnly`; checked in the playground with a temporary `Page("/OldReport")` link in both environments.
 
 The prototype was rendered in headless Chromium in light and dark on 2026-10-14.
+
+## Sidebar icons
+
+Added on 2026-10-15 after the evaluation (decisions 49–52): `resource.SidebarItem(item => item.Icon = "plane")`, `SidebarLinkBuilder.Icon`, and `SidebarLinkItemBase.Icon` for custom providers. The icon renders as `<sa-icon>` before the label in the sidebar and the command palette. There is no default or fallback icon, and an item without one reserves no space. Icons are set through the builders only, and the collapsed icon-only sidebar is out of scope. A blank icon name throws.
+
+Tests: `ResourceSidebarTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, `SidebarLinkTests.Icon_RendersBeforeLabelInSidebarAndCommandPalette`, and blank-icon cases in `StellarAdminBuilderTests` and `StellarAdminBuilderExtensionsTests`. The playground's Identity and Commerce items and the Sales report link have icons; the gallery groups have none. A headless Chromium screenshot of `/stellaradmin/products` in the playground (Development, anonymous) showed the icons in the sidebar. The command palette and the signed-in Identity group were not checked visually.

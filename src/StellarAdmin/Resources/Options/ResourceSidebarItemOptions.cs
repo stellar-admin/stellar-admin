@@ -22,6 +22,23 @@ public sealed class ResourceSidebarItemOptions
     } = "Resources";
 
     /// <summary>
+    ///     The icon shown before the item's label, or <c>null</c> for none.
+    /// </summary>
+    public string? Icon
+    {
+        get;
+        internal set
+        {
+            if (value is not null)
+            {
+                ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            }
+
+            field = value;
+        }
+    }
+
+    /// <summary>
     ///     The sidebar item label.
     /// </summary>
     /// <remarks>

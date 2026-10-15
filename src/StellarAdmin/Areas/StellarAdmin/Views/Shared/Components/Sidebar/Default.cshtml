@@ -101,6 +101,10 @@
     {
         <sa-sidebar-menu-item>
             <sa-sidebar-menu-link href="@Url.Content(linkItem.Href)" target="@Target(linkItem)" rel="@Rel(linkItem)">
+                @if (linkItem.Icon is { } icon)
+                {
+                    <sa-icon name="@icon"/>
+                }
                 <span>@linkItem.Label</span>
             </sa-sidebar-menu-link>
         </sa-sidebar-menu-item>
@@ -112,6 +116,10 @@
             <sa-sidebar-menu-link asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
                                    asp-area="@actionLinkItem.Area" target="@Target(actionLinkItem)"
                                    rel="@Rel(actionLinkItem)">
+                @if (actionLinkItem.Icon is { } icon)
+                {
+                    <sa-icon name="@icon"/>
+                }
                 <span>@actionLinkItem.Label</span>
             </sa-sidebar-menu-link>
         </sa-sidebar-menu-item>
@@ -122,6 +130,10 @@
         <sa-sidebar-menu-item>
             <sa-sidebar-menu-link asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
                                    target="@Target(pageLinkItem)" rel="@Rel(pageLinkItem)">
+                @if (pageLinkItem.Icon is { } icon)
+                {
+                    <sa-icon name="@icon"/>
+                }
                 <span>@pageLinkItem.Label</span>
             </sa-sidebar-menu-link>
         </sa-sidebar-menu-item>

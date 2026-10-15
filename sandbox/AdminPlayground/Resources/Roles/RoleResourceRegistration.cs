@@ -20,6 +20,7 @@ internal static class RoleResourceRegistration
                 resource.SidebarItem(item =>
                 {
                     item.Label = "Roles";
+                    item.Icon = "shield";
                     item.Group = "Identity";
                     item.Order = 10;
                 });

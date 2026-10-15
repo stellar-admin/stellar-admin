@@ -141,6 +141,7 @@ public static partial class StellarAdminBuilderExtensions
                             return new ResourceSidebarItem(
                                 sidebarItem.Label ?? options.PluralLabel,
                                 sidebarItem.Group,
+                                sidebarItem.Icon,
                                 sidebarItem.Order,
                                 sidebarItem.Visible
                             );

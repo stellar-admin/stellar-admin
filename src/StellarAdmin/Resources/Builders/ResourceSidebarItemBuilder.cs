@@ -22,6 +22,21 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     }
 
     /// <summary>
+    ///     The icon shown before the item's label, or <c>null</c> for none.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>null</c>.
+    /// </remarks>
+    /// <exception cref="ArgumentException"></exception>
+    public string? Icon
+    {
+        set =>
+            _services.Configure<ResourceOptions<TResource>>(options =>
+                options.SidebarItem.Icon = value
+            );
+    }
+
+    /// <summary>
     ///     The sidebar item label.
     /// </summary>
     public string? Label

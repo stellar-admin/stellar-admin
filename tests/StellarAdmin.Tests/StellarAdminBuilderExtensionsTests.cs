@@ -64,13 +64,15 @@ public class StellarAdminBuilderExtensionsTests
     }
 
     [Test]
-    [Arguments("", true)]
-    [Arguments(" ", true)]
-    [Arguments("", false)]
-    [Arguments(" ", false)]
+    [Arguments("", "Label")]
+    [Arguments(" ", "Label")]
+    [Arguments("", "Group")]
+    [Arguments(" ", "Group")]
+    [Arguments("", "Icon")]
+    [Arguments(" ", "Icon")]
     public async Task AddResource_WithBlankSidebarText_RejectsConfiguration(
         string value,
-        bool label
+        string property
     )
     {
         // Arrange
@@ -79,13 +81,17 @@ public class StellarAdminBuilderExtensionsTests
         sut.AddResource<Product>(resource =>
             resource.SidebarItem(item =>
             {
-                if (label)
+                switch (property)
                 {
-                    item.Label = value;
-                }
-                else
-                {
-                    item.Group = value;
+                    case "Label":
+                        item.Label = value;
+                        break;
+                    case "Group":
+                        item.Group = value;
+                        break;
+                    default:
+                        item.Icon = value;
+                        break;
                 }
             })
         );

@@ -2,14 +2,13 @@
 
 Status: backlog (2026-10-14).
 
-Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmin, react-admin) offer and StellarAdmin does not. Recorded during the [admin panel skills](admin-panel-skills.md) research so the consumer skill can name them as unsupported. None is scheduled; an item becomes a plan when it is picked up. Source: the API survey of 2026-10-14.
+Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmin, react-admin) offer and StellarAdmin does not. Recorded during the [admin panel skills](admin-panel-skills.md) research so the consumer skill can name them as unsupported. None is scheduled; an item becomes a plan when it is picked up. Source: the API survey of 2026-10-14. Sidebar icons were removed from the table when they were implemented (2026-10-15, recorded in [sidebar-branding-user-menu](sidebar-branding-user-menu.md)).
 
 | Feature | Current state |
 | --- | --- |
 | Custom row and page actions | Row actions are fixed to view, edit and delete. |
 | Bulk actions | No row selection or bulk operations on the index. |
 | Index filters | Scopes (named tabs) only; no field filters such as select, date range or ternary. |
-| Sidebar icons | Resource items and custom links have no icon. Also noted as unscheduled in [custom-sidebar-links](archive/custom-sidebar-links.md). |
 | Form tabs and wizards | Forms have sections and groups only. |
 | Dashboard and widgets | The home page is a bare landing page with no widget or stat API. |
 | File and image uploads | No upload editor or display. |

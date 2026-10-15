@@ -87,6 +87,7 @@ builder.Services.AddStellarAdmin(admin =>
         link =>
         {
             link.Group = "Commerce";
+            link.Icon = "chart-line";
             link.Order = 30;
         }
     );

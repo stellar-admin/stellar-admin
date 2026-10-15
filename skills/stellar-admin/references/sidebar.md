@@ -25,6 +25,7 @@ admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
         item.Group = "Sales";
         item.Order = 1;
         item.Label = "All bookings";
+        item.Icon = "plane";
     });
 });
 ```
@@ -34,9 +35,10 @@ admin.AddEfCoreResource<VoyagerDbContext, Booking>(resource =>
 | `Group` | `"Resources"` |
 | `Order` | `0`, ascending within the group |
 | `Label` | The plural label |
+| `Icon` | None. An icon name from the app's icon set (Lucide by default), shown before the label in the sidebar and command palette. |
 | `Visible` | `true`. Hiding the item does not disable or protect the pages. |
 
-Items for resources the user isn't authorized for are hidden automatically ([authorization](authorization.md)). Items have no icons.
+Items for resources the user isn't authorized for are hidden automatically ([authorization](authorization.md)).
 
 ## Custom links
 
@@ -48,6 +50,7 @@ using StellarAdmin.Sidebar;
 admin.AddSidebarLink("Departures this week", SidebarLinkTarget.Page("/Admin/Departures"), link =>
 {
     link.Group = "Sales";
+    link.Icon = "calendar";
     link.Order = 3;
     link.RequireAuthorization(policy => policy.RequireRole("Sales"));
 });
@@ -62,7 +65,7 @@ admin.AddSidebarLink("Help centre", SidebarLinkTarget.Url("https://help.voyager.
 ```
 
 - `SidebarLinkTarget.Page(page, area)` and `Action(action, controller, area)` resolve outside any area unless an area is given, so they reach the host app's pages. `Url(url)` takes absolute URLs and `~/` paths.
-- Link builder: `Group`, `Order`, `OpenInNewTab`, `RequireAuthorization(...)`.
+- Link builder: `Group`, `Icon`, `Order`, `OpenInNewTab`, `RequireAuthorization(...)`.
 - `link.RequireAuthorization` hides the link from users who don't satisfy it. It **does not protect the destination**; protect host pages with `[Authorize]`.
 - Links appear in the command palette too.
 - A `Page` or `Action` target that doesn't exist shows in Development as a red, disabled item with the reason ("No page /Admin/Departures"). In other environments it is hidden and a warning is logged; it is never in the command palette. User menu items behave the same way.
@@ -70,6 +73,7 @@ admin.AddSidebarLink("Help centre", SidebarLinkTarget.Url("https://help.voyager.
 ## Groups and order
 
 - Items with the same group label merge into one group, whether they come from resources or links. A link without a `Group` sits at the top level, with no heading.
+- Icons are optional per item, and an item without one reserves no space, so give every item in a group an icon or none.
 - Within a group, items sort by `Order`. With equal orders, resource items and links don't interleave: set `Order` explicitly to mix them.
 - Groups appear in the order their label is first registered. There is no group order setting, so register the resource or link of the group that should come first earlier.
 

@@ -21,7 +21,7 @@ Copy this list and tick it off:
 
 ```
 - [ ] 1. Packages referenced (StellarAdmin, plus StellarAdmin.EntityFrameworkCore for EF Core)
-- [ ] 2. builder.Services.AddStellarAdmin(...) with at least one resource
+- [ ] 2. builder.Services.AddStellarAdmin(...) with at least one resource; every foreign key field has a choice editor
 - [ ] 3. app.MapStellarAdmin() after UseAuthentication/UseAuthorization, with static assets mapped
 - [ ] 4. Sign-in or role protection, if the app has authentication
 - [ ] 5. The panel's name (and logo, if the app has one); theme, if wanted
@@ -79,8 +79,23 @@ builder.Services.AddStellarAdmin(admin =>
 - The DbContext must be registered with `AddDbContext` (any provider). The key is discovered from EF metadata: a single `int`, `long`, `Guid` or `string` property.
 - Index columns start empty: a resource without columns shows an empty grid.
 - Create, edit, view and delete are off until `AllowCreate`, `AllowEdit`, `AllowView` and `AllowDelete` are called. Each takes its own callback; they don't chain off each other.
-- A foreign key such as `Booking.CustomerId` renders as a number input unless it gets a choice editor; see the stellar-admin skill's relationships reference.
 - Entities that don't live in EF Core use `admin.AddResource<T>(resource => resource.UseDataSource<TDataSource>())`; see the stellar-admin skill.
+
+### Foreign keys
+
+A foreign key field such as `Booking.CustomerId` renders as a **number input** unless it gets a choice editor, so staff would have to type customer IDs. Give every foreign key field on the create and edit pages a `SelectEditor` that lists the related rows:
+
+```csharp
+using StellarAdmin.Resources.Editors;
+
+fields.Add(booking => booking.CustomerId).UseEditor<SelectEditor>(select =>
+    select.UseItems<VoyagerDbContext, Customer, int>(
+        customer => customer.Id,
+        customer => customer.Name,
+        items => items.OrderBy(customer => customer.Name)));
+```
+
+The type arguments are the DbContext, the related entity and the key type (`int` for `int` and `int?` keys). For a long list, `LookupSheetEditor` takes the same `UseItems` and adds search and "create new"; see the stellar-admin skill's relationships reference. In the index, show the related name with `columns.Add(booking => booking.Customer!.Name, column => column.Title = "Customer")` rather than the key.
 
 ## 3. Map the routes
 
@@ -151,7 +166,7 @@ Building is not enough: configuration errors surface on the first request. Run t
 
 1. `/stellaradmin` returns 200 with a sidebar listing each resource.
 2. `/stellaradmin/{slug}` shows the grid with the configured columns and rows.
-3. `/stellaradmin/{slug}/create` and `/stellaradmin/{slug}/edit/{id}` render and save, for resources that allow them.
+3. `/stellaradmin/{slug}/create` and `/stellaradmin/{slug}/edit/{id}` render and save, for resources that allow them. Foreign keys show a list of related rows, not a number box.
 4. The page is styled. Raw `<sa-...>` tags in the HTML mean a view is missing its `_ViewImports.cshtml` tag helper registrations (see the stellar-admin skill's customization reference).
 5. The sidebar header shows the app's name. When signed in, the sidebar footer shows the user, and Log out signs them out.
 

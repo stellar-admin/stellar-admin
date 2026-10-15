@@ -23,6 +23,18 @@ public sealed class SidebarLinkBuilder
     }
 
     /// <summary>
+    ///     The icon shown before the link's label, or <c>null</c> for none.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>null</c>.
+    /// </remarks>
+    /// <exception cref="ArgumentException"></exception>
+    public string? Icon
+    {
+        set => _options.Icon = value;
+    }
+
+    /// <summary>
     ///     Whether the link opens in a new browser tab.
     /// </summary>
     public bool OpenInNewTab

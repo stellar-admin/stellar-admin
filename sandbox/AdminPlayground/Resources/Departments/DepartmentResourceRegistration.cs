@@ -13,6 +13,7 @@ internal static class DepartmentResourceRegistration
             resource.SidebarItem(item =>
             {
                 item.Label = "Departments";
+                item.Icon = "building";
                 item.Group = "Identity";
                 item.Order = 20;
             });

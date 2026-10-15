@@ -22,6 +22,7 @@ internal static class UserResourceRegistration
                 resource.SidebarItem(item =>
                 {
                     item.Label = "Users";
+                    item.Icon = "users";
                     item.Group = "Identity";
                 });
                 resource.UseDataSource<UserDataSource>();

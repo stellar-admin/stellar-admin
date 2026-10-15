@@ -15,6 +15,7 @@ internal static class ProductResourceRegistration
             resource.SidebarItem(item =>
             {
                 item.Group = "Commerce";
+                item.Icon = "package";
                 item.Order = 10;
             });
             resource.AllowCreate(create =>

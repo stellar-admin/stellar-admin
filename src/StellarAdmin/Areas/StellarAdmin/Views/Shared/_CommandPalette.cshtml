@@ -72,12 +72,20 @@
                 <sa-command-link-item asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
                                       asp-area="@actionLinkItem.Area" keywords="@groupLabel"
                                       target="@Target(actionLinkItem)" rel="@Rel(actionLinkItem)">
+                    @if (item.Icon is { } icon)
+                    {
+                        <sa-icon name="@icon"/>
+                    }
                     @actionLinkItem.Label
                 </sa-command-link-item>
                 break;
             case SidebarLinkItem linkItem:
                 <sa-command-link-item href="@Url.Content(linkItem.Href)" keywords="@groupLabel"
                                       target="@Target(linkItem)" rel="@Rel(linkItem)">
+                    @if (item.Icon is { } icon)
+                    {
+                        <sa-icon name="@icon"/>
+                    }
                     @linkItem.Label
                 </sa-command-link-item>
                 break;
@@ -85,6 +93,10 @@
                 <sa-command-link-item asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
                                       keywords="@groupLabel" target="@Target(pageLinkItem)"
                                       rel="@Rel(pageLinkItem)">
+                    @if (item.Icon is { } icon)
+                    {
+                        <sa-icon name="@icon"/>
+                    }
                     @pageLinkItem.Label
                 </sa-command-link-item>
                 break;

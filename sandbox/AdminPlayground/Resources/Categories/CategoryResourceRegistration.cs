@@ -15,6 +15,7 @@ internal static class CategoryResourceRegistration
             resource.SidebarItem(item =>
             {
                 item.Group = "Commerce";
+                item.Icon = "tags";
                 item.Order = 15;
             });
             resource.Index(index =>

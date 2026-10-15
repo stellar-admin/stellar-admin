@@ -12,6 +12,7 @@ internal static class CustomerResourceRegistration
             resource.SidebarItem(item =>
             {
                 item.Group = "Commerce";
+                item.Icon = "contact";
                 item.Order = 20;
             });
             resource.UseDataSource<CustomerDataSource>();

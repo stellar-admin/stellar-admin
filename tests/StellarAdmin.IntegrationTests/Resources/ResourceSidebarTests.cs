@@ -2,6 +2,7 @@ using AngleSharp.Dom;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
+using TUnit.Assertions.Enums;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -55,5 +56,48 @@ public class ResourceSidebarTests
         await Assert.That(links[0].GetAttribute("href")).IsEqualTo("/stellaradmin/catalog");
         await Assert.That(links[1].TextContent.Trim()).IsEqualTo("Inventory");
         await Assert.That(links[1].GetAttribute("href")).IsEqualTo("/stellaradmin/products");
+    }
+
+    [Test]
+    public async Task Icon_RendersBeforeLabelInSidebarAndCommandPalette()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource => resource.SidebarItem(item => item.Icon = "package"),
+            admin =>
+                admin.AddResource<CustomProduct>(
+                    "catalog",
+                    resource => resource.UseDataSource<CustomProductDataSource>()
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        foreach (
+            var selector in new[]
+            {
+                "[data-slot='sidebar-group'] [data-slot='sidebar-menu-button']",
+                "#--command-palette [data-slot='command-item']",
+            }
+        )
+        {
+            var links = document.QuerySelectorAll(selector).ToArray();
+            await Assert
+                .That(links.Select(link => link.TextContent.Trim()).ToArray())
+                .IsEquivalentTo(["Products", "Custom products"], CollectionOrdering.Matching);
+            await Assert
+                .That(
+                    links
+                        .Select(link =>
+                            link.QuerySelector("svg:not(.sa-command-item-indicator)") is not null
+                        )
+                        .ToArray()
+                )
+                .IsEquivalentTo([true, false], CollectionOrdering.Matching);
+        }
     }
 }

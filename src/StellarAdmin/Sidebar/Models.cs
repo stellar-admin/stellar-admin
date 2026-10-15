@@ -7,6 +7,11 @@ public record SidebarGroupItem(string Label, SidebarLinkItemBase[] Items) : Side
 public abstract record SidebarLinkItemBase(string Label) : SidebarItem(Label)
 {
     /// <summary>
+    ///     The icon shown before the link's label, or <c>null</c> for none.
+    /// </summary>
+    public string? Icon { get; init; }
+
+    /// <summary>
     ///     Whether the link opens in a new browser tab.
     /// </summary>
     public bool OpenInNewTab { get; init; }

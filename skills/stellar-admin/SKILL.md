@@ -158,7 +158,7 @@ Say so rather than inventing an API:
 
 - Custom row or page actions and bulk actions (row actions are view, edit and delete).
 - Index filters other than scope tabs.
-- Icons on sidebar items and links; sidebar group ordering.
+- Sidebar group ordering.
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).

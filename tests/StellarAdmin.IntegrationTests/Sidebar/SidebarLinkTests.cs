@@ -140,6 +140,42 @@ public class SidebarLinkTests
     }
 
     [Test]
+    public async Task Icon_RendersBeforeLabelInSidebarAndCommandPalette()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            configureAdmin: admin =>
+            {
+                admin.AddSidebarLink(
+                    "Reports",
+                    SidebarLinkTarget.Url("/reports"),
+                    link => link.Icon = "chart-line"
+                );
+                admin.AddSidebarLink("Status", SidebarLinkTarget.Url("https://status.example.com"));
+            }
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin");
+
+        // Assert
+        foreach (var selector in new[] { SidebarLinks, CommandItems })
+        {
+            await Assert
+                .That(
+                    CustomLinks(document, selector)
+                        .Select(link =>
+                            link.QuerySelector("svg:not(.sa-command-item-indicator)") is not null
+                        )
+                        .ToArray()
+                )
+                .IsEquivalentTo([true, false], CollectionOrdering.Matching);
+        }
+    }
+
+    [Test]
     [Arguments(
         "Development",
         new[]
