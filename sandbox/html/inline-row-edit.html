@@ -149,27 +149,39 @@
     <!-- Control page                                                                               -->
     <!-- ========================================================================================== -->
     <main class="proto-page" id="control" hidden>
-      <h1>Row edit mode and the edit sheet</h1>
+      <h1>Inline editing</h1>
       <p class="proto-intro">
-        A small resource (4 fields) where quick inline edits make sense. The strips switch how Edit and Add behave, where an inline add appears, and the width of the frame (phone and tablet widths are real: the demo runs in an iframe). Saves are simulated.
+        A small resource (4 fields) where quick inline edits make sense. Each operation is either inline or a form, never both, and edit and add choose independently; the sheet stands in for the form (the page works the same way). Phone and tablet widths are real: the demo runs in an iframe. Saves are simulated.
       </p>
       <div class="proto-strips">
-        <span class="label">1 · Edit and add</span>
-        <div class="group" data-strip="mode">
-          <button data-value="row">A — Row only</button>
-          <button data-value="sheet">B — Sheet only</button>
-          <button data-value="rowFirst">C — Row, hand off to sheet</button>
-          <button data-value="twoActions">D — Two actions</button>
-          <button data-value="sheetFirst">E — Sheet, double-click for row</button>
+        <span class="label">Edit</span>
+        <div class="group" data-strip="edit">
+          <button data-value="inline">Inline</button>
+          <button data-value="form">Form (sheet)</button>
         </div>
-        <p class="note" data-note="mode"></p>
+        <p class="note" data-note="edit"></p>
 
-        <span class="label">5 · Inline add</span>
+        <span class="label">Add</span>
+        <div class="group" data-strip="create">
+          <button data-value="inline">Inline</button>
+          <button data-value="form">Form (sheet)</button>
+        </div>
+        <p class="note" data-note="create"></p>
+
+        <span class="label">Position</span>
         <div class="group" data-strip="add">
-          <button data-value="top">Add row at the top</button>
-          <button data-value="bottom">Add row at the bottom</button>
+          <button data-value="top">Top</button>
+          <button data-value="bottom">Bottom</button>
         </div>
         <p class="note" data-note="add"></p>
+
+        <span class="label">Add button</span>
+        <div class="group" data-strip="button">
+          <button data-value="header">Header</button>
+          <button data-value="grid">Grid</button>
+          <button data-value="both">Both</button>
+        </div>
+        <p class="note" data-note="button"></p>
 
         <span class="label">Dim other rows</span>
         <div class="group" data-strip="dim">
@@ -177,13 +189,6 @@
           <button data-value="off">Off</button>
         </div>
         <p class="note" data-note="dim"></p>
-
-        <span class="label">4 · Narrow screens</span>
-        <div class="group" data-strip="narrow">
-          <button data-value="row">Keep row edit (grid scrolls)</button>
-          <button data-value="sheet">Use the sheet below 640px</button>
-        </div>
-        <p class="note" data-note="narrow"></p>
 
         <span class="label">Width</span>
         <div class="group" data-strip="width">
@@ -194,8 +199,8 @@
       </div>
       <ul class="proto-try">
         <li><strong>Edit</strong> a row; <span class="kbd">Enter</span> saves, <span class="kbd">Esc</span> cancels. Click the Country cell to open the lookup sheet.</li>
-        <li><strong>Add</strong> a destination with the grid’s own Add button; Name and Country are required. The page header’s Add destination goes to the create page.</li>
-        <li><strong>A rule the row can’t show:</strong> active destinations need a description, which isn’t a column. Turn on Active for Marrakech or Cusco (no description) and save the row to see how each option handles it.</li>
+        <li><strong>Add</strong> a destination; Name and Country are required. With the add row at the bottom, the header’s Add scrolls down to the new row.</li>
+        <li><strong>Server errors:</strong> name a destination after another in the same country (for example a second Lisbon in Portugal) for an error under the cell. Turn off Active for Lisbon or Kyoto, which have upcoming trips, for an error the row shows in a message under it.</li>
       </ul>
       <div class="proto-stage" data-width="full"><iframe title="Demo" id="demo"></iframe></div>
     </main>
@@ -284,9 +289,10 @@
       const params = new URLSearchParams(location.search);
       const EMBED = params.has("embed");
       const settings = {
-        mode: params.get("mode") ?? "rowFirst",
+        edit: params.get("edit") ?? "inline",
+        create: params.get("create") ?? "inline",
         add: params.get("add") ?? "top",
-        narrow: params.get("narrow") ?? "row",
+        button: params.get("button") ?? "both",
         dim: params.get("dim") ?? "on",
         width: params.get("width") ?? "full",
         theme: params.get("theme") ?? "default",
@@ -308,24 +314,26 @@
         document.getElementById("control").hidden = false;
         document.getElementById("controls").hidden = false;
         const NOTES = {
-          mode: {
-            row: "Edit and Add always work in the row. Nothing opens a sheet; a rule the row can’t show sends you to the edit page.",
-            sheet: "Edit and Add always open the sheet, for comparison. No inline editing.",
-            rowFirst: "Edit and Add work in the row; the editing row has an extra button that carries the values over to the sheet, and a rule the row can’t show offers the sheet.",
-            twoActions: "Two actions per row: the pencil edits in the row, the panel icon opens the sheet. The editing row can also hand off to the sheet.",
-            sheetFirst: "Edit and Add open the sheet; double-clicking a row edits it in place.",
+          edit: {
+            inline: "The row’s Edit turns the row into fields. There is no edit page.",
+            form: "The row’s Edit opens the full form. No inline editing.",
+          },
+          create: {
+            inline: "Add inserts an editing row. There is no create page.",
+            form: "Add opens the full form. Position and Add button don’t apply.",
           },
           add: {
-            top: "The grid starts with its own “Add destination” button, which inserts an editing row at the top. The page header’s Add destination always opens the create page.",
-            bottom: "The grid ends with its own “Add destination” button, which inserts an editing row at the bottom. The page header’s Add destination always opens the create page.",
+            top: "New rows go at the top of the grid.",
+            bottom: "New rows go at the bottom of the current page.",
+          },
+          button: {
+            header: "Only the page header’s Add destination. It scrolls to the new row and focuses its first field.",
+            grid: "Only the grid’s own Add destination, in the first row (Top) or the last row (Bottom). The header has no Add.",
+            both: "The header’s Add destination and the grid’s own. Both insert the same row.",
           },
           dim: {
             on: "While a row is being edited or added, the other rows fade back.",
             off: "The other rows stay as they are while a row is being edited or added.",
-          },
-          narrow: {
-            row: "Row edit stays on at every width; the grid scrolls sideways when the fields don’t fit.",
-            sheet: "Below 640px, Edit and Add open the sheet whatever option 1 says. Try it at the phone width.",
           },
         };
         const frame = document.getElementById("demo");
@@ -340,7 +348,7 @@
             const key = g.dataset.control === "mode" ? "scheme" : g.dataset.control;
             g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === settings[key])));
           });
-          for (const k of ["mode", "add", "dim", "narrow"]) document.querySelector(`[data-note="${k}"]`).textContent = NOTES[k][settings[k]];
+          for (const k of ["edit", "create", "add", "button", "dim"]) document.querySelector(`[data-note="${k}"]`).textContent = NOTES[k][settings[k]];
           history.replaceState(null, "", `?${new URLSearchParams(settings)}`);
           applyLook();
         };
@@ -383,27 +391,26 @@
         const countryName = (code) => COUNTRIES.find((c) => c.code === code)?.name ?? "";
         const SEASONS = ["Spring", "Summer", "Autumn", "Winter", "Year-round"];
 
-        let nextId = 7;
+        let nextId = 13;
         const rows = [
-          { id: 1, name: "Lisbon", country: "PT", season: "Spring", active: true, description: "Tiled streets, trams and pastel de nata." },
-          { id: 2, name: "Kyoto", country: "JP", season: "Autumn", active: true, description: "Temples and maple leaves." },
-          { id: 3, name: "Queenstown", country: "NZ", season: "Summer", active: true, description: "Lakes, peaks and bungy." },
-          { id: 4, name: "Marrakech", country: "MA", season: "Spring", active: false, description: "" },
-          { id: 5, name: "Reykjavík", country: "IS", season: "Winter", active: true, description: "Northern lights base camp." },
-          { id: 6, name: "Cusco", country: "PE", season: "Year-round", active: false, description: "" },
+          { id: 1, name: "Lisbon", country: "PT", season: "Spring", active: true, trips: 3 },
+          { id: 2, name: "Kyoto", country: "JP", season: "Autumn", active: true, trips: 5 },
+          { id: 3, name: "Queenstown", country: "NZ", season: "Summer", active: true, trips: 0 },
+          { id: 4, name: "Marrakech", country: "MA", season: "Spring", active: false, trips: 0 },
+          { id: 5, name: "Reykjavík", country: "IS", season: "Winter", active: true, trips: 0 },
+          { id: 6, name: "Cusco", country: "PE", season: "Year-round", active: false, trips: 0 },
+          { id: 7, name: "Santorini", country: "GR", season: "Summer", active: true, trips: 0 },
+          { id: 8, name: "Cape Town", country: "ZA", season: "Summer", active: true, trips: 0 },
+          { id: 9, name: "Hoi An", country: "VN", season: "Spring", active: true, trips: 0 },
+          { id: 10, name: "Tromsø", country: "NO", season: "Winter", active: false, trips: 0 },
+          { id: 11, name: "Patagonia", country: "AR", season: "Summer", active: true, trips: 0 },
+          { id: 12, name: "Amalfi Coast", country: "IT", season: "Summer", active: true, trips: 0 },
         ];
 
-        const MODES = {
-          row: { edit: "row", add: "row", handoff: false, sheetAction: false, dblclick: false },
-          sheet: { edit: "sheet", add: "sheet", handoff: false, sheetAction: false, dblclick: false },
-          rowFirst: { edit: "row", add: "row", handoff: true, sheetAction: false, dblclick: false },
-          twoActions: { edit: "row", add: "row", handoff: true, sheetAction: true, dblclick: false },
-          sheetFirst: { edit: "sheet", add: "sheet", handoff: true, sheetAction: false, dblclick: true },
-        };
-        const mode = MODES[settings.mode];
-        const narrow = () => settings.narrow === "sheet" && innerWidth < 640;
-        const editTarget = () => (narrow() ? "sheet" : mode.edit);
-        const addTarget = () => (narrow() ? "sheet" : mode.add);
+        const inlineEdit = settings.edit === "inline";
+        const inlineCreate = settings.create === "inline";
+        const gridAdd = inlineCreate && settings.button !== "header";
+        const headerAdd = !inlineCreate || settings.button !== "grid";
 
         /* ---------------------------------------------------------------------------------------- */
         /* Markup                                                                                    */
@@ -433,7 +440,6 @@
         function displayRow(r) {
           const actions = [
             icon("outline", "pen", "Edit", "data-edit"),
-            mode.sheetAction ? icon("outline", "panel", "Edit in sheet", "data-edit-sheet") : "",
             icon("outline", "trash", "Delete", "data-delete"),
           ].join("");
           return `<tr class="sa-table-row" data-slot="table-row" data-id="${r.id}">
@@ -455,7 +461,6 @@
           const actions = [
             icon("default", "check", isNew ? "Add" : "Save", "data-row-save"),
             icon("outline", "x", "Cancel", "data-row-cancel"),
-            mode.handoff ? icon("ghost", "expand", "Open in sheet", "data-row-handoff") : "",
           ].join("");
           return `<tr class="sa-table-row" data-slot="table-row" data-editing ${isNew ? "data-new" : `data-id="${r.id}"`}>
             <td class="sa-table-cell" data-slot="table-cell" data-field="name"><input class="sa-input sa-cell-editor" data-slot="input" data-size="sm" name="name" aria-label="Name" value="${esc(r.name)}" autocomplete="off" placeholder="${isNew ? "Name" : ""}"></td>
@@ -465,24 +470,18 @@
             <td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell"><span class="proto-actions">${actions}</span></td>
           </tr>`;
         }
-        // Inline add is only on where Add works in the row (A, C and D).
-        const inlineAdd = mode.add === "row";
         const addRowHtml = () =>
-          inlineAdd
+          gridAdd
             ? `<tr class="sa-table-row sa-table-add-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}">${button("ghost", "sm", `${svg(ICON.plus)}Add destination`, 'data-icon="inline-start" data-add')}</td></tr>`
             : "";
 
         function render() {
           const top = settings.add === "top";
           tbody.innerHTML = (top ? addRowHtml() : "") + rows.map(displayRow).join("") + (top ? "" : addRowHtml());
-          const hint = {
-            row: "Edit and the grid’s Add work in the row. The header’s Add opens the create page.",
-            sheet: "Edit and Add open the sheet.",
-            rowFirst: "Edit and the grid’s Add work in the row; the expand button in the editing row moves to the sheet. The header’s Add opens the create page.",
-            twoActions: "Pencil: edit in the row. Panel: edit in the sheet. The header’s Add opens the create page.",
-            sheetFirst: "Edit opens the sheet. Double-click a row to edit it in place.",
-          }[settings.mode];
-          document.querySelector("[data-hint]").textContent = narrow() ? `${hint} (Narrow: the sheet is used at this width.)` : hint;
+          document.querySelector("[data-add-page]").style.display = headerAdd ? "" : "none";
+          const edit = inlineEdit ? "Edit works in the row" : "Edit opens the form";
+          const add = !inlineCreate ? "Add opens the form" : { header: "the header’s Add inserts a row", grid: "the grid’s Add inserts a row", both: "either Add inserts a row" }[settings.button];
+          document.querySelector("[data-hint]").textContent = `${edit}; ${add}.`;
         }
         const tr = (id) => tbody.querySelector(`tr[data-id="${id}"]:not(.sa-row-message)`);
         const row = (id) => rows.find((r) => r.id === Number(id));
@@ -532,8 +531,9 @@
           const addRow = tbody.querySelector(".sa-table-add-row");
           if (settings.add === "bottom") addRow ? addRow.before(el) : tbody.append(el);
           else addRow ? addRow.after(el) : tbody.prepend(el);
-          el.scrollIntoView({ block: "nearest" });
-          el.querySelector("input").focus();
+          // Whichever Add was used, the new row comes into view with its first field focused.
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+          el.querySelector("input").focus({ preventScroll: true });
         }
         function readRow(editTr) {
           return {
@@ -547,6 +547,15 @@
           const e = {};
           if (!v.name) e.name = "Name is required.";
           if (!v.country) e.country = "Choose a country.";
+          return e;
+        }
+        // The "server" rules: one that belongs to a field, and one that belongs to the whole row.
+        function serverErrors(v, id) {
+          const e = {};
+          if (rows.some((r) => r.id !== id && r.country === v.country && r.name.toLowerCase() === v.name.toLowerCase()))
+            e.name = `${countryName(v.country)} already has a destination called ${v.name}.`;
+          const r = id ? row(id) : null;
+          if (r && r.active && !v.active && r.trips) e.row = `${r.name} can’t be deactivated while it has ${r.trips} upcoming trips.`;
           return e;
         }
         function setCellError(editTr, field, message) {
@@ -572,21 +581,16 @@
           btn.innerHTML = svg(ICON.spin, "sa-spinner");
           btn.disabled = true;
           await fakeSave();
-          // The "server" rule: an active destination needs a description, which the row doesn't show.
-          const description = isNew ? "" : row(editTr.dataset.id).description;
-          if (v.active && !description) {
-            btn.innerHTML = svg(ICON.check);
-            btn.disabled = false;
-            const canSheet = mode.handoff || settings.mode === "sheet";
-            const action = canSheet
-              ? button("link", "sm", "Open in sheet to add one", "data-row-handoff")
-              : button("link", "sm", "Open the edit page", "data-edit-page");
-            editTr.insertAdjacentHTML("afterend", `<tr class="sa-table-row sa-row-message" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}"><div class="sa-row-message-body" role="alert">Active destinations need a description, which isn’t shown here. ${action}</div></td></tr>`);
-            return;
-          }
+          btn.innerHTML = svg(ICON.check);
+          btn.disabled = false;
+          const server = serverErrors(v, isNew ? null : Number(editTr.dataset.id));
+          if (server.name) { setCellError(editTr, "name", server.name); editTr.querySelector('[name="name"]').focus(); }
+          if (server.row)
+            editTr.insertAdjacentHTML("afterend", `<tr class="sa-table-row sa-row-message" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}"><div class="sa-row-message-body" role="alert">${esc(server.row)}</div></td></tr>`);
+          if (server.name || server.row) return;
           let saved;
           if (isNew) {
-            saved = { id: nextId++, description: "", ...v };
+            saved = { id: nextId++, trips: 0, ...v };
             settings.add === "bottom" ? rows.push(saved) : rows.unshift(saved);
           } else {
             saved = Object.assign(row(editTr.dataset.id), v);
@@ -617,8 +621,7 @@
             field("name", "Name", `<input class="sa-input" data-slot="input" id="--sheet-name" name="name" value="${esc(values.name)}" ${errors.name ? 'aria-invalid="true"' : ""} autocomplete="off">`),
             field("country", "Country", lookupTrigger(values.country, "default", "--sheet-country")),
             field("season", "Best season", seasonSelect(values.season, "default", "--sheet-season")),
-            `<div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field">${activeSwitch(values.active, "default", "--sheet-active")}<div data-slot="field-content" class="sa-field-content"><label for="--sheet-active" data-slot="field-label" class="sa-label sa-field-label">Active</label><p data-slot="field-description" class="sa-field-description">Shown to travellers on the site.</p></div></div>`,
-            field("description", "Description", `<textarea class="sa-textarea" data-slot="textarea" id="--sheet-description" name="description" rows="4" ${errors.description ? 'aria-invalid="true"' : ""}>${esc(values.description ?? "")}</textarea>`),
+            `<div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field" data-field="active">${activeSwitch(values.active, "default", "--sheet-active")}<div data-slot="field-content" class="sa-field-content"><label for="--sheet-active" data-slot="field-label" class="sa-label sa-field-label">Active</label><p data-slot="field-description" class="sa-field-description">Shown to travellers on the site.</p><p class="sa-field-error" data-slot="field-error" role="alert"></p></div></div>`,
           ].join("");
           if (errors.country) sheet.querySelector("[data-lookup]").setAttribute("aria-invalid", "true");
           sheet.showModal();
@@ -633,19 +636,22 @@
             country: f.querySelector("[data-lookup]").dataset.value,
             season: f.querySelector("#--sheet-season").value,
             active: f.querySelector("#--sheet-active").checked,
-            description: f.querySelector("#--sheet-description").value.trim(),
           };
-          const errors = fieldErrors(v);
-          if (v.active && !v.description) errors.description = "Active destinations need a description.";
-          for (const key of ["name", "country", "description"]) {
-            const wrap = f.querySelector(`[data-field="${key}"]`);
-            const p = wrap.querySelector(".sa-field-error");
-            p.classList.toggle("field-validation-error", !!errors[key]);
-            p.textContent = errors[key] ?? "";
-            wrap.querySelector("input, textarea, [data-lookup]").toggleAttribute("aria-invalid", !!errors[key]);
-            if (errors[key]) wrap.querySelector("input, textarea, [data-lookup]").setAttribute("aria-invalid", "true");
-          }
-          if (Object.keys(errors).length) { f.querySelector('[aria-invalid="true"]').focus(); return; }
+          const showErrors = (errors) => {
+            for (const key of ["name", "country", "active"]) {
+              const wrap = f.querySelector(`[data-field="${key}"]`);
+              const p = wrap.querySelector(".sa-field-error");
+              p.classList.toggle("field-validation-error", !!errors[key]);
+              p.textContent = errors[key] ?? "";
+              const control = wrap.querySelector("input, [data-lookup]");
+              if (errors[key]) control.setAttribute("aria-invalid", "true");
+              else control.removeAttribute("aria-invalid");
+            }
+            const bad = f.querySelector('[aria-invalid="true"]');
+            bad?.focus();
+            return !!bad;
+          };
+          if (showErrors(fieldErrors(v))) return;
           const btn = f.querySelector("[data-sheet-submit]");
           const label = btn.textContent;
           btn.innerHTML = `${svg(ICON.spin, "sa-spinner")}Saving`;
@@ -653,15 +659,14 @@
           await fakeSave();
           btn.textContent = label;
           btn.disabled = false;
+          const server = serverErrors(v, sheetTarget.id);
+          if (showErrors({ name: server.name, active: server.row })) return;
           let saved;
           const isNew = !sheetTarget.id;
           if (isNew) {
-            saved = { id: nextId++, ...v };
+            saved = { id: nextId++, trips: 0, ...v };
             settings.add === "bottom" ? rows.push(saved) : rows.unshift(saved);
           } else saved = Object.assign(row(sheetTarget.id), v);
-          // A row handed off to the sheet is replaced by the saved row.
-          tbody.querySelector("tr[data-editing]")?.remove();
-          tbody.querySelector(".sa-row-message")?.remove();
           sheet.close();
           render();
           unfreeze();
@@ -670,15 +675,6 @@
           fresh.querySelector("[data-edit]").focus();
           toast(isNew ? "Destination added" : "Destination saved", saved.name);
         });
-
-        function handoff(editTr) {
-          const v = readRow(editTr);
-          const id = editTr.hasAttribute("data-new") ? null : Number(editTr.dataset.id);
-          const description = id ? row(id).description : "";
-          const errors = fieldErrors(v);
-          if (v.active && !description && editTr.nextElementSibling?.classList.contains("sa-row-message")) errors.description = "Active destinations need a description.";
-          openSheet({ ...v, description }, { id, errors });
-        }
 
         /* ---------------------------------------------------------------------------------------- */
         /* Lookup sheet                                                                              */
@@ -725,36 +721,21 @@
         document.addEventListener("click", (e) => {
           const t = e.target;
           if (t.closest("[data-lookup]")) return openLookup(t.closest("[data-lookup]"));
-          if (t.closest("[data-add-page]")) return addTarget() === "sheet" || !inlineAdd
-            ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: false, description: "" }))
-            : toast("Would open the create page", "The header’s Add always goes to the create page.");
-          if (t.closest("[data-add]")) return addTarget() === "sheet" ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: false, description: "" })) : startRowAdd();
+          if (t.closest("[data-add-page], [data-add]")) return inlineCreate ? startRowAdd() : openSheet({ name: "", country: "", season: "Year-round", active: false });
           const editTr = t.closest("tr[data-editing]");
           if (editTr) {
             if (t.closest("[data-row-save]")) return saveRow(editTr);
             if (t.closest("[data-row-cancel]")) return closeRow(editTr);
-            if (t.closest("[data-row-handoff]")) return handoff(editTr);
-          }
-          const msg = t.closest(".sa-row-message");
-          if (msg) {
-            if (t.closest("[data-row-handoff]")) return handoff(msg.previousElementSibling);
-            if (t.closest("[data-edit-page]")) return toast("Would open the edit page", "Leaving the index for the full form.");
           }
           const displayTr = t.closest("tr[data-id]");
           if (!displayTr) return;
           const id = Number(displayTr.dataset.id);
-          if (t.closest("[data-edit]")) return editTarget() === "sheet" ? (cancelOpenRow(), openSheet(row(id), { id })) : startRowEdit(id);
-          if (t.closest("[data-edit-sheet]")) return cancelOpenRow(), openSheet(row(id), { id });
+          if (t.closest("[data-edit]")) return inlineEdit ? startRowEdit(id) : (cancelOpenRow(), openSheet(row(id), { id }));
           if (t.closest("[data-delete]")) {
             rows.splice(rows.indexOf(row(id)), 1);
             displayTr.remove();
             toast("Destination deleted", "");
           }
-        });
-        tbody.addEventListener("dblclick", (e) => {
-          if (!mode.dblclick || narrow() || e.target.closest("button, input, select")) return;
-          const displayTr = e.target.closest("tr[data-id]:not([data-editing])");
-          if (displayTr) { window.getSelection()?.removeAllRanges(); startRowEdit(Number(displayTr.dataset.id)); }
         });
         tbody.addEventListener("keydown", (e) => {
           const editTr = e.target.closest("tr[data-editing]");
@@ -764,7 +745,7 @@
             e.preventDefault();
             const id = editTr.dataset.id;
             closeRow(editTr);
-            (id ? tr(id)?.querySelector("[data-edit]") : document.querySelector("[data-add]"))?.focus();
+            (id ? tr(id)?.querySelector("[data-edit]") : document.querySelector("[data-add]") ?? document.querySelector("[data-add-page]"))?.focus();
           }
         });
         tbody.addEventListener("input", (e) => {
