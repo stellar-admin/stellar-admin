@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Row edit and sheet</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      Two pages in one file. Without ?embed the page is the control panel: the option strips and an
+      iframe at the chosen width, so phone and tablet widths get real media queries and the sheets open
+      inside the frame. With ?embed it is the demo: a small "Destinations" index page with the grid
+      markup _IndexDataGrid emits, the real sheet (sel-dialog) and toaster markup captured from
+      DocsSamples, and simulated saves.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link id="theme-css" rel="stylesheet" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+
+      /* ---------------------------------------------------------------------------------------- */
+      /* Control page (prototype only)                                                             */
+      /* ---------------------------------------------------------------------------------------- */
+      .proto-page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 160px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 16px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-strips { display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px; align-items: start; margin: 0 0 12px; font-size: 13px; }
+      .proto-strips > .label { font-weight: 600; padding-top: 3px; }
+      .proto-strips .group { display: flex; flex-wrap: wrap; gap: 4px; }
+      .proto-strips .note { grid-column: 2; margin-top: -4px; color: var(--sa-color-ink-muted); max-width: 95ch; }
+      .proto-strips button, .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: transparent; border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-strips button[aria-pressed="true"], .proto-controls button[aria-pressed="true"] {
+        background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent;
+      }
+      .proto-try { margin: 0 0 20px; padding-left: 18px; list-style: disc; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-try li { margin: 2px 0; }
+      .proto-try strong { color: var(--sa-color-ink); }
+      .proto-stage { display: flex; justify-content: center; padding: 16px; border: var(--sa-border-width) dashed var(--sa-color-line); border-radius: var(--sa-radius-container); }
+      .proto-stage iframe { display: block; width: 100%; height: 640px; border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); background: var(--sa-color-canvas); }
+      .proto-stage[data-width="768"] iframe { width: 768px; }
+      .proto-stage[data-width="390"] iframe { width: 390px; height: 760px; }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); border: var(--sa-border-width) solid var(--sa-color-line);
+        border-radius: var(--sa-radius-container); box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+      .kbd { font-size: 12px; padding: 0 4px; border-radius: 4px; background: var(--sa-color-tint); }
+
+      /* ---------------------------------------------------------------------------------------- */
+      /* Demo page scaffolding (prototype only)                                                    */
+      /* ---------------------------------------------------------------------------------------- */
+      .demo-hint { margin: 0; color: var(--sa-color-ink-muted); font-size: var(--sa-text-sm); }
+      .proto-muted { color: var(--sa-color-ink-muted); }
+      .proto-bool svg { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+      .proto-actions { display: inline-flex; gap: var(--sa-unit); }
+      .w-px { width: 1px; }
+      .whitespace-nowrap { white-space: nowrap; }
+      .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .size-4 { width: 1rem; height: 1rem; }
+
+      /* ======================================================================================== */
+      /* Candidate CSS (tokens only)                                                               */
+      /* ======================================================================================== */
+      @layer sa.components {
+        /* Row editors: small controls inside the cells, half the cell padding apart. */
+        .sa-cell-editor {
+          display: block;
+          margin-block: calc(-0.5 * var(--sa-unit));
+          margin-inline: calc(-0.5 * var(--sa-space-cell-x));
+          width: calc(100% + var(--sa-space-cell-x));
+          min-width: 7rem;
+        }
+        .sa-cell-editor.sa-native-select-wrapper { width: calc(100% + var(--sa-space-cell-x)); }
+        .sa-cell-editor.sa-button { display: flex; }
+        /* A switch sits centred on the row's control line. */
+        .sa-cell-switch { display: flex; align-items: center; height: var(--sa-control-h-sm); margin-block: calc(-0.5 * var(--sa-unit)); }
+
+        /* The lookup trigger: a field-like button that opens the lookup sheet. */
+        .sa-lookup-trigger {
+          justify-content: space-between;
+          width: 100%;
+          font-weight: inherit;
+          background: var(--sa-color-field);
+          border-color: var(--sa-color-line-control);
+          & > span { overflow: hidden; text-overflow: ellipsis; }
+          &[data-empty] > span { color: var(--sa-color-ink-placeholder); }
+          & svg { color: var(--sa-color-ink-muted); }
+          &[aria-invalid="true"] { border-color: var(--sa-color-danger); box-shadow: var(--sa-invalid-shadow); }
+        }
+
+        /* The row being edited (or added). */
+        .sa-table-row[data-editing] { background: var(--sa-color-surface-subtle); }
+        .sa-table-body > .sa-table-row[data-editing]:hover { background: var(--sa-color-surface-subtle); }
+        .sa-table-row[data-editing] > :first-child { box-shadow: inset 2px 0 0 var(--sa-color-accent-fill); }
+        .sa-table-row[data-editing] > td { position: relative; vertical-align: top; }
+        /* Optional: the other rows step back while one is being edited or added. */
+        [data-dim="on"] .sa-table-body:has(> [data-editing]) > .sa-table-row:not([data-editing], .sa-row-message, .sa-table-add-row) {
+          opacity: 0.55;
+          transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+        }
+        .sa-table-row[data-editing] > td:last-child .proto-actions { margin-block: calc(-0.5 * var(--sa-unit)); }
+
+        /* Field errors under the cell, and a row-level message for errors the row can't show. */
+        .sa-cell-error { display: block; margin-top: var(--sa-unit); color: var(--sa-color-danger-text); font-size: var(--sa-text-xs); white-space: normal; }
+        .sa-row-message > td { padding-top: 0; background: var(--sa-color-surface-subtle); box-shadow: inset 2px 0 0 var(--sa-color-accent-fill); }
+        .sa-row-message-body { display: flex; flex-wrap: wrap; align-items: center; gap: calc(1 * var(--sa-unit)) calc(2 * var(--sa-unit)); color: var(--sa-color-danger-text); font-size: var(--sa-text-sm); white-space: normal; }
+        .sa-table-row:has(+ .sa-row-message) { border-bottom-color: transparent; }
+
+        /* The "Add" row at the bottom of the grid. */
+        .sa-table-add-row > td { padding-block: calc(1.5 * var(--sa-unit)); }
+        .sa-table-add-row .sa-button { margin-inline-start: calc(-1 * var(--sa-space-cell-x) + var(--sa-unit)); color: var(--sa-color-ink-muted); }
+        .sa-table-add-row .sa-button:hover { color: var(--sa-color-ink); }
+        .sa-table-body:has(> [data-editing]) > .sa-table-add-row { display: none; }
+
+        .sa-table-row[data-saved] > td { animation: sa-row-saved 1.4s var(--sa-motion-ease); }
+        @keyframes sa-row-saved {
+          0%, 30% { background: color-mix(in oklab, var(--sa-color-success) 16%, transparent); }
+          100% { background: transparent; }
+        }
+
+        /* Lookup sheet list. */
+        .sa-lookup-list { display: grid; gap: var(--sa-unit); padding-inline: calc(4 * var(--sa-unit)); }
+        .sa-lookup-list .sa-item { width: 100%; text-align: start; cursor: pointer; font: inherit; }
+        .sa-lookup-list .sa-item:hover { background: var(--sa-color-hover); }
+        .sa-lookup-list .sa-item[aria-selected="true"] { background: var(--sa-color-selected); }
+        .sa-sheet-form-fields { display: grid; gap: calc(6 * var(--sa-unit)); padding-inline: calc(4 * var(--sa-unit)); }
+        .sa-sheet-form-fields .sa-native-select-wrapper { width: 100%; }
+        .sa-sheet-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: calc(4 * var(--sa-unit)); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========================================================================================== -->
+    <!-- Control page                                                                               -->
+    <!-- ========================================================================================== -->
+    <main class="proto-page" id="control" hidden>
+      <h1>Row edit mode and the edit sheet</h1>
+      <p class="proto-intro">
+        A small resource (4 fields) where quick inline edits make sense. The strips switch how Edit and Add behave, where an inline add appears, and the width of the frame (phone and tablet widths are real: the demo runs in an iframe). Saves are simulated.
+      </p>
+      <div class="proto-strips">
+        <span class="label">1 · Edit and add</span>
+        <div class="group" data-strip="mode">
+          <button data-value="row">A — Row only</button>
+          <button data-value="sheet">B — Sheet only</button>
+          <button data-value="rowFirst">C — Row, hand off to sheet</button>
+          <button data-value="twoActions">D — Two actions</button>
+          <button data-value="sheetFirst">E — Sheet, double-click for row</button>
+        </div>
+        <p class="note" data-note="mode"></p>
+
+        <span class="label">5 · Inline add</span>
+        <div class="group" data-strip="add">
+          <button data-value="top">New row at the top</button>
+          <button data-value="bottom">“Add” row at the bottom</button>
+        </div>
+        <p class="note" data-note="add"></p>
+
+        <span class="label">Dim other rows</span>
+        <div class="group" data-strip="dim">
+          <button data-value="on">On</button>
+          <button data-value="off">Off</button>
+        </div>
+        <p class="note" data-note="dim"></p>
+
+        <span class="label">4 · Narrow screens</span>
+        <div class="group" data-strip="narrow">
+          <button data-value="row">Keep row edit (grid scrolls)</button>
+          <button data-value="sheet">Use the sheet below 640px</button>
+        </div>
+        <p class="note" data-note="narrow"></p>
+
+        <span class="label">Width</span>
+        <div class="group" data-strip="width">
+          <button data-value="full">Desktop</button>
+          <button data-value="768">Tablet · 768</button>
+          <button data-value="390">Phone · 390</button>
+        </div>
+      </div>
+      <ul class="proto-try">
+        <li><strong>Edit</strong> a row; <span class="kbd">Enter</span> saves, <span class="kbd">Esc</span> cancels. Click the Country cell to open the lookup sheet.</li>
+        <li><strong>Add</strong> a destination; Name and Country are required.</li>
+        <li><strong>A rule the row can’t show:</strong> active destinations need a description, which isn’t a column. Turn on Active for Marrakech or Cusco (no description) and save the row to see how each option handles it.</li>
+      </ul>
+      <div class="proto-stage" data-width="full"><iframe title="Demo" id="demo"></iframe></div>
+    </main>
+
+    <aside class="proto-controls" id="controls" aria-label="Prototype controls" hidden>
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default">Default</button>
+        <button data-value="ops">Ops</button>
+        <button data-value="soft">Soft</button>
+        <button data-value="ledger">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light">Light</button>
+        <button data-value="dark">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact">Compact</button>
+        <button data-value="default">Default</button>
+        <button data-value="comfortable">Comfortable</button>
+      </div>
+    </aside>
+
+    <!-- ========================================================================================== -->
+    <!-- Demo page                                                                                  -->
+    <!-- ========================================================================================== -->
+    <div id="demo-root" hidden>
+      <div class="sa-page-container" data-slot="page-container">
+        <div class="sa-page-header" data-slot="page-header">
+          <h1 class="sa-page-header-title" data-slot="page-header-title">Destinations</h1>
+          <div class="sa-page-header-actions" data-slot="page-header-actions">
+            <button type="button" class="sa-button sa-button-variant-default sa-button-size-default" data-slot="button" data-add>Add destination</button>
+          </div>
+        </div>
+        <div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid">
+          <div class="sa-table-container" data-slot="table-container">
+            <table class="sa-table" data-slot="table">
+              <thead class="sa-table-header" data-slot="table-header">
+                <tr class="sa-table-row" data-slot="table-row">
+                  <th class="sa-table-head" data-slot="table-head">Name</th>
+                  <th class="sa-table-head" data-slot="table-head">Country</th>
+                  <th class="sa-table-head" data-slot="table-head">Best season</th>
+                  <th class="sa-table-head" data-slot="table-head">Active</th>
+                  <th class="sa-table-head w-px whitespace-nowrap" data-slot="table-head"></th>
+                </tr>
+              </thead>
+              <tbody class="sa-table-body" data-slot="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="demo-hint" data-hint></p>
+      </div>
+
+      <!-- Edit / create sheet (sel-dialog markup as the Sheet tag helpers emit it). -->
+      <sel-dialog><dialog id="--edit-sheet" data-slot="sheet-content" data-side="right" class="sa-sheet-content"><button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="--edit-sheet" command="close" data-slot="button"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span></button><div class="sa-sheet-body">
+        <div data-slot="sheet-header" class="sa-sheet-header">
+          <h2 data-slot="sheet-title" class="sa-sheet-title" data-sheet-title>Edit destination</h2>
+        </div>
+        <form class="sa-sheet-form" novalidate style="display:flex;flex-direction:column;flex:1;min-height:0">
+          <div class="sa-sheet-scroll"><div class="sa-field-group sa-sheet-form-fields" data-slot="field-group" data-sheet-fields></div></div>
+          <div data-slot="sheet-footer" class="sa-sheet-footer">
+            <button type="submit" data-slot="button" class="sa-button sa-button-variant-default sa-button-size-default" data-sheet-submit>Save</button>
+            <button type="button" commandfor="--edit-sheet" command="close" data-slot="button" class="sa-button sa-button-variant-outline sa-button-size-default">Cancel</button>
+          </div>
+        </form>
+      </div></dialog></sel-dialog>
+
+      <!-- Lookup sheet. -->
+      <sel-dialog><dialog id="--lookup-sheet" data-slot="sheet-content" data-side="right" class="sa-sheet-content"><button type="button" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-sheet-close" commandfor="--lookup-sheet" command="close" data-slot="button"><svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg><span class="sr-only">Close</span></button><div class="sa-sheet-body">
+        <div data-slot="sheet-header" class="sa-sheet-header">
+          <h2 data-slot="sheet-title" class="sa-sheet-title">Choose country</h2>
+        </div>
+        <div style="padding-inline: calc(4 * var(--sa-unit)); padding-bottom: calc(3 * var(--sa-unit))">
+          <input class="sa-input" data-slot="input" type="search" placeholder="Search countries" aria-label="Search countries" data-lookup-search>
+        </div>
+        <div class="sa-sheet-scroll"><div class="sa-lookup-list" role="listbox" aria-label="Countries" data-lookup-list></div></div>
+      </div></dialog></sel-dialog>
+
+      <!-- Toaster markup as <sa-toaster /> emits it (captured from DocsSamples). -->
+      <sel-toaster data-slot="toaster" duration="5000" limit="3"><template data-slot="toast-template"><div aria-modal="false" class="sa-toast" data-slot="toast" role="dialog" tabindex="0"><div class="sa-toast-content" data-slot="toast-content"><span class="sa-toast-icon" data-slot="toast-icon"><svg data-toast-icon="success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><circle cx="12" cy="12" r="10"></circle><path d="m16 9-5.5 5.5L8 12"></path></svg><svg data-toast-icon="info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><svg data-toast-icon="warning" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg><svg data-toast-icon="error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><path d="m15 9-6 6"></path><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"></path><path d="m9 9 6 6"></path></svg><svg data-toast-icon="loading" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg></span><div class="sa-toast-text" data-slot="toast-text"><div class="sa-toast-title" data-slot="toast-title"></div><div class="sa-toast-description" data-slot="toast-description"></div></div><a data-slot="toast-action" class="sa-button sa-button-variant-outline sa-button-size-sm sa-toast-action"></a><button type="button" data-slot="toast-close" aria-label="Close toast" class="sa-button sa-button-variant-ghost sa-button-size-icon-sm sa-toast-close"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" stroke-linejoin="round" viewBox="0 0 24 24" fill="none" stroke-linecap="round" height="24" stroke="currentColor" stroke-width="2" width="24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div></div></template><div aria-atomic="false" aria-label="Notifications" aria-live="polite" aria-relevant="additions text" class="sa-toast-viewport" data-position="bottom-right" data-slot="toast-viewport" popover="manual" role="region" tabindex="-1"><div aria-live="assertive" class="sr-only" data-slot="toast-announcer"></div></div></sel-toaster>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const EMBED = params.has("embed");
+      const settings = {
+        mode: params.get("mode") ?? "rowFirst",
+        add: params.get("add") ?? "top",
+        narrow: params.get("narrow") ?? "row",
+        dim: params.get("dim") ?? "on",
+        width: params.get("width") ?? "full",
+        theme: params.get("theme") ?? "default",
+        scheme: params.get("scheme") ?? "light",
+        density: params.get("density") ?? "default",
+      };
+      function applyLook(doc = document) {
+        doc.getElementById("theme-css").href = settings.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${settings.theme}.css`;
+        doc.documentElement.classList.toggle("dark", settings.scheme === "dark");
+        if (settings.density === "default") doc.body.removeAttribute("data-sa-density");
+        else doc.body.setAttribute("data-sa-density", settings.density);
+      }
+      applyLook();
+
+      /* ======================================================================================== */
+      /* Control page                                                                              */
+      /* ======================================================================================== */
+      if (!EMBED) {
+        document.getElementById("control").hidden = false;
+        document.getElementById("controls").hidden = false;
+        const NOTES = {
+          mode: {
+            row: "Edit and Add always work in the row. Nothing opens a sheet; a rule the row can’t show sends you to the edit page.",
+            sheet: "Edit and Add always open the sheet, for comparison. No inline editing.",
+            rowFirst: "Edit and Add work in the row; the editing row has an extra button that carries the values over to the sheet, and a rule the row can’t show offers the sheet.",
+            twoActions: "Two actions per row: the pencil edits in the row, the panel icon opens the sheet. The editing row can also hand off to the sheet.",
+            sheetFirst: "Edit and Add open the sheet; double-clicking a row edits it in place.",
+          },
+          add: {
+            top: "Add destination (page header) inserts an editing row at the top of the grid.",
+            bottom: "The grid ends with an “Add destination” row; it and the header button both add an editing row at the bottom.",
+          },
+          dim: {
+            on: "While a row is being edited or added, the other rows fade back.",
+            off: "The other rows stay as they are while a row is being edited or added.",
+          },
+          narrow: {
+            row: "Row edit stays on at every width; the grid scrolls sideways when the fields don’t fit.",
+            sheet: "Below 640px, Edit and Add open the sheet whatever option 1 says. Try it at the phone width.",
+          },
+        };
+        const frame = document.getElementById("demo");
+        const stage = document.querySelector(".proto-stage");
+        const load = () => {
+          const q = new URLSearchParams({ embed: "1", ...settings });
+          frame.src = `${location.pathname}?${q}`;
+          stage.dataset.width = settings.width;
+          document.querySelectorAll("[data-strip]").forEach((g) =>
+            g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === settings[g.dataset.strip]))));
+          document.querySelectorAll("[data-control]").forEach((g) => {
+            const key = g.dataset.control === "mode" ? "scheme" : g.dataset.control;
+            g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === settings[key])));
+          });
+          for (const k of ["mode", "add", "dim", "narrow"]) document.querySelector(`[data-note="${k}"]`).textContent = NOTES[k][settings[k]];
+          history.replaceState(null, "", `?${new URLSearchParams(settings)}`);
+          applyLook();
+        };
+        document.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-strip] button, [data-control] button");
+          if (!b) return;
+          const g = b.closest("[data-strip], [data-control]");
+          const key = g.dataset.strip ?? (g.dataset.control === "mode" ? "scheme" : g.dataset.control);
+          settings[key] = b.dataset.value;
+          if (g.dataset.control && frame.contentDocument?.body) { applyLook(); applyLook(frame.contentDocument); load_ui_only(); return; }
+          load();
+        });
+        const load_ui_only = () => {
+          document.querySelectorAll("[data-control]").forEach((g) => {
+            const key = g.dataset.control === "mode" ? "scheme" : g.dataset.control;
+            g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === settings[key])));
+          });
+          history.replaceState(null, "", `?${new URLSearchParams(settings)}`);
+        };
+        load();
+      }
+    </script>
+
+    <script>
+      /* ======================================================================================== */
+      /* Demo page                                                                                 */
+      /* ======================================================================================== */
+      if (EMBED) (function () {
+        document.getElementById("demo-root").hidden = false;
+        document.getElementById("demo-root").dataset.dim = settings.dim;
+        document.querySelectorAll("#control, #controls").forEach((el) => el.remove());
+
+        const COUNTRIES = [
+          ["AR", "Argentina", "South America"], ["AU", "Australia", "Oceania"], ["CA", "Canada", "North America"],
+          ["CL", "Chile", "South America"], ["EG", "Egypt", "Africa"], ["GR", "Greece", "Europe"],
+          ["IS", "Iceland", "Europe"], ["IT", "Italy", "Europe"], ["JP", "Japan", "Asia"], ["MA", "Morocco", "Africa"],
+          ["NZ", "New Zealand", "Oceania"], ["NO", "Norway", "Europe"], ["PE", "Peru", "South America"],
+          ["PT", "Portugal", "Europe"], ["ZA", "South Africa", "Africa"], ["TH", "Thailand", "Asia"], ["VN", "Vietnam", "Asia"],
+        ].map(([code, name, region]) => ({ code, name, region }));
+        const countryName = (code) => COUNTRIES.find((c) => c.code === code)?.name ?? "";
+        const SEASONS = ["Spring", "Summer", "Autumn", "Winter", "Year-round"];
+
+        let nextId = 7;
+        const rows = [
+          { id: 1, name: "Lisbon", country: "PT", season: "Spring", active: true, description: "Tiled streets, trams and pastel de nata." },
+          { id: 2, name: "Kyoto", country: "JP", season: "Autumn", active: true, description: "Temples and maple leaves." },
+          { id: 3, name: "Queenstown", country: "NZ", season: "Summer", active: true, description: "Lakes, peaks and bungy." },
+          { id: 4, name: "Marrakech", country: "MA", season: "Spring", active: false, description: "" },
+          { id: 5, name: "Reykjavík", country: "IS", season: "Winter", active: true, description: "Northern lights base camp." },
+          { id: 6, name: "Cusco", country: "PE", season: "Year-round", active: false, description: "" },
+        ];
+
+        const MODES = {
+          row: { edit: "row", add: "row", handoff: false, sheetAction: false, dblclick: false },
+          sheet: { edit: "sheet", add: "sheet", handoff: false, sheetAction: false, dblclick: false },
+          rowFirst: { edit: "row", add: "row", handoff: true, sheetAction: false, dblclick: false },
+          twoActions: { edit: "row", add: "row", handoff: true, sheetAction: true, dblclick: false },
+          sheetFirst: { edit: "sheet", add: "sheet", handoff: true, sheetAction: false, dblclick: true },
+        };
+        const mode = MODES[settings.mode];
+        const narrow = () => settings.narrow === "sheet" && innerWidth < 640;
+        const editTarget = () => (narrow() ? "sheet" : mode.edit);
+        const addTarget = () => (narrow() ? "sheet" : mode.add);
+
+        /* ---------------------------------------------------------------------------------------- */
+        /* Markup                                                                                    */
+        /* ---------------------------------------------------------------------------------------- */
+        const svg = (paths, cls = "") =>
+          `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${cls ? `class="${cls}"` : ""}>${paths}</svg>`;
+        const ICON = {
+          pen: '<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>',
+          trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+          check: '<path d="M20 6 9 17l-5-5"/>',
+          x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+          chevron: '<path d="m6 9 6 6 6-6"/>',
+          spin: '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+          panel: '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/>',
+          expand: '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>',
+          search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+          plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+        };
+        const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+        const button = (variant, size, inner, attrs = "") =>
+          `<button type="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}" data-slot="button" ${attrs}>${inner}</button>`;
+        const icon = (variant, name, label, attrs = "") => button(variant, "icon-sm", svg(ICON[name]), `aria-label="${label}" title="${label}" ${attrs}`);
+
+        const tbody = document.querySelector("tbody");
+        const COLS = 5;
+
+        function displayRow(r) {
+          const actions = [
+            icon("outline", "pen", "Edit", "data-edit"),
+            mode.sheetAction ? icon("outline", "panel", "Edit in sheet", "data-edit-sheet") : "",
+            icon("outline", "trash", "Delete", "data-delete"),
+          ].join("");
+          return `<tr class="sa-table-row" data-slot="table-row" data-id="${r.id}">
+            <td class="sa-table-cell" data-slot="table-cell">${esc(r.name)}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${esc(countryName(r.country))}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${esc(r.season)}</td>
+            <td class="sa-table-cell" data-slot="table-cell">${r.active ? `<span class="proto-bool" aria-label="Yes">${svg(ICON.check)}</span>` : `<span class="proto-muted">—</span>`}</td>
+            <td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell"><span class="proto-actions">${actions}</span></td>
+          </tr>`;
+        }
+        const lookupTrigger = (code, size, id = "") =>
+          `<button type="button" class="sa-button sa-button-variant-outline sa-button-size-${size} sa-lookup-trigger${size === "sm" ? " sa-cell-editor" : ""}" data-slot="button" data-lookup data-value="${code ?? ""}" ${code ? "" : "data-empty"} ${id ? `id="${id}"` : 'aria-label="Country"'}><span>${code ? esc(countryName(code)) : "Choose country"}</span>${svg(ICON.search)}</button>`;
+        const seasonSelect = (v, size, id = "") =>
+          `<div class="sa-native-select-wrapper${size === "sm" ? " sa-cell-editor" : ""}" data-slot="native-select-wrapper"><select class="sa-native-select" data-slot="native-select" ${size === "sm" ? 'data-size="sm" aria-label="Best season"' : ""} ${id ? `id="${id}"` : ""} name="season">${SEASONS.map((s) => `<option ${s === v ? "selected" : ""}>${s}</option>`).join("")}</select>${svg(ICON.chevron, "sa-native-select-icon")}</div>`;
+        const activeSwitch = (v, size, id = "") =>
+          `<span data-slot="switch" data-size="${size === "sm" ? "sm" : "default"}" class="sa-switch-wrapper"><input type="checkbox" role="switch" data-slot="switch-input" class="sa-switch" name="active" ${id ? `id="${id}"` : 'aria-label="Active"'} ${v ? "checked" : ""}><span class="sa-switch-thumb" data-slot="switch-thumb"></span></span>`;
+
+        function editingRow(r, isNew) {
+          const actions = [
+            icon("default", "check", isNew ? "Add" : "Save", "data-row-save"),
+            icon("outline", "x", "Cancel", "data-row-cancel"),
+            mode.handoff ? icon("ghost", "expand", "Open in sheet", "data-row-handoff") : "",
+          ].join("");
+          return `<tr class="sa-table-row" data-slot="table-row" data-editing ${isNew ? "data-new" : `data-id="${r.id}"`}>
+            <td class="sa-table-cell" data-slot="table-cell" data-field="name"><input class="sa-input sa-cell-editor" data-slot="input" data-size="sm" name="name" aria-label="Name" value="${esc(r.name)}" autocomplete="off" placeholder="${isNew ? "Name" : ""}"></td>
+            <td class="sa-table-cell" data-slot="table-cell" data-field="country">${lookupTrigger(r.country, "sm")}</td>
+            <td class="sa-table-cell" data-slot="table-cell" data-field="season">${seasonSelect(r.season, "sm")}</td>
+            <td class="sa-table-cell" data-slot="table-cell" data-field="active"><span class="sa-cell-switch">${activeSwitch(r.active, "sm")}</span></td>
+            <td class="sa-table-cell w-px whitespace-nowrap" data-slot="table-cell"><span class="proto-actions">${actions}</span></td>
+          </tr>`;
+        }
+        const addRowHtml = () =>
+          settings.add === "bottom"
+            ? `<tr class="sa-table-row sa-table-add-row" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}">${button("ghost", "sm", `${svg(ICON.plus)}Add destination`, 'data-icon="inline-start" data-add')}</td></tr>`
+            : "";
+
+        function render() {
+          tbody.innerHTML = rows.map(displayRow).join("") + addRowHtml();
+          const hint = {
+            row: "Edit and Add work in the row.",
+            sheet: "Edit and Add open the sheet.",
+            rowFirst: "Edit and Add work in the row; the expand button in the editing row moves to the sheet.",
+            twoActions: "Pencil: edit in the row. Panel: edit in the sheet.",
+            sheetFirst: "Edit opens the sheet. Double-click a row to edit it in place.",
+          }[settings.mode];
+          document.querySelector("[data-hint]").textContent = narrow() ? `${hint} (Narrow: the sheet is used at this width.)` : hint;
+        }
+        const tr = (id) => tbody.querySelector(`tr[data-id="${id}"]:not(.sa-row-message)`);
+        const row = (id) => rows.find((r) => r.id === Number(id));
+
+        /* Columns keep their widths while a row is in fields. */
+        const freeze = () => document.querySelectorAll("thead th").forEach((th) => (th.style.width = `${th.getBoundingClientRect().width}px`));
+        const unfreeze = () => { if (!tbody.querySelector("[data-editing]")) document.querySelectorAll("thead th").forEach((th) => (th.style.width = "")); };
+        const flash = (el) => { el.setAttribute("data-saved", ""); setTimeout(() => el.removeAttribute("data-saved"), 1400); };
+        const fakeSave = (ms = 500) => new Promise((r) => setTimeout(r, ms));
+        const toast = (title, description) => window.stellarAdmin?.toast?.success(title, description);
+
+        /* ---------------------------------------------------------------------------------------- */
+        /* Row edit                                                                                  */
+        /* ---------------------------------------------------------------------------------------- */
+        function cancelOpenRow() {
+          const open = tbody.querySelector("tr[data-editing]");
+          if (!open) return;
+          closeRow(open);
+        }
+        function closeRow(editTr) {
+          editTr.nextElementSibling?.classList.contains("sa-row-message") && editTr.nextElementSibling.remove();
+          if (editTr.hasAttribute("data-new")) editTr.remove();
+          else {
+            const t = document.createElement("tbody");
+            t.innerHTML = displayRow(row(editTr.dataset.id));
+            editTr.replaceWith(t.firstElementChild);
+          }
+          unfreeze();
+        }
+        function startRowEdit(id) {
+          cancelOpenRow();
+          freeze();
+          const t = document.createElement("tbody");
+          t.innerHTML = editingRow(row(id), false);
+          const el = t.firstElementChild;
+          tr(id).replaceWith(el);
+          el.querySelector("input").focus();
+          el.querySelector("input").select();
+        }
+        function startRowAdd() {
+          cancelOpenRow();
+          freeze();
+          const t = document.createElement("tbody");
+          t.innerHTML = editingRow({ name: "", country: "", season: "Year-round", active: true }, true);
+          const el = t.firstElementChild;
+          if (settings.add === "bottom") {
+            const addRow = tbody.querySelector(".sa-table-add-row");
+            addRow ? addRow.before(el) : tbody.append(el);
+          } else tbody.prepend(el);
+          el.scrollIntoView({ block: "nearest" });
+          el.querySelector("input").focus();
+        }
+        function readRow(editTr) {
+          return {
+            name: editTr.querySelector('[name="name"]').value.trim(),
+            country: editTr.querySelector("[data-lookup]").dataset.value,
+            season: editTr.querySelector('[name="season"]').value,
+            active: editTr.querySelector('[name="active"]').checked,
+          };
+        }
+        function fieldErrors(v) {
+          const e = {};
+          if (!v.name) e.name = "Name is required.";
+          if (!v.country) e.country = "Choose a country.";
+          return e;
+        }
+        function setCellError(editTr, field, message) {
+          const td = editTr.querySelector(`td[data-field="${field}"]`);
+          td.querySelector(".sa-cell-error")?.remove();
+          const control = td.querySelector("input, select, [data-lookup]");
+          if (message) {
+            control.setAttribute("aria-invalid", "true");
+            td.insertAdjacentHTML("beforeend", `<span class="sa-cell-error" role="alert">${esc(message)}</span>`);
+          } else control.removeAttribute("aria-invalid");
+        }
+        async function saveRow(editTr) {
+          const v = readRow(editTr);
+          const isNew = editTr.hasAttribute("data-new");
+          const errors = fieldErrors(v);
+          ["name", "country"].forEach((f) => setCellError(editTr, f, errors[f]));
+          editTr.nextElementSibling?.classList.contains("sa-row-message") && editTr.nextElementSibling.remove();
+          if (Object.keys(errors).length) {
+            editTr.querySelector('[aria-invalid="true"]').focus();
+            return;
+          }
+          const btn = editTr.querySelector("[data-row-save]");
+          btn.innerHTML = svg(ICON.spin, "sa-spinner");
+          btn.disabled = true;
+          await fakeSave();
+          // The "server" rule: an active destination needs a description, which the row doesn't show.
+          const description = isNew ? "" : row(editTr.dataset.id).description;
+          if (v.active && !description) {
+            btn.innerHTML = svg(ICON.check);
+            btn.disabled = false;
+            const canSheet = mode.handoff || settings.mode === "sheet";
+            const action = canSheet
+              ? button("link", "sm", "Open in sheet to add one", "data-row-handoff")
+              : button("link", "sm", "Open the edit page", "data-edit-page");
+            editTr.insertAdjacentHTML("afterend", `<tr class="sa-table-row sa-row-message" data-slot="table-row"><td class="sa-table-cell" data-slot="table-cell" colspan="${COLS}"><div class="sa-row-message-body" role="alert">Active destinations need a description, which isn’t shown here. ${action}</div></td></tr>`);
+            return;
+          }
+          let saved;
+          if (isNew) {
+            saved = { id: nextId++, description: "", ...v };
+            settings.add === "bottom" ? rows.push(saved) : rows.unshift(saved);
+          } else {
+            saved = Object.assign(row(editTr.dataset.id), v);
+          }
+          const t = document.createElement("tbody");
+          t.innerHTML = displayRow(saved);
+          const fresh = t.firstElementChild;
+          editTr.replaceWith(fresh);
+          unfreeze();
+          flash(fresh);
+          fresh.querySelector("[data-edit]").focus();
+          if (isNew) toast("Destination added", `${saved.name} is in the list.`);
+        }
+
+        /* ---------------------------------------------------------------------------------------- */
+        /* Sheet                                                                                     */
+        /* ---------------------------------------------------------------------------------------- */
+        const sheet = document.getElementById("--edit-sheet");
+        let sheetTarget = null; // { id } or { isNew }
+        function openSheet(values, { id = null, errors = {} } = {}) {
+          sheetTarget = { id };
+          sheet.querySelector("[data-sheet-title]").textContent = id ? "Edit destination" : "Add destination";
+          sheet.querySelector("[data-sheet-submit]").textContent = id ? "Save" : "Add";
+          const field = (key, label, control) => `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field" data-field="${key}">
+              <label for="--sheet-${key}" data-slot="label" class="sa-label">${label}</label>${control}
+              <p class="sa-field-error${errors[key] ? " field-validation-error" : ""}" data-slot="field-error" role="alert">${esc(errors[key] ?? "")}</p></div>`;
+          sheet.querySelector("[data-sheet-fields]").innerHTML = [
+            field("name", "Name", `<input class="sa-input" data-slot="input" id="--sheet-name" name="name" value="${esc(values.name)}" ${errors.name ? 'aria-invalid="true"' : ""} autocomplete="off">`),
+            field("country", "Country", lookupTrigger(values.country, "default", "--sheet-country")),
+            field("season", "Best season", seasonSelect(values.season, "default", "--sheet-season")),
+            `<div class="sa-field sa-field-orientation-horizontal" data-orientation="horizontal" data-slot="field">${activeSwitch(values.active, "default", "--sheet-active")}<div data-slot="field-content" class="sa-field-content"><label for="--sheet-active" data-slot="field-label" class="sa-label sa-field-label">Active</label><p data-slot="field-description" class="sa-field-description">Shown to travellers on the site.</p></div></div>`,
+            field("description", "Description", `<textarea class="sa-textarea" data-slot="textarea" id="--sheet-description" name="description" rows="4" ${errors.description ? 'aria-invalid="true"' : ""}>${esc(values.description ?? "")}</textarea>`),
+          ].join("");
+          if (errors.country) sheet.querySelector("[data-lookup]").setAttribute("aria-invalid", "true");
+          sheet.showModal();
+          const firstBad = sheet.querySelector('[aria-invalid="true"]');
+          (firstBad ?? sheet.querySelector("#--sheet-name")).focus();
+        }
+        sheet.querySelector("form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const f = sheet.querySelector("form");
+          const v = {
+            name: f.querySelector("#--sheet-name").value.trim(),
+            country: f.querySelector("[data-lookup]").dataset.value,
+            season: f.querySelector("#--sheet-season").value,
+            active: f.querySelector("#--sheet-active").checked,
+            description: f.querySelector("#--sheet-description").value.trim(),
+          };
+          const errors = fieldErrors(v);
+          if (v.active && !v.description) errors.description = "Active destinations need a description.";
+          for (const key of ["name", "country", "description"]) {
+            const wrap = f.querySelector(`[data-field="${key}"]`);
+            const p = wrap.querySelector(".sa-field-error");
+            p.classList.toggle("field-validation-error", !!errors[key]);
+            p.textContent = errors[key] ?? "";
+            wrap.querySelector("input, textarea, [data-lookup]").toggleAttribute("aria-invalid", !!errors[key]);
+            if (errors[key]) wrap.querySelector("input, textarea, [data-lookup]").setAttribute("aria-invalid", "true");
+          }
+          if (Object.keys(errors).length) { f.querySelector('[aria-invalid="true"]').focus(); return; }
+          const btn = f.querySelector("[data-sheet-submit]");
+          const label = btn.textContent;
+          btn.innerHTML = `${svg(ICON.spin, "sa-spinner")}Saving`;
+          btn.disabled = true;
+          await fakeSave();
+          btn.textContent = label;
+          btn.disabled = false;
+          let saved;
+          const isNew = !sheetTarget.id;
+          if (isNew) {
+            saved = { id: nextId++, ...v };
+            settings.add === "bottom" ? rows.push(saved) : rows.unshift(saved);
+          } else saved = Object.assign(row(sheetTarget.id), v);
+          // A row handed off to the sheet is replaced by the saved row.
+          tbody.querySelector("tr[data-editing]")?.remove();
+          tbody.querySelector(".sa-row-message")?.remove();
+          sheet.close();
+          render();
+          unfreeze();
+          const fresh = tr(saved.id);
+          flash(fresh);
+          fresh.querySelector("[data-edit]").focus();
+          toast(isNew ? "Destination added" : "Destination saved", saved.name);
+        });
+
+        function handoff(editTr) {
+          const v = readRow(editTr);
+          const id = editTr.hasAttribute("data-new") ? null : Number(editTr.dataset.id);
+          const description = id ? row(id).description : "";
+          const errors = fieldErrors(v);
+          if (v.active && !description && editTr.nextElementSibling?.classList.contains("sa-row-message")) errors.description = "Active destinations need a description.";
+          openSheet({ ...v, description }, { id, errors });
+        }
+
+        /* ---------------------------------------------------------------------------------------- */
+        /* Lookup sheet                                                                              */
+        /* ---------------------------------------------------------------------------------------- */
+        const lookup = document.getElementById("--lookup-sheet");
+        let lookupFor = null;
+        const listEl = lookup.querySelector("[data-lookup-list]");
+        const searchEl = lookup.querySelector("[data-lookup-search]");
+        function renderLookup() {
+          const q = searchEl.value.trim().toLowerCase();
+          const current = lookupFor?.dataset.value;
+          listEl.innerHTML = COUNTRIES.filter((c) => !q || c.name.toLowerCase().includes(q) || c.region.toLowerCase().includes(q))
+            .map((c) => `<button type="button" role="option" aria-selected="${c.code === current}" data-slot="item" data-variant="default" data-size="sm" class="sa-item sa-item-size-sm sa-item-variant-default" data-code="${c.code}">
+                <div data-slot="item-content" class="sa-item-content"><div data-slot="item-title" class="sa-item-title">${c.name}</div><p data-slot="item-description" class="sa-item-description">${c.region}</p></div>
+                ${c.code === current ? `<div data-slot="item-actions" class="sa-item-actions">${svg(ICON.check, "size-4")}</div>` : ""}</button>`)
+            .join("") || `<p class="proto-muted" style="padding: 8px">No countries match.</p>`;
+        }
+        function openLookup(trigger) {
+          lookupFor = trigger;
+          searchEl.value = "";
+          renderLookup();
+          lookup.showModal();
+          searchEl.focus();
+        }
+        searchEl.addEventListener("input", renderLookup);
+        searchEl.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); listEl.querySelector("[data-code]")?.click(); } });
+        listEl.addEventListener("click", (e) => {
+          const item = e.target.closest("[data-code]");
+          if (!item || !lookupFor) return;
+          lookupFor.dataset.value = item.dataset.code;
+          lookupFor.removeAttribute("data-empty");
+          lookupFor.removeAttribute("aria-invalid");
+          lookupFor.querySelector("span").textContent = countryName(item.dataset.code);
+          lookupFor.closest("td")?.querySelector(".sa-cell-error")?.remove();
+          const err = lookupFor.closest(".sa-field")?.querySelector(".sa-field-error");
+          if (err) err.classList.remove("field-validation-error");
+          lookup.close();
+        });
+        lookup.addEventListener("close", () => lookupFor?.focus());
+
+        /* ---------------------------------------------------------------------------------------- */
+        /* Events                                                                                    */
+        /* ---------------------------------------------------------------------------------------- */
+        document.addEventListener("click", (e) => {
+          const t = e.target;
+          if (t.closest("[data-lookup]")) return openLookup(t.closest("[data-lookup]"));
+          if (t.closest("[data-add]")) return addTarget() === "sheet" ? (cancelOpenRow(), openSheet({ name: "", country: "", season: "Year-round", active: true, description: "" })) : startRowAdd();
+          const editTr = t.closest("tr[data-editing]");
+          if (editTr) {
+            if (t.closest("[data-row-save]")) return saveRow(editTr);
+            if (t.closest("[data-row-cancel]")) return closeRow(editTr);
+            if (t.closest("[data-row-handoff]")) return handoff(editTr);
+          }
+          const msg = t.closest(".sa-row-message");
+          if (msg) {
+            if (t.closest("[data-row-handoff]")) return handoff(msg.previousElementSibling);
+            if (t.closest("[data-edit-page]")) return toast("Would open the edit page", "Leaving the index for the full form.");
+          }
+          const displayTr = t.closest("tr[data-id]");
+          if (!displayTr) return;
+          const id = Number(displayTr.dataset.id);
+          if (t.closest("[data-edit]")) return editTarget() === "sheet" ? (cancelOpenRow(), openSheet(row(id), { id })) : startRowEdit(id);
+          if (t.closest("[data-edit-sheet]")) return cancelOpenRow(), openSheet(row(id), { id });
+          if (t.closest("[data-delete]")) {
+            rows.splice(rows.indexOf(row(id)), 1);
+            displayTr.remove();
+            toast("Destination deleted", "");
+          }
+        });
+        tbody.addEventListener("dblclick", (e) => {
+          if (!mode.dblclick || narrow() || e.target.closest("button, input, select")) return;
+          const displayTr = e.target.closest("tr[data-id]:not([data-editing])");
+          if (displayTr) { window.getSelection()?.removeAllRanges(); startRowEdit(Number(displayTr.dataset.id)); }
+        });
+        tbody.addEventListener("keydown", (e) => {
+          const editTr = e.target.closest("tr[data-editing]");
+          if (!editTr) return;
+          if (e.key === "Enter" && e.target.matches("input:not([type=checkbox])")) { e.preventDefault(); saveRow(editTr); }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            const id = editTr.dataset.id;
+            closeRow(editTr);
+            (id ? tr(id)?.querySelector("[data-edit]") : document.querySelector("[data-add]"))?.focus();
+          }
+        });
+        tbody.addEventListener("input", (e) => {
+          const td = e.target.closest("td[data-field]");
+          if (td && e.target.getAttribute("aria-invalid")) setCellError(td.closest("tr"), td.dataset.field, null);
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
