@@ -38,14 +38,14 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
             fields.Add(d => d.BestSeason);
             fields.Add(d => d.Active);
         });
-        edit.UseInline(inline => inline.DimOtherRows = true);           // default
+        edit.UseInlineRow(inline => inline.DimOtherRows = true);           // default
     });
 
     resource.AllowCreate(create =>
     {
         create.Fields(...);
         create.UseFactory(() => new Destination { Active = false });
-        create.UseInline(inline =>
+        create.UseInlineRow(inline =>
         {
             inline.Position = InlineCreatePosition.Top;                 // Top (default) or Bottom
             inline.AddButton = InlineAddButton.Both;                     // Header, Grid or Both (default)
@@ -63,7 +63,7 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
 });
 ```
 
-- Without `UseInline()`, an operation keeps its page as today. The sheet later becomes another choice on the same builders (`edit.UseSheet()`), with the page as the default.
+- Without `UseInlineRow()`, an operation keeps its page as today. Each choice names what the user sees: the sheet later becomes `UseSheet()` on the same builders, and a dialog could become `UseDialog()`; the page stays the default. The name avoids "Form": the row is not the full form, while the page and the sheet are.
 - The cell renders the field's editor through its grid template (decision 13), with the field's label as its accessible name and its validation shown compactly under the cell.
 - Startup fails when an inline operation's field matches no column, or when a `[Required]` create model property has no column.
 - `InlineCreatePosition` (`Top`, `Bottom`) and `InlineAddButton` (`Header`, `Grid`, `Both`) are new enums of their own.
@@ -74,11 +74,12 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
 - Edit: the row's Edit action loads the editing row from the edit loader (the edit model may differ from the grid's item) and posts the fields through the existing edit handler. On success the row comes back as it displays, reloaded through the index query. On failure the editing row comes back with errors under its cells, and errors the row cannot place appear in the message under the row.
 - Add: an Add button inserts an editing row filled from `UseFactory`, scrolls to it and focuses its first field. Saving goes through the existing create handler. The new row stays where it was added until the grid next reloads, and a toast confirms it. Errors behave as for Edit.
 
-## Work outline
+## Implementation phases
 
-- `UseInline()` on the edit and create builders, column matching and `EditsField`, and their startup checks; skipping the page registration and the View page's Edit button for inline operations.
-- An endpoint that renders the editing row (edit and create), and one that saves the submitted fields, reusing `TryBindConfiguredFieldsAsync` and the existing handlers.
-- Re-rendering one display row after a save.
-- Resolving editor templates in `GridEditorTemplates/` for cells, with the development error and the empty production cell; binding only the rendered fields.
-- Grid templates for the editors in decision 14, including the lookup trigger that opens the lookup sheet from a cell.
-- The grid script: one editing row at a time, Enter and Escape, column widths held while editing, dimming, collapsing the row's details, and the Add buttons scrolling to and focusing the new row.
+Each phase ends at a checkpoint for review before the next starts.
+
+1. **Configuration and startup checks** (StellarAdmin, no UI). `UseInlineRow(...)` on `ResourceEditBuilder` and `ResourceCreateBuilder` with their settings builders, the `InlineCreatePosition` and `InlineAddButton` enums, and `EditsField(...)` on `ResourceColumnBuilder`. Startup checks: every field of an inline operation matches a column (by name or `EditsField`), and every `[Required]` create model property has a column. For an inline operation, `Edit`/`Create` return 404, the grid's Edit links and the View page's Edit button go, and the header Add follows `AddButton`. Save and Cancel index labels. Unit tests for the builders and the checks.
+2. **Grid editor templates.** Resolve an editor's `TemplateName` in `GridEditorTemplates/` for cells, with the development error and the empty production cell. Grid templates for the v1 editors (decision 14). The cell CSS from the prototype moves into the library: `.sa-cell-editor`, `.sa-cell-switch`, the lookup trigger, `.sa-cell-error`, the editing row, the row message, the add row and the saved flash.
+3. **Server endpoints.** `EditRow` and `CreateRow` (GET renders the editing row; POST binds only the rendered fields through the existing loader and handlers, and returns the display row, or the editing row with cell errors and a row message). The row posts with htmx (`hx-include="closest tr"`), since a `<form>` cannot sit inside a `<tr>`; the antiforgery token goes in a request header. Rendering a single row needs rows to carry their key; how the grid renders one row (a single-item grid with the row selected by key, or a body-rows mode on `sa-data-grid`) is to be discussed when this phase starts.
+4. **Grid script and behaviour.** One editing row at a time, Enter and Escape, column widths held while editing, dimming, collapsing the row's details, the Add buttons scrolling to and focusing the new row, discarding an unsaved row on reload, the saved flash and toast, and the lookup sheet opening from a cell.
+5. **Samples, docs and verification.** An inline resource in AdminPlayground, docs pages and regenerated consumer skills, and browser checks of the flows across the theme fixtures at desktop and phone widths.
