@@ -11,7 +11,8 @@ public partial class DataGridTagHelperTests
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateGrid(context, Bookings);
-        var selection = new DataGridSelectionTagHelper { KeyField = "Id", Name = "selected" };
+        sut.KeyField = "Id";
+        var selection = new DataGridSelectionTagHelper { Name = "selected" };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -33,6 +34,9 @@ public partial class DataGridTagHelperTests
         var rowCheckboxes = html.QuerySelectorAll("tbody input[type=checkbox]");
         await Assert.That(rowCheckboxes.Length).IsEqualTo(2);
         await Assert.That(rowCheckboxes.All(c => c.HasAttribute("data-row-select"))).IsTrue();
+        await Assert
+            .That(rowCheckboxes.Select(c => c.GetAttribute("value")).ToArray())
+            .IsEquivalentTo(["24817", "24822"]);
         await Assert
             .That(html.QuerySelector("thead input[type=checkbox]")?.HasAttribute("data-row-select"))
             .IsFalse();

@@ -19,8 +19,8 @@
 }
 else
 {
-    <sa-data-grid items="bookings">
-        <sa-data-grid-selection key-field="Reference" name="selectedRefs" id="spike-selection"/>
+    <sa-data-grid items="bookings" key-field="Reference">
+        <sa-data-grid-selection name="selectedRefs" id="spike-selection"/>
         <sa-data-grid-column title="Reference" field="Reference"/>
         <sa-data-grid-column title="Total" field="Total"/>
         <sa-data-grid-column title="Status" field="Status"/>

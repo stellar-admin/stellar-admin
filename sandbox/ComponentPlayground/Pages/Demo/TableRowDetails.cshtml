@@ -92,13 +92,13 @@
 
     <section class="flex flex-col gap-3">
         <h2 class="text-lg font-semibold">Data grid: selection, leading toggle, nested grid, expanded-keys</h2>
-        <sa-data-grid id="grid-bookings" items="Model.AllBookings">
-            <sa-data-grid-selection key-field="Id" name="selected" />
+        <sa-data-grid id="grid-bookings" items="Model.AllBookings" key-field="Id">
+            <sa-data-grid-selection name="selected" />
             <sa-data-grid-column title="Reference" field="Reference" />
             <sa-data-grid-column title="Lead traveller" field="Lead" />
             <sa-data-grid-column title="Destination" field="Destination" />
             <sa-data-grid-column title="Total" field="Total" />
-            <sa-data-grid-row-detail key-field="Id" expanded-keys="new[] { 24830 }">
+            <sa-data-grid-row-detail expanded-keys="new[] { 24830 }">
                 @{ var booking = Html.GridItem<RowDetailBooking>(); }
                 <div class="flex flex-col gap-3">
                     <label class="flex items-center gap-2 text-sm">

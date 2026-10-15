@@ -35,6 +35,12 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
  * Server-rendered state raises no events. Because the event fires on the detail
  * row, htmx attributes on that row need no `from:` modifier:
  * `hx-get="…" hx-trigger="row-detail-expand once" hx-target="find [data-slot=table-row-detail-content]"`.
+ *
+ * Rows with a `data-key` are remembered by key: when a script or htmx replaces a detail
+ * row, the detail row that takes its place under a row with the same key is expanded or
+ * collapsed as before, without animating, whatever the new markup says, and raises the
+ * matching event so its content can load again. Rows with a key not seen before keep their
+ * rendered state.
  */
 export class TableRowDetails {
   #host: HTMLElement;
@@ -53,6 +59,8 @@ export class TableRowDetails {
     }
   });
   #resizeObserver = new ResizeObserver(() => this.#measure());
+  // The detail rows of keyed rows present at the last sync, and whether each was open.
+  #remembered = new Map<string, { detailRow: HTMLTableRowElement; open: boolean }>();
   #syncScheduled = false;
 
   constructor(host: HTMLElement) {
@@ -201,8 +209,19 @@ export class TableRowDetails {
     }
 
     this.#syncToggles();
+    this.#remember(detailRow);
+    this.#dispatch(detailRow);
+  }
+
+  #remember(detailRow: HTMLTableRowElement) {
+    const key = this.#rowFor(detailRow)?.dataset.key;
+    if (key !== undefined) this.#remembered.set(key, { detailRow, open: this.#isOpen(detailRow) });
+  }
+
+  /** Raises the event for the detail row's current state. */
+  #dispatch(detailRow: HTMLTableRowElement) {
     detailRow.dispatchEvent(
-      new CustomEvent(open ? "row-detail-expand" : "row-detail-collapse", {
+      new CustomEvent(this.#isOpen(detailRow) ? "row-detail-expand" : "row-detail-collapse", {
         bubbles: true,
         detail: { row: this.#rowFor(detailRow), detailRow },
       }),
@@ -220,6 +239,8 @@ export class TableRowDetails {
 
   /** Reconciles server-rendered or script-inserted rows with the component's conventions. */
   #sync() {
+    const remembered = new Map<string, { detailRow: HTMLTableRowElement; open: boolean }>();
+    const restored: HTMLTableRowElement[] = [];
     for (const detailRow of this.detailRows) {
       if (!detailRow.id) detailRow.id = `--sa-row-detail-${++idCounter}`;
       // Rows inserted without a state take it from `hidden`; a hidden row is never open.
@@ -228,21 +249,40 @@ export class TableRowDetails {
         detailRow.dataset.state = detailRow.hidden ? "closed" : "open";
       }
 
+      const row = this.#rowFor(detailRow);
+      const key = row?.dataset.key;
+      if (key !== undefined) {
+        // A detail row that replaced the remembered one takes its state.
+        const previous = this.#remembered.get(key);
+        if (
+          previous &&
+          previous.detailRow !== detailRow &&
+          previous.open !== this.#isOpen(detailRow)
+        ) {
+          detailRow.hidden = !previous.open;
+          detailRow.dataset.state = previous.open ? "open" : "closed";
+          restored.push(detailRow);
+        }
+        // A row still animating closed counts as closed.
+        remembered.set(key, { detailRow, open: this.#isOpen(detailRow) });
+      }
+
       const cell = detailRow.cells[0];
       if (cell && !cell.hasAttribute("colspan")) {
         const columns = this.#columnCount(detailRow);
         if (columns > 1) cell.colSpan = columns;
       }
 
-      const row = this.#rowFor(detailRow);
       for (const toggle of row?.querySelectorAll(TOGGLE) ?? []) {
         if (!toggle.hasAttribute("aria-controls") && !toggle.hasAttribute("data-all")) {
           toggle.setAttribute("aria-controls", detailRow.id);
         }
       }
     }
+    this.#remembered = remembered;
     this.#syncToggles();
     this.#measure();
+    for (const detailRow of restored) this.#dispatch(detailRow);
   }
 
   #columnCount(detailRow: HTMLTableRowElement) {

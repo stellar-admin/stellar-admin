@@ -18,6 +18,11 @@ internal sealed class DataGridContext
     public Type? ItemType { get; init; }
 
     /// <summary>
+    ///     The row item property that identifies a row, from the grid's <c>key-field</c>.
+    /// </summary>
+    public string? KeyField { get; init; }
+
+    /// <summary>
     ///     The row pass currently executing, or <c>null</c> during the first (collect) pass,
     ///     in which columns register their definitions and produce no output.
     /// </summary>

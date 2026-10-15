@@ -24,8 +24,8 @@
     var pageOfBookings = bookings.Skip((pageNo - 1) * pageSize).Take(pageSize);
     var totalPages = (int)Math.Ceiling(StaticData.Bookings.Length / (double)pageSize);
 }
-<sa-data-grid items="pageOfBookings">
-    <sa-data-grid-selection key-field="Id" name="selectedBookings" id="booking-grid-selection"/>
+<sa-data-grid items="pageOfBookings" key-field="Id">
+    <sa-data-grid-selection name="selectedBookings" id="booking-grid-selection"/>
     <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
                        asp-page="/DataGrid/Index"
                        asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"

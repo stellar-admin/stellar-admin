@@ -53,11 +53,8 @@ public partial class DataGridTagHelperTests
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateGrid(context, Bookings);
-        var rowDetail = new DataGridRowDetailTagHelper
-        {
-            KeyField = "Id",
-            ExpandedKeys = new[] { 24822 },
-        };
+        sut.KeyField = "Id";
+        var rowDetail = new DataGridRowDetailTagHelper { ExpandedKeys = new[] { 24822 } };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut, RowDetailChildren(rowDetail));
@@ -86,7 +83,8 @@ public partial class DataGridTagHelperTests
         {
             Toggle = DataGridRowDetailToggle.Trailing,
         };
-        var selection = new DataGridSelectionTagHelper { KeyField = "Id" };
+        sut.KeyField = "Id";
+        var selection = new DataGridSelectionTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(

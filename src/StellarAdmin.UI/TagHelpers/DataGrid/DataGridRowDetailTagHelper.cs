@@ -81,14 +81,8 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
     public bool? Animate { get; set; }
 
     /// <summary>
-    ///     The name of a public property on the row item that identifies it, compared against
-    ///     <see cref="ExpandedKeys" />. Required when <see cref="ExpandedKeys" /> is set.
-    /// </summary>
-    [HtmlAttributeName("key-field")]
-    public string? KeyField { get; set; }
-
-    /// <summary>
-    ///     The keys of the rows to render expanded. Expanding a row in the browser raises
+    ///     The keys of the rows to render expanded, compared against the grid's
+    ///     <c>key-field</c>, which is then required. Expanding a row in the browser raises
     ///     <c>row-detail-expand</c>; a row rendered expanded does not, so render its content
     ///     directly rather than loading it on expand.
     /// </summary>
@@ -116,10 +110,11 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
 
         // Collect pass: register the declaration; the template is not executed, so it can
         // dereference the row item unconditionally.
-        if (ExpandedKeys is not null && KeyField is null)
+        if (ExpandedKeys is not null && gridContext.KeyField is null)
         {
             throw new InvalidOperationException(
-                "<sa-data-grid-row-detail> requires the key-field attribute when expanded-keys is set."
+                "<sa-data-grid-row-detail> requires the key-field attribute on the grid when "
+                    + "expanded-keys is set."
             );
         }
 
@@ -134,7 +129,6 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
                 Inset ?? TableRowDetailInset.Aligned,
                 Animate ?? true
             ),
-            KeyField = KeyField,
             ExpandedKeys = (ExpandedKeys?.Cast<object?>() ?? [])
                 .Select(key => Convert.ToString(key, CultureInfo.InvariantCulture))
                 .OfType<string>()

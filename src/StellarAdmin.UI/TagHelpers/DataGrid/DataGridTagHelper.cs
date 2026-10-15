@@ -43,6 +43,14 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("items")]
     public IEnumerable? Items { get; set; }
 
+    /// <summary>
+    ///     The name of a public property on the row item whose value identifies the row. Row
+    ///     selection and expanded details use it, and a row keeps them when it is replaced in
+    ///     the page.
+    /// </summary>
+    [HtmlAttributeName("key-field")]
+    public string? KeyField { get; set; }
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // Ensures we work with a list which has better performance that an enumerable
@@ -52,6 +60,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         var gridContext = new DataGridContext
         {
             ItemType = items.Find(item => item is not null)?.GetType(),
+            KeyField = KeyField,
         };
         SetContext(context, gridContext);
         var idDiscriminator = new UniqueIdDiscriminator();
@@ -242,6 +251,13 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         UniqueIdDiscriminator idDiscriminator
     )
     {
+        // The details rows' ids start with the grid's id, or the id of its source tag
+        var gridId =
+            output.Attributes.TryGetAttribute("id", out var idAttribute)
+            && idAttribute.Value?.ToString() is { Length: > 0 } id
+                ? id
+                : context.UniqueId;
+
         var bodyBuilder = new TagBuilder("tbody");
         bodyBuilder.Attributes.Add("data-slot", "table-body");
         bodyBuilder.Attributes.Add("class", "sa-table-body");
@@ -286,7 +302,10 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 var currentRow = new DataGridRowContext { Item = items[i], RowIndex = i };
                 gridContext.CurrentRow = currentRow;
                 ViewContext.ViewData[DataGridConsts.ItemKey] = items[i];
-                idDiscriminator.Value = $"r{i}";
+                var rowKey = KeyField is null
+                    ? null
+                    : DataGridFieldGetters.GetKey(items[i], KeyField);
+                idDiscriminator.Value = rowKey is null ? $"r{i}" : ToIdPart(rowKey);
 
                 // Row pass: re-execute the grid's child content; columns deposit their cells.
                 await output.GetChildContentAsync(useCachedResult: false);
@@ -294,15 +313,14 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 var rowBuilder = new TagBuilder("tr");
                 rowBuilder.Attributes.Add("data-slot", "table-row");
                 rowBuilder.Attributes.Add("class", "sa-table-row");
+                if (rowKey is not null)
+                {
+                    rowBuilder.Attributes.Add("data-key", rowKey);
+                }
 
                 if (gridContext.Selection is { } selection)
                 {
-                    var key =
-                        (
-                            items[i] is { } item
-                                ? DataGridFieldGetters.GetValue(item, selection.KeyField)
-                                : null
-                        )?.ToString() ?? "";
+                    var key = rowKey ?? "";
 
                     var checkboxAttributes = new List<TagHelperAttribute>
                     {
@@ -326,7 +344,9 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 }
 
                 var rowDetail = gridContext.RowDetail;
-                var expanded = rowDetail is not null && IsExpanded(rowDetail, items[i]);
+                var expanded =
+                    rowKey is not null && rowDetail?.ExpandedKeys.Contains(rowKey) == true;
+                var detailRowId = rowKey is null ? null : $"{gridId}-detail-{ToIdPart(rowKey)}";
                 if (rowDetail is { Toggle: DataGridRowDetailToggle.Leading })
                 {
                     rowBuilder.InnerHtml.AppendHtml(
@@ -336,7 +356,8 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                             "table-cell",
                             "sa-table-cell",
                             all: false,
-                            expanded
+                            expanded,
+                            detailRowId
                         )
                     );
                 }
@@ -362,7 +383,8 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                             "table-cell",
                             "sa-table-cell",
                             all: false,
-                            expanded
+                            expanded,
+                            detailRowId
                         )
                     );
                 }
@@ -379,6 +401,10 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                         detailRowBuilder.Attributes.Add(name, value);
                     }
                     detailRowBuilder.Attributes.Add("class", "sa-table-row-detail");
+                    if (detailRowId is not null)
+                    {
+                        detailRowBuilder.Attributes.Add("id", detailRowId);
+                    }
                     detailRowBuilder.InnerHtml.AppendHtml(
                         TableRowDetailRendering.BuildCell(
                             new HtmlString(currentRow.DetailHtml ?? ""),
@@ -416,19 +442,9 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         + (gridContext.Selection is null ? 0 : 1)
         + (gridContext.RowDetail is { Toggle: not DataGridRowDetailToggle.None } ? 1 : 0);
 
-    private static bool IsExpanded(DataGridRowDetail rowDetail, object? item)
-    {
-        if (rowDetail.KeyField is not { } keyField || item is null)
-        {
-            return false;
-        }
-
-        var key = Convert.ToString(
-            DataGridFieldGetters.GetValue(item, keyField),
-            CultureInfo.InvariantCulture
-        );
-        return key is not null && rowDetail.ExpandedKeys.Contains(key);
-    }
+    // An id may not contain whitespace
+    private static string ToIdPart(string key) =>
+        string.Concat(key.Select(c => char.IsWhiteSpace(c) ? '_' : c));
 
     /// <summary>
     ///     Renders a cell of the row details toggle column, holding a toggle rendered by the
@@ -441,7 +457,8 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         string slot,
         string cssClass,
         bool all,
-        bool expanded = false
+        bool expanded = false,
+        string? controls = null
     )
     {
         var toggleOutput = new TagHelperOutput(
@@ -454,6 +471,10 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             All = all,
         }.ProcessAsync(context, toggleOutput);
         toggleOutput.Attributes.SetAttribute("aria-expanded", expanded ? "true" : "false");
+        if (controls is not null)
+        {
+            toggleOutput.Attributes.SetAttribute("aria-controls", controls);
+        }
 
         var cellBuilder = new TagBuilder(tagName);
         cellBuilder.Attributes.Add("data-slot", slot);

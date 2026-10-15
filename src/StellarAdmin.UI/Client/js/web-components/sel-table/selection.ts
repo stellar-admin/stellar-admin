@@ -14,9 +14,19 @@
  *
  * A bubbling `selection-change` custom event (detail: `{ values }`) fires on the table
  * on every user-driven change. It does NOT fire for the initial server-rendered state.
+ *
+ * Rows with a `data-key` are remembered by key: when a script or htmx replaces a row, the
+ * row that takes its place with the same key gets its selection back, whatever the new
+ * markup says. Rows with a key not seen before keep their rendered state.
  */
 export class TableSelection {
   #host: HTMLElement;
+  // The keyed rows present at the last sync, and whether each was selected.
+  #remembered = new Map<string, { row: HTMLTableRowElement; selected: boolean }>();
+  #mutationObserver = new MutationObserver((records) => {
+    if (records.some((record) => record.type === "childList")) this.#scheduleSync();
+  });
+  #syncScheduled = false;
 
   constructor(host: HTMLElement) {
     this.#host = host;
@@ -24,6 +34,7 @@ export class TableSelection {
 
   connect() {
     this.#host.addEventListener("change", this.#onChange);
+    this.#mutationObserver.observe(this.#host, { childList: true, subtree: true });
 
     // Reflect any server-rendered checked state (row highlights, select-all
     // checked/indeterminate) as soon as the component connects.
@@ -32,6 +43,7 @@ export class TableSelection {
 
   disconnect() {
     this.#host.removeEventListener("change", this.#onChange);
+    this.#mutationObserver.disconnect();
   }
 
   /** The values of the currently selected row checkboxes. */
@@ -98,12 +110,29 @@ export class TableSelection {
     );
   };
 
+  #scheduleSync() {
+    if (this.#syncScheduled) return;
+    this.#syncScheduled = true;
+    queueMicrotask(() => {
+      this.#syncScheduled = false;
+      this.#syncState();
+    });
+  }
+
   #syncState() {
     const rowCheckboxes = this.#rowCheckboxes;
+    const remembered = new Map<string, { row: HTMLTableRowElement; selected: boolean }>();
     let selectedCount = 0;
 
     for (const checkbox of rowCheckboxes) {
       const row = checkbox.closest("tr");
+      const key = row?.dataset.key;
+      if (row && key !== undefined) {
+        // A row that replaced the remembered row takes its selection.
+        const previous = this.#remembered.get(key);
+        if (previous && previous.row !== row) checkbox.checked = previous.selected;
+        remembered.set(key, { row, selected: checkbox.checked });
+      }
       if (checkbox.checked) {
         selectedCount++;
         row?.setAttribute("data-state", "selected");
@@ -111,6 +140,8 @@ export class TableSelection {
         row?.removeAttribute("data-state");
       }
     }
+
+    this.#remembered = remembered;
 
     const selectAll = this.#selectAll;
     if (selectAll) {

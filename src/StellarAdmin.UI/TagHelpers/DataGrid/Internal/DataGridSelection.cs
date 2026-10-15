@@ -3,9 +3,6 @@ namespace StellarAdmin.UI;
 /// <summary>The row-selection declaration registered during the collect pass.</summary>
 internal sealed class DataGridSelection
 {
-    /// <summary>The row item property whose value becomes each row checkbox's <c>value</c>.</summary>
-    public required string KeyField { get; init; }
-
     /// <summary>The <c>name</c> of the row checkboxes, when the selection should post as form data.</summary>
     public string? Name { get; init; }
 

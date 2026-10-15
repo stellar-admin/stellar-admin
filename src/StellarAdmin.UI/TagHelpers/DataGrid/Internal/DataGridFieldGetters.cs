@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -33,6 +34,17 @@ internal static class DataGridFieldGetters
             (item.GetType(), field),
             static key => CreateFieldGetter(key.Type, key.Field)
         )(item);
+    }
+
+    /// <summary>
+    ///     Reads a row key: the field's value as an invariant string, or an empty string when
+    ///     the item or the value is null.
+    /// </summary>
+    public static string GetKey(object? item, string field)
+    {
+        return item is null
+            ? ""
+            : Convert.ToString(GetValue(item, field), CultureInfo.InvariantCulture) ?? "";
     }
 
     /// <summary>

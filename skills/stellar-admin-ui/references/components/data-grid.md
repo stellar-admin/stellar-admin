@@ -19,7 +19,7 @@ A data grid that renders a full table from declarative column definitions and a 
 | `<sa-data-grid-item-template>` | The row template of a data grid column, re-rendered once per data row with the current item available through `Html.GridItem<T>()`. Unlike plain child content, the template is never executed during the grid's collect pass, so it can safely dereference the item unconditionally. |
 | `<sa-data-grid-pager>` | A pager that renders page-number, previous, and next links for a paged data set. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); a route value must contain the `{pageNo}` placeholder, which is replaced with the target page number in each link (e.g. `asp-route-pageNo="{pageNo}"`). A route value may also contain the `{pageSize}` placeholder: page links substitute `selected-page-size` when one is supplied and drop the route value otherwise, so a size carries across page navigation only when one was actually chosen, while the links of the footer's page-size selector (`page-size-options`) always substitute the target size and reset the page number to 1. Declared as a child of `sa-data-grid` it renders in the grid's footer bar as compact icon links, alongside a record-range summary when `total-items` is supplied — the footer renders even when there is a single page, showing just the record count. Used standalone it renders the classic labelled pager and nothing at all when there is one page or less. |
 | `<sa-data-grid-row-detail>` | Lets the data grid's rows expand to show details. The content is a row template, rendered once per data row with the current item available through `Html.GridItem<T>()`, below its row and spanning every column. The grid adds a toggle column and wraps its table in the `sel-table` web component, which raises bubbling `row-detail-expand` and `row-detail-collapse` events on the detail row, so htmx can load a row's details when it first expands. |
-| `<sa-data-grid-selection>` | Adds row selection to the data grid: a leading checkbox column with a select-all checkbox in the header. Renders nothing itself — the grid wraps its table in the `sel-table` web component, to which an `id` and `class` set here are transferred. Read the current selection from the element's `selectedValues` property, or listen for its bubbling `selection-change` event; with a `name` the selection also posts as ordinary checkbox form data. |
+| `<sa-data-grid-selection>` | Adds row selection to the data grid: a leading checkbox column with a select-all checkbox in the header. Requires the grid's `key-field`, whose value each row's checkbox carries. Renders nothing itself — the grid wraps its table in the `sel-table` web component, to which an `id` and `class` set here are transferred. Read the current selection from the element's `selectedValues` property, or listen for its bubbling `selection-change` event; with a `name` the selection also posts as ordinary checkbox form data. |
 | `<sa-data-grid-sort>` | Declares how the data grid generates its column-sorting links, and the current sort state. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); the route values must contain the `{sort}` placeholder, replaced with the column's sort field, and the `{dir}` placeholder, replaced with the target direction (`asc` or `desc`) — e.g. `asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"`. Renders nothing itself; columns opt in with their `sortable` attribute. |
 
 ## Attributes
@@ -29,6 +29,7 @@ A data grid that renders a full table from declarative column definitions and a 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `items` | `IEnumerable` | — | — |
+| `key-field` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -82,7 +83,6 @@ A data grid that renders a full table from declarative column definitions and a 
 | `divider` | `TableRowDetailDivider` | `Inset` | `None`, `Inset`, `FullWidth` |
 | `inset` | `TableRowDetailInset` | `Aligned` | `Bleed`, `Aligned` |
 | `animate` | `bool` | `true` | `true`, `false` |
-| `key-field` | `string` | — | — |
 | `expanded-keys` | `IEnumerable` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -90,7 +90,6 @@ A data grid that renders a full table from declarative column definitions and a 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `key-field` | `string` | — | — |
 | `name` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -144,8 +143,8 @@ A data grid that renders a full table from declarative column definitions and a 
     var pageOfBookings = bookings.Skip((pageNo - 1) * pageSize).Take(pageSize);
     var totalPages = (int)Math.Ceiling(StaticData.Bookings.Length / (double)pageSize);
 }
-<sa-data-grid items="pageOfBookings">
-    <sa-data-grid-selection key-field="Id" name="selectedBookings" id="booking-grid-selection"/>
+<sa-data-grid items="pageOfBookings" key-field="Id">
+    <sa-data-grid-selection name="selectedBookings" id="booking-grid-selection"/>
     <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
                        asp-page="/DataGrid/Index"
                        asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"
@@ -185,12 +184,12 @@ A data grid that renders a full table from declarative column definitions and a 
 *From `Pages/DataGrid/_RowDetails.cshtml`*
 
 ```razor
-<sa-data-grid items="StaticData.Bookings" class="w-full">
+<sa-data-grid items="StaticData.Bookings" key-field="Id" class="w-full">
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination"/>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right"/>
-    <sa-data-grid-row-detail key-field="Id" expanded-keys='new[] { "TRP-4821" }'>
+    <sa-data-grid-row-detail expanded-keys='new[] { "TRP-4821" }'>
         @{ var details = StaticData.DetailsFor(Html.GridItem<Booking>().Id); }
         <div class="flex flex-col gap-3">
             <p>

@@ -1,9 +1,9 @@
-<sa-data-grid items="StaticData.Bookings" class="w-full">
+<sa-data-grid items="StaticData.Bookings" key-field="Id" class="w-full">
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination"/>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right"/>
-    <sa-data-grid-row-detail key-field="Id" expanded-keys='new[] { "TRP-4821" }'>
+    <sa-data-grid-row-detail expanded-keys='new[] { "TRP-4821" }'>
         @{ var details = StaticData.DetailsFor(Html.GridItem<Booking>().Id); }
         <div class="flex flex-col gap-3">
             <p>
