@@ -22,7 +22,7 @@
   "Chip": ["Chip/_Intro", "Chip/_Media", "Chip/_Removable", "Chip/_ReadOnly", "Chip/_Invalid"],
   "Collapsible": ["Collapsible/_Intro", "Collapsible/_Settings"],
   "Command": ["Command/_Intro", "Command/_Dialog", "Command/_KeyboardShortcut", "Command/_Checked"],
-  "DataGrid": ["DataGrid/_Intro", "DataGrid/_RowDetails", "DataGrid/_Editing", "DataGrid/_NewItem", "DataGrid/_EditorTemplates", "DataGrid/_EditingErrors"],
+  "DataGrid": ["DataGrid/_Intro", "DataGrid/_RowDetails", "DataGrid/_Editing", "DataGrid/_NewItem", "DataGrid/_AddRow", "DataGrid/_EditorTemplates", "DataGrid/_EditingErrors"],
   "Details": ["Details/_Intro", "Details/_Columns", "Details/_Starts", "Details/_EmptyValues", "Details/_Templates", "Details/_InForm", "Details/_RecordPage"],
   "Dialog": ["Dialog/_Intro", "Dialog/_ReturnValue"],
   "DropdownMenu": ["DropdownMenu/_Intro", "DropdownMenu/_CheckboxItems", "DropdownMenu/_Submenu"],

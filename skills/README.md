@@ -7,7 +7,7 @@ StellarAdmin has two products, each with its own consumer skills, plus a theme s
 | StellarAdmin.UI — UI library for ASP.NET Core MVC and Razor Pages | [stellar-admin-ui](stellar-admin-ui/SKILL.md) | Available: setup, components, forms, layout, and theming. |
 | Themes — theme files of CSS variables, for either product | [stellar-admin-theme](stellar-admin-theme/SKILL.md) | Available: writing a theme from a description or brand colours, the theme variable reference, worked examples, and theme builder links. |
 | StellarAdmin — integrated admin panel | [stellar-admin-setup](stellar-admin-setup/SKILL.md) | Available: installing the admin panel (packages, registration, routes, protection, theme) and checking that it works. |
-| StellarAdmin — integrated admin panel | [stellar-admin](stellar-admin/SKILL.md) | Available: resources, index pages, columns, forms, fields, editors, relationships, view pages, sidebar, authorization and customization. |
+| StellarAdmin — integrated admin panel | [stellar-admin](stellar-admin/SKILL.md) | Available: resources, index pages, columns, forms, inline editing, fields, editors, relationships, view pages, sidebar, authorization and customization. |
 
 ## Install the UI skill
 

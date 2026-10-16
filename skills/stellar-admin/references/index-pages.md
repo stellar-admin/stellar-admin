@@ -1,6 +1,6 @@
 # Index pages
 
-The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md).
+The index page lists a resource's records in a grid. Everything is configured in `resource.Index(index => ...)`. Columns are in [columns](columns.md), and editing and adding in the grid's rows in [inline editing](inline-editing.md).
 
 ## Contents
 
@@ -31,7 +31,7 @@ Search, scope tabs, sorting and paging all update the grid in place, keep each o
 | Property | Default |
 | --- | --- |
 | `index.Title` | The plural label |
-| `index.CreateLabel` | `Create {singular label}` |
+| `index.CreateLabel` | `Create` |
 | `index.EditLabel`, `index.ViewLabel`, `index.DeleteLabel` | `Edit {singular}`, `View {singular}`, `Delete {singular}` (row action labels) |
 
 ## Search

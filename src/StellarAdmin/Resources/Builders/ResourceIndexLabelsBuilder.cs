@@ -37,6 +37,22 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the default message of the toast shown when a resource is
+    ///     added in a new row.
+    /// </summary>
+    public Func<ResourceLabelContext, string> CreatedMessage
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Index.CreatedMessage = value
+            );
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default index delete button label.
     /// </summary>
     public Func<ResourceLabelContext, string> DeleteLabel

@@ -124,10 +124,11 @@
                             ? $"#index-page-grid-detail-{System.Text.RegularExpressions.Regex.Replace(key, @"\s", "_")}:innerHTML"
                             : "";
                     }
-                    @* The row posts its fields and the token; a form cannot hold a table row *@
+                    @* The row posts its fields and the token; a form cannot hold a table row. Without settling, htmx
+                       doesn't give a rejected row's fields the old fields' values while it refocuses the field that had focus *@
                     @Html.AntiForgeryToken()
                     <sa-button size="ButtonSize.IconSmall" data-row-save
-                               hx-post="@saveUrl" hx-include="closest tr" hx-target="closest tr" hx-swap="outerHTML"
+                               hx-post="@saveUrl" hx-include="closest tr" hx-target="closest tr" hx-swap="outerHTML settle:0"
                                hx-select="@select" hx-select-oob="@selectOob" hx-push-url="false"
                                aria-label="@inline!.SaveLabel" interestfor="@saveTooltipId">
                         <sa-icon name="check" />

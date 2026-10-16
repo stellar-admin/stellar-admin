@@ -1,6 +1,6 @@
 # Create and edit forms
 
-`resource.AllowCreate(create => ...)` and `resource.AllowEdit(edit => ...)` generate the create and edit pages from the fields you configure. Don't write these pages by hand. Choosing inputs is covered in [editors](editors.md), read-only values in [fields](fields.md), and foreign keys in [relationships](relationships.md).
+`resource.AllowCreate(create => ...)` and `resource.AllowEdit(edit => ...)` generate the create and edit pages from the fields you configure. Don't write these pages by hand. Choosing inputs is covered in [editors](editors.md), read-only values in [fields](fields.md), and foreign keys in [relationships](relationships.md). A small resource can be edited and added in the index grid's rows instead ([inline editing](inline-editing.md)).
 
 ## Contents
 

@@ -128,7 +128,7 @@ The data source implements `IResourceCrudDataSource<T>`, or only the interfaces 
 | `IResourceEditHandler<T>` (extends view) | `FindAsync`, and `Task<ResourceOperationResult> UpdateAsync(string id, T model, CancellationToken cancellationToken)` | Edit, and View |
 | `IResourceDeleteHandler<T>` | `Task<ResourceOperationResult> DeleteAsync(string id, CancellationToken cancellationToken)` | Delete |
 
-`ListAsync` receives a `ResourceListRequest` with `Search` (trimmed text or null), `Scope` (the selected scope id or null), `Sort` (`Field` and `Direction`, or null) and `Paging` (`Page`, `PageSize`, or null). Apply search, scope and sort before paging, and return `new ResourceListResult<T>(items, totalCount)` where `totalCount` counts all matching records. The panel does not sort or filter returned rows itself.
+`ListAsync` receives a `ResourceListRequest` with `Search` (trimmed text or null), `Scope` (the selected scope id or null), `Sort` (`Field` and `Direction`, or null) and `Paging` (`Page`, `PageSize`, or null). Apply search, scope and sort before paging, and return `new ResourceListResult<T>(items, totalCount)` where `totalCount` counts all matching records. The panel does not sort or filter returned rows itself. With inline rows, `Keys` is set after a save to reload only those records ([inline editing](inline-editing.md#custom-data-sources)).
 
 `UseDataSource<TDataSource>()` registers the source as scoped unless the app already registered it, so it can take services such as a DbContext or an HTTP client in its constructor. Configuring a page whose interface the source doesn't implement fails options validation.
 

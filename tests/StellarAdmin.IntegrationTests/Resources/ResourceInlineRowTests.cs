@@ -488,9 +488,14 @@ public class ResourceInlineRowTests
     }
 
     [Test]
-    [Arguments(null, "Product added")]
-    [Arguments("Saved to the catalogue", "Saved to the catalogue")]
-    public async Task CreateRow_Save_SendsCreatedToast(string? message, string expected)
+    [Arguments(null, false, "Product added")]
+    [Arguments(null, true, "New Product in stock")]
+    [Arguments("Saved to the catalogue", true, "Saved to the catalogue")]
+    public async Task CreateRow_Save_SendsCreatedToast(
+        string? message,
+        bool configureLabels,
+        string expected
+    )
     {
         // Arrange
         await using var sut = await StellarAdminTestHost.CreateAsync(
@@ -499,6 +504,18 @@ public class ResourceInlineRowTests
             {
                 ConfigureInlineRows(resource);
                 resource.Index(index => index.CreatedMessage = message);
+            },
+            admin =>
+            {
+                if (configureLabels)
+                {
+                    admin.ConfigureResourceLabels(labels =>
+                        labels.Index(index =>
+                            index.CreatedMessage = resource =>
+                                $"New {resource.SingularLabel} in stock"
+                        )
+                    );
+                }
             }
         );
         using var client = sut.GetTestClient();

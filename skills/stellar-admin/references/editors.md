@@ -165,4 +165,4 @@ For a new editor:
 3. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It reads the editor and prepared data from `ViewData[ViewDataKeys.FormFieldProperties]` (`FormFieldProperties.Editor`, `.EditorData`), and renders inputs with `asp-for` on the model.
 4. `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { ... })`.
 
-Write the template's markup with `sa-*` components (stellar-admin-ui skill).
+Write the template's markup with `sa-*` components (stellar-admin-ui skill). For the editor to work in an inline row's cell, add a second template under `GridEditorTemplates/` ([inline editing](inline-editing.md#editors-in-cells)).

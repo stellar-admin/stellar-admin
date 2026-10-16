@@ -17,7 +17,7 @@ public class DataGridAddRowTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <see cref="DataGridAddRowPosition.Top" />.
     /// </remarks>
     [HtmlAttributeName("position")]
-    public DataGridAddRowPosition Position { get; set; } = DataGridAddRowPosition.Top;
+    public DataGridAddRowPosition? Position { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -26,7 +26,7 @@ public class DataGridAddRowTagHelper : StellarAdminTagHelperBase
         {
             gridContext.AddRow = new(
                 (await output.GetChildContentAsync(useCachedResult: false)).GetContent(),
-                Position
+                Position ?? DataGridAddRowPosition.Top
             );
         }
 

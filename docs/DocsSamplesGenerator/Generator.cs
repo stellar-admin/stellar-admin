@@ -538,6 +538,7 @@ internal sealed partial class Generator
         new("Command/_KeyboardShortcut"),
         new("Command/_Scrollable"),
         new("Dialog/_Dismissing"),
+        new("DataGrid/_AddRow"),
         new("DataGrid/_Editing"),
         new("DataGrid/_EditingErrors"),
         new("DataGrid/_EditorTemplates"),

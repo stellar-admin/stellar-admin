@@ -270,6 +270,23 @@ A data grid that renders a full table from declarative column definitions and a 
 </sa-data-grid>
 ```
 
+*From `Pages/DataGrid/_AddRow.cshtml`*
+
+```razor
+<sa-data-grid items="StaticData.Bookings.Take(3)" key-field="Id">
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Status" field="Status"/>
+    <sa-data-grid-column title="Destination" field="Destination"/>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right"/>
+    <sa-data-grid-add-row position="DataGridAddRowPosition.Bottom">
+        <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small">
+            <sa-icon name="plus"/>
+            Add booking
+        </sa-button>
+    </sa-data-grid-add-row>
+</sa-data-grid>
+```
+
 *From `Pages/DataGrid/_EditorTemplates.cshtml`*
 
 ```razor
