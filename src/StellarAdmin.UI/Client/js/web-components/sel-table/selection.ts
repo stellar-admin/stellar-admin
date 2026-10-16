@@ -1,3 +1,9 @@
+interface Remembered {
+  row: HTMLTableRowElement;
+  selected: boolean;
+  value: string;
+}
+
 /**
  * Row selection for a `sel-table` with `data-selection`. The checkbox inside `thead` is
  * the select-all; the checkboxes inside `tbody` marked `data-row-select` select their row.
@@ -17,12 +23,14 @@
  *
  * Rows with a `data-key` are remembered by key: when a script or htmx replaces a row, the
  * row that takes its place with the same key gets its selection back, whatever the new
- * markup says. Rows with a key not seen before keep their rendered state.
+ * markup says. Rows with a key not seen before keep their rendered state. A row in edit mode
+ * (`data-editing`) has no checkbox but stays selected: its value is still in `selectedValues`,
+ * select-all counts it, and the row that replaces it gets its selection back.
  */
 export class TableSelection {
   #host: HTMLElement;
   // The keyed rows present at the last sync, and whether each was selected.
-  #remembered = new Map<string, { row: HTMLTableRowElement; selected: boolean }>();
+  #remembered = new Map<string, Remembered>();
   #mutationObserver = new MutationObserver((records) => {
     if (records.some((record) => record.type === "childList")) this.#scheduleSync();
   });
@@ -46,11 +54,21 @@ export class TableSelection {
     this.#mutationObserver.disconnect();
   }
 
-  /** The values of the currently selected row checkboxes. */
+  /** The values of the selected rows, including selected rows in edit mode. */
   get selectedValues(): string[] {
-    return this.#rowCheckboxes
-      .filter((checkbox) => checkbox.checked)
-      .map((checkbox) => checkbox.value);
+    return [
+      ...this.#rowCheckboxes
+        .filter((checkbox) => checkbox.checked)
+        .map((checkbox) => checkbox.value),
+      ...this.#editingRows.filter((entry) => entry.selected).map((entry) => entry.value),
+    ];
+  }
+
+  /** The remembered selection of the rows now in edit mode, which have no checkbox. */
+  get #editingRows(): Remembered[] {
+    return Array.from(this.#remembered.values()).filter(
+      (entry) => entry.row.isConnected && entry.row.hasAttribute("data-editing"),
+    );
   }
 
   get #selectAll(): HTMLInputElement | null {
@@ -97,6 +115,7 @@ export class TableSelection {
           checkbox.checked = target.checked;
         }
       }
+      for (const entry of this.#editingRows) entry.selected = target.checked;
     } else if (!rowCheckboxes.includes(target)) {
       return;
     }
@@ -121,8 +140,19 @@ export class TableSelection {
 
   #syncState() {
     const rowCheckboxes = this.#rowCheckboxes;
-    const remembered = new Map<string, { row: HTMLTableRowElement; selected: boolean }>();
+    const remembered = new Map<string, Remembered>();
     let selectedCount = 0;
+    let count = rowCheckboxes.length;
+
+    // A row in edit mode takes over the selection of the row it replaced.
+    for (const row of this.#host.querySelectorAll<HTMLTableRowElement>("tr[data-editing]")) {
+      const key = row.dataset.key;
+      const previous = key === undefined ? undefined : this.#remembered.get(key);
+      if (!previous || row.closest("sel-table") !== this.#host) continue;
+      remembered.set(key!, { ...previous, row });
+      count++;
+      if (previous.selected) selectedCount++;
+    }
 
     for (const checkbox of rowCheckboxes) {
       const row = checkbox.closest("tr");
@@ -131,7 +161,7 @@ export class TableSelection {
         // A row that replaced the remembered row takes its selection.
         const previous = this.#remembered.get(key);
         if (previous && previous.row !== row) checkbox.checked = previous.selected;
-        remembered.set(key, { row, selected: checkbox.checked });
+        remembered.set(key, { row, selected: checkbox.checked, value: checkbox.value });
       }
       if (checkbox.checked) {
         selectedCount++;
@@ -145,8 +175,8 @@ export class TableSelection {
 
     const selectAll = this.#selectAll;
     if (selectAll) {
-      selectAll.checked = rowCheckboxes.length > 0 && selectedCount === rowCheckboxes.length;
-      selectAll.indeterminate = selectedCount > 0 && selectedCount < rowCheckboxes.length;
+      selectAll.checked = count > 0 && selectedCount === count;
+      selectAll.indeterminate = selectedCount > 0 && selectedCount < count;
     }
   }
 }

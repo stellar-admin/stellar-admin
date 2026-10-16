@@ -141,17 +141,19 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         containerBuilder.Attributes.Add("class", "sa-table-container");
         containerBuilder.InnerHtml.AppendHtml(tableBuilder);
 
-        // Places the table inside the table web component, which adds the row selection and
-        // row details behaviors
+        // Places the table inside the table web component, which adds the row selection, row
+        // details and editing behaviors
         var selection = gridContext.Selection;
         var rowDetail = gridContext.RowDetail;
-        if (selection is not null || rowDetail is not null)
+        var editing = gridContext.Columns.Any(column => column.HasEditTemplate);
+        if (selection is not null || rowDetail is not null || editing)
         {
             var tableElementBuilder = new TagBuilder("sel-table");
             foreach (
                 var (name, value) in TableElementRendering.GetAttributes(
                     selection is not null,
-                    rowDetail?.Settings
+                    rowDetail?.Settings,
+                    editing
                 )
             )
             {

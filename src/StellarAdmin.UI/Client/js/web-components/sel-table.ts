@@ -1,5 +1,6 @@
 import { LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
+import { TableEditing } from "./sel-table/editing";
 import { TableRowDetails } from "./sel-table/row-details";
 import { TableSelection } from "./sel-table/selection";
 
@@ -8,6 +9,7 @@ import { TableSelection } from "./sel-table/selection";
  * switch on, read when the element connects:
  *   - data-selection: row selection with a select-all checkbox (see `TableSelection`)
  *   - data-row-details: rows that expand to show details (see `TableRowDetails`)
+ *   - data-editing: rows that are edited in place (see `TableEditing`)
  *
  * Each behavior listens on this element only, so rows that htmx (or any script) adds,
  * replaces or removes need no re-initialization. Scripts read the selection from
@@ -17,6 +19,7 @@ import { TableSelection } from "./sel-table/selection";
  */
 @customElement("sel-table")
 export class Table extends LitElement {
+  #editing: TableEditing | null = null;
   #rowDetails: TableRowDetails | null = null;
   #selection: TableSelection | null = null;
 
@@ -34,6 +37,10 @@ export class Table extends LitElement {
       this.#rowDetails = new TableRowDetails(this);
       this.#rowDetails.connect();
     }
+    if (this.hasAttribute("data-editing")) {
+      this.#editing = new TableEditing(this);
+      this.#editing.connect();
+    }
   }
 
   override disconnectedCallback() {
@@ -42,9 +49,11 @@ export class Table extends LitElement {
     this.#selection = null;
     this.#rowDetails?.disconnect();
     this.#rowDetails = null;
+    this.#editing?.disconnect();
+    this.#editing = null;
   }
 
-  /** The values of the currently selected row checkboxes. */
+  /** The values of the selected rows, including selected rows in edit mode. */
   get selectedValues(): string[] {
     return this.#selection?.selectedValues ?? [];
   }

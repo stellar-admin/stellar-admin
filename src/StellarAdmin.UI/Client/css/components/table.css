@@ -187,6 +187,8 @@
     margin-inline: calc(-0.5 * var(--sa-space-cell-x));
     &.sa-button { display: flex; }
   }
+  /* While a row is in edit mode the columns keep their widths, and editors shrink to fit. */
+  .sa-table[data-columns-locked] .sa-cell-editor { min-width: 0; }
 
   /* A checkbox or switch sits centred on the row's control line. */
   .sa-cell-check {

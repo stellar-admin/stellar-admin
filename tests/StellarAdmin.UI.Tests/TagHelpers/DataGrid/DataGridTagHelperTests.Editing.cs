@@ -33,6 +33,23 @@ public partial class DataGridTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WithEditTemplate_SwitchesOnEditingBehavior()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateGrid(context, Bookings);
+        sut.KeyField = "Id";
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut, EditingChildren(context));
+
+        // Assert
+        var element = html.QuerySelector("sel-table");
+        await Assert.That(element?.HasAttribute("data-editing")).IsTrue();
+        await Assert.That(element?.HasAttribute("data-selection")).IsFalse();
+    }
+
+    [Test]
     public async Task ProcessAsync_WithEditingRow_RendersEmptySelectionCellHiddenToggleAndNoDetailRow()
     {
         // Arrange

@@ -134,7 +134,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
 
         output.TagName = "sel-table";
         output.Attributes.RemoveAll("class");
-        foreach (var (name, value) in TableElementRendering.GetAttributes(Selection, rowDetails))
+        foreach (var (name, value) in TableElementRendering.GetAttributes(Selection, rowDetails, false))
         {
             output.Attributes.SetAttribute(name, value);
         }

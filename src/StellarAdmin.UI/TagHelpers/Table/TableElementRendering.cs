@@ -8,13 +8,19 @@ internal static class TableElementRendering
 {
     public static IEnumerable<KeyValuePair<string, string>> GetAttributes(
         bool selection,
-        TableRowDetailSettings? rowDetails
+        TableRowDetailSettings? rowDetails,
+        bool editing
     )
     {
         yield return new("data-slot", "table-interactivity");
         if (selection)
         {
             yield return new("data-selection", "");
+        }
+
+        if (editing)
+        {
+            yield return new("data-editing", "");
         }
 
         if (rowDetails is not null)
