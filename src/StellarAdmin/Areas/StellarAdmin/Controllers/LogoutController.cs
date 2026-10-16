@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
 
 [Area("StellarAdmin")]
-public class LogoutController(
+internal sealed class LogoutController(
     StellarAdminOptions options,
     IAuthenticationSchemeProvider authenticationSchemes
 ) : Controller

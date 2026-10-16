@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using StellarAdmin.Areas.StellarAdmin.Controllers;
 using StellarAdmin.Infrastructure.Routing;
 using StellarAdmin.Sidebar;
 using StellarAdmin.UI;
@@ -30,6 +31,8 @@ public static class StellarAdminServiceCollectionExtensions
 
             var admin = new StellarAdminBuilder(services, GetOrCreateOptions(services));
             admin.AddApplicationPart(typeof(StellarAdminServiceCollectionExtensions).Assembly);
+            admin.AddController(typeof(HomeController), "Home");
+            admin.AddController(typeof(LogoutController), "Logout");
             admin.AddScript("~/_content/StellarAdmin/htmx.min.js");
             admin.AddScript("~/_content/StellarAdmin/stellar-admin-panel.js");
             admin.AddStylesheet("~/_content/StellarAdmin/stellar-admin-panel.css");

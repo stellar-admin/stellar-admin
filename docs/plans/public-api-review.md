@@ -35,7 +35,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | --- | --- | --- |
 | J1 | Delete dead public types | Done (2026-10-16) |
 | J2 | Make the two tag helper base classes abstract | Done (2026-10-16) |
-| J3 | Make the admin panel controllers and their query types internal | Approved, if feasible |
+| J3 | Make the admin panel controllers and `ResourceLookupQuery` internal | Done (2026-10-16) |
 | J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Approved, if feasible |
 | J5 | Tidy the protected hooks EF Core uses | |
 | J6 | Seal builders, options types, view models and the view component | |
@@ -160,7 +160,7 @@ Anything marked stable gets documented. Anything else gets a note that it may ch
 
 ### J3. Internal controllers
 
-`ResourceController<TResource>`, `HomeController` and `LogoutController`, plus `ResourceIndexQuery` and `ResourceLookupQuery`. Register them through the internal `StellarAdminControllerFeatureProvider` and confirm with a routing test.
+Done. `ResourceController<TResource>`, `HomeController`, `LogoutController` and `ResourceLookupQuery` are `internal sealed` and undocumented. `AddStellarAdmin` registers Home and Logout through `AddController`, as resources already were. `ResourceIndexQuery` stays public, because index view overrides read it through `Model.Query` and model binding needs its setters. All 1378 tests pass, including the home and logout integration tests.
 
 ### J4. View models
 

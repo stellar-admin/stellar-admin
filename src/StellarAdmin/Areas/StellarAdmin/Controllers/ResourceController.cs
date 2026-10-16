@@ -20,11 +20,8 @@ using StellarAdmin.UI;
 
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
 
-/// <summary>
-///     Handles resource pages using the configured data source.
-/// </summary>
 [Area("StellarAdmin")]
-public class ResourceController<TResource>(
+internal sealed class ResourceController<TResource>(
     IResourceDataSource<TResource> dataSource,
     IOptions<ResourceOptions<TResource>> options,
     IOptions<ResourceLabelOptions> labelOptions,
@@ -54,9 +51,6 @@ public class ResourceController<TResource>(
     private bool HasEditPage =>
         _resourceOptions.Edit is { InlineRow: null } && _resourceOptions.KeySelector is not null;
 
-    /// <summary>
-    ///     Displays the create form.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
@@ -65,9 +59,6 @@ public class ResourceController<TResource>(
             : NotFound();
     }
 
-    /// <summary>
-    ///     Creates a resource from the submitted form.
-    /// </summary>
     [HttpPost]
     [ActionName(nameof(Create))]
     [ValidateAntiForgeryToken]
@@ -95,9 +86,6 @@ public class ResourceController<TResource>(
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>
-    ///     Renders a new row in edit mode, for creating a resource in the index grid.
-    /// </summary>
     [HttpGet]
     public IActionResult CreateRow([FromQuery] ResourceIndexQuery query)
     {
@@ -108,9 +96,6 @@ public class ResourceController<TResource>(
             : NotFound();
     }
 
-    /// <summary>
-    ///     Creates a resource from a new row, and renders it as it displays in the index grid.
-    /// </summary>
     [HttpPost]
     [ActionName(nameof(CreateRow))]
     [ValidateAntiForgeryToken]
@@ -156,9 +141,6 @@ public class ResourceController<TResource>(
         return await SavedRowView(key, cancellationToken);
     }
 
-    /// <summary>
-    ///     Displays the create form in a sheet, for a lookup field that creates its item.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> CreateSheet(
         [FromQuery(Name = "for")] string? lookup,
@@ -171,9 +153,6 @@ public class ResourceController<TResource>(
             : NotFound();
     }
 
-    /// <summary>
-    ///     Creates a resource from the create form in a sheet, and returns its key to the lookup field.
-    /// </summary>
     [HttpPost]
     [ActionName(nameof(CreateSheet))]
     [ValidateAntiForgeryToken]
@@ -214,9 +193,6 @@ public class ResourceController<TResource>(
         return PartialView("_LookupCreated", new LookupCreatedViewModel(lookup, key));
     }
 
-    /// <summary>
-    ///     Deletes a resource.
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(
@@ -284,9 +260,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Displays the edit form.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Edit(
         [FromRoute] string id,
@@ -314,9 +287,6 @@ public class ResourceController<TResource>(
         return await EditView(resource, id, cancellationToken);
     }
 
-    /// <summary>
-    ///     Updates a resource from the submitted form.
-    /// </summary>
     [HttpPost]
     [ActionName(nameof(Edit))]
     [ValidateAntiForgeryToken]
@@ -367,9 +337,6 @@ public class ResourceController<TResource>(
         return RedirectToAction(nameof(Index), new { id = (string?)null });
     }
 
-    /// <summary>
-    ///     Renders a resource's row in edit mode, for editing it in the index grid.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> EditRow(
         [FromRoute] string id,
@@ -393,9 +360,6 @@ public class ResourceController<TResource>(
             : await EditRowView(id, resource, query, cancellationToken);
     }
 
-    /// <summary>
-    ///     Updates a resource from its row, and renders it as it displays in the index grid.
-    /// </summary>
     [HttpPost]
     [ActionName(nameof(EditRow))]
     [ValidateAntiForgeryToken]
@@ -444,9 +408,6 @@ public class ResourceController<TResource>(
             : await SavedRowView(id, cancellationToken);
     }
 
-    /// <summary>
-    ///     Displays the resource index page.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Index(
         [FromQuery] ResourceIndexQuery query,
@@ -466,9 +427,6 @@ public class ResourceController<TResource>(
         return await IndexView(query, request, cancellationToken);
     }
 
-    /// <summary>
-    ///     Searches the items of a lookup field.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Lookup(
         [FromQuery] ResourceLookupQuery query,
@@ -560,9 +518,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Renders a lookup field's display of the item with the specified value, for an item created from the field.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> LookupSelection(
         [FromQuery] ResourceLookupQuery query,
@@ -606,9 +561,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Renders the search panel of a lookup field for the shared sheet.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> LookupSheet([FromQuery] ResourceLookupQuery query)
     {
@@ -647,10 +599,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Renders a multi-select lookup field's display of the items with the specified values, as they are selected in
-    ///     its sheet.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> MultiLookupSelection(
         [FromQuery] ResourceLookupQuery query,
@@ -680,9 +628,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Renders a row detail panel that loads when it is first shown.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> RowDetail(
         [FromRoute] string id,
@@ -713,9 +658,6 @@ public class ResourceController<TResource>(
         return PartialView(panelOptions.PartialName, model);
     }
 
-    /// <summary>
-    ///     Displays the view page.
-    /// </summary>
     [HttpGet]
     [ActionName(ViewActionName)]
     public async Task<IActionResult> Show(
@@ -765,10 +707,6 @@ public class ResourceController<TResource>(
         );
     }
 
-    /// <summary>
-    ///     Stores an image uploaded to an image field, and returns the value the form saves and
-    ///     the image's URL.
-    /// </summary>
     // No parameters, so model binding leaves the body unread until its limit is the field's
     [HttpPost]
     public async Task<IActionResult> UploadImage()

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace StellarAdmin.Areas.StellarAdmin.Controllers;
 
 [Area("StellarAdmin")]
-public class HomeController : Controller
+internal sealed class HomeController : Controller
 {
     public IActionResult Index()
     {

@@ -1,48 +1,20 @@
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
-/// <summary>
-///     The lookup search settings supplied in the query string.
-/// </summary>
-public sealed class ResourceLookupQuery
+internal sealed class ResourceLookupQuery
 {
-    /// <summary>
-    ///     The name of the lookup field.
-    /// </summary>
     public string? Field { get; set; }
 
-    /// <summary>
-    ///     The HTML id of the lookup field's editor, which the shared sheet's content belongs to.
-    /// </summary>
     public string? For { get; set; }
 
-    /// <summary>
-    ///     The form that contains the field: create or edit.
-    /// </summary>
     public string? Form { get; set; }
 
-    /// <summary>
-    ///     The sheet level of the form that contains the field: 0 for the page, or the level of a create form in a
-    ///     sheet. A multi-select lookup's create form opens one level above it.
-    /// </summary>
     public int Level { get; set; }
 
-    /// <summary>
-    ///     The values of the currently selected items, which are empty when nothing is selected.
-    /// </summary>
     public string[] Selected { get; set; } = [];
 
-    /// <summary>
-    ///     Whether a multi-select lookup searches only its selected items.
-    /// </summary>
     public bool SelectedOnly { get; set; }
 
-    /// <summary>
-    ///     The number of results to skip.
-    /// </summary>
     public int Skip { get; set; }
 
-    /// <summary>
-    ///     The search term, or null when nothing has been typed.
-    /// </summary>
     public string? Term { get; set; }
 }
