@@ -9,8 +9,7 @@ The audit checks source, configuration, samples, generated website artifacts and
 | Record | Status | Current assessment |
 | --- | --- | --- |
 | [admin-panel-rename](admin-panel-rename.md) | in progress (phases 1–7 done) | Rename the packages before the first release: the panel becomes `StellarAdmin` (from Dashboard) and Core and TagHelpers merge into `StellarAdmin.UI`. |
-| [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, uploads and others). Unscheduled; an item becomes a plan when picked up. |
-| [image-field](image-field.md) | implemented (2026-10-16); stage 4 and the website pages on the `stellaradmin-rename` branch not committed | `ImageDisplay` and `ImageEditor` for a string property: a per-field `ResolveUrl` and `StoreImage`, with the UX agreed in `sandbox/html/image-field.html`. |
+| [admin-panel-backlog](admin-panel-backlog.md) | backlog | Admin panel features comparable frameworks offer and StellarAdmin lacks (custom and bulk actions, filters, form tabs, dashboards, file uploads and others). Unscheduled; an item becomes a plan when picked up. |
 | [crud-screen-tag-helpers](crud-screen-tag-helpers.md) | proposed | The independent screen-composition proposal is still unimplemented: there are no `sa-record-page`, `sa-form-actions`, `sa-details`, or `sa-display-field` helpers. |
 | [row-detail-expand-when](row-detail-expand-when.md) | deferred | Per-row expand rules for row details. Deferred until an application needs them; the plan records the smallest route (an admin panel `ExpandWhen` bool backed by a grid marker element) and the reviewed reason-tooltip variant. Prototype in `sandbox/html/row-details-expand-when.html`. |
 | [configured-row-details](configured-row-details.md) | proposed | Row-detail panels configured from display fields, like the view page, instead of hand-written partials. Carried over from info-lists decision 5. |
@@ -49,6 +48,7 @@ Completed work and superseded alternatives are retained for rationale. Each reco
 | [grid-field-expression-binding](archive/grid-field-expression-binding.md) | completed |
 | [grid-nested-field-binding](archive/grid-nested-field-binding.md) | completed |
 | [ice-theme](archive/ice-theme.md) | completed |
+| [image-field](archive/image-field.md) | completed (2026-10-16); `ImageDisplay` and `ImageEditor` for a string property with a per-field `ResolveUrl` and `StoreImage`, the upload endpoint, `sa-image` and `sa-image-upload` in StellarAdmin.UI, `template-renders-empty` and `FieldDisplay.RendersEmptyValue`, samples, skill references and website docs (on the `stellaradmin-rename` branch). UX in `sandbox/html/image-field.html`. |
 | [info-lists](archive/info-lists.md) | completed; `sa-details` and `sa-display-field`, Dashboard display fields, details sections, displays and display handlers, EF Core reference loading, grid column displays and the `AllowView` view page. Configured row details and display defaults continue in their own plans; the website inline-example stylesheet still has the old divided rule. |
 | [identity-entity-constraint-research](archive/identity-entity-constraint-research.md) | completed |
 | [identity-on-resource-baseline](archive/identity-on-resource-baseline.md) | retired; historical Identity example. The role description migration was applied on 2026-09-27. |

@@ -11,7 +11,7 @@ Admin panel features that comparable frameworks (Filament, Nova, Avo, ActiveAdmi
 | Index filters | Scopes (named tabs) only; no field filters such as select, date range or ternary. |
 | Form tabs and wizards | Forms have sections and groups only. |
 | Dashboard and widgets | The home page is a bare landing page with no widget or stat API. |
-| File and image uploads | No upload editor or display. |
+| File uploads | No general file upload editor. Images have `ImageEditor` and `ImageDisplay` ([image-field](archive/image-field.md)). |
 | Fluent read-only fields | `FormFieldOptions.IsReadOnly` has no builder method; read-only comes only from `[ReadOnly]` or `[Editable(false)]` metadata. |
 | Save hooks | No before/after create, update or delete callbacks. EF data source errors propagate. |
 | Search and scope predicates for custom data sources | Only EF Core builders accept predicates; other data sources interpret `ResourceListRequest.Search` and `Scope` themselves. |
