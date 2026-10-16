@@ -83,7 +83,7 @@ Checked 2026-10-14:
 - `StellarAdmin.Core` (0.3.0, 0.4.0) and `StellarAdmin.TagHelpers` (up to 0.4.0) are listed under `jerriep`. They get deprecated in favor of `StellarAdmin.UI` after its first release.
 - `StellarAdmin.UI` and `StellarAdmin.Dashboard` are unused.
 
-The release workflow switches its publishable set from Core and TagHelpers to `StellarAdmin.UI`. Enabling publishing for `StellarAdmin` and `StellarAdmin.EntityFrameworkCore`, version numbers and the NuGet deprecations are release steps outside this rename.
+The release workflow switches its publishable set from Core and TagHelpers to `StellarAdmin.UI`. Since 2026-10-16 it publishes `StellarAdmin.UI`, `StellarAdmin` and `StellarAdmin.EntityFrameworkCore` in dependency order and attaches all six package and symbol files to the release; the trusted publishing policy covers all packages. The version must be above 0.30.0. Version numbers and the NuGet deprecations of Core and TagHelpers remain release steps outside this rename.
 
 ## Phases
 

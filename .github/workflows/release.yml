@@ -1,7 +1,7 @@
 name: Release
 run-name: Release ${{ inputs.version }}${{ inputs.publish && ' (publish)' || ' (dry run)' }}
 
-# Build and verify StellarAdmin.UI, StellarAdmin, and EF Core. Publishing is opt-in and limited to StellarAdmin.UI.
+# Build and verify StellarAdmin.UI, StellarAdmin, and EF Core. Publishing all three is opt-in.
 on:
   workflow_dispatch:
     inputs:
@@ -10,7 +10,7 @@ on:
         required: true
         type: string
       publish:
-        description: "Publish StellarAdmin.UI to NuGet (unchecked runs verification only)"
+        description: "Publish StellarAdmin.UI, StellarAdmin and StellarAdmin.EntityFrameworkCore to NuGet (unchecked runs verification only)"
         required: false
         default: false
         type: boolean
@@ -139,7 +139,7 @@ jobs:
           retention-days: 30
 
   publish:
-    name: Publish StellarAdmin.UI
+    name: Publish packages
     needs: build
     if: ${{ inputs.publish }}
     runs-on: ubuntu-latest
@@ -150,7 +150,8 @@ jobs:
     env:
       SOURCE_SHA: ${{ needs.build.outputs.source_sha }}
       ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
-      PUBLISH_PACKAGES: StellarAdmin.UI
+      # Dependencies first: EF Core depends on StellarAdmin, which depends on StellarAdmin.UI.
+      PUBLISH_PACKAGES: StellarAdmin.UI StellarAdmin StellarAdmin.EntityFrameworkCore
       NUGET_SOURCE: https://api.nuget.org/v3/index.json
       TAG: v${{ inputs.version }}
 
@@ -288,9 +289,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber \
-            "artifacts/StellarAdmin.UI.$VERSION.nupkg" \
-            "artifacts/StellarAdmin.UI.$VERSION.snupkg"
+          files=()
+          for package in $PUBLISH_PACKAGES; do
+            files+=("artifacts/$package.$VERSION.nupkg" "artifacts/$package.$VERSION.snupkg")
+          done
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${files[@]}"
 
       - name: Publish GitHub release
         uses: actions/github-script@v7
