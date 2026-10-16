@@ -11,6 +11,12 @@ public sealed class ResourceInlineCreateOptions
     public InlineAddButton AddButton { get; set; } = InlineAddButton.Both;
 
     /// <summary>
+    ///     What the grid shows after the new row is saved. Defaults to
+    ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
+    /// </summary>
+    public InlineRowAfterSave AfterSave { get; set; } = InlineRowAfterSave.ReloadGrid;
+
+    /// <summary>
     ///     Whether the other rows and the page's controls are dimmed and locked while the new row is edited,
     ///     until it is saved or cancelled. Defaults to <c>true</c>.
     /// </summary>

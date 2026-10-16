@@ -105,11 +105,18 @@ public class ResourceInlineRowTests
     }
 
     [Test]
-    public async Task EditRow_Save_UpdatesAndRendersDisplayRow()
+    public async Task EditRow_SaveKeepingInPlace_UpdatesAndRendersDisplayRow()
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            resource =>
+                ConfigureInlineRows(
+                    resource,
+                    edit: inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
+                )
+        );
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[7].Name"] = "Fountain pen";
@@ -289,11 +296,11 @@ public class ResourceInlineRowTests
     }
 
     [Test]
-    public async Task CreateRow_Save_CreatesAndRendersDisplayRow()
+    public async Task CreateRow_SaveKeepingInPlace_CreatesAndRendersDisplayRow()
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)]);
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
+        await using var sut = await StellarAdminTestHost.CreateAsync(state, KeepCreatedInPlace);
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "Fountain pen";
@@ -340,14 +347,14 @@ public class ResourceInlineRowTests
     }
 
     [Test]
-    public async Task CreateRow_SavedRowNotFound_RefreshesPage()
+    public async Task CreateRow_SaveKeepingInPlaceWithoutKey_RefreshesPage()
     {
         // Arrange
         var state = new ProductState([new(7, "Notebook", 8.50m)])
         {
             CreateResult = ResourceOperationResult.Success(),
         };
-        await using var sut = await StellarAdminTestHost.CreateAsync(state, ConfigureInlineRows);
+        await using var sut = await StellarAdminTestHost.CreateAsync(state, KeepCreatedInPlace);
         using var client = sut.GetTestClient();
         var values = await PrepareForm(client, "/stellaradmin/products");
         values["rows[new].Name"] = "Fountain pen";
@@ -539,6 +546,245 @@ public class ResourceInlineRowTests
         await Assert
             .That(response.Headers.GetValues("SA-Toasts").Single())
             .IsEqualTo($$"""[{"title":"{{expected}}","type":"success"}]""");
+    }
+
+    [Test]
+    public async Task Index_WithPageQuery_CarriesItToRowRequests()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigureSearchableInlineRows
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync(
+            "/stellaradmin/products?search=note&sortBy=Name&sortDirection=desc"
+        );
+
+        // Assert
+        var query = "?search=note&sortBy=Name&sortDirection=desc";
+        await Assert
+            .That(document.RequiredElement("[data-row-edit]").GetAttribute("hx-get"))
+            .IsEqualTo("/stellaradmin/products/editrow/7" + query);
+        await Assert
+            .That(
+                document
+                    .QuerySelectorAll("[data-row-add]")
+                    .Select(button => button.GetAttribute("hx-get"))
+            )
+            .IsEquivalentTo([
+                "/stellaradmin/products/createrow" + query,
+                "/stellaradmin/products/createrow" + query,
+            ]);
+    }
+
+    [Test]
+    public async Task EditRow_WithPageQuery_CarriesItToSave()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigureSearchableInlineRows
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        using var response = await client.GetAsync(
+            "/stellaradmin/products/editrow/7?page=2&search=note"
+        );
+
+        // Assert
+        var row = (await response.ReadRowsAsync()).RequiredElement("tr[data-key='7']");
+        await Assert
+            .That(row.RequiredElement("[data-row-save]").GetAttribute("hx-post"))
+            .IsEqualTo("/stellaradmin/products/editrow/7?page=2&search=note");
+    }
+
+    [Test]
+    public async Task EditRow_Save_ReloadsGridForPageQuery()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m), new(8, "Atlas", 30m)]);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureSearchableInlineRows
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products");
+        values["rows[7].Name"] = "Notepad";
+        values["rows[7].Price"] = "9.00";
+
+        // Act
+        using var response = await PostRowAsync(
+            client,
+            "/stellaradmin/products/editrow/7?search=note",
+            values
+        );
+
+        // Assert
+        var document = await response.ReadDocumentAsync();
+        var rows = document.QuerySelectorAll("#index-page-data-grid tbody > tr[data-key]");
+        await Assert.That(state.Products[0].Name).IsEqualTo("Notepad");
+        await Assert.That(rows.Select(row => row.GetAttribute("data-key"))).IsEquivalentTo(["7"]);
+        await Assert.That(rows[0].TextContent).Contains("Notepad");
+        await Assert.That(state.ListRequests[^1].Search).IsEqualTo("note");
+        await Assert
+            .That(response.Headers.GetValues("HX-Retarget").Single())
+            .IsEqualTo("#index-page-data-grid");
+        await Assert.That(response.Headers.GetValues("HX-Reswap").Single()).IsEqualTo("outerHTML");
+        await Assert
+            .That(response.Headers.GetValues("HX-Reselect").Single())
+            .IsEqualTo("#index-page-data-grid");
+        await Assert.That(response.Headers.GetValues("SA-Saved-Row").Single()).IsEqualTo("7");
+        await Assert.That(response.Headers.Contains("SA-Toasts")).IsFalse();
+    }
+
+    [Test]
+    public async Task EditRow_SaveNoLongerShown_ReloadsGridWithToast()
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m), new(8, "Atlas", 30m)]);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureSearchableInlineRows
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products");
+        values["rows[7].Name"] = "Fountain pen";
+        values["rows[7].Price"] = "9.00";
+
+        // Act
+        using var response = await PostRowAsync(
+            client,
+            "/stellaradmin/products/editrow/7?search=note",
+            values
+        );
+
+        // Assert
+        var document = await response.ReadDocumentAsync();
+        await Assert
+            .That(document.QuerySelectorAll("#index-page-data-grid tbody > tr[data-key]"))
+            .IsEmpty();
+        await Assert.That(response.Headers.Contains("SA-Saved-Row")).IsFalse();
+        await Assert
+            .That(response.Headers.GetValues("SA-Toasts").Single())
+            .IsEqualTo(
+                """[{"title":"Product saved","description":"It isn\u0027t on this page with the current search, scope and sort.","type":"success"}]"""
+            );
+    }
+
+    [Test]
+    [Arguments("Notepad", "Product added", true)]
+    [Arguments("Fountain pen", "Product added", false)]
+    public async Task CreateRow_Save_ReloadsGridForPageQuery(string name, string toast, bool shown)
+    {
+        // Arrange
+        var state = new ProductState([new(7, "Notebook", 8.50m)]);
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            state,
+            ConfigureSearchableInlineRows
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products");
+        values["rows[new].Name"] = name;
+        values["rows[new].Price"] = "12.00";
+
+        // Act
+        using var response = await PostRowAsync(
+            client,
+            "/stellaradmin/products/createrow?search=note",
+            values
+        );
+
+        // Assert
+        var document = await response.ReadDocumentAsync();
+        var keys = document
+            .QuerySelectorAll("#index-page-data-grid tbody > tr[data-key]")
+            .Select(row => row.GetAttribute("data-key"));
+        await Assert.That(state.Products.Count).IsEqualTo(2);
+        await Assert.That(keys).IsEquivalentTo(shown ? new[] { "7", "2" } : ["7"]);
+        await Assert.That(response.Headers.Contains("SA-Saved-Row")).IsEqualTo(shown);
+        await Assert
+            .That(response.Headers.GetValues("SA-Toasts").Single())
+            .IsEqualTo(
+                shown
+                    ? $$"""[{"title":"{{toast}}","type":"success"}]"""
+                    : $$"""[{"title":"{{toast}}","description":"It isn\u0027t on this page with the current search, scope and sort.","type":"success"}]"""
+            );
+    }
+
+    [Test]
+    public async Task EditRow_SaveNoLongerShown_UsesConfiguredMessages()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                ConfigureSearchableInlineRows(resource);
+                resource.Index(index =>
+                {
+                    index.SavedMessage = "Stock updated";
+                    index.NotShownMessage = "Clear the search to see it.";
+                });
+            },
+            admin =>
+                admin.ConfigureResourceLabels(labels =>
+                    labels.Index(index =>
+                    {
+                        index.SavedMessage = resource => "Ignored";
+                        index.NotShownMessage = resource => "Ignored";
+                    })
+                )
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products");
+        values["rows[7].Name"] = "Fountain pen";
+        values["rows[7].Price"] = "9.00";
+
+        // Act
+        using var response = await PostRowAsync(
+            client,
+            "/stellaradmin/products/editrow/7?search=note",
+            values
+        );
+
+        // Assert
+        await Assert
+            .That(response.Headers.GetValues("SA-Toasts").Single())
+            .IsEqualTo(
+                """[{"title":"Stock updated","description":"Clear the search to see it.","type":"success"}]"""
+            );
+    }
+
+    // A script's request, whose toasts come back in a header
+    private static async Task<HttpResponseMessage> PostRowAsync(
+        HttpClient client,
+        string url,
+        Dictionary<string, string> values
+    )
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new FormUrlEncodedContent(values),
+        };
+        request.Headers.Add("Sec-Fetch-Mode", "cors");
+
+        return await client.SendAsync(request);
+    }
+
+    private static void KeepCreatedInPlace(ResourceBuilder<Product> resource) =>
+        ConfigureInlineRows(
+            resource,
+            create: inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace
+        );
+
+    private static void ConfigureSearchableInlineRows(ResourceBuilder<Product> resource)
+    {
+        ConfigureInlineRows(resource);
+        resource.Index(index => index.EnableSearch());
     }
 
     private static void ConfigureInlineRows(ResourceBuilder<Product> resource) =>

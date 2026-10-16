@@ -89,12 +89,12 @@ public class ResourceController<TResource>(
     ///     Renders a new row in edit mode, for creating a resource in the index grid.
     /// </summary>
     [HttpGet]
-    public IActionResult CreateRow()
+    public IActionResult CreateRow([FromQuery] ResourceIndexQuery query)
     {
         return
             _resourceOptions.Create is { InlineRow: not null } create
             && _resourceOptions.KeySelector is not null
-            ? NewRowView(create.CreateModel())
+            ? NewRowView(create.CreateModel(), query)
             : NotFound();
     }
 
@@ -104,10 +104,13 @@ public class ResourceController<TResource>(
     [HttpPost]
     [ActionName(nameof(CreateRow))]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateRowPost(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateRowPost(
+        [FromQuery] ResourceIndexQuery query,
+        CancellationToken cancellationToken
+    )
     {
         if (
-            _resourceOptions.Create is not { InlineRow: not null }
+            _resourceOptions.Create is not { InlineRow: { } inline }
             || _resourceOptions.KeySelector is not { } keySelector
         )
         {
@@ -125,17 +128,20 @@ public class ResourceController<TResource>(
 
         if (result is not { IsSuccess: true })
         {
-            return NewRowView(resource);
+            return NewRowView(resource, query);
         }
 
         // A create model other than the resource has no key selector, so its handler returns the key
         var key = result.Key ?? (resource is TResource created ? keySelector(created) : null);
         var labels = CreateLabelContext();
-        HttpContext
-            .RequestServices.GetRequiredService<IToastNotifier>()
-            .Success(
-                _resourceOptions.Index.CreatedMessage ?? _labelOptions.Index.CreatedMessage(labels)
-            );
+        var message =
+            _resourceOptions.Index.CreatedMessage ?? _labelOptions.Index.CreatedMessage(labels);
+        if (inline.AfterSave == InlineRowAfterSave.ReloadGrid)
+        {
+            return await ReloadedGridView(query, key, message, cancellationToken);
+        }
+
+        HttpContext.RequestServices.GetRequiredService<IToastNotifier>().Success(message);
 
         return await SavedRowView(key, cancellationToken);
     }
@@ -357,6 +363,7 @@ public class ResourceController<TResource>(
     [HttpGet]
     public async Task<IActionResult> EditRow(
         [FromRoute] string id,
+        [FromQuery] ResourceIndexQuery query,
         CancellationToken cancellationToken
     )
     {
@@ -371,7 +378,9 @@ public class ResourceController<TResource>(
 
         var resource = await LoadEditModelAsync(id, cancellationToken);
 
-        return resource is null ? NotFound() : await EditRowView(id, resource, cancellationToken);
+        return resource is null
+            ? NotFound()
+            : await EditRowView(id, resource, query, cancellationToken);
     }
 
     /// <summary>
@@ -382,11 +391,12 @@ public class ResourceController<TResource>(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditRowPost(
         [FromRoute] string id,
+        [FromQuery] ResourceIndexQuery query,
         CancellationToken cancellationToken
     )
     {
         if (
-            _resourceOptions.Edit is not { InlineRow: not null } edit
+            _resourceOptions.Edit is not { InlineRow: { } inline } edit
             || _resourceOptions.KeySelector is null
             || string.IsNullOrEmpty(id)
         )
@@ -404,7 +414,7 @@ public class ResourceController<TResource>(
         var prefix = ModelNames.CreateIndexModelName(InlineRowsPrefix, id);
         if (!await TryBindConfiguredFieldsAsync(resource, edit.ModelType, fields, prefix))
         {
-            return await EditRowView(id, resource, cancellationToken);
+            return await EditRowView(id, resource, query, cancellationToken);
         }
 
         var result = await UpdateAsync(id, resource, cancellationToken);
@@ -416,10 +426,12 @@ public class ResourceController<TResource>(
         if (!result.IsSuccess)
         {
             AddValidationErrors(result, fields, prefix);
-            return await EditRowView(id, resource, cancellationToken);
+            return await EditRowView(id, resource, query, cancellationToken);
         }
 
-        return await SavedRowView(id, cancellationToken);
+        return inline.AfterSave == InlineRowAfterSave.ReloadGrid
+            ? await ReloadedGridView(query, id, null, cancellationToken)
+            : await SavedRowView(id, cancellationToken);
     }
 
     /// <summary>
@@ -1052,6 +1064,7 @@ public class ResourceController<TResource>(
     private async Task<IActionResult> EditRowView(
         string id,
         object resource,
+        ResourceIndexQuery query,
         CancellationToken cancellationToken
     )
     {
@@ -1062,7 +1075,7 @@ public class ResourceController<TResource>(
             : RowsView(
                 CreateIndexModel(
                     rows,
-                    new(),
+                    query,
                     new(),
                     null,
                     rowsOnly: true,
@@ -1263,7 +1276,8 @@ public class ResourceController<TResource>(
         ResourceIndexQuery query,
         ResourceListRequest request,
         CancellationToken cancellationToken,
-        bool redirectOutOfRange = true
+        bool redirectOutOfRange = true,
+        Action<IReadOnlyList<TResource>>? loaded = null
     )
     {
         var result = await dataSource.ListAsync(request, cancellationToken);
@@ -1322,6 +1336,8 @@ public class ResourceController<TResource>(
             );
         }
 
+        loaded?.Invoke(result.Items);
+
         return ResourceView(
             nameof(Index),
             CreateIndexModel(result.Items, query, request, pagingModel)
@@ -1347,8 +1363,9 @@ public class ResourceController<TResource>(
             .ToArray();
     }
 
-    private PartialViewResult NewRowView(object resource) =>
-        RowsView(CreateIndexModel([], new(), new(), null, rowsOnly: true, newItem: resource));
+    // The row keeps the page's query, so a save can reload the page as it shows
+    private PartialViewResult NewRowView(object resource, ResourceIndexQuery query) =>
+        RowsView(CreateIndexModel([], query, new(), null, rowsOnly: true, newItem: resource));
 
     private ViewResult ResourceView(string action, object model)
     {
@@ -1357,6 +1374,59 @@ public class ResourceController<TResource>(
             : "Resource" + action;
 
         return View(viewName, model);
+    }
+
+    // After an inline save, the page's grid as its query shows it, replacing the whole grid. A row the page shows is
+    // named for the script to flash and focus; one it doesn't is confirmed by a toast, as a new row always is
+    private async Task<IActionResult> ReloadedGridView(
+        ResourceIndexQuery query,
+        string? key,
+        string? createdMessage,
+        CancellationToken cancellationToken
+    )
+    {
+        if (!TryCreateListRequest(query, out var request))
+        {
+            return BadRequest();
+        }
+
+        var shown = false;
+        var view = await IndexView(
+            query,
+            request,
+            cancellationToken,
+            redirectOutOfRange: false,
+            loaded: items => shown = items.Any(item => _resourceOptions.KeySelector!(item) == key)
+        );
+
+        var labels = CreateLabelContext();
+        var notShown =
+            key is null || shown
+                ? null
+                : _resourceOptions.Index.NotShownMessage
+                    ?? _labelOptions.Index.NotShownMessage(labels);
+        var toasts = HttpContext.RequestServices.GetRequiredService<IToastNotifier>();
+        if (createdMessage is not null)
+        {
+            toasts.Success(createdMessage, notShown);
+        }
+        else if (notShown is not null)
+        {
+            toasts.Success(
+                _resourceOptions.Index.SavedMessage ?? _labelOptions.Index.SavedMessage(labels),
+                notShown
+            );
+        }
+
+        Response.Headers["HX-Retarget"] = "#index-page-data-grid";
+        Response.Headers["HX-Reswap"] = "outerHTML";
+        Response.Headers["HX-Reselect"] = "#index-page-data-grid";
+        if (shown)
+        {
+            Response.Headers["SA-Saved-Row"] = key;
+        }
+
+        return view;
     }
 
     private PartialViewResult RowsView(object model) => PartialView("_IndexDataGrid", model);

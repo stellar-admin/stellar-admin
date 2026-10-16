@@ -6,6 +6,12 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceInlineEditOptions
 {
     /// <summary>
+    ///     What the grid shows after a row is saved. Defaults to
+    ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
+    /// </summary>
+    public InlineRowAfterSave AfterSave { get; set; } = InlineRowAfterSave.ReloadGrid;
+
+    /// <summary>
     ///     Whether the other rows and the page's controls are dimmed and locked while a row is edited,
     ///     until it is saved or cancelled. Defaults to <c>true</c>.
     /// </summary>

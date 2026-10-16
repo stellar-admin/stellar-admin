@@ -300,6 +300,29 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+function flashRow(row) {
+  row.setAttribute("data-saved", "");
+  setTimeout(() => row.removeAttribute("data-saved"), 1400);
+  row.querySelector("[data-row-edit]")?.focus({ preventScroll: true });
+}
+
+// The grid's footer, with its record count, as the page's address shows it
+function reloadGridFooter() {
+  const selector = "#index-page-grid [data-slot='card-footer']";
+  const footer = document.querySelector(selector);
+  if (footer) {
+    htmx.ajax("GET", location.href, {
+      source: footer,
+      target: footer,
+      swap: "outerHTML",
+      select: selector,
+      selectOOB: undefined,
+      push: undefined,
+      replace: undefined,
+    });
+  }
+}
+
 // A response swaps out the row it came from, and htmx sends the swap's end for the detached row's button to the
 // document: the work after the swap is set up before it, by request, with the rows around the one replaced to find
 // what came in its place
@@ -337,7 +360,8 @@ document.addEventListener("htmx:before:swap", (event) => {
 
   const body = row?.parentElement;
   const previous = row?.previousElementSibling;
-  rowSwaps.set(event.detail.ctx, () => {
+  const ctx = event.detail.ctx;
+  rowSwaps.set(ctx, () => {
     const grid = document.getElementById("index-page-grid");
     const editing = grid?.querySelector("tr[data-editing]");
     if (kind === "add" && editing) {
@@ -347,17 +371,27 @@ document.addEventListener("htmx:before:swap", (event) => {
       focusRow(editing, { select: true });
     } else if (kind === "save" && editing) {
       focusRow(editing, { invalid: true });
+    } else if (kind === "save" && ctx.response?.headers.has("HX-Retarget")) {
+      // A save that reloaded the grid names the saved row when the page shows it. Without it, focus goes to the Add
+      // button after adding, or else to the first row
+      const key = ctx.response.headers.get("SA-Saved-Row");
+      const display = key ? grid?.querySelector(`.sa-table-body > tr[data-key="${CSS.escape(key)}"]`) : null;
+      if (display) {
+        flashRow(display);
+      } else {
+        (row?.dataset.key === "new" ? addButton() : grid?.querySelector(".sa-table-body [data-row-edit]"))?.focus();
+      }
     } else if (kind === "save") {
-      // A saved row takes the place of the editing row, after the row that was before it
+      // A saved row takes the place of the editing row, after the row that was before it. The pager's count may have
+      // changed, so the footer is reloaded
       const saved = previous?.isConnected ? previous.nextElementSibling : body?.firstElementChild;
       const display = saved?.matches("tr[data-key]")
         ? saved
         : grid?.querySelector(`tr[data-key="${CSS.escape(row?.dataset.key ?? "")}"]`);
       if (display) {
-        display.setAttribute("data-saved", "");
-        setTimeout(() => display.removeAttribute("data-saved"), 1400);
-        display.querySelector("[data-row-edit]")?.focus({ preventScroll: true });
+        flashRow(display);
       }
+      reloadGridFooter();
     }
   });
 });

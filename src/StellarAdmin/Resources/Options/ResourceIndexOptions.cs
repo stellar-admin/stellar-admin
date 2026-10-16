@@ -50,6 +50,14 @@ public class ResourceIndexOptions
     public string? EditLabel { get; set; }
 
     /// <summary>
+    ///     The description of the toast shown when a saved inline row isn't on the reloaded page.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? NotShownMessage { get; set; }
+
+    /// <summary>
     ///     The paging settings, or null when paging is disabled.
     /// </summary>
     public ResourcePagingOptions? Paging { get; set; }
@@ -66,6 +74,14 @@ public class ResourceIndexOptions
     ///     Uses the global resource label callback when null.
     /// </remarks>
     public string? SaveLabel { get; set; }
+
+    /// <summary>
+    ///     The message of the toast shown when an edited inline row isn't on the reloaded page.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? SavedMessage { get; set; }
 
     /// <summary>
     ///     The scope settings, or null when scopes are disabled.

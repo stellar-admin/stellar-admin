@@ -79,6 +79,22 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
+    ///     The callback that generates the default description of the toast shown when a saved
+    ///     inline row isn't on the reloaded page.
+    /// </summary>
+    public Func<ResourceLabelContext, string> NotShownMessage
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Index.NotShownMessage = value
+            );
+        }
+    }
+
+    /// <summary>
     ///     The callback that generates the default inline row save button label.
     /// </summary>
     public Func<ResourceLabelContext, string> SaveLabel
@@ -88,6 +104,22 @@ public sealed class ResourceIndexLabelsBuilder
             ArgumentNullException.ThrowIfNull(value);
 
             _services.Configure<ResourceLabelOptions>(options => options.Index.SaveLabel = value);
+        }
+    }
+
+    /// <summary>
+    ///     The callback that generates the default message of the toast shown when an edited inline
+    ///     row isn't on the reloaded page.
+    /// </summary>
+    public Func<ResourceLabelContext, string> SavedMessage
+    {
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            _services.Configure<ResourceLabelOptions>(options =>
+                options.Index.SavedMessage = value
+            );
         }
     }
 

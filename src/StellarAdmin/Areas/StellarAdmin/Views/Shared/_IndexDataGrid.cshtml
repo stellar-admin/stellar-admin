@@ -21,6 +21,11 @@
 
     // The operations that dim the other rows while their row is edited
     var dim = string.Join(' ', new[] { inline?.Edit?.DimOtherRows == true ? "edit" : null, inline?.Create?.DimOtherRows == true ? "create" : null }.OfType<string>());
+
+    // A row's requests carry the page's query, so a save can reload the page as it shows
+    var query = Model.Query;
+    var queryPage = query.Page is null ? null : Model.Paging?.Page ?? query.Page;
+    string? RowUrl(string action, string? id) => Url.Action(action, new { id, page = queryPage, pageSize = query.PageSize, search = query.Search, scope = query.Scope, sortBy = query.SortBy, sortDirection = query.SortDirection });
 }
 
 <sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
@@ -87,7 +92,7 @@
                 {
                     @* Swaps the row for its editing row *@
                     <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" data-row-edit
-                               hx-get="@Url.Action("EditRow", new { id = resourceId })" hx-target="closest tr" hx-swap="outerHTML"
+                               hx-get="@RowUrl("EditRow", resourceId)" hx-target="closest tr" hx-swap="outerHTML"
                                hx-select="" hx-select-oob="" hx-push-url="false"
                                aria-label="@Model.EditLabel" interestfor="@editTooltipId">
                         <sa-icon name="square-pen" />
@@ -112,15 +117,17 @@
                 <sa-data-grid-edit-template>
                     @{
                         var key = isNewRow ? "new" : inline!.EditingKey!;
-                        var saveUrl = isNewRow ? Url.Action("CreateRow", new { id = (string?)null }) : Url.Action("EditRow", new { id = key });
+                        var saveUrl = isNewRow ? RowUrl("CreateRow", null) : RowUrl("EditRow", key);
                         var saveTooltipId = $"--resource-save-{key}";
                         var cancelTooltipId = $"--resource-cancel-{key}";
 
-                        // A new row is swapped for its display and details rows. An edited row kept its details row, so
-                        // only its display row is swapped in, and the details' content is refreshed unless it loads on
-                        // demand. A rejected save brings the editing row back with the row's message after it
+                        // A save that reloads the grid retargets its response to the grid. Otherwise a new row is swapped for
+                        // its display and details rows, and an edited row, which kept its details row, swaps in only its
+                        // display row, refreshing the details' content unless it loads on demand. A rejected save brings
+                        // the editing row back with the row's message after it
                         var select = isNewRow ? "" : "tr[data-key], tr.sa-row-message";
-                        var selectOob = !isNewRow && Model.RowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == false
+                        var selectOob = !isNewRow && inline.Edit?.AfterSave == InlineRowAfterSave.KeepInPlace
+                                        && Model.RowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == false
                             ? $"#index-page-grid-detail-{System.Text.RegularExpressions.Regex.Replace(key, @"\s", "_")}:innerHTML"
                             : "";
                     }
@@ -148,7 +155,7 @@
         @* Adds the new row after this row at the top, or before it at the bottom *@
         <sa-data-grid-add-row position="@(inlineCreate.Position == InlineCreatePosition.Top ? DataGridAddRowPosition.Top : DataGridAddRowPosition.Bottom)">
             <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" data-row-add
-                       hx-get="@Url.Action("CreateRow", new { id = (string?)null })" hx-target="closest tr"
+                       hx-get="@RowUrl("CreateRow", null)" hx-target="closest tr"
                        hx-swap="@(inlineCreate.Position == InlineCreatePosition.Top ? "afterend" : "beforebegin")"
                        hx-select="" hx-select-oob="" hx-push-url="false">
                 <sa-icon name="plus" />

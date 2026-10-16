@@ -2,13 +2,14 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.TestHost;
 using StellarAdmin.EntityFrameworkCore.IntegrationTests.Infrastructure;
+using StellarAdmin.Resources;
 
 namespace StellarAdmin.EntityFrameworkCore.IntegrationTests.Resources;
 
 public class ResourceInlineRowTests
 {
     [Test]
-    public async Task EditRow_Save_RendersRowThroughIndexQuery()
+    public async Task EditRow_SaveKeepingInPlace_RendersRowThroughIndexQuery()
     {
         // Arrange
         await using var sut = await EfCoreTestHost.CreateAsync(resource =>
@@ -29,7 +30,7 @@ public class ResourceInlineRowTests
                     fields.Add(product => product.Name);
                     fields.Add(product => product.Price);
                 });
-                edit.UseInlineRow();
+                edit.UseInlineRow(inline => inline.AfterSave = InlineRowAfterSave.KeepInPlace);
             });
         });
         using var client = sut.GetTestClient();

@@ -35,9 +35,23 @@ public sealed class ResourceIndexLabelOptions
         resource => $"Edit {resource.SingularLabel}";
 
     /// <summary>
+    ///     The callback that generates the default description of the toast shown when a saved
+    ///     inline row isn't on the reloaded page.
+    /// </summary>
+    public Func<ResourceLabelContext, string> NotShownMessage { get; set; } =
+        resource => "It isn't on this page with the current search, scope and sort.";
+
+    /// <summary>
     ///     The callback that generates the default inline row save button label.
     /// </summary>
     public Func<ResourceLabelContext, string> SaveLabel { get; set; } = resource => "Save";
+
+    /// <summary>
+    ///     The callback that generates the default message of the toast shown when an edited inline
+    ///     row isn't on the reloaded page.
+    /// </summary>
+    public Func<ResourceLabelContext, string> SavedMessage { get; set; } =
+        resource => $"{resource.SingularLabel} saved";
 
     /// <summary>
     ///     The callback that generates the default index search placeholder.

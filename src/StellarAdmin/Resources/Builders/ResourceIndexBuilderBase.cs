@@ -67,6 +67,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
+    ///     The description of the toast shown when a saved inline row isn't on the reloaded page.
+    /// </summary>
+    public string? NotShownMessage
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.NotShownMessage = value
+            );
+    }
+
+    /// <summary>
     ///     The inline row save button label.
     /// </summary>
     public string? SaveLabel
@@ -74,6 +85,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
         set =>
             Services.Configure<ResourceOptions<TResource>>(options =>
                 options.Index.SaveLabel = value
+            );
+    }
+
+    /// <summary>
+    ///     The message of the toast shown when an edited inline row isn't on the reloaded page.
+    /// </summary>
+    public string? SavedMessage
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.SavedMessage = value
             );
     }
 

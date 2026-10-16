@@ -18,6 +18,15 @@ public sealed class ResourceInlineCreateBuilder
     }
 
     /// <summary>
+    ///     What the grid shows after the new row is saved. Defaults to
+    ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
+    /// </summary>
+    public InlineRowAfterSave AfterSave
+    {
+        set => _configure(options => options.AfterSave = value);
+    }
+
+    /// <summary>
     ///     Whether the other rows and the page's controls are dimmed and locked while the new row is edited,
     ///     until it is saved or cancelled. Defaults to <c>true</c>.
     /// </summary>
