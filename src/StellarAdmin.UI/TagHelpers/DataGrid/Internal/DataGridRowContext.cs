@@ -17,6 +17,9 @@ internal sealed class DataGridRowContext
     /// <summary>Whether the row renders its columns' edit templates.</summary>
     public bool Editing { get; init; }
 
+    /// <summary>Whether the row is the new item's, whose columns without an edit template are empty.</summary>
+    public bool IsNew { get; init; }
+
     /// <summary>Cells deposited by the columns during this row pass, in document order.</summary>
     public List<DataGridCell> Cells { get; } = [];
 

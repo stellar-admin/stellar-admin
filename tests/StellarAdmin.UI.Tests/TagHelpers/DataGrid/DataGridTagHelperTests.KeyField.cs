@@ -55,6 +55,21 @@ public partial class DataGridTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WithEmptyKeyField_RendersNoRowKeys()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateGrid(context, Bookings);
+        sut.KeyField = "";
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert.That(html.QuerySelector("tr[data-key]")).IsNull();
+    }
+
+    [Test]
     public async Task ProcessAsync_WithSelectionWithoutKeyField_Throws()
     {
         // Arrange

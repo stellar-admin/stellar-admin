@@ -36,6 +36,38 @@ internal static class EfCoreResourceKey
         return true;
     }
 
+    // Matches the entities whose primary key is one of the resource IDs; IDs that are not valid key values match nothing
+    public static Expression<Func<TEntity, bool>> CreatePredicate<TEntity>(
+        DbContext db,
+        IEnumerable<string> ids
+    )
+        where TEntity : class
+    {
+        var property = db
+            .Model.FindEntityType(typeof(TEntity))!
+            .FindPrimaryKey()!
+            .Properties.Single();
+        var keys = ids.Select(id =>
+                TryParseResourceId(id, property.ClrType, out var key) ? key : null
+            )
+            .Where(key => key is not null)
+            .ToArray();
+        var typedKeys = Array.CreateInstance(property.ClrType, keys.Length);
+        Array.Copy(keys, typedKeys, keys.Length);
+
+        var parameter = Expression.Parameter(typeof(TEntity), "entity");
+        return Expression.Lambda<Func<TEntity, bool>>(
+            Expression.Call(
+                typeof(Enumerable),
+                nameof(Enumerable.Contains),
+                [property.ClrType],
+                Expression.Constant(typedKeys),
+                Expression.Property(parameter, property.Name)
+            ),
+            parameter
+        );
+    }
+
     private static bool TryParseResourceId(string id, Type underlyingType, out object? parsedId)
     {
         if (

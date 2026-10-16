@@ -60,6 +60,9 @@ public static class ViewDataKeys
     // The column definitions of the form scope whose items are rendered
     internal const string FormColumns = "StellarAdminFormColumns";
 
+    // The model state keys whose errors grid cells show, so the row's message shows the others
+    internal const string GridCellErrors = "StellarAdminGridCellErrors";
+
     // The label orientation display fields inherit from their sections
     internal const string FormOrientation = "StellarAdminFormOrientation";
 

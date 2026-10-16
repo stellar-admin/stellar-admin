@@ -51,6 +51,11 @@ public interface IResourceIndexPageViewModel
     string? EditLabel { get; }
 
     /// <summary>
+    ///     The inline rows, or null when resources are neither edited nor created inline.
+    /// </summary>
+    ResourceIndexInlineRowsViewModel? InlineRows { get; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     IEnumerable Items { get; }
@@ -69,6 +74,11 @@ public interface IResourceIndexPageViewModel
     ///     The row details settings, or null when rows do not expand.
     /// </summary>
     ResourceRowDetailsOptions? RowDetails { get; }
+
+    /// <summary>
+    ///     Whether only the grid's rows are rendered, for a row request.
+    /// </summary>
+    bool RowsOnly { get; }
 
     /// <summary>
     ///     The scope tabs.

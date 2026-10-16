@@ -25,6 +25,14 @@ internal static class HtmlTestExtensions
                 await response.Content.ReadAsStringAsync()
             );
         }
+
+        // A response of table rows parses inside a table body, where the rows belong
+        public async Task<IHtmlDocument> ReadRowsAsync()
+        {
+            return await new HtmlParser().ParseDocumentAsync(
+                $"<table><tbody>{await response.Content.ReadAsStringAsync()}</tbody></table>"
+            );
+        }
     }
 
     extension(IParentNode node)

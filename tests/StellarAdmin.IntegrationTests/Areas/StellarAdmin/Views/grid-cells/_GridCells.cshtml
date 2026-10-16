@@ -6,5 +6,5 @@
 }
 @foreach (var field in (IReadOnlyList<FormFieldOptions>)ViewData["GridFields"]!)
 {
-    <td data-field="@field.FieldName">@await Html.GridEditorAsync(field)</td>
+    <td data-field="@field.FieldName">@await Html.GridEditorAsync(field, Model)</td>
 }

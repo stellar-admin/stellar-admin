@@ -106,6 +106,7 @@ public partial class DataGridTagHelperTests
         await Assert.That(rows[0].GetAttribute("data-key")).IsEqualTo("new");
         await Assert.That(rows[0].HasAttribute("data-editing")).IsTrue();
         await Assert.That(rows[0].Children[0].TextContent).IsEqualTo("edit:rows[new].Reference");
+        await Assert.That(rows[0].Children[1].TextContent).IsEmpty();
         await Assert.That(rows[1].GetAttribute("data-key")).IsEqualTo("24817");
     }
 

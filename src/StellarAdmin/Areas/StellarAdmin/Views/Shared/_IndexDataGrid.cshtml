@@ -7,9 +7,21 @@
     // each row, so the count and the columns' displays live outside it
     var row = 0;
     var displays = Model.Columns.Select(column => FieldDisplayDefaults.Resolve(column, MetadataProvider)).ToArray();
+
+    // A row request renders either a new row or an edited row, and the page neither, so a column has an edit template
+    // when it edits a field of the row being rendered. Its lookups open that form's lookup sheet
+    var inline = Model.InlineRows;
+    var isNewRow = inline?.NewItem is not null;
+    var rowFields = isNewRow ? inline!.CreateFields : inline?.EditingKey is not null ? inline.EditFields : null;
+    if (rowFields is not null)
+    {
+        ViewData[ViewDataKeys.LookupForm] = isNewRow ? "create" : "edit";
+    }
 }
 
-<sa-data-grid items="Model.Items" class="sa-resource-index-grid">
+<sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
+              editing-keys="@(inline?.EditingKey is { } editingKey ? new[] { editingKey } : null)"
+              new-item="inline?.NewItem" rows-only="Model.RowsOnly">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
                        asp-route-sortBy="{sort}" asp-route-sortDirection="{dir}"
                        preserve-query="true" preserve-query-except="page"
@@ -25,12 +37,20 @@
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
                              template="@display?.TemplateName" empty-text="@column.EmptyText"
                              sortable="@column.Sortable" sort-field="@column.FieldName"
-                             class="@(display is NumberDisplay ? "text-right" : null)" />
+                             class="@(display is NumberDisplay ? "text-right" : null)">
+            @if (rowFields?[index] is { } field)
+            {
+                @* An edited row's cells edit its edit model, which may be another type than the grid's item *@
+                <sa-data-grid-edit-template>
+                    @await Html.GridEditorAsync(field, inline!.EditModel ?? Html.GridItem<object>())
+                </sa-data-grid-edit-template>
+            }
+        </sa-data-grid-column>
     }
     @{
         ViewContext.ViewData.Remove(ViewDataKeys.FieldDisplay);
     }
-    @if (Model.CanView || Model.CanEdit || Model.Delete is not null)
+    @if (Model.CanView || Model.CanEdit || Model.Delete is not null || inline is not null)
     {
         <sa-data-grid-column sortable="false" class="w-px whitespace-nowrap">
             <sa-data-grid-item-template>
@@ -58,6 +78,17 @@
                     </sa-linkbutton>
                     <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
                 }
+                else if (inline?.EditFields is not null)
+                {
+                    @* Swaps the row for its editing row *@
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                               hx-get="@Url.Action("EditRow", new { id = resourceId })" hx-target="closest tr" hx-swap="outerHTML"
+                               hx-select="" hx-select-oob="" hx-push-url="false"
+                               aria-label="@Model.EditLabel" interestfor="@editTooltipId">
+                        <sa-icon name="square-pen" />
+                    </sa-button>
+                    <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
+                }
                 @if (Model.Delete is not null)
                 {
                     <form method="post" asp-action="Delete" asp-route-id="@resourceId" asp-route-page="@(Model.Query.Page is null ? null : Model.Paging?.Page)" asp-route-pageSize="@Model.Query.PageSize" asp-route-search="@Model.Query.Search" asp-route-scope="@Model.Query.Scope" asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection" class="inline-block" data-resource-delete
@@ -70,6 +101,40 @@
                     <sa-tooltip id="@deleteTooltipId">@Model.DeleteLabel</sa-tooltip>
                 }
             </sa-data-grid-item-template>
+            @* Renders only in a row in edit mode; on the page it switches on the grid's editing behaviour *@
+            @if (inline is not null)
+            {
+                <sa-data-grid-edit-template>
+                    @{
+                        var key = isNewRow ? "new" : inline!.EditingKey!;
+                        var saveUrl = isNewRow ? Url.Action("CreateRow", new { id = (string?)null }) : Url.Action("EditRow", new { id = key });
+                        var saveTooltipId = $"--resource-save-{key}";
+                        var cancelTooltipId = $"--resource-cancel-{key}";
+
+                        // A new row is swapped for its display and details rows. An edited row kept its details row, so
+                        // only its display row is swapped in, and the details' content is refreshed unless it loads on
+                        // demand. A rejected save brings the editing row back with the row's message after it
+                        var select = isNewRow ? "" : "tr[data-key], tr.sa-row-message";
+                        var selectOob = !isNewRow && Model.RowDetails?.Panels.Any(panel => panel.LoadsOnDemand) == false
+                            ? $"#index-page-grid-detail-{System.Text.RegularExpressions.Regex.Replace(key, @"\s", "_")}:innerHTML"
+                            : "";
+                    }
+                    @* The row posts its fields and the token; a form cannot hold a table row *@
+                    @Html.AntiForgeryToken()
+                    <sa-button size="ButtonSize.IconSmall" data-row-save
+                               hx-post="@saveUrl" hx-include="closest tr" hx-target="closest tr" hx-swap="outerHTML"
+                               hx-select="@select" hx-select-oob="@selectOob" hx-push-url="false"
+                               aria-label="@inline!.SaveLabel" interestfor="@saveTooltipId">
+                        <sa-icon name="check" />
+                    </sa-button>
+                    <sa-tooltip id="@saveTooltipId">@inline.SaveLabel</sa-tooltip>
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" data-row-cancel
+                               aria-label="@inline.CancelLabel" interestfor="@cancelTooltipId">
+                        <sa-icon name="x" />
+                    </sa-button>
+                    <sa-tooltip id="@cancelTooltipId">@inline.CancelLabel</sa-tooltip>
+                </sa-data-grid-edit-template>
+            }
         </sa-data-grid-column>
     }
     @if (Model.RowDetails is { } rowDetails)
@@ -151,3 +216,28 @@
         </sa-empty>
     </sa-data-grid-empty>
 </sa-data-grid>
+@if (Model.RowsOnly && rowFields is not null && ViewData.ModelState.ErrorCount > 0)
+{
+    @* Errors no cell shows: the operation's own, and those of fields whose cells rendered no editor *@
+    var shown = ViewData[ViewDataKeys.GridCellErrors] as HashSet<string> ?? [];
+    var messages = ViewData.ModelState
+        .Where(entry => !shown.Contains(entry.Key))
+        .SelectMany(entry => entry.Value!.Errors)
+        .Select(error => string.IsNullOrEmpty(error.ErrorMessage) ? "The value is invalid." : error.ErrorMessage)
+        .Distinct()
+        .ToArray();
+    if (messages.Length > 0)
+    {
+        var columns = Model.Columns.Count + 1 + (Model.RowDetails?.Toggle is DataGridRowDetailToggle.Leading or DataGridRowDetailToggle.Trailing ? 1 : 0);
+        <tr class="sa-table-row sa-row-message" data-slot="table-row">
+            <td class="sa-table-cell" data-slot="table-cell" colspan="@columns">
+                <div class="sa-row-message-body" role="alert">
+                    @foreach (var message in messages)
+                    {
+                        <span>@message</span>
+                    }
+                </div>
+            </td>
+        </tr>
+    }
+}

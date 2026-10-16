@@ -18,6 +18,7 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Destination>();
         sut.UseDataSource<DestinationDataSource>();
+        sut.UseKey(destination => destination.Id);
         ConfigureInlineRow(sut, operation);
         sut.Index(index =>
             index.Columns(columns =>
@@ -46,6 +47,7 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Destination>();
         sut.UseDataSource<DestinationDataSource>();
+        sut.UseKey(destination => destination.Id);
         ConfigureInlineRow(sut, operation);
         sut.Index(index =>
             index.Columns(columns =>
@@ -74,6 +76,7 @@ public partial class ResourceBuilderTests
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Destination>();
         sut.UseDataSource<DestinationDataSource>();
+        sut.UseKey(destination => destination.Id);
         sut.AllowCreate(create =>
         {
             create.Fields(fields => fields.Add(destination => destination.CountryId));
@@ -98,12 +101,41 @@ public partial class ResourceBuilderTests
     }
 
     [Test]
+    [Arguments("edit")]
+    [Arguments("create")]
+    public async Task UseInlineRow_WithoutKey_RejectsConfiguration(string operation)
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var sut = services.AddStellarAdmin().AddResource<Destination>();
+        sut.UseDataSource<DestinationDataSource>();
+        ConfigureInlineRow(sut, operation);
+        sut.Index(index =>
+            index.Columns(columns =>
+            {
+                columns.Add(destination => destination.Name);
+                columns.Add(destination => destination.CountryId);
+            })
+        );
+        using var provider = services.BuildServiceProvider();
+
+        // Act
+        Action act = () =>
+            _ = provider.GetRequiredService<IOptions<ResourceOptions<Destination>>>().Value;
+
+        // Assert
+        var exception = await Assert.That(act).Throws<OptionsValidationException>();
+        await Assert.That(exception!.Message).Contains("Inline rows require a resource key");
+    }
+
+    [Test]
     public async Task UseInlineRow_WithSeparateModel_MatchesFieldsByName()
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdmin().AddResource<Destination>();
         sut.UseDataSource<DestinationDataSource>();
+        sut.UseKey(destination => destination.Id);
         sut.AllowEdit<DestinationEditModel, DestinationEditHandler>(edit =>
         {
             edit.Fields(fields =>
@@ -167,6 +199,8 @@ public partial class ResourceBuilderTests
         public Country? Country { get; set; }
 
         public int CountryId { get; set; }
+
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; } = "";

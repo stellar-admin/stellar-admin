@@ -62,6 +62,11 @@ internal sealed class EfCoreResourceDataSource<TContext, TEntity>(
     )
     {
         var query = db.Set<TEntity>().AsNoTracking();
+        if (request.Keys is { } keys)
+        {
+            query = query.Where(EfCoreResourceKey.CreatePredicate<TEntity>(db, keys));
+        }
+
         if (
             _resourceOptions.Index.Scopes?.Items.FirstOrDefault(scope => scope.Id == request.Scope)
             is EfCoreResourceScopeOptions<TEntity> { Predicate: { } predicate }

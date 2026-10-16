@@ -19,11 +19,15 @@ internal static class GridEditorRenderer
 {
     private const string Folder = "GridEditorTemplates";
 
-    public static async Task<IHtmlContent> RenderAsync(IHtmlHelper html, FormFieldOptions field)
+    public static async Task<IHtmlContent> RenderAsync(
+        IHtmlHelper html,
+        FormFieldOptions field,
+        object model
+    )
     {
         var viewContext = html.ViewContext;
         var services = viewContext.HttpContext.RequestServices;
-        var explorer = html.ViewData.ModelExplorer;
+        var explorer = html.MetadataProvider.GetModelExplorerForType(model.GetType(), model);
         foreach (var property in field.PropertyPath)
         {
             explorer =
@@ -39,7 +43,6 @@ internal static class GridEditorRenderer
         {
             var handler = (IFieldEditorHandler)
                 ActivatorUtilities.CreateInstance(services, handlerType, field.Editor);
-            var model = html.ViewData.Model!;
             var context = new FieldEditorContext(
                 field.FieldName,
                 model,
@@ -85,6 +88,13 @@ internal static class GridEditorRenderer
         }
 
         AppendError(content, viewData);
+        if (html.ViewData[ViewDataKeys.GridCellErrors] is not HashSet<string> shown)
+        {
+            shown = new(StringComparer.OrdinalIgnoreCase);
+            html.ViewData[ViewDataKeys.GridCellErrors] = shown;
+        }
+
+        shown.Add(viewData.TemplateInfo.HtmlFieldPrefix);
 
         return content;
     }

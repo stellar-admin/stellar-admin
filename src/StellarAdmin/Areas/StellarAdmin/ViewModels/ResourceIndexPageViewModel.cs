@@ -50,6 +50,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public string? EditLabel { get; init; }
 
     /// <summary>
+    ///     The inline rows, or null when resources are neither edited nor created inline.
+    /// </summary>
+    public ResourceIndexInlineRowsViewModel? InlineRows { get; init; }
+
+    /// <summary>
     ///     The resources to display.
     /// </summary>
     public required IReadOnlyList<TResource> Items { get; init; }
@@ -73,6 +78,11 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     ///     The row details settings, or null when rows do not expand.
     /// </summary>
     public ResourceRowDetailsOptions? RowDetails { get; init; }
+
+    /// <summary>
+    ///     Whether only the grid's rows are rendered, for a row request.
+    /// </summary>
+    public bool RowsOnly { get; init; }
 
     /// <summary>
     ///     The scope tabs.

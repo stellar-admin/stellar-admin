@@ -19,13 +19,19 @@ public static class GridEditorHtmlHelperExtensions
     ///     <c>EditorTemplates/</c>. Without a grid template, the cell shows an error naming the
     ///     template in development and is empty otherwise.
     /// </remarks>
-    /// <param name="html">The view's HTML helper, whose model holds the field.</param>
+    /// <param name="html">The view's HTML helper.</param>
     /// <param name="field">The field to render.</param>
-    public static Task<IHtmlContent> GridEditorAsync(this IHtmlHelper html, FormFieldOptions field)
+    /// <param name="model">The model that holds the field, such as the edit model of the row.</param>
+    public static Task<IHtmlContent> GridEditorAsync(
+        this IHtmlHelper html,
+        FormFieldOptions field,
+        object model
+    )
     {
         ArgumentNullException.ThrowIfNull(html);
         ArgumentNullException.ThrowIfNull(field);
+        ArgumentNullException.ThrowIfNull(model);
 
-        return GridEditorRenderer.RenderAsync(html, field);
+        return GridEditorRenderer.RenderAsync(html, field, model);
     }
 }

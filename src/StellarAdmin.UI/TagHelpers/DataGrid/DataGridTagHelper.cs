@@ -60,8 +60,8 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
     public IEnumerable? EditingKeys { get; set; }
 
     /// <summary>
-    ///     An item to render in edit mode above the other rows, with the key <c>new</c>.
-    ///     Requires <c>key-field</c>.
+    ///     An item to render in edit mode above the other rows, with the key <c>new</c>. Its
+    ///     columns without an edit template are empty. Requires <c>key-field</c>.
     /// </summary>
     [HtmlAttributeName("new-item")]
     public object? NewItem { get; set; }
@@ -78,6 +78,9 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        // Razor writes a null expression bound to a string attribute as an empty string.
+        KeyField = string.IsNullOrEmpty(KeyField) ? null : KeyField;
+
         if ((EditingKeys is not null || NewItem is not null) && KeyField is null)
         {
             throw new InvalidOperationException(
@@ -386,6 +389,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                     Item = item,
                     RowIndex = i,
                     Editing = editing,
+                    IsNew = NewItem is not null && i == 0,
                 };
                 gridContext.CurrentRow = currentRow;
                 ViewContext.ViewData[DataGridConsts.ItemKey] = item;

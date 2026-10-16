@@ -234,6 +234,11 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
         {
             cellHtml = columnContext.EditContent ?? "";
         }
+        else if (currentRow.IsNew)
+        {
+            // The new item need not be the grid's item type, so it has nothing to display.
+            cellHtml = "";
+        }
         else if (columnContext.ItemContent is not null)
         {
             cellHtml = columnContext.ItemContent;

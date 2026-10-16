@@ -10,6 +10,14 @@ internal sealed class InlineRowOptionsValidator<TResource>
     public ValidateOptionsResult Validate(string? name, ResourceOptions<TResource> options)
     {
         var failures = new List<string>();
+        if (
+            options is { Edit.InlineRow: not null } or { Create.InlineRow: not null }
+            && options.KeyPropertyName is null
+        )
+        {
+            failures.Add("Inline rows require a resource key. Call UseKey on the resource.");
+        }
+
         if (options.Edit is { InlineRow: not null } edit)
         {
             AddUnmatchedFields(failures, "inline edit row", edit, options.Index.Columns);

@@ -32,6 +32,10 @@ public class ResourceController<TResource>(
     // The view page's action, whose method cannot be named View alongside the controller's View helpers
     private const string ViewActionName = "View";
 
+    // An inline row's fields are named rows[key].Field, with the key "new" for a new row
+    private const string InlineRowsPrefix = "rows";
+    private const string NewRowKey = "new";
+
     private readonly ResourceLabelOptions _labelOptions = labelOptions.Value;
     private readonly ResourceOptions<TResource> _resourceOptions = options.Value;
 
@@ -79,6 +83,55 @@ public class ResourceController<TResource>(
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>
+    ///     Renders a new row in edit mode, for creating a resource in the index grid.
+    /// </summary>
+    [HttpGet]
+    public IActionResult CreateRow()
+    {
+        return
+            _resourceOptions.Create is { InlineRow: not null } create
+            && _resourceOptions.KeySelector is not null
+            ? NewRowView(create.CreateModel())
+            : NotFound();
+    }
+
+    /// <summary>
+    ///     Creates a resource from a new row, and renders it as it displays in the index grid.
+    /// </summary>
+    [HttpPost]
+    [ActionName(nameof(CreateRow))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateRowPost(CancellationToken cancellationToken)
+    {
+        if (
+            _resourceOptions.Create is not { InlineRow: not null }
+            || _resourceOptions.KeySelector is not { } keySelector
+        )
+        {
+            return NotFound();
+        }
+
+        var (resource, result) = await SubmitCreateAsync(
+            ModelNames.CreateIndexModelName(InlineRowsPrefix, NewRowKey),
+            cancellationToken
+        );
+        if (result is { IsNotFound: true })
+        {
+            return NotFound();
+        }
+
+        if (result is not { IsSuccess: true })
+        {
+            return NewRowView(resource);
+        }
+
+        // A create model other than the resource has no key selector, so its handler returns the key
+        var key = result.Key ?? (resource is TResource created ? keySelector(created) : null);
+
+        return await SavedRowView(key, cancellationToken);
     }
 
     /// <summary>
@@ -227,9 +280,7 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        var resource = _resourceOptions.EditLoader is { } loader
-            ? await loader(HttpContext.RequestServices, id, cancellationToken)
-            : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
+        var resource = await LoadEditModelAsync(id, cancellationToken);
 
         if (resource is null)
         {
@@ -261,21 +312,13 @@ public class ResourceController<TResource>(
             return NotFound();
         }
 
-        var resource = _resourceOptions.EditLoader is { } loader
-            ? await loader(HttpContext.RequestServices, id, cancellationToken)
-            : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
+        var resource = await LoadEditModelAsync(id, cancellationToken);
         if (resource is null)
         {
             return NotFound();
         }
 
-        var fields = _resourceOptions
-            .Edit.Fields.Select(field => field.FieldName)
-            .Where(name =>
-                _resourceOptions.Edit.ModelType != typeof(TResource)
-                || name != _resourceOptions.KeyPropertyName
-            )
-            .ToHashSet(StringComparer.Ordinal);
+        var fields = GetEditFieldNames();
         var valid = await TryBindConfiguredFieldsAsync(
             resource,
             _resourceOptions.Edit.ModelType,
@@ -287,13 +330,7 @@ public class ResourceController<TResource>(
             return await EditView(resource, id, cancellationToken);
         }
 
-        var result = _resourceOptions.EditHandler is { } handler
-            ? await handler(HttpContext.RequestServices, id, resource, cancellationToken)
-            : await ((IResourceEditHandler<TResource>)dataSource).UpdateAsync(
-                id,
-                (TResource)resource,
-                cancellationToken
-            );
+        var result = await UpdateAsync(id, resource, cancellationToken);
         if (result.IsNotFound)
         {
             return NotFound();
@@ -306,6 +343,77 @@ public class ResourceController<TResource>(
         }
 
         return RedirectToAction(nameof(Index), new { id = (string?)null });
+    }
+
+    /// <summary>
+    ///     Renders a resource's row in edit mode, for editing it in the index grid.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> EditRow(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            _resourceOptions.Edit is not { InlineRow: not null }
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+        )
+        {
+            return NotFound();
+        }
+
+        var resource = await LoadEditModelAsync(id, cancellationToken);
+
+        return resource is null ? NotFound() : await EditRowView(id, resource, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Updates a resource from its row, and renders it as it displays in the index grid.
+    /// </summary>
+    [HttpPost]
+    [ActionName(nameof(EditRow))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditRowPost(
+        [FromRoute] string id,
+        CancellationToken cancellationToken
+    )
+    {
+        if (
+            _resourceOptions.Edit is not { InlineRow: not null } edit
+            || _resourceOptions.KeySelector is null
+            || string.IsNullOrEmpty(id)
+        )
+        {
+            return NotFound();
+        }
+
+        var resource = await LoadEditModelAsync(id, cancellationToken);
+        if (resource is null)
+        {
+            return NotFound();
+        }
+
+        var fields = GetEditFieldNames();
+        var prefix = ModelNames.CreateIndexModelName(InlineRowsPrefix, id);
+        if (!await TryBindConfiguredFieldsAsync(resource, edit.ModelType, fields, prefix))
+        {
+            return await EditRowView(id, resource, cancellationToken);
+        }
+
+        var result = await UpdateAsync(id, resource, cancellationToken);
+        if (result.IsNotFound)
+        {
+            return NotFound();
+        }
+
+        if (!result.IsSuccess)
+        {
+            AddValidationErrors(result, fields, prefix);
+            return await EditRowView(id, resource, cancellationToken);
+        }
+
+        return await SavedRowView(id, cancellationToken);
     }
 
     /// <summary>
@@ -743,6 +851,132 @@ public class ResourceController<TResource>(
             )
             : null;
 
+    private ResourceIndexPageViewModel<TResource> CreateIndexModel(
+        IReadOnlyList<TResource> items,
+        ResourceIndexQuery query,
+        ResourceListRequest request,
+        ResourceIndexPagingViewModel? pagingModel,
+        bool rowsOnly = false,
+        string? editingKey = null,
+        object? editModel = null,
+        object? newItem = null
+    )
+    {
+        var labels = CreateLabelContext();
+
+        return new ResourceIndexPageViewModel<TResource>
+        {
+            CanCreate = HasCreatePage,
+            CanEdit = HasEditPage,
+            CanView = _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
+            Columns = _resourceOptions.Index.Columns.ToArray(),
+            CreateLabel =
+                _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
+            Delete =
+                _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
+                    ? null
+                    : new(
+                        _resourceOptions.Delete.Title ?? _labelOptions.Delete.Title(labels),
+                        _resourceOptions.Delete.Message ?? _labelOptions.Delete.Message(labels),
+                        _resourceOptions.Delete.ConfirmLabel
+                            ?? _labelOptions.Delete.ConfirmLabel(labels),
+                        _resourceOptions.Delete.CancelLabel
+                            ?? _labelOptions.Delete.CancelLabel(labels)
+                    ),
+            DeleteLabel =
+                _resourceOptions.Index.DeleteLabel ?? _labelOptions.Index.DeleteLabel(labels),
+            EditLabel = _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
+            KeySelector = _resourceOptions.KeySelector,
+            InlineRows = CreateInlineRows(labels, editingKey, editModel, newItem),
+            Items = items,
+            Paging = pagingModel,
+            Query = query,
+            RowDetails = GetRowDetails(),
+            RowsOnly = rowsOnly,
+            Scopes = _resourceOptions.Index.Scopes is { } scopes
+                ? scopes
+                    .Items.Select(scope => new ResourceIndexScopeViewModel(
+                        scope.Id,
+                        scope.Title,
+                        scope.Id == request.Scope,
+                        scope.Id == scopes.DefaultScope ? null : scope.Id
+                    ))
+                    .ToArray()
+                : [],
+            Search = _resourceOptions.Index.Search is { } search
+                ? new(
+                    request.Search,
+                    search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
+                )
+                : null,
+            Sort = request.Sort is { } sort
+                ? new(
+                    sort.Field,
+                    sort.Direction == ResourceSortDirection.Descending
+                        ? DataGridSortDirection.Descending
+                        : DataGridSortDirection.Ascending
+                )
+                : null,
+            Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
+            ViewLabel = _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
+        };
+    }
+
+    // The inline rows' fields by column position: each field is edited by the first column that shows it, or that names
+    // it with EditsField
+    private ResourceIndexInlineRowsViewModel? CreateInlineRows(
+        ResourceLabelContext labels,
+        string? editingKey,
+        object? editModel,
+        object? newItem
+    )
+    {
+        var edit = _resourceOptions.Edit is { InlineRow: not null } editOptions
+            ? editOptions.Fields
+            : null;
+        var create = _resourceOptions.Create is { InlineRow: not null } createOptions
+            ? createOptions.Fields
+            : null;
+        if (
+            (edit is null && create is null) || _resourceOptions.KeyPropertyName is not { } keyField
+        )
+        {
+            return null;
+        }
+
+        return new()
+        {
+            CancelLabel =
+                _resourceOptions.Index.CancelLabel ?? _labelOptions.Index.CancelLabel(labels),
+            CreateFields = create is null ? null : GetColumnFields(create),
+            EditFields = edit is null ? null : GetColumnFields(edit),
+            EditingKey = editingKey,
+            EditModel = editModel,
+            KeyField = keyField,
+            NewItem = newItem,
+            SaveLabel = _resourceOptions.Index.SaveLabel ?? _labelOptions.Index.SaveLabel(labels),
+        };
+
+        FormFieldOptions?[] GetColumnFields(IEnumerable<FormFieldOptions> fields)
+        {
+            var remaining = fields.Where(field => !field.IsReadOnly).ToList();
+
+            return _resourceOptions
+                .Index.Columns.Select(column =>
+                {
+                    var name = column.EditsFieldName ?? column.FieldName;
+                    var field = remaining.FirstOrDefault(field => field.FieldName == name);
+                    if (field is not null)
+                    {
+                        remaining.Remove(field);
+                    }
+
+                    return field;
+                })
+                .ToArray();
+        }
+    }
+
     private ResourceLabelContext CreateLabelContext() =>
         new(_resourceOptions.SingularLabel, _resourceOptions.PluralLabel);
 
@@ -811,6 +1045,29 @@ public class ResourceController<TResource>(
         );
     }
 
+    private async Task<IActionResult> EditRowView(
+        string id,
+        object resource,
+        CancellationToken cancellationToken
+    )
+    {
+        var rows = await LoadRowsAsync(id, cancellationToken);
+
+        return rows.Length == 0
+            ? NotFound()
+            : RowsView(
+                CreateIndexModel(
+                    rows,
+                    new(),
+                    new(),
+                    null,
+                    rowsOnly: true,
+                    editingKey: id,
+                    editModel: resource
+                )
+            );
+    }
+
     private async Task<ViewResult> EditView(
         object resource,
         string id,
@@ -860,6 +1117,16 @@ public class ResourceController<TResource>(
             ? (options, editor)
             : null;
     }
+
+    // The edit fields that are bound from a form; the key of a resource edited as itself is not
+    private HashSet<string> GetEditFieldNames() =>
+        _resourceOptions
+            .Edit!.Fields.Select(field => field.FieldName)
+            .Where(name =>
+                _resourceOptions.Edit.ModelType != typeof(TResource)
+                || name != _resourceOptions.KeyPropertyName
+            )
+            .ToHashSet(StringComparer.Ordinal);
 
     private string GetFieldLabel(FormFieldOptions options)
     {
@@ -1051,69 +1318,33 @@ public class ResourceController<TResource>(
             );
         }
 
-        var labels = CreateLabelContext();
-
         return ResourceView(
             nameof(Index),
-            new ResourceIndexPageViewModel<TResource>
-            {
-                CanCreate = HasCreatePage,
-                CanEdit = HasEditPage,
-                CanView =
-                    _resourceOptions.View is not null && _resourceOptions.KeySelector is not null,
-                Columns = _resourceOptions.Index.Columns.ToArray(),
-                CreateLabel =
-                    _resourceOptions.Index.CreateLabel ?? _labelOptions.Index.CreateLabel(labels),
-                Delete =
-                    _resourceOptions.Delete is null || _resourceOptions.KeySelector is null
-                        ? null
-                        : new(
-                            _resourceOptions.Delete.Title ?? _labelOptions.Delete.Title(labels),
-                            _resourceOptions.Delete.Message ?? _labelOptions.Delete.Message(labels),
-                            _resourceOptions.Delete.ConfirmLabel
-                                ?? _labelOptions.Delete.ConfirmLabel(labels),
-                            _resourceOptions.Delete.CancelLabel
-                                ?? _labelOptions.Delete.CancelLabel(labels)
-                        ),
-                DeleteLabel =
-                    _resourceOptions.Index.DeleteLabel ?? _labelOptions.Index.DeleteLabel(labels),
-                EditLabel =
-                    _resourceOptions.Index.EditLabel ?? _labelOptions.Index.EditLabel(labels),
-                KeySelector = _resourceOptions.KeySelector,
-                Items = result.Items,
-                Paging = pagingModel,
-                Query = query,
-                RowDetails = GetRowDetails(),
-                Scopes = _resourceOptions.Index.Scopes is { } scopes
-                    ? scopes
-                        .Items.Select(scope => new ResourceIndexScopeViewModel(
-                            scope.Id,
-                            scope.Title,
-                            scope.Id == request.Scope,
-                            scope.Id == scopes.DefaultScope ? null : scope.Id
-                        ))
-                        .ToArray()
-                    : [],
-                Search = _resourceOptions.Index.Search is { } search
-                    ? new(
-                        request.Search,
-                        search.Placeholder ?? _labelOptions.Index.SearchPlaceholder(labels)
-                    )
-                    : null,
-                Sort = request.Sort is { } sort
-                    ? new(
-                        sort.Field,
-                        sort.Direction == ResourceSortDirection.Descending
-                            ? DataGridSortDirection.Descending
-                            : DataGridSortDirection.Ascending
-                    )
-                    : null,
-                Title = _resourceOptions.Index.Title ?? _labelOptions.Index.Title(labels),
-                ViewLabel =
-                    _resourceOptions.Index.ViewLabel ?? _labelOptions.Index.ViewLabel(labels),
-            }
+            CreateIndexModel(result.Items, query, request, pagingModel)
         );
     }
+
+    private async Task<object?> LoadEditModelAsync(
+        string id,
+        CancellationToken cancellationToken
+    ) =>
+        _resourceOptions.EditLoader is { } loader
+            ? await loader(HttpContext.RequestServices, id, cancellationToken)
+            : await ((IResourceEditHandler<TResource>)dataSource).FindAsync(id, cancellationToken);
+
+    // A row as the index displays it, through the index query, whatever the scope or search
+    private async Task<TResource[]> LoadRowsAsync(string key, CancellationToken cancellationToken)
+    {
+        var result = await dataSource.ListAsync(new() { Keys = [key] }, cancellationToken);
+
+        return result
+            .Items.Where(item => _resourceOptions.KeySelector!(item) == key)
+            .Take(1)
+            .ToArray();
+    }
+
+    private PartialViewResult NewRowView(object resource) =>
+        RowsView(CreateIndexModel([], new(), new(), null, rowsOnly: true, newItem: resource));
 
     private ViewResult ResourceView(string action, object model)
     {
@@ -1122,6 +1353,21 @@ public class ResourceController<TResource>(
             : "Resource" + action;
 
         return View(viewName, model);
+    }
+
+    private PartialViewResult RowsView(object model) => PartialView("_IndexDataGrid", model);
+
+    // A saved row that cannot be shown, such as one created without a key, reloads the page instead
+    private async Task<IActionResult> SavedRowView(string? key, CancellationToken cancellationToken)
+    {
+        var rows = key is null ? [] : await LoadRowsAsync(key, cancellationToken);
+        if (rows.Length == 0)
+        {
+            Response.Headers["HX-Refresh"] = "true";
+            return Ok();
+        }
+
+        return RowsView(CreateIndexModel(rows, new(), new(), null, rowsOnly: true));
     }
 
     // Binds and saves the create form; the result is null when binding failed
@@ -1288,6 +1534,19 @@ public class ResourceController<TResource>(
             metadata => propertyNames.Contains(metadata.PropertyName ?? "")
         );
     }
+
+    private async Task<ResourceOperationResult> UpdateAsync(
+        string id,
+        object resource,
+        CancellationToken cancellationToken
+    ) =>
+        _resourceOptions.EditHandler is { } handler
+            ? await handler(HttpContext.RequestServices, id, resource, cancellationToken)
+            : await ((IResourceEditHandler<TResource>)dataSource).UpdateAsync(
+                id,
+                (TResource)resource,
+                cancellationToken
+            );
 
     private sealed class ConfiguredFieldValueProvider(
         IValueProvider source,

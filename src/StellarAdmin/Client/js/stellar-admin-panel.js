@@ -180,6 +180,25 @@ document.addEventListener("click", (event) => {
   event.target.closest("[data-user-menu-logout]")?.closest("form")?.requestSubmit();
 });
 
+// An index grid row in edit mode: its message, which follows it with the errors no cell shows, goes when the row is
+// cancelled or a save's response replaces the row, which brings the message back if the save is rejected again
+function removeRowMessage(row) {
+  const next = row?.nextElementSibling;
+  if (next?.classList.contains("sa-row-message")) {
+    next.remove();
+  }
+}
+
+document.addEventListener(
+  "click",
+  (event) => removeRowMessage(event.target.closest("[data-row-cancel]")?.closest("tr")),
+  { capture: true },
+);
+
+document.addEventListener("htmx:before:swap", (event) => {
+  removeRowMessage(event.target.closest?.("[data-row-save]")?.closest("tr"));
+});
+
 document.addEventListener("mousemove", (event) => {
   const levels = AdminRemoteSheet.levels;
   const covered = AdminRemoteSheet.coveredAt(event);
