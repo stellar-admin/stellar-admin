@@ -4,8 +4,8 @@ namespace StellarAdmin.UI;
 
 /// <summary>
 ///     A full-width row at the top or bottom of the data grid's body, for a button that adds
-///     an item. It is shown when the grid has no items too, and hidden while a row is in edit
-///     mode. A grid rendered with <c>rows-only</c> leaves it out.
+///     an item. It is shown when the grid has no items too, and hidden while a new row, with the
+///     key <c>new</c>, is in edit mode. A grid rendered with <c>rows-only</c> leaves it out.
 /// </summary>
 [HtmlTargetElement("sa-data-grid-add-row", ParentTag = "sa-data-grid")]
 public class DataGridAddRowTagHelper : StellarAdminTagHelperBase

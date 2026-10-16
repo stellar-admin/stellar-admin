@@ -302,11 +302,12 @@
     }
 
     /* The other rows step back while one is edited or added, when the grid asks for it for that operation
-       (data-inline-dim lists "edit" and "create"). The edited row's message and details stay */
+       (data-inline-dim lists "edit" and "create"). The edited row's message and details stay, and the add row
+       steps back with the others */
     :is(
         [data-inline-dim~="edit"] .sa-table-body:has(> [data-editing]:not([data-key="new"])),
         [data-inline-dim~="create"] .sa-table-body:has(> [data-editing][data-key="new"])
-    ) > .sa-table-row:not([data-editing], .sa-row-message, .sa-table-add-row, [data-editing] + [data-slot="table-row-detail"], [data-editing] + .sa-row-message + [data-slot="table-row-detail"]) {
+    ) > .sa-table-row:not([data-editing], .sa-row-message, [data-editing] + [data-slot="table-row-detail"], [data-editing] + .sa-row-message + [data-slot="table-row-detail"]) {
         opacity: 0.55;
         transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
     }
