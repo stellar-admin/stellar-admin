@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     named-slot support, and tracks the parent tag-helper stack so children can
 ///     locate their parents.
 /// </summary>
-public class StellarAdminTagHelperBase : TagHelper
+public abstract class StellarAdminTagHelperBase : TagHelper
 {
     private const string ParentTagHelperKey = "stellar-admin-parent-tag-helper";
 

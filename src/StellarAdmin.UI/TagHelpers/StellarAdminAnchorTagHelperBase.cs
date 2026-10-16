@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Base class for StellarAdmin tag helpers that render an anchor (<c>&lt;a&gt;</c>) with ASP.NET
 ///     Core routing support (<c>asp-action</c>, <c>asp-controller</c>, <c>asp-page</c>, etc.).
 /// </summary>
-public class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
+public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
 {
     private const string ActionAttributeName = "asp-action";
     private const string ControllerAttributeName = "asp-controller";

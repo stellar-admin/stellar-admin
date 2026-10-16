@@ -34,7 +34,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | # | Change | Outcome |
 | --- | --- | --- |
 | J1 | Delete dead public types | Done (2026-10-16) |
-| J2 | Make the two tag helper base classes abstract | Approved |
+| J2 | Make the two tag helper base classes abstract | Done (2026-10-16) |
 | J3 | Make the admin panel controllers and their query types internal | Approved, if feasible |
 | J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Approved, if feasible |
 | J5 | Tidy the protected hooks EF Core uses | |
