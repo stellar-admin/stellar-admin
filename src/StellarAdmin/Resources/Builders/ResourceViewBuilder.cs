@@ -36,7 +36,11 @@ public sealed class ResourceViewBuilder<TModel>
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new(action => _configure(options => action(options))));
+        configure(
+            new ResourceViewPageFieldsBuilder<TModel>(action =>
+                _configure(options => action(options))
+            )
+        );
 
         return this;
     }

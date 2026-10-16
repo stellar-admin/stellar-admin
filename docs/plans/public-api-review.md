@@ -38,7 +38,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J3 | Make the admin panel controllers and `ResourceLookupQuery` internal | Done (2026-10-16) |
 | J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Done (2026-10-16) |
 | J5 | Tidy the protected hooks EF Core uses | |
-| J6 | Seal builders, options types, view models and the view component | |
+| J6 | Seal builders, options types, view models and the view component | Done (2026-10-17) |
 | J7 | Make tag helper plumbing internal or protected | |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract | |
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | |
@@ -185,7 +185,12 @@ Rule for records: keep records for types consumers create and pass in. Use seale
 
 ### J6. Seal everything else
 
-Builders, options types, view models, `SidebarViewComponent`, `StellarAdminUIBuilder`, `StellarAdminUIOptions`, `IconOptions` and the other non-tag-helper classes. Tag helpers are D1.
+Done:
+- Sealed `StellarAdminUIBuilder`, `StellarAdminUIOptions`, `StellarAdminUIMenuOptions`, `IconOptions`, `IconPackOptions`, the three icon packs, `StellarAdminBuilder`, `StellarAdminOptions`, `ResourceIndexOptions`, `SidebarViewComponent` and the five leaf editor class-name types.
+- `ResourceFormOptions` is abstract.
+- `ResourceFieldsBuilder<T>` and `ResourceViewFieldsBuilder<T>` are abstract with internal constructors. The create, edit and view builders use the new internal `ResourceFormFieldsBuilder<T>` and `ResourceViewPageFieldsBuilder<T>`.
+- Left open because types derive from them: `FieldEditor` (J8), `EditorClassNames`, `ChoiceEditorClassNames`, `ResourceRowDetailPanelsBuilder<T>` and `ResourceSearchOptions` (both J5).
+- All 1378 tests pass. Tag helpers are D1.
 
 ### J7. Tag helper plumbing
 

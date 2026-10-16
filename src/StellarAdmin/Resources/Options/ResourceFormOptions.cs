@@ -5,7 +5,7 @@ namespace StellarAdmin.Resources.Options;
 /// <summary>
 ///     Configures a resource form.
 /// </summary>
-public class ResourceFormOptions : IFormScope
+public abstract class ResourceFormOptions : IFormScope
 {
     /// <summary>
     ///     All read-only fields in display order, including fields inside layout containers and

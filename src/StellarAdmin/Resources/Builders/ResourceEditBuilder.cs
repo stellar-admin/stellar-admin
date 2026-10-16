@@ -44,7 +44,9 @@ public sealed class ResourceEditBuilder<TModel>
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        configure(new(action => _configure(options => action(options))));
+        configure(
+            new ResourceFormFieldsBuilder<TModel>(action => _configure(options => action(options)))
+        );
 
         return this;
     }

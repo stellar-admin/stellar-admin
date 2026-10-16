@@ -9,7 +9,7 @@ namespace StellarAdmin.Resources.Editors;
 ///     Root styles the fieldset, Label its legend, and Control the choices container.
 ///     Use Option.Content for choice content and Error for group validation.
 /// </remarks>
-public class RadioGroupEditorClassNames : ChoiceEditorClassNames
+public sealed class RadioGroupEditorClassNames : ChoiceEditorClassNames
 {
     /// <summary>
     ///     Additional CSS classes applied to each choice.

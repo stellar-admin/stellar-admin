@@ -1,6 +1,6 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
-public class LucideIconPack : IIconPack
+public sealed class LucideIconPack : IIconPack
 {
     public IDictionary<string, IconDefinition> GetIcons()
     {

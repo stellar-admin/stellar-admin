@@ -14,7 +14,7 @@ namespace StellarAdmin;
 /// <summary>
 ///     Provides a fluent API to configure the StellarAdmin admin panel.
 /// </summary>
-public class StellarAdminBuilder
+public sealed class StellarAdminBuilder
 {
     private readonly StellarAdminOptions _options;
 

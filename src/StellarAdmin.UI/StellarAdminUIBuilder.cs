@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Configures the StellarAdmin UI services: icons, menu defaults and form defaults.
 /// </summary>
-public class StellarAdminUIBuilder
+public sealed class StellarAdminUIBuilder
 {
     /// <summary>
     ///     Gets the services collection.

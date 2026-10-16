@@ -1,6 +1,6 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
-public class TablerOutlineIconPack : IIconPack
+public sealed class TablerOutlineIconPack : IIconPack
 {
     /// <inheritdoc/>
     public IDictionary<string, IconDefinition> GetIcons()

@@ -3,7 +3,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Additional CSS classes for an image editor, its image and its note.
 /// </summary>
-public class ImageEditorClassNames : EditorClassNames
+public sealed class ImageEditorClassNames : EditorClassNames
 {
     /// <summary>
     ///     Additional CSS classes applied to the image.

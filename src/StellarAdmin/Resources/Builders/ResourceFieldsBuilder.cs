@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures the fields displayed on a resource's form.
 /// </summary>
-public class ResourceFieldsBuilder<TResource>
+public abstract class ResourceFieldsBuilder<TResource>
 {
     private readonly Action<Action<IFormScope>> _configure;
 

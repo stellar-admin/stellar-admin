@@ -3,7 +3,7 @@ namespace StellarAdmin.Resources.Options;
 /// <summary>
 ///     Configures a resource's index page.
 /// </summary>
-public class ResourceIndexOptions
+public sealed class ResourceIndexOptions
 {
     /// <summary>
     ///     The inline row cancel button label.

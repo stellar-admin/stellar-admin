@@ -3,7 +3,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Additional CSS classes for a slider editor, its value and its marks.
 /// </summary>
-public class SliderEditorClassNames : EditorClassNames
+public sealed class SliderEditorClassNames : EditorClassNames
 {
     /// <summary>
     ///     Additional CSS classes applied to each mark.

@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures the fields displayed on a resource's view page.
 /// </summary>
-public class ResourceViewFieldsBuilder<TModel>
+public abstract class ResourceViewFieldsBuilder<TModel>
 {
     private readonly Action<Action<IFormScope>> _configure;
 

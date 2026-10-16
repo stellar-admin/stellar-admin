@@ -4,7 +4,7 @@ namespace StellarAdmin.UI;
 ///     Application-wide settings for floating menu surfaces (Dropdown Menu, and future menu
 ///     families). Configured via <see cref="StellarAdminUIBuilder.ConfigureMenu" />.
 /// </summary>
-public class StellarAdminUIMenuOptions
+public sealed class StellarAdminUIMenuOptions
 {
     /// <summary>The color scheme of menu surfaces. Defaults to <see cref="MenuColor.Default" />.</summary>
     public MenuColor Color { get; set; } = MenuColor.Default;

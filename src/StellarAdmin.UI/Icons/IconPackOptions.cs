@@ -3,7 +3,7 @@ namespace StellarAdmin.UI.Icons;
 /// <summary>
 ///     Configures the registration of an icon pack.
 /// </summary>
-public class IconPackOptions
+public sealed class IconPackOptions
 {
     /// <summary>
     ///     Whether to import the pack's semantic icon mappings.

@@ -3,7 +3,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Additional CSS classes for the parts of a multi-select lookup editor.
 /// </summary>
-public class MultiLookupSheetEditorClassNames : EditorClassNames
+public sealed class MultiLookupSheetEditorClassNames : EditorClassNames
 {
     /// <summary>
     ///     Additional CSS classes for the media of the selected items and the search results. A size utility replaces

@@ -3,7 +3,7 @@ using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.Areas.StellarAdmin.ViewComponents;
 
-public class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItemsProviders)
+public sealed class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItemsProviders)
     : ViewComponent
 {
     public async Task<IViewComponentResult> InvokeAsync()

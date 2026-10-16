@@ -5,7 +5,7 @@ namespace StellarAdmin;
 /// <summary>
 ///     Options for the StellarAdmin admin panel.
 /// </summary>
-public class StellarAdminOptions
+public sealed class StellarAdminOptions
 {
     /// <summary>
     ///     Gets the app-relative paths of the scripts the shell layout links, in registration order.

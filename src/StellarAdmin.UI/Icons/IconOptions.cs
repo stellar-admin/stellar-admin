@@ -8,7 +8,7 @@ namespace StellarAdmin.UI.Icons;
 /// <remarks>
 ///     Includes Lucide icons by default.
 /// </remarks>
-public class IconOptions
+public sealed class IconOptions
 {
     private readonly Dictionary<string, IconDefinition> _icons = new(
         StringComparer.OrdinalIgnoreCase
