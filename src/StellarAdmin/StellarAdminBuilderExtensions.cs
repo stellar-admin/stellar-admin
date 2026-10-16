@@ -120,6 +120,12 @@ public static partial class StellarAdminBuilderExtensions
                     InlineRowOptionsValidator<TResource>
                 >()
             );
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IValidateOptions<ResourceOptions<TResource>>,
+                    ImageEditorOptionsValidator<TResource>
+                >()
+            );
             builder.AddController(typeof(ResourceController<TResource>), slug);
 
             builder.Services.TryAddEnumerable(

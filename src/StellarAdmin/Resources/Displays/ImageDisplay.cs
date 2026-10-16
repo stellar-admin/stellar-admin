@@ -12,7 +12,7 @@ namespace StellarAdmin.Resources.Displays;
 /// </remarks>
 public sealed class ImageDisplay : FieldDisplay
 {
-    private Func<string, IServiceProvider, CancellationToken, Task<string?>>? _resolveUrl;
+    private readonly ImageUrlResolver _urlResolver = new();
 
     /// <inheritdoc />
     public override string TemplateName => "Displays/Image";
@@ -61,12 +61,7 @@ public sealed class ImageDisplay : FieldDisplay
     ///     Turns the stored value into the image's URL.
     /// </summary>
     /// <param name="resolve">Returns the URL, or <c>null</c> when there is no image.</param>
-    public void ResolveUrl(Func<string, string?> resolve)
-    {
-        ArgumentNullException.ThrowIfNull(resolve);
-
-        _resolveUrl = (value, _, _) => Task.FromResult(resolve(value));
-    }
+    public void ResolveUrl(Func<string, string?> resolve) => _urlResolver.Set(resolve);
 
     /// <summary>
     ///     Turns the stored value into the image's URL with the request's services.
@@ -76,25 +71,14 @@ public sealed class ImageDisplay : FieldDisplay
     ///     The grid calls it once for each row, so it should compute a URL rather than query
     ///     for one.
     /// </remarks>
-    public void ResolveUrl(Func<string, IServiceProvider, CancellationToken, Task<string?>> resolve)
-    {
-        ArgumentNullException.ThrowIfNull(resolve);
+    public void ResolveUrl(
+        Func<string, IServiceProvider, CancellationToken, Task<string?>> resolve
+    ) => _urlResolver.Set(resolve);
 
-        _resolveUrl = resolve;
-    }
-
-    // The URL of a stored value, or null for an empty one. Without a resolver the value is the URL
-    internal async Task<string?> ResolveUrlAsync(
+    // The URL of a stored value, or null for an empty one
+    internal Task<string?> ResolveUrlAsync(
         object? value,
         IServiceProvider services,
         CancellationToken cancellationToken
-    )
-    {
-        if (value is not string text || string.IsNullOrWhiteSpace(text))
-        {
-            return null;
-        }
-
-        return _resolveUrl is null ? text : await _resolveUrl(text, services, cancellationToken);
-    }
+    ) => _urlResolver.ResolveAsync(value, services, cancellationToken);
 }

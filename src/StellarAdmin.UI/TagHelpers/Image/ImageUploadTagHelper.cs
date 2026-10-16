@@ -19,7 +19,7 @@ namespace StellarAdmin.UI;
 ///     image take effect when the form is saved.
 /// </remarks>
 [HtmlTargetElement("sa-image-upload", TagStructure = TagStructure.WithoutEndTag)]
-public class ImageUploadTagHelper : FieldInputBaseTagHelper
+public class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassNames>
 {
     private const string DefaultAccept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
     private const long DefaultMaxFileSize = 5 * 1024 * 1024;
@@ -142,7 +142,7 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-image-upload", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-image-upload", ClassNames?.Control, output.GetUserSuppliedClass())
         );
 
         ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
@@ -185,7 +185,7 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
 
         output.Content.AppendHtml(hidden);
 
-        var parts = new Parts(context, _iconOptions, state, effectiveDisabled);
+        var parts = new Parts(context, _iconOptions, state, effectiveDisabled, ClassNames?.Image);
         switch (effectiveLayout)
         {
             case ImageUploadLayout.Compact:
@@ -206,7 +206,7 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
         {
             var error = new TagBuilder("span");
             error.Attributes.Add("data-slot", "image-upload-note");
-            error.Attributes.Add("class", "sa-cell-error");
+            error.Attributes.Add("class", JoinCssClasses("sa-cell-error", ClassNames?.Note));
             error.Attributes.Add("role", "alert");
             error.Attributes.Add("hidden", "hidden");
             output.Content.AppendHtml(error);
@@ -215,7 +215,7 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
         {
             var note = new TagBuilder("p");
             note.Attributes.Add("data-slot", "image-upload-note");
-            note.Attributes.Add("class", "sa-image-upload-note");
+            note.Attributes.Add("class", JoinCssClasses("sa-image-upload-note", ClassNames?.Note));
             note.Attributes.Add("aria-live", "polite");
             note.Attributes.Add(
                 "data-hint",
@@ -573,7 +573,8 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
         TagHelperContext context,
         IconOptions iconOptions,
         string state,
-        bool disabled
+        bool disabled,
+        string? imageClass
     )
     {
         public TagHelperContext Context { get; } = context;
@@ -674,8 +675,22 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper
             return drop;
         }
 
-        public Task<TagBuilder> ImageAsync(string? source, ImageAppearance appearance) =>
-            ImageRendering.RenderImageAsync(Context, IconOptions, source, null, appearance);
+        public async Task<TagBuilder> ImageAsync(string? source, ImageAppearance appearance)
+        {
+            var image = await ImageRendering.RenderImageAsync(
+                Context,
+                IconOptions,
+                source,
+                null,
+                appearance
+            );
+            if (imageClass is not null)
+            {
+                image.Attributes["class"] = JoinCssClasses(image.Attributes["class"], imageClass);
+            }
+
+            return image;
+        }
 
         public TagBuilder Media(string? when)
         {

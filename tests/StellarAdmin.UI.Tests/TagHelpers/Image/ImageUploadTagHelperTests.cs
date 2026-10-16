@@ -154,6 +154,45 @@ public class ImageUploadTagHelperTests
             .IsTrue();
     }
 
+    [Test]
+    public async Task ProcessAsync_WithClassNames_AddsClassesToParts()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context);
+        sut.Label = "Photo";
+        sut.Value = "kyoto.jpg";
+        sut.ClassNames = new ImageUploadClassNames
+        {
+            Control = "max-w-md",
+            Image = "shadow-lg",
+            Label = "font-semibold",
+            Note = "italic",
+            Root = "col-span-2",
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var upload = html.QuerySelector("sel-image-upload");
+        await Assert.That(upload?.ClassList.Contains("max-w-md")).IsTrue();
+        await Assert
+            .That(upload?.QuerySelector(".sa-image")?.ClassList.Contains("shadow-lg"))
+            .IsTrue();
+        await Assert
+            .That(upload?.QuerySelector("[data-slot=image-upload-note]")?.ClassName)
+            .IsEqualTo("sa-image-upload-note italic");
+        await Assert
+            .That(html.QuerySelector("[data-slot=field]")?.ClassList.Contains("col-span-2"))
+            .IsTrue();
+        await Assert
+            .That(
+                html.QuerySelector("[data-slot=field-label]")?.ClassList.Contains("font-semibold")
+            )
+            .IsTrue();
+    }
+
     private static ImageUploadTagHelper CreateSut(RenderingContext context) =>
         new(context.Generator, context.Icons)
         {

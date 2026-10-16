@@ -247,7 +247,9 @@ function lockInlineRow() {
   }
 
   const locked = [
-    ...[...editing.parentElement.children].filter((row) => !kept.includes(row) && !row.matches("[data-empty]")),
+    ...[...editing.parentElement.children].filter(
+      (row) => !kept.includes(row) && !row.matches("[data-empty]"),
+    ),
     ...document.querySelectorAll(
       "[data-row-add]:not(#index-page-grid *), #index-page-scopes, #index-page-search, " +
         "#index-page-grid [data-slot='data-grid-sort-link'], #index-page-grid [data-slot='card-footer']",
@@ -267,7 +269,9 @@ document.addEventListener(
     }
 
     // Cancel ends the edit; sel-table restores the row, and stops the click
-    const cancelled = event.target.closest("#index-page-grid tr[data-editing] [data-row-cancel]")?.closest("tr");
+    const cancelled = event.target
+      .closest("#index-page-grid tr[data-editing] [data-row-cancel]")
+      ?.closest("tr");
     if (cancelled) {
       removeRowMessage(cancelled);
       unlockInlineRow();
@@ -375,11 +379,16 @@ document.addEventListener("htmx:before:swap", (event) => {
       // A save that reloaded the grid names the saved row when the page shows it. Without it, focus goes to the Add
       // button after adding, or else to the first row
       const key = ctx.response.headers.get("SA-Saved-Row");
-      const display = key ? grid?.querySelector(`.sa-table-body > tr[data-key="${CSS.escape(key)}"]`) : null;
+      const display = key
+        ? grid?.querySelector(`.sa-table-body > tr[data-key="${CSS.escape(key)}"]`)
+        : null;
       if (display) {
         flashRow(display);
       } else {
-        (row?.dataset.key === "new" ? addButton() : grid?.querySelector(".sa-table-body [data-row-edit]"))?.focus();
+        (row?.dataset.key === "new"
+          ? addButton()
+          : grid?.querySelector(".sa-table-body [data-row-edit]")
+        )?.focus();
       }
     } else if (kind === "save") {
       // A saved row takes the place of the editing row, after the row that was before it. The pager's count may have
@@ -394,6 +403,20 @@ document.addEventListener("htmx:before:swap", (event) => {
       reloadGridFooter();
     }
   });
+});
+
+// An editing row saves with htmx rather than by submitting a form, so it waits here for its images to finish uploading,
+// as a form does: until then the row's value is still the old image. Cancelling the row still works
+document.addEventListener("htmx:config:request", (event) => {
+  if (event.detail?.ctx?.request?.method?.toUpperCase() === "GET") return;
+  const row = event.target instanceof Element ? event.target.closest("tr") : null;
+  const uploading = [...(row?.querySelectorAll("sel-image-upload") ?? [])].some(
+    (upload) => upload.uploading,
+  );
+  if (!uploading) return;
+
+  event.preventDefault();
+  window.stellarAdmin?.toast?.warning("Wait for the upload to finish, then save again.");
 });
 
 // Toasts the server queued for an htmx request, such as a row added in the index grid

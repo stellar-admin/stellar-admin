@@ -24,6 +24,23 @@ internal static class EditorClassNamesMapper
         );
     }
 
+    public static ImageUploadClassNames ForImageUpload(ImageEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new ImageUploadClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Image = classes.Image,
+            Label = classes.Label,
+            Note = classes.Note,
+            Root = classes.Root,
+        };
+    }
+
     public static InputClassNames ForInput(FieldEditor? editor)
     {
         ValidateScalar(editor);

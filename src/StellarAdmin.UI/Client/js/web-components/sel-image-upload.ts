@@ -198,9 +198,7 @@ export class ImageUpload extends LitElement {
 
     const body = new FormData();
     body.append("file", file);
-    const token = this.#hidden.form?.querySelector<HTMLInputElement>(
-      'input[name="__RequestVerificationToken"]',
-    )?.value;
+    const token = this.#antiforgeryToken();
     if (token) body.append("__RequestVerificationToken", token);
 
     const request = new XMLHttpRequest();
@@ -283,6 +281,18 @@ export class ImageUpload extends LitElement {
 
   #showOriginalImage() {
     this.#setImage(this.#original.src);
+  }
+
+  // The form's token, or outside a form (an editing table row) the nearest one around the control
+  #antiforgeryToken(): string | undefined {
+    const selector = 'input[name="__RequestVerificationToken"]';
+    const form = this.#hidden.form;
+    if (form) return form.querySelector<HTMLInputElement>(selector)?.value;
+    for (let element = this.parentElement; element; element = element.parentElement) {
+      const token = element.querySelector<HTMLInputElement>(selector);
+      if (token) return token.value;
+    }
+    return undefined;
   }
 
   #setValue(value: string) {
