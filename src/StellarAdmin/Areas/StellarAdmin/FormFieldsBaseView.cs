@@ -64,6 +64,7 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
 
         return new FieldScope(
             display?.TemplateName,
+            display?.RendersEmptyValue == true,
             () =>
             {
                 ViewData = original;
@@ -73,10 +74,17 @@ public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
         );
     }
 
-    internal sealed class FieldScope(string? templateName, Action restore) : IDisposable
+    internal sealed class FieldScope(
+        string? templateName,
+        bool templateRendersEmpty,
+        Action restore
+    ) : IDisposable
     {
         // The display template the field renders, or null to let the tag helper choose
         public string? TemplateName { get; } = templateName;
+
+        // Whether the template renders an empty value instead of the field's empty text
+        public bool TemplateRendersEmpty { get; } = templateRendersEmpty;
 
         public void Dispose() => restore();
     }

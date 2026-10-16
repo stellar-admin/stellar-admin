@@ -13,4 +13,13 @@ public abstract class FieldDisplay
     ///     The name of the display template, resolved as <c>DisplayTemplates/{name}</c>.
     /// </summary>
     public abstract string TemplateName { get; }
+
+    /// <summary>
+    ///     Whether the template renders empty values itself, instead of the field's empty text.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>. Override it when the display shows something of its own for
+    ///     an empty value, such as a placeholder.
+    /// </remarks>
+    public virtual bool RendersEmptyValue => false;
 }

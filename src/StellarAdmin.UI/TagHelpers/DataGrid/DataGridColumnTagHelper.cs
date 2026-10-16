@@ -45,6 +45,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </summary>
     /// <remarks>
     ///     Defaults to the field's <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
+    ///     Not used when <c>template-renders-empty</c> passes empty values to the template.
     /// </remarks>
     [HtmlAttributeName("empty-text")]
     public string? EmptyText { get; set; }
@@ -101,6 +102,15 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </summary>
     [HtmlAttributeName("template")]
     public string? Template { get; set; }
+
+    /// <summary>
+    ///     Whether the display template also renders empty values, instead of the empty text.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>. Has no effect without a template.
+    /// </remarks>
+    [HtmlAttributeName("template-renders-empty")]
+    public bool TemplateRendersEmpty { get; set; }
 
     /// <summary>
     ///     The column header text. When omitted on a field column, the header defaults to the
@@ -254,13 +264,14 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
                 : null;
 
             var fieldMetadata = GetFieldMetadata(gridContext, fieldName);
-            if (IsEmpty(value))
+            var templateName = Template ?? fieldMetadata?.TemplateHint;
+            if (IsEmpty(value) && !(TemplateRendersEmpty && templateName is not null))
             {
                 cellHtml = HtmlEncoder.Default.Encode(
                     EmptyText ?? fieldMetadata?.NullDisplayText ?? ""
                 );
             }
-            else if ((Template ?? fieldMetadata?.TemplateHint) is { } templateName)
+            else if (templateName is not null)
             {
                 cellHtml = await RenderTemplate(
                     ResolveDisplayTemplate(gridContext, templateName),
@@ -427,7 +438,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
 
     private async Task<string> RenderTemplate(
         IView view,
-        object value,
+        object? value,
         ModelMetadata? fieldMetadata
     )
     {

@@ -264,6 +264,75 @@ public class ResourceDisplayFieldTests
     }
 
     [Test]
+    public async Task Edit_WithImageDisplay_RendersFigureFromResolvedUrl()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(details =>
+        {
+            details
+                .Add(model => model.Photo)
+                .UseDisplay<ImageDisplay>(image =>
+                    image.ResolveUrl(value => $"https://cdn.voyager.example/{value}")
+                );
+            details
+                .Add(model => model.Website)
+                .UseDisplay<ImageDisplay>(image =>
+                {
+                    image.AspectRatio = ImageAspectRatio.Widescreen;
+                    image.Size = ImageDisplaySize.Small;
+                    image.Interaction = ImageDisplayInteraction.Preview;
+                });
+        });
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var values = GetValues(document);
+        var photo = values["Photo"].RequiredElement(".sa-image");
+        await Assert.That(photo.LocalName).IsEqualTo("button");
+        await Assert.That(photo.GetAttribute("data-variant")).IsEqualTo("figure");
+        await Assert.That(photo.GetAttribute("data-size")).IsEqualTo("md");
+        await Assert.That(photo.GetAttribute("data-aspect-ratio")).IsEqualTo("original");
+        await Assert
+            .That(photo.RequiredElement("img").GetAttribute("src"))
+            .IsEqualTo("https://cdn.voyager.example/notebook.jpg");
+        var website = values["Website"].RequiredElement(".sa-image");
+        await Assert.That(website.LocalName).IsEqualTo("span");
+        await Assert.That(website.GetAttribute("data-size")).IsEqualTo("sm");
+        await Assert.That(website.GetAttribute("data-aspect-ratio")).IsEqualTo("widescreen");
+        await Assert.That(website.GetAttribute("data-interaction")).IsEqualTo("preview");
+        await Assert
+            .That(website.RequiredElement("img").GetAttribute("src"))
+            .IsEqualTo("https://voyager.example/notebook");
+    }
+
+    [Test]
+    public async Task Edit_WithImageDisplayAndEmptyValue_RendersPlaceholder()
+    {
+        // Arrange
+        await using var sut = await CreateFactsHostAsync(
+            details =>
+                details.Add(model => model.Photo).UseDisplay<ImageDisplay>().EmptyText = "None",
+            model => model.Photo = null
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
+
+        // Assert
+        var value = GetValues(document)["Photo"];
+        var image = value.RequiredElement(".sa-image");
+        await Assert.That(value.HasAttribute("data-empty")).IsFalse();
+        await Assert.That(image.GetAttribute("data-state")).IsEqualTo("empty");
+        await Assert
+            .That(image.RequiredElement("[data-slot='image-placeholder']").TextContent.Trim())
+            .IsEqualTo("No image");
+    }
+
+    [Test]
     public async Task Edit_WithUIHint_RendersHintTemplateUnlessDisplayIsConfigured()
     {
         // Arrange

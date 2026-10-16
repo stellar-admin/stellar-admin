@@ -25,6 +25,7 @@ public sealed class ProductFactsHandler(ProductDataSource source, ProductFactsCh
             Notes = "Ships from Cape Town.\nAllow two days.",
             Opens = new(9, 30),
             Phone = "+27 21 555 0100",
+            Photo = "notebook.jpg",
             Price = product.Price,
             ProductName = product.Name,
             Reference = Reference,

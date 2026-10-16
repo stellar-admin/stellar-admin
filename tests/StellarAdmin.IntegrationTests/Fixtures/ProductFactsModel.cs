@@ -19,6 +19,8 @@ public sealed class ProductFactsModel
     [Phone]
     public string? Phone { get; set; }
 
+    public string? Photo { get; set; }
+
     public decimal Price { get; set; }
 
     [DisplayFormat(DataFormatString = "{0:0.000}")]

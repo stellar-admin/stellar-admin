@@ -34,7 +34,7 @@
             {
                 using (var scope = BeginField(displayField))
                 {
-                    <sa-display-field asp-for="@Model" label="@displayField.Title" empty-text="@displayField.EmptyText" template="@scope.TemplateName"
+                    <sa-display-field asp-for="@Model" label="@displayField.Title" empty-text="@displayField.EmptyText" template="@scope.TemplateName" template-renders-empty="@scope.TemplateRendersEmpty"
                                       orientation="@(displayField.Orientation ?? orientation)" />
                 }
             }

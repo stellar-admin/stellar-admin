@@ -17,7 +17,7 @@
         {
             using (var scope = BeginField(field))
             {
-                <sa-display-field asp-for="@Model" label="@field.Title" empty-text="@field.EmptyText" template="@scope.TemplateName"
+                <sa-display-field asp-for="@Model" label="@field.Title" empty-text="@field.EmptyText" template="@scope.TemplateName" template-renders-empty="@scope.TemplateRendersEmpty"
                                   orientation="@field.Orientation"
                                   column-span="@Span(field.ColumnSpan.Base)" column-span-sm="@Span(field.ColumnSpan.Small)"
                                   column-span-md="@Span(field.ColumnSpan.Medium)" column-span-lg="@Span(field.ColumnSpan.Large)"

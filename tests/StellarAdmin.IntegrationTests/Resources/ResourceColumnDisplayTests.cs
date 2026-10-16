@@ -6,6 +6,7 @@ using StellarAdmin.IntegrationTests.Fixtures;
 using StellarAdmin.IntegrationTests.Infrastructure;
 using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Displays;
+using StellarAdmin.UI;
 
 namespace StellarAdmin.IntegrationTests.Resources;
 
@@ -182,38 +183,174 @@ public class ResourceColumnDisplayTests
         await Assert.That(cell.QuerySelector(".sa-boolean-display")).IsNull();
     }
 
+    [Test]
+    public async Task Index_WithImageDisplay_RendersThumbnailFromResolvedUrl()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(columns =>
+            columns.Add(
+                facts => facts.Photo,
+                column =>
+                    column.UseDisplay<ImageDisplay>(image =>
+                        image.ResolveUrl(value => $"https://cdn.voyager.example/{value}")
+                    )
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var image = Cells(document)[0].RequiredElement(".sa-image");
+        await Assert.That(image.LocalName).IsEqualTo("button");
+        await Assert.That(image.GetAttribute("data-variant")).IsEqualTo("thumbnail");
+        await Assert.That(image.GetAttribute("data-size")).IsEqualTo("sm");
+        await Assert.That(image.GetAttribute("data-aspect-ratio")).IsEqualTo("square");
+        await Assert.That(image.GetAttribute("data-interaction")).IsEqualTo("lightbox");
+        await Assert.That(image.GetAttribute("aria-label")).IsEqualTo("Photo");
+        await Assert
+            .That(image.RequiredElement("img").GetAttribute("src"))
+            .IsEqualTo("https://cdn.voyager.example/notebook.jpg");
+        await Assert
+            .That(document.QuerySelectorAll("[data-slot='image-lightbox-template']").Length)
+            .IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task Index_WithImageDisplaySettings_RendersSettings()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(columns =>
+            columns.Add(
+                facts => facts.Photo,
+                column =>
+                    column.UseDisplay<ImageDisplay>(image =>
+                    {
+                        image.AspectRatio = ImageAspectRatio.Landscape;
+                        image.Fit = ImageFit.Contain;
+                        image.Size = ImageDisplaySize.Large;
+                        image.Interaction = ImageDisplayInteraction.None;
+                    })
+            )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var image = Cells(document)[0].RequiredElement(".sa-image");
+        await Assert.That(image.LocalName).IsEqualTo("span");
+        await Assert.That(image.GetAttribute("data-size")).IsEqualTo("lg");
+        await Assert.That(image.GetAttribute("data-aspect-ratio")).IsEqualTo("landscape");
+        await Assert.That(image.GetAttribute("data-fit")).IsEqualTo("contain");
+        await Assert.That(image.HasAttribute("data-interaction")).IsFalse();
+        await Assert
+            .That(image.RequiredElement("img").GetAttribute("src"))
+            .IsEqualTo("notebook.jpg");
+    }
+
+    [Test]
+    public async Task Index_WithAsyncImageResolver_ResolvesUrlWithServices()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(
+            columns =>
+                columns.Add(
+                    facts => facts.Photo,
+                    column =>
+                        column.UseDisplay<ImageDisplay>(image =>
+                            image.ResolveUrl(
+                                (value, services, _) =>
+                                    Task.FromResult<string?>(
+                                        services.GetRequiredService<PhotoHost>().Url + value
+                                    )
+                            )
+                        )
+                ),
+            services => services.AddSingleton(new PhotoHost("https://photos.voyager.example/"))
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        await Assert
+            .That(Cells(document)[0].RequiredElement(".sa-image img").GetAttribute("src"))
+            .IsEqualTo("https://photos.voyager.example/notebook.jpg");
+    }
+
+    [Test]
+    public async Task Index_WithImageDisplayAndEmptyValue_RendersPlaceholder()
+    {
+        // Arrange
+        await using var sut = await CreateAsync(
+            columns =>
+                columns.Add(
+                    facts => facts.Photo,
+                    column =>
+                    {
+                        column.EmptyText = "None";
+                        column.UseDisplay<ImageDisplay>();
+                    }
+                ),
+            change: facts => facts.Photo = null
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/facts");
+
+        // Assert
+        var cell = Cells(document)[0];
+        var image = cell.RequiredElement(".sa-image");
+        await Assert.That(image.GetAttribute("data-state")).IsEqualTo("empty");
+        await Assert.That(image.QuerySelector("img")).IsNull();
+        await Assert.That(cell.TextContent.Contains("None")).IsFalse();
+    }
+
     private static IElement[] Cells(IDocument document) =>
         document.QuerySelectorAll("tbody tr:first-child td").ToArray();
 
     private static Task<WebApplication> CreateAsync(
-        Action<ResourceColumnsBuilder<ProductFactsModel>> columns
-    ) =>
-        StellarAdminTestHost.CreateAsync(
+        Action<ResourceColumnsBuilder<ProductFactsModel>> columns,
+        Action<IServiceCollection>? configureServices = null,
+        Action<ProductFactsModel>? change = null
+    )
+    {
+        var facts = new ProductFactsModel
+        {
+            Active = true,
+            Code = "NB-01",
+            Email = "sales@voyager.example",
+            Notes = "Ships in a sleeve.\nRecycled paper.",
+            Phone = "+27 21 555 0100",
+            Photo = "notebook.jpg",
+            Price = 8.50m,
+            ProductName = "Notebook",
+            Released = new(2026, 3, 1),
+            Status = ProductFactsStatus.OnSale,
+            Website = "https://voyager.example/",
+            Weight = 1.25m,
+        };
+        change?.Invoke(facts);
+
+        return StellarAdminTestHost.CreateAsync(
             new([]),
             configureServices: services =>
-                services.AddSingleton(
-                    new List<ProductFactsModel>
-                    {
-                        new()
-                        {
-                            Active = true,
-                            Code = "NB-01",
-                            Email = "sales@voyager.example",
-                            Notes = "Ships in a sleeve.\nRecycled paper.",
-                            Phone = "+27 21 555 0100",
-                            Price = 8.50m,
-                            ProductName = "Notebook",
-                            Released = new(2026, 3, 1),
-                            Status = ProductFactsStatus.OnSale,
-                            Website = "https://voyager.example/",
-                            Weight = 1.25m,
-                        },
-                    }
-                ),
+            {
+                configureServices?.Invoke(services);
+                services.AddSingleton(new List<ProductFactsModel> { facts });
+            },
             configureAdmin: admin =>
                 admin
                     .AddResource<ProductFactsModel>("facts")
                     .UseDataSource<ProductFactsDataSource>()
                     .Index(index => index.Columns(columns))
         );
+    }
+
+    private sealed record PhotoHost(string Url);
 }

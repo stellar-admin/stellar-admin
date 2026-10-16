@@ -83,6 +83,25 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenTemplateRendersEmptyAndValueIsEmpty_RendersTemplate()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateSut(context, "Code");
+        sut.For = CreateFor(context, new Booking(), nameof(Booking.PromoCode));
+        sut.Template = "Code";
+        sut.TemplateRendersEmpty = true;
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var value = Value(html);
+        await Assert.That(value?.HasAttribute("data-empty")).IsFalse();
+        await Assert.That(value?.TextContent).IsEqualTo("DisplayTemplates/Code:");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenTemplateIsMissing_ThrowsInvalidOperationException()
     {
         // Arrange

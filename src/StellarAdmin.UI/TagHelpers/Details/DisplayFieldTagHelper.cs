@@ -110,7 +110,8 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     ///     The text displayed when the value is empty.
     /// </summary>
     /// <remarks>
-    ///     Defaults to the property's null display text, otherwise a dash.
+    ///     Defaults to the property's null display text, otherwise a dash. Not used when
+    ///     <c>template-renders-empty</c> passes empty values to the template.
     /// </remarks>
     [HtmlAttributeName("empty-text")]
     public string? EmptyText { get; set; }
@@ -170,6 +171,15 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     /// </remarks>
     [HtmlAttributeName("template")]
     public string? Template { get; set; }
+
+    /// <summary>
+    ///     Whether the display template also renders empty values, instead of the empty text.
+    /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>. Has no effect without a template.
+    /// </remarks>
+    [HtmlAttributeName("template-renders-empty")]
+    public bool TemplateRendersEmpty { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="ViewContext" /> of the executing view.
@@ -394,12 +404,16 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     {
         var metadata = For?.Metadata;
         var value = For?.Model;
+        var templateName = Template ?? metadata?.TemplateHint;
 
         if (!childContent.IsEmptyOrWhiteSpace)
         {
             valueElement.InnerHtml.AppendHtml(childContent);
         }
-        else if (metadata is null || IsEmpty(value))
+        else if (
+            metadata is null
+            || (IsEmpty(value) && !(TemplateRendersEmpty && templateName is not null))
+        )
         {
             valueElement.Attributes["data-empty"] = "true";
             valueElement.InnerHtml.Append(
@@ -408,7 +422,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 
             return;
         }
-        else if ((Template ?? metadata.TemplateHint) is { } templateName)
+        else if (templateName is not null)
         {
             valueElement.InnerHtml.AppendHtml(await RenderTemplateAsync(templateName));
         }

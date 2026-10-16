@@ -44,7 +44,8 @@
         // Numbers line up on the right, header and cells alike
         ViewContext.ViewData[ViewDataKeys.FieldDisplay] = display;
         <sa-data-grid-column title="@column.Title" field-for="@column.FieldExpression"
-                             template="@display?.TemplateName" empty-text="@column.EmptyText"
+                             template="@display?.TemplateName" template-renders-empty="@(display?.RendersEmptyValue == true)"
+                             empty-text="@column.EmptyText"
                              sortable="@column.Sortable" sort-field="@column.FieldName"
                              class="@(display is NumberDisplay ? "text-right" : null)">
             @if (rowFields?[index] is { } field)

@@ -16,6 +16,10 @@ public sealed class ResourceColumnBuilder<TResource>
     ///     The text a cell shows when its value is empty. Defaults to the property's
     ///     <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
     /// </summary>
+    /// <remarks>
+    ///     Not used with a display that renders empty values itself, such as
+    ///     <see cref="ImageDisplay" />.
+    /// </remarks>
     public string? EmptyText
     {
         set => _configuration.Add(options => options.EmptyText = value);

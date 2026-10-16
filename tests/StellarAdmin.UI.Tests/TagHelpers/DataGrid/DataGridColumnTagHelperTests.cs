@@ -74,6 +74,42 @@ public class DataGridColumnTagHelperTests
         await Assert.That(viewEngine.Renders).IsEqualTo(0);
     }
 
+    [Test]
+    public async Task ProcessAsync_WithTemplateRendersEmptyAndEmptyValue_RendersTemplate()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = CreateColumn(context, new TemplateViewEngine());
+        sut.Field = nameof(GridProduct.Notes);
+        sut.Template = "Notes";
+        sut.TemplateRendersEmpty = true;
+        sut.EmptyText = "None";
+
+        // Act
+        var cells = await RenderCellsAsync(context, sut, new GridProduct());
+
+        // Assert
+        await Assert.That(cells[0]).IsEqualTo("Notes:No notes:");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithTemplateRendersEmptyAndNoTemplate_ShowsEmptyText()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var viewEngine = new TemplateViewEngine();
+        var sut = CreateColumn(context, viewEngine);
+        sut.Field = nameof(GridProduct.Notes);
+        sut.TemplateRendersEmpty = true;
+
+        // Act
+        var cells = await RenderCellsAsync(context, sut, new GridProduct());
+
+        // Assert
+        await Assert.That(cells[0]).IsEqualTo("No notes");
+        await Assert.That(viewEngine.Renders).IsEqualTo(0);
+    }
+
     private static DataGridColumnTagHelper CreateColumn(
         RenderingContext context,
         ICompositeViewEngine viewEngine
