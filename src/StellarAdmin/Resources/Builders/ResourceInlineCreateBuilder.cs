@@ -18,7 +18,8 @@ public sealed class ResourceInlineCreateBuilder
     }
 
     /// <summary>
-    ///     Whether the other rows are dimmed while the new row is edited. Defaults to <c>true</c>.
+    ///     Whether the other rows and the page's controls are dimmed and locked while the new row is edited,
+    ///     until it is saved or cancelled. Defaults to <c>true</c>.
     /// </summary>
     public bool DimOtherRows
     {

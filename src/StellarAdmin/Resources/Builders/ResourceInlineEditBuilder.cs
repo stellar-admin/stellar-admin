@@ -10,7 +10,8 @@ public sealed class ResourceInlineEditBuilder
     private readonly Action<Action<ResourceInlineEditOptions>> _configure;
 
     /// <summary>
-    ///     Whether the other rows are dimmed while a row is edited. Defaults to <c>true</c>.
+    ///     Whether the other rows and the page's controls are dimmed and locked while a row is edited,
+    ///     until it is saved or cancelled. Defaults to <c>true</c>.
     /// </summary>
     public bool DimOtherRows
     {

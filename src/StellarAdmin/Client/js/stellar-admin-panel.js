@@ -219,6 +219,46 @@ function focusRow(row, { invalid = false, select = false } = {}) {
   }
 }
 
+// While a row is edited or added and the grid dims the other rows for that operation (data-inline-dim lists "edit"
+// and "create"), the other rows, the Add buttons, the scopes, the search, the sort links and the pager step back and
+// can't be used until the row is saved or cancelled. The edited row's message and details stay usable
+function unlockInlineRow() {
+  for (const locked of document.querySelectorAll("[data-inline-locked]")) {
+    locked.removeAttribute("data-inline-locked");
+    locked.inert = false;
+  }
+}
+
+function lockInlineRow() {
+  unlockInlineRow();
+  const grid = document.getElementById("index-page-grid");
+  const editing = grid?.querySelector(".sa-table-body > tr[data-editing]");
+  const dim = (grid?.dataset.inlineDim ?? "").split(" ");
+  if (!editing || !dim.includes(editing.dataset.key === "new" ? "create" : "edit")) {
+    return;
+  }
+
+  // The edited row's message and details follow it, up to the next row or the add row
+  const kept = [editing];
+  let next = editing.nextElementSibling;
+  while (next && !next.matches("[data-key], .sa-table-add-row")) {
+    kept.push(next);
+    next = next.nextElementSibling;
+  }
+
+  const locked = [
+    ...[...editing.parentElement.children].filter((row) => !kept.includes(row) && !row.matches("[data-empty]")),
+    ...document.querySelectorAll(
+      "[data-row-add]:not(#index-page-grid *), #index-page-scopes, #index-page-search, " +
+        "#index-page-grid [data-slot='data-grid-sort-link'], #index-page-grid [data-slot='card-footer']",
+    ),
+  ];
+  for (const element of locked) {
+    element.setAttribute("data-inline-locked", "");
+    element.inert = true;
+  }
+}
+
 document.addEventListener(
   "click",
   (event) => {
@@ -226,7 +266,12 @@ document.addEventListener(
       document.querySelector("#index-page-grid tr[data-editing] [data-row-cancel]")?.click();
     }
 
-    removeRowMessage(event.target.closest("[data-row-cancel]")?.closest("tr"));
+    // Cancel ends the edit; sel-table restores the row, and stops the click
+    const cancelled = event.target.closest("#index-page-grid tr[data-editing] [data-row-cancel]")?.closest("tr");
+    if (cancelled) {
+      removeRowMessage(cancelled);
+      unlockInlineRow();
+    }
   },
   { capture: true },
 );
@@ -262,6 +307,7 @@ const rowSwaps = new WeakMap();
 
 document.addEventListener("htmx:after:swap", (event) => {
   const ctx = event.detail?.ctx;
+  lockInlineRow();
   rowSwaps.get(ctx)?.();
   rowSwaps.delete(ctx);
 });

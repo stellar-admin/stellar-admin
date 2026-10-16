@@ -54,7 +54,7 @@ admin.AddEfCoreResource<AppDbContext, Destination>(resource =>
 ```
 
 - An operation is edited either inline or on its page, never both. An inline operation's page is not registered, and with inline edit the view page shows no Edit button.
-- `edit.UseInlineRow(inline => inline.DimOtherRows = false)` keeps the other rows at full strength while a row is edited.
+- `DimOtherRows` (default true) dims and locks the other rows and the page's controls (Add buttons, scopes, search, sort links and pager) while a row is edited or added, until it is saved or cancelled. With `edit.UseInlineRow(inline => inline.DimOtherRows = false)` they stay usable, and editing or adding another row cancels the first.
 - `InlineCreatePosition` and `InlineAddButton` are in `StellarAdmin.Resources`.
 - Inline rows need a resource key. EF Core resources have one; `AddResource<T>` needs `UseKey`.
 
@@ -76,7 +76,7 @@ The Add button inserts a new row filled from `UseFactory`, at the top of the gri
 
 ## What the user sees
 
-- The row's Edit action turns the row into fields, with Save and Cancel in place of the row actions. One row is edited at a time: editing or adding another row cancels the first.
+- The row's Edit action turns the row into fields, with Save and Cancel in place of the row actions. One row is edited at a time.
 - Enter in a text field saves and Escape cancels. Cancel restores the row without a request.
 - On success the row comes back as it displays, reloaded through the index query, and flashes. Field errors appear under their cells. Errors the row can't place, such as a `ResourceOperationResult` error without a field, appear in a message under the row.
 - Paging, sorting, search and scopes discard an unsaved row without asking.
