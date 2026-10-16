@@ -58,4 +58,6 @@ public sealed class ResourceIndexInlineRowsViewModel
     ///     The save button label.
     /// </summary>
     public required string SaveLabel { get; init; }
+
+    internal ResourceIndexInlineRowsViewModel() { }
 }

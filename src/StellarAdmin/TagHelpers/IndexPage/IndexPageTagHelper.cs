@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
+using StellarAdmin.Areas.StellarAdmin.ViewModels;
 using StellarAdmin.UI;
 
 namespace StellarAdmin;

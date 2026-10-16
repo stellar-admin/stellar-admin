@@ -57,4 +57,6 @@ public sealed class ResourceViewPageViewModel
     public string Title { get; internal init; } = "";
 
     internal FormGridColumnDefinitions Columns { get; init; }
+
+    internal ResourceViewPageViewModel() { }
 }

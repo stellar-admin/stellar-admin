@@ -36,7 +36,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J1 | Delete dead public types | Done (2026-10-16) |
 | J2 | Make the two tag helper base classes abstract | Done (2026-10-16) |
 | J3 | Make the admin panel controllers and `ResourceLookupQuery` internal | Done (2026-10-16) |
-| J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Approved, if feasible |
+| J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Done (2026-10-16) |
 | J5 | Tidy the protected hooks EF Core uses | |
 | J6 | Seal builders, options types, view models and the view component | |
 | J7 | Make tag helper plumbing internal or protected | |
@@ -164,9 +164,13 @@ Done. `ResourceController<TResource>`, `HomeController`, `LogoutController` and 
 
 ### J4. View models
 
-- Six positional records (`ResourceIndexPagingViewModel` and five siblings) become sealed classes.
-- Constructors become internal.
-- `IResourceIndexPageViewModel` becomes an abstract class with an internal constructor in the main `ViewModels` namespace.
+Done:
+- The five index records (`ResourceIndexPagingViewModel`, `ResourceIndexScopeViewModel`, `ResourceIndexSearchViewModel`, `ResourceIndexSortViewModel`, `ResourceIndexDeleteDialogViewModel`) are sealed classes with internal constructors. A positional record always has a public constructor, so adding a property would have broken callers.
+- The unused `ResourceIndexEmptyViewModel` is deleted.
+- `ResourceIndexPageViewModel<TResource>`, `ResourceIndexInlineRowsViewModel`, `ResourceFormPageViewModel` (now sealed) and `ResourceViewPageViewModel` have internal constructors.
+- `IResourceIndexPageViewModel` stays an interface, because it is the `@model` for a shared index view overridden for every resource. It moved to `StellarAdmin.Areas.StellarAdmin.ViewModels` and lost `[EditorBrowsable(Never)]`. `ViewModels.Internal` now holds only internal types.
+
+Rule for records: keep records for types consumers create and pass in. Use sealed classes with internal constructors for public types only the library creates. `SidebarBrandModel` and `SidebarUserMenuModel` may fall in the second group and have not been checked.
 
 ### J5. Hooks EF Core uses
 

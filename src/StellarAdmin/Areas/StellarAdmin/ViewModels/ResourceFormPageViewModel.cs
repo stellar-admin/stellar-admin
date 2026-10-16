@@ -8,7 +8,7 @@ namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 ///     the views need no knowledge of the entity type; the stock HTML helpers resolve
 ///     field values and metadata from the runtime type of <see cref="Entity" />.
 /// </summary>
-public class ResourceFormPageViewModel
+public sealed class ResourceFormPageViewModel
 {
     /// <summary>
     ///     The prefix the form's input names carry. A posted field is named
@@ -74,4 +74,6 @@ public class ResourceFormPageViewModel
     public string Title { get; internal init; } = "";
 
     internal FormGridColumnDefinitions Columns { get; init; }
+
+    internal ResourceFormPageViewModel() { }
 }

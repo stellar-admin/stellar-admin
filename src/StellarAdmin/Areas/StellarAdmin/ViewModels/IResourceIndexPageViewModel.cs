@@ -1,13 +1,13 @@
 using System.Collections;
-using System.ComponentModel;
 using StellarAdmin.Resources.Options;
 
-namespace StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
+namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     Provides index page data to the default views.
+///     The index page model, without the resource type.
+///     Use it as the <c>@model</c> of a shared index view that you override for every resource.
+///     To override one resource's index view, use <see cref="ResourceIndexPageViewModel{TResource}" />.
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
 public interface IResourceIndexPageViewModel
 {
     /// <summary>

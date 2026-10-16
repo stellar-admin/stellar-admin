@@ -1,5 +1,4 @@
 using System.Collections;
-using StellarAdmin.Areas.StellarAdmin.ViewModels.Internal;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
@@ -110,6 +109,8 @@ public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageVi
     public string? ViewLabel { get; init; }
 
     IEnumerable IResourceIndexPageViewModel.Items => Items;
+
+    internal ResourceIndexPageViewModel() { }
 
     string IResourceIndexPageViewModel.GetKey(object resource) => KeySelector!((TResource)resource);
 }
