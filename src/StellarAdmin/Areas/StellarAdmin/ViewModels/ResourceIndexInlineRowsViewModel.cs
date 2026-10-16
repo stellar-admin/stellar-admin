@@ -13,10 +13,20 @@ public sealed class ResourceIndexInlineRowsViewModel
     public required string CancelLabel { get; init; }
 
     /// <summary>
+    ///     The inline create settings, or null when resources are not created inline.
+    /// </summary>
+    public ResourceInlineCreateOptions? Create { get; init; }
+
+    /// <summary>
     ///     The field each column edits in a new row, by column position, or null when resources
     ///     are not created inline.
     /// </summary>
     public IReadOnlyList<FormFieldOptions?>? CreateFields { get; init; }
+
+    /// <summary>
+    ///     The inline edit settings, or null when resources are not edited inline.
+    /// </summary>
+    public ResourceInlineEditOptions? Edit { get; init; }
 
     /// <summary>
     ///     The field each column edits in an edited row, by column position, or null when

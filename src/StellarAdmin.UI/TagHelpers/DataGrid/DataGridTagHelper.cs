@@ -16,7 +16,8 @@ namespace StellarAdmin.UI;
 ///     The grid renders as a card-style panel; add an <c>sa-data-grid-pager</c> child to
 ///     render a footer bar with paging links and a record-range summary, an
 ///     <c>sa-data-grid-sort</c> child to render sort links on the sortable columns' headers,
-///     and an <c>sa-data-grid-selection</c> child to render a row-selection checkbox column.
+///     an <c>sa-data-grid-selection</c> child to render a row-selection checkbox column, and an
+///     <c>sa-data-grid-add-row</c> child to render a row for a button that adds an item.
 ///     Rows listed in <c>editing-keys</c>, and a <c>new-item</c>, render in edit mode with their
 ///     columns' <c>sa-data-grid-edit-template</c>s. Querying, sorting, and paging the data remain the application's responsibility — the
 ///     grid renders the items it is given.
@@ -302,6 +303,14 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         bodyBuilder.Attributes.Add("data-slot", "table-body");
         bodyBuilder.Attributes.Add("class", "sa-table-body");
 
+        var addRow = gridContext.AddRow is { } addRowDefinition
+            ? RenderAddRow(gridContext, addRowDefinition.Content)
+            : null;
+        if (gridContext.AddRow is { Position: DataGridAddRowPosition.Top })
+        {
+            bodyBuilder.InnerHtml.AppendHtml(addRow!);
+        }
+
         if (items.Count == 0 && NewItem is null)
         {
             var columnCount = GetColumnCount(gridContext);
@@ -324,19 +333,47 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 emptyCellBuilder.InnerHtml.Append("No records found.");
             }
 
+            // Marked, so the empty state can step aside for a row added in the page
             var emptyRowBuilder = new TagBuilder("tr");
             emptyRowBuilder.Attributes.Add("data-slot", "table-row");
             emptyRowBuilder.Attributes.Add("class", "sa-table-row");
+            emptyRowBuilder.Attributes.Add("data-empty", "");
             emptyRowBuilder.InnerHtml.AppendHtml(emptyCellBuilder);
 
             bodyBuilder.InnerHtml.AppendHtml(emptyRowBuilder);
-            return bodyBuilder;
+        }
+        else
+        {
+            bodyBuilder.InnerHtml.AppendHtml(
+                await RenderRows(context, output, gridContext, items, idDiscriminator)
+            );
         }
 
-        bodyBuilder.InnerHtml.AppendHtml(
-            await RenderRows(context, output, gridContext, items, idDiscriminator)
-        );
+        if (gridContext.AddRow is { Position: DataGridAddRowPosition.Bottom })
+        {
+            bodyBuilder.InnerHtml.AppendHtml(addRow!);
+        }
+
         return bodyBuilder;
+    }
+
+    private static TagBuilder RenderAddRow(DataGridContext gridContext, string content)
+    {
+        var cellBuilder = new TagBuilder("td");
+        cellBuilder.Attributes.Add("data-slot", "table-cell");
+        cellBuilder.Attributes.Add("class", "sa-table-cell");
+        cellBuilder.Attributes.Add(
+            "colspan",
+            Math.Max(GetColumnCount(gridContext), 1).ToString(CultureInfo.InvariantCulture)
+        );
+        cellBuilder.InnerHtml.AppendHtml(content);
+
+        var rowBuilder = new TagBuilder("tr");
+        rowBuilder.Attributes.Add("data-slot", "table-add-row");
+        rowBuilder.Attributes.Add("class", "sa-table-row sa-table-add-row");
+        rowBuilder.InnerHtml.AppendHtml(cellBuilder);
+
+        return rowBuilder;
     }
 
     /// <summary>

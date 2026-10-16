@@ -49,6 +49,9 @@ internal sealed class DataGridContext
     /// <summary>Column definitions registered during the collect pass, in document order.</summary>
     public List<DataGridColumn> Columns { get; } = [];
 
+    /// <summary>The add row captured from <c>sa-data-grid-add-row</c>.</summary>
+    public DataGridAddRow? AddRow { get; set; }
+
     /// <summary>Custom empty-state content captured from <c>sa-data-grid-empty</c>.</summary>
     public string? EmptyContent { get; set; }
 

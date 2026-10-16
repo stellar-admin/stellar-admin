@@ -145,10 +145,17 @@ class AdminRemoteSheet extends HTMLElement {
     return this.querySelector("[data-sheet='content']");
   }
 
+  // The opener can sit where it inherits htmx attributes, such as a row of the index grid, so the load sets its own
+  // swap and drops any inherited selection and history
   #load() {
     htmx.ajax("GET", this.#opener.dataset.sheetOpen, {
       source: this.#opener,
       target: this.#content,
+      swap: "innerHTML",
+      select: undefined,
+      selectOOB: undefined,
+      push: undefined,
+      replace: undefined,
     });
   }
 
@@ -180,8 +187,10 @@ document.addEventListener("click", (event) => {
   event.target.closest("[data-user-menu-logout]")?.closest("form")?.requestSubmit();
 });
 
-// An index grid row in edit mode: its message, which follows it with the errors no cell shows, goes when the row is
-// cancelled or a save's response replaces the row, which brings the message back if the save is rejected again
+// Index grid inline rows. One row is edited at a time: Edit or Add cancels the row being edited first. In the row,
+// Enter in a text field saves and Escape cancels, focusing the row's Edit button or the Add button again. A row's
+// message, which follows it with the errors no cell shows, goes when the row is cancelled or a save's response
+// replaces the row, which brings the message back if the save is rejected again.
 function removeRowMessage(row) {
   const next = row?.nextElementSibling;
   if (next?.classList.contains("sa-row-message")) {
@@ -189,14 +198,130 @@ function removeRowMessage(row) {
   }
 }
 
+// The grid's own Add button while it shows, or else the page header's
+function addButton() {
+  return (
+    document.querySelector("#index-page-grid .sa-table-add-row [data-row-add]") ??
+    document.querySelector("[data-row-add]")
+  );
+}
+
+// The first field of a row in edit mode, or its first field with an error
+function focusRow(row, { invalid = false, select = false } = {}) {
+  const field =
+    (invalid ? row.querySelector("[aria-invalid='true']:not([hidden] *)") : null) ??
+    row.querySelector(
+      "input:not([type='hidden']), select, textarea, [data-lookup='open']:not([hidden] *)",
+    );
+  field?.focus({ preventScroll: true });
+  if (select && field instanceof HTMLInputElement) {
+    field.select();
+  }
+}
+
 document.addEventListener(
   "click",
-  (event) => removeRowMessage(event.target.closest("[data-row-cancel]")?.closest("tr")),
+  (event) => {
+    if (event.target.closest("[data-row-edit], [data-row-add]")) {
+      document.querySelector("#index-page-grid tr[data-editing] [data-row-cancel]")?.click();
+    }
+
+    removeRowMessage(event.target.closest("[data-row-cancel]")?.closest("tr"));
+  },
   { capture: true },
 );
 
+document.addEventListener("keydown", (event) => {
+  const row = event.target.closest?.("#index-page-grid tr[data-editing]");
+  if (!row || event.defaultPrevented || event.isComposing) {
+    return;
+  }
+
+  if (
+    event.key === "Enter" &&
+    event.target.matches(
+      "input:not([type='checkbox'], [type='radio'], [type='button'], [type='submit'], [type='reset'])",
+    )
+  ) {
+    event.preventDefault();
+    row.querySelector("[data-row-save]")?.click();
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    const key = row.dataset.key;
+    const body = row.parentElement;
+    row.querySelector("[data-row-cancel]")?.click();
+    const display = key === "new" ? null : body.querySelector(`tr[data-key="${CSS.escape(key)}"]`);
+    (display ? display.querySelector("[data-row-edit]") : addButton())?.focus();
+  }
+});
+
+// A response swaps out the row it came from, and htmx sends the swap's end for the detached row's button to the
+// document: the work after the swap is set up before it, by request, with the rows around the one replaced to find
+// what came in its place
+const rowSwaps = new WeakMap();
+
+document.addEventListener("htmx:after:swap", (event) => {
+  const ctx = event.detail?.ctx;
+  rowSwaps.get(ctx)?.();
+  rowSwaps.delete(ctx);
+});
+
 document.addEventListener("htmx:before:swap", (event) => {
-  removeRowMessage(event.target.closest?.("[data-row-save]")?.closest("tr"));
+  const source = event.target;
+  if (!(source instanceof Element)) {
+    return;
+  }
+
+  const save = source.closest("[data-row-save]");
+  const row = source.closest("tr");
+  if (save) {
+    removeRowMessage(row);
+  }
+
+  const kind = save
+    ? "save"
+    : source.matches("[data-row-edit]")
+      ? "edit"
+      : source.matches("[data-row-add]")
+        ? "add"
+        : null;
+  if (!kind) {
+    return;
+  }
+
+  const body = row?.parentElement;
+  const previous = row?.previousElementSibling;
+  rowSwaps.set(event.detail.ctx, () => {
+    const grid = document.getElementById("index-page-grid");
+    const editing = grid?.querySelector("tr[data-editing]");
+    if (kind === "add" && editing) {
+      editing.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      focusRow(editing);
+    } else if (kind === "edit" && editing) {
+      focusRow(editing, { select: true });
+    } else if (kind === "save" && editing) {
+      focusRow(editing, { invalid: true });
+    } else if (kind === "save") {
+      // A saved row takes the place of the editing row, after the row that was before it
+      const saved = previous?.isConnected ? previous.nextElementSibling : body?.firstElementChild;
+      const display = saved?.matches("tr[data-key]")
+        ? saved
+        : grid?.querySelector(`tr[data-key="${CSS.escape(row?.dataset.key ?? "")}"]`);
+      if (display) {
+        display.setAttribute("data-saved", "");
+        setTimeout(() => display.removeAttribute("data-saved"), 1400);
+        display.querySelector("[data-row-edit]")?.focus({ preventScroll: true });
+      }
+    }
+  });
+});
+
+// Toasts the server queued for an htmx request, such as a row added in the index grid
+document.addEventListener("htmx:after:request", (event) => {
+  const headers = event.detail?.ctx?.response?.headers;
+  if (headers) {
+    window.stellarAdmin?.toast?.fromResponse(headers);
+  }
 });
 
 document.addEventListener("mousemove", (event) => {

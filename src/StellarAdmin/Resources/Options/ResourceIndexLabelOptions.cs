@@ -16,6 +16,13 @@ public sealed class ResourceIndexLabelOptions
     public Func<ResourceLabelContext, string> CreateLabel { get; set; } = resource => "Create";
 
     /// <summary>
+    ///     The callback that generates the default message of the toast shown when a resource is
+    ///     added in a new row.
+    /// </summary>
+    public Func<ResourceLabelContext, string> CreatedMessage { get; set; } =
+        resource => $"{resource.SingularLabel} added";
+
+    /// <summary>
     ///     The callback that generates the default index delete button label.
     /// </summary>
     public Func<ResourceLabelContext, string> DeleteLabel { get; set; } =

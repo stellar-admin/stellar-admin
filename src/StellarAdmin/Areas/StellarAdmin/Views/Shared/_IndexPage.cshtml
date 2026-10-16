@@ -1,3 +1,4 @@
+@using StellarAdmin.Resources
 @model IResourceIndexPageViewModel
 
 <sa-page-container>
@@ -8,6 +9,18 @@
             @if (Model.CanCreate)
             {
                 <sa-linkbutton asp-action="Create">@Model.CreateLabel</sa-linkbutton>
+            }
+            else if (Model.InlineRows?.Create is { AddButton: InlineAddButton.Header or InlineAddButton.Both } inlineCreate)
+            {
+                @* Adds the new row next to the grid's own Add row when it has one, or else first or last in the grid *@
+                var top = inlineCreate.Position == InlineCreatePosition.Top;
+                var (addTarget, addSwap) = inlineCreate.AddButton == InlineAddButton.Both
+                    ? ("#index-page-grid .sa-table-add-row", top ? "afterend" : "beforebegin")
+                    : ("#index-page-grid .sa-table-body", top ? "afterbegin" : "beforeend");
+                <sa-button data-row-add hx-get="@Url.Action("CreateRow", new { id = (string?)null })"
+                           hx-target="@addTarget" hx-swap="@addSwap" hx-push-url="false">
+                    @Model.CreateLabel
+                </sa-button>
             }
             <sa-slot-outlet name="post-page-actions" />
         </sa-page-header-actions>

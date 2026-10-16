@@ -27,6 +27,14 @@ public class ResourceIndexOptions
     public string? CreateLabel { get; set; }
 
     /// <summary>
+    ///     The message of the toast shown when a resource is added in a new row.
+    /// </summary>
+    /// <remarks>
+    ///     Uses the global resource label callback when null.
+    /// </remarks>
+    public string? CreatedMessage { get; set; }
+
+    /// <summary>
     ///     The default ordering, or null to use the data source's default.
     /// </summary>
     public ResourceSort? DefaultSort { get; set; }

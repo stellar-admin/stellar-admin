@@ -19,7 +19,7 @@
 | [Chip](components/chip.md) | `<sa-chip>`, `<sa-chip-group>`, `<sa-chip-remove>` | A compact token for a selected or entered value, with optional media before its label and an optional remove button after it. |
 | [Collapsible](components/collapsible.md) | `<sa-collapsible>` | A container whose content can be expanded or collapsed. |
 | [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
-| [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-column>`, `<sa-data-grid-edit-template>`, … | A data grid that renders a full table from declarative column definitions and a data source. |
+| [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-add-row>`, `<sa-data-grid-column>`, … | A data grid that renders a full table from declarative column definitions and a data source. |
 | [Details](components/details.md) | `<sa-details>`, `<sa-display-field>` | Lays out read-only display fields in a description list. |
 | [Dialog](components/dialog.md) | `<sa-dialog>`, `<sa-dialog-description>`, `<sa-dialog-footer>`, … | A modal window overlaid on the page, rendered over a native `<dialog>` element. |
 | [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. |

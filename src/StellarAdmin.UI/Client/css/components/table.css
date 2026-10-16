@@ -177,6 +177,20 @@
   }
   .sa-table-body > .sa-table-row[data-editing]:hover { background: var(--sa-color-surface-subtle); }
 
+  /* A grid's add row, first or last, hidden while a row is in edit mode. Its button lines up with
+     the cells' text. */
+  .sa-table-add-row > td { padding-block: calc(1.5 * var(--sa-unit)); }
+  .sa-table-body > .sa-table-add-row:hover { background: transparent; }
+  .sa-table-add-row .sa-button {
+    margin-inline-start: calc(-1 * var(--sa-space-cell-x) + var(--sa-unit));
+    color: var(--sa-color-ink-muted);
+    &:hover { color: var(--sa-color-ink); }
+  }
+  .sa-table-body:has(> [data-editing]) > .sa-table-add-row { display: none; }
+
+  /* The empty state steps aside for a row added in the page. */
+  .sa-table-body:has(> [data-key]) > .sa-table-row[data-empty] { display: none; }
+
   /* Editors fill their cells, reaching half the cell padding into it on each side and half a unit
      above and below, so the row keeps its height. */
   .sa-cell-editor {

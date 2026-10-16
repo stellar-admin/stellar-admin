@@ -362,28 +362,197 @@ public class ResourceInlineRowTests
         await Assert.That(response.Headers.GetValues("HX-Refresh")).IsEquivalentTo(["true"]);
     }
 
-    private static void ConfigureInlineRows(ResourceBuilder<Product> resource)
+    [Test]
+    public async Task InlineCreate_RendersAddButtonsInHeaderAndGrid()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            ConfigureInlineRows
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var header = document
+            .QuerySelectorAll("[data-row-add]")
+            .Single(button => button.Closest("table") is null);
+        await Assert
+            .That(header.GetAttribute("hx-get"))
+            .IsEqualTo("/stellaradmin/products/createrow");
+        await Assert
+            .That(header.GetAttribute("hx-target"))
+            .IsEqualTo("#index-page-grid .sa-table-add-row");
+        await Assert.That(header.GetAttribute("hx-swap")).IsEqualTo("afterend");
+        var rows = document.QuerySelectorAll("#index-page-grid tbody > tr");
+        await Assert.That(rows[0].ClassList.Contains("sa-table-add-row")).IsTrue();
+        var add = rows[0].RequiredElement("[data-row-add]");
+        await Assert.That(add.GetAttribute("hx-get")).IsEqualTo("/stellaradmin/products/createrow");
+        await Assert.That(add.GetAttribute("hx-target")).IsEqualTo("closest tr");
+        await Assert.That(add.GetAttribute("hx-swap")).IsEqualTo("afterend");
+        await Assert.That(add.GetAttribute("hx-select")).IsEmpty();
+    }
+
+    [Test]
+    public async Task InlineCreate_WithHeaderButtonAtBottom_AddsLastInGrid()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                ConfigureInlineRows(
+                    resource,
+                    create: inline =>
+                    {
+                        inline.AddButton = InlineAddButton.Header;
+                        inline.Position = InlineCreatePosition.Bottom;
+                    }
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var add = document.RequiredElement("[data-row-add]");
+        await Assert
+            .That(add.GetAttribute("hx-target"))
+            .IsEqualTo("#index-page-grid .sa-table-body");
+        await Assert.That(add.GetAttribute("hx-swap")).IsEqualTo("beforeend");
+        await Assert.That(document.QuerySelector(".sa-table-add-row")).IsNull();
+    }
+
+    [Test]
+    public async Task InlineCreate_WithGridButtonAtBottom_RendersOnlyLastAddRow()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                ConfigureInlineRows(
+                    resource,
+                    create: inline =>
+                    {
+                        inline.AddButton = InlineAddButton.Grid;
+                        inline.Position = InlineCreatePosition.Bottom;
+                    }
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        var add = document.RequiredElement("[data-row-add]");
+        await Assert
+            .That(add.Closest("tr"))
+            .IsEqualTo(document.QuerySelectorAll("#index-page-grid tbody > tr").Last());
+        await Assert.That(add.GetAttribute("hx-swap")).IsEqualTo("beforebegin");
+        await Assert.That(document.QuerySelectorAll("[data-row-add]").Length).IsEqualTo(1);
+    }
+
+    [Test]
+    [Arguments(true, true, "edit create")]
+    [Arguments(false, true, "create")]
+    [Arguments(true, false, "edit")]
+    [Arguments(false, false, "")]
+    public async Task InlineRows_MarkGridWithOperationsThatDimOtherRows(
+        bool editDims,
+        bool createDims,
+        string expected
+    )
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+                ConfigureInlineRows(
+                    resource,
+                    create: inline => inline.DimOtherRows = createDims,
+                    edit: inline => inline.DimOtherRows = editDims
+                )
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products");
+
+        // Assert
+        await Assert
+            .That(document.RequiredElement("#index-page-grid").GetAttribute("data-inline-dim"))
+            .IsEqualTo(expected);
+    }
+
+    [Test]
+    [Arguments(null, "Product added")]
+    [Arguments("Saved to the catalogue", "Saved to the catalogue")]
+    public async Task CreateRow_Save_SendsCreatedToast(string? message, string expected)
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([new(7, "Notebook", 8.50m)]),
+            resource =>
+            {
+                ConfigureInlineRows(resource);
+                resource.Index(index => index.CreatedMessage = message);
+            }
+        );
+        using var client = sut.GetTestClient();
+        var values = await PrepareForm(client, "/stellaradmin/products");
+        values["rows[new].Name"] = "Fountain pen";
+        values["rows[new].Price"] = "12.00";
+        // A script's request, whose toasts come back in a header
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "/stellaradmin/products/createrow"
+        )
+        {
+            Content = new FormUrlEncodedContent(values),
+        };
+        request.Headers.Add("Sec-Fetch-Mode", "cors");
+
+        // Act
+        using var response = await client.SendAsync(request);
+
+        // Assert
+        await Assert
+            .That(response.Headers.GetValues("SA-Toasts").Single())
+            .IsEqualTo($$"""[{"title":"{{expected}}","type":"success"}]""");
+    }
+
+    private static void ConfigureInlineRows(ResourceBuilder<Product> resource) =>
+        ConfigureInlineRows(resource, create: null);
+
+    private static void ConfigureInlineRows(
+        ResourceBuilder<Product> resource,
+        Action<ResourceInlineCreateBuilder>? create = null,
+        Action<ResourceInlineEditBuilder>? edit = null
+    )
     {
         resource.UseKey(product => product.Id);
         resource.AllowView(view => view.Fields(fields => fields.Add(product => product.Name)));
         resource.AllowDelete();
-        resource.AllowEdit(edit =>
+        resource.AllowEdit(builder =>
         {
-            edit.Fields(fields =>
+            builder.Fields(fields =>
             {
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
             });
-            edit.UseInlineRow();
+            builder.UseInlineRow(inline => edit?.Invoke(inline));
         });
-        resource.AllowCreate(create =>
+        resource.AllowCreate(builder =>
         {
-            create.Fields(fields =>
+            builder.Fields(fields =>
             {
                 fields.Add(product => product.Name);
                 fields.Add(product => product.Price);
             });
-            create.UseInlineRow();
+            builder.UseInlineRow(inline => create?.Invoke(inline));
         });
     }
 }

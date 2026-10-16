@@ -34,6 +34,17 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
+    ///     The message of the toast shown when a resource is added in a new row.
+    /// </summary>
+    public string? CreatedMessage
+    {
+        set =>
+            Services.Configure<ResourceOptions<TResource>>(options =>
+                options.Index.CreatedMessage = value
+            );
+    }
+
+    /// <summary>
     ///     The delete button label.
     /// </summary>
     public string? DeleteLabel

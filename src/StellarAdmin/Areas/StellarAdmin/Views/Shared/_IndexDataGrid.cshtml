@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.ModelBinding
+@using StellarAdmin.Resources
 @using StellarAdmin.Resources.Displays
 @model IResourceIndexPageViewModel
 @inject IModelMetadataProvider MetadataProvider
@@ -17,11 +18,14 @@
     {
         ViewData[ViewDataKeys.LookupForm] = isNewRow ? "create" : "edit";
     }
+
+    // The operations that dim the other rows while their row is edited
+    var dim = string.Join(' ', new[] { inline?.Edit?.DimOtherRows == true ? "edit" : null, inline?.Create?.DimOtherRows == true ? "create" : null }.OfType<string>());
 }
 
 <sa-data-grid id="index-page-grid" items="Model.Items" class="sa-resource-index-grid" key-field="@inline?.KeyField"
               editing-keys="@(inline?.EditingKey is { } editingKey ? new[] { editingKey } : null)"
-              new-item="inline?.NewItem" rows-only="Model.RowsOnly">
+              new-item="inline?.NewItem" rows-only="Model.RowsOnly" data-inline-dim="@dim">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
                        asp-route-sortBy="{sort}" asp-route-sortDirection="{dir}"
                        preserve-query="true" preserve-query-except="page"
@@ -52,7 +56,8 @@
     }
     @if (Model.CanView || Model.CanEdit || Model.Delete is not null || inline is not null)
     {
-        <sa-data-grid-column sortable="false" class="w-px whitespace-nowrap">
+        @* With inline rows, the column keeps room for Save and Cancel, since its width stays while a row is edited *@
+        <sa-data-grid-column sortable="false" class="@(inline is null ? "w-px whitespace-nowrap" : "w-px whitespace-nowrap sa-inline-row-actions")">
             <sa-data-grid-item-template>
                 @{
                     var resourceId = Model.GetKey(Html.GridItem<object>());
@@ -81,7 +86,7 @@
                 else if (inline?.EditFields is not null)
                 {
                     @* Swaps the row for its editing row *@
-                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                    <sa-button variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" data-row-edit
                                hx-get="@Url.Action("EditRow", new { id = resourceId })" hx-target="closest tr" hx-swap="outerHTML"
                                hx-select="" hx-select-oob="" hx-push-url="false"
                                aria-label="@Model.EditLabel" interestfor="@editTooltipId">
@@ -136,6 +141,19 @@
                 </sa-data-grid-edit-template>
             }
         </sa-data-grid-column>
+    }
+    @if (inline?.Create is { AddButton: InlineAddButton.Grid or InlineAddButton.Both } inlineCreate)
+    {
+        @* Adds the new row after this row at the top, or before it at the bottom *@
+        <sa-data-grid-add-row position="@(inlineCreate.Position == InlineCreatePosition.Top ? DataGridAddRowPosition.Top : DataGridAddRowPosition.Bottom)">
+            <sa-button variant="ButtonVariant.Ghost" size="ButtonSize.Small" data-row-add
+                       hx-get="@Url.Action("CreateRow", new { id = (string?)null })" hx-target="closest tr"
+                       hx-swap="@(inlineCreate.Position == InlineCreatePosition.Top ? "afterend" : "beforebegin")"
+                       hx-select="" hx-select-oob="" hx-push-url="false">
+                <sa-icon name="plus" />
+                @Model.CreateLabel
+            </sa-button>
+        </sa-data-grid-add-row>
     }
     @if (Model.RowDetails is { } rowDetails)
     {

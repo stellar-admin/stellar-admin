@@ -33,6 +33,9 @@
     </sa-sidebar-inset>
 </sa-sidebar-wrapper>
 
+@* Toasts queued for the page, and those htmx responses carry in their header *@
+<sa-toaster />
+
 @* The sheets stack: a button that opens one adds a level from this template, outside any form, and loads its content
    with htmx; the level is removed again when it closes *@
 <template id="admin-sheet-template">

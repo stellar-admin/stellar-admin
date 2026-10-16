@@ -301,10 +301,20 @@
         }
     }
 
-    /* The other rows step back while one is edited or added, when the grid asks for it */
-    [data-inline-dim] .sa-table-body:has(> [data-editing]) > .sa-table-row:not([data-editing], .sa-row-message, .sa-table-add-row) {
+    /* The other rows step back while one is edited or added, when the grid asks for it for that operation
+       (data-inline-dim lists "edit" and "create"). The edited row's message and details stay */
+    :is(
+        [data-inline-dim~="edit"] .sa-table-body:has(> [data-editing]:not([data-key="new"])),
+        [data-inline-dim~="create"] .sa-table-body:has(> [data-editing][data-key="new"])
+    ) > .sa-table-row:not([data-editing], .sa-row-message, .sa-table-add-row, [data-editing] + [data-slot="table-row-detail"], [data-editing] + .sa-row-message + [data-slot="table-row-detail"]) {
         opacity: 0.55;
         transition: opacity var(--sa-motion-fast) var(--sa-motion-ease);
+    }
+
+    /* The actions column of a grid with inline rows has room for Save and Cancel, as its width stays while a row is
+       edited */
+    .sa-inline-row-actions {
+        min-width: calc(2 * var(--sa-control-h-sm) + var(--sa-unit) + 2 * var(--sa-space-cell-x));
     }
 
     /* A message under the row for errors no cell can show (the cell editors and their errors are styled by
@@ -327,28 +337,6 @@
 
     .sa-table-row:has(+ .sa-row-message) {
         border-bottom-color: transparent;
-    }
-
-    /* The grid's own Add row, first or last, hidden while a row is edited or added */
-    .sa-table-add-row > td {
-        padding-block: calc(1.5 * var(--sa-unit));
-    }
-
-    .sa-table-body > .sa-table-add-row:hover {
-        background: transparent;
-    }
-
-    .sa-table-add-row .sa-button {
-        margin-inline-start: calc(-1 * var(--sa-space-cell-x) + var(--sa-unit));
-        color: var(--sa-color-ink-muted);
-
-        &:hover {
-            color: var(--sa-color-ink);
-        }
-    }
-
-    .sa-table-body:has(> [data-editing]) > .sa-table-add-row {
-        display: none;
     }
 
     /* A saved row flashes briefly */

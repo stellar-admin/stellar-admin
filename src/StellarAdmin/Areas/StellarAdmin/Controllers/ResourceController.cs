@@ -130,6 +130,12 @@ public class ResourceController<TResource>(
 
         // A create model other than the resource has no key selector, so its handler returns the key
         var key = result.Key ?? (resource is TResource created ? keySelector(created) : null);
+        var labels = CreateLabelContext();
+        HttpContext
+            .RequestServices.GetRequiredService<IToastNotifier>()
+            .Success(
+                _resourceOptions.Index.CreatedMessage ?? _labelOptions.Index.CreatedMessage(labels)
+            );
 
         return await SavedRowView(key, cancellationToken);
     }
@@ -931,12 +937,8 @@ public class ResourceController<TResource>(
         object? newItem
     )
     {
-        var edit = _resourceOptions.Edit is { InlineRow: not null } editOptions
-            ? editOptions.Fields
-            : null;
-        var create = _resourceOptions.Create is { InlineRow: not null } createOptions
-            ? createOptions.Fields
-            : null;
+        var edit = _resourceOptions.Edit?.InlineRow;
+        var create = _resourceOptions.Create?.InlineRow;
         if (
             (edit is null && create is null) || _resourceOptions.KeyPropertyName is not { } keyField
         )
@@ -948,8 +950,10 @@ public class ResourceController<TResource>(
         {
             CancelLabel =
                 _resourceOptions.Index.CancelLabel ?? _labelOptions.Index.CancelLabel(labels),
-            CreateFields = create is null ? null : GetColumnFields(create),
-            EditFields = edit is null ? null : GetColumnFields(edit),
+            Create = create,
+            CreateFields = create is null ? null : GetColumnFields(_resourceOptions.Create!.Fields),
+            Edit = edit,
+            EditFields = edit is null ? null : GetColumnFields(_resourceOptions.Edit!.Fields),
             EditingKey = editingKey,
             EditModel = editModel,
             KeyField = keyField,
