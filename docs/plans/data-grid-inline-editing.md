@@ -1,6 +1,6 @@
 # Table interactivity and inline editing in the data grid
 
-Status: proposed (2026-10-15). StellarAdmin.UI work that the admin panel's [inline editing](inline-editing.md) phase 3 builds on. Designed with a throwaway spike (`sandbox/InlineEditingSpike`, not committed), which is deleted once this plan is reviewed.
+Status: done except the website docs (2026-10-16; see stage 5). StellarAdmin.UI work that the admin panel's [inline editing](inline-editing.md) phase 3 builds on. Designed with a throwaway spike (`sandbox/InlineEditingSpike`, never committed), deleted on 2026-10-16.
 
 ## Goal
 
