@@ -3,6 +3,7 @@ import "./web-components/sel-collapsible";
 import "./web-components/sel-command";
 import "./web-components/sel-dialog";
 import "./web-components/sel-dropdown-menu";
+import "./web-components/sel-image-upload";
 import "./web-components/sel-input-otp";
 import "./web-components/sel-message-scroller";
 import "./web-components/sel-questionnaire";
@@ -11,6 +12,8 @@ import "./web-components/sel-slider";
 import "./web-components/sel-table";
 import "./web-components/sel-tabs";
 import "./web-components/sel-toaster";
+
+import "./image";
 
 import { alertDialog } from "./wrappers/alert-dialog";
 import { dialog } from "./wrappers/dialog";

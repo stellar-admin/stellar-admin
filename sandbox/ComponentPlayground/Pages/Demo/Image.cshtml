@@ -1,0 +1,75 @@
+@page
+@model ComponentPlayground.Pages.Demo.Image
+@{
+    string[] shapes = ["/images/kyoto-square.jpg", "/images/lisbon.jpg", "/images/cape-town-panorama.jpg", "/images/chiang-mai-portrait.jpg", "/images/kyoto-tall.jpg"];
+}
+
+<div class="flex max-w-5xl flex-col gap-10 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Image</h1>
+        <p class="text-sm text-muted-foreground">Thumbnails and figures: square, landscape, panorama, portrait and tall sources.</p>
+    </div>
+
+    <section class="flex flex-col gap-3" id="thumbnail-sizes">
+        <h2 class="font-semibold">Thumbnail sizes</h2>
+        @foreach (var size in Enum.GetValues<ImageSize>())
+        {
+            <div class="flex items-center gap-3">
+                <span class="w-24 text-sm text-muted-foreground">@size</span>
+                @foreach (var src in shapes)
+                {
+                    <sa-image src="@src" alt="Destination" size="size" />
+                }
+            </div>
+        }
+    </section>
+
+    <section class="flex flex-col gap-3" id="thumbnail-shapes">
+        <h2 class="font-semibold">Thumbnail shapes</h2>
+        @foreach (var ratio in Enum.GetValues<ImageAspectRatio>())
+        {
+            foreach (var fit in ratio == ImageAspectRatio.Original ? [ImageFit.Cover] : Enum.GetValues<ImageFit>())
+            {
+                <div class="flex items-center gap-3">
+                    <span class="w-40 text-sm text-muted-foreground">@ratio @(ratio == ImageAspectRatio.Original ? "" : fit.ToString())</span>
+                    @foreach (var src in shapes)
+                    {
+                        <sa-image src="@src" alt="Destination" aspect-ratio="ratio" fit="fit" size="ImageSize.Large" />
+                    }
+                </div>
+            }
+        }
+    </section>
+
+    <section class="flex flex-col gap-3" id="thumbnail-states">
+        <h2 class="font-semibold">Thumbnail states and interactions</h2>
+        <div class="flex items-center gap-3">
+            <span class="w-40 text-sm text-muted-foreground">Empty, broken</span>
+            <sa-image />
+            <sa-image src="/images/missing.jpg" alt="Missing" />
+            <sa-image aspect-ratio="ImageAspectRatio.Original" />
+            <sa-image src="/images/missing.jpg" aspect-ratio="ImageAspectRatio.Original" />
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="w-40 text-sm text-muted-foreground">Lightbox, preview, none</span>
+            <sa-image src="/images/chiang-mai-portrait.jpg" alt="Chiang Mai" id="lightbox-thumb" />
+            <sa-image src="/images/lisbon.jpg" alt="Lisbon" interaction="ImageInteraction.Preview" id="preview-thumb" />
+            <sa-image src="/images/kyoto-square.jpg" alt="Kyoto" interaction="ImageInteraction.None" />
+        </div>
+    </section>
+
+    <section class="flex flex-col gap-3" id="figures">
+        <h2 class="font-semibold">Figures</h2>
+        <div class="grid grid-cols-3 gap-6">
+            @foreach (var src in shapes.Skip(1).Take(3))
+            {
+                <sa-image src="@src" alt="Destination" variant="ImageVariant.Figure" />
+            }
+            <sa-image src="/images/lisbon.jpg" variant="ImageVariant.Figure" aspect-ratio="ImageAspectRatio.Landscape" />
+            <sa-image src="/images/kyoto-tall.jpg" variant="ImageVariant.Figure" aspect-ratio="ImageAspectRatio.Landscape" fit="ImageFit.Contain" />
+            <sa-image src="/images/cape-town-panorama.jpg" variant="ImageVariant.Figure" size="ImageSize.Small" />
+            <sa-image variant="ImageVariant.Figure" />
+            <sa-image src="/images/missing.jpg" variant="ImageVariant.Figure" />
+        </div>
+    </section>
+</div>

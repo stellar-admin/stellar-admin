@@ -370,6 +370,9 @@
   .w-24 {
     width: calc(var(--sa-unit) * 24);
   }
+  .w-40 {
+    width: calc(var(--sa-unit) * 40);
+  }
   .w-48 {
     width: calc(var(--sa-unit) * 48);
   }

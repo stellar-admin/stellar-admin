@@ -1,0 +1,179 @@
+/* Image: a stored image as a thumbnail (a fixed-height tile) or a figure (a larger image in the flow,
+   no wider than its container), in a box of a set shape or the image's own; the placeholder and
+   broken-image fallbacks; the lightbox dialog and the hover preview.
+   Replaces: .sa-image, .sa-image-fallback, .sa-image-lightbox, .sa-image-lightbox-close,
+   .sa-image-preview */
+
+@layer sa.components {
+  .sa-image {
+    --_size: calc(8 * var(--sa-unit));
+    --_ratio: 1;
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    place-content: center;
+    flex: none;
+    vertical-align: middle;
+    height: var(--_size);
+    max-width: 100%;
+    aspect-ratio: var(--_ratio);
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    /* Capped so pill themes round the corners instead of turning thumbnails into circles. */
+    border-radius: min(var(--sa-radius-control-sm), 25%);
+    background: var(--sa-color-surface-subtle);
+    color: var(--sa-color-ink-muted);
+    font: inherit;
+    & > img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* A hairline inside the edge keeps light images from bleeding into the surface. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 var(--sa-border-width)
+        color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
+    }
+
+    &[data-size="xs"] { --_size: calc(6 * var(--sa-unit)); }
+    &[data-size="md"] { --_size: calc(10 * var(--sa-unit)); }
+    &[data-size="lg"] { --_size: calc(16 * var(--sa-unit)); }
+
+    &[data-aspect-ratio="landscape"] { --_ratio: 4 / 3; }
+    &[data-aspect-ratio="widescreen"] { --_ratio: 16 / 9; }
+    &[data-aspect-ratio="portrait"] { --_ratio: 3 / 4; }
+
+    &[data-fit="contain"] {
+      background: var(--sa-color-surface-sunken);
+      & > img { object-fit: contain; }
+    }
+
+    /* The image's own shape at the thumbnail's height, between half and three times as wide. */
+    &[data-aspect-ratio="original"] {
+      display: inline-flex;
+      height: auto;
+      aspect-ratio: auto;
+      & > img {
+        position: static;
+        width: auto;
+        height: var(--_size);
+        min-width: calc(var(--_size) * 0.5);
+        max-width: calc(var(--_size) * 3);
+        object-fit: cover;
+      }
+    }
+
+    &[data-state="loading"] > img { opacity: 0; }
+    &:is([data-state="empty"], [data-state="error"]) {
+      height: var(--_size);
+      aspect-ratio: var(--_ratio);
+      &[data-aspect-ratio="original"] { aspect-ratio: 1; }
+      &::after { box-shadow: inset 0 0 0 var(--sa-border-width) var(--sa-color-line); }
+      & > img { display: none; }
+    }
+    /* Quiet like the placeholder; only the icon and text carry the danger colour. */
+    &[data-state="error"] { color: var(--sa-color-danger-text); }
+  }
+
+  .sa-image-fallback {
+    display: none;
+    justify-items: center;
+    gap: calc(1.5 * var(--sa-unit));
+    & > svg {
+      width: min(55%, var(--sa-control-icon));
+      height: auto;
+      aspect-ratio: 1;
+    }
+  }
+  .sa-image[data-state="empty"] > .sa-image-fallback[data-slot="image-placeholder"],
+  .sa-image[data-state="error"] > .sa-image-fallback[data-slot="image-error"] {
+    display: grid;
+  }
+
+  /* Figure: a larger image, its size the height of a set shape or the most an own shape takes. */
+  .sa-image[data-variant="figure"] {
+    --_size: 15rem;
+    /* Its own size in a grid or flex container, not the cell's. */
+    place-self: start;
+    border-radius: var(--sa-radius-box);
+    &[data-size="xs"] { --_size: 8rem; }
+    &[data-size="sm"] { --_size: 10rem; }
+    &[data-size="lg"] { --_size: 20rem; }
+    &[data-aspect-ratio="original"] > img {
+      width: auto;
+      height: auto;
+      min-width: 0;
+      max-width: 100%;
+      max-height: var(--_size);
+    }
+    &:is([data-state="empty"], [data-state="error"])[data-aspect-ratio="original"] { aspect-ratio: 4 / 3; }
+    & .sa-image-fallback {
+      padding: calc(3 * var(--sa-unit));
+      font-size: var(--sa-text-xs);
+      text-align: center;
+      & > svg { width: calc(6 * var(--sa-unit)); }
+    }
+  }
+
+  button.sa-image {
+    cursor: zoom-in;
+    &:focus-visible {
+      outline: 2px solid var(--sa-color-accent);
+      outline-offset: 2px;
+    }
+    &[data-state="error"] { cursor: default; }
+  }
+
+  /* Lightbox: just the larger image, with a close button over its corner. */
+  .sa-image-lightbox.sa-dialog-content {
+    width: fit-content;
+    min-width: 0;
+    max-width: min(92vw, 80rem);
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    background: var(--sa-color-surface-sunken);
+    &[open] { place-items: center; }
+    & > img {
+      display: block;
+      max-width: min(92vw, 80rem);
+      max-height: 85vh;
+      object-fit: contain;
+    }
+  }
+  .sa-image-lightbox-close.sa-button {
+    position: absolute;
+    top: calc(2 * var(--sa-unit));
+    inset-inline-end: calc(2 * var(--sa-unit));
+    box-shadow: var(--sa-shadow-raised);
+  }
+
+  /* Hover preview: the image larger, beside the thumbnail. */
+  .sa-image-preview {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: calc(1.5 * var(--sa-unit));
+    border: var(--sa-border-width) solid var(--sa-color-line);
+    border-radius: var(--sa-radius-box);
+    background: var(--sa-color-surface-raised);
+    box-shadow: var(--sa-shadow-raised);
+    pointer-events: none;
+    & > img {
+      display: block;
+      max-width: 18rem;
+      max-height: 12rem;
+      border-radius: var(--sa-radius-control-sm);
+    }
+  }
+}

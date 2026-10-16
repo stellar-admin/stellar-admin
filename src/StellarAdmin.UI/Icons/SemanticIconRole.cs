@@ -1,4 +1,4 @@
-namespace StellarAdmin.UI.Icons;
+﻿namespace StellarAdmin.UI.Icons;
 
 /// <summary>
 ///     The purpose of a built-in component icon.
@@ -164,4 +164,24 @@ public enum SemanticIconRole
     ///     A false value in a display field.
     /// </summary>
     BooleanFalse,
+
+    /// <summary>
+    ///     A missing image.
+    /// </summary>
+    Image,
+
+    /// <summary>
+    ///     An image that couldn't be loaded.
+    /// </summary>
+    ImageError,
+
+    /// <summary>
+    ///     An action that uploads a file.
+    /// </summary>
+    Upload,
+
+    /// <summary>
+    ///     An action that removes a value.
+    /// </summary>
+    Remove,
 }

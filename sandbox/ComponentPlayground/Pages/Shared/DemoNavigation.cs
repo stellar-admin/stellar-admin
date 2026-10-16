@@ -1,4 +1,4 @@
-namespace ComponentPlayground.Pages.Shared;
+﻿namespace ComponentPlayground.Pages.Shared;
 
 // The demo pages, shared by the sidebar navigation and the command palette.
 internal static class DemoNavigation
@@ -14,6 +14,7 @@ internal static class DemoNavigation
                 new DemoItem("Data Grid Editing", "/Demo/DataGridEditing"),
                 new DemoItem("Empty", "/Demo/Empty"),
                 new DemoItem("Icon", "/Demo/Icon"),
+                new DemoItem("Image", "/Demo/Image"),
                 new DemoItem("Item", "/Demo/Item"),
                 new DemoItem("Kbd", "/Demo/Kbd"),
                 new DemoItem("Separator", "/Demo/Separator"),
@@ -38,6 +39,7 @@ internal static class DemoNavigation
                 new DemoItem("Button", "/Demo/Button"),
                 new DemoItem("Button Group", "/Demo/ButtonGroup"),
                 new DemoItem("Checkbox", "/Demo/Checkbox"),
+                new DemoItem("Image Upload", "/Demo/ImageUpload"),
                 new DemoItem("Field", "/Demo/Field"),
                 new DemoItem("Label", "/Demo/Label"),
                 new DemoItem("Input", "/Demo/Input"),
@@ -49,7 +51,10 @@ internal static class DemoNavigation
                 new DemoItem("Toggle", "/Demo/Toggle"),
             ]
         ),
-        new DemoGroup("Layout", [new DemoItem("Group", "/Demo/Group"), new DemoItem("Stack", "/Demo/Stack")]),
+        new DemoGroup(
+            "Layout",
+            [new DemoItem("Group", "/Demo/Group"), new DemoItem("Stack", "/Demo/Stack")]
+        ),
         new DemoGroup(
             "Navigation",
             [

@@ -44,6 +44,10 @@ public class TablerOutlineIconPack : IIconPack
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
             [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "layout-sidebar",
+            [SemanticIconRole.Image] = "photo",
+            [SemanticIconRole.ImageError] = "photo-off",
+            [SemanticIconRole.Upload] = "upload",
+            [SemanticIconRole.Remove] = "trash",
             [SemanticIconRole.Warning] = "alert-triangle",
         };
     }

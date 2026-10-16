@@ -1,0 +1,46 @@
+@page
+@model ComponentPlayground.Pages.Demo.ImageUpload
+@{
+    var upload = "/Demo/ImageUpload?handler=Upload";
+}
+
+<div class="flex max-w-3xl flex-col gap-10 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Image upload</h1>
+        <p class="text-sm text-muted-foreground">Uploads go to a temporary folder after a short pause. Save posts the stored values.</p>
+    </div>
+
+    <form method="post" class="flex flex-col gap-8" id="upload-form">
+        <sa-image-upload asp-for="Photo" src="@ImageUpload.Url(Model.Photo)" upload-url="@upload" id="dropzone-filled" />
+        <sa-image-upload asp-for="Cover" src="@ImageUpload.Url(Model.Cover)" upload-url="@upload" id="dropzone-empty" description="Shown at the top of the destination page." />
+        <sa-image-upload asp-for="Thumbnail" src="@ImageUpload.Url(Model.Thumbnail)" upload-url="@upload" layout="ImageUploadLayout.Compact" id="compact" />
+        <sa-image-upload asp-for="Attachment" src="@ImageUpload.Url(Model.Attachment)" upload-url="@upload" layout="ImageUploadLayout.Attachment" id="attachment" />
+        <sa-image-upload name="Empty" label="Compact, empty" upload-url="@upload" layout="ImageUploadLayout.Compact" id="compact-empty" />
+        <sa-image-upload name="Failing" label="Attachment, empty, upload fails" upload-url="/Demo/ImageUpload?handler=UploadFail" layout="ImageUploadLayout.Attachment" id="attachment-empty" />
+        <sa-image-upload name="Small" label="Small limit (100 KB), PNG only" upload-url="@upload" max-file-size="102400" accept="image/png" id="limited" />
+        <sa-image-upload name="Disabled" label="Disabled" value="kyoto-square.jpg" src="/images/kyoto-square.jpg" disabled="true" layout="ImageUploadLayout.Compact" />
+
+        <div class="flex items-center gap-3">
+            <sa-button type="submit">Save</sa-button>
+            @if (Model.Posted != null)
+            {
+                <span class="text-sm" id="posted">@Model.Posted</span>
+            }
+        </div>
+    </form>
+
+    <section class="flex flex-col gap-3">
+        <h2 class="font-semibold">In an editing row</h2>
+        <form method="post">
+            <table class="sa-table" data-slot="table">
+                <tbody>
+                    <tr class="sa-table-row" data-editing>
+                        <td class="sa-table-cell"><sa-image-upload name="CellFilled" value="kyoto-square.jpg" src="/images/kyoto-square.jpg" upload-url="@upload" layout="ImageUploadLayout.Cell" id="cell-filled" /></td>
+                        <td class="sa-table-cell"><sa-image-upload name="CellEmpty" upload-url="@upload" layout="ImageUploadLayout.Cell" id="cell-empty" /></td>
+                        <td class="sa-table-cell"><sa-image-upload name="CellPortrait" value="kyoto-tall.jpg" src="/images/kyoto-tall.jpg" upload-url="@upload" layout="ImageUploadLayout.Cell" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </section>
+</div>

@@ -45,6 +45,10 @@ public class LucideIconPack : IIconPack
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
             [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "panel-left",
+            [SemanticIconRole.Image] = "image",
+            [SemanticIconRole.ImageError] = "image-off",
+            [SemanticIconRole.Upload] = "upload",
+            [SemanticIconRole.Remove] = "trash",
             [SemanticIconRole.Warning] = "triangle-alert",
         };
     }

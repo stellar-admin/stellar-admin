@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Image field</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Lexend:wght@400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Figtree:wght@400..700&display=swap"
+    />
+
+    <!--
+      An image field: one property holding a reference to an image (full URL, file name or storage key)
+      that an app-supplied resolver turns into a URL. Four templates: grid display, grid editor, display,
+      editor. Real built library assets; the image pieces are candidates in the <style> block. Images are
+      DocsSamples' city photos plus portrait / panorama crops in image-field/. Uploads are simulated.
+    -->
+    <link rel="stylesheet" href="../../src/StellarAdmin.UI/wwwroot/stellar-admin.css" />
+    <link id="theme-css" rel="stylesheet" />
+    <script defer src="../../src/StellarAdmin.UI/wwwroot/stellar-admin.js"></script>
+
+    <style>
+      /* ---------------------------------------------------------------------------------------- */
+      /* Page chrome (prototype only)                                                              */
+      /* ---------------------------------------------------------------------------------------- */
+      :root { --sa-font-sans: "Inter", sans-serif; }
+      body { margin: 0; background: var(--sa-color-canvas); color: var(--sa-color-ink); font-family: var(--sa-font-sans); }
+      .proto-page { max-width: 1180px; margin: 0 auto; padding: 32px 24px 220px; }
+      .proto-page > h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; }
+      .proto-intro { margin: 0 0 12px; color: var(--sa-color-ink-muted); font-size: 14px; max-width: 95ch; }
+      .proto-section { margin-top: 72px; scroll-margin-top: 16px; }
+      .proto-section > h2 { margin: 0 0 4px; font-size: 20px; font-weight: 600; padding-top: 20px; border-top: 2px solid var(--sa-color-ink); }
+      .proto-section > p { margin: 0 0 16px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section h3 { margin: 36px 0 4px; font-size: 15px; font-weight: 600; }
+      .proto-section h3 + p { margin: 0 0 10px; color: var(--sa-color-ink-muted); font-size: 13px; max-width: 95ch; }
+      .proto-section h4 { margin: 24px 0 8px; font-size: 13px; font-weight: 600; color: var(--sa-color-ink-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+      .proto-q { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-right: 6px; padding: 0 5px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--sa-color-ink); color: var(--sa-color-canvas); vertical-align: 1px; box-sizing: border-box; }
+      .proto-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--proto-min, 240px), 1fr)); gap: 12px; margin: 0; }
+      .proto-cell {
+        display: grid; grid-template-rows: auto 1fr; gap: 10px; padding: 14px; min-width: 0;
+        background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-box);
+      }
+      .proto-cell > figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--sa-color-ink-muted); }
+      .proto-cell > figcaption b { color: var(--sa-color-ink); font-weight: 600; }
+      .proto-cell[data-chosen] { box-shadow: 0 0 0 2px var(--sa-color-accent); border-color: transparent; }
+      .proto-opt {
+        display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; cursor: pointer;
+        font: inherit; font-size: 12px; font-weight: 700; color: var(--sa-color-ink);
+        background: var(--sa-color-surface-subtle); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: 6px;
+      }
+      .proto-cell[data-chosen] .proto-opt { background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent; }
+      .proto-rec { margin-left: auto; padding: 1px 6px; border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--sa-color-success); border: var(--sa-border-width) solid currentColor; }
+      .proto-decided { margin: 0 0 12px; padding: 12px 14px; max-width: 95ch; font-size: 13px; color: var(--sa-color-ink); background: color-mix(in oklab, var(--sa-color-success) 8%, var(--sa-color-surface)); border: var(--sa-border-width) solid color-mix(in oklab, var(--sa-color-success) 45%, transparent); border-radius: var(--sa-radius-box); }
+      .proto-decided p { margin: 0 0 6px; }
+      .proto-decided ul { margin: 4px 0 8px; padding-left: 18px; list-style: disc; }
+      .proto-decided pre { margin: 8px 0 0; padding: 10px 12px; overflow-x: auto; font-family: var(--sa-font-mono); font-size: 12px; line-height: 1.5; background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-control-sm); }
+      .proto-badge { padding: 1px 6px; border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--sa-color-success); border: var(--sa-border-width) solid currentColor; }
+      .proto-strip[data-decided] .proto-opt { cursor: default; }
+      .proto-strip[data-decided="fixed"] .proto-cell:not([data-chosen]) { opacity: 0.45; }
+      .proto-api { font-family: var(--sa-font-mono); font-size: 11px; color: var(--sa-color-accent-text); }
+      .proto-sheet td[data-status] { font-size: 12px; color: var(--sa-color-ink-muted); }
+      .proto-sheet td[data-status] strong { color: var(--sa-color-success); }
+      .proto-card { padding: 20px; background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); }
+      .proto-note { margin: 10px 0 0; font-size: 13px; color: var(--sa-color-ink-muted); max-width: 95ch; }
+      .proto-section code, .proto-sheet code { font-family: var(--sa-font-mono); font-size: 12px; }
+
+      /* Decision sheet */
+      .proto-sheet { margin: 24px 0 0; padding: 16px 20px; background: var(--sa-color-surface); border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); }
+      .proto-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 8px; }
+      .proto-sheet-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
+      .proto-sheet-head p { margin: 0; font-size: 13px; color: var(--sa-color-ink-muted); flex: 1; min-width: 20ch; }
+      .proto-sheet table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .proto-sheet th, .proto-sheet td { text-align: left; padding: 6px 12px 6px 0; border-bottom: var(--sa-border-width) solid var(--sa-color-line); vertical-align: top; }
+      .proto-sheet tr.proto-group td { padding-top: 14px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sa-color-ink-muted); }
+      .proto-sheet a { color: inherit; }
+      .proto-sheet td[data-answer] { font-weight: 600; white-space: nowrap; }
+      .proto-sheet td[data-answer][data-changed] { color: var(--sa-color-accent-text); }
+      .proto-sheet output { font-family: var(--sa-font-mono); font-size: 12px; }
+
+      .proto-controls button {
+        font: inherit; font-size: 13px; padding: 2px 8px; cursor: pointer; color: var(--sa-color-ink);
+        background: transparent; border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-control-sm);
+      }
+      .proto-controls button[aria-pressed="true"] { background: var(--sa-color-accent-fill); color: var(--sa-color-on-accent); border-color: transparent; }
+      .proto-controls {
+        position: fixed; right: 16px; bottom: 16px; z-index: 50;
+        display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; padding: 12px; font-size: 13px;
+        background: var(--sa-color-surface-raised); color: var(--sa-color-ink);
+        border: var(--sa-border-width) solid var(--sa-color-line); border-radius: var(--sa-radius-container); box-shadow: var(--sa-shadow-overlay);
+      }
+      .proto-controls .group { display: flex; gap: 4px; flex-wrap: wrap; }
+      .proto-form { display: grid; gap: 24px; max-width: 560px; }
+      .w-px { width: 1px; }
+
+      /* ======================================================================================== */
+      /* Candidate CSS, written as the library would (tokens only)                                 */
+      /* ======================================================================================== */
+      @layer sa.components {
+        /* ---- The thumbnail: a box of the field's aspect ratio, sized by its height ------------ */
+        .sa-image {
+          --_size: calc(8 * var(--sa-unit));
+          --_ratio: 1;
+          position: relative; display: inline-grid; place-items: center; place-content: center; flex: none; vertical-align: middle;
+          height: var(--_size); aspect-ratio: var(--_ratio); overflow: hidden; padding: 0; border: 0;
+          /* Capped so pill themes round the corners instead of turning thumbnails into circles. */
+          border-radius: min(var(--sa-radius-control-sm), 25%);
+          background: var(--sa-color-tint); color: var(--sa-color-ink-muted);
+        }
+        .sa-image > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+        .sa-image::after {
+          content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+          box-shadow: inset 0 0 0 var(--sa-border-width) color-mix(in oklab, var(--sa-color-ink) 12%, transparent);
+        }
+        .sa-image > svg { width: min(55%, var(--sa-control-icon)); height: auto; }
+        .sa-image[data-size="xs"] { --_size: calc(6 * var(--sa-unit)); }
+        .sa-image[data-size="sm"] { --_size: calc(8 * var(--sa-unit)); }
+        .sa-image[data-size="md"] { --_size: calc(10 * var(--sa-unit)); }
+        .sa-image[data-size="lg"] { --_size: calc(16 * var(--sa-unit)); }
+        .sa-image[data-shape="circle"] { border-radius: var(--sa-radius-round); }
+        .sa-image[data-shape="square"] { border-radius: 0; }
+        /* Fit: the whole picture inside the box, on a quiet backdrop. */
+        .sa-image[data-fit="contain"] { background: var(--sa-color-surface-sunken); }
+        .sa-image[data-fit="contain"] > img { object-fit: contain; }
+        /* Natural: the box takes the picture's own shape at the row height, between 1:2 and 3:1. */
+        .sa-image[data-fit="natural"] { display: inline-flex; aspect-ratio: auto; height: auto; }
+        .sa-image[data-fit="natural"] > img { position: static; height: var(--_size); width: auto; min-width: calc(var(--_size) * 0.5); max-width: calc(var(--_size) * 3); }
+        .sa-image[data-fit="natural"]:is([data-state="empty"], [data-state="error"]) { aspect-ratio: 1; }
+        /* Quiet like the empty tile; only the icon and text carry the danger colour. */
+        .sa-image[data-state="error"] { color: var(--sa-color-danger-text); background: var(--sa-color-surface-subtle); }
+        .sa-image[data-state="error"]::after { box-shadow: inset 0 0 0 var(--sa-border-width) var(--sa-color-line); }
+        .sa-image[data-state="empty"] { background: var(--sa-color-surface-subtle); }
+        .sa-image[data-state="empty"]::after { box-shadow: inset 0 0 0 var(--sa-border-width) var(--sa-color-line); }
+        .sa-image[data-state="loading"] { background: var(--sa-color-surface-subtle); }
+        .sa-image[data-state="loading"] > img { opacity: 0; }
+        button.sa-image { cursor: zoom-in; }
+        button.sa-image:focus-visible { outline: 2px solid var(--sa-color-accent); outline-offset: 2px; }
+        .sa-image[data-removed] > img { opacity: 0.35; filter: grayscale(1); }
+
+        /* ---- Display: the view page and row details ------------------------------------------- */
+        .sa-image-figure { display: grid; gap: calc(1.5 * var(--sa-unit)); justify-items: start; margin: 0; min-width: 0; }
+        .sa-image-figure > .sa-image { height: auto; max-width: 100%; border-radius: var(--sa-radius-box); }
+        .sa-image-figure[data-fit="natural"] > .sa-image { aspect-ratio: auto; }
+        .sa-image-figure[data-fit="natural"] > .sa-image > img { position: static; width: auto; height: auto; max-width: 100%; max-height: var(--_max-h, 15rem); }
+        .sa-image-figure:is([data-fit="cover"], [data-fit="contain"]) > .sa-image { width: var(--_frame-w, 20rem); }
+        .sa-image-figure > .sa-image:is([data-state="empty"], [data-state="error"]) { width: var(--_frame-w, 20rem); aspect-ratio: 4 / 3; }
+        .sa-image-caption { display: flex; align-items: center; gap: calc(2 * var(--sa-unit)); max-width: 100%; font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+        .sa-image-caption > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sa-image-caption a { display: inline-flex; align-items: center; gap: var(--sa-unit); color: inherit; white-space: nowrap; }
+        .sa-image-caption svg { width: 0.85em; height: 0.85em; }
+        .sa-image-state-text { display: grid; justify-items: center; gap: calc(1.5 * var(--sa-unit)); font-size: var(--sa-text-xs); text-align: center; padding: calc(3 * var(--sa-unit)); }
+        .sa-image-state-text > svg { width: calc(6 * var(--sa-unit)); height: calc(6 * var(--sa-unit)); }
+
+        /* ---- Lightbox ------------------------------------------------------------------------- */
+        /* Just the larger image, with a close button over its corner. */
+        .sa-image-lightbox.sa-dialog-content { width: fit-content; min-width: 0; max-width: min(92vw, 80rem); padding: 0; gap: 0; overflow: hidden; }
+        .sa-image-lightbox-stage { display: grid; place-items: center; background: var(--sa-color-surface-sunken); }
+        .sa-image-lightbox-stage > img { display: block; max-width: min(92vw, 80rem); max-height: 85vh; object-fit: contain; }
+        .sa-image-lightbox-close.sa-button { position: absolute; top: calc(2 * var(--sa-unit)); inset-inline-end: calc(2 * var(--sa-unit)); box-shadow: var(--sa-shadow-raised); }
+
+        /* ---- Reference editor ----------------------------------------------------------------- */
+        .sa-image-ref { display: flex; align-items: center; gap: calc(3 * var(--sa-unit)); }
+        .sa-image-ref > .sa-input, .sa-image-ref > .sa-input-group { flex: 1; min-width: 0; }
+        .sa-image-ref[data-layout="beside"] > .sa-image { --_size: var(--sa-control-h); }
+        .sa-image-ref[data-layout="below"] { flex-direction: column; align-items: stretch; }
+        .sa-image-ref[data-layout="below"] > .sa-image { align-self: start; height: auto; max-width: 100%; aspect-ratio: auto; border-radius: var(--sa-radius-box); }
+        .sa-image-ref[data-layout="below"] > .sa-image > img { position: static; width: auto; height: auto; max-width: 100%; max-height: 12rem; }
+        .sa-image-ref[data-layout="below"] > .sa-image:is([data-state="empty"], [data-state="error"]) { width: 12rem; aspect-ratio: 4 / 3; }
+        .sa-image-ref[data-layout="addon"] .sa-input-group-addon .sa-image { --_size: calc(var(--sa-control-h) - 3 * var(--sa-unit)); border-radius: calc(var(--sa-radius-control-sm) - 2px); }
+        .sa-image-resolved { display: flex; gap: var(--sa-unit); min-width: 0; font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+        .sa-image-resolved > span { white-space: nowrap; }
+        .sa-image-resolved > code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--sa-font-mono); }
+
+        /* ---- Upload editor -------------------------------------------------------------------- */
+        .sa-image-upload { display: grid; gap: calc(2 * var(--sa-unit)); }
+        .sa-image-upload input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+        .sa-image-upload-actions { display: flex; flex-wrap: wrap; align-items: center; gap: calc(2 * var(--sa-unit)); }
+        .sa-image-upload-note { margin: 0; font-size: var(--sa-text-xs); color: var(--sa-color-ink-muted); }
+        .sa-image-upload-note[data-tone="danger"] { color: var(--sa-color-danger-text); }
+        .sa-image-upload-note[data-tone="warning"] { color: var(--sa-color-ink); }
+        .sa-image-upload-note button { font: inherit; padding: 0; border: 0; background: none; color: var(--sa-color-accent-text); text-decoration: underline; cursor: pointer; }
+
+        .sa-image-drop {
+          position: relative; display: grid; place-items: center; gap: calc(2 * var(--sa-unit));
+          min-height: calc(36 * var(--sa-unit)); padding: calc(6 * var(--sa-unit)); text-align: center; cursor: pointer;
+          border: var(--sa-border-width) dashed var(--sa-color-line-control); border-radius: var(--sa-radius-box);
+          background: var(--sa-color-surface-subtle); color: var(--sa-color-ink-muted); font-size: var(--sa-text-body);
+          transition: border-color var(--sa-motion-fast) var(--sa-motion-ease), background var(--sa-motion-fast) var(--sa-motion-ease);
+        }
+        .sa-image-drop:hover { border-color: var(--sa-color-line-control-hover); }
+        .sa-image-drop:focus-visible { outline: none; border-style: solid; border-color: var(--sa-color-accent); }
+        .sa-image-drop[data-dragover] { border-style: solid; border-color: var(--sa-color-accent); background: var(--sa-color-selected); }
+        .sa-image-drop-icon { display: grid; place-items: center; width: calc(10 * var(--sa-unit)); height: calc(10 * var(--sa-unit)); border-radius: var(--sa-radius-round); background: var(--sa-color-surface); color: var(--sa-color-ink); box-shadow: var(--sa-shadow-control); }
+        .sa-image-drop-icon > svg { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+        .sa-image-drop strong { color: var(--sa-color-ink); font-weight: 500; }
+        .sa-image-drop[data-state="error"] { border-color: var(--sa-color-danger); }
+        .sa-image-drop[data-size="row"] { min-height: 0; grid-auto-flow: column; justify-content: start; gap: calc(3 * var(--sa-unit)); padding: calc(3 * var(--sa-unit)); text-align: start; }
+        .sa-image-drop[data-size="row"] .sa-image-drop-icon { width: calc(9 * var(--sa-unit)); height: calc(9 * var(--sa-unit)); border-radius: var(--sa-radius-control-sm); }
+        /* Dropzone, filled: the picture in its own shape (as on the view page), actions over it. */
+        .sa-image-drop-filled { position: relative; justify-self: start; max-width: 100%; }
+        .sa-image-drop-filled > .sa-image { height: auto; max-width: 100%; aspect-ratio: auto; border-radius: var(--sa-radius-box); }
+        .sa-image-drop-filled > .sa-image > img { position: static; width: auto; height: auto; max-width: 100%; max-height: 15rem; min-width: calc(48 * var(--sa-unit)); object-fit: cover; }
+        .sa-image-overlay-actions { position: absolute; inset-inline-end: calc(2 * var(--sa-unit)); inset-block-end: calc(2 * var(--sa-unit)); display: flex; gap: calc(1.5 * var(--sa-unit)); }
+        .sa-image-drop-filled[data-hover-actions] .sa-image-overlay-actions { opacity: 0; transition: opacity var(--sa-motion-fast) var(--sa-motion-ease); }
+        .sa-image-drop-filled[data-hover-actions]:is(:hover, :focus-within) .sa-image-overlay-actions { opacity: 1; }
+        .sa-image-overlay-actions .sa-button { box-shadow: var(--sa-shadow-raised); }
+
+        .sa-image-busy {
+          position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: calc(2 * var(--sa-unit)); padding-inline: 15%;
+          background: color-mix(in oklab, var(--sa-color-surface) 70%, transparent); color: var(--sa-color-ink); border-radius: inherit;
+        }
+        .sa-image-busy .sa-spinner { width: var(--sa-control-icon); height: var(--sa-control-icon); }
+        .sa-image-busy-bar { width: 100%; max-width: 10rem; height: 4px; border-radius: 999px; background: color-mix(in oklab, var(--sa-color-ink) 15%, transparent); overflow: hidden; }
+        .sa-image-busy-bar > i { display: block; height: 100%; background: var(--sa-color-accent-fill); transition: width 120ms linear; }
+
+        .sa-image-upload[data-layout="compact"] { grid-template-columns: auto 1fr; align-items: center; column-gap: calc(4 * var(--sa-unit)); }
+        .sa-image-upload[data-layout="compact"] > .sa-image { grid-row: span 2; }
+        .sa-image-upload[data-layout="compact"] > .sa-image-upload-actions { align-self: end; }
+        .sa-image-upload[data-layout="compact"] > .sa-image-upload-note { align-self: start; }
+        .sa-image-upload[data-layout="compact"][data-dragover] > .sa-image { box-shadow: 0 0 0 2px var(--sa-color-accent); }
+        .sa-image-upload[data-layout="attachment"] .sa-attachment { width: 100%; }
+        .sa-image-upload[data-layout="attachment"][data-dragover] :is(.sa-attachment, .sa-image-drop) { border-color: var(--sa-color-accent); }
+
+        .sa-image-source { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--sa-radius-control); background: var(--sa-color-surface-subtle); justify-self: start; }
+        .sa-image-source > button { font: inherit; font-size: var(--sa-text-xs); font-weight: 500; padding: var(--sa-unit) calc(2.5 * var(--sa-unit)); cursor: pointer; border: 0; border-radius: var(--sa-radius-control-sm); background: none; color: var(--sa-color-ink-muted); }
+        .sa-image-source > button[aria-pressed="true"] { background: var(--sa-color-surface); color: var(--sa-color-ink); box-shadow: var(--sa-shadow-control); }
+
+        /* ---- In the grid ---------------------------------------------------------------------- */
+        .sa-table-cell[data-image-cell] { padding-block: calc(1.5 * var(--sa-unit)); }
+        /* The image control in a row in edit mode: the thumbnail on the row's control line. */
+        .sa-image-cell { position: relative; display: flex; align-items: center; gap: var(--sa-unit); min-height: var(--sa-control-h-sm); margin-block: calc(-0.5 * var(--sa-unit)); }
+        .sa-image-cell-actions { display: flex; gap: 2px; }
+        /* A staged change: an accent ring on the thumbnail until the row saves. */
+        .sa-image-cell[data-changed] .sa-image { box-shadow: 0 0 0 2px var(--sa-color-surface), 0 0 0 4px var(--sa-color-accent); }
+        .sa-image-cell-trigger { position: relative; display: inline-flex; padding: 0; border: 0; background: none; border-radius: min(var(--sa-radius-control-sm), 25%); cursor: pointer; }
+        .sa-image-cell-trigger:focus-visible { outline: 2px solid var(--sa-color-accent); outline-offset: 2px; }
+        .sa-image-cell-trigger:hover .sa-image::before {
+          content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+          background: color-mix(in oklab, var(--sa-color-ink) 45%, transparent) var(--proto-upload-light) center / 45% no-repeat;
+        }
+        .sa-image-cell-badge.sa-button { position: absolute; top: -6px; left: calc(8 * var(--sa-unit) - 10px); z-index: 2; width: 18px; height: 18px; min-width: 0; padding: 0; border-radius: 999px; box-shadow: var(--sa-shadow-raised); }
+        .sa-image-cell-badge svg { width: 11px; height: 11px; }
+        .sa-cell-editor { margin-block: calc(-0.5 * var(--sa-unit)); margin-inline: calc(-1 * (var(--sa-control-px) + var(--sa-border-width))); }
+        .sa-cell-editor .sa-input-group { height: var(--sa-control-h-sm); }
+        .sa-hover-preview { padding: calc(1.5 * var(--sa-unit)); width: auto; }
+        .sa-hover-preview > img { display: block; max-width: 18rem; max-height: 12rem; border-radius: var(--sa-radius-control-sm); }
+      }
+      :root {
+        --proto-pencil-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3C/svg%3E");
+        --proto-upload-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m17 8-5-5-5 5'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E");
+      }
+    </style>
+  </head>
+  <body>
+    <main class="proto-page">
+      <h1>Image field</h1>
+      <p class="proto-intro">
+        One property storing a reference to an image (a full URL, a file name or a storage key); the app's resolver turns it into the URL the browser loads. One section per template: <strong>grid display</strong>, <strong>grid editor</strong>, <strong>display</strong>, <strong>editor</strong>. Each starts with the recommended candidate, then the numbered questions with lettered options; click a letter to choose. The sample photos are deliberately mixed: square, 3:2 landscape, 3:1 panorama, 3:4 portrait and 9:16 tall.
+      </p>
+
+      <section class="proto-sheet" aria-labelledby="sheet-title">
+        <div class="proto-sheet-head">
+          <h2 id="sheet-title">Decisions</h2>
+          <p>Decided questions are locked and show their API. For open ones, recommendations are preselected; click an option's letter in its section to change it.</p>
+          <output id="sheet-summary"></output>
+          <button type="button" class="sa-button sa-button-variant-outline sa-button-size-sm" data-slot="button" id="sheet-copy">Copy answers</button>
+          <button type="button" class="sa-button sa-button-variant-ghost sa-button-size-sm" data-slot="button" id="sheet-reset">Reset</button>
+        </div>
+        <table id="sheet"></table>
+      </section>
+
+      <section class="proto-section" id="grid-display">
+        <h2>1 · Grid display</h2>
+        <p>The value in an index grid cell. Recommended candidate: 32px square thumbnail, cropped to fill, rounded corners. Empty shows a placeholder tile; a failed load shows a broken-image tile (hover for the reference). Click a thumbnail for the lightbox.</p>
+        <div id="gd-live"></div>
+        <div id="gd-questions"></div>
+      </section>
+
+      <section class="proto-section" id="grid-editor">
+        <h2>2 · Grid editor</h2>
+        <p>The value edited inline, in a row in edit mode. The row's own Save and Cancel commit or discard every cell, so the image control has none of its own: it only stages the change, marked by an accent ring. Recommended candidate below, with Alfama in edit mode: click the thumbnail to pick a file or × to remove it, then the row's Save or Cancel.</p>
+        <div id="ge-live"></div>
+        <div id="ge-questions"></div>
+      </section>
+
+      <section class="proto-section" id="display">
+        <h2>3 · Display</h2>
+        <p>The value on the view page and in row details. Recommended candidate: the picture in its own shape (no crop), capped at 15rem tall, with nothing under it. Click it for the lightbox (the grid display opens the same one).</p>
+        <div class="proto-card" id="d-live"></div>
+        <div id="d-questions"></div>
+        <h4>For review: failed load and the lightbox (not decisions)</h4>
+        <figure class="proto-strip" id="d-states" style="--proto-min: 300px"></figure>
+      </section>
+
+      <section class="proto-section" id="editor">
+        <h2>4 · Editor</h2>
+        <p>The value on the create and edit forms. The user uploads a file; the app's storage handler saves it and returns the reference that goes in the property. The preview keeps the picture's own shape, like the display: an editor shouldn't crop what the user is about to save.</p>
+
+        <h3>Recommended candidate</h3>
+        <p>Choose a file, drag one in, replace, remove, undo. Uploads take ~1.5s (simulated); non-images and files over 5 MB are rejected.</p>
+        <div class="proto-card"><div class="proto-form" id="e-upload-live"></div></div>
+        <div id="e-upload-questions"></div>
+        <h4>For review: every state of the chosen layout (not decisions)</h4>
+        <figure class="proto-strip" id="e-states" style="--proto-min: 300px"></figure>
+
+      </section>
+    </main>
+
+    <sel-dialog><dialog id="image-lightbox" data-slot="dialog-content" class="sa-dialog-content sa-image-lightbox" closedby="any" aria-label="Photo">
+      <div class="sa-image-lightbox-stage"><img alt="" data-lb-img /></div>
+      <button type="button" commandfor="image-lightbox" command="close" data-slot="button" class="sa-button sa-button-variant-secondary sa-button-size-icon-sm sa-image-lightbox-close" aria-label="Close"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </dialog></sel-dialog>
+
+    <aside class="proto-controls" aria-label="Prototype controls">
+      <span>Theme</span>
+      <div class="group" data-control="theme">
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="ops" aria-pressed="false">Ops</button>
+        <button data-value="soft" aria-pressed="false">Soft</button>
+        <button data-value="ledger" aria-pressed="false">Ledger</button>
+      </div>
+      <span>Mode</span>
+      <div class="group" data-control="mode">
+        <button data-value="light" aria-pressed="true">Light</button>
+        <button data-value="dark" aria-pressed="false">Dark</button>
+      </div>
+      <span>Density</span>
+      <div class="group" data-control="density">
+        <button data-value="compact" aria-pressed="false">Compact</button>
+        <button data-value="default" aria-pressed="true">Default</button>
+        <button data-value="comfortable" aria-pressed="false">Comfortable</button>
+      </div>
+    </aside>
+
+    <script>
+      /* Icons and helpers */
+      const ICON = {
+        image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+        imageOff: '<line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/>',
+        upload: '<path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>',
+        x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+        trash: '<path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+        replace: '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+        external: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>',
+        alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
+      };
+      const svg = (name, size = 24) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
+      const spinner = '<svg viewBox="0 0 24 24" stroke-linejoin="round" stroke="currentColor" height="24" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" fill="none" stroke-width="2" width="24" role="status" aria-label="Loading" class="sa-spinner"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>';
+      const button = (variant, size, content, attrs = "") => `<button type="button" data-slot="button" class="sa-button sa-button-variant-${variant} sa-button-size-${size}" ${attrs}>${content}</button>`;
+      const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      let uid = 0;
+      const nextId = (p) => `${p}-${++uid}`;
+      const $ = (id) => document.getElementById(id);
+
+      /* Stand-in resolver */
+      const CDN = "https://cdn.voyager.example/destinations/";
+      const CITIES = "../../docs/DocsSamples/wwwroot/cities/";
+      const CROPS = "image-field/";
+      const FILES = {
+        "kyoto.jpg": CITIES, "lisbon.jpg": CITIES, "cape-town.jpg": CITIES, "chiang-mai.jpg": CITIES,
+        "kyoto-square.jpg": CROPS, "kyoto-tall.jpg": CROPS, "chiang-mai-portrait.jpg": CROPS, "cape-town-panorama.jpg": CROPS,
+      };
+      const KEYS = { "dest/cape-town": "cape-town-panorama.jpg", "dest/kyoto": "kyoto-square.jpg", "dest/lisbon": "lisbon.jpg" };
+      function resolve(value) {
+        const v = String(value ?? "").trim();
+        if (!v) return null;
+        if (v.startsWith("blob:")) return { url: v, src: v };
+        if (/^https?:\/\//i.test(v)) {
+          const file = v.startsWith(CDN) ? v.slice(CDN.length) : null;
+          return { url: v, src: file ? (FILES[file] ?? CITIES) + file : v };
+        }
+        const file = KEYS[v] ?? v;
+        return { url: CDN + file, src: (FILES[file] ?? CITIES) + file };
+      }
+      const fileName = (v) => String(v).split("/").pop();
+
+      /* Thumbnail. opts: size, ratio, fit (cover|contain|natural), shape, empty (tile|dash), click (lightbox|hover|none) */
+      function imageHtml(value, o = {}) {
+        const { size = "sm", ratio, fit = "cover", shape, empty = "tile", click = "lightbox", label = "Photo", attrs = "", removed = false } = o;
+        const r = resolve(value);
+        const style = ratio ? ` style="--_ratio:${ratio}"` : "";
+        const common = `data-slot="image" data-size="${size}" data-fit="${fit}"${shape ? ` data-shape="${shape}"` : ""}${removed ? " data-removed" : ""}${style} ${attrs}`;
+        if (!r) {
+          if (empty === "dash") return `<span style="color:var(--sa-color-ink-muted)">—</span>`;
+          return `<span class="sa-image" data-state="empty" ${common} role="img" aria-label="No image">${svg("image")}</span>`;
+        }
+        const tag = click === "lightbox" ? "button" : "span";
+        const extra = click === "lightbox" ? ` type="button" data-lightbox="${esc(value)}" data-label="${esc(label)}" aria-label="View ${esc(label).toLowerCase()}"` : "";
+        return `<${tag} class="sa-image" data-state="loading" ${common}${extra}${click === "hover" ? " data-hover-preview" : ""} title="${esc(value)}"><img src="${esc(r.src)}" alt="" data-ref="${esc(value)}"></${tag}>`;
+      }
+      function markBroken(host, img) {
+        // A broken image isn't clickable: a button becomes a plain element.
+        if (host.tagName === "BUTTON") {
+          const span = document.createElement("span");
+          for (const a of host.attributes) if (!["type", "data-lightbox", "data-label", "aria-label", "style"].includes(a.name)) span.setAttribute(a.name, a.value);
+          span.append(...host.childNodes);
+          host.replaceWith(span);
+          host = span;
+        }
+        host.setAttribute("role", "img");
+        host.setAttribute("aria-label", "Image couldn't be loaded");
+        host.dataset.state = "error";
+        host.setAttribute("title", `Couldn't load ${img.dataset.ref || img.getAttribute("src")}`);
+        host.innerHTML = host.closest(".sa-image-figure, [data-layout='below']")
+          ? `<span class="sa-image-state-text">${svg("imageOff")}<span>Couldn't load the image</span></span>`
+          : svg("imageOff");
+        host.closest("[data-image-ref]")?.dispatchEvent(new CustomEvent("image-error"));
+      }
+      document.addEventListener("load", (e) => {
+        const h = e.target.tagName === "IMG" && e.target.closest(".sa-image");
+        if (h) { h.dataset.state = "loaded"; h.closest("[data-image-ref]")?.dispatchEvent(new CustomEvent("image-load")); }
+      }, true);
+      document.addEventListener("error", (e) => { const h = e.target.tagName === "IMG" && e.target.closest(".sa-image"); if (h) markBroken(h, e.target); }, true);
+      new MutationObserver(() => document.querySelectorAll('.sa-image[data-state="loading"] > img').forEach((img) => {
+        if (img.complete && img.naturalWidth) img.parentElement.dataset.state = "loaded";
+        else if (img.complete) markBroken(img.parentElement, img);
+      })).observe(document.body, { childList: true, subtree: true });
+
+      /* Lightbox */
+      const lb = $("image-lightbox");
+      document.addEventListener("click", (e) => {
+        const t = e.target.closest("[data-lightbox]");
+        if (!t || t.closest("[data-editable]")) return;
+        const r = resolve(t.dataset.lightbox);
+        if (!r) return;
+        lb.setAttribute("aria-label", t.dataset.label || "Photo");
+        lb.querySelector("[data-lb-img]").src = r.src;
+        lb.querySelector("[data-lb-img]").alt = t.dataset.label || "";
+        lb.showModal();
+      });
+
+      /* Hover preview */
+      const hoverPop = document.createElement("div");
+      hoverPop.className = "sa-popover-content sa-hover-preview";
+      hoverPop.setAttribute("popover", "hint");
+      hoverPop.innerHTML = "<img alt=''>";
+      document.body.append(hoverPop);
+      document.addEventListener("mouseover", (e) => {
+        const t = e.target.closest("[data-hover-preview]");
+        if (!t || t.dataset.state === "error") return;
+        hoverPop.querySelector("img").src = t.querySelector("img").src;
+        const r = t.getBoundingClientRect();
+        Object.assign(hoverPop.style, { position: "fixed", margin: "0", left: `${r.right + 8}px`, top: `${r.top - 8}px` });
+        hoverPop.showPopover?.();
+        t.addEventListener("mouseleave", () => hoverPop.hidePopover?.(), { once: true });
+      });
+
+      /* Decisions */
+      const QUESTIONS = [];
+      const chosen = {};
+      try { Object.assign(chosen, JSON.parse(localStorage.getItem("image-field-answers-v2") ?? "{}")); } catch {}
+      const answer = (n) => { const q = QUESTIONS.find((x) => x.n === n); return q?.decided?.answer ?? chosen[n] ?? q?.rec; };
+      function renderQuestions(hostId, questions) {
+        const host = $(hostId);
+        questions.forEach((q) => {
+          QUESTIONS.push(q);
+          const d = q.decided;
+          const decidedHtml = d ? `<div class="proto-decided"><p><strong>Decided:</strong> ${d.summary}</p>${d.points ? `<ul>${d.points.map((x) => `<li>${x}</li>`).join("")}</ul>` : ""}${d.api ? `<pre><code>${esc(d.api)}</code></pre>` : ""}</div>` : "";
+          host.insertAdjacentHTML("beforeend", `<h3 id="q${q.n}"><span class="proto-q">${q.n}</span>${q.title}</h3>${decidedHtml || (q.text ? `<p>${q.text}</p>` : "")}<figure class="proto-strip" data-q="${q.n}"${d ? ` data-decided="${d.configurable ? "configurable" : "fixed"}"` : ""} style="--proto-min:${q.min ?? 240}px"></figure>`);
+          const strip = host.lastElementChild;
+          q.options.forEach((o) => {
+            strip.insertAdjacentHTML("beforeend", `<div class="proto-cell" data-opt="${o.id}"><figcaption><button type="button" class="proto-opt" aria-label="Choose ${q.n}${o.id}">${o.id}</button><b>${o.title}</b>${o.note ? ` · ${o.note}` : ""}${o.api ? `<span class="proto-api" style="flex-basis:100%">${esc(o.api)}</span>` : ""}${d ? (o.id === d.answer ? '<span class="proto-badge" style="margin-left:auto">Default</span>' : "") : o.id === q.rec ? '<span class="proto-rec">Recommended</span>' : ""}</figcaption><div style="min-width:0">${o.render()}</div></div>`);
+            o.after?.(strip.lastElementChild.querySelector("figcaption + div"));
+          });
+          strip.addEventListener("click", (e) => {
+            const b = e.target.closest(".proto-opt");
+            if (!b || q.decided) return;
+            chosen[q.n] = b.closest("[data-opt]").dataset.opt;
+            try { localStorage.setItem("image-field-answers-v2", JSON.stringify(chosen)); } catch {}
+            syncSheet();
+          });
+        });
+      }
+      function syncSheet() {
+        document.querySelectorAll(".proto-strip[data-q]").forEach((s) => {
+          const a = answer(+s.dataset.q);
+          s.querySelectorAll("[data-opt]").forEach((c) => c.toggleAttribute("data-chosen", c.dataset.opt === a));
+        });
+        let group = "";
+        $("sheet").innerHTML = `<tr><th>#</th><th>Question</th><th>Answer</th><th>Status</th></tr>` + QUESTIONS.map((q) => {
+          const a = answer(q.n);
+          const opt = q.options.find((o) => o.id === a);
+          const rec = q.options.find((o) => o.id === q.rec);
+          const head = q.group !== group ? `<tr class="proto-group"><td colspan="4">${(group = q.group)}</td></tr>` : "";
+          const status = q.decided
+            ? `<strong>Decided</strong> · ${q.decided.configurable ? `configurable: <code>${esc(q.decided.setting)}</code>` : "not configurable"}`
+            : `Open · recommended ${q.rec} (${rec.title})`;
+          return `${head}<tr><td>${q.n}</td><td><a href="#q${q.n}">${q.title}</a></td><td data-answer${!q.decided && a !== q.rec ? " data-changed" : ""}>${a} · ${opt.title}</td><td data-status>${status}</td></tr>`;
+        }).join("");
+        $("sheet-summary").textContent = QUESTIONS.map((q) => `${q.n}${answer(q.n)}`).join(" ");
+        renderStates?.();
+      }
+      $("sheet-copy").addEventListener("click", () => navigator.clipboard?.writeText($("sheet-summary").textContent));
+      $("sheet-reset").addEventListener("click", () => { for (const k in chosen) delete chosen[k]; try { localStorage.removeItem("image-field-answers-v2"); } catch {} syncSheet(); });
+
+      /* Data and grid markup */
+      const ROWS = [
+        { id: 1, name: "Kiyomizu-dera, Kyoto", shape: "Square", photo: "kyoto-square.jpg" },
+        { id: 2, name: "Alfama, Lisbon", shape: "3:2 landscape", photo: CDN + "lisbon.jpg" },
+        { id: 3, name: "Table Bay, Cape Town", shape: "3:1 panorama", photo: "dest/cape-town" },
+        { id: 4, name: "Wat Chedi Luang, Chiang Mai", shape: "3:4 portrait", photo: "chiang-mai-portrait.jpg" },
+        { id: 5, name: "Sannenzaka, Kyoto", shape: "9:16 tall", photo: "kyoto-tall.jpg" },
+        { id: 6, name: "Tromsø Aurora Nights", shape: "Missing file", photo: "tromso.jpg" },
+        { id: 7, name: "Patagonia Trek", shape: "No image", photo: null },
+      ];
+      const SHAPES = ROWS.slice(0, 5);
+      function gridHtml(rows, cols) {
+        const head = cols.map((c) => `<th class="sa-table-head${c.narrow ? " w-px" : ""}" data-slot="table-head">${c.title}</th>`).join("");
+        const body = rows.map((r) => `<tr class="sa-table-row" data-slot="table-row" data-id="${r.id}">${cols.map((c) =>
+          `<td class="sa-table-cell${c.narrow ? " w-px" : ""}" data-slot="table-cell"${c.image ? " data-image-cell" : ""}${c.cellAttrs ? " " + c.cellAttrs(r) : ""}>${c.render(r)}</td>`).join("")}</tr>`).join("");
+        return `<div class="sa-data-grid sa-card sa-resource-index-grid" data-slot="data-grid"><div class="sa-table-container" data-slot="table-container"><table class="sa-table" data-slot="table">
+          <thead class="sa-table-header" data-slot="table-header"><tr class="sa-table-row" data-slot="table-row">${head}</tr></thead>
+          <tbody class="sa-table-body" data-slot="table-body">${body}</tbody></table></div></div>`;
+      }
+      const photoCol = (o = {}) => ({ title: "Photo", narrow: true, image: true, render: (r) => imageHtml(r.photo, { label: "Photo", ...o }) });
+      const nameCol = { title: "Destination", render: (r) => `<span style="font-weight:500">${r.name}</span>` };
+      const shapeCol = { title: "Source shape", render: (r) => `<span style="color:var(--sa-color-ink-muted)">${r.shape}</span>` };
+      const miniGrid = (o, rows = SHAPES) => gridHtml(rows, [photoCol(o), nameCol]);
+
+      /* 1 — Grid display */
+      $("gd-live").innerHTML = gridHtml(ROWS, [photoCol(), nameCol, shapeCol]);
+      renderQuestions("gd-questions", [
+        {
+          n: 1, group: "Grid display", title: "Non-square images", rec: "A", min: 250,
+          decided: {
+            answer: "A", configurable: true, setting: "AspectRatio, Fit",
+            summary: "square and cropped by default (A); configurable with two settings on <code>ImageDisplay</code>.",
+            points: [
+              "<code>AspectRatio</code> is a fixed list (<code>ImageAspectRatio</code>): <code>Square</code> 1:1, <code>Landscape</code> 4:3, <code>Widescreen</code> 16:9, <code>Portrait</code> 3:4, <code>Original</code> (each picture's own shape).",
+              "<code>Fit</code> (<code>ImageFit</code>): <code>Cover</code> crops to fill, <code>Contain</code> letterboxes. Ignored for <code>Original</code>.",
+              "Unset means the default for where the image is shown: <code>Square</code> in the grid, <code>Original</code> on the view page.",
+            ],
+            api: `column.UseDisplay<ImageDisplay>(image =>
+{
+    image.AspectRatio = ImageAspectRatio.Widescreen;
+    image.Fit = ImageFit.Cover;
+});`,
+          },
+          options: [
+            { id: "A", api: "AspectRatio = Square, Fit = Cover", title: "Square, cropped", note: "uniform column; panorama and tall edges are cut", render: () => miniGrid({ fit: "cover" }) },
+            { id: "B", api: "AspectRatio = Square, Fit = Contain", title: "Square, whole picture", note: "letterboxed; small at 32px", render: () => miniGrid({ fit: "contain" }) },
+            { id: "C", api: "AspectRatio = Original", title: "Own shape, row height", note: "width 0.5×–3× the height; ragged column", render: () => miniGrid({ fit: "natural" }) },
+            { id: "D", api: "AspectRatio = Landscape, Fit = Cover", title: "Field's ratio (here 4:3), cropped", note: "for fields whose images share a shape", render: () => miniGrid({ fit: "cover", ratio: "4 / 3" }) },
+          ],
+        },
+        {
+          n: 2, group: "Grid display", title: "Thumbnail size", rec: "B",
+          decided: {
+            answer: "B", configurable: true, setting: "Size",
+            summary: "32px in the grid by default (B); configurable with <code>Size</code> (<code>ImageDisplaySize</code>), which also sets the maximum height on the view page.",
+            points: [
+              "<code>ExtraSmall</code>: 24px in the grid, 8rem on the view page.",
+              "<code>Small</code>: 32px, 10rem. The grid default.",
+              "<code>Medium</code>: 40px, 15rem. The view page default.",
+              "<code>Large</code>: 64px, 20rem.",
+              "The size sets the height; the width follows <code>AspectRatio</code>. Unset means the default for where the image is shown.",
+            ],
+            api: `column.UseDisplay<ImageDisplay>(image => image.Size = ImageDisplaySize.Large);`,
+          },
+          options: [
+            { id: "A", api: "Size = ExtraSmall", title: "XS", note: "24px", render: () => miniGrid({ size: "xs" }, SHAPES.slice(0, 3)) },
+            { id: "B", api: "Size = Small", title: "Small", note: "32px", render: () => miniGrid({ size: "sm" }, SHAPES.slice(0, 3)) },
+            { id: "C", api: "Size = Medium", title: "Medium", note: "40px", render: () => miniGrid({ size: "md" }, SHAPES.slice(0, 3)) },
+            { id: "D", api: "Size = Large", title: "Large", note: "64px", render: () => miniGrid({ size: "lg" }, SHAPES.slice(0, 3)) },
+          ],
+        },
+        {
+          n: 3, group: "Grid display", title: "Corners", rec: "A",
+          decided: { answer: "A", configurable: false, summary: "rounded, following the theme and capped so pill themes don't make circles. Not configurable; a CSS class covers one-off cases." },
+          options: [
+            { id: "A", title: "Rounded", note: "follows the theme, capped", render: () => miniGrid({}, SHAPES.slice(0, 3)) },
+            { id: "B", title: "Square corners", render: () => miniGrid({ shape: "square" }, SHAPES.slice(0, 3)) },
+            { id: "C", title: "Circle", render: () => miniGrid({ shape: "circle" }, SHAPES.slice(0, 3)) },
+          ],
+        },
+        {
+          n: 4, group: "Grid display", title: "Empty value", rec: "A",
+          decided: { answer: "A", configurable: false, summary: "a placeholder tile. Not configurable. A value that fails to load shows the broken-image tile." },
+          options: [
+            { id: "A", title: "Placeholder tile", render: () => miniGrid({}, ROWS.slice(4)) },
+            { id: "B", title: "Dash", note: "like other empty fields", render: () => miniGrid({ empty: "dash" }, ROWS.slice(4)) },
+          ],
+        },
+        {
+          n: 5, group: "Grid display", title: "Clicking or hovering a thumbnail", rec: "A",
+          decided: {
+            answer: "A", configurable: true, setting: "Interaction",
+            summary: "clicking opens the lightbox by default (A); configurable with <code>Interaction</code> (<code>ImageDisplayInteraction</code> enum).",
+            points: [
+              "<code>Lightbox</code> (default), <code>Preview</code> (hover shows a larger preview), <code>None</code> (static). On the view page <code>Preview</code> behaves like <code>None</code>.",
+              "The lightbox shows only the larger image and a close button: no title, no metadata, no links. To open the original, the user right-clicks the image (Open image in new tab).",
+            ],
+            api: `column.UseDisplay<ImageDisplay>(image => image.Interaction = ImageDisplayInteraction.None);`,
+          },
+          options: [
+            { id: "A", api: "Interaction = Lightbox", title: "Click opens the lightbox", render: () => miniGrid({}, SHAPES.slice(0, 3)) },
+            { id: "B", api: "Interaction = Preview", title: "Hover shows a larger preview", render: () => miniGrid({ click: "hover" }, SHAPES.slice(0, 3)) },
+            { id: "C", api: "Interaction = None", title: "Nothing", render: () => miniGrid({ click: "none" }, SHAPES.slice(0, 3)) },
+          ],
+        },
+      ]);
+
+      /* Upload editor (form and grid) */
+      const MAX = 5 * 1024 * 1024;
+      const fmtSize = (n) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+      function field(label, control, { id, description } = {}) {
+        return `<div class="sa-field sa-field-orientation-vertical" data-orientation="vertical" data-slot="field">
+          <label class="sa-label sa-field-label" data-slot="field-label" for="${id}">${label}</label>${control}
+          ${description ? `<p class="sa-field-description" data-slot="field-description">${description}</p>` : ""}
+          <p class="sa-field-error" data-slot="field-error" role="alert" hidden></p></div>`;
+      }
+      class ImageUpload {
+        constructor(host, opts) {
+          this.host = host;
+          this.o = { layout: "dropzone", hoverActions: false, allowLink: false, label: "Photo", frozen: false, ...opts };
+          this.s = { value: opts.value ?? null, pending: opts.pending ?? null, error: opts.error ?? null, source: "upload" };
+          this.id = nextId("upload");
+          this.render();
+        }
+        get shown() { return this.s.pending?.kind === "upload" ? this.s.pending.url : this.s.value; }
+        get busy() { return this.s.pending?.kind === "upload" && !this.s.pending.done; }
+        get removed() { return this.s.pending?.kind === "remove"; }
+        render() {
+          const { layout, label } = this.o;
+          const body = this.s.source === "link" ? this.linkHtml() : layout === "compact" ? this.compactHtml() : layout === "attachment" ? this.attachmentHtml() : this.dropzoneHtml();
+          const source = this.o.allowLink
+            ? `<div class="sa-image-source" role="group" aria-label="Image source"><button type="button" data-source="upload" aria-pressed="${this.s.source === "upload"}">Upload</button><button type="button" data-source="link" aria-pressed="${this.s.source === "link"}">Link</button></div>`
+            : "";
+          this.host.innerHTML = field(label, `<div class="sa-image-upload" data-slot="image-upload" data-layout="${layout}">${source}<input type="file" id="${this.id}" accept="image/*" tabindex="-1">${body}</div>`, { id: this.id });
+          this.host.querySelector(".sa-field-error")?.remove();
+          this.wire();
+        }
+        note() {
+          const s = this.s;
+          if (s.error) return `<p class="sa-image-upload-note" data-tone="danger" role="alert">${s.error}</p>`;
+          if (this.removed) return `<p class="sa-image-upload-note" data-tone="warning">The image is removed when you save. <button type="button" data-undo>Undo</button></p>`;
+          if (this.busy) return `<p class="sa-image-upload-note">Uploading ${esc(s.pending.name)} · ${s.pending.progress}%</p>`;
+          if (s.pending?.kind === "upload" && s.value) return `<p class="sa-image-upload-note">Replaces ${esc(fileName(s.value))} when you save. <button type="button" data-undo>Undo</button></p>`;
+          return `<p class="sa-image-upload-note">PNG, JPG, WebP or GIF, up to 5 MB.</p>`;
+        }
+        withBusy(html) {
+          if (!this.busy) return html;
+          return html.replace(/<\/(button|span)>$/, `<span class="sa-image-busy">${spinner}<span class="sa-image-busy-bar"><i style="width:${this.s.pending.progress}%"></i></span></span></$1>`);
+        }
+        dropzoneHtml() {
+          if (!this.shown) {
+            return `<div class="sa-image-drop" role="button" tabindex="0" data-pick${this.s.error ? ' data-state="error"' : ""}>
+                <span class="sa-image-drop-icon">${svg("upload")}</span><span><strong>Click to upload</strong> or drag and drop</span></div>${this.note()}`;
+          }
+          const actions = this.busy
+            ? button("secondary", "sm", `${svg("x")}Cancel`, 'data-cancel data-icon="inline-start"')
+            : this.removed ? "" : button("secondary", "sm", `${svg("replace")}Replace`, 'data-pick data-icon="inline-start"') + button("secondary", "icon-sm", svg("trash"), 'data-remove aria-label="Remove image"');
+          return `<div class="sa-image-drop-filled"${this.o.hoverActions && !this.busy ? " data-hover-actions" : ""}>${this.withBusy(imageHtml(this.shown, { size: "auto", fit: "natural", label: this.o.label, click: !this.removed && !this.busy ? "lightbox" : "none", removed: this.removed }))}<div class="sa-image-overlay-actions">${actions}</div></div>${this.note()}`;
+        }
+        compactHtml() {
+          const has = !!this.shown && !this.removed;
+          const buttons = this.busy
+            ? button("outline", "sm", "Cancel", "data-cancel")
+            : has
+              ? button("outline", "sm", `${svg("replace")}Replace`, 'data-pick data-icon="inline-start"') + button("ghost", "sm", "Remove", "data-remove")
+              : button("outline", "sm", `${svg("upload")}${this.removed ? "Upload new" : "Upload"}`, 'data-pick data-icon="inline-start"');
+          const thumb = this.withBusy(imageHtml(this.shown, { size: "lg", label: this.o.label, click: has && !this.busy ? "lightbox" : "none", removed: this.removed }));
+          return `${thumb}<div class="sa-image-upload-actions">${buttons}</div>${this.note()}`;
+        }
+        attachmentHtml() {
+          const s = this.s, p = s.pending;
+          if (!this.shown) {
+            return `<div class="sa-image-drop" data-size="row" role="button" tabindex="0" data-pick${s.error ? ' data-state="error"' : ""}><span class="sa-image-drop-icon">${svg("upload")}</span><span><strong>Click to upload</strong> or drag and drop</span></div>${this.note()}`;
+          }
+          const name = p?.kind === "upload" ? p.name : fileName(s.value);
+          const desc = this.busy ? `Uploading · ${p.progress}%` : this.removed ? "Removed when you save" : p?.kind === "upload" ? `${fmtSize(p.size)} · new` : "JPG · 1.2 MB";
+          const media = this.busy
+            ? `<div data-slot="attachment-media" data-variant="icon" class="sa-attachment-media sa-attachment-media-variant-icon">${spinner}</div>`
+            : `<div data-slot="attachment-media" data-variant="image" class="sa-attachment-media sa-attachment-media-variant-image"${this.removed ? ' style="opacity:.4;filter:grayscale(1)"' : ""}><img src="${esc(resolve(this.shown).src)}" alt=""></div>`;
+          const actions = this.busy
+            ? button("ghost", "icon-xs", svg("x"), `data-cancel aria-label="Cancel uploading ${esc(name)}"`)
+            : this.removed
+              ? button("ghost", "icon-xs", svg("undo"), `data-undo aria-label="Undo remove"`)
+              : button("ghost", "icon-xs", svg("replace"), `data-pick aria-label="Replace ${esc(name)}"`) + button("ghost", "icon-xs", svg("x"), `data-remove aria-label="Remove ${esc(name)}"`);
+          return `<div class="sa-attachment sa-attachment-size-default sa-attachment-orientation-horizontal" data-slot="attachment" data-state="${this.busy ? "uploading" : "done"}" data-size="default" data-orientation="horizontal">
+              ${media}<div data-slot="attachment-content" class="sa-attachment-content"><span data-slot="attachment-title" class="sa-attachment-title"${this.removed ? ' style="text-decoration:line-through"' : ""}>${esc(name)}</span><span data-slot="attachment-description" class="sa-attachment-description">${desc}</span></div>
+              <div data-slot="attachment-actions" class="sa-attachment-actions">${actions}</div></div>${s.error ? this.note() : ""}`;
+        }
+        linkHtml() {
+          const v = this.s.value && !String(this.s.value).startsWith("blob:") ? this.s.value : "";
+          return `<div class="sa-image-ref" data-layout="beside">${imageHtml(v, { click: v ? "lightbox" : "none" })}<input class="sa-input" data-slot="input" data-link value="${esc(v)}" placeholder="https://…" spellcheck="false"></div><p class="sa-image-upload-note">Paste the image's address. It's saved as typed.</p>`;
+        }
+        wire() {
+          if (this.o.frozen) return;
+          const fileInput = this.host.querySelector("input[type=file]");
+          this.host.querySelectorAll("[data-pick]").forEach((el) => {
+            el.addEventListener("click", () => fileInput.click());
+            el.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && el.getAttribute("role") === "button") { e.preventDefault(); fileInput.click(); } });
+          });
+          fileInput.addEventListener("change", () => fileInput.files[0] && this.accept(fileInput.files[0]));
+          this.host.querySelector("[data-remove]")?.addEventListener("click", () => { this.s.pending = this.s.value ? { kind: "remove" } : null; this.s.error = null; this.render(); });
+          this.host.querySelectorAll("[data-undo]").forEach((b) => b.addEventListener("click", () => { this.s.pending = null; this.render(); }));
+          this.host.querySelector("[data-cancel]")?.addEventListener("click", () => { clearInterval(this.timer); this.s.pending = null; this.render(); });
+          this.host.querySelectorAll("[data-source]").forEach((b) => b.addEventListener("click", () => { this.s.source = b.dataset.source; this.render(); }));
+          const link = this.host.querySelector("[data-link]");
+          if (link) {
+            let t;
+            link.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { this.host.querySelector(".sa-image").outerHTML = imageHtml(link.value, { click: link.value ? "lightbox" : "none" }); }, 350); });
+          }
+          const zone = this.host.querySelector(".sa-image-upload");
+          const mark = this.host.querySelector(".sa-image-drop") ?? zone;
+          zone.addEventListener("dragover", (e) => { e.preventDefault(); mark.setAttribute("data-dragover", ""); zone.setAttribute("data-dragover", ""); });
+          zone.addEventListener("dragleave", (e) => { if (!zone.contains(e.relatedTarget)) { mark.removeAttribute("data-dragover"); zone.removeAttribute("data-dragover"); } });
+          zone.addEventListener("drop", (e) => { e.preventDefault(); mark.removeAttribute("data-dragover"); zone.removeAttribute("data-dragover"); const f = e.dataTransfer.files[0]; if (f) this.accept(f); });
+        }
+        accept(file) {
+          if (!file.type.startsWith("image/")) { this.s.error = `${esc(file.name)} isn't an image. Choose a PNG, JPG, WebP or GIF.`; return this.render(); }
+          if (file.size > MAX) { this.s.error = `${esc(file.name)} is ${fmtSize(file.size)}. The limit is 5 MB.`; return this.render(); }
+          this.s.error = null;
+          clearInterval(this.timer);
+          this.s.pending = { kind: "upload", name: file.name, size: file.size, url: URL.createObjectURL(file), progress: 0, done: false };
+          this.render();
+          this.timer = setInterval(() => {
+            const p = this.s.pending;
+            if (!p || p.kind !== "upload") return clearInterval(this.timer);
+            p.progress = Math.min(100, p.progress + 7 + Math.round(Math.random() * 8));
+            if (p.progress >= 100) { p.done = true; clearInterval(this.timer); this.render(); return; }
+            const bar = this.host.querySelector(".sa-image-busy-bar > i");
+            if (bar) bar.style.width = `${p.progress}%`;
+            const note = this.host.querySelector(".sa-image-upload-note, .sa-attachment-description");
+            if (note) note.textContent = this.o.layout === "attachment" ? `Uploading · ${p.progress}%` : `Uploading ${p.name} · ${p.progress}%`;
+          }, 110);
+        }
+      }
+
+      /* Reference editor (form and grid) */
+      const refThumb = (v, layout) => imageHtml(v, { size: layout === "below" ? "auto" : "sm", fit: layout === "below" ? "natural" : "cover", click: layout === "addon" || !v ? "none" : "lightbox" });
+      function referenceEditor(value, { layout = "beside", failMode = "warn", label = "Photo" } = {}) {
+        const id = nextId("ref");
+        const input = `<input id="${id}" class="sa-input${layout === "addon" ? " sa-input-group-input" : ""}" data-slot="${layout === "addon" ? "input-group-control" : "input"}" value="${esc(value)}" placeholder="kyoto.jpg or https://…" autocomplete="off" spellcheck="false">`;
+        const thumb = refThumb(value, layout);
+        const ctl = layout === "addon"
+          ? `<div class="sa-input-group" data-slot="input-group" role="group"><div class="sa-input-group-addon sa-input-group-addon-align-inline-start" data-slot="input-group-addon" data-align="inline-start">${thumb}</div>${input}</div>`
+          : layout === "below" ? `${input}${thumb}` : `${thumb}${input}`;
+        return `<div data-image-ref data-layout="${layout}" data-fail="${failMode}">${field(label, `<div class="sa-image-ref" data-layout="${layout}">${ctl}</div><div class="sa-image-resolved" data-resolved></div>`, { id, description: "A file name, storage key or full URL." })}</div>`;
+      }
+      function wireReference(root) {
+        root.querySelectorAll("[data-image-ref]:not([data-wired])").forEach((ed) => {
+          ed.dataset.wired = "1";
+          const input = ed.querySelector("input");
+          const layout = ed.dataset.layout;
+          const fieldEl = ed.querySelector(".sa-field");
+          const errEl = ed.querySelector(".sa-field-error");
+          const desc = ed.querySelector(".sa-field-description");
+          const baseDesc = desc.innerHTML;
+          const feedback = (failed) => {
+            errEl.hidden = true; fieldEl.removeAttribute("data-invalid"); input.removeAttribute("aria-invalid"); desc.innerHTML = baseDesc;
+            if (!failed) return;
+            if (ed.dataset.fail === "block") {
+              errEl.hidden = false; errEl.textContent = "Couldn't load an image from this value.";
+              fieldEl.setAttribute("data-invalid", "true"); input.setAttribute("aria-invalid", "true");
+            } else {
+              desc.innerHTML = `<span style="display:inline-flex;gap:6px;align-items:center;color:var(--sa-color-ink)">${svg("alert", 14)}The image couldn't be loaded. You can still save.</span>`;
+            }
+          };
+          const resolved = () => {
+            const r = resolve(input.value);
+            ed.querySelector("[data-resolved]").innerHTML = r && r.url !== input.value.trim() ? `<span>Resolves to</span><code title="${esc(r.url)}">${esc(r.url)}</code>` : "";
+          };
+          ed.addEventListener("image-error", () => feedback(true));
+          ed.addEventListener("image-load", () => feedback(false));
+          let t;
+          input.addEventListener("input", () => {
+            clearTimeout(t); resolved();
+            t = setTimeout(() => { feedback(false); ed.querySelector(".sa-image").outerHTML = refThumb(input.value, layout); }, 350);
+          });
+          resolved();
+          if (ed.querySelector('.sa-image[data-state="error"]')) feedback(true);
+        });
+      }
+
+      /* 2 — Grid editor: the image cell inside a row in edit mode. The row's Save and Cancel commit or
+         discard every cell; the image control only stages a change. */
+      const PENCIL = '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>';
+      ICON.pencil = PENCIL;
+      // variant: "buttons" (thumbnail + icon buttons) | "thumb" (the thumbnail is the trigger, × on its corner)
+      function editGrid(host, { variant = "buttons", editing = [] } = {}) {
+        const rows = structuredClone(ROWS.slice(0, 4).concat(ROWS[6]));
+        const edits = new Map(); // id -> { name, photo (staged), busy, error }
+        const actions = (r) => edits.has(r.id)
+          ? `<div style="display:flex;gap:6px;justify-content:flex-end">${button("outline", "sm", "Cancel", "data-row-cancel")}${button("default", "sm", "Save", `data-row-save${edits.get(r.id).busy ? " disabled" : ""}`)}</div>`
+          : `<div style="display:flex;justify-content:flex-end">${button("outline", "sm", "Edit", "data-row-edit")}</div>`;
+        const photoEditor = (r) => {
+          const e = edits.get(r.id);
+          const changed = e.photo !== r.photo;
+          let thumb = imageHtml(e.photo, { click: "none" });
+          if (e.busy) thumb = thumb.replace(/<\/span>$/, `<span class="sa-image-busy" style="padding:0">${spinner}</span></span>`);
+          const err = e.error ? `<span class="sa-cell-error" role="alert">${e.error}</span>` : "";
+          const file = `<input type="file" accept="image/*" hidden data-cell-file>`;
+          if (variant === "thumb") {
+            const trigger = `<button type="button" class="sa-image-cell-trigger" data-cell-pick aria-label="${e.photo ? "Replace" : "Upload"} photo"${e.busy ? " disabled" : ""}>${thumb}</button>`;
+            const remove = e.photo && !e.busy ? `<button type="button" data-slot="button" class="sa-button sa-button-variant-secondary sa-image-cell-badge" data-cell-remove aria-label="Remove photo">${svg("x")}</button>` : "";
+            return `<div class="sa-image-cell" data-variant="thumb"${changed ? " data-changed" : ""}>${trigger}${remove}${file}</div>${err}`;
+          }
+          const btns = e.busy ? "" :
+            button("ghost", "icon-xs", svg("upload"), `data-cell-pick aria-label="${e.photo ? "Replace" : "Upload"} photo" title="${e.photo ? "Replace" : "Upload"}"`) +
+            (e.photo ? button("ghost", "icon-xs", svg("x"), 'data-cell-remove aria-label="Remove photo" title="Remove"') : "") +
+            (changed ? button("ghost", "icon-xs", svg("undo"), 'data-cell-undo aria-label="Undo photo change" title="Undo"') : "");
+          return `<div class="sa-image-cell" data-variant="buttons"${changed ? " data-changed" : ""}>${thumb}<span class="sa-image-cell-actions">${btns}</span>${file}</div>${err}`;
+        };
+        const render = () => {
+          host.innerHTML = gridHtml(rows, [
+            { title: "Photo", narrow: true, image: true, render: (r) => edits.has(r.id) ? photoEditor(r) : imageHtml(r.photo, { label: "Photo" }) },
+            { title: "Destination", render: (r) => edits.has(r.id) ? `<input class="sa-input sa-cell-editor" data-slot="input" value="${esc(edits.get(r.id).name)}" data-cell-name aria-label="Destination">` : `<span style="font-weight:500">${r.name}</span>` },
+            { title: "", narrow: true, render: (r) => actions(r) },
+          ]);
+          host.querySelectorAll("tr[data-id]").forEach((tr) => { if (edits.has(+tr.dataset.id)) tr.setAttribute("data-editing", ""); });
+        };
+        const flash = (id) => {
+          const tr = host.querySelector(`tr[data-id="${id}"]`);
+          tr.style.transition = "background 1.2s"; tr.style.background = "color-mix(in oklab, var(--sa-color-success) 18%, transparent)";
+          setTimeout(() => (tr.style.background = ""), 50);
+        };
+        const start = (r) => edits.set(r.id, { name: r.name, photo: r.photo, busy: false, error: null });
+        editing.forEach((id) => start(rows.find((r) => r.id === id)));
+        host.addEventListener("input", (e) => { if (e.target.matches("[data-cell-name]")) edits.get(+e.target.closest("tr").dataset.id).name = e.target.value; });
+        host.addEventListener("change", (e) => {
+          if (!e.target.matches("[data-cell-file]")) return;
+          const id = +e.target.closest("tr").dataset.id, ed = edits.get(id), f = e.target.files[0];
+          if (!f) return;
+          if (!f.type.startsWith("image/")) { ed.error = `${esc(f.name)} isn't an image.`; return render(); }
+          if (f.size > MAX) { ed.error = `${esc(f.name)} is ${fmtSize(f.size)}. The limit is 5 MB.`; return render(); }
+          ed.error = null; ed.busy = true; render();
+          setTimeout(() => { ed.busy = false; ed.photo = URL.createObjectURL(f); if (edits.get(id) === ed) render(); }, 1500);
+        });
+        host.addEventListener("click", (e) => {
+          const tr = e.target.closest("tr[data-id]");
+          if (!tr) return;
+          const r = rows.find((x) => x.id === +tr.dataset.id), ed = edits.get(r.id);
+          if (e.target.closest("[data-row-edit]")) { start(r); render(); host.querySelector(`tr[data-id="${r.id}"] [data-cell-name]`).focus(); }
+          else if (e.target.closest("[data-row-cancel]")) { edits.delete(r.id); render(); }
+          else if (e.target.closest("[data-row-save]")) { if (ed.busy) return; r.name = ed.name; r.photo = ed.photo; edits.delete(r.id); render(); flash(r.id); }
+          else if (e.target.closest("[data-cell-pick]")) tr.querySelector("[data-cell-file]").click();
+          else if (e.target.closest("[data-cell-remove]")) { ed.photo = null; ed.error = null; render(); }
+          else if (e.target.closest("[data-cell-undo]")) { ed.photo = r.photo; ed.error = null; render(); }
+        });
+        render();
+      }
+      editGrid($("ge-live"), { variant: "thumb", editing: [2] });
+      renderQuestions("ge-questions", [
+        {
+          n: 6, group: "Grid editor", title: "The image control in an editing row", rec: "A", min: 420,
+          decided: { answer: "B", configurable: false, summary: "the thumbnail is the button (B). Click it to pick a file; × on its corner removes the image; the row's Cancel discards the change. The control keeps the same size throughout editing, so the locked column fits it. Not configurable." },
+          text: "Each grid starts with one row in edit mode; Edit opens others. Picking, removing or undoing only stages the change: the row's Save commits it, the row's Cancel discards it. While a file uploads, Save waits.",
+          options: [
+            { id: "A", title: "Thumbnail with icon buttons", note: "upload/replace, remove, and undo once changed; visible and touch-friendly", render: () => "<div></div>", after: (el) => editGrid(el.firstElementChild, { variant: "buttons", editing: [1] }) },
+            { id: "B", title: "Thumbnail is the button", note: "click it to pick a file; × on its corner removes; no undo (the row's Cancel discards)", render: () => "<div></div>", after: (el) => editGrid(el.firstElementChild, { variant: "thumb", editing: [1] }) },
+          ],
+        },
+      ]);
+
+      /* 3 — Display */
+      function figureHtml(value, { fit = "natural", ratio = "4 / 3", caption = "none", empty = "tile", label = "Photo", maxH, frameW } = {}) {
+        const r = resolve(value);
+        if (!r && empty === "dash") return `<span style="color:var(--sa-color-ink-muted)">—</span>`;
+        const cap = r && caption !== "none"
+          ? `<figcaption class="sa-image-caption"><span title="${esc(value)}">${esc(value)}</span>${caption === "link" ? `<a href="${esc(r.src)}" target="_blank" rel="noopener">${svg("external")}Open original</a>` : ""}</figcaption>`
+          : "";
+        const inner = r
+          ? imageHtml(value, { size: "auto", fit, ratio: fit === "natural" ? undefined : ratio, label })
+          : `<span class="sa-image" data-slot="image" data-state="empty" role="img" aria-label="No image"><span class="sa-image-state-text">${svg("image")}<span>No image</span></span></span>`;
+        const vars = [maxH && `--_max-h:${maxH}`, frameW && `--_frame-w:${frameW}`].filter(Boolean).join(";");
+        return `<figure class="sa-image-figure" data-fit="${fit}"${vars ? ` style="${vars}"` : ""}>${inner}${cap}</figure>`;
+      }
+      const spanVars = (full) => ["", "-sm", "-md", "-lg"].map((b, i) => `--sa-start${b}:auto;--sa-span${b}:${full && i ? 3 : 1}`).join(";");
+      const displayField = (label, value, full) =>
+        `<div class="sa-field sa-field-orientation-vertical sa-display-field" data-slot="display-field" data-orientation="vertical" style="${spanVars(full)}"><dt class="sa-display-field-label" data-slot="display-field-label">${label}</dt><dd class="sa-display-field-value" data-slot="display-field-value">${value}</dd></div>`;
+      const details = (fields) => `<div class="sa-details" data-slot="details" data-columns="3"><dl class="sa-details-list" data-slot="details-list" style="--sa-cols:1;--sa-cols-sm:3;--sa-cols-md:3;--sa-cols-lg:3">${fields.join("")}</dl></div>`;
+      const shapesRow = (o) => `<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:start">${SHAPES.map((r) => figureHtml(r.photo, { caption: "none", maxH: "9rem", frameW: "12rem", ...o })).join("")}</div>`;
+
+      $("d-live").innerHTML = details([
+        displayField("Destination", "Wat Chedi Luang, Chiang Mai"), displayField("Country", "Thailand"), displayField("Tours", "9"),
+        displayField("Photo", figureHtml("chiang-mai-portrait.jpg"), true),
+      ]);
+      renderQuestions("d-questions", [
+        {
+          n: 7, group: "Display", title: "Non-square images", rec: "A", min: 900,
+          decided: { answer: "A", configurable: true, setting: "AspectRatio, Fit", summary: "covered by question 1. The same <code>AspectRatio</code> and <code>Fit</code> apply on the view page; unset means <code>Original</code> there (A). With a fixed ratio, <code>Size</code> sets the height (15rem by default) and the ratio sets the width." },
+          text: "The same five source shapes in each option (scaled down so they fit in a row).",
+          options: [
+            { id: "A", api: "AspectRatio = Original", title: "Own shape, capped", note: "no crop; at most 15rem tall and the field's width", render: () => shapesRow({ fit: "natural" }) },
+            { id: "B", api: "AspectRatio = Landscape, Fit = Cover", title: "Field's ratio (here 4:3), cropped", note: "uniform frames", render: () => shapesRow({ fit: "cover" }) },
+            { id: "C", api: "AspectRatio = Landscape, Fit = Contain", title: "Field's ratio (here 4:3), whole picture", note: "uniform frames, letterboxed", render: () => shapesRow({ fit: "contain" }) },
+          ],
+        },
+        {
+          n: 8, group: "Display", title: "Under the picture", rec: "C", min: 300,
+          decided: { answer: "A", configurable: false, summary: "nothing. The value only ever resolves to a URL and no extra information is shown. Not configurable." },
+          options: [
+            { id: "A", title: "Nothing", render: () => figureHtml("lisbon.jpg", { caption: "none", maxH: "10rem" }) },
+            { id: "B", title: "Stored reference", render: () => figureHtml("lisbon.jpg", { caption: "reference", maxH: "10rem" }) },
+            { id: "C", title: "Reference + Open original", render: () => figureHtml("lisbon.jpg", { caption: "link", maxH: "10rem" }) },
+          ],
+        },
+        {
+          n: 9, group: "Display", title: "Empty value", rec: "A", min: 300,
+          decided: { answer: "A", configurable: false, summary: "a placeholder with “No image”. Not configurable." },
+          options: [
+            { id: "A", title: "Placeholder with “No image”", render: () => details([displayField("Photo", figureHtml(null))]) },
+            { id: "B", title: "Dash", note: "like other empty fields", render: () => details([displayField("Photo", figureHtml(null, { empty: "dash" }))]) },
+          ],
+        },
+      ]);
+      $("d-states").innerHTML =
+        `<div class="proto-cell"><figcaption><b>Failed to load</b></figcaption><div>${figureHtml("tromso.jpg")}</div></div>` +
+        `<div class="proto-cell"><figcaption><b>Lightbox</b></figcaption><div style="display:grid;gap:8px;justify-items:start;align-content:start"><p class="proto-note" style="margin:0">Only the larger image and a close button. Esc or the backdrop closes it; right-click the image to open the original.</p>
+          ${button("outline", "default", "Open (landscape)", 'data-lightbox="lisbon.jpg" data-label="Photo"')}${button("outline", "default", "Open (tall portrait)", 'data-lightbox="kyoto-tall.jpg" data-label="Photo"')}</div></div>`;
+
+      /* 4 — Editor */
+      new ImageUpload($("e-upload-live"), { layout: "dropzone", value: "chiang-mai-portrait.jpg" });
+      const upload = (el, o) => new ImageUpload(el.firstElementChild, o);
+      renderQuestions("e-upload-questions", [
+        {
+          n: 10, group: "Editor", title: "Layout", rec: "A", min: 320,
+          decided: {
+            answer: "A", configurable: true, setting: "Layout",
+            summary: "the dropzone by default (A); configurable with <code>Layout</code> on the image editor. (Proposed names, following <code>LookupSheetEditor.Layout</code>; not yet reviewed.)",
+            points: ["<code>ImageEditorLayout</code>: <code>Dropzone</code> (default), <code>Compact</code>, <code>Attachment</code>."],
+            api: `field.UseEditor<ImageEditor>(image => image.Layout = ImageEditorLayout.Compact);`,
+          },
+          text: "One default. Compact suits logos and people's photos; the attachment row reuses the Attachment component and shows the file name.",
+          options: [
+            { id: "A", api: "Layout = Dropzone", title: "Dropzone", note: "big target; preview in the picture's shape", render: () => "<div></div>", after: (el) => upload(el, { layout: "dropzone", value: "lisbon.jpg" }) },
+            { id: "B", api: "Layout = Compact", title: "Compact", note: "64px thumbnail beside the buttons", render: () => "<div></div>", after: (el) => upload(el, { layout: "compact", value: "lisbon.jpg" }) },
+            { id: "C", api: "Layout = Attachment", title: "Attachment row", note: "file name and size", render: () => "<div></div>", after: (el) => upload(el, { layout: "attachment", value: "lisbon.jpg" }) },
+          ],
+        },
+        {
+          n: 11, group: "Editor", title: "Replace and remove on the dropzone", rec: "A", min: 320,
+          decided: { answer: "A", configurable: false, summary: "always visible. Not configurable." },
+          options: [
+            { id: "A", title: "Always visible", render: () => "<div></div>", after: (el) => upload(el, { value: "cape-town-panorama.jpg" }) },
+            { id: "B", title: "On hover and focus", render: () => "<div></div>", after: (el) => upload(el, { value: "cape-town-panorama.jpg", hoverActions: true }) },
+          ],
+        },
+        {
+          n: 12, group: "Editor", title: "When the file is uploaded", rec: "A", min: 320,
+          decided: {
+            answer: "A", configurable: false,
+            summary: "when picked (A). The file goes to the app's storage straight away, with progress; the form posts only the returned reference. Replace and remove take effect when the form saves.",
+            points: ["Still to design: how the app plugs in its own storage (where files are saved and what reference comes back), and how the stored value is resolved to a URL."],
+          },
+          text: "Behaviour rather than looks, but it decides whether there is an uploading state.",
+          options: [
+            { id: "A", title: "When picked", note: "sent to the app's storage handler straight away, with progress; the form posts only the returned reference", render: () => "<div></div>", after: (el) => upload(el, { value: "kyoto-square.jpg", frozen: true, pending: { kind: "upload", name: "lisbon-tram.jpg", size: 2100000, url: "lisbon.jpg", progress: 62, done: false } }) },
+            { id: "B", title: "With the form", note: "the file goes in the form post; no progress, just a preview until save", render: () => "<div></div>", after: (el) => upload(el, { value: "kyoto-square.jpg", frozen: true, pending: { kind: "upload", name: "lisbon-tram.jpg", size: 2100000, url: "lisbon.jpg", progress: 100, done: true } }) },
+          ],
+        },
+      ]);
+      const STATES = [
+        ["Empty", { value: null }],
+        ["Saved image", { value: "kyoto-square.jpg" }],
+        ["Uploading", { value: "kyoto-square.jpg", pending: { kind: "upload", name: "lisbon-tram.jpg", size: 2100000, url: "lisbon.jpg", progress: 62, done: false } }],
+        ["New file, not saved", { value: "kyoto-square.jpg", pending: { kind: "upload", name: "lisbon-tram.jpg", size: 2100000, url: "lisbon.jpg", progress: 100, done: true } }],
+        ["Pending removal", { value: "kyoto-square.jpg", pending: { kind: "remove" } }],
+        ["Rejected file", { value: null, error: "harbour-panorama.tiff is 18.4 MB. The limit is 5 MB." }],
+      ];
+      var renderStates = function () {
+        const layout = { A: "dropzone", B: "compact", C: "attachment" }[answer(10)];
+        $("e-states").innerHTML = "";
+        STATES.forEach(([cap, st]) => {
+          $("e-states").insertAdjacentHTML("beforeend", `<div class="proto-cell"><figcaption><b>${cap}</b></figcaption><div><div></div></div></div>`);
+          new ImageUpload($("e-states").lastElementChild.querySelector("div > div"), { layout, frozen: true, ...structuredClone(st) });
+        });
+      };
+
+      syncSheet();
+
+      /* Control bar */
+      const params = new URLSearchParams(location.search);
+      const state = { theme: params.get("theme") ?? "default", mode: params.get("mode") ?? "light", density: params.get("density") ?? "default" };
+      function apply() {
+        $("theme-css").href = state.theme === "default" ? "data:text/css," : `../../util/theme-check/presets/${state.theme}.css`;
+        document.documentElement.classList.toggle("dark", state.mode === "dark");
+        if (state.density === "default") document.querySelector("main").removeAttribute("data-sa-density");
+        else document.querySelector("main").setAttribute("data-sa-density", state.density);
+        document.querySelectorAll(".proto-controls [data-control]").forEach((g) =>
+          g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.value === state[g.dataset.control]))),
+        );
+      }
+      document.querySelector(".proto-controls").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        state[b.closest("[data-control]").dataset.control] = b.dataset.value;
+        apply();
+      });
+      apply();
+    </script>
+  </body>
+</html>

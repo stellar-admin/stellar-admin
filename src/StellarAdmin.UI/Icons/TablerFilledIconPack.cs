@@ -44,6 +44,10 @@ public class TablerFilledIconPack : IIconPack
             [SemanticIconRole.SubmenuIndicator] = "chevron-right",
             [SemanticIconRole.Success] = "circle-check",
             [SemanticIconRole.ToggleSidebar] = "layout-sidebar",
+            [SemanticIconRole.Image] = "photo",
+            [SemanticIconRole.ImageError] = "photo",
+            [SemanticIconRole.Upload] = "file-upload",
+            [SemanticIconRole.Remove] = "trash",
             [SemanticIconRole.Warning] = "alert-triangle",
         };
     }
