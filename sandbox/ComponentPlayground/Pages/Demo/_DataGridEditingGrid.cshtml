@@ -1,0 +1,95 @@
+@model ComponentPlayground.Pages.Demo.TourGrid
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    List<SelectListItem> countries = [new("Choose a country", ""), .. DataGridEditing.Countries.Select(country => new SelectListItem(country.Value, country.Key))];
+    var headers = $$"""{"RequestVerificationToken": "{{Antiforgery.GetAndStoreTokens(Context).RequestToken}}"}""";
+    // Rows the page rendered in edit mode have no details row, so their Cancel and Save swap in the
+    // display row with its details row. A row opened with Edit kept its details row: Save swaps in
+    // only the display row and refreshes the details' content.
+    var withPage = !Model.RowsOnly || Model.WithPage;
+}
+
+<sa-data-grid id="tours" items="Model.Items" key-field="Id" editing-keys="Model.EditingKeys"
+              new-item="Model.NewItem" rows-only="Model.RowsOnly">
+    <sa-data-grid-selection name="selected" />
+    <sa-data-grid-column title="Name" field="Name" class="font-medium">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Tour>().Name" aria-label="Name" />
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().Name" />
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Country">
+        <sa-data-grid-item-template>@DataGridEditing.Countries.GetValueOrDefault(Html.GridItem<Tour>().CountryCode ?? "")</sa-data-grid-item-template>
+        <sa-data-grid-edit-template>
+            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+                       asp-for="@Html.GridItem<Tour>().CountryCode" asp-items="countries" aria-label="Country" />
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().CountryCode" />
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Price" field="Price" format="{0:C0}" class="text-right">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Tour>().Price" aria-label="Price" />
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().Price" />
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Active">
+        <sa-data-grid-item-template>
+            @if (Html.GridItem<Tour>().Active)
+            {
+                <sa-badge>Active</sa-badge>
+            }
+            else
+            {
+                <sa-badge variant="BadgeVariant.Outline">Inactive</sa-badge>
+            }
+        </sa-data-grid-item-template>
+        <sa-data-grid-edit-template>
+            <span class="sa-cell-check">
+                <sa-switch render-field="false" size="SwitchSize.Small" asp-for="@Html.GridItem<Tour>().Active" aria-label="Active" />
+            </span>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column class="w-px whitespace-nowrap">
+        <sa-data-grid-item-template>
+            @{ var tour = Html.GridItem<Tour>(); }
+            @* The editing row's buttons sit invisibly under Edit, so the column is already wide enough for them. *@
+            <div class="grid *:[grid-area:1/1]">
+                <div class="flex justify-end gap-1.5">
+                    <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline"
+                               hx-get="?handler=Edit&id=@tour.Id" hx-target="closest tr" hx-swap="outerHTML">Edit</sa-button>
+                </div>
+                <div class="invisible flex gap-1.5" aria-hidden="true" inert>
+                    <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline" tabindex="-1">Cancel</sa-button>
+                    <sa-button size="ButtonSize.Small" tabindex="-1">Save</sa-button>
+                </div>
+            </div>
+        </sa-data-grid-item-template>
+        <sa-data-grid-edit-template>
+            @{
+                var tour = Html.GridItem<Tour>();
+                var isNew = ReferenceEquals(tour, Model.NewItem);
+                var saveUrl = isNew ? $"?handler=Save&withPage={withPage}" : $"?handler=Save&id={tour.Id}&withPage={withPage}";
+            }
+            <div class="flex justify-end gap-1.5">
+                @* Puts the display row back without a request, or removes a new row; it goes to the
+                   server only for a row the page rendered in edit mode. *@
+                <sa-button size="ButtonSize.Small" variant="ButtonVariant.Outline" data-row-cancel
+                           hx-get="?handler=Cancel&id=@tour.Id" hx-target="closest tr" hx-swap="outerHTML">Cancel</sa-button>
+                @if (isNew || withPage)
+                {
+                    <sa-button size="ButtonSize.Small" hx-post="@saveUrl" hx-include="closest tr" hx-headers="@headers"
+                               hx-target="closest tr" hx-swap="outerHTML">Save</sa-button>
+                }
+                else
+                {
+                    <sa-button size="ButtonSize.Small" hx-post="@saveUrl" hx-include="closest tr" hx-headers="@headers"
+                               hx-target="closest tr" hx-swap="outerHTML"
+                               hx-select="tr[data-key]" hx-select-oob="#tours-detail-@(tour.Id):innerHTML">Save</sa-button>
+                }
+            </div>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-row-detail>
+        <p><span class="font-medium">@(Html.GridItem<Tour>().Name):</span> @(Html.GridItem<Tour>().Notes)</p>
+    </sa-data-grid-row-detail>
+</sa-data-grid>

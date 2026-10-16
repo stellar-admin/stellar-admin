@@ -11,12 +11,19 @@ const LOCKED = "data-columns-locked";
  *   - locks the column widths while any row is in edit mode, so editors cannot move the
  *     columns, and releases them when no row is. Widths are tracked while no row is in edit
  *     mode, since an editing row is in the page before the behavior sees it.
- *   - keeps the display row an editing row replaced, and puts it back when a
+ *   - keeps the display row an editing row replaced, and puts a copy of it back when a
  *     `[data-row-cancel]` element in the editing row is clicked, without the click's own
- *     action (an htmx request, say). A new row (`data-key="new"`) is removed instead. Only
+ *     action (an htmx request, say); htmx, when on the page, processes the copy. A new row (`data-key="new"`) is removed instead. Only
  *     a row that was rendered in edit mode lets the click through, so it can ask the server
  *     for its display row.
  */
+interface Widths {
+  table: number;
+  heads: number[];
+  // Whether the table fills its container, so its columns lock as shares of its width.
+  fills: boolean;
+}
+
 export class TableEditing {
   #host: HTMLElement;
   // The display rows that editing rows replaced, by key.
@@ -25,7 +32,7 @@ export class TableEditing {
   #resizeObserver = new ResizeObserver(() => this.#track());
   #observed: Element[] = [];
   // The header widths and the table width while no row was in edit mode.
-  #widths: { table: number; heads: number[] } | null = null;
+  #widths: Widths | null = null;
   // The header cells' own style attributes, put back when the columns are released.
   #headStyles: (string | null)[] = [];
 
@@ -87,9 +94,15 @@ export class TableEditing {
   #track() {
     const table = this.#table;
     if (!table || table.hasAttribute(LOCKED)) return;
-    this.#widths = {
-      table: table.getBoundingClientRect().width,
+    this.#widths = this.#measure(table);
+  }
+
+  #measure(table: HTMLTableElement): Widths {
+    const width = table.getBoundingClientRect().width;
+    return {
+      table: width,
       heads: this.#heads.map((head) => head.getBoundingClientRect().width),
+      fills: Math.abs(width - (table.parentElement?.clientWidth ?? 0)) < 1,
     };
   }
 
@@ -136,15 +149,16 @@ export class TableEditing {
 
     // A table rendered with rows in edit mode has no earlier widths: it keeps its current ones.
     const widths =
-      this.#widths?.heads.length === heads.length
-        ? this.#widths
-        : {
-            table: table.getBoundingClientRect().width,
-            heads: heads.map((head) => head.getBoundingClientRect().width),
-          };
+      this.#widths?.heads.length === heads.length ? this.#widths : this.#measure(table);
     this.#headStyles = heads.map((head) => head.getAttribute("style"));
-    for (const [index, head] of heads.entries()) head.style.width = `${widths.heads[index]}px`;
-    table.style.width = `${widths.table}px`;
+    // A table that fills its container keeps doing so, its columns keeping their shares when the
+    // container resizes; a wider table keeps its width.
+    for (const [index, head] of heads.entries()) {
+      head.style.width = widths.fills
+        ? `${(widths.heads[index] / widths.table) * 100}%`
+        : `${widths.heads[index]}px`;
+    }
+    if (!widths.fills) table.style.width = `${widths.table}px`;
     table.style.tableLayout = "fixed";
     table.setAttribute(LOCKED, "");
   }
@@ -181,9 +195,11 @@ export class TableEditing {
     event.stopPropagation();
     if (displayRow) {
       this.#displayRows.delete(key);
-      row.replaceWith(displayRow);
-      // htmx removes its handlers from an element it swaps out; set them up again.
-      (window as { htmx?: { process?: (element: Element) => void } }).htmx?.process?.(displayRow);
+      // A copy of the kept row: htmx removed its handlers from the row it swapped out but may still
+      // mark the row as set up, and a copy carries no such state, so htmx sets it up again.
+      const restored = displayRow.cloneNode(true) as HTMLTableRowElement;
+      row.replaceWith(restored);
+      (window as { htmx?: { process?: (element: Element) => void } }).htmx?.process?.(restored);
     } else {
       row.remove();
     }

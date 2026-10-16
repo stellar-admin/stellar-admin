@@ -210,3 +210,103 @@ A data grid that renders a full table from declarative column definitions and a 
     </sa-data-grid-row-detail>
 </sa-data-grid>
 ```
+
+*From `Pages/DataGrid/_Editing.cshtml`*
+
+```razor
+<sa-data-grid items="StaticData.Bookings.Take(3)" key-field="Id" editing-keys='new[] { "TRP-4822" }'>
+    <sa-data-grid-selection name="selectedBookings"/>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Status" field="Status">
+        <sa-data-grid-edit-template>
+            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+                       asp-for="@Html.GridItem<Booking>().Status" asp-items="Html.GetEnumSelectList<BookingStatus>()" aria-label="Status"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>
+```
+
+*From `Pages/DataGrid/_NewItem.cshtml`*
+
+```razor
+<sa-data-grid items="StaticData.Bookings.Take(3)" key-field="Id"
+              new-item='new Booking("", BookingStatus.Pending, "", 0)'>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Status" field="Status">
+        <sa-data-grid-edit-template>
+            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+                       asp-for="@Html.GridItem<Booking>().Status" asp-items="Html.GetEnumSelectList<BookingStatus>()" aria-label="Status"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination"
+                      placeholder="City, country" aria-label="Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>
+```
+
+*From `Pages/DataGrid/_EditorTemplates.cshtml`*
+
+```razor
+<sa-data-grid items="StaticData.Bookings.Take(3)" key-field="Id" editing-keys='new[] { "TRP-4822" }'>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Status" field="Status">
+        <sa-data-grid-edit-template>
+            @* Picked by the property's [UIHint("BookingStatus")]: EditorTemplates/BookingStatus.cshtml *@
+            @Html.EditorFor(_ => Html.GridItem<Booking>().Status)
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <partial name="_DestinationEditor" for="@Html.GridItem<Booking>().Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            @* Named: EditorTemplates/Currency.cshtml *@
+            @Html.EditorFor(_ => Html.GridItem<Booking>().Amount, "Currency")
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>
+```
+
+*From `Pages/DataGrid/_EditingErrors.cshtml`*
+
+```razor
+    // The posted values, rendered again with the errors that a Save handler found
+    var bookings = StaticData.Bookings.Take(3)
+        .Select(booking => booking.Id == "TRP-4822" ? booking with { Destination = "", Amount = -50 } : booking);
+}
+<sa-data-grid items="bookings" key-field="Id" editing-keys='new[] { "TRP-4822" }'>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Amount"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>
+```

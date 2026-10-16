@@ -1,0 +1,3 @@
+@model DocsSamples.BookingStatus
+<sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+           asp-for="@Model" asp-items="Html.GetEnumSelectList<BookingStatus>()" aria-label="Status"/>

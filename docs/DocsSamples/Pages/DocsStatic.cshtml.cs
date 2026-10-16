@@ -133,6 +133,9 @@ public class DocsStatic : PageModel
                     "Please select a valid cabin class"
                 );
                 break;
+            case "DataGrid/_EditingErrors":
+                DataGrid.Index.AddEditingErrors(ModelState);
+                break;
             case "Textarea/_Validation":
                 ModelState.AddModelError(
                     "PartialModel.Review",

@@ -11,6 +11,7 @@ internal static class DemoNavigation
                 new DemoItem("Avatar", "/Demo/Avatar"),
                 new DemoItem("Badge", "/Demo/Badge"),
                 new DemoItem("Card", "/Demo/Card"),
+                new DemoItem("Data Grid Editing", "/Demo/DataGridEditing"),
                 new DemoItem("Empty", "/Demo/Empty"),
                 new DemoItem("Icon", "/Demo/Icon"),
                 new DemoItem("Item", "/Demo/Item"),

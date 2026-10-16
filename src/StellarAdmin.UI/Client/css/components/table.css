@@ -185,7 +185,7 @@
     min-width: 7rem;
     margin-block: calc(-0.5 * var(--sa-unit));
     margin-inline: calc(-0.5 * var(--sa-space-cell-x));
-    &.sa-button { display: flex; }
+    &.sa-button, &.sa-input-group { display: flex; }
   }
   /* While a row is in edit mode the columns keep their widths, and editors shrink to fit. */
   .sa-table[data-columns-locked] .sa-cell-editor { min-width: 0; }
@@ -205,5 +205,7 @@
     color: var(--sa-color-danger-text);
     font-size: var(--sa-text-xs);
     white-space: normal;
+    /* As an sa-field-error, it shows only when its field is invalid. */
+    &.sa-field-error:not(.field-validation-error) { display: none; }
   }
 }

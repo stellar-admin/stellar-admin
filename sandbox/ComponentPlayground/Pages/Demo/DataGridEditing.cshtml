@@ -1,0 +1,32 @@
+@page
+@model ComponentPlayground.Pages.Demo.DataGridEditing
+
+@*
+    Inline editing with htmx. Edit, Cancel, Save and Add each make one row request, rendering the
+    same grid partial with rows-only; only the page lists the tours. ?edit=1&edit=3 renders rows
+    in edit mode with the page, whose Cancel then goes to the server.
+*@
+
+<div class="flex max-w-5xl flex-col gap-6 p-10">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-2xl font-semibold">Data grid inline editing</h1>
+        <p class="text-sm text-muted-foreground">
+            Edit several rows at once, add a tour, and expand or select rows while editing.
+            <a class="underline" href="?edit=1&amp;edit=3">Render rows 1 and 3 in edit mode</a>.
+        </p>
+    </div>
+    <div class="flex items-center gap-3">
+        <sa-button id="add-tour" hx-get="?handler=New" hx-target="#tours tbody" hx-swap="afterbegin">Add tour</sa-button>
+        <p class="text-sm text-muted-foreground">Selected: <span id="selected-tours">none</span></p>
+    </div>
+    <partial name="_DataGridEditingGrid" model="Model.Grid" />
+</div>
+
+@section Scripts {
+    <script src="/js/htmx.min.js"></script>
+    <script>
+        document.addEventListener("selection-change", (event) => {
+            document.getElementById("selected-tours").textContent = event.detail.values.join(", ") || "none";
+        });
+    </script>
+}

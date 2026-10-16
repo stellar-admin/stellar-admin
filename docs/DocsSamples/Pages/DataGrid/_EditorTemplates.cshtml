@@ -1,0 +1,20 @@
+<sa-data-grid items="StaticData.Bookings.Take(3)" key-field="Id" editing-keys='new[] { "TRP-4822" }'>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Status" field="Status">
+        <sa-data-grid-edit-template>
+            @* Picked by the property's [UIHint("BookingStatus")]: EditorTemplates/BookingStatus.cshtml *@
+            @Html.EditorFor(_ => Html.GridItem<Booking>().Status)
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <partial name="_DestinationEditor" for="@Html.GridItem<Booking>().Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            @* Named: EditorTemplates/Currency.cshtml *@
+            @Html.EditorFor(_ => Html.GridItem<Booking>().Amount, "Currency")
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>

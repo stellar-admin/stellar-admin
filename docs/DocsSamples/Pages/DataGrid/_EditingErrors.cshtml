@@ -1,0 +1,20 @@
+@{
+    // The posted values, rendered again with the errors that a Save handler found
+    var bookings = StaticData.Bookings.Take(3)
+        .Select(booking => booking.Id == "TRP-4822" ? booking with { Destination = "", Amount = -50 } : booking);
+}
+<sa-data-grid items="bookings" key-field="Id" editing-keys='new[] { "TRP-4822" }'>
+    <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
+    <sa-data-grid-column title="Destination" field="Destination">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Destination"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+    <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
+        <sa-data-grid-edit-template>
+            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+            <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Amount"/>
+        </sa-data-grid-edit-template>
+    </sa-data-grid-column>
+</sa-data-grid>
