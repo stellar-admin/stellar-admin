@@ -3,13 +3,33 @@ namespace StellarAdmin.Sidebar;
 /// <summary>
 ///     The sidebar header's content, the model of <c>_SidebarBrand.cshtml</c>.
 /// </summary>
-/// <param name="Title">The admin panel's name.</param>
-/// <param name="Subtitle">The line under the title, or <c>null</c> for none.</param>
-/// <param name="Logo">The logo, or <c>null</c> for none.</param>
-/// <param name="Href">The URL the header links to.</param>
-public sealed record SidebarBrandModel(
-    string Title,
-    string? Subtitle,
-    BrandingLogo? Logo,
-    string Href
-);
+public sealed class SidebarBrandModel
+{
+    /// <summary>
+    ///     The URL the header links to.
+    /// </summary>
+    public string Href { get; }
+
+    /// <summary>
+    ///     The logo, or <c>null</c> for none.
+    /// </summary>
+    public BrandingLogo? Logo { get; }
+
+    /// <summary>
+    ///     The line under the title, or <c>null</c> for none.
+    /// </summary>
+    public string? Subtitle { get; }
+
+    /// <summary>
+    ///     The admin panel's name.
+    /// </summary>
+    public string Title { get; }
+
+    internal SidebarBrandModel(string title, string? subtitle, BrandingLogo? logo, string href)
+    {
+        Title = title;
+        Subtitle = subtitle;
+        Logo = logo;
+        Href = href;
+    }
+}

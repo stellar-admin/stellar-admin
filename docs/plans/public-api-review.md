@@ -170,7 +170,7 @@ Done:
 - `ResourceIndexPageViewModel<TResource>`, `ResourceIndexInlineRowsViewModel`, `ResourceFormPageViewModel` (now sealed) and `ResourceViewPageViewModel` have internal constructors.
 - `IResourceIndexPageViewModel` stays an interface, because it is the `@model` for a shared index view overridden for every resource. It moved to `StellarAdmin.Areas.StellarAdmin.ViewModels` and lost `[EditorBrowsable(Never)]`. `ViewModels.Internal` now holds only internal types.
 
-Rule for records: keep records for types consumers create and pass in. Use sealed classes with internal constructors for public types only the library creates. `SidebarBrandModel` and `SidebarUserMenuModel` may fall in the second group and have not been checked.
+Rule for records: keep records for types consumers create and pass in. Use sealed classes with internal constructors for public types only the library creates. `SidebarBrandModel` and `SidebarUserMenuModel` were in the second group and are now sealed classes with internal constructors too (2026-10-17).
 
 ### J5. Hooks EF Core uses
 
