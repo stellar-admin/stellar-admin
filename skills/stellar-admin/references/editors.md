@@ -11,6 +11,7 @@ An editor is the input a form field renders. Without `UseEditor`, the input is i
 - [The empty choice](#the-empty-choice)
 - [Media on choices](#media-on-choices)
 - [Columns in radio and checkbox groups](#columns-in-radio-and-checkbox-groups)
+- [Images](#images)
 - [Overriding and custom editors](#overriding-and-custom-editors)
 
 ```csharp
@@ -40,8 +41,9 @@ fields.Add(customer => customer.IsVip).UseEditor<ToggleEditor>();
 | Foreign key with few related rows | `SelectEditor` + EF `UseItems` ([relationships](relationships.md)) |
 | Foreign key with many related rows, searchable, create new | `LookupSheetEditor` ([relationships](relationships.md)) |
 | Several keys from a long list (many-to-many) | `MultiLookupSheetEditor` ([relationships](relationships.md)) |
+| Image stored as a file name, key or URL | `ImageEditor` ([images](#images)) |
 
-`ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no upload, rich text, colour or tag-input editor.
+`ChoiceEditor` is the abstract base of the choice editors; don't pass it to `UseEditor`. There is no general file upload, rich text, colour or tag-input editor.
 
 ## What is inferred
 
@@ -77,8 +79,9 @@ Settings left unset are inferred from the property (for example, `SliderEditor` 
 | `SliderEditor` | `Min`, `Max` (from `[Range]`, else 0–100), `Step`, `ShowValue`, `ValueFormat` (`"{0} km"`), `MarkInterval`, `MarkLabels` (`SliderMarkLabels.None`, `Ends`, `All`), `AddMark(value, label)` |
 | `OneTimeCodeEditor` | `Length` (from max length, else 6) |
 | `LookupSheetEditor`, `MultiLookupSheetEditor` | See [relationships](relationships.md#lookup-sheet-settings) |
+| `ImageEditor` | `StoreImage(...)` (required), `ResolveUrl(...)`, `Layout` (`ImageEditorLayout.Dropzone`, `Compact`, `Attachment`), `MaxFileSize` (bytes, default 5 MB), `AcceptedTypes` (default JPEG, PNG, WebP, GIF, AVIF); see [images](#images) |
 
-Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors). `RadioGroupFlow`, `CheckboxGroupFlow` and `SliderMarkLabels` are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
+Every editor also has `ClassNames` for extra CSS classes on its parts (`ClassNames.Media` on choice editors, `ClassNames.Image` and `ClassNames.Note` on `ImageEditor`). `RadioGroupFlow`, `CheckboxGroupFlow` and `SliderMarkLabels` are in `StellarAdmin.UI`; the appearance enums are in `StellarAdmin.Resources.Editors`.
 
 ```csharp
 fields.Add(booking => booking.Travellers).UseEditor<SliderEditor>(slider =>
@@ -153,6 +156,31 @@ The editor adds a first choice that clears the value, labelled `EmptyChoiceText`
 ## Columns in radio and checkbox groups
 
 `Columns(2)` or `Columns(columns => columns.Small(2).Large(3))` arranges choices in columns, measured against the field's width. `Flow = RadioGroupFlow.Down` fills each column before the next.
+
+## Images
+
+`ImageEditor` edits a string property that stores a reference to an image: a file name, a storage key or a URL. A picked or dropped file uploads straight away, with progress, to an endpoint the panel adds to the resource; it checks the file and calls `StoreImage`, which saves it wherever the app keeps images and returns the value to store. The form then saves only that value. `ResolveUrl` turns a stored value into the image's URL for the preview; without it the value is the URL. Show the same field with `ImageDisplay` in columns and on the view page, with the same resolver.
+
+```csharp
+using StellarAdmin.Resources.Displays;
+using StellarAdmin.Resources.Editors;
+
+fields.Add(destination => destination.Photo).UseEditor<ImageEditor>(image =>
+{
+    image.ResolveUrl(value => $"https://cdn.voyager.example/photos/{value}");
+    image.StoreImage((file, services, ct) => services.GetRequiredService<IPhotoStore>().SaveAsync(file, ct)); // returns the value to store
+    image.Layout = ImageEditorLayout.Compact;
+    image.MaxFileSize = 10 * 1024 * 1024;
+});
+
+columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageDisplay>(image => image.ResolveUrl(value => $"https://cdn.voyager.example/photos/{value}")));
+```
+
+- `StoreImage` is required: a resource whose create or edit form has an `ImageEditor` without it fails at startup. It receives the `IFormFile`, the request's services and a cancellation token, and must return a non-empty value.
+- The upload endpoint uses the resource's authorization and antiforgery validation, and raises the request body limit to `MaxFileSize` for that request only. It checks the size and the type again: JPEG, PNG, GIF, WebP and AVIF are recognised by their content, so a renamed file is rejected; other `AcceptedTypes` go by the type the browser declares. SVG is not accepted by default.
+- `ResolveUrl` has a synchronous overload and `ResolveUrl(async (value, services, ct) => ...)`. In the grid it runs once per row, so compute the URL; don't query for it.
+- Replace and remove take effect when the form saves, and can be undone until then. StellarAdmin never deletes images: replaced, removed and abandoned uploads stay where `StoreImage` put them, so clean up files no record references in the app.
+- In an inline row the editor is a thumbnail button with a remove badge, whatever its `Layout`; the row's Save waits for a running upload.
 
 ## Overriding and custom editors
 

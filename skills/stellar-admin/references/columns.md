@@ -78,12 +78,14 @@ All in `StellarAdmin.Resources.Displays`. The same displays are used by display 
 | `PhoneDisplay` | `[Phone]` | A `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
 | `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant` from `StellarAdmin.UI`, default `Secondary`), the same for every value; collections show one badge per item |
+| `ImageDisplay` | Never a default | A thumbnail from a stored file name or URL: `ResolveUrl(value => url)` or `ResolveUrl(async (value, services, ct) => url)` (without it the value is the URL), `Size` (`ImageDisplaySize`, default `Small`, 32px), `AspectRatio` (`ImageAspectRatio` from `StellarAdmin.UI`, default `Square`), `Fit` (`ImageFit.Cover`, `Contain`), `Interaction` (`ImageDisplayInteraction.Lightbox`, `Preview`, `None`). An empty value shows a placeholder tile, an image that fails to load a broken-image tile |
 
 Formats use the request's culture. `"C"` therefore shows the server culture's currency unless the app sets a request culture.
 
 ```csharp
 columns.Add(booking => booking.Cabin, column => column.UseDisplay<BadgeDisplay>(badge => badge.Variant = BadgeVariant.Outline));
 columns.Add(customer => customer.IsActive, column => column.UseDisplay<BooleanDisplay>(flag => flag.Appearance = BooleanDisplayAppearance.Text));
+columns.Add(destination => destination.Photo, column => column.UseDisplay<ImageDisplay>(image => image.ResolveUrl(value => $"https://cdn.voyager.example/photos/{value}")));
 ```
 
 ## A badge styled by value
@@ -132,4 +134,4 @@ columns.Add(booking => booking.Status, column => column.UseDisplay<BookingStatus
 
 ## Empty values
 
-A null or empty value shows the column's `EmptyText`, else `[DisplayFormat(NullDisplayText = "...")]`, else an empty cell. No display or template runs for it.
+A null or empty value shows the column's `EmptyText`, else `[DisplayFormat(NullDisplayText = "...")]`, else an empty cell. No display or template runs for it, unless the display renders empty values itself: `ImageDisplay` shows its placeholder tile, and a custom display can do the same by overriding `RendersEmptyValue` ([fields](fields.md#custom-displays)).

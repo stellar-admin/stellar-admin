@@ -30,6 +30,7 @@
   "Field": ["Field/_Intro", "Field/_Implicit"],
   "Grid": ["Grid/_Intro", "Grid/_Spans", "Grid/_Starts", "Grid/_DisplayFields", "Grid/_GridItems"],
   "Icon": ["Icon/_Intro", "Icon/_Custom"],
+  "Image": ["Image/_Intro", "Image/_Figure", "Image/_States", "ImageUpload/_Intro", "ImageUpload/_Cell"],
   "Input": ["Input/_Intro", "Input/_ModelBinding", "Checkbox/_Intro", "Radio/_Intro"],
   "InputGroup": ["InputGroup/_Icons", "InputGroup/_Buttons"],
   "InputOtp": ["InputOtp/_Intro", "InputOtp/_Composition", "InputOtp/_ModelBinding"],

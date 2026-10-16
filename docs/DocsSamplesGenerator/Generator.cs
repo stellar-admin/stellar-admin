@@ -57,6 +57,50 @@ internal sealed partial class Generator
             </script>
         """;
 
+    // Injected into the exported image upload demos, which have no server to upload to. It answers
+    // the demo upload handler's requests in the browser: progress over a second or so, then the
+    // picked file's name as the value and an object URL for it, as the samples' handler would.
+    private const string DemoUploadScript = """
+            <script>
+                (function () {
+                    var Native = window.XMLHttpRequest;
+                    class DemoUploadRequest extends Native {
+                        open(method, url) {
+                            this._demo = /[?&]handler=Upload\b/.test(String(url));
+                            if (!this._demo) return super.open.apply(this, arguments);
+                        }
+                        setRequestHeader() {
+                            if (!this._demo) return super.setRequestHeader.apply(this, arguments);
+                        }
+                        get status() { return this._demo ? this._status || 0 : super.status; }
+                        get response() { return this._demo ? this._response || null : super.response; }
+                        abort() {
+                            if (!this._demo) return super.abort();
+                            clearInterval(this._timer);
+                            this.dispatchEvent(new Event('abort'));
+                        }
+                        send(body) {
+                            if (!this._demo) return super.send(body);
+                            var request = this;
+                            var file = body.get('file');
+                            var total = file.size || 1;
+                            var loaded = 0;
+                            this._timer = setInterval(function () {
+                                loaded = Math.min(total, loaded + total / 8);
+                                request.upload.dispatchEvent(new ProgressEvent('progress', { lengthComputable: true, loaded: loaded, total: total }));
+                                if (loaded < total) return;
+                                clearInterval(request._timer);
+                                request._status = 200;
+                                request._response = { value: file.name, url: URL.createObjectURL(file) };
+                                request.dispatchEvent(new Event('load'));
+                            }, 150);
+                        }
+                    }
+                    window.XMLHttpRequest = DemoUploadRequest;
+                })();
+            </script>
+        """;
+
     /// <summary>Content root of the DocsSamples web project, used to host it in-memory.</summary>
     public static readonly string DocsSamplesContentRoot = Path.Combine(
         RepoRootFolder,
@@ -326,6 +370,11 @@ internal sealed partial class Generator
         response.EnsureSuccessStatusCode();
 
         var content = FixDemoContent(await response.Content.ReadAsStringAsync());
+        if (partialName.StartsWith("ImageUpload/", StringComparison.Ordinal))
+        {
+            content = content.Replace("<head>", "<head>\n" + DemoUploadScript);
+        }
+
         if (partialName == "DataGrid/_Intro")
         {
             // Exported demos have no server to handle the grid's query parameters.
@@ -618,6 +667,18 @@ internal sealed partial class Generator
         new("Icon/_Intro"),
         new("Icon/_Size"),
         new("Icon/_StrokeWidth"),
+        new("Image/_AspectRatio"),
+        new("Image/_Figure"),
+        new("Image/_Interaction"),
+        new("Image/_Intro"),
+        new("Image/_Sizes"),
+        new("Image/_States"),
+        new("ImageUpload/_Attachment"),
+        new("ImageUpload/_Cell"),
+        new("ImageUpload/_Compact"),
+        new("ImageUpload/_Disabled"),
+        new("ImageUpload/_Intro"),
+        new("ImageUpload/_Limits"),
         new("Input/_FieldExplicit"),
         new("Input/_FieldImplicit"),
         new("Input/_InputTypesModelBinding"),

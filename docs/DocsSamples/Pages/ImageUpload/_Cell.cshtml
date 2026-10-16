@@ -1,0 +1,28 @@
+<div class="w-full max-w-lg">
+    <!-- code begin -->
+    <sa-table>
+        <sa-table-header>
+            <sa-table-row>
+                <sa-table-head>Photo</sa-table-head>
+                <sa-table-head>Destination</sa-table-head>
+            </sa-table-row>
+        </sa-table-header>
+        <sa-table-body>
+            <sa-table-row>
+                <sa-table-cell>
+                    <sa-image-upload name="rows[1].Photo" value="cape-town.jpg" src="/cities/cape-town.jpg" upload-url="/ImageUpload?handler=Upload"
+                                     layout="ImageUploadLayout.Cell" aria-label="Photo of Cape Town" />
+                </sa-table-cell>
+                <sa-table-cell>Cape Town</sa-table-cell>
+            </sa-table-row>
+            <sa-table-row>
+                <sa-table-cell>
+                    <sa-image-upload name="rows[2].Photo" upload-url="/ImageUpload?handler=Upload"
+                                     layout="ImageUploadLayout.Cell" aria-label="Photo of Reykjavík" />
+                </sa-table-cell>
+                <sa-table-cell>Reykjavík</sa-table-cell>
+            </sa-table-row>
+        </sa-table-body>
+    </sa-table>
+    <!-- code end -->
+</div>

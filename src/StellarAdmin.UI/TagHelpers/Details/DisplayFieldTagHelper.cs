@@ -107,11 +107,11 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     public string? ColumnStartSmall { get; set; }
 
     /// <summary>
-    ///     The text displayed when the value is empty.
+    ///     The text displayed when the value is empty, unless <c>template-renders-empty</c> passes
+    ///     empty values to the template.
     /// </summary>
     /// <remarks>
-    ///     Defaults to the property's null display text, otherwise a dash. Not used when
-    ///     <c>template-renders-empty</c> passes empty values to the template.
+    ///     Defaults to the property's null display text, otherwise a dash.
     /// </remarks>
     [HtmlAttributeName("empty-text")]
     public string? EmptyText { get; set; }

@@ -69,7 +69,7 @@ In order of precedence:
 4. The default display for the property's data type, then its CLR type.
 5. Text rendering, which joins collections with commas and applies `[DisplayFormat]`.
 
-An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash.
+An empty value shows `EmptyText`, else `[DisplayFormat(NullDisplayText)]`, else a dash, unless the display renders empty values itself (`ImageDisplay` shows "No image").
 
 ## Built-in displays
 
@@ -86,6 +86,7 @@ In `StellarAdmin.Resources.Displays`; the same displays render index cells ([col
 | `PhoneDisplay` | `[Phone]` | `tel:` link |
 | `LinkDisplay` | `[Url]` | `OpenInNewTab` (default `true`) |
 | `BadgeDisplay` | Never a default | `Variant` (`BadgeVariant`), the same for every value |
+| `ImageDisplay` | Never a default | The image as a figure, from a stored file name or URL: `ResolveUrl(...)`, `Size` (maximum height, default `Medium`, 15rem), `AspectRatio` (default `Original`), `Fit`, `Interaction` (default `Lightbox`); see [columns](columns.md#built-in-displays-in-cells) |
 
 ## Display templates
 
@@ -118,4 +119,5 @@ details.Add(booking => booking.Status, field => field.UseDisplay<StatusBadgeDisp
 
 - The template inherits `FieldDisplayView<TDisplay>`: `Model` is the value (`object?`), `Display` the configured settings, `FormatValue(format)` the value formatted with a format string, else `[DisplayFormat]`, with enum members by their `[Display(Name)]`.
 - Display fields use `DisplayTemplates/{TemplateName}`; index columns use `GridDisplayTemplates/{TemplateName}`. Provide both if the display is used in both places.
+- An empty value normally shows the field's empty text and skips the template. Override `public override bool RendersEmptyValue => true;` when the template shows something of its own for an empty value, such as initials for a missing avatar; the template then receives null and blank values.
 - A display that needs request data (a lookup by an id that has no navigation) also implements `IFieldDisplay<THandler>`. The handler derives from `FieldDisplayHandler<TDisplay>`, takes services in its constructor, and returns data from `PrepareAsync(FieldDisplayContext context, CancellationToken cancellationToken)`; the template reads it as `DisplayData`. Displays with handlers work on forms and view pages, not in index columns.

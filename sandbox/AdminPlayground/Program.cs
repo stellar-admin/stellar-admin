@@ -2,6 +2,7 @@ using AdminPlayground.Data;
 using AdminPlayground.Resources.Categories;
 using AdminPlayground.Resources.Customers;
 using AdminPlayground.Resources.Departments;
+using AdminPlayground.Resources.Destinations;
 using AdminPlayground.Resources.FieldEditors;
 using AdminPlayground.Resources.FormLayouts;
 using AdminPlayground.Resources.Products;
@@ -76,6 +77,7 @@ builder.Services.AddStellarAdmin(admin =>
     admin.AddRoleResource();
     admin.AddDepartmentResource();
     admin.AddCustomerResource();
+    admin.AddDestinationResource();
     admin.AddProductResource();
     admin.AddCategoryResource();
     admin.AddFieldEditorGallery();
@@ -120,6 +122,15 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapStellarAdmin();
+
+// Serves the images uploaded to the playground's image fields
+app.MapGet(
+    "/playground-uploads/{name}",
+    (string name, PlaygroundImageStore store) =>
+        store.GetPath(name) is { } path
+            ? Results.File(path, PlaygroundImageStore.GetContentType(path))
+            : Results.NotFound()
+);
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();

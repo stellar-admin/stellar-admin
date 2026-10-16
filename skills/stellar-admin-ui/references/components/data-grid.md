@@ -57,6 +57,7 @@ A data grid that renders a full table from declarative column definitions and a 
 | `sortable` | `bool` | `false` | `true`, `false` |
 | `sort-field` | `string` | — | — |
 | `template` | `string` | — | — |
+| `template-renders-empty` | `bool` | `false` | `true`, `false` |
 | `title` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

@@ -28,6 +28,7 @@
 | [FormSection](components/form-section.md) | `<sa-form-section>` | Groups form content under a title with an optional description. |
 | [Grid](components/grid.md) | `<sa-grid>`, `<sa-grid-item>` | Lays out fields and other content in responsive columns. |
 | [Icon](components/icon.md) | `<sa-icon>` | Renders an SVG icon from the active icon pack by name. |
+| [Image](components/image.md) | `<sa-image>`, `<sa-image-upload>` | Displays an image as a thumbnail or a figure, with a placeholder when there is none and a broken-image tile when it can't be loaded. |
 | [Input](components/input.md) | `<sa-input>` | A form input. |
 | [InputGroup](components/input-group.md) | `<sa-input-group>`, `<sa-input-group-addon>`, `<sa-input-group-button>`, … | A container that groups an input with add-ons, buttons, or text so they render as a single combined field. |
 | [InputOtp](components/input-otp.md) | `<sa-input-otp>`, `<sa-input-otp-group>`, `<sa-input-otp-separator>`, … | A segmented one-time-code input. |

@@ -1,3 +1,4 @@
+using AdminPlayground.Resources.Destinations;
 using Microsoft.Extensions.DependencyInjection;
 using StellarAdmin;
 using StellarAdmin.Resources.Builders;
@@ -76,6 +77,7 @@ internal static class FieldEditorGalleryRegistration
             ConfigureDateTimeFields
         );
         admin.AddGalleryResource<SliderGallery>("slider", "Slider", 90, ConfigureSliderFields);
+        admin.AddGalleryResource<ImageGallery>("image", "Image", 95, ConfigureImageFields);
         admin.AddGalleryResource<OneTimeCodeGallery>(
             "one-time-code",
             "One-time code",
@@ -1348,6 +1350,61 @@ internal static class FieldEditorGalleryRegistration
                     .UseEditor<DateInputEditor>(date => date.ClassNames.Control = "border-dashed");
             }
         );
+    }
+
+    private static void ConfigureImageFields(ResourceFieldsBuilder<ImageGallery> fields)
+    {
+        fields.AddSection(
+            "Layouts",
+            section =>
+            {
+                section.Description =
+                    "A picked file uploads straight away to the playground's image store; Save keeps the returned value.";
+                section.Add(model => model.Photo).UseEditor<ImageEditor>(ConfigureEditor);
+                section.Add(model => model.Cover).UseEditor<ImageEditor>(ConfigureEditor);
+                section
+                    .Add(model => model.Thumbnail)
+                    .UseEditor<ImageEditor>(editor =>
+                    {
+                        ConfigureEditor(editor);
+                        editor.Layout = ImageEditorLayout.Compact;
+                    });
+                section
+                    .Add(model => model.Attachment)
+                    .UseEditor<ImageEditor>(editor =>
+                    {
+                        ConfigureEditor(editor);
+                        editor.Layout = ImageEditorLayout.Attachment;
+                    });
+            }
+        );
+        fields.AddSection(
+            "ImageEditor settings",
+            section =>
+            {
+                section
+                    .Add(model => model.Limited)
+                    .UseEditor<ImageEditor>(editor =>
+                    {
+                        ConfigureEditor(editor);
+                        editor.MaxFileSize = 100 * 1024;
+                        editor.AcceptedTypes = ["image/png", "image/webp"];
+                    });
+                section
+                    .Add(model => model.Styled)
+                    .UseEditor<ImageEditor>(editor =>
+                    {
+                        ConfigureEditor(editor);
+                        editor.Layout = ImageEditorLayout.Compact;
+                        editor.ClassNames.Image = "ring-2 ring-primary";
+                        editor.ClassNames.Note = "italic";
+                    });
+                section.Add(model => model.ReadOnlyPhoto).UseEditor<ImageEditor>(ConfigureEditor);
+            }
+        );
+
+        static void ConfigureEditor(ImageEditor editor) =>
+            DestinationResourceRegistration.ConfigureEditor(editor);
     }
 
     private static void ConfigureSliderFields(ResourceFieldsBuilder<SliderGallery> fields)

@@ -45,7 +45,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     /// </summary>
     /// <remarks>
     ///     Defaults to the field's <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
-    ///     Not used when <c>template-renders-empty</c> passes empty values to the template.
+    ///     Not used when template-renders-empty passes empty values to the template.
     /// </remarks>
     [HtmlAttributeName("empty-text")]
     public string? EmptyText { get; set; }

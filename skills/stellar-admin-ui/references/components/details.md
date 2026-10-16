@@ -80,6 +80,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 | `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `secondary` | `string` | — | — |
 | `template` | `string` | `[UIHint]` | — |
+| `template-renders-empty` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

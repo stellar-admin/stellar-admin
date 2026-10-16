@@ -26,6 +26,7 @@ This skill is maintained alongside StellarAdmin. It follows the repository's def
 | Edit and add small resources in the index grid's rows | `UseInlineRow`, `EditsField`, `InlineCreatePosition`, `InlineAddButton` | [inline-editing](references/inline-editing.md) |
 | Read-only values in forms, displays, display templates | `AddDisplayField`, `AddDetails`, `UseDisplay<TDisplay>` | [fields](references/fields.md) |
 | Choosing an input: radio cards, slider, toggle, select, OTP, custom editors | `UseEditor<TEditor>` | [editors](references/editors.md) |
+| Images: thumbnails in the grid, photos on the view page, uploads | `ImageDisplay`, `ImageEditor`, `ResolveUrl`, `StoreImage` | [editors](references/editors.md#images), [columns](references/columns.md#built-in-displays-in-cells) |
 | Foreign keys, lookups, many-to-many, create-from-lookup | `SelectEditor`/`LookupSheetEditor` + EF `UseItems`, `MultiLookupSheetEditor`, `EnableCreate` | [relationships](references/relationships.md) |
 | Read-only detail page | `AllowView(view => view.Fields(...))` | [view-pages](references/view-pages.md) |
 | Sidebar groups, order, icons, links, host pages in the admin layout | `SidebarItem`, `AddSidebarLink`, `Icon`, `StellarAdminLayouts.Default` | [sidebar](references/sidebar.md) |
@@ -163,7 +164,7 @@ Say so rather than inventing an API:
 - Changing the user menu's "Log out" text, and hiding user menu items by authorization (replace `_SidebarUserMenu.cshtml` for either).
 - Form tabs and wizards.
 - Dashboards and widgets (the panel home page is a plain landing page).
-- File and image upload editors.
+- File upload editors other than images (`ImageEditor`), and deleting replaced or removed images: StellarAdmin never deletes them, so the app cleans up files no record references.
 - A fluent read-only field option (use display fields, or `[ReadOnly(true)]`/`[Editable(false)]` metadata).
 - Before/after save hooks (use a custom create or edit handler).
 - Search and scope predicates for non-EF data sources (the data source reads `ResourceListRequest.Search` and `Scope`).
