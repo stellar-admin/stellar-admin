@@ -25,6 +25,7 @@ Prefer a [radio group](radio-group.md) when related options share one bound prop
 | `asp-format` | `string` | — | — |
 | `type` | `string` | — | — |
 | `value` | `string` | — | — |
+| `class-names` | `InputClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

@@ -16,6 +16,7 @@ Renders a button that can be pressed on or off.
 | `variant` | `ToggleVariant` | `Default` | `Default`, `Outline` |
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `value` | `string` | — | — |
+| `class-names` | `ToggleClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

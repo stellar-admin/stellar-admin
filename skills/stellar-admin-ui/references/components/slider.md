@@ -34,6 +34,7 @@ Renders an input that selects a number, or a range of numbers, by dragging thumb
 | `value-format` | `string` | — | — |
 | `thumb-labels` | `string` | — | — |
 | `form` | `string` | — | — |
+| `class-names` | `SliderClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

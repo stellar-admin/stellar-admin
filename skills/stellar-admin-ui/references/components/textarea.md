@@ -12,6 +12,7 @@ Renders a multi-line text input that grows with its content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
+| `class-names` | `TextareaClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

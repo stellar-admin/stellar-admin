@@ -785,10 +785,10 @@ Done (2026-10-17), in `../website-rename` on `stellaradmin-rename`, not pushed:
 - `docs/DocsSamples/Pages/Progress/_MinMax.cshtml` still used `minimum`/`maximum`, so it now uses `min`/`max` (J17).
 - No old names are left in the website content. Lint, type check and build pass.
 
-Found during the pass, not fixed:
-- The Badge page says long text wraps, but the CSS keeps it on one line (`docs/DocsSamples/Pages/Badge/_LongText.cshtml` and `badge.mdx`).
-- The skill generator leaves the inherited `class-names` out of the attribute tables, for example on the checkbox group and input.
-- Pages for Carousel, Dialog, Message Scroller, Slider and Table still name `<sel-*>` elements, which D11 says may change.
+Found during the pass and fixed afterwards (2026-10-17):
+- Badge: the page said long text wraps, but the CSS keeps a badge on one line. `_LongText.cshtml` now also shows a truncated badge with a `max-width`, and `badge.mdx` explains it.
+- The skills generator keyed classes by bare name, so the generic `FieldInputBaseTagHelper<TClassNames>` collided with the non-generic base and the inherited `class-names` was missing. Classes are now keyed by name and arity, and type parameters are replaced by the derived tag's type arguments. 12 input references gained a `class-names` row.
+- Component pages no longer name `<sel-*>` elements. The JavaScript page keeps the element table as background, with a note that the names are internal and that the `id` given to the `<sa-*>` tag lands on the element with the API. The table now covers every current element, and the `<sa-table-selection>` row and the `whenDefined` advice are replaced.
 
 ## Order of work
 

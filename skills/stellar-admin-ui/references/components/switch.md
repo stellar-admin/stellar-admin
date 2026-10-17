@@ -15,6 +15,7 @@ Renders a control that switches between on and off.
 | `form` | `string` | — | — |
 | `size` | `SwitchSize` | `Default` | `Default`, `Small` |
 | `value` | `string` | — | — |
+| `class-names` | `SwitchClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

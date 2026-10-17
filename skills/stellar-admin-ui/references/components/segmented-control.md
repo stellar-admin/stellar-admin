@@ -36,6 +36,7 @@ Use the component for a single choice from a short list. It has one horizontal a
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `required` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
+| `class-names` | `SegmentedControlClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

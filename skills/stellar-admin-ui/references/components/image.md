@@ -54,6 +54,7 @@ The upload endpoint you give as `upload-url` receives a multipart POST with the 
 | `src` | `string` | — | — |
 | `upload-url` | `string` | — | — |
 | `value` | `string` | — | — |
+| `class-names` | `ImageUploadClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

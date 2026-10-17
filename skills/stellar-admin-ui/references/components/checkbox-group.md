@@ -56,6 +56,7 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 | `columns-sm` | `int` | — | — |
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
+| `class-names` | `ChoiceGroupClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

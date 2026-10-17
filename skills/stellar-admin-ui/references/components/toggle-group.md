@@ -28,6 +28,7 @@ Renders a group of toggle items that lets the user select one item or several.
 | `spacing` | `ToggleGroupSpacing` | `Default` | `Default`, `None`, `Small`, `Large` |
 | `value` | `string` | — | — |
 | `values` | `IEnumerable<string>` | — | — |
+| `class-names` | `ToggleGroupClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

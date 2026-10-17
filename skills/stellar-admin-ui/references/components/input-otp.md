@@ -31,6 +31,7 @@ Renders a one-time code input with a slot for each character.
 | `aria-invalid` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `form` | `string` | — | — |
+| `class-names` | `InputOtpClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |

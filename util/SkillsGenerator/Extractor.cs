@@ -152,7 +152,7 @@ internal static partial class Extractor
         // shared bases (asp-for/label/description/error on the field-input base, the asp-*
         // routing attributes on the anchor base) are real attributes of every derived tag and
         // would otherwise be missing from the table entirely.
-        foreach (var declaration in WithBaseClasses(classDecl, classIndex))
+        foreach (var (declaration, typeArguments) in WithBaseClasses(classDecl, classIndex))
         foreach (var prop in declaration.Members.OfType<PropertyDeclarationSyntax>())
         {
             if (!IsPublic(prop.Modifiers))
@@ -168,7 +168,7 @@ internal static partial class Extractor
             if (!seen.Add(name))
                 continue;
 
-            var typeText = prop.Type.ToString();
+            var typeText = SubstituteTypeArguments(prop.Type.ToString(), typeArguments);
 
             attributes.Add(
                 new AttributeInfo(
@@ -352,40 +352,88 @@ internal static partial class Extractor
         {
             var root = ParseFile(file);
             foreach (var classDecl in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
-                result.TryAdd(classDecl.Identifier.Text, classDecl);
+                result.TryAdd(
+                    ClassKey(
+                        classDecl.Identifier.Text,
+                        classDecl.TypeParameterList?.Parameters.Count ?? 0
+                    ),
+                    classDecl
+                );
         }
 
         return result;
     }
 
     /// <summary>
-    /// Yields the class followed by each resolvable base class, most-derived first. Bases outside
-    /// the tag-helpers root (framework types) simply stop the walk. Guards against cycles.
+    /// Keys a class by name and arity, so a generic base such as
+    /// <c>FieldInputBaseTagHelper&lt;TClassNames&gt;</c> doesn't collide with its non-generic base.
     /// </summary>
-    private static IEnumerable<ClassDeclarationSyntax> WithBaseClasses(
+    private static string ClassKey(string name, int arity) => arity == 0 ? name : $"{name}`{arity}";
+
+    /// <summary>
+    /// The class and its base classes, each with the type arguments that replace its type
+    /// parameters, so an inherited <c>TClassNames? ClassNames</c> shows the derived tag's type.
+    /// </summary>
+    private static IEnumerable<(
+        ClassDeclarationSyntax Declaration,
+        IReadOnlyDictionary<string, string> TypeArguments
+    )> WithBaseClasses(
         ClassDeclarationSyntax classDecl,
         Dictionary<string, ClassDeclarationSyntax> classIndex
     )
     {
-        var visited = new HashSet<string>(StringComparer.Ordinal);
+        var visited = new HashSet<ClassDeclarationSyntax>();
         var current = classDecl;
+        IReadOnlyDictionary<string, string> typeArguments = new Dictionary<string, string>();
 
-        while (current is not null && visited.Add(current.Identifier.Text))
+        while (current is not null && visited.Add(current))
         {
-            yield return current;
+            yield return (current, typeArguments);
 
-            var baseName = current
+            var baseType = current
                 .BaseList?.Types.Select(t => t.Type)
                 .OfType<SimpleNameSyntax>()
-                .Select(n => n.Identifier.Text)
                 .FirstOrDefault();
+            if (baseType is null)
+                break;
 
-            current =
-                baseName is not null && classIndex.TryGetValue(baseName, out var baseDecl)
-                    ? baseDecl
-                    : null;
+            var arguments = baseType is GenericNameSyntax generic
+                ? generic
+                    .TypeArgumentList.Arguments.Select(a =>
+                        SubstituteTypeArguments(a.ToString(), typeArguments)
+                    )
+                    .ToList()
+                : [];
+
+            if (
+                !classIndex.TryGetValue(
+                    ClassKey(baseType.Identifier.Text, arguments.Count),
+                    out var baseDecl
+                )
+            )
+                break;
+
+            typeArguments = (baseDecl.TypeParameterList?.Parameters ?? default)
+                .Select((parameter, index) => (parameter.Identifier.Text, arguments[index]))
+                .ToDictionary(pair => pair.Item1, pair => pair.Item2, StringComparer.Ordinal);
+            current = baseDecl;
         }
     }
+
+    private static string SubstituteTypeArguments(
+        string typeText,
+        IReadOnlyDictionary<string, string> typeArguments
+    ) =>
+        typeArguments.Count == 0
+            ? typeText
+            : Regex.Replace(
+                typeText,
+                @"\b\w+\b",
+                match =>
+                    typeArguments.TryGetValue(match.Value, out var argument)
+                        ? argument
+                        : match.Value
+            );
 
     private static IEnumerable<string> EnumerateCsFiles(string root) =>
         Directory

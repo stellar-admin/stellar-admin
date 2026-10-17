@@ -14,6 +14,7 @@ Renders a styled native `<select>` for choosing an option.
 |-----------|------|---------|--------|
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `size` | `SelectSize` | `Default` | `Default`, `Small` |
+| `class-names` | `SelectClassNames` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
