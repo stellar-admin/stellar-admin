@@ -46,7 +46,8 @@ Renders a dropdown menu, which pairs a trigger with its content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `position` | `PositionArea` | `BottomSpanRight` | `TopCenter`, `TopSpanLeft`, `TopSpanRight`, `Top`, `LeftCenter`, `LeftSpanTop`, `LeftSpanBottom`, `Left`, `BottomCenter`, `BottomSpanLeft`, `BottomSpanRight`, `Bottom`, `RightCenter`, `RightSpanTop`, `RightSpanBottom`, `Right`, `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `align` | `DropdownMenuAlign` | `Start` | `Start`, `Center`, `End`, `CenterWithin` |
+| `side` | `DropdownMenuSide` | `Bottom` | `Top`, `Right`, `Bottom`, `Left` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-dropdown-menu-item>`
@@ -107,7 +108,8 @@ Renders a dropdown menu, which pairs a trigger with its content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `position` | `PositionArea` | `RightSpanBottom` | `TopCenter`, `TopSpanLeft`, `TopSpanRight`, `Top`, `LeftCenter`, `LeftSpanTop`, `LeftSpanBottom`, `Left`, `BottomCenter`, `BottomSpanLeft`, `BottomSpanRight`, `Bottom`, `RightCenter`, `RightSpanTop`, `RightSpanBottom`, `Right`, `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `align` | `DropdownMenuAlign` | `Start` | `Start`, `Center`, `End`, `CenterWithin` |
+| `side` | `DropdownMenuSide` | `Right` | `Top`, `Right`, `Bottom`, `Left` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-dropdown-menu-sub-trigger>`

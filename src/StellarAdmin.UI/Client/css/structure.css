@@ -14,27 +14,24 @@
 }
 
 @layer sa.components {
-  /* Anchor positioning: anchored-* mirrors the PositionArea enum (TagHelpers/PositionArea.cs). */
-  .anchored-top { position-area: top; }
-  .anchored-top-center { position-area: top center; }
-  .anchored-top-span-left { position-area: top span-left; }
-  .anchored-top-span-right { position-area: top span-right; }
-  .anchored-top-left { position-area: top left; }
-  .anchored-top-right { position-area: top right; }
-  .anchored-bottom { position-area: bottom; }
-  .anchored-bottom-center { position-area: bottom center; }
-  .anchored-bottom-span-left { position-area: bottom span-left; }
-  .anchored-bottom-span-right { position-area: bottom span-right; }
-  .anchored-bottom-left { position-area: bottom left; }
-  .anchored-bottom-right { position-area: bottom right; }
-  .anchored-left { position-area: left; }
-  .anchored-left-center { position-area: left center; }
-  .anchored-left-span-top { position-area: left span-top; }
-  .anchored-left-span-bottom { position-area: left span-bottom; }
-  .anchored-right { position-area: right; }
-  .anchored-right-center { position-area: right center; }
-  .anchored-right-span-top { position-area: right span-top; }
-  .anchored-right-span-bottom { position-area: right span-bottom; }
+  /* Anchor positioning: anchored-<side>-<align>, from the side and align attributes of the popover,
+     tooltip and dropdown menu panels (TagHelpers/AnchorPlacement.cs). */
+  .anchored-top-start { position-area: top span-right; }
+  .anchored-top-center { position-area: top; }
+  .anchored-top-end { position-area: top span-left; }
+  .anchored-top-center-within { position-area: top center; }
+  .anchored-bottom-start { position-area: bottom span-right; }
+  .anchored-bottom-center { position-area: bottom; }
+  .anchored-bottom-end { position-area: bottom span-left; }
+  .anchored-bottom-center-within { position-area: bottom center; }
+  .anchored-left-start { position-area: left span-bottom; }
+  .anchored-left-center { position-area: left; }
+  .anchored-left-end { position-area: left span-top; }
+  .anchored-left-center-within { position-area: left center; }
+  .anchored-right-start { position-area: right span-bottom; }
+  .anchored-right-center { position-area: right; }
+  .anchored-right-end { position-area: right span-top; }
+  .anchored-right-center-within { position-area: right center; }
 
   /* The gap between an anchored panel and its trigger, from the data-anchor-side attribute the
      overlay tag helpers emit. [popover] out-ranks the panels' own margin: 0. */

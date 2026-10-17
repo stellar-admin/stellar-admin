@@ -72,4 +72,40 @@ public class DropdownMenuContentTagHelperTests
         // Assert
         await Assert.That(render).Throws<InvalidOperationException>();
     }
+
+    [Test]
+    public async Task ProcessAsync_WithNoPlacement_UsesDefaultPlacement()
+    {
+        // Arrange
+        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var content = html.QuerySelector("[data-slot=dropdown-menu-content]");
+        await Assert.That(content?.ClassList.Contains("anchored-bottom-start")).IsTrue();
+        await Assert.That(content?.GetAttribute("data-side")).IsEqualTo("bottom");
+        await Assert.That(content?.GetAttribute("data-anchor-side")).IsEqualTo("bottom");
+    }
+
+    [Test]
+    public async Task ProcessAsync_WithSideAndAlign_WritesPlacement()
+    {
+        // Arrange
+        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()))
+        {
+            Side = DropdownMenuSide.Right,
+            Align = DropdownMenuAlign.End,
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var content = html.QuerySelector("[data-slot=dropdown-menu-content]");
+        await Assert.That(content?.ClassList.Contains("anchored-right-end")).IsTrue();
+        await Assert.That(content?.GetAttribute("data-side")).IsEqualTo("right");
+        await Assert.That(content?.GetAttribute("data-anchor-side")).IsEqualTo("right");
+    }
 }

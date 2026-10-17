@@ -23,7 +23,8 @@ Renders a floating panel of content that is anchored to the element that opens i
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `position` | `PositionArea` | `Bottom` | `TopCenter`, `TopSpanLeft`, `TopSpanRight`, `Top`, `LeftCenter`, `LeftSpanTop`, `LeftSpanBottom`, `Left`, `BottomCenter`, `BottomSpanLeft`, `BottomSpanRight`, `Bottom`, `RightCenter`, `RightSpanTop`, `RightSpanBottom`, `Right`, `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `align` | `PopoverAlign` | `Center` | `Start`, `Center`, `End`, `CenterWithin` |
+| `side` | `PopoverSide` | `Bottom` | `Top`, `Right`, `Bottom`, `Left` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

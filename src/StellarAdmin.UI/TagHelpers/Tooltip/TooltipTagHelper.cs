@@ -26,14 +26,24 @@ namespace StellarAdmin.UI;
 public sealed class TooltipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Gets or sets where the tooltip appears relative to the element that shows it.
+    ///     Gets or sets how the tooltip lines up with its trigger.
     /// </summary>
     /// <value>
-    ///     One of the enumeration values that specifies the position. The default is
-    ///     <see cref="PositionArea.Top" />.
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="TooltipAlign.Center" />.
     /// </value>
-    [HtmlAttributeName("position")]
-    public PositionArea? Position { get; set; }
+    [HtmlAttributeName("align")]
+    public TooltipAlign? Align { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the side of its trigger that the tooltip appears on.
+    /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the side. The default is
+    ///     <see cref="TooltipSide.Top" />.
+    /// </value>
+    [HtmlAttributeName("side")]
+    public TooltipSide? Side { get; set; }
 
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -41,7 +51,8 @@ public sealed class TooltipTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        var effectivePositionArea = Position ?? PositionArea.Top;
+        var side = (Side ?? TooltipSide.Top).GetDataAttributeText();
+        var align = (Align ?? TooltipAlign.Center).GetDataAttributeText();
 
         if (!output.Attributes.ContainsName("popover"))
         {
@@ -49,15 +60,12 @@ public sealed class TooltipTagHelper : StellarAdminTagHelperBase
         }
 
         output.Attributes.SetAttribute("data-slot", "tooltip-content");
-        output.Attributes.SetAttribute(
-            "data-anchor-side",
-            effectivePositionArea.GetAnchorSideDataAttributeText()
-        );
+        output.Attributes.SetAttribute("data-anchor-side", side);
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
                 "sa-tooltip-content",
-                effectivePositionArea.GetClassName(),
+                AnchorPlacement.GetClassName(side, align),
                 output.GetUserSuppliedClass()
             )
         );

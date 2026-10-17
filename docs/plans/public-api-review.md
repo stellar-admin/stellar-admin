@@ -21,7 +21,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | Yes, keep it public, tidy the models and document it. Done (2026-10-17) |
 | D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link` and `sa-dropdown-menu-item-link`. Done (2026-10-17) |
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | The smallest width, and `columns-base` goes. Done (2026-10-17) |
-| D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | |
+| D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | Split into `side` and `align` with enums for each component, and drop the corners. Done (2026-10-17) |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | |
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | |
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | |
@@ -148,6 +148,14 @@ Done:
 ### D6. PositionArea
 
 The name comes from CSS anchor positioning. It is used by Popover, Tooltip and DropdownMenu. `Top` and `TopCenter` differ only in that `Top` spans the anchor. A possible new name is `PopoverPosition`.
+
+Done:
+- `position` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`. The enums are `PopoverSide`/`PopoverAlign`, `TooltipSide`/`TooltipAlign` and `DropdownMenuSide`/`DropdownMenuAlign`, shared by the dropdown menu's content and sub-content.
+- Sides are `Top`, `Right`, `Bottom` and `Left`, in the same order as `SheetSide`. Alignments are `Start`, `Center`, `End` and `CenterWithin`. `CenterWithin` is the old `TopCenter` family, which keeps the panel within the trigger's width.
+- The corner positions `TopLeft`, `TopRight`, `BottomLeft` and `BottomRight` are gone. `PositionArea` is removed, and an internal `AnchorPlacement` builds the `anchored-<side>-<align>` class.
+- The defaults are unchanged: Popover is below and centered, Tooltip above and centered, the dropdown menu below at the start, and the submenu to the right at the start.
+- The admin panel's sidebar user menu, DocsSamples and the UI skill's sidebar reference use the new attributes. The Position examples are relabelled.
+- New tests cover the defaults and the attributes on all four tag helpers. The build is clean apart from older warnings, the skills have no drift, and all 1446 tests pass (2026-10-17). The placements were not checked in a browser.
 
 ### D7. Single or multiple
 
@@ -687,6 +695,7 @@ Changes the website still needs:
 - [ ] D2: add the "Your own field inputs" guide from the UI skill's `references/forms.md` to the forms docs.
 - [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
 - [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
+- [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

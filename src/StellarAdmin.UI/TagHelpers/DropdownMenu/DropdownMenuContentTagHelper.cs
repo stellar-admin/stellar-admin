@@ -15,14 +15,24 @@ public sealed class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions>
     : StellarAdminTagHelperBase()
 {
     /// <summary>
-    ///     Gets or sets where the panel is placed relative to its trigger.
+    ///     Gets or sets how the panel lines up with its trigger.
     /// </summary>
     /// <value>
-    ///     One of the enumeration values that specifies the placement. The default is
-    ///     <see cref="PositionArea.BottomSpanRight" />.
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="DropdownMenuAlign.Start" />.
     /// </value>
-    [HtmlAttributeName("position")]
-    public PositionArea? Position { get; set; }
+    [HtmlAttributeName("align")]
+    public DropdownMenuAlign? Align { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the side of its trigger that the panel appears on.
+    /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the side. The default is
+    ///     <see cref="DropdownMenuSide.Bottom" />.
+    /// </value>
+    [HtmlAttributeName("side")]
+    public DropdownMenuSide? Side { get; set; }
 
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
@@ -31,7 +41,8 @@ public sealed class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var menuOptions = options.Value.Menu;
-        var effectivePosition = Position ?? PositionArea.BottomSpanRight;
+        var side = (Side ?? DropdownMenuSide.Bottom).GetDataAttributeText();
+        var align = (Align ?? DropdownMenuAlign.Start).GetDataAttributeText();
 
         output.TagName = "sel-dropdown-menu";
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -62,14 +73,8 @@ public sealed class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions>
 
         output.Attributes.SetAttribute("role", "menu");
         output.Attributes.SetAttribute("data-slot", "dropdown-menu-content");
-        output.Attributes.SetAttribute(
-            "data-anchor-side",
-            effectivePosition.GetAnchorSideDataAttributeText()
-        );
-        output.Attributes.SetAttribute(
-            "data-side",
-            DropdownMenuInternals.GetSideDataAttribute(effectivePosition)
-        );
+        output.Attributes.SetAttribute("data-anchor-side", side);
+        output.Attributes.SetAttribute("data-side", side);
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
@@ -78,7 +83,7 @@ public sealed class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions>
                 MenuSurfaceInternals.ColorToken(menuOptions.Color),
                 MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
                 MenuSurfaceInternals.AccentToken(menuOptions.Accent),
-                effectivePosition.GetClassName(),
+                AnchorPlacement.GetClassName(side, align),
                 output.GetUserSuppliedClass()
             )
         );

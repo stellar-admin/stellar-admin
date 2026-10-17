@@ -13,14 +13,24 @@ namespace StellarAdmin.UI;
 public sealed class PopoverTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Gets or sets the position of the popover relative to its anchor.
+    ///     Gets or sets how the popover lines up with its trigger.
     /// </summary>
     /// <value>
-    ///     One of the enumeration values that specifies the position. The default is
-    ///     <see cref="PositionArea.Bottom" />.
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="PopoverAlign.Center" />.
     /// </value>
-    [HtmlAttributeName("position")]
-    public PositionArea? Position { get; set; }
+    [HtmlAttributeName("align")]
+    public PopoverAlign? Align { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the side of its trigger that the popover appears on.
+    /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the side. The default is
+    ///     <see cref="PopoverSide.Bottom" />.
+    /// </value>
+    [HtmlAttributeName("side")]
+    public PopoverSide? Side { get; set; }
 
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -28,7 +38,8 @@ public sealed class PopoverTagHelper : StellarAdminTagHelperBase
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        var effectivePositionArea = Position ?? PositionArea.Bottom;
+        var side = (Side ?? PopoverSide.Bottom).GetDataAttributeText();
+        var align = (Align ?? PopoverAlign.Center).GetDataAttributeText();
 
         if (!output.Attributes.ContainsName("popover"))
         {
@@ -36,15 +47,12 @@ public sealed class PopoverTagHelper : StellarAdminTagHelperBase
         }
 
         output.Attributes.SetAttribute("data-slot", "popover-content");
-        output.Attributes.SetAttribute(
-            "data-anchor-side",
-            effectivePositionArea.GetAnchorSideDataAttributeText()
-        );
+        output.Attributes.SetAttribute("data-anchor-side", side);
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses(
                 "sa-popover-content",
-                effectivePositionArea.GetClassName(),
+                AnchorPlacement.GetClassName(side, align),
                 output.GetUserSuppliedClass()
             )
         );

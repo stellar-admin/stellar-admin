@@ -14,7 +14,7 @@ internal static partial class Extractor
     /// <summary>
     /// Builds the global enum dictionary (enum name -> ordered members) by scanning EVERY .cs file
     /// under the tag-helpers root, so cross-folder enum references (e.g. a DropdownMenu attribute
-    /// typed as <c>ButtonSize</c> or <c>PositionArea</c>) resolve.
+    /// typed as <c>ButtonSize</c> or <c>PopoverSide</c>) resolve.
     /// </summary>
     public static Dictionary<string, EnumInfo> BuildEnumIndex(string tagHelpersRoot)
     {

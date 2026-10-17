@@ -12,7 +12,8 @@ Renders a small label that appears when the user hovers over or focuses another 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `position` | `PositionArea` | `Top` | `TopCenter`, `TopSpanLeft`, `TopSpanRight`, `Top`, `LeftCenter`, `LeftSpanTop`, `LeftSpanBottom`, `Left`, `BottomCenter`, `BottomSpanLeft`, `BottomSpanRight`, `Bottom`, `RightCenter`, `RightSpanTop`, `RightSpanBottom`, `Right`, `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `align` | `TooltipAlign` | `Center` | `Start`, `Center`, `End`, `CenterWithin` |
+| `side` | `TooltipSide` | `Top` | `Top`, `Right`, `Bottom`, `Left` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
