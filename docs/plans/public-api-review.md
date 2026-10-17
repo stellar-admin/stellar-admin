@@ -23,7 +23,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | The smallest width, and `columns-base` goes. Done (2026-10-17) |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | Split into `side` and `align` with enums for each component, and drop the corners. Done (2026-10-17) |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | `multiple` on ToggleGroup. The table and data grid keep an expand-mode enum each. Done (2026-10-17) |
-| D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | |
+| D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | Rename it to `value`. ToggleGroup gets `value` for one selection and `values` with `multiple`. Done (2026-10-17) |
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | |
 | D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | |
 | D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | |
@@ -171,6 +171,12 @@ Done:
 ### D8. Tabs and ToggleGroup values
 
 On `sa-tabs`, `selected` is the selected panel's id. Everywhere else, `selected` is a `bool?` on an item. RadioGroup and SegmentedControl take the current value as `value` on the group. ToggleGroup has only `selected` on each item.
+
+Done:
+- `sa-tabs` takes `value` (the panel id) instead of `selected`.
+- `sa-toggle-group` takes `value` (`string`) when single-select and `values` (`IEnumerable<string>`) with `multiple`, like RadioGroup and CheckboxGroup. Neither can be combined with `asp-for`, and using the wrong one for the mode throws. A posted value still wins, and an item's `selected` still overrides the group.
+- The DocsSamples set the group value instead of `selected` on items.
+- New tests cover `value`, `values`, the item override and the invalid combinations. The skills have no drift, validation passes, and all 1455 tests pass (2026-10-17).
 
 ### D9. EF UseItems types
 
@@ -704,6 +710,7 @@ Changes the website still needs:
 - [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
 - [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
 - [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
+- [ ] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

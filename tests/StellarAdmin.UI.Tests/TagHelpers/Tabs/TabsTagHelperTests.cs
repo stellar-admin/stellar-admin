@@ -48,7 +48,7 @@ public class TabsTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WithoutSelected_SelectsFirstTabAndPanel()
+    public async Task ProcessAsync_WithoutValue_SelectsFirstTabAndPanel()
     {
         // Arrange
         var sut = new TabsTagHelper();
@@ -68,10 +68,10 @@ public class TabsTagHelperTests
     }
 
     [Test]
-    public async Task ProcessAsync_WithSelected_SelectsNamedTabAndPanel()
+    public async Task ProcessAsync_WithValue_SelectsNamedTabAndPanel()
     {
         // Arrange
-        var sut = new TabsTagHelper { Selected = "itinerary" };
+        var sut = new TabsTagHelper { Value = "itinerary" };
 
         // Act
         using var html = await RenderTabsAsync(sut);

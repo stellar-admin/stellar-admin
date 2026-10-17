@@ -20,8 +20,8 @@ public sealed class TabsTagHelper : StellarAdminTagHelperBase
     /// <value>
     ///     The <c>id</c> of a <c>&lt;sa-tab-panel&gt;</c>. The default is the first tab's panel.
     /// </value>
-    [HtmlAttributeName("selected")]
-    public string? Selected { get; set; }
+    [HtmlAttributeName("value")]
+    public string? Value { get; set; }
 
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -34,7 +34,7 @@ public sealed class TabsTagHelper : StellarAdminTagHelperBase
             new TabsContext
             {
                 TabsId = tabsId,
-                SelectedPanelId = string.IsNullOrWhiteSpace(Selected) ? null : Selected,
+                SelectedPanelId = string.IsNullOrWhiteSpace(Value) ? null : Value,
             }
         );
 

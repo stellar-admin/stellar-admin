@@ -26,6 +26,8 @@ Renders a group of toggle items that lets the user select one item or several.
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `orientation` | `ToggleGroupOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `spacing` | `ToggleGroupSpacing` | `Default` | `Default`, `None`, `Small`, `Large` |
+| `value` | `string` | — | — |
+| `values` | `IEnumerable<string>` | — | — |
 | `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
@@ -60,8 +62,8 @@ Renders a group of toggle items that lets the user select one item or several.
 *From `Pages/ToggleGroup/_Intro.cshtml`*
 
 ```razor
-<sa-toggle-group name="results-view">
-    <sa-toggle-group-item value="list" selected="true" aria-label="List view">
+<sa-toggle-group name="results-view" value="list">
+    <sa-toggle-group-item value="list" aria-label="List view">
         <sa-icon name="list"/>
     </sa-toggle-group-item>
     <sa-toggle-group-item value="grid" aria-label="Grid view">

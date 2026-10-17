@@ -10,7 +10,8 @@ namespace StellarAdmin.UI;
 /// </summary>
 /// <remarks>
 ///     Place <c>&lt;sa-toggle-group-item&gt;</c> elements inside the group. Bind a single value,
-///     or set <c>multiple</c> and bind a collection. The group works without JavaScript.
+///     or set <c>multiple</c> and bind a collection. Without <c>asp-for</c>, set <c>value</c>, or
+///     <c>values</c> with <c>multiple</c>. The group works without JavaScript.
 /// </remarks>
 [HtmlTargetElement("sa-toggle-group")]
 public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
@@ -75,7 +76,32 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
     [HtmlAttributeName("spacing")]
     public ToggleGroupSpacing? Spacing { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the selected value when a single-select group isn't bound with
+    ///     <c>asp-for</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Can't be combined with <c>asp-for</c> or <c>multiple</c>; use <c>values</c> for a
+    ///     multiple-select group.
+    /// </remarks>
+    [HtmlAttributeName("value")]
+    public string? Value { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the selected values when a multiple-select group isn't bound with
+    ///     <c>asp-for</c>.
+    /// </summary>
+    /// <remarks>
+    ///     Can't be combined with <c>asp-for</c>, and requires <c>multiple</c>.
+    /// </remarks>
+    [HtmlAttributeName("values")]
+    public IEnumerable<string>? Values { get; set; }
+
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The group combines <c>asp-for</c> with <c>value</c> or <c>values</c>, sets
+    ///     <c>value</c> with <c>multiple</c>, or sets <c>values</c> without it.
+    /// </exception>
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,
@@ -94,6 +120,18 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
         var fieldName =
             For == null ? Name : ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(For.Name);
         var multiple = Multiple ?? false;
+        if (For != null && (Value != null || Values != null))
+        {
+            throw new InvalidOperationException("asp-for cannot be combined with value or values.");
+        }
+
+        if (multiple ? Value != null : Values != null)
+        {
+            throw new InvalidOperationException(
+                "A multiple-select toggle group takes values; a single-select group takes value."
+            );
+        }
+
         var valueType =
             For == null ? null
             : multiple ? ChoiceGroupValue.ElementType(For.ModelExplorer.ModelType)
@@ -105,7 +143,12 @@ public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupCl
             : ViewContext.ViewData.ModelState[fieldName]?.RawValue;
         var hasState = state != null;
         var selection = ChoiceGroupValue
-            .Values(hasState ? state : For?.Model)
+            .Values(
+                hasState ? state
+                : For != null ? For.Model
+                : multiple ? Values
+                : Value
+            )
             .Where(value => value != null)
             .Select(value => ChoiceGroupValue.Normalize(value!, valueType));
         var groupContext = new ToggleGroupContext

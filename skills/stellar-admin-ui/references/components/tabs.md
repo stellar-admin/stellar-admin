@@ -61,7 +61,7 @@ Renders a tab that shows its panel when selected.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `selected` | `string` | — | — |
+| `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

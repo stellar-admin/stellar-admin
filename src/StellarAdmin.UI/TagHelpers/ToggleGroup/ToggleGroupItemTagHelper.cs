@@ -43,7 +43,7 @@ public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
     /// </summary>
     /// <value>
     ///     <see langword="true" /> if the item is selected; otherwise, <see langword="false" />.
-    ///     By default, the item is selected when the group's bound value contains the item's
+    ///     By default, the item is selected when the group's value contains the item's
     ///     value.
     /// </value>
     [HtmlAttributeName("selected")]

@@ -1,10 +1,10 @@
 ﻿<div class="flex w-full items-center justify-center">
     <!-- code begin -->
-    <sa-toggle-group name="amenities" multiple="true" variant="ToggleVariant.Outline">
-        <sa-toggle-group-item value="wifi" selected="true" aria-label="Free Wi-Fi">
+    <sa-toggle-group name="amenities" multiple="true" values="@(["wifi", "pool"])" variant="ToggleVariant.Outline">
+        <sa-toggle-group-item value="wifi" aria-label="Free Wi-Fi">
             <sa-icon name="wifi"/>
         </sa-toggle-group-item>
-        <sa-toggle-group-item value="pool" selected="true" aria-label="Pool">
+        <sa-toggle-group-item value="pool" aria-label="Pool">
             <sa-icon name="waves-horizontal"/>
         </sa-toggle-group-item>
         <sa-toggle-group-item value="parking" aria-label="Parking">

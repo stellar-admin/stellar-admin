@@ -64,7 +64,7 @@ public class TabPanelTagHelperTests
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
-            new TabsTagHelper { Selected = "itinerary" },
+            new TabsTagHelper { Value = "itinerary" },
             async context => await RenderPanelAsync(sut, context, "summary")
         );
 

@@ -46,7 +46,7 @@ public class TabTagHelperTests
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
-            new TabsTagHelper { Selected = "summary" },
+            new TabsTagHelper { Value = "summary" },
             async context => await TagHelperRenderer.RenderChildAsync(sut, context)
         );
 
@@ -65,7 +65,7 @@ public class TabTagHelperTests
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
-            new TabsTagHelper { Selected = "itinerary" },
+            new TabsTagHelper { Value = "itinerary" },
             async context => await TagHelperRenderer.RenderChildAsync(sut, context)
         );
 
