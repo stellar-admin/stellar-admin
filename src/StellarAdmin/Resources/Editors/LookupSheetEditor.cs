@@ -43,7 +43,7 @@ public sealed class LookupSheetEditor
     /// <summary>
     ///     Configures how the field is displayed in the form.
     /// </summary>
-    public void Editor(Action<LookupFieldOptions> configure)
+    public void Field(Action<LookupFieldOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 

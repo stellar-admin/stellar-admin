@@ -24,7 +24,7 @@ public sealed class ResourcePagingBuilder<TResource>
     /// <summary>
     ///     The page sizes available for selection.
     /// </summary>
-    public int[] PageSizes
+    public IReadOnlyList<int> PageSizes
     {
         set
         {

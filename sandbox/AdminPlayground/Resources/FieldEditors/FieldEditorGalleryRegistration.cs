@@ -394,14 +394,14 @@ internal static class FieldEditorGalleryRegistration
                             sheet.Title = "Select a departure airport";
                             sheet.SearchPlaceholder = "City, code or country";
                         });
-                        lookup.Editor(editor => editor.EmptyText = "Any airport");
+                        lookup.Field(editor => editor.EmptyText = "Any airport");
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.UnclearableAirport)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.AllowClear = false);
+                        lookup.Field(editor => editor.AllowClear = false);
                         UseAirports(lookup);
                     });
                 section
@@ -469,21 +469,21 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.InputLayoutAirport)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Input);
+                        lookup.Field(editor => editor.Layout = LookupSheetEditorLayout.Input);
                         UseAirports(lookup, describe: true);
                     });
                 section
                     .Add(model => model.CardLayoutAirport)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Card);
+                        lookup.Field(editor => editor.Layout = LookupSheetEditorLayout.Card);
                         UseAirports(lookup, media: AirportMedia.Code);
                     });
                 section
                     .Add(model => model.EditorMediaHiddenAirport)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.ShowMedia = false);
+                        lookup.Field(editor => editor.ShowMedia = false);
                         UseAirports(lookup, describe: true, media: AirportMedia.Code);
                     });
                 section
@@ -577,21 +577,21 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.ListDestinations)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseDestinations(lookup, describe: true);
                     });
                 section
                     .Add(model => model.ListGuides)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseGuides(lookup, describe: true);
                     });
                 section
                     .Add(model => model.SummaryDestinations)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseDestinations(lookup);
@@ -600,7 +600,7 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.SummaryGuides)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseGuides(lookup);
@@ -624,7 +624,7 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.LabelledDestinations)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.EmptyText = "Any destination");
+                        lookup.Field(editor => editor.EmptyText = "Any destination");
                         lookup.Sheet(sheet => sheet.Title = "Select destinations");
                         UseDestinations(lookup);
                     });
@@ -632,7 +632,7 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.MediaHiddenGuides)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.ShowMedia = false);
+                        lookup.Field(editor => editor.ShowMedia = false);
                         UseGuides(lookup);
                     });
                 section
@@ -656,14 +656,14 @@ internal static class FieldEditorGalleryRegistration
                     .Add(model => model.ReadOnlyListGuides)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseGuides(lookup, describe: true);
                     });
                 section
                     .Add(model => model.ReadOnlySummaryGuides)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseGuides(lookup, describe: true);

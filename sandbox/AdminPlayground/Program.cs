@@ -52,16 +52,15 @@ builder.Services.AddStellarAdmin(admin =>
     // Log in through Identity UI to see the user menu; Log out signs out of the Identity cookie
     admin.ConfigureUserMenu(menu =>
     {
-        menu.Items.Insert(
-            0,
-            UserMenuItem.Page(
-                "Account",
-                "/Account/Manage/Index",
-                "Identity",
-                item => item.Icon = "badge-check"
+        menu.Add(
+                UserMenuItem.Page(
+                    "Account",
+                    "/Account/Manage/Index",
+                    "Identity",
+                    item => item.Icon = "badge-check"
+                )
             )
-        );
-        menu.Items.Insert(1, UserMenuItem.Separator());
+            .Add(UserMenuItem.Separator());
     });
 
     admin.ConfigureResourceLabels(labels =>

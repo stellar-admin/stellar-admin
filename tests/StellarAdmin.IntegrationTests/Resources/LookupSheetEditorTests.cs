@@ -94,7 +94,7 @@ public class LookupSheetEditorTests
                     .Add(model => model.CategoryId)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.EmptyText = "Pick a category");
+                        lookup.Field(editor => editor.EmptyText = "Pick a category");
                         UseCategories(lookup);
                     }),
             new()
@@ -235,7 +235,7 @@ public class LookupSheetEditorTests
                     .Add(model => model.CategoryId)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = LookupSheetEditorLayout.Input);
+                        lookup.Field(editor => editor.Layout = LookupSheetEditorLayout.Input);
                         UseCategories(lookup);
                     }),
             new() { CategoryId = 2 }
@@ -392,7 +392,7 @@ public class LookupSheetEditorTests
                             category => category.Name,
                             items => items.UseCode(category => category.Code)
                         );
-                        lookup.Editor(editor => editor.ShowMedia = false);
+                        lookup.Field(editor => editor.ShowMedia = false);
                     }),
             new() { CategoryId = 2 }
         );
@@ -612,7 +612,7 @@ public class LookupSheetEditorTests
                     .Add(model => model.PrimaryCategoryId)
                     .UseEditor<LookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.AllowClear = true);
+                        lookup.Field(editor => editor.AllowClear = true);
                         UseCategories(lookup);
                     }),
             new() { PrimaryCategoryId = 1 }

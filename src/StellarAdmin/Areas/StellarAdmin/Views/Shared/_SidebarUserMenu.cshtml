@@ -17,7 +17,7 @@
                         @{ await RenderUser(); }
                     </div>
                 </sa-dropdown-menu-label>
-                @if (Model.Items.Count > 0 && Model.Items[0] is not SeparatorUserMenuItem)
+                @if (Model.Items.Count > 0 ? Model.Items[0] is not SeparatorUserMenuItem : Model.Logout is not null)
                 {
                     <sa-dropdown-menu-separator/>
                 }
@@ -55,20 +55,21 @@
                                 @{ await RenderText(actionItem.Icon, actionItem.Text); }
                             </sa-dropdown-menu-item-link>
                             break;
-                        case LogoutUserMenuItem logoutItem:
-                            if (logoutItem.Path is null)
-                            {
-                                <form method="post" asp-area="StellarAdmin" asp-controller="Logout" asp-action="Index">
-                                    @{ await RenderLogout(logoutItem); }
-                                </form>
-                            }
-                            else
-                            {
-                                <form method="post" action="@Url.Content(logoutItem.Path)" asp-antiforgery="true">
-                                    @{ await RenderLogout(logoutItem); }
-                                </form>
-                            }
-                            break;
+                    }
+                }
+                @if (Model.Logout is { } logout)
+                {
+                    if (logout.Path is null)
+                    {
+                        <form method="post" asp-area="StellarAdmin" asp-controller="Logout" asp-action="Index">
+                            @{ await RenderLogout(logout); }
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" action="@Url.Content(logout.Path)" asp-antiforgery="true">
+                            @{ await RenderLogout(logout); }
+                        </form>
                     }
                 }
             </sa-dropdown-menu-content>

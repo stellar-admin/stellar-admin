@@ -6,7 +6,7 @@ internal sealed class UserMenuOptions
 
     public string? DescriptionClaimType { get; set; }
 
-    public List<UserMenuItem> Items { get; } = [UserMenuItem.Logout()];
+    public List<UserMenuItem> Items { get; } = [];
 
     public LogoutOptions Logout { get; } = new();
 

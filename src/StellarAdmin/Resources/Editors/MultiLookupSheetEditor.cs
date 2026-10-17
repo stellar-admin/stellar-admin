@@ -36,7 +36,7 @@ public sealed class MultiLookupSheetEditor
     /// <summary>
     ///     Configures how the field is displayed in the form.
     /// </summary>
-    public void Editor(Action<MultiLookupFieldOptions> configure)
+    public void Field(Action<MultiLookupFieldOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
 

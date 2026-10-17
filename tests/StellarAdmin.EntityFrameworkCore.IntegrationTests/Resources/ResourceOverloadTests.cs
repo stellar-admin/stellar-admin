@@ -64,6 +64,42 @@ public class ResourceOverloadTests
     }
 
     [Test]
+    public async Task SearchOn_WithNullInMoreSelectors_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = new LookupSheetEditor();
+
+        // Act
+        Action act = () =>
+            sut.UseItems<CatalogDbContext, Category, int>(
+                category => category.Id,
+                category => category.Name,
+                items => items.SearchOn(category => category.Name, null!, null!)
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    public async Task SearchOn_WithNullSelector_ThrowsArgumentNullException()
+    {
+        // Arrange
+        var sut = new LookupSheetEditor();
+
+        // Act
+        Action act = () =>
+            sut.UseItems<CatalogDbContext, Category, int>(
+                category => category.Id,
+                category => category.Name,
+                items => items.SearchOn(null!)
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentNullException>();
+    }
+
+    [Test]
     public async Task ScopesAdd_WithNullPredicate_ThrowsArgumentNullException()
     {
         // Arrange

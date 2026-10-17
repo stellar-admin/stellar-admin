@@ -64,8 +64,8 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J29 | Replace optional parameters with overloads | Done (2026-10-17) |
 | J30 | Fix `Enable*` return types and write the rule down | Done (2026-10-17) |
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | Done (2026-10-17) |
-| J32 | Configure menu and forms options the same way | |
-| J33 | Fix small builder naming issues | |
+| J32 | Configure menu and forms options the same way | On hold (menu options to be removed) |
+| J33 | Fix small builder naming issues | Done (2026-10-17) |
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | |
 | J36 | Rename the client events to one style | |
@@ -472,6 +472,8 @@ Done (2026-10-17):
 
 `ConfigureMenu` takes a builder like `ConfigureForms`. Both are stored as `StellarAdminUIOptions.Menu` and `.Forms`.
 
+On hold (2026-10-17): Jerrie plans to remove the menu options (`ConfigureMenu`, `StellarAdminUIMenuOptions` and `StellarAdminUIOptions.Menu`) now that StellarAdmin has its own stylesheets instead of following shadcn. Come back to this once that's decided, since only the forms half may remain.
+
 ### J33. Small builder naming issues
 
 - `Base(...)`/`BaseFull()` vs the `Default` tier name in the convention: align them.
@@ -480,6 +482,18 @@ Done (2026-10-17):
 - `UserMenuBuilder.Items` gets `Add*` methods.
 - `ResourcePagingBuilder.PageSizes` takes a list.
 - `SearchOn` requires at least one field at compile time.
+
+Done (2026-10-17):
+
+- `LookupSheetEditor.Editor(...)` and `MultiLookupSheetEditor.Editor(...)` are now `Field(...)`, matching `Sheet(...)` and the `LookupFieldOptions` types. The relationships skill reference was updated.
+- The conventions doc now names the smallest form grid tier `Base`, matching `Base(n)` and `BaseFull()`.
+- `MultiLookupFieldOptions.Layout` stays non-nullable, because the multi lookup has no automatic layout for null to stand for.
+- `ResourcePagingBuilder.PageSizes` takes an `IReadOnlyList<int>`.
+- `SearchOn` takes a required first selector and `params` for more, so it needs at least one at compile time.
+- `UserMenuBuilder.Items` is gone. `menu.Add(item)` appends and `menu.Clear()` empties the list, both returning the builder. Log out is no longer an item: it always shows after the items, and `menu.Logout(...)` configures it with `Path`, `Icon` and `Show` next to `RedirectPath`. The four `UserMenuItem.Logout(...)` factories are removed, and `SidebarUserMenuModel.Logout` carries the item to the view.
+- `LogoutBuilder.AuthenticationSchemes` is replaced by `AddAuthenticationScheme(scheme)`.
+- The sidebar skill reference and `SKILL.md` were updated. `sandbox/html/sidebar-branding.html` is an old prototype and was left as it was.
+- Verified with the full test run (1428 passed) and a skills drift check. The website doesn't mention these APIs.
 
 ### J34. Guardrails
 

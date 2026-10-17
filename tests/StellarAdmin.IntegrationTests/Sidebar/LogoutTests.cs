@@ -46,8 +46,7 @@ public class LogoutTests
                 admin.ConfigureUserMenu(menu =>
                     menu.Logout(logout =>
                     {
-                        logout.AuthenticationSchemes.Add("Local");
-                        logout.AuthenticationSchemes.Add("Remote");
+                        logout.AddAuthenticationScheme("Local").AddAuthenticationScheme("Remote");
                         logout.RedirectPath = "~/signed-out";
                     })
                 ),
@@ -84,8 +83,7 @@ public class LogoutTests
                 admin.ConfigureUserMenu(menu =>
                     menu.Logout(logout =>
                     {
-                        logout.AuthenticationSchemes.Add("External");
-                        logout.AuthenticationSchemes.Add("Local");
+                        logout.AddAuthenticationScheme("External").AddAuthenticationScheme("Local");
                         logout.RedirectPath = "~/";
                     })
                 ),

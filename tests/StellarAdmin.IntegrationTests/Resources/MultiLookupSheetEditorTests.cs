@@ -131,7 +131,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.CategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.EmptyText = "Pick categories");
+                        lookup.Field(editor => editor.EmptyText = "Pick categories");
                         UseCategories(lookup);
                     }),
             new()
@@ -166,7 +166,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.CategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
+                        lookup.Field(editor => editor.Layout = MultiLookupSheetEditorLayout.List);
                         UseCategories(lookup);
                     }),
             new() { CategoryIds = [1, 2] }
@@ -200,7 +200,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.CategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseCategories(lookup);
@@ -234,7 +234,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.CategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseCategories(lookup);
@@ -267,7 +267,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.FixedCategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseCategories(lookup);
@@ -716,7 +716,7 @@ public class MultiLookupSheetEditorTests
                     .Add(model => model.CategoryIds)
                     .UseEditor<MultiLookupSheetEditor>(lookup =>
                     {
-                        lookup.Editor(editor =>
+                        lookup.Field(editor =>
                             editor.Layout = MultiLookupSheetEditorLayout.Summary
                         );
                         UseCategories(lookup);

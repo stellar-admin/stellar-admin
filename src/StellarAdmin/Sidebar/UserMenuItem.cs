@@ -1,7 +1,7 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     An entry in the sidebar's user menu: a link, a separator or the log out item.
+///     An entry in the sidebar's user menu: a link or a separator.
 /// </summary>
 public abstract class UserMenuItem
 {
@@ -91,72 +91,6 @@ public abstract class UserMenuItem
         ArgumentNullException.ThrowIfNull(configure);
 
         var item = Action(text, action, controller, area);
-        configure(new(icon => item.Icon = icon));
-
-        return item;
-    }
-
-    /// <summary>
-    ///     Returns an item that logs the user out through the admin panel's logout endpoint.
-    /// </summary>
-    /// <remarks>
-    ///     The endpoint signs out of the schemes configured with <see cref="UserMenuBuilder.Logout" />.
-    ///     The item shows the <c>log-out</c> icon.
-    /// </remarks>
-    public static LogoutUserMenuItem Logout() => new(null);
-
-    /// <summary>
-    ///     Returns and configures an item that logs the user out through the admin panel's logout endpoint.
-    /// </summary>
-    /// <remarks>
-    ///     The endpoint signs out of the schemes configured with <see cref="UserMenuBuilder.Logout" />.
-    /// </remarks>
-    /// <param name="configure">Configures the item.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static LogoutUserMenuItem Logout(Action<UserMenuItemBuilder> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        var item = Logout();
-        configure(new(icon => item.Icon = icon));
-
-        return item;
-    }
-
-    /// <summary>
-    ///     Returns an item that logs the user out by posting to an endpoint of the application, such as
-    ///     ASP.NET Core Identity's logout page.
-    /// </summary>
-    /// <remarks>
-    ///     The item posts a form with an antiforgery token. The endpoint decides where to go afterwards.
-    ///     For an endpoint that logs out on a GET request, use <see cref="Url(string, string)" /> instead.
-    /// </remarks>
-    /// <param name="path">An app-relative path such as <c>~/Identity/Account/Logout</c>.</param>
-    /// <exception cref="ArgumentException"></exception>
-    public static LogoutUserMenuItem Logout(string path)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-
-        return new(path);
-    }
-
-    /// <summary>
-    ///     Returns and configures an item that logs the user out by posting to an endpoint of the
-    ///     application, such as ASP.NET Core Identity's logout page.
-    /// </summary>
-    /// <remarks>
-    ///     The item posts a form with an antiforgery token. The endpoint decides where to go afterwards.
-    ///     For an endpoint that logs out on a GET request, use <see cref="Url(string, string)" /> instead.
-    /// </remarks>
-    /// <param name="path">An app-relative path such as <c>~/Identity/Account/Logout</c>.</param>
-    /// <param name="configure">Configures the item.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    public static LogoutUserMenuItem Logout(string path, Action<UserMenuItemBuilder> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        var item = Logout(path);
         configure(new(icon => item.Icon = icon));
 
         return item;

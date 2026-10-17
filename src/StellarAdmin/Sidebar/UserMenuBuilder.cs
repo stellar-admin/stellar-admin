@@ -43,33 +43,6 @@ public sealed class UserMenuBuilder
     }
 
     /// <summary>
-    ///     The menu's items, in the order they are shown.
-    /// </summary>
-    /// <remarks>
-    ///     Starts with a <see cref="UserMenuItem.Logout()" /> item. Insert items before it, or assign a list
-    ///     to replace the items; a list without a logout item shows no log out.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
-    public IList<UserMenuItem> Items
-    {
-        get => _options.Items;
-        set
-        {
-            ArgumentNullException.ThrowIfNull(value);
-
-            var items = value.ToList();
-            if (items.Contains(null!))
-            {
-                throw new ArgumentException("The items cannot contain null.", nameof(value));
-            }
-
-            _options.Items.Clear();
-            _options.Items.AddRange(items);
-        }
-    }
-
-    /// <summary>
     ///     The claim shown as the user's name.
     /// </summary>
     /// <remarks>
@@ -90,9 +63,34 @@ public sealed class UserMenuBuilder
     internal UserMenuBuilder(UserMenuOptions options) => _options = options;
 
     /// <summary>
-    ///     Configures the admin panel's logout endpoint, which <see cref="UserMenuItem.Logout()" /> posts to.
+    ///     Adds an item to the end of the menu. The log out item always shows after the items.
     /// </summary>
-    /// <param name="configure">Configures the endpoint.</param>
+    /// <param name="item">The item, created with a <see cref="UserMenuItem" /> factory.</param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public UserMenuBuilder Add(UserMenuItem item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        _options.Items.Add(item);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Removes the items added so far. The log out item is configured with <see cref="Logout" />.
+    /// </summary>
+    public UserMenuBuilder Clear()
+    {
+        _options.Items.Clear();
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Configures the log out item, which shows after the other items, and the admin panel's logout endpoint
+    ///     it posts to.
+    /// </summary>
+    /// <param name="configure">Configures log out.</param>
     /// <exception cref="ArgumentNullException"></exception>
     public UserMenuBuilder Logout(Action<LogoutBuilder> configure)
     {

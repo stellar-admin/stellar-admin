@@ -5,18 +5,6 @@ namespace StellarAdmin.Tests.Sidebar;
 public class UserMenuItemTests
 {
     [Test]
-    public async Task Logout_WhenConfiguredWithoutIcon_RemovesDefaultIcon()
-    {
-        // Arrange
-
-        // Act
-        var item = UserMenuItem.Logout(item => item.Icon = null);
-
-        // Assert
-        await Assert.That(item.Icon).IsNull();
-    }
-
-    [Test]
     public async Task Page_WhenConfiguredWithIcon_SetsIcon()
     {
         // Arrange

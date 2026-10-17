@@ -115,8 +115,8 @@ The sidebar footer shows the signed-in user: an avatar, their name and a second 
 admin.ConfigureUserMenu(menu =>
 {
     menu.DescriptionClaimType = ClaimTypes.Role;
-    menu.Items.Insert(0, UserMenuItem.Page("Account", "/Account/Manage/Index", "Identity", item => item.Icon = "badge-check"));
-    menu.Items.Insert(1, UserMenuItem.Separator());
+    menu.Add(UserMenuItem.Page("Account", "/Account/Manage/Index", "Identity", item => item.Icon = "badge-check"));
+    menu.Add(UserMenuItem.Separator());
 });
 ```
 
@@ -125,34 +125,32 @@ admin.ConfigureUserMenu(menu =>
 | `NameClaimType` | The identity's name (`User.Identity.Name`), then the `ClaimTypes.Name` and `name` claims. |
 | `DescriptionClaimType` | The `ClaimTypes.Email`, then `email` claim. Without the claim, the name shows alone. A configured claim type with several claims, such as `ClaimTypes.Role` for a user in two roles, shows them all: "Sales, Finance". |
 | `AvatarClaimType` | `picture`, a URL. Without it, the avatar shows initials from the name. |
-| `Items` | One `UserMenuItem.Logout()`. |
-
-`Items` is a plain list, shown in order: insert before the log out item, or assign a new list (`menu.Items = [ ... ]`), which must include `UserMenuItem.Logout()` to keep log out. Item kinds, from `UserMenuItem`:
+`menu.Add(item)` adds an item to the end of the menu, and `menu.Clear()` removes the items added so far. Both return the builder. The log out item isn't one of the items: it always shows after them ([log out](#log-out)). Item kinds, from `UserMenuItem`:
 
 - `Url(text, url)`, `Page(text, page)`, `Page(text, page, area)`, `Action(text, action, controller)` and `Action(text, action, controller, area)`: links. Pages and actions resolve outside any area unless one is given.
 - `Separator()`: a line between groups of items.
-- `Logout()` and `Logout(path)`: the log out item ([log out](#log-out)).
 
-Every factory except `Separator()` has an overload with a last `item => ...` callback for the item's settings: `item.Icon = "badge-check"` adds an icon. The log out item has the `log-out` icon; `UserMenuItem.Logout(item => item.Icon = null)` removes it.
+Every factory except `Separator()` has an overload with a last `item => ...` callback for the item's settings: `item.Icon = "badge-check"` adds an icon.
 
 ## Log out
 
-`UserMenuItem.Logout()` posts a form, with an antiforgery token, to the panel's logout endpoint at `/stellaradmin/logout`. The endpoint signs out and redirects; configure it with `menu.Logout(...)`:
+The log out item shows after the other items, with the `log-out` icon. It posts a form, with an antiforgery token, to the panel's logout endpoint at `/stellaradmin/logout`. The endpoint signs out and redirects. Configure the item and the endpoint with `menu.Logout(...)`:
 
 ```csharp
 admin.ConfigureUserMenu(menu => menu.Logout(logout =>
 {
-    logout.AuthenticationSchemes.Add(CookieAuthenticationDefaults.AuthenticationScheme);
-    logout.AuthenticationSchemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
+    logout.AddAuthenticationScheme(CookieAuthenticationDefaults.AuthenticationScheme);
+    logout.AddAuthenticationScheme(OpenIdConnectDefaults.AuthenticationScheme);
     logout.RedirectPath = "~/";
 }));
 ```
 
-- With no schemes listed, it signs out of the default authenticate scheme, the one that signed the user in: the cookie for cookie authentication, the application cookie for ASP.NET Core Identity.
-- Listed schemes are signed out in order. Put local cookies first and a remote scheme such as OpenID Connect last: its handler redirects to the identity provider, which returns to `RedirectPath` afterwards.
+- With no schemes added, it signs out of the default authenticate scheme, the one that signed the user in: the cookie for cookie authentication, the application cookie for ASP.NET Core Identity.
+- Added schemes are signed out in order. Put local cookies first and a remote scheme such as OpenID Connect last: its handler redirects to the identity provider, which returns to `RedirectPath` afterwards.
 - `RedirectPath` (default: the panel's home page) is where the endpoint goes when no handler redirected.
-- To use the app's own logout endpoint, such as Identity UI's (which also clears the external and two-factor cookies), use `UserMenuItem.Logout("~/Identity/Account/Logout")`. It posts there with an antiforgery token, and that endpoint decides where to go; `menu.Logout(...)` doesn't apply.
-- An app whose logout is a GET request uses a link instead: replace the log out item with `UserMenuItem.Url("Log out", "~/logout")`.
+- To use the app's own logout endpoint, such as Identity UI's (which also clears the external and two-factor cookies), set `logout.Path = "~/Identity/Account/Logout"`. The item posts there with an antiforgery token, and that endpoint decides where to go, so the schemes and `RedirectPath` don't apply.
+- `logout.Icon = null` removes the icon.
+- `logout.Show = false` hides the log out item. An app whose logout is a GET request hides it and adds a link instead: `menu.Add(UserMenuItem.Url("Log out", "~/logout"))`.
 
 ## Replacing the header or user menu
 

@@ -59,19 +59,21 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     ///     Searches the specified properties, ignoring case. The item title is searched by default.
     /// </summary>
     public EfCoreLookupItemsBuilder<TEntity, TValue> SearchOn(
-        params Expression<Func<TEntity, string?>>[] selectors
+        Expression<Func<TEntity, string?>> selector,
+        params Expression<Func<TEntity, string?>>[] moreSelectors
     )
     {
-        ArgumentNullException.ThrowIfNull(selectors);
-        if (selectors.Length == 0 || selectors.Any(selector => selector is null))
+        ArgumentNullException.ThrowIfNull(selector);
+        ArgumentNullException.ThrowIfNull(moreSelectors);
+        if (moreSelectors.Any(item => item is null))
         {
             throw new ArgumentException(
-                "At least one search selector is required, and none can be null.",
-                nameof(selectors)
+                "The search selectors cannot contain null.",
+                nameof(moreSelectors)
             );
         }
 
-        _options.SearchExpressions = selectors.ToArray();
+        _options.SearchExpressions = [selector, .. moreSelectors];
 
         return this;
     }

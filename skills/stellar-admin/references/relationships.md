@@ -75,7 +75,7 @@ lookup.EnableCreate();
 
 | Method | Settings |
 | --- | --- |
-| `lookup.Editor(editor => ...)` (the field) | `Layout` (`LookupSheetEditorLayout.Card` or `Input`; `MultiLookupSheetEditorLayout.Chips`, `List` or `Summary` for multi), `EmptyText`, `AllowClear` (single only; defaults to optional fields), `ShowMedia` |
+| `lookup.Field(field => ...)` (the field) | `Layout` (`LookupSheetEditorLayout.Card` or `Input`; `MultiLookupSheetEditorLayout.Chips`, `List` or `Summary` for multi), `EmptyText`, `AllowClear` (single only; defaults to optional fields), `ShowMedia` |
 | `lookup.Sheet(sheet => ...)` (the search sheet) | `Title`, `SearchPlaceholder`, `MinimumSearchLength`, `PageSize` (20), `ShowMedia` |
 | `lookup.EnableCreate()` / `EnableCreate<TResource>()` | New button ([above](#creating-from-a-lookup)) |
 
@@ -92,7 +92,7 @@ fields.Add(form => form.DestinationIds).UseEditor<MultiLookupSheetEditor>(lookup
         destination => destination.Id,
         destination => destination.Name,
         items => items.UseCode(destination => destination.AirportCode));
-    lookup.Editor(editor => editor.Layout = MultiLookupSheetEditorLayout.Chips);
+    lookup.Field(field => field.Layout = MultiLookupSheetEditorLayout.Chips);
 });
 ```
 

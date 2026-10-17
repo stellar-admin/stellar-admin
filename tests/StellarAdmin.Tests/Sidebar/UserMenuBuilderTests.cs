@@ -6,32 +6,46 @@ namespace StellarAdmin.Tests.Sidebar;
 public class UserMenuBuilderTests
 {
     [Test]
-    public async Task Items_ByDefault_ContainsLogoutWithIcon()
+    public async Task Add_WithNullItem_ThrowsArgumentNullException()
     {
         // Arrange
-        IList<UserMenuItem> items = [];
+        var sut = new ServiceCollection().AddStellarAdmin();
 
         // Act
-        new ServiceCollection()
-            .AddStellarAdmin()
-            .ConfigureUserMenu(menu => items = menu.Items);
+        Action act = () => sut.ConfigureUserMenu(menu => menu.Add(null!));
 
         // Assert
-        await Assert.That(items).HasSingleItem();
-        await Assert.That(items[0]).IsTypeOf<LogoutUserMenuItem>();
-        await Assert.That(((LogoutUserMenuItem)items[0]).Icon).IsEqualTo("log-out");
-        await Assert.That(((LogoutUserMenuItem)items[0]).Path).IsNull();
+        await Assert.That(act).Throws<ArgumentNullException>();
     }
 
     [Test]
-    public async Task Items_WhenAssignedListContainsNull_ThrowsArgumentException()
+    [Arguments("")]
+    [Arguments(" ")]
+    public async Task AddAuthenticationScheme_WithBlankScheme_ThrowsArgumentException(string scheme)
     {
         // Arrange
         var sut = new ServiceCollection().AddStellarAdmin();
 
         // Act
         Action act = () =>
-            sut.ConfigureUserMenu(menu => menu.Items = [UserMenuItem.Separator(), null!]);
+            sut.ConfigureUserMenu(menu =>
+                menu.Logout(logout => logout.AddAuthenticationScheme(scheme))
+            );
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments("")]
+    [Arguments(" ")]
+    public async Task LogoutPath_WithBlankPath_ThrowsArgumentException(string path)
+    {
+        // Arrange
+        var sut = new ServiceCollection().AddStellarAdmin();
+
+        // Act
+        Action act = () => sut.ConfigureUserMenu(menu => menu.Logout(logout => logout.Path = path));
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();

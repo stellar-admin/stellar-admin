@@ -21,6 +21,11 @@ public sealed class SidebarUserMenuModel
     public IReadOnlyList<UserMenuItem> Items { get; }
 
     /// <summary>
+    ///     The log out item, shown after the other items, or <c>null</c> when log out is hidden.
+    /// </summary>
+    public LogoutUserMenuItem? Logout { get; }
+
+    /// <summary>
     ///     The user's name.
     /// </summary>
     public string Name { get; }
@@ -29,12 +34,14 @@ public sealed class SidebarUserMenuModel
         string name,
         string? description,
         string? avatarUrl,
-        IReadOnlyList<UserMenuItem> items
+        IReadOnlyList<UserMenuItem> items,
+        LogoutUserMenuItem? logout
     )
     {
         Name = name;
         Description = description;
         AvatarUrl = avatarUrl;
         Items = items;
+        Logout = logout;
     }
 }

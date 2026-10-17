@@ -27,7 +27,8 @@ internal sealed class UserMenuResolver(StellarAdminOptions options)
             name ?? description ?? "User",
             name is null ? null : description,
             avatarUrl,
-            [.. menu.Items.Where(item => item is not null)]
+            [.. menu.Items],
+            menu.Logout.Show ? new LogoutUserMenuItem(menu.Logout.Path, menu.Logout.Icon) : null
         );
     }
 
