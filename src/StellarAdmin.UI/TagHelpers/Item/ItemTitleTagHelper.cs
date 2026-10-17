@@ -16,7 +16,7 @@ public class ItemTitleTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-title");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-title", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-title", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

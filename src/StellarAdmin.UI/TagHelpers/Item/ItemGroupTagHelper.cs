@@ -17,7 +17,7 @@ public class ItemGroupTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-group");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-group", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-group", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

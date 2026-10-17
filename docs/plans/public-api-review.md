@@ -39,7 +39,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Done (2026-10-16) |
 | J5 | Tidy the protected hooks EF Core uses | |
 | J6 | Seal builders, options types, view models and the view component | Done (2026-10-17) |
-| J7 | Make tag helper plumbing internal or protected | |
+| J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract | |
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | |
 | J10 | Make the resource options read-only | |
@@ -194,12 +194,14 @@ Done:
 
 ### J7. Tag helper plumbing
 
-- `TryGetNamedSlot` becomes protected, because apps' own tag helpers read slots (documented in `templated-views.md`).
-- `TryAddNamedSlot` becomes internal, because only `<sa-slot-content>` calls it.
-- `MessageScrollerId`, `SidebarId` and `UniqueIdDiscriminator` become internal.
-- Remove the protected `GetUserSpecifiedClass`, which duplicates the `GetUserSuppliedClass` extension.
-- Seal `Init`, so a subclass can't skip the setup that slots and parent lookup need.
-- `ResponsiveGrid`, `GridTiers` and `DataGridConsts` become internal. Move whatever StellarAdmin needs from them into StellarAdmin.
+Done:
+- `TryGetNamedSlot` is `protected internal`, because apps' own tag helpers read slots and `<sa-slot-outlet>` reads its host's slots.
+- `TryAddNamedSlot`, `MessageScrollerId` and `SidebarId` are internal. `DataGridConsts` is internal.
+- The protected `GetUserSpecifiedClass` is removed. The item tag helpers use the `GetUserSuppliedClass` extension.
+- `Init` is sealed and calls a new protected virtual `OnInit`. `SelectTagHelper`, `QuestionnaireItemTagHelper` and `QuestionnaireChoicesTagHelper` override `OnInit` instead.
+- `ResponsiveGrid` and `GridTiers` stay public, because StellarAdmin uses almost all of them and has no friend access. They get docs under J40.
+- `UniqueIdDiscriminator` stays public for now, because the DataGridSpike sandbox uses it from outside the assembly. Open question.
+- All 1378 tests pass.
 
 ### J8. Editor contract
 

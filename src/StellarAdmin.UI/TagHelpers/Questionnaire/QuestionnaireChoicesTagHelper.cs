@@ -17,10 +17,8 @@ public class QuestionnaireChoicesTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("shortcuts")]
     public QuestionnaireShortcuts? Shortcuts { get; set; }
 
-    public override void Init(TagHelperContext context)
+    protected override void OnInit(TagHelperContext context)
     {
-        base.Init(context);
-
         SetContext(context, new QuestionnaireChoicesContext { Shortcuts = Shortcuts });
     }
 

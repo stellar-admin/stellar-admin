@@ -16,7 +16,7 @@ public class ItemActionsTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-actions");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-actions", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-actions", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

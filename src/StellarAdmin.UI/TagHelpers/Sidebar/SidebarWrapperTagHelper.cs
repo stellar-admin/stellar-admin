@@ -13,13 +13,7 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
     private const string SidebarWidthIcon = "3rem";
     private const string SidebarWidthMobile = "18rem";
 
-    /// <summary>
-    ///     The id of the rendered <c>sel-sidebar</c> element. Nested triggers and the
-    ///     backdrop read this (via <see cref="StellarAdminTagHelperBase.GetParentTagHelper{T}" />)
-    ///     to target it with <c>commandfor</c>.
-    /// </summary>
-    [HtmlAttributeNotBound]
-    public string? SidebarId { get; private set; }
+    internal string? SidebarId { get; private set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

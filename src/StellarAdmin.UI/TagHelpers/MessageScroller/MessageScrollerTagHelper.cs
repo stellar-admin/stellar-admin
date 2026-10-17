@@ -27,12 +27,7 @@ public class MessageScrollerTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("initial-position")]
     public MessageScrollerPosition? InitialPosition { get; set; }
 
-    /// <summary>
-    ///     The id of the rendered element. Nested scroll buttons read this to target it with
-    ///     <c>commandfor</c>.
-    /// </summary>
-    [HtmlAttributeNotBound]
-    public string? MessageScrollerId { get; private set; }
+    internal string? MessageScrollerId { get; private set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

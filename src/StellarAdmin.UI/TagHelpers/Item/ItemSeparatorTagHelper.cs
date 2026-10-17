@@ -13,7 +13,7 @@ public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-separator");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-separator", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-separator", output.GetUserSuppliedClass())
         );
 
         var separatorTagHelper = new SeparatorTagHelper()

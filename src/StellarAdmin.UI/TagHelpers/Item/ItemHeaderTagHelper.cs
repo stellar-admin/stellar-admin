@@ -16,7 +16,7 @@ public class ItemHeaderTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-header");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-header", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-header", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;

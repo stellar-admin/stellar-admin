@@ -21,7 +21,10 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     [HtmlAttributeNotBound]
     protected internal StellarAdminTagHelperBase? ParentTagHelper { get; private set; }
 
-    public override void Init(TagHelperContext context)
+    /// <summary>
+    ///     Records the parent tag helper and the slot host, then calls <see cref="OnInit" />.
+    /// </summary>
+    public sealed override void Init(TagHelperContext context)
     {
         // Razor gives every tag helper scope its own copy-on-write view of Items, so a value
         // set here is visible to descendants only: siblings and ancestors keep seeing their
@@ -37,13 +40,11 @@ public abstract class StellarAdminTagHelperBase : TagHelper
         {
             context.Items[ParentTagHelperKey] = this;
         }
+
+        OnInit(context);
     }
 
-    /// <summary>
-    ///     Stores content under a slot name. Returns <c>false</c> when the slot has already
-    ///     been filled.
-    /// </summary>
-    public bool TryAddNamedSlot(string name, TagHelperContent childContent)
+    internal bool TryAddNamedSlot(string name, TagHelperContent childContent)
     {
         return _namedSlots.TryAdd(name, childContent);
     }
@@ -51,7 +52,10 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     /// <summary>
     ///     Gets the content a child <c>&lt;sa-slot-content&gt;</c> assigned to a named slot.
     /// </summary>
-    public bool TryGetNamedSlot(string name, [NotNullWhen(true)] out TagHelperContent? content)
+    protected internal bool TryGetNamedSlot(
+        string name,
+        [NotNullWhen(true)] out TagHelperContent? content
+    )
     {
         return _namedSlots.TryGetValue(name, out content);
     }
@@ -65,6 +69,12 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     {
         return string.Join(' ', classes.Where(c => !string.IsNullOrWhiteSpace(c)));
     }
+
+    /// <summary>
+    ///     Runs when the tag helper is initialized, before any child content executes. Override it
+    ///     to publish context for descendants with <see cref="SetContext{T}" />.
+    /// </summary>
+    protected virtual void OnInit(TagHelperContext context) { }
 
     /// <summary>
     ///     Publishes a context object that descendant tag helpers can read with
@@ -124,19 +134,6 @@ public abstract class StellarAdminTagHelperBase : TagHelper
             }
 
             currentParentTagHelper = currentParentTagHelper.ParentTagHelper;
-        }
-
-        return null;
-    }
-
-    protected string? GetUserSpecifiedClass(TagHelperOutput output)
-    {
-        if (
-            output.Attributes.ContainsName("class")
-            && output.Attributes["class"].Value?.ToString() is { } userSpecifiedClass
-        )
-        {
-            return userSpecifiedClass;
         }
 
         return null;

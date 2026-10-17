@@ -63,10 +63,8 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    public override void Init(TagHelperContext context)
+    protected override void OnInit(TagHelperContext context)
     {
-        base.Init(context);
-
         // The question owns the answer, so the choices and the error read the expression from
         // here rather than each repeating it. This has to happen in Init: the children run
         // before the item's own ProcessAsync does.

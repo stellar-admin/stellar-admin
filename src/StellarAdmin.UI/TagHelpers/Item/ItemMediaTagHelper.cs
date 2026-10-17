@@ -39,7 +39,7 @@ public class ItemMediaTagHelper : StellarAdminTagHelperBase
             JoinCssClasses(
                 "sa-item-media",
                 ItemVariantClasses[effectiveVariant],
-                GetUserSpecifiedClass(output)
+                output.GetUserSuppliedClass()
             )
         );
 

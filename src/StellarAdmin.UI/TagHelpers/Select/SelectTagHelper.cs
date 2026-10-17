@@ -41,10 +41,8 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
     [HtmlAttributeName("size")]
     public SelectSize? Size { get; set; }
 
-    public override void Init(TagHelperContext context)
+    protected override void OnInit(TagHelperContext context)
     {
-        base.Init(context);
-
         if (For != null || Items != null)
         {
             _frameworkTagHelper = new FrameworkSelectTagHelper(_htmlGenerator)

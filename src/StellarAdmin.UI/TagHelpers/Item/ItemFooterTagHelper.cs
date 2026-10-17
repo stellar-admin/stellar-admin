@@ -16,7 +16,7 @@ public class ItemFooterTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "item-footer");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-item-footer", GetUserSpecifiedClass(output))
+            JoinCssClasses("sa-item-footer", output.GetUserSuppliedClass())
         );
 
         return Task.CompletedTask;
