@@ -18,7 +18,12 @@ public static class StellarAdminUIExtensions
         /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
         public StellarAdminUIBuilder AddStellarAdminUI()
         {
-            services.AddOptions<IconOptions>();
+            // Freezing after every Configure call, and resolving at startup, makes a bad icon
+            // registration fail when the app starts rather than on the first render
+            services
+                .AddOptions<IconOptions>()
+                .PostConfigure(options => options.Freeze())
+                .ValidateOnStart();
             services.AddOptions<StellarAdminUIOptions>();
             services.AddHttpContextAccessor();
             services.TryAddScoped<IToastNotifier, TempDataToastNotifier>();

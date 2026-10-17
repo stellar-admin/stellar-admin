@@ -59,7 +59,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J24 | Make Slider and Progress numbers `double?` | Done (2026-10-17) |
 | J25 | Make the remaining plain `bool` attributes `bool?` | Done (2026-10-17) |
 | J26 | Make icon definitions immutable | Done (2026-10-17) |
-| J27 | Freeze `IconOptions` after startup | |
+| J27 | Freeze `IconOptions` after startup | Done (2026-10-17) |
 | J28 | Align size and media enum member order | |
 | J29 | Replace optional parameters with overloads | |
 | J30 | Fix `Enable*` return types and write the rule down | |
@@ -410,6 +410,14 @@ Done (2026-10-17):
 - Make `AddIcon` and `AddIconPack` treat duplicates the same way.
 - Validate at startup instead of on the first render.
 
+Done (2026-10-17):
+
+- `AddStellarAdminUI()` registers a `PostConfigure` that freezes `IconOptions` into frozen dictionaries after every `Configure` call. `AddIcon`, `AddIconPack`, `ClearIcons`, `MapSemanticIcon` and `RemoveIcon` then throw `InvalidOperationException`.
+- `AddIcon` replaces a same-named icon, like `AddIconPack`, so the last registration wins.
+- `ValidateOnStart()` resolves the options when the host starts, so an invalid pack or mapping stops startup instead of the first render.
+- The icons skill reference was updated.
+- Verified with the full test run (1400 passed), a skills drift check and DocsSamples starting and rendering the Icon page.
+
 ### J28. Enum member order
 
 - Put `ButtonSize`, `AttachmentSize`, `ItemSize` and `ImageSize` in one order with a `Default` member.
@@ -523,6 +531,7 @@ Changes the website still needs:
 - [ ] J22: `sa-command-group` takes `title` instead of `heading`.
 - [ ] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
 - [ ] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
+- [ ] J27: `icons.mdx` says duplicate `AddIcon` names throw. A same-named icon now replaces the existing one, icons are frozen once configured, and invalid packs fail at startup.
 
 ## Order of work
 

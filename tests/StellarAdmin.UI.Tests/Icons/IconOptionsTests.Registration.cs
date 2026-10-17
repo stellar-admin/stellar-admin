@@ -7,21 +7,22 @@ public partial class IconOptionsTests
     [Test]
     [Arguments("CHECK")]
     [Arguments("duplicate-custom")]
-    public async Task AddIcon_WhenNameAlreadyExists_ThrowsArgumentException(string name)
+    public async Task AddIcon_WhenNameAlreadyExists_ReplacesDefinition(string name)
     {
         // Arrange
         var sut = new IconOptions();
-        var icon = new IconDefinition(new Dictionary<string, string>(), []);
+        var expected = new IconDefinition(new Dictionary<string, string>(), []);
         if (name == "duplicate-custom")
         {
-            sut.AddIcon(name, icon);
+            sut.AddIcon(name, new IconDefinition(new Dictionary<string, string>(), []));
         }
 
         // Act
-        Action act = () => sut.AddIcon(name, icon);
+        sut.AddIcon(name, expected);
 
         // Assert
-        await Assert.That(act).Throws<ArgumentException>();
+        await Assert.That(sut.TryGetIcon(name, out var icon)).IsTrue();
+        await Assert.That(icon).IsSameReferenceAs(expected);
     }
 
     [Test]

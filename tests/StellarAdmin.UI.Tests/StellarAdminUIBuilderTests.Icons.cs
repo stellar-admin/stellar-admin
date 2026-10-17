@@ -46,28 +46,73 @@ public partial class StellarAdminUIBuilderTests
     [Test]
     [Arguments("CHECK")]
     [Arguments("duplicate-custom")]
-    public async Task AddIcon_WhenNameAlreadyExists_ThrowsOnOptionsResolution(string name)
+    public async Task AddIcon_WhenNameAlreadyExists_ReplacesDefinition(string name)
     {
         // Arrange
         var services = new ServiceCollection();
         var sut = services.AddStellarAdminUI();
-        var icon = new IconDefinition(new Dictionary<string, string>(), []);
+        var expected = new IconDefinition(new Dictionary<string, string>(), []);
         if (name == "duplicate-custom")
         {
-            sut.AddIcon(name, icon);
+            sut.AddIcon(name, new IconDefinition(new Dictionary<string, string>(), []));
         }
 
-        sut.AddIcon(name, icon);
+        // Act
+        sut.AddIcon(name, expected);
         using var provider = services.BuildServiceProvider();
+        var icons = provider.GetRequiredService<IOptions<IconOptions>>().Value;
+
+        // Assert
+        await Assert.That(icons.TryGetIcon(name, out var icon)).IsTrue();
+        await Assert.That(icon).IsSameReferenceAs(expected);
+    }
+
+    [Test]
+    public async Task AddIconPack_WhenPackIsInvalid_FailsStartupValidation()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddStellarAdminUI().AddIconPack<InvalidMappingPack>();
+        using var provider = services.BuildServiceProvider();
+        var validator = provider.GetRequiredService<IStartupValidator>();
 
         // Act
-        Action act = () =>
-        {
-            _ = provider.GetRequiredService<IOptions<IconOptions>>().Value;
-        };
+        Action act = () => validator.Validate();
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    [Arguments("add")]
+    [Arguments("add-pack")]
+    [Arguments("clear")]
+    [Arguments("map")]
+    [Arguments("remove")]
+    public async Task IconOptions_WhenChangedAfterResolution_ThrowsInvalidOperationException(
+        string change
+    )
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddStellarAdminUI();
+        using var provider = services.BuildServiceProvider();
+        var icons = provider.GetRequiredService<IOptions<IconOptions>>().Value;
+
+        // Act
+        Action act = change switch
+        {
+            "add" => () =>
+                icons.AddIcon("later", new IconDefinition(new Dictionary<string, string>(), [])),
+            "add-pack" => () => icons.AddIconPack<TestIconPack>(),
+            "clear" => () => icons.ClearIcons(),
+            "map" => () => icons.MapSemanticIcon(SemanticIconRole.Close, "check"),
+            _ => () => icons.RemoveIcon("check"),
+        };
+
+        // Assert
+        await Assert.That(act).Throws<InvalidOperationException>();
+        await Assert.That(icons.TryGetIcon("check", out _)).IsTrue();
     }
 
     [Test]
@@ -104,5 +149,14 @@ public partial class StellarAdminUIBuilderTests
         await Assert.That(icons.TryGetIcon("check", out var icon)).IsTrue();
         await Assert.That(icon!.Shapes.Count).IsGreaterThan(0);
         await Assert.That(icon.Attributes.ContainsKey("data-test")).IsFalse();
+    }
+
+    private sealed class InvalidMappingPack : IIconPack
+    {
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
+            new Dictionary<string, IconDefinition>();
+
+        public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
+            new Dictionary<SemanticIconRole, string> { [SemanticIconRole.Close] = "absent" };
     }
 }

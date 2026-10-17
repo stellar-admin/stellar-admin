@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StellarAdmin.UI.Icons;
@@ -6,7 +7,8 @@ namespace StellarAdmin.UI.Icons;
 ///     Configures the icons available to StellarAdmin.
 /// </summary>
 /// <remarks>
-///     Includes Lucide icons by default.
+///     Includes Lucide icons by default. The options are frozen once configured, after which
+///     they can only be read.
 /// </remarks>
 public sealed class IconOptions
 {
@@ -14,6 +16,8 @@ public sealed class IconOptions
         StringComparer.OrdinalIgnoreCase
     );
     private readonly Dictionary<SemanticIconRole, string> _semanticIcons = new();
+    private FrozenDictionary<string, IconDefinition>? _frozenIcons;
+    private FrozenDictionary<SemanticIconRole, string>? _frozenSemanticIcons;
 
     public IconOptions()
     {
@@ -21,13 +25,15 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Adds an icon with a unique name.
+    ///     Adds an icon, replacing any icon already registered with the same name.
     /// </summary>
     public void AddIcon(string name, IconDefinition iconDefinition)
     {
+        ArgumentNullException.ThrowIfNull(name);
         ArgumentNullException.ThrowIfNull(iconDefinition);
+        ThrowIfFrozen();
 
-        _icons.Add(name, iconDefinition);
+        _icons[name] = iconDefinition;
     }
 
     /// <summary>
@@ -46,6 +52,7 @@ public sealed class IconOptions
         where TIconPack : IIconPack, new()
     {
         ArgumentNullException.ThrowIfNull(configure);
+        ThrowIfFrozen();
 
         var registration = new IconPackOptions();
         configure(registration);
@@ -85,6 +92,7 @@ public sealed class IconOptions
     /// </summary>
     public void ClearIcons()
     {
+        ThrowIfFrozen();
         _icons.Clear();
         _semanticIcons.Clear();
     }
@@ -94,7 +102,7 @@ public sealed class IconOptions
     /// </summary>
     public string[] GetIconNames()
     {
-        return _icons.Keys.ToArray();
+        return _frozenIcons?.Keys.ToArray() ?? _icons.Keys.ToArray();
     }
 
     /// <summary>
@@ -102,7 +110,8 @@ public sealed class IconOptions
     /// </summary>
     public string? GetSemanticIconName(SemanticIconRole role)
     {
-        return _semanticIcons.GetValueOrDefault(role);
+        return _frozenSemanticIcons?.GetValueOrDefault(role)
+            ?? _semanticIcons.GetValueOrDefault(role);
     }
 
     /// <summary>
@@ -111,6 +120,7 @@ public sealed class IconOptions
     public void MapSemanticIcon(SemanticIconRole role, string name)
     {
         ArgumentNullException.ThrowIfNull(name);
+        ThrowIfFrozen();
         if (!_icons.ContainsKey(name))
         {
             throw new ArgumentException($"Icon '{name}' is not registered.", nameof(name));
@@ -124,6 +134,7 @@ public sealed class IconOptions
     /// </summary>
     public bool RemoveIcon(string name)
     {
+        ThrowIfFrozen();
         if (!_icons.Remove(name))
         {
             return false;
@@ -147,6 +158,24 @@ public sealed class IconOptions
     /// </summary>
     public bool TryGetIcon(string name, [NotNullWhen(true)] out IconDefinition? iconDefinition)
     {
-        return _icons.TryGetValue(name, out iconDefinition);
+        return _frozenIcons?.TryGetValue(name, out iconDefinition)
+            ?? _icons.TryGetValue(name, out iconDefinition);
+    }
+
+    // Called once the options are configured, so renders share a registry nothing can change
+    internal void Freeze()
+    {
+        _frozenIcons ??= _icons.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+        _frozenSemanticIcons ??= _semanticIcons.ToFrozenDictionary();
+    }
+
+    private void ThrowIfFrozen()
+    {
+        if (_frozenIcons != null)
+        {
+            throw new InvalidOperationException(
+                "Icons can't be changed after the icon options are configured. Register icons on the StellarAdminUIBuilder instead."
+            );
+        }
     }
 }

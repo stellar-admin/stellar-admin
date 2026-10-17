@@ -60,7 +60,7 @@ builder.Services.AddStellarAdminUI()
 <sa-icon name="voyager-suitcase"/>
 ```
 
-**Duplicate names cause an exception when icon options are resolved**, including names already used by a built-in icon. To replace a built-in icon, register a pack.
+**An icon whose name is already registered replaces the existing one**, including a built-in icon, so the last registration wins.
 
 ### An icon pack — `AddIconPack<T>`
 
@@ -106,7 +106,7 @@ builder.Services.AddStellarAdminUI()
     .AddIconPack<VoyagerIconPack>();
 ```
 
-`TIconPack` must have a parameterless constructor. Packs are read when icon options are first resolved. Each service provider has its own icon options; configure icons before building the application.
+`TIconPack` must have a parameterless constructor. Packs are read when the app starts, so an invalid pack or mapping stops startup. Each service provider has its own icon options. Configure icons on the builder before building the application: once configured, the options are frozen, and changing them throws `InvalidOperationException`.
 
 Icon registration uses `IconOptions` in `StellarAdmin.UI.Icons`. Configure it through `services.Configure<IconOptions>(...)` using `AddIcon`, `AddIconPack<TIconPack>`, `RemoveIcon`, and `ClearIcons`. Use `GetIconNames` to list registered names and `TryGetIcon` to look up a definition. Tag helpers read the configured options directly. Treat the options and icon definitions as read-only after startup.
 
@@ -196,7 +196,7 @@ Supply glyphs compatible with component styling: the accordion indicator points 
 
 | Member | Description |
 |--------|-------------|
-| `AddIcon(name, iconDefinition)` | Registers a single icon under a new name. Duplicate names throw when icon options are resolved. |
+| `AddIcon(name, iconDefinition)` | Registers a single icon. A same-named icon replaces the existing one. |
 | `AddIconPack<TIconPack>()` | Instantiates `TIconPack` and registers every icon it returns. Same-named icons replace existing ones. |
 | `IconOptions.MapSemanticIcon(role, name)` | Assigns a registered icon to a semantic role. |
 | `IconOptions.GetSemanticIconName(role)` | Returns the mapped icon name, or `null`. |

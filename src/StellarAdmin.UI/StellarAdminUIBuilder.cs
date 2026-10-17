@@ -26,7 +26,7 @@ public sealed class StellarAdminUIBuilder
     }
 
     /// <summary>
-    ///     Adds a custom icon.
+    ///     Adds a custom icon, replacing any icon already registered with the same name.
     /// </summary>
     /// <param name="name">The name of the icon.</param>
     /// <param name="iconDefinition">The icon definition.</param>
