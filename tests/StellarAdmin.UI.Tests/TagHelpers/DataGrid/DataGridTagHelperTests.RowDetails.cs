@@ -79,10 +79,7 @@ public partial class DataGridTagHelperTests
         // Arrange
         using var context = new RenderingContext();
         var sut = CreateGrid(context, Bookings);
-        var rowDetail = new DataGridRowDetailTagHelper
-        {
-            Toggle = DataGridRowDetailToggle.Trailing,
-        };
+        var rowDetail = new DataGridRowDetailTagHelper { Toggle = DataGridRowDetailToggle.End };
         sut.KeyField = "Id";
         var selection = new DataGridSelectionTagHelper();
 

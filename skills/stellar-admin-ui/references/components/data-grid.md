@@ -89,7 +89,7 @@ A data grid that renders a full table from declarative column definitions and a 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `toggle` | `DataGridRowDetailToggle` | `Leading` | `Leading`, `Trailing`, `None` |
+| `toggle` | `DataGridRowDetailToggle` | `Start` | `Start`, `End`, `None` |
 | `row-click` | `bool` | `false` | `true`, `false` |
 | `expand-mode` | `TableRowDetailExpandMode` | `Multiple` | `Multiple`, `Single` |
 | `emphasis` | `TableRowDetailEmphasis` | `Band` | `None`, `Band`, `Rail` |

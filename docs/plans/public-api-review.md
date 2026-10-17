@@ -47,7 +47,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | Done as `sa-button-link` under D4 (2026-10-17) |
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | Done (2026-10-17) |
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | Done (2026-10-17) |
-| J15 | Use logical `Start`/`End` names | |
+| J15 | Use logical `Start`/`End` names | Done (2026-10-17) |
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | |
 | J17 | Use `min`/`max` on Progress | |
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | |
@@ -271,6 +271,13 @@ Done (2026-10-17):
 ### J15. Start and End
 
 `InlineStart`/`BlockEnd` (input group add-on), `Leading`/`Trailing` (DataGrid row detail toggle) and `Left`/`Right` (`PositionArea`) become `Start`/`End`, plus `Top`/`Bottom` where meant.
+
+Done (2026-10-17):
+
+- `InputGroupAddonAlign` is now `Start`, `End`, `Top` and `Bottom`. The `data-align` values and the `sa-input-group-addon-align-*` classes follow, for example `start` and `top` instead of `inline-start` and `block-start`.
+- `DataGridRowDetailToggle` is now `Start`, `End` and `None`.
+- `PositionArea`, `SheetSide` and `SidebarSide` keep physical `Left`/`Right` names by decision. They name a screen position, their CSS is physical and the library has no right-to-left support. `Start`/`End` is used where the meaning is order in the layout.
+- Verified with the full test run (1385 passed), a client CSS build and a skills drift check. Not checked in a browser.
 
 ### J16. Toast namespace
 

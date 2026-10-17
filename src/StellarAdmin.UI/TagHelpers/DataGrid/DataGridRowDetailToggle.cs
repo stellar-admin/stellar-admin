@@ -6,10 +6,10 @@ namespace StellarAdmin.UI;
 public enum DataGridRowDetailToggle
 {
     /// <summary>In a column before the data columns.</summary>
-    Leading,
+    Start,
 
     /// <summary>In a column after the data columns.</summary>
-    Trailing,
+    End,
 
     /// <summary>
     ///     No toggle column; place an <c>sa-table-row-detail-toggle</c> in a column's item

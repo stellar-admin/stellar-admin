@@ -255,7 +255,7 @@
         .ToArray();
     if (messages.Length > 0)
     {
-        var columns = Model.Columns.Count + 1 + (Model.RowDetails?.Toggle is DataGridRowDetailToggle.Leading or DataGridRowDetailToggle.Trailing ? 1 : 0);
+        var columns = Model.Columns.Count + 1 + (Model.RowDetails?.Toggle is DataGridRowDetailToggle.Start or DataGridRowDetailToggle.End ? 1 : 0);
         <tr class="sa-table-row sa-row-message" data-slot="table-row">
             <td class="sa-table-cell" data-slot="table-cell" colspan="@columns">
                 <div class="sa-row-message-body" role="alert">

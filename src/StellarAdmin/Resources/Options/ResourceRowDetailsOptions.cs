@@ -46,5 +46,5 @@ public sealed class ResourceRowDetailsOptions
     /// <summary>
     ///     Where the buttons that expand and collapse rows are placed.
     /// </summary>
-    public DataGridRowDetailToggle Toggle { get; set; } = DataGridRowDetailToggle.Leading;
+    public DataGridRowDetailToggle Toggle { get; set; } = DataGridRowDetailToggle.Start;
 }

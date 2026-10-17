@@ -1,9 +1,9 @@
 /* Input group: one field drawn around an input or textarea, with addons (icons, text, kbd, buttons)
    inline or above and below. The group draws the field; the control inside gives up its own edge.
    Reads the input's tokens (input.css).
-   Replaces: .sa-input-group, .sa-input-group-addon, .sa-input-group-addon-align-inline-start,
-   .sa-input-group-addon-align-inline-end, .sa-input-group-addon-align-block-start,
-   .sa-input-group-addon-align-block-end, .sa-input-group-button, .sa-input-group-button-size-xs,
+   Replaces: .sa-input-group, .sa-input-group-addon, .sa-input-group-addon-align-start,
+   .sa-input-group-addon-align-end, .sa-input-group-addon-align-top,
+   .sa-input-group-addon-align-bottom, .sa-input-group-button, .sa-input-group-button-size-xs,
    .sa-input-group-button-size-icon-xs, .sa-input-group-button-size-icon-sm, .sa-input-group-text,
    .sa-input-group-input, .sa-input-group-textarea */
 
@@ -45,11 +45,11 @@
       opacity: var(--sa-disabled-opacity);
     }
     &:has(> textarea),
-    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+    &:has(> [data-align="top"], > [data-align="bottom"]) {
       height: auto;
       border-radius: var(--sa-radius-box);
     }
-    &:has(> [data-align="block-start"], > [data-align="block-end"]) {
+    &:has(> [data-align="top"], > [data-align="bottom"]) {
       flex-direction: column;
     }
 
@@ -69,16 +69,16 @@
         opacity: 1;
       }
     }
-    &:has(> [data-align="inline-start"]) > .sa-input-group-input {
+    &:has(> [data-align="start"]) > .sa-input-group-input {
       padding-inline-start: calc(1.5 * var(--sa-unit));
     }
-    &:has(> [data-align="inline-end"]) > .sa-input-group-input {
+    &:has(> [data-align="end"]) > .sa-input-group-input {
       padding-inline-end: calc(1.5 * var(--sa-unit));
     }
-    &:has(> [data-align="block-start"]) > .sa-input-group-input {
+    &:has(> [data-align="top"]) > .sa-input-group-input {
       padding-bottom: calc(3 * var(--sa-unit));
     }
-    &:has(> [data-align="block-end"]) > .sa-input-group-input {
+    &:has(> [data-align="bottom"]) > .sa-input-group-input {
       padding-top: calc(3 * var(--sa-unit));
     }
   }
@@ -104,7 +104,7 @@
       border-radius: var(--sa-radius-inner);
     }
   }
-  .sa-input-group-addon-align-inline-start {
+  .sa-input-group-addon-align-start {
     order: -1;
     padding-inline-start: calc(2 * var(--sa-unit));
     &:has(> button) {
@@ -114,7 +114,7 @@
       margin-inline-start: calc(-0.6 * var(--sa-unit));
     }
   }
-  .sa-input-group-addon-align-inline-end {
+  .sa-input-group-addon-align-end {
     order: 1;
     padding-inline-end: calc(2 * var(--sa-unit));
     &:has(> button) {
@@ -124,20 +124,20 @@
       margin-inline-end: calc(-0.6 * var(--sa-unit));
     }
   }
-  .sa-input-group-addon-align-block-start,
-  .sa-input-group-addon-align-block-end {
+  .sa-input-group-addon-align-top,
+  .sa-input-group-addon-align-bottom {
     justify-content: flex-start;
     width: 100%;
     padding-inline: var(--sa-control-px);
   }
-  .sa-input-group-addon-align-block-start {
+  .sa-input-group-addon-align-top {
     order: -1;
     padding-top: calc(2 * var(--sa-unit));
     &.border-b {
       padding-bottom: calc(2 * var(--sa-unit));
     }
   }
-  .sa-input-group-addon-align-block-end {
+  .sa-input-group-addon-align-bottom {
     order: 1;
     padding-bottom: calc(2 * var(--sa-unit));
     &.border-t {

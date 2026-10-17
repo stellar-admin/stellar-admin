@@ -5,17 +5,17 @@
 /// </summary>
 public enum InputGroupAddonAlign
 {
-    /// <summary>Aligned to the leading (inline start) edge of the input.</summary>
-    InlineStart,
+    /// <summary>Before the input, on the same row.</summary>
+    Start,
 
-    /// <summary>Aligned to the trailing (inline end) edge of the input.</summary>
-    InlineEnd,
+    /// <summary>After the input, on the same row.</summary>
+    End,
 
-    /// <summary>Placed on its own row above the input.</summary>
-    BlockStart,
+    /// <summary>On its own row above the input.</summary>
+    Top,
 
-    /// <summary>Placed on its own row below the input.</summary>
-    BlockEnd,
+    /// <summary>On its own row below the input.</summary>
+    Bottom,
 }
 
 internal static class InputGroupAddonAlignExtensions
@@ -26,10 +26,10 @@ internal static class InputGroupAddonAlignExtensions
         {
             return align switch
             {
-                InputGroupAddonAlign.InlineStart => "inline-start",
-                InputGroupAddonAlign.InlineEnd => "inline-end",
-                InputGroupAddonAlign.BlockStart => "block-start",
-                InputGroupAddonAlign.BlockEnd => "block-end",
+                InputGroupAddonAlign.Start => "start",
+                InputGroupAddonAlign.End => "end",
+                InputGroupAddonAlign.Top => "top",
+                InputGroupAddonAlign.Bottom => "bottom",
                 _ => string.Empty,
             };
         }

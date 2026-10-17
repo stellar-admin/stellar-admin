@@ -222,7 +222,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             headerRowBuilder.InnerHtml.AppendHtml(selectAllHeadBuilder);
         }
 
-        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Leading })
+        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Start })
         {
             headerRowBuilder.InnerHtml.AppendHtml(
                 await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
@@ -276,7 +276,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
             headerRowBuilder.InnerHtml.AppendHtml(headBuilder);
         }
 
-        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.Trailing })
+        if (gridContext.RowDetail is { Toggle: DataGridRowDetailToggle.End })
         {
             headerRowBuilder.InnerHtml.AppendHtml(
                 await RenderToggleCell(context, "th", "table-head", "sa-table-head", all: true)
@@ -486,7 +486,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                 var expanded =
                     rowKey is not null && rowDetail?.ExpandedKeys.Contains(rowKey) == true;
                 var detailRowId = rowKey is null ? null : $"{gridId}-detail-{ToIdPart(rowKey)}";
-                if (rowDetail is { Toggle: DataGridRowDetailToggle.Leading })
+                if (rowDetail is { Toggle: DataGridRowDetailToggle.Start })
                 {
                     rowBuilder.InnerHtml.AppendHtml(
                         await RenderToggleCell(
@@ -509,7 +509,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
                     rowBuilder.InnerHtml.AppendHtml(cellBuilder);
                 }
 
-                if (rowDetail is { Toggle: DataGridRowDetailToggle.Trailing })
+                if (rowDetail is { Toggle: DataGridRowDetailToggle.End })
                 {
                     rowBuilder.InnerHtml.AppendHtml(
                         await RenderToggleCell(

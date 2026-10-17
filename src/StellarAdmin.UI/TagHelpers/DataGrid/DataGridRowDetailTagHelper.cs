@@ -19,7 +19,7 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
     ///     Where the grid places the buttons that expand and collapse rows.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="DataGridRowDetailToggle.Leading" />.
+    ///     Defaults to <see cref="DataGridRowDetailToggle.Start" />.
     /// </remarks>
     [HtmlAttributeName("toggle")]
     public DataGridRowDetailToggle? Toggle { get; set; }
@@ -126,7 +126,7 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
 
         gridContext.RowDetail = new DataGridRowDetail
         {
-            Toggle = Toggle ?? DataGridRowDetailToggle.Leading,
+            Toggle = Toggle ?? DataGridRowDetailToggle.Start,
             Settings = new TableRowDetailSettings(
                 RowClick ?? false,
                 ExpandMode ?? TableRowDetailExpandMode.Multiple,

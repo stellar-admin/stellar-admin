@@ -73,10 +73,10 @@ public class CommandInputTagHelper : StellarAdminTagHelperBase
         var addon = new TagBuilder("div");
         addon.Attributes["role"] = "group";
         addon.Attributes["data-slot"] = "input-group-addon";
-        addon.Attributes["data-align"] = "inline-start";
+        addon.Attributes["data-align"] = "start";
         addon.Attributes["class"] = JoinCssClasses(
             "sa-input-group-addon",
-            "sa-input-group-addon-align-inline-start"
+            "sa-input-group-addon-align-start"
         );
         addon.InnerHtml.AppendHtml(
             CommandRenderingHelper.RenderIcon(

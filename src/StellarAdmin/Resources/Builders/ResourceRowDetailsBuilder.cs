@@ -82,7 +82,7 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     ///     Where the buttons that expand and collapse rows are placed.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="DataGridRowDetailToggle.Leading" />.
+    ///     Defaults to <see cref="DataGridRowDetailToggle.Start" />.
     /// </remarks>
     public DataGridRowDetailToggle Toggle
     {

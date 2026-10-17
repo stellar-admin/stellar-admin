@@ -33,7 +33,7 @@ internal static class CategoryResourceRegistration
                     "_CategoryProducts",
                     details =>
                     {
-                        details.Toggle = DataGridRowDetailToggle.Trailing;
+                        details.Toggle = DataGridRowDetailToggle.End;
                         details.ExpandMode = TableRowDetailExpandMode.Single;
                     }
                 );

@@ -12,23 +12,23 @@ public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
     private static readonly Dictionary<InputGroupAddonAlign, string?[]> AlignClasses =
         new Dictionary<InputGroupAddonAlign, string?[]>
         {
-            [InputGroupAddonAlign.InlineStart] = ["sa-input-group-addon-align-inline-start"],
-            [InputGroupAddonAlign.InlineEnd] = ["sa-input-group-addon-align-inline-end"],
-            [InputGroupAddonAlign.BlockStart] = ["sa-input-group-addon-align-block-start"],
-            [InputGroupAddonAlign.BlockEnd] = ["sa-input-group-addon-align-block-end"],
+            [InputGroupAddonAlign.Start] = ["sa-input-group-addon-align-start"],
+            [InputGroupAddonAlign.End] = ["sa-input-group-addon-align-end"],
+            [InputGroupAddonAlign.Top] = ["sa-input-group-addon-align-top"],
+            [InputGroupAddonAlign.Bottom] = ["sa-input-group-addon-align-bottom"],
         };
 
     /// <summary>
     ///     Where the add-on is positioned relative to the input.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="InputGroupAddonAlign.InlineStart" />.
+    ///     Defaults to <see cref="InputGroupAddonAlign.Start" />.
     /// </remarks>
     public InputGroupAddonAlign? Align { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveAlign = Align ?? InputGroupAddonAlign.InlineStart;
+        var effectiveAlign = Align ?? InputGroupAddonAlign.Start;
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;

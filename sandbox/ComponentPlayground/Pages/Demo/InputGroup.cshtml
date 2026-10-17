@@ -22,13 +22,13 @@
                 <sa-input-group-addon>
                     <sa-icon name="credit-card"/>
                 </sa-input-group-addon>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-icon name="check"/>
                 </sa-input-group-addon>
             </sa-input-group>
             <sa-input-group>
                 <sa-input-group-input placeholder="Card number"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-icon name="star"/>
                     <sa-icon name="info"/>
                 </sa-input-group-addon>
@@ -39,7 +39,7 @@
                     <sa-input-group-text>$</sa-input-group-text>
                 </sa-input-group-addon>
                 <sa-input-group-input placeholder="0.00"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-text>USD</sa-input-group-text>
                 </sa-input-group-addon>
             </sa-input-group>
@@ -48,19 +48,19 @@
                     <sa-input-group-text>https://</sa-input-group-text>
                 </sa-input-group-addon>
                 <sa-input-group-input placeholder="example.com" class="pl-0.5"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-text>.com</sa-input-group-text>
                 </sa-input-group-addon>
             </sa-input-group>
             <sa-input-group>
                 <sa-input-group-input placeholder="Enter your username"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-text>@@company.com</sa-input-group-text>
                 </sa-input-group-addon>
             </sa-input-group>
             <sa-input-group>
                 <sa-input-group-input placeholder="Enter your message"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.BlockEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.Bottom">
                     <sa-input-group-text class="text-muted-foreground text-xs">
                         120 characters left
                     </sa-input-group-text>
@@ -69,7 +69,7 @@
             <h2>Buttons</h2>
             <sa-input-group>
                 <sa-input-group-input placeholder="https://x.com/shadcn" readonly/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-button
                         aria-label="Copy"
                         title="Copy"
@@ -84,7 +84,7 @@
                     https://
                 </sa-input-group-addon>
                 <sa-input-group-input id="input-secure-19"/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-button
                         size="InputGroupButtonSize.IconExtraSmall"
                     >
@@ -94,7 +94,7 @@
             </sa-input-group>
             <sa-input-group>
                 <sa-input-group-input placeholder="Type to search..."/>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-button variant="ButtonVariant.Secondary">Search</sa-input-group-button>
                 </sa-input-group-addon>
             </sa-input-group>
@@ -104,13 +104,13 @@
                     placeholder="console.log('Hello, world!');"
                     class="min-h-[200px]"
                 />
-                <sa-input-group-addon align="InputGroupAddonAlign.BlockEnd" class="border-t">
+                <sa-input-group-addon align="InputGroupAddonAlign.Bottom" class="border-t">
                     <sa-input-group-text>Line 1, Column 1</sa-input-group-text>
                     <sa-input-group-button size="InputGroupButtonSize.Small" class="ml-auto" variant="ButtonVariant.Default">
                         Run <sa-icon name="corner-down-left"/>
                     </sa-input-group-button>
                 </sa-input-group-addon>
-                <sa-input-group-addon align="InputGroupAddonAlign.BlockStart" class="border-b">
+                <sa-input-group-addon align="InputGroupAddonAlign.Top" class="border-b">
                     <sa-input-group-text class="font-mono font-medium">
                         <sa-icon name="file-braces-corner" />
                         script.js
@@ -126,7 +126,7 @@
             <h2>Spinner</h2>
             <sa-input-group data-disabled>
                 <sa-input-group-input placeholder="Searching..." disabled />
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-spinner />
                 </sa-input-group-addon>
             </sa-input-group>
@@ -138,7 +138,7 @@
             </sa-input-group>
             <sa-input-group data-disabled>
                 <sa-input-group-input placeholder="Saving changes..." disabled />
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-text>Saving...</sa-input-group-text>
                     <sa-spinner />
                 </sa-input-group-addon>
@@ -148,7 +148,7 @@
                 <sa-input-group-addon>
                     <sa-icon name="loader" class="animate-spin" />
                 </sa-input-group-addon>
-                <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                <sa-input-group-addon align="InputGroupAddonAlign.End">
                     <sa-input-group-text class="text-muted-foreground">
                         Please wait...
                     </sa-input-group-text>
@@ -161,7 +161,7 @@
                 </sa-button-group-text>
                 <sa-input-group>
                     <sa-input-group-input id="url" />
-                    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
+                    <sa-input-group-addon align="InputGroupAddonAlign.End">
                         <sa-icon name="link-2" />
                     </sa-input-group-addon>
                 </sa-input-group>
