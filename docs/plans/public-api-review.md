@@ -24,7 +24,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | Split into `side` and `align` with enums for each component, and drop the corners. Done (2026-10-17) |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | `multiple` on ToggleGroup. The table and data grid keep an expand-mode enum each. Done (2026-10-17) |
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | Rename it to `value`. ToggleGroup gets `value` for one selection and `values` with `multiple`. Done (2026-10-17) |
-| D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | |
+| D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | Keep the explicit type arguments. No change (2026-10-17) |
 | D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | |
 | D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | |
 | D12 | Replace the row details loader delegate with a class? | Yes. A small abstract `RowDetailsLoader` with `LoadAsync(services, key, cancellationToken)`. | |
@@ -181,6 +181,15 @@ Done:
 ### D9. EF UseItems types
 
 `UseItems<TContext,TEntity,TValue>` (`StellarAdmin.EntityFrameworkCore/Editors/ChoiceEditorExtensions.cs:17`, and the lookup extensions) cannot infer `TContext`. Callers must write `UseItems<AppDbContext, Customer, int>(...)`. Core's `LookupSheetEditor.UseItems<TSource,TEntity,TValue>` has the same problem. The skills docs need updating with the change.
+
+Decision (Jerrie, 2026-10-17): keep `UseItems<TContext, TEntity, TValue>(value, title)` with explicit type arguments. No API change.
+
+Reasoning:
+- A set selector with a typed lambda parameter, `(AppDbContext db) => db.Customers`, lets C# infer all three types. It was prototyped on `ChoiceEditor` and `LookupSheetEditor` in the AdminPlayground and then reverted.
+- Typing a lambda parameter only to drive inference is uncommon in configuration APIs. Minimal API handlers are the closest familiar case. Readers may not realise the type arguments can be left off.
+- It would be the only place in StellarAdmin with this shape. Everywhere else, callers name the types: `AddEfCoreResource<TContext, TEntity>`, `AllowCreate<TModel, THandler>`, `EnableRowDetails<TModel, THandler>` and core `LookupSheetEditor.UseItems<TSource, TEntity, TValue>`. None of those can infer their types, because there is no lambda argument to infer from.
+- The same lookup sheet would then take two styles depending on where the items come from: a selector for EF and explicit type arguments for a custom `ILookupSource`.
+- The explicit form is longer, but it is ordinary C# and matches the rest of the API.
 
 ### D10. Custom editors vs custom displays
 
