@@ -1,15 +1,17 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
+/// <summary>
+///     Supplies the Lucide icons.
+/// </summary>
 public sealed class LucideIconPack : IIconPack
 {
+    /// <inheritdoc />
     public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return LucideIcons.IconDefinitions;
     }
 
-    /// <summary>
-    ///     Returns the Lucide icon names used for semantic roles.
-    /// </summary>
+    /// <inheritdoc />
     public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
     {
         return new Dictionary<SemanticIconRole, string>

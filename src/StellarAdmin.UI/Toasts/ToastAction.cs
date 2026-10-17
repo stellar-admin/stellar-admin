@@ -1,17 +1,17 @@
 namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
-///     An action button shown on a toast.
+///     Represents a button on a toast.
 /// </summary>
 public sealed class ToastAction
 {
     /// <summary>
-    ///     The URL the action navigates to.
+    ///     Gets the URL that the button navigates to.
     /// </summary>
     public string Href { get; }
 
     /// <summary>
-    ///     The button label.
+    ///     Gets the text of the button.
     /// </summary>
     public string Label { get; }
 
@@ -22,12 +22,17 @@ public sealed class ToastAction
     }
 
     /// <summary>
-    ///     Returns an action that navigates to a URL.
+    ///     Returns a button that navigates to a URL.
     /// </summary>
-    /// <param name="label">The button label.</param>
+    /// <param name="label">The text of the button.</param>
     /// <param name="href">The URL to navigate to.</param>
-    /// <returns>The <see cref="ToastAction" /> instance.</returns>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The new button.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="label" /> or <paramref name="href" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="label" /> or <paramref name="href" /> is empty or white space.
+    /// </exception>
     public static ToastAction Link(string label, string href)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(label);

@@ -1,17 +1,23 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a <c>&lt;sa-avatar&gt;</c>.
+///     Specifies the size of an avatar.
 /// </summary>
 public enum AvatarSize
 {
-    /// <summary>The default avatar size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A small avatar.</summary>
+    /// <summary>
+    ///     A small size.
+    /// </summary>
     Small,
 
-    /// <summary>A large avatar.</summary>
+    /// <summary>
+    ///     A large size.
+    /// </summary>
     Large,
 }
 

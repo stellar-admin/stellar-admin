@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A vertically stacked set of collapsible items, each of which can be expanded to reveal its content.
+///     Renders a vertical stack of items that each expand to show their content.
 /// </summary>
 [HtmlTargetElement("sa-accordion")]
 public class AccordionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

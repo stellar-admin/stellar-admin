@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of a popover; typically contains the title and description.
+///     Renders the header of a popover, which usually holds its title and description.
 /// </summary>
 [HtmlTargetElement("sa-popover-header")]
 public class PopoverHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Base class for tag helpers that render through a view. The view resolves like a
-///     partial view, so an application can override the markup by supplying its own view
-///     with the same name.
+///     Provides the base class for tag helpers that render a view.
 /// </summary>
+/// <remarks>
+///     The view is found like a partial view, so an application can replace the markup with its
+///     own view of the same name. Child content other than <c>&lt;sa-slot-content&gt;</c> isn't
+///     rendered.
+/// </remarks>
 public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelperBase
 {
     internal const string SlotHostViewDataKey = "__StellarAdminSlotHost";
@@ -17,24 +20,44 @@ public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelper
     private readonly ICompositeViewEngine _viewEngine;
 
     /// <summary>
-    ///     The name or application-relative path of a view that replaces the tag helper's
-    ///     default view.
+    ///     Gets or sets the name or path of a view that replaces the default view.
     /// </summary>
+    /// <value>
+    ///     The name of the view, or a path relative to the application root. The default is the
+    ///     tag helper's own view.
+    /// </value>
     [HtmlAttributeName("view")]
     public string? View { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
-    /// <summary>The name of the view the tag helper renders.</summary>
+    /// <summary>
+    ///     Gets the name of the default view.
+    /// </summary>
     protected abstract string ViewName { get; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="StellarAdminTemplatedTagHelperBase" />
+    ///     class.
+    /// </summary>
+    /// <param name="viewEngine">The view engine that finds the view.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="viewEngine" /> is <see langword="null" />.
+    /// </exception>
     protected StellarAdminTemplatedTagHelperBase(ICompositeViewEngine viewEngine)
     {
         _viewEngine = viewEngine ?? throw new ArgumentNullException(nameof(viewEngine));
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The view can't be found.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // Executing the child content runs any <sa-slot-content> children, which assign
@@ -63,7 +86,10 @@ public abstract class StellarAdminTemplatedTagHelperBase : StellarAdminTagHelper
         output.Content.SetHtmlContent(writer.ToString());
     }
 
-    /// <summary>Returns the model of the view.</summary>
+    /// <summary>
+    ///     Returns the model to pass to the view.
+    /// </summary>
+    /// <returns>The model of the view.</returns>
     protected abstract object? GetViewModel();
 
     private IView ResolveView(string viewName)

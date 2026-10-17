@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A line of muted descriptive text within an empty state header.
+///     Renders the description in an empty state's header.
 /// </summary>
 [HtmlTargetElement("sa-empty-description")]
 public class EmptyDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

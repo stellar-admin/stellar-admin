@@ -6,16 +6,16 @@ generated: true
 
 # Slider
 
-An input for selecting a numeric value, or a range of values, by dragging one or more thumbs along a track.
+Renders an input that selects a number, or a range of numbers, by dragging thumbs along a track.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-slider>` | An input for selecting a numeric value, or a range of values, by dragging one or more thumbs along a track. |
-| `<sa-slider-mark>` | A mark at one value of a `<sa-slider>`, labelled with its content when it has any. |
-| `<sa-slider-marks>` | The marks along a `<sa-slider>`. Contains authored `<sa-slider-mark>` elements, or generates a mark every `Interval` when it has none. |
-| `<sa-slider-value>` | Displays the current value of a `<sa-slider>`, rendered as an `<output>` that the slider fills in the browser and updates as it moves. Inside a field it shows that field's slider; elsewhere, `For` names the slider. |
+| `<sa-slider>` | Renders an input that selects a number, or a range of numbers, by dragging thumbs along a track. |
+| `<sa-slider-mark>` | Renders a mark at one value of a slider. |
+| `<sa-slider-marks>` | Renders marks along a slider. |
+| `<sa-slider-value>` | Renders the current value of a slider, which updates as the slider moves. |
 
 ## Attributes
 
@@ -23,10 +23,10 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `min` | `double` | — | — |
-| `max` | `double` | — | — |
-| `step` | `double` | — | — |
-| `min-distance` | `double` | — | — |
+| `min` | `double` | `0` | — |
+| `max` | `double` | `100` | — |
+| `step` | `double` | `1` | — |
+| `min-distance` | `double` | `0` | — |
 | `orientation` | `SliderOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `thumb-alignment` | `SliderThumbAlignment` | `Edge` | `Center`, `Edge` |
 | `disabled` | `bool` | `false` | `true`, `false` |
@@ -34,7 +34,7 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 | `value-format` | `string` | — | — |
 | `thumb-labels` | `string` | — | — |
 | `form` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -63,7 +63,7 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `interval` | `double` | `step` | — |
+| `interval` | `double` | — | — |
 | `labels` | `SliderMarkLabels` | `None` | `None`, `Ends`, `All` |
 | `show-ticks` | `bool` | `true` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |

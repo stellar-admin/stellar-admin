@@ -5,23 +5,31 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The button that removes a chip, placed after its label. It renders a close icon when it
-///     has no content, and requires an <c>aria-label</c> that names the chip, such as
-///     "Remove Lisbon".
+///     Renders a button that removes a chip.
 /// </summary>
 /// <remarks>
-///     The button does not remove the chip itself; handle its click to update the value.
+///     Requires an <c>aria-label</c> that names the chip, such as "Remove Lisbon". Shows a close
+///     icon when the element has no content. The button doesn't remove the chip. Handle its click
+///     to update the value.
 /// </remarks>
 [HtmlTargetElement("sa-chip-remove")]
 public class ChipRemoveTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ChipRemoveTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the close icon.</param>
     public ChipRemoveTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The element has no <c>aria-label</c> attribute.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         if (!output.Attributes.ContainsName("aria-label"))

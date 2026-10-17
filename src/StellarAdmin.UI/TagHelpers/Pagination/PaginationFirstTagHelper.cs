@@ -7,8 +7,11 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A pagination link that navigates to the first page.
+///     Renders a pagination link to the first page.
 /// </summary>
+/// <remarks>
+///     With no content, the link shows an arrow icon and the label "First".
+/// </remarks>
 [HtmlTargetElement("sa-pagination-first")]
 public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
 {
@@ -16,17 +19,30 @@ public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     The size of the rendered pagination button.
+    ///     Gets or sets the size of the link.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PaginationFirstTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that builds the link URL from the routing attributes.</param>
+    /// <param name="iconOptions">The icon options that supply the default arrow icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public PaginationFirstTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.SetAttribute(

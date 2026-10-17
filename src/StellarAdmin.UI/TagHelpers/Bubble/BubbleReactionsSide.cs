@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The vertical edge of the bubble that a reactions row is anchored to.
+///     Specifies the vertical edge of a bubble that its reactions sit on.
 /// </summary>
 public enum BubbleReactionsSide
 {
-    /// <summary>Anchors the reactions row to the top edge of the bubble.</summary>
+    /// <summary>
+    ///     On the top edge of the bubble.
+    /// </summary>
     Top,
 
-    /// <summary>Anchors the reactions row to the bottom edge of the bubble.</summary>
+    /// <summary>
+    ///     On the bottom edge of the bubble.
+    /// </summary>
     Bottom,
 }
 

@@ -9,16 +9,17 @@ using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelp
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A segmented one-time-code input. A single real <c>&lt;input&gt;</c> holds the whole code
-///     and posts it as one form value;
-///     the presentational slot cells (one per character) display the value and the active caret.
-///     The <c>sel-input-otp</c> web component distributes the value into the cells and drives the
-///     active / caret state once hydrated.
+///     Renders a one-time code input with a slot for each character.
 /// </summary>
 /// <remarks>
-///     Slots can be auto-generated from <c>maxlength</c> (optionally split into groups via
-///     <c>groups</c>), or composed by hand with <c>sa-input-otp-group</c>,
-///     <c>sa-input-otp-slot</c>, and <c>sa-input-otp-separator</c> children.
+///     <para>
+///         The whole code posts as one form value. Slots are generated from <c>maxlength</c> and
+///         <c>groups</c>, or written by hand with <c>&lt;sa-input-otp-group&gt;</c>,
+///         <c>&lt;sa-input-otp-slot&gt;</c> and <c>&lt;sa-input-otp-separator&gt;</c>.
+///     </para>
+///     <para>
+///         Requires <c>stellar-admin.js</c>.
+///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-input-otp")]
 public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
@@ -26,6 +27,14 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="InputOtpTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders a bound input, label and error.</param>
+    /// <param name="iconOptions">The icon options that supply the separator icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public InputOtpTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : base(htmlGenerator)
     {
@@ -34,60 +43,90 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
     }
 
     /// <summary>
-    ///     The number of slots. Defaults to 6 (or the sum of <see cref="Groups" /> when set).
+    ///     Gets or sets the number of characters in the code.
     /// </summary>
+    /// <value>
+    ///     The default is the sum of the group sizes, or 6 when no groups are set.
+    /// </value>
     [HtmlAttributeName("maxlength")]
     public int? MaxLength { get; set; }
 
     /// <summary>
-    ///     A regular expression the input is constrained to (characters that would make the value
-    ///     fail to match are rejected). Defaults to digits only (<c>^\d*$</c>).
+    ///     Gets or sets the regular expression that the code must match.
     /// </summary>
+    /// <value>
+    ///     The default is <c>^\d*$</c>, which accepts digits only.
+    /// </value>
+    /// <remarks>
+    ///     Characters that would stop the code from matching are rejected as they're typed.
+    /// </remarks>
     [HtmlAttributeName("pattern")]
     public string? Pattern { get; set; }
 
     /// <summary>
-    ///     Splits the slots into groups (separated by a separator), e.g. <c>"3,3"</c>. When omitted
-    ///     all slots render in a single group. The sizes must sum to <see cref="MaxLength" /> when
-    ///     both are set.
+    ///     Gets or sets the sizes of the groups that the slots are split into.
     /// </summary>
+    /// <value>
+    ///     A comma-separated list of positive numbers, such as <c>3,3</c>. The default is one group.
+    /// </value>
+    /// <remarks>
+    ///     When <see cref="MaxLength" /> is also set, the sizes must add up to it.
+    /// </remarks>
     [HtmlAttributeName("groups")]
     public string? Groups { get; set; }
 
     /// <summary>
-    ///     The virtual keyboard hint applied to the input. Defaults to <c>numeric</c>.
+    ///     Gets or sets the kind of on-screen keyboard to show.
     /// </summary>
+    /// <value>
+    ///     An HTML <c>inputmode</c> value. The default is <c>numeric</c>.
+    /// </value>
     [HtmlAttributeName("inputmode")]
     public string? InputMode { get; set; }
 
     /// <summary>
-    ///     Whether the input is disabled.
+    ///     Gets or sets a value that indicates whether the input is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the input is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Forces the invalid (error) styling. Set to <c>true</c> for manual validation when not
-    ///     model binding; otherwise the invalid state is derived from the bound field's ModelState.
+    ///     Gets or sets a value that indicates whether the input is shown as invalid.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the input is shown as invalid; otherwise,
+    ///     <see langword="false" />. The default is based on whether the field has an error.
+    /// </value>
     [HtmlAttributeName("aria-invalid")]
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
-    ///     The initial code when not bound via <c>asp-for</c>.
+    ///     Gets or sets the code.
     /// </summary>
+    /// <remarks>
+    ///     Used when the input isn't bound with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     The id of the form the input is associated with.
+    ///     Gets or sets the <c>id</c> of the form that the input belongs to.
     /// </summary>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentException">
+    ///     <see cref="Groups" /> has no sizes or a size that isn't positive, or its sizes don't add
+    ///     up to <see cref="MaxLength" />.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <see cref="MaxLength" /> isn't positive.
+    /// </exception>
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

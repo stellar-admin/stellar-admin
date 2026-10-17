@@ -3,31 +3,41 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The details of the table row before it, rendered as a <c>&lt;tr&gt;</c> with one cell
-///     spanning every column. It is collapsed until the row's
-///     <c>sa-table-row-detail-toggle</c> expands it.
+///     Renders the details of the table row before it.
 /// </summary>
+/// <remarks>
+///     The details are a row with one cell that spans the columns. They stay collapsed until the
+///     row's <c>&lt;sa-table-row-detail-toggle&gt;</c> expands them. Expanding and collapsing
+///     the details raises the bubbling <c>rowdetailexpand</c> and <c>rowdetailcollapse</c>
+///     events on this row.
+/// </remarks>
 [HtmlTargetElement("sa-table-row-detail")]
 public class TableRowDetailTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether the details render expanded. Expanding a row in the browser raises
-    ///     <c>rowdetailexpand</c>; a row rendered expanded does not, so render its content
-    ///     directly rather than loading it on expand.
+    ///     Gets or sets a value that indicates whether the details are expanded when the page loads.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the details are expanded; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Details that start expanded don't raise <c>rowdetailexpand</c>, so render their content
+    ///     directly instead of loading it when they expand.
     /// </remarks>
     [HtmlAttributeName("expanded")]
     public bool? Expanded { get; set; }
 
     /// <summary>
-    ///     The number of columns the details span. When omitted, the details span every column
-    ///     of the table's header row.
+    ///     Gets or sets the number of columns that the details span.
     /// </summary>
+    /// <value>
+    ///     The number of columns. The default spans every column of the table's header row.
+    /// </value>
     [HtmlAttributeName("colspan")]
     public int? Colspan { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var expanded = Expanded ?? false;

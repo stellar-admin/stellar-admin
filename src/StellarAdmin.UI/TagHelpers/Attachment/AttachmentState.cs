@@ -1,23 +1,33 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The point an attachment has reached in its upload lifecycle.
+///     Specifies how far an attachment has progressed through its upload.
 /// </summary>
 public enum AttachmentState
 {
-    /// <summary>Nothing has been attached yet, drawn with a dashed border as a drop target.</summary>
+    /// <summary>
+    ///     Nothing is attached yet, and the attachment shows a dashed border.
+    /// </summary>
     Idle,
 
-    /// <summary>The file is being uploaded, and its title shimmers.</summary>
+    /// <summary>
+    ///     The file is uploading, and its title shimmers.
+    /// </summary>
     Uploading,
 
-    /// <summary>The upload finished and the file is being processed, and its title shimmers.</summary>
+    /// <summary>
+    ///     The file is uploaded and being processed, and its title shimmers.
+    /// </summary>
     Processing,
 
-    /// <summary>The upload or processing failed.</summary>
+    /// <summary>
+    ///     The upload or processing failed.
+    /// </summary>
     Error,
 
-    /// <summary>The file is available.</summary>
+    /// <summary>
+    ///     The file is available.
+    /// </summary>
     Done,
 }
 

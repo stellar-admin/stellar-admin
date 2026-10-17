@@ -5,45 +5,57 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A control that scrolls a message scroller to the start or the end of its transcript.
+///     Renders a button that scrolls a message scroller to the start or end of its transcript.
 /// </summary>
+/// <remarks>
+///     The button stays hidden until there is something to scroll to. With no content, it shows an
+///     arrow icon and a screen reader label. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-message-scroller-button")]
 public class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="MessageScrollerButtonTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the default arrow icon.</param>
     public MessageScrollerButtonTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
-    ///     The end of the transcript the button scrolls to.
+    ///     Gets or sets the end of the transcript that the button scrolls to.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="MessageScrollerDirection.End" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the end of the transcript. The default is
+    ///     <see cref="MessageScrollerDirection.End" />.
+    /// </value>
     [HtmlAttributeName("direction")]
     public MessageScrollerDirection? Direction { get; set; }
 
     /// <summary>
-    ///     The size of the button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.IconSmall" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.IconSmall" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual style of the button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Secondary" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="ButtonVariant.Secondary" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDirection = Direction ?? MessageScrollerDirection.End;

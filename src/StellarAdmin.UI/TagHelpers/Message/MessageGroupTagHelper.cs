@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container that stacks consecutive messages from the same sender.
+///     Renders a group of consecutive messages from the same sender.
 /// </summary>
 [HtmlTargetElement("sa-message-group")]
 public class MessageGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

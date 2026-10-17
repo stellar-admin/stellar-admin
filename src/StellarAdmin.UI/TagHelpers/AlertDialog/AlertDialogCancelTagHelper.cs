@@ -3,23 +3,27 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The dismissing button of an alert dialog. Renders a styled outline submit button with
-///     <c>value="cancel"</c> so a wrapping <c>&lt;form method="dialog"&gt;</c> closes the dialog
-///     with that <c>returnValue</c> (which the <c>stellarAdmin.alertDialog</c> helper reads as
-///     <c>confirmed: false</c>).
+///     Renders the button that cancels an alert dialog.
 /// </summary>
+/// <remarks>
+///     The button submits with the value <c>cancel</c>, unless it sets its own <c>value</c>.
+///     Inside a <c>&lt;form method="dialog"&gt;</c>, it closes the dialog with that return
+///     value.
+/// </remarks>
 [HtmlTargetElement("sa-alert-dialog-cancel")]
 public class AlertDialogCancelTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The visual style of the cancel button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Outline" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ButtonVariant.Outline" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ButtonVariant.Outline;

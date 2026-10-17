@@ -7,8 +7,11 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A pagination link that navigates to the previous page.
+///     Renders a pagination link to the previous page.
 /// </summary>
+/// <remarks>
+///     With no content, the link shows an arrow icon and the label "Previous".
+/// </remarks>
 [HtmlTargetElement("sa-pagination-previous")]
 public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
 {
@@ -16,11 +19,23 @@ public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     The size of the rendered pagination button.
+    ///     Gets or sets the size of the link.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PaginationPreviousTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that builds the link URL from the routing attributes.</param>
+    /// <param name="iconOptions">The icon options that supply the default arrow icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public PaginationPreviousTagHelper(
         IHtmlGenerator htmlGenerator,
         IOptions<IconOptions> iconOptions
@@ -30,6 +45,7 @@ public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.SetAttribute(

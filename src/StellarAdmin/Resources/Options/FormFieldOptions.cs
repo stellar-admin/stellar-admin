@@ -5,45 +5,53 @@ using StellarAdmin.Resources.Editors;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     A configured field of a form page.
+///     Stores the configuration of a form field.
 /// </summary>
 public sealed class FormFieldOptions : FormItemOptions
 {
     /// <summary>
-    ///     The help text shown with the field, or <c>null</c> to derive it from the property's
-    ///     metadata.
+    ///     Gets the help text shown with the field.
     /// </summary>
+    /// <value>
+    ///     The help text, or <see langword="null" /> to use the property's description.
+    /// </value>
     public string? Description { get; internal set; }
 
     /// <summary>
-    ///     The editor's configuration.
+    ///     Gets the editor that renders the field.
     /// </summary>
     public FieldEditor Editor { get; internal set; } = new();
 
     /// <summary>
-    ///     The expression selecting the property the field renders and binds.
+    ///     Gets the expression that selects the property the field edits.
     /// </summary>
     public LambdaExpression FieldExpression { get; }
 
     /// <summary>
-    ///     The property path selected by <see cref="FieldExpression" />.
+    ///     Gets the property path that <see cref="FieldExpression" /> selects.
     /// </summary>
     public string FieldName { get; }
 
     /// <summary>
-    ///     Whether the field renders read-only and is excluded from the form's binding
-    ///     allow-list — a posted value for it is ignored.
+    ///     Gets a value that indicates whether the field is read-only.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the field is read-only and a posted value for it is ignored;
+    ///     otherwise, <see langword="false" />.
+    /// </value>
     public bool IsReadOnly { get; internal set; }
 
     /// <summary>
-    ///     The properties selected by <see cref="FieldExpression" />, in order.
+    ///     Gets the properties that <see cref="FieldExpression" /> selects, in order.
     /// </summary>
     public IReadOnlyList<PropertyInfo> PropertyPath { get; }
 
     /// <summary>
-    ///     The field label, or <c>null</c> to derive it from the property's metadata.
+    ///     Gets the field's label.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the property's display name.
+    /// </value>
     public string? Title { get; internal set; }
 
     internal Type? HandlerType { get; set; }

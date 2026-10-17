@@ -1,17 +1,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a toggle group.
+///     Holds additional CSS classes for the parts of a toggle group.
 /// </summary>
 public class ToggleGroupClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the toggle group container.
+    ///     Gets or sets additional CSS classes for the element that holds the items.
     /// </summary>
     public string? Control { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each toggle item.
+    ///     Gets or sets additional CSS classes for each item.
     /// </summary>
     public string? Item { get; set; }
 }

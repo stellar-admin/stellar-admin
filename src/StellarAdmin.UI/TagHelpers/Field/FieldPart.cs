@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A supporting part that a field can automatically render around its control.
+///     Specifies a part that a control's field renders around the control.
 /// </summary>
 public enum FieldPart
 {

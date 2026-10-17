@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The row holding a questionnaire's navigation buttons.
+///     Renders the row that holds a questionnaire's navigation buttons.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-actions")]
 public class QuestionnaireActionsTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The edge of the screen a sidebar is anchored to.
+///     Specifies the edge of the screen that a sidebar sits on.
 /// </summary>
 public enum SidebarSide
 {
-    /// <summary>Anchored to the left edge.</summary>
+    /// <summary>
+    ///     The sidebar sits on the left edge.
+    /// </summary>
     Left,
 
-    /// <summary>Anchored to the right edge.</summary>
+    /// <summary>
+    ///     The sidebar sits on the right edge.
+    /// </summary>
     Right,
 }
 

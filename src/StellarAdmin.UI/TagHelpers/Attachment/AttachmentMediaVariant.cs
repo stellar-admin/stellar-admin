@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The kind of media held by an attachment's media region.
+///     Specifies the kind of media an attachment shows.
 /// </summary>
 public enum AttachmentMediaVariant
 {
-    /// <summary>An icon standing in for the file type.</summary>
+    /// <summary>
+    ///     An icon that represents the file type.
+    /// </summary>
     Icon,
 
-    /// <summary>A thumbnail preview of the file itself.</summary>
+    /// <summary>
+    ///     A thumbnail of the file.
+    /// </summary>
     Image,
 }
 

@@ -6,58 +6,68 @@ namespace StellarAdmin.UI;
 ///     Lays out fields and other content in responsive columns.
 /// </summary>
 /// <remarks>
-///     Fields and display fields placed directly in the grid set their own span with
-///     <c>column-span</c>; other content spans through an <c>&lt;sa-grid-item&gt;</c>.
+///     Breakpoints are measured against the width of the grid. Fields and display fields placed
+///     directly in the grid set their own span with <c>column-span</c>. Other content spans
+///     through an <c>&lt;sa-grid-item&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-grid")]
 public class GridTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The number of columns when the grid is at least 40rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns when the grid is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at 30rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to 1. Narrower grids use one column, unless <see cref="ColumnsBase" /> or
-    ///     <see cref="ColumnsSmall" /> is set.
+    ///     Same as <c>columns-md</c>. Set one or the other, not both.
     /// </remarks>
     [HtmlAttributeName("columns")]
     public int? Columns { get; set; }
 
     /// <summary>
-    ///     The number of columns at the smallest width, from 1 to 12.
+    ///     Gets or sets the number of columns at the smallest width.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to 1.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is <c>1</c>.
+    /// </value>
     [HtmlAttributeName("columns-base")]
     public int? ColumnsBase { get; set; }
 
     /// <summary>
-    ///     The number of columns when the grid is at least 56rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns when the grid is at least 56rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the number of columns at 40rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at 40rem.
+    /// </value>
     [HtmlAttributeName("columns-lg")]
     public int? ColumnsLarge { get; set; }
 
     /// <summary>
-    ///     The number of columns when the grid is at least 40rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns when the grid is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at 30rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="Columns" />, otherwise the number of columns at 30rem.
+    ///     Same as <c>columns</c>. Set one or the other, not both.
     /// </remarks>
     [HtmlAttributeName("columns-md")]
     public int? ColumnsMedium { get; set; }
 
     /// <summary>
-    ///     The number of columns when the grid is at least 30rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns when the grid is at least 30rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the number of columns at the smallest width.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at the smallest width.
+    /// </value>
     [HtmlAttributeName("columns-sm")]
     public int? ColumnsSmall { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     A column count is outside 1 to 12, or both <c>columns</c> and <c>columns-md</c> are set.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columns = GridLayout.ResolveColumns(

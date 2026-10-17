@@ -6,15 +6,22 @@ namespace StellarAdmin.Resources.Editors;
 ///     Configures a local date and time input editor.
 /// </summary>
 /// <remarks>
-///     A <see cref="DateTimeOffset" /> property renders a text input with the round-trip format, so its offset is kept.
+///     A <see cref="DateTimeOffset" /> property renders a text input in the round-trip format, so
+///     its offset is kept. That input ignores <see cref="Step" />,
+///     <see cref="TemporalInputEditor{TValue}.Min" /> and
+///     <see cref="TemporalInputEditor{TValue}.Max" />.
 /// </remarks>
 public sealed class DateTimeInputEditor
     : TemporalInputEditor<DateTime>,
         IFieldEditor<DateTimeInputEditorHandler>
 {
     /// <summary>
-    ///     The interval between accepted times, or null to accept any time.
+    ///     Gets or sets the interval between accepted times.
     /// </summary>
+    /// <value>
+    ///     The interval, or <see langword="null" /> to accept any time. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public TimeSpan? Step { get; set; }
 
     internal override TemporalInputAttributes ResolveAttributes(ModelMetadata metadata)

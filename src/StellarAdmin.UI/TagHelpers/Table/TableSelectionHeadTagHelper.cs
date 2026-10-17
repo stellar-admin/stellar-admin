@@ -7,16 +7,26 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A header cell with the checkbox that selects or clears every row, for an
-///     <c>sa-table</c> with <c>selection</c>. It heads the column of
-///     <c>sa-table-selection-cell</c> cells.
+///     Renders a table header cell with a checkbox that selects or clears every row.
 /// </summary>
+/// <remarks>
+///     Use it in a <c>&lt;sa-table&gt;</c> with <c>selection</c>, above the column of
+///     <c>&lt;sa-table-selection-cell&gt;</c> cells.
+/// </remarks>
 [HtmlTargetElement("sa-table-selection-head", TagStructure = TagStructure.WithoutEndTag)]
 public class TableSelectionHeadTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TableSelectionHeadTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the checkbox.</param>
+    /// <param name="iconOptions">The icon options that supply the checkbox's check mark.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public TableSelectionHeadTagHelper(
         IHtmlGenerator htmlGenerator,
         IOptions<IconOptions> iconOptions
@@ -27,18 +37,22 @@ public class TableSelectionHeadTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     The checkbox's accessible label.
+    ///     Gets or sets the accessible label of the checkbox.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to "Select all".
-    /// </remarks>
+    /// <value>
+    ///     The label. The default is <c>Select all</c>.
+    /// </value>
     [HtmlAttributeName("label")]
     public string? Label { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "th";

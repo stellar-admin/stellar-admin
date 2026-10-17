@@ -6,7 +6,7 @@ generated: true
 
 # RadioGroup
 
-A group of radio options bound to a scalar value.
+Renders a group of radio buttons that posts a single value.
 
 <!-- structure:begin -->
 ## When to use
@@ -35,9 +35,9 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-radio-group>` | A group of radio options bound to a scalar value. |
-| `<sa-radio-group-item>` | An option in a radio group. |
-| `<sa-radio-group-item-media>` | The media of a radio group option, such as an icon, avatar or image. It sits before the option's text, or leads the card in the choice card variant. |
+| `<sa-radio-group>` | Renders a group of radio buttons that posts a single value. |
+| `<sa-radio-group-item>` | Renders an option in a radio group. |
+| `<sa-radio-group-item-media>` | Renders the media of a radio group option, such as an icon, avatar or image. |
 
 ## Attributes
 
@@ -49,13 +49,13 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 | `value` | `string` | — | — |
 | `variant` | `RadioGroupVariant` | `Default` | `Default`, `ChoiceCard` |
 | `columns` | `int` | — | — |
-| `columns-base` | `int` | — | — |
+| `columns-base` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -78,7 +78,7 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `description` | `string` | — | — |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

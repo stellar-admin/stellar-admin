@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of the sidebar, pinned above its content; typically holds branding or a workspace switcher.
+///     Renders the header of a sidebar, above its content.
 /// </summary>
+/// <remarks>
+///     The header usually holds branding or a workspace switcher.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-header")]
 public class SidebarHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

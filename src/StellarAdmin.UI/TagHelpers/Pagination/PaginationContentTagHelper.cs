@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The list that holds the individual pagination items.
+///     Renders the list that holds the pagination items.
 /// </summary>
 [HtmlTargetElement("sa-pagination-content")]
 public class PaginationContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ul";

@@ -6,17 +6,17 @@ generated: true
 
 # MessageScroller
 
-A scrolling frame for a conversation, holding the transcript and its scroll controls.
+Renders a scrolling frame for a conversation, with its transcript and scroll buttons.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-message-scroller>` | A scrolling frame for a conversation, holding the transcript and its scroll controls. |
-| `<sa-message-scroller-button>` | A control that scrolls a message scroller to the start or the end of its transcript. |
-| `<sa-message-scroller-content>` | The transcript inside a message scroller, stacking its messages. |
-| `<sa-message-scroller-item>` | A single row of a message scroller's transcript, wrapping one message. |
-| `<sa-message-scroller-viewport>` | The scrolling region of a message scroller, wrapping the transcript. |
+| `<sa-message-scroller>` | Renders a scrolling frame for a conversation, with its transcript and scroll buttons. |
+| `<sa-message-scroller-button>` | Renders a button that scrolls a message scroller to the start or end of its transcript. |
+| `<sa-message-scroller-content>` | Renders the transcript of a message scroller, which stacks its messages. |
+| `<sa-message-scroller-item>` | Renders a row of a message scroller's transcript, which holds one message. |
+| `<sa-message-scroller-viewport>` | Renders the scrolling area of a message scroller, which holds the transcript. |
 
 ## Attributes
 

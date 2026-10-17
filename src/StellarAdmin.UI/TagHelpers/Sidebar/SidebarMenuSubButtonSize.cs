@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a sidebar submenu button.
+///     Specifies the size of a sidebar submenu button.
 /// </summary>
 public enum SidebarMenuSubButtonSize
 {
-    /// <summary>The standard size.</summary>
+    /// <summary>
+    ///     The standard text size.
+    /// </summary>
     Default,
 
-    /// <summary>A more compact size.</summary>
+    /// <summary>
+    ///     A smaller text size.
+    /// </summary>
     Small,
 }
 

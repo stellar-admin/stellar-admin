@@ -1,7 +1,7 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
 /// <summary>
-///     The purpose of a built-in component icon.
+///     Specifies the purpose of an icon that a built-in component renders.
 /// </summary>
 public enum SemanticIconRole
 {

@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The focus/highlight intensity of menu items (Dropdown Menu, and future menu families).
+///     Specifies how strongly menu items are highlighted when focused.
 /// </summary>
 public enum MenuAccent
 {
-    /// <summary>A low-contrast highlight (the muted <c>accent</c> color).</summary>
+    /// <summary>
+    ///     A low-contrast highlight tinted by the accent color.
+    /// </summary>
     Subtle,
 
-    /// <summary>A solid highlight in the <c>primary</c> color.</summary>
+    /// <summary>
+    ///     A solid highlight in the accent color.
+    /// </summary>
     Bold,
 }
 

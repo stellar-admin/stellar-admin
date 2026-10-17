@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A horizontal divider used to separate items within a group.
+///     Renders a horizontal line between items in a group.
 /// </summary>
 [HtmlTargetElement("sa-item-separator")]
 public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.SetAttribute("data-slot", "item-separator");

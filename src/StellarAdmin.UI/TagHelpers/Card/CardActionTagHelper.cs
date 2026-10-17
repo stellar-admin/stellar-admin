@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An action region within a card header, aligned to the top-right corner; typically
-///     contains a button or other interactive control.
+///     Renders an area in the top-right corner of a card header for a button or other control.
 /// </summary>
 [HtmlTargetElement("sa-card-action")]
 public class CardActionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

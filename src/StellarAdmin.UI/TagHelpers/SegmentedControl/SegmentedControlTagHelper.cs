@@ -4,32 +4,56 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A group of radio buttons styled as a segmented control.
+///     Renders a group of radio buttons as a segmented control.
 /// </summary>
+/// <remarks>
+///     Bind it with <c>asp-for</c> or set <c>name</c>. Add the options as
+///     <c>sa-segmented-control-item</c> elements.
+/// </remarks>
 [HtmlTargetElement("sa-segmented-control")]
 public class SegmentedControlTagHelper : FieldInputBaseTagHelper<SegmentedControlClassNames>
 {
     /// <summary>
-    ///     Whether all options are disabled.
+    ///     Gets or sets a value that indicates whether every option is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if every option is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Whether an option must be selected before submitting the form.
+    ///     Gets or sets a value that indicates whether an option must be selected before the form
+    ///     is submitted.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if an option must be selected; otherwise,
+    ///     <see langword="false" />. The default is whether the bound property is required.
+    /// </value>
     [HtmlAttributeName("required")]
     public bool? Required { get; set; }
 
     /// <summary>
-    ///     The initially selected value when not using model binding.
+    ///     Gets or sets the selected value when the control isn't bound with <c>asp-for</c>.
     /// </summary>
+    /// <remarks>
+    ///     Ignored when bound with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SegmentedControlTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the field and its radio buttons.</param>
     public SegmentedControlTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The control has neither <c>asp-for</c> nor <c>name</c>.
+    /// </exception>
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

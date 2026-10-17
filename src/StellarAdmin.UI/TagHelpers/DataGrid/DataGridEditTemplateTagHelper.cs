@@ -3,16 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The editor of a data grid column, rendered instead of the column's display in the rows
-///     the grid renders in edit mode, with the current item available through
-///     <c>Html.GridItem&lt;T&gt;()</c>. Field names get the row's prefix,
-///     <c>rows[key]</c>, so <c>asp-for="@Html.GridItem&lt;Booking&gt;().Destination"</c> posts
-///     as <c>rows[24817].Destination</c>. A column without an edit template keeps its display
-///     in an editing row.
+///     Renders the editor of a data grid column in rows that are in edit mode.
 /// </summary>
+/// <remarks>
+///     <para>
+///         Use <c>Html.GridItem&lt;T&gt;()</c> to get the row's item. Field names get the prefix
+///         <c>rows[key]</c>, so <c>asp-for="@Html.GridItem&lt;Booking&gt;().Destination"</c> posts
+///         as <c>rows[24817].Destination</c>.
+///     </para>
+///     <para>
+///         A column without an edit template shows its normal content in an editing row.
+///     </para>
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-edit-template", ParentTag = "sa-data-grid-column")]
 public class DataGridEditTemplateTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columnContext = GetContext<DataGridColumnContext>(context);

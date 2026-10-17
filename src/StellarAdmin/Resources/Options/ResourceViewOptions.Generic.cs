@@ -1,8 +1,9 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures a view page for a model.
+///     Stores the configuration of a resource's view page for a model type.
 /// </summary>
+/// <typeparam name="TModel">The type of the model the view page displays.</typeparam>
 public sealed class ResourceViewOptions<TModel> : ResourceViewOptions
 {
     /// <inheritdoc />

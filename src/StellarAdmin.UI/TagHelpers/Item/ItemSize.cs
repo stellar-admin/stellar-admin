@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of an item, controlling its padding and spacing.
+///     Specifies the size of an item, which sets its padding and spacing.
 /// </summary>
 public enum ItemSize
 {
-    /// <summary>The standard item size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>The most compact item size.</summary>
+    /// <summary>
+    ///     The most compact size.
+    /// </summary>
     ExtraSmall,
 
-    /// <summary>A compact item size.</summary>
+    /// <summary>
+    ///     A compact size.
+    /// </summary>
     Small,
 }
 

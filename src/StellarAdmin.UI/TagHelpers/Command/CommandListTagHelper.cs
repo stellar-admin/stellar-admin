@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The scrollable list of a command menu's groups and items. When the application supplies
-///     results itself, this is the element whose contents it replaces.
+///     Renders the scrollable list that holds the groups and items of a command menu.
 /// </summary>
+/// <remarks>
+///     When the application supplies the results itself, it replaces the contents of this element.
+/// </remarks>
 [HtmlTargetElement("sa-command-list")]
 public class CommandListTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var commandContext = GetContext<CommandContext>(context);

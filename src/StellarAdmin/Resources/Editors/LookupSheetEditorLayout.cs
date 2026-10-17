@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     How a lookup editor lays out its selected item in the form.
+///     Specifies how a lookup editor lays out its selected item in the form.
 /// </summary>
 public enum LookupSheetEditorLayout
 {

@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays a progress bar's value, rendered as a <c>&lt;span&gt;</c>; falls back to the
-///     computed completion percentage when no content is supplied.
+///     Renders the value of a progress bar.
 /// </summary>
+/// <remarks>
+///     With no content, the value shows the percentage complete of the parent progress bar.
+/// </remarks>
 [HtmlTargetElement("sa-progress-value")]
 public class ProgressValueTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

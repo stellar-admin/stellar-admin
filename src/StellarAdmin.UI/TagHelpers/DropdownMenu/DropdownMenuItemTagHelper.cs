@@ -3,39 +3,56 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A selectable menu item for an action. Renders a button, so inside a form an item with
-///     <c>type="submit"</c> submits it. Use <c>sa-dropdown-menu-item-link</c> for navigation.
+///     Renders a dropdown menu item that performs an action.
 /// </summary>
+/// <remarks>
+///     The item renders as a button. Inside a form, an item with <c>type="submit"</c> submits it.
+///     Use <c>sa-dropdown-menu-item-link</c> for navigation.
+/// </remarks>
 [HtmlTargetElement("sa-dropdown-menu-item")]
 public class DropdownMenuItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether clicking the item closes the menu. Plain items close on click unless this is set.
+    ///     Gets or sets a value that indicates whether clicking the item closes the menu.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if clicking the item closes the menu; otherwise,
+    ///     <see langword="false" />. The default is <see langword="true" />.
+    /// </value>
     [HtmlAttributeName("close-on-click")]
     public bool? CloseOnClick { get; set; }
 
     /// <summary>
-    ///     Whether the item is disabled.
+    ///     Gets or sets a value that indicates whether the item is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item is disabled and can't be chosen; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Whether the item is inset, aligning its text with items that have a leading icon.
+    ///     Gets or sets a value that indicates whether the item is inset.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item's text aligns with items that have a leading icon;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
     /// <summary>
-    ///     The visual style of the item.
+    ///     Gets or sets the visual style of the item.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DropdownMenuItemVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="DropdownMenuItemVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public DropdownMenuItemVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "button";

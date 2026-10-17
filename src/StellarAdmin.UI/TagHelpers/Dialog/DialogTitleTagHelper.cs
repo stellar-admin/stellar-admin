@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The title heading of a dialog.
+///     Renders the title of a dialog.
 /// </summary>
 [HtmlTargetElement("sa-dialog-title")]
 public class DialogTitleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "h2";

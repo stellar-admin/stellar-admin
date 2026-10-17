@@ -4,27 +4,33 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Shows how far through a questionnaire the reader is. Supply <c>current</c> and
-///     <c>total</c> to expose it as a progress bar; supply your own content to replace the
-///     default wording.
+///     Renders how far through a questionnaire the reader is.
 /// </summary>
+/// <remarks>
+///     Set <c>current</c> and <c>total</c> to show "Question 1 of 5" and announce it as a progress
+///     bar. Content of your own replaces the text. Set <c>aria-valuetext</c> to match it.
+/// </remarks>
 [HtmlTargetElement("sa-questionnaire-progress")]
 public class QuestionnaireProgressTagHelper : StellarAdminTagHelperBase
 {
     private const string DefaultLabel = "Questionnaire progress";
 
     /// <summary>
-    ///     The one-based position of the question being shown.
+    ///     Gets or sets the position of the question being shown.
     /// </summary>
+    /// <value>
+    ///     A position that starts at 1.
+    /// </value>
     [HtmlAttributeName("current")]
     public int? Current { get; set; }
 
     /// <summary>
-    ///     The total number of questions.
+    ///     Gets or sets the total number of questions.
     /// </summary>
     [HtmlAttributeName("total")]
     public int? Total { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

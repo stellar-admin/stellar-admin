@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A run of text or an icon displayed inside an input group, typically within an add-on.
+///     Renders text or an icon inside an input group, usually in an add-on.
 /// </summary>
 [HtmlTargetElement("sa-input-group-text")]
 public class InputGroupTextTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

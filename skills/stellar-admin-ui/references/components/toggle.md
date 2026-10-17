@@ -6,7 +6,7 @@ generated: true
 
 # Toggle
 
-Renders a two-state button that can be toggled on or off.
+Renders a button that can be pressed on or off.
 
 ## Attributes
 
@@ -16,7 +16,7 @@ Renders a two-state button that can be toggled on or off.
 | `variant` | `ToggleVariant` | `Default` | `Default`, `Outline` |
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `value` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

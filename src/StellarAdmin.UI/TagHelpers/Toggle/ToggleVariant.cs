@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a toggle.
+///     Specifies the visual style of a toggle.
 /// </summary>
 public enum ToggleVariant
 {
-    /// <summary>The default toggle style with no border.</summary>
+    /// <summary>
+    ///     A toggle with no border.
+    /// </summary>
     Default,
 
-    /// <summary>A toggle with a border.</summary>
+    /// <summary>
+    ///     A toggle with a border.
+    /// </summary>
     Outline,
 }
 

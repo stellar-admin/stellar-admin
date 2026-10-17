@@ -1,17 +1,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a radio or checkbox group.
+///     Specifies additional CSS classes for the parts of a radio or checkbox group.
 /// </summary>
 public class ChoiceGroupClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the group container.
+    ///     Gets or sets additional CSS classes for the element that holds the options.
     /// </summary>
     public string? Control { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each option.
+    ///     Gets or sets additional CSS classes for each option.
     /// </summary>
     public string? Item { get; set; }
 }

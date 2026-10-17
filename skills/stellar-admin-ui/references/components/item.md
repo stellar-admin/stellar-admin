@@ -6,23 +6,23 @@ generated: true
 
 # Item
 
-A flexible row for presenting content, combining media, a title, description, and actions.
+Renders a row that combines media, a title, a description and actions.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-item>` | A flexible row for presenting content, combining media, a title, description, and actions. |
-| `<sa-item-actions>` | The region of an item that holds action controls such as buttons, aligned to its trailing edge. |
-| `<sa-item-content>` | The main content region of an item; typically wraps the title and description. |
-| `<sa-item-description>` | The secondary descriptive text of an item, rendered beneath its title. |
-| `<sa-item-footer>` | The footer region of an item, spanning its full width beneath the main content. |
-| `<sa-item-group>` | A vertical list container that groups related items together. |
-| `<sa-item-header>` | The header region of an item, spanning its full width above the main content. |
-| `<sa-item-link>` | An item rendered as an anchor, making the entire row a clickable link. |
-| `<sa-item-media>` | The leading media region of an item, holding an icon, image, or avatar. |
-| `<sa-item-separator>` | A horizontal divider used to separate items within a group. |
-| `<sa-item-title>` | The primary title text of an item. |
+| `<sa-item>` | Renders a row that combines media, a title, a description and actions. |
+| `<sa-item-actions>` | Renders the area of an item that holds actions, such as buttons. |
+| `<sa-item-content>` | Renders the main content of an item, which usually holds its title and description. |
+| `<sa-item-description>` | Renders the description of an item, below its title. |
+| `<sa-item-footer>` | Renders the footer of an item, across its full width below the content. |
+| `<sa-item-group>` | Renders a list of related items. |
+| `<sa-item-header>` | Renders the header of an item, across its full width above the content. |
+| `<sa-item-link>` | Renders an item as a link, so the whole row can be clicked. |
+| `<sa-item-media>` | Renders the media of an item, such as an icon, image or avatar, at its start. |
+| `<sa-item-separator>` | Renders a horizontal line between items in a group. |
+| `<sa-item-title>` | Renders the title of an item. |
 
 ## Attributes
 

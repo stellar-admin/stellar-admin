@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A header cell within a table header row, rendered as a <c>&lt;th&gt;</c>.
+///     Renders a header cell in a table's header row, as a <c>&lt;th&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-head")]
 public class TableHeadTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "th";

@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The page title inside <c>&lt;sa-page-header&gt;</c>, rendered as the page's
-///     <c>&lt;h1&gt;</c> element. Inline trailing content such as an <c>&lt;sa-badge&gt;</c>
-///     can be placed directly after the title text.
+///     Renders the title of a page header as the page's <c>&lt;h1&gt;</c> heading.
 /// </summary>
+/// <remarks>
+///     Inline content, such as an <c>&lt;sa-badge&gt;</c>, can follow the title text.
+/// </remarks>
 [HtmlTargetElement("sa-page-header-title")]
 public class PageHeaderTitleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "h1";

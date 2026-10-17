@@ -1,17 +1,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The display format of a radio group.
+///     Specifies how a radio group displays its options.
 /// </summary>
 public enum RadioGroupVariant
 {
     /// <summary>
-    ///     A conventional list of options.
+    ///     The options show as a list.
     /// </summary>
     Default,
 
     /// <summary>
-    ///     Options displayed as selectable cards.
+    ///     The options show as selectable cards.
     /// </summary>
     ChoiceCard,
 }

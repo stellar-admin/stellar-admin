@@ -10,21 +10,22 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A pager that renders page-number, previous, and next links for a paged data set. Link
-///     destinations are specified with the standard routing attributes (<c>asp-page</c>,
-///     <c>asp-action</c>, <c>asp-route-*</c>, etc.); a route value must contain the
-///     <c>{page}</c> placeholder, which is replaced with the target page number in each
-///     link (e.g. <c>asp-route-pageNo="{page}"</c>). A route value may also contain the
-///     <c>{pageSize}</c> placeholder: page links substitute <c>selected-page-size</c> when
-///     one is supplied and drop the route value otherwise, so a size carries across page
-///     navigation only when one was actually chosen, while the links of the footer's
-///     page-size selector (<c>page-size-options</c>) always substitute the target size and
-///     reset the page number to 1. Declared as a child of <c>sa-data-grid</c> it renders in the grid's
-///     footer bar as compact icon links, alongside a record-range summary when
-///     <c>total-items</c> is supplied — the footer renders even when there is a single page,
-///     showing just the record count. Used standalone it renders the classic labelled pager
-///     and nothing at all when there is one page or less.
+///     Renders page number, previous and next links for a paged list.
 /// </summary>
+/// <remarks>
+///     <para>
+///         Set the link destination with the routing attributes, such as <c>asp-page</c> and
+///         <c>asp-route-*</c>. One route value must contain the <c>{page}</c> placeholder, such
+///         as <c>asp-route-pageNo="{page}"</c>, which each link replaces with its page number. A
+///         route value can also contain the <c>{pageSize}</c> placeholder.
+///     </para>
+///     <para>
+///         Inside an <c>sa-data-grid</c>, the pager renders compact links in the grid's footer.
+///         With one page, the footer still shows the item count and page sizes when they are
+///         set. On its own, the pager renders labelled links, and nothing when there is one page
+///         or less.
+///     </para>
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-pager")]
 public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
 {
@@ -34,6 +35,16 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DataGridPagerTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the links.</param>
+    /// <param name="iconOptions">
+    ///     The icon options that supply the previous, next and ellipsis icons.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public DataGridPagerTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
@@ -41,65 +52,94 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
     }
 
     /// <summary>
-    ///     The current page number (1-based).
+    ///     Gets or sets the current page number.
     /// </summary>
+    /// <value>
+    ///     The page number, starting at 1.
+    /// </value>
+    /// <remarks>
+    ///     Required.
+    /// </remarks>
     [HtmlAttributeName("page")]
     public long? CurrentPage { get; set; }
 
     /// <summary>
-    ///     The total number of pages. The page links render only when there is more than one
-    ///     page; within a grid the footer itself still renders with the record-range summary.
+    ///     Gets or sets the total number of pages.
     /// </summary>
+    /// <remarks>
+    ///     Required. The page links only render when there is more than one page.
+    /// </remarks>
     [HtmlAttributeName("total-pages")]
     public long? TotalPages { get; set; }
 
     /// <summary>
-    ///     The current number of items per page. Used together with <see cref="TotalItems" />
-    ///     to render the record-range summary (e.g. "1–8 of 56") in the grid's footer, and
-    ///     used to mark the active option of the page-size selector.
+    ///     Gets or sets the current number of items per page.
     /// </summary>
+    /// <remarks>
+    ///     With <c>total-items</c>, the grid's footer shows the range of items on the page, such as
+    ///     "1–8 of 56". The page size selector marks this size as active. Required when a route
+    ///     value contains <c>{pageSize}</c>.
+    /// </remarks>
     [HtmlAttributeName("page-size")]
     public long? PageSize { get; set; }
 
     /// <summary>
-    ///     The page sizes offered by the grid footer's page-size selector, comma-separated
-    ///     (e.g. "8,24,48"). When supplied, the footer renders a "Rows per page" tab list of
-    ///     links, one per size; the current <see cref="PageSize" /> renders as the active tab.
-    ///     Each link substitutes its size for the <c>{pageSize}</c> placeholder and resets the
-    ///     <c>{page}</c> placeholder to 1. Only rendered within an <c>sa-data-grid</c>.
+    ///     Gets or sets the page sizes that the grid's footer offers.
     /// </summary>
+    /// <value>
+    ///     A comma-separated list of numbers, such as <c>8,24,48</c>.
+    /// </value>
+    /// <remarks>
+    ///     The footer shows a link for each size under a "Rows per page" label. Each link goes to
+    ///     page 1 with its size in the <c>{pageSize}</c> placeholder, so a route value must
+    ///     contain it. Only shown inside an <c>sa-data-grid</c>.
+    /// </remarks>
     [HtmlAttributeName("page-size-options")]
     public string? PageSizeOptions { get; set; }
 
     /// <summary>
-    ///     The page size the user explicitly chose, substituted for the <c>{pageSize}</c>
-    ///     placeholder in page links so a chosen size carries across navigation. When
-    ///     omitted, page links drop the placeholder's route value entirely, keeping URLs
-    ///     free of a size the user never picked. The page-size selector's links are
-    ///     unaffected — each always carries its target size.
+    ///     Gets or sets the page size that the user chose.
     /// </summary>
+    /// <remarks>
+    ///     The page links put it in the <c>{pageSize}</c> placeholder, so the chosen size carries
+    ///     across pages. Without it, the page links leave out the route value with the
+    ///     placeholder. The links of the page size selector always carry their own size.
+    /// </remarks>
     [HtmlAttributeName("selected-page-size")]
     public long? SelectedPageSize { get; set; }
 
     /// <summary>
-    ///     The total number of items across all pages. When supplied, the grid's footer shows
-    ///     a record-range summary: "1–8 of 56" when paging, or the plain record count
-    ///     (e.g. "23 records") when everything fits on one page.
+    ///     Gets or sets the total number of items across all pages.
     /// </summary>
+    /// <remarks>
+    ///     The grid's footer shows the range of items on the page, such as "1–8 of 56", or the
+    ///     number of items, such as "23 records", when there is one page.
+    /// </remarks>
     [HtmlAttributeName("total-items")]
     public long? TotalItems { get; set; }
 
     /// <summary>
-    ///     Whether to carry the current request's query string parameters over into the
-    ///     generated links. Only parameters not already declared as route values are added, so
-    ///     explicit <c>asp-route-*</c> values always win, regardless of attribute order.
+    ///     Gets or sets a value that indicates whether the links keep the current query string.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the links keep the current request's query string
+    ///     parameters; otherwise, <see langword="false" />. The default is
+    ///     <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     <c>asp-route-*</c> values take precedence over query string parameters with the same
+    ///     name.
     /// </remarks>
     [HtmlAttributeName("preserve-query")]
     public bool? PreserveQuery { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="CurrentPage" /> or <see cref="TotalPages" /> isn't set, no route value
+    ///     contains <c>{page}</c>, a route value contains <c>{pageSize}</c> without
+    ///     <see cref="PageSize" />, or <see cref="PageSizeOptions" /> isn't a list of numbers or
+    ///     is set without a <c>{pageSize}</c> route value.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var gridContext = GetContext<DataGridContext>(context);

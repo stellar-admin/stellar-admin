@@ -1,18 +1,31 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Configures a toggle group editor. A collection property selects multiple values; any other property selects one.
+///     Configures a toggle group editor.
 /// </summary>
+/// <remarks>
+///     A collection property selects several values. Any other property selects one.
+/// </remarks>
 public sealed class ToggleGroupEditor : ChoiceEditor, IFieldEditor<ToggleGroupEditorHandler>
 {
     /// <summary>
-    ///     How the choices are displayed. Defaults to <see cref="ToggleGroupAppearance.Chips" />.
+    ///     Gets or sets how the choices are displayed.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies how the choices are displayed. The default
+    ///     is <see cref="ToggleGroupAppearance.Chips" />.
+    /// </value>
     public ToggleGroupAppearance Appearance { get; set; }
 
     /// <summary>
-    ///     Where chips show their check mark while on. Defaults to <see cref="ToggleGroupCheckPlacement.ReplaceMedia" />.
-    ///     Only chips show a check mark.
+    ///     Gets or sets where chips show their check mark while on.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies where the check mark is shown. The default
+    ///     is <see cref="ToggleGroupCheckPlacement.ReplaceMedia" />.
+    /// </value>
+    /// <remarks>
+    ///     Only <see cref="ToggleGroupAppearance.Chips" /> shows a check mark.
+    /// </remarks>
     public ToggleGroupCheckPlacement CheckPlacement { get; set; }
 }

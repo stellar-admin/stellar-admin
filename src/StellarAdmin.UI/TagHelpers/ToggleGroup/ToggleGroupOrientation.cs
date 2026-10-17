@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The direction in which a toggle group lays out its items.
+///     Specifies the direction in which a toggle group arranges its items.
 /// </summary>
 public enum ToggleGroupOrientation
 {
-    /// <summary>Items are arranged in a row.</summary>
+    /// <summary>
+    ///     The items are arranged in a row.
+    /// </summary>
     Horizontal,
 
-    /// <summary>Items are stacked in a column.</summary>
+    /// <summary>
+    ///     The items are arranged in a column.
+    /// </summary>
     Vertical,
 }
 

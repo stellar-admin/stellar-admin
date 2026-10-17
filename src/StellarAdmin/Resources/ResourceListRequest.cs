@@ -1,37 +1,40 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     The requested resources and listing settings.
+///     Specifies which resources a data source returns and how they are sorted and paged.
 /// </summary>
 public sealed record ResourceListRequest
 {
     /// <summary>
-    ///     The keys of the only resources to return, or null to return all matching resources.
-    ///     Set to reload rows after an inline save, without a scope, search or paging.
+    ///     Gets the keys of the only resources to return, or <see langword="null" /> to return all
+    ///     matching resources.
     /// </summary>
     /// <remarks>
-    ///     Keys are formatted in the invariant culture. A data source that ignores them still
-    ///     works, since the rows are picked from the result by key, but returns more than needed.
+    ///     Keys are set to reload rows after an inline save, with no scope, search or paging. They
+    ///     are formatted in the invariant culture. A data source that ignores them still works, but
+    ///     returns more resources than needed.
     /// </remarks>
     public IReadOnlyList<string>? Keys { get; init; }
 
     /// <summary>
-    ///     The requested page, or null to return all matching resources.
+    ///     Gets the requested page, or <see langword="null" /> to return all matching resources.
     /// </summary>
     public ResourcePaging? Paging { get; init; }
 
     /// <summary>
-    ///     The selected scope identifier, or null when no scope is selected.
+    ///     Gets the identifier of the selected scope, or <see langword="null" /> when no scope is
+    ///     selected.
     /// </summary>
     public string? Scope { get; init; }
 
     /// <summary>
-    ///     The search term, or null when the list is unfiltered.
+    ///     Gets the search term, or <see langword="null" /> when the list isn't searched.
     /// </summary>
     public string? Search { get; init; }
 
     /// <summary>
-    ///     The requested ordering, or null to use the data source's default.
+    ///     Gets the requested sort order, or <see langword="null" /> to use the data source's
+    ///     default order.
     /// </summary>
     public ResourceSort? Sort { get; init; }
 }

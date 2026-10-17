@@ -1,13 +1,16 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     A container of fields and other form containers.
+///     Stores the configuration of a form item that holds fields and other form items.
 /// </summary>
 public abstract class FormContainerOptions : FormItemOptions, IFormScope
 {
     /// <summary>
-    ///     The container's immediate fields and child containers, in display order, preserving any further nesting.
+    ///     Gets the container's fields and child containers.
     /// </summary>
+    /// <value>
+    ///     The direct child items, in display order.
+    /// </value>
     public IReadOnlyList<FormItemOptions> Items => MutableItems;
 
     internal FormGridColumnDefinitions Columns { get; set; }

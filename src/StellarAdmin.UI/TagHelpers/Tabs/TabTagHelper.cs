@@ -3,27 +3,37 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A tab within the <c>&lt;sa-tab-list&gt;</c> of an <c>&lt;sa-tabs&gt;</c>, which shows
-///     its panel when selected.
+///     Renders a tab that shows its panel when selected.
 /// </summary>
+/// <remarks>
+///     Place the tab in the <c>&lt;sa-tab-list&gt;</c> of a <c>&lt;sa-tabs&gt;</c>.
+/// </remarks>
 [HtmlTargetElement("sa-tab")]
 public class TabTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The id of the <c>&lt;sa-tab-panel&gt;</c> the tab shows.
+    ///     Gets or sets the <c>id</c> of the <c>&lt;sa-tab-panel&gt;</c> that the tab shows.
     /// </summary>
+    /// <remarks>
+    ///     Required.
+    /// </remarks>
     [HtmlAttributeName("for")]
     public string? For { get; set; }
 
     /// <summary>
-    ///     Whether the tab is disabled and cannot be selected.
+    ///     Gets or sets a value that indicates whether the tab is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the tab is disabled and can't be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The tab isn't inside a <c>&lt;sa-tabs&gt;</c>, or <see cref="For" /> isn't set.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var tabs =

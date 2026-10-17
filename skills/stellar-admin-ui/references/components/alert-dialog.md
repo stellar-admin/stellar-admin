@@ -6,20 +6,20 @@ generated: true
 
 # AlertDialog
 
-A modal dialog that interrupts the user to confirm an important action, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`. Unlike a regular dialog, it is not dismissed by clicking the backdrop.
+Renders a modal dialog that asks the user to confirm an important action.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-alert-dialog>` | A modal dialog that interrupts the user to confirm an important action, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`. Unlike a regular dialog, it is not dismissed by clicking the backdrop. |
-| `<sa-alert-dialog-action>` | The confirming button of an alert dialog. Renders a styled submit button with `value="confirm"` so a wrapping `<form method="dialog">` closes the dialog with that `returnValue` (which the `stellarAdmin.alertDialog` helper reads as `confirmed: true`). Override `variant` for a destructive action. |
-| `<sa-alert-dialog-cancel>` | The dismissing button of an alert dialog. Renders a styled outline submit button with `value="cancel"` so a wrapping `<form method="dialog">` closes the dialog with that `returnValue` (which the `stellarAdmin.alertDialog` helper reads as `confirmed: false`). |
-| `<sa-alert-dialog-description>` | The descriptive body text of an alert dialog, shown beneath the title. |
-| `<sa-alert-dialog-footer>` | The footer region of an alert dialog; typically contains the cancel and action buttons. |
-| `<sa-alert-dialog-header>` | The header region of an alert dialog; typically contains the title and description. |
-| `<sa-alert-dialog-media>` | A region within an alert dialog for media such as an icon or illustration. |
-| `<sa-alert-dialog-title>` | The title heading of an alert dialog. |
+| `<sa-alert-dialog>` | Renders a modal dialog that asks the user to confirm an important action. |
+| `<sa-alert-dialog-action>` | Renders the button that confirms an alert dialog. |
+| `<sa-alert-dialog-cancel>` | Renders the button that cancels an alert dialog. |
+| `<sa-alert-dialog-description>` | Renders the description of an alert dialog, shown below the title. |
+| `<sa-alert-dialog-footer>` | Renders the footer of an alert dialog, which holds the cancel and confirm buttons. |
+| `<sa-alert-dialog-header>` | Renders the header of an alert dialog, which holds the title and description. |
+| `<sa-alert-dialog-media>` | Renders an area in an alert dialog for media, such as an icon or illustration. |
+| `<sa-alert-dialog-title>` | Renders the title of an alert dialog. |
 
 ## Attributes
 

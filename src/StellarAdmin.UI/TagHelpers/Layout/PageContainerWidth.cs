@@ -1,20 +1,31 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The maximum content width of a <c>&lt;sa-page-container&gt;</c>.
+///     Specifies the maximum content width of a <c>&lt;sa-page-container&gt;</c>.
 /// </summary>
 public enum PageContainerWidth
 {
-    /// <summary>No maximum width; the content fills the available space. Suited to data tables and grids.</summary>
+    /// <summary>
+    ///     No maximum width, so the content fills the available space.
+    /// </summary>
+    /// <remarks>
+    ///     Suits data tables and grids.
+    /// </remarks>
     Full,
 
-    /// <summary>A wide layout suited to dashboards.</summary>
+    /// <summary>
+    ///     A wide layout that suits dashboards.
+    /// </summary>
     Large,
 
-    /// <summary>A medium-width layout suited to detail and settings pages.</summary>
+    /// <summary>
+    ///     A medium-width layout that suits detail and settings pages.
+    /// </summary>
     Medium,
 
-    /// <summary>A narrow layout suited to single-column forms.</summary>
+    /// <summary>
+    ///     A narrow layout that suits single-column forms.
+    /// </summary>
     Small,
 }
 

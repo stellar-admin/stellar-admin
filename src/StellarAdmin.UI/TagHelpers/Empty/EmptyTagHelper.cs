@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An empty-state container that communicates the absence of content, composed of a
-///     header, media, title, description, and content subcomponents.
+///     Renders an empty state, which tells the user there is no content to show.
 /// </summary>
 [HtmlTargetElement("sa-empty")]
 public class EmptyTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

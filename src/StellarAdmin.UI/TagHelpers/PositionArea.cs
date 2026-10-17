@@ -1,68 +1,109 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     Where a floating element (such as a popover or tooltip) is anchored relative to its trigger.
+///     Specifies where a floating element, such as a popover or tooltip, is placed relative to its
+///     trigger.
 /// </summary>
 public enum PositionArea
 {
-    /// <summary>Above the trigger, horizontally centred.</summary>
+    /// <summary>
+    ///     Above the trigger, centred within the trigger's width.
+    /// </summary>
     TopCenter,
 
-    /// <summary>Above the trigger, extending toward the left.</summary>
+    /// <summary>
+    ///     Above the trigger, extending toward the left.
+    /// </summary>
     TopSpanLeft,
 
-    /// <summary>Above the trigger, extending toward the right.</summary>
+    /// <summary>
+    ///     Above the trigger, extending toward the right.
+    /// </summary>
     TopSpanRight,
 
-    /// <summary>Above the trigger.</summary>
+    /// <summary>
+    ///     Above the trigger, with room to extend past both of its sides.
+    /// </summary>
     Top,
 
-    /// <summary>To the left of the trigger, vertically centred.</summary>
+    /// <summary>
+    ///     To the left of the trigger, centred within the trigger's height.
+    /// </summary>
     LeftCenter,
 
-    /// <summary>To the left of the trigger, extending toward the top.</summary>
+    /// <summary>
+    ///     To the left of the trigger, extending toward the top.
+    /// </summary>
     LeftSpanTop,
 
-    /// <summary>To the left of the trigger, extending toward the bottom.</summary>
+    /// <summary>
+    ///     To the left of the trigger, extending toward the bottom.
+    /// </summary>
     LeftSpanBottom,
 
-    /// <summary>To the left of the trigger.</summary>
+    /// <summary>
+    ///     To the left of the trigger, with room to extend past its top and bottom.
+    /// </summary>
     Left,
 
-    /// <summary>Below the trigger, horizontally centred.</summary>
+    /// <summary>
+    ///     Below the trigger, centred within the trigger's width.
+    /// </summary>
     BottomCenter,
 
-    /// <summary>Below the trigger, extending toward the left.</summary>
+    /// <summary>
+    ///     Below the trigger, extending toward the left.
+    /// </summary>
     BottomSpanLeft,
 
-    /// <summary>Below the trigger, extending toward the right.</summary>
+    /// <summary>
+    ///     Below the trigger, extending toward the right.
+    /// </summary>
     BottomSpanRight,
 
-    /// <summary>Below the trigger.</summary>
+    /// <summary>
+    ///     Below the trigger, with room to extend past both of its sides.
+    /// </summary>
     Bottom,
 
-    /// <summary>To the right of the trigger, vertically centred.</summary>
+    /// <summary>
+    ///     To the right of the trigger, centred within the trigger's height.
+    /// </summary>
     RightCenter,
 
-    /// <summary>To the right of the trigger, extending toward the top.</summary>
+    /// <summary>
+    ///     To the right of the trigger, extending toward the top.
+    /// </summary>
     RightSpanTop,
 
-    /// <summary>To the right of the trigger, extending toward the bottom.</summary>
+    /// <summary>
+    ///     To the right of the trigger, extending toward the bottom.
+    /// </summary>
     RightSpanBottom,
 
-    /// <summary>To the right of the trigger.</summary>
+    /// <summary>
+    ///     To the right of the trigger, with room to extend past its top and bottom.
+    /// </summary>
     Right,
 
-    /// <summary>Diagonally above and to the left of the trigger.</summary>
+    /// <summary>
+    ///     Diagonally above and to the left of the trigger.
+    /// </summary>
     TopLeft,
 
-    /// <summary>Diagonally above and to the right of the trigger.</summary>
+    /// <summary>
+    ///     Diagonally above and to the right of the trigger.
+    /// </summary>
     TopRight,
 
-    /// <summary>Diagonally below and to the left of the trigger.</summary>
+    /// <summary>
+    ///     Diagonally below and to the left of the trigger.
+    /// </summary>
     BottomLeft,
 
-    /// <summary>Diagonally below and to the right of the trigger.</summary>
+    /// <summary>
+    ///     Diagonally below and to the right of the trigger.
+    /// </summary>
     BottomRight,
 }
 

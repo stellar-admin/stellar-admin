@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A right-aligned area at the end of <c>&lt;sa-app-header&gt;</c> for trailing content such
-///     as buttons or an avatar.
+///     Renders an area at the end of an app header for content such as buttons or an avatar.
 /// </summary>
 [HtmlTargetElement("sa-app-header-actions")]
 public class AppHeaderActionsTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

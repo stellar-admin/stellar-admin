@@ -1,42 +1,43 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a slider.
+///     Holds additional CSS classes for the parts of a slider.
 /// </summary>
 public class SliderClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the slider container.
+    ///     Gets or sets additional CSS classes for the slider element that holds the track and
+    ///     thumbs.
     /// </summary>
     public string? Control { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each mark.
+    ///     Gets or sets additional CSS classes for each mark.
     /// </summary>
     public string? Mark { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each mark's label.
+    ///     Gets or sets additional CSS classes for each mark's label.
     /// </summary>
     public string? MarkLabel { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the container of the marks.
+    ///     Gets or sets additional CSS classes for the container of the marks.
     /// </summary>
     public string? Marks { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the filled range.
+    ///     Gets or sets additional CSS classes for the filled part of the track.
     /// </summary>
     public string? Range { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each slider thumb.
+    ///     Gets or sets additional CSS classes for each thumb.
     /// </summary>
     public string? Thumb { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the slider track.
+    ///     Gets or sets additional CSS classes for the track.
     /// </summary>
     public string? Track { get; set; }
 }

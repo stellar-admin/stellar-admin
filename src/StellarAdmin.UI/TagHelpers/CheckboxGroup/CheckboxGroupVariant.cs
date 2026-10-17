@@ -1,17 +1,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The display format of a checkbox group.
+///     Specifies how a checkbox group displays its options.
 /// </summary>
 public enum CheckboxGroupVariant
 {
     /// <summary>
-    ///     A conventional list of options.
+    ///     The options show as a list.
     /// </summary>
     Default,
 
     /// <summary>
-    ///     Options displayed as selectable cards.
+    ///     The options show as selectable cards.
     /// </summary>
     ChoiceCard,
 }

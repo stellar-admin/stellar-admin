@@ -1,23 +1,33 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The amount of horizontal spacing between the children of a <c>&lt;sa-group&gt;</c>.
+///     Specifies the horizontal space between the children of a <c>&lt;sa-group&gt;</c>.
 /// </summary>
 public enum GroupGap
 {
-    /// <summary>The default spacing between children.</summary>
+    /// <summary>
+    ///     The standard space.
+    /// </summary>
     Default,
 
-    /// <summary>Extra-small spacing between children.</summary>
+    /// <summary>
+    ///     An extra-small space.
+    /// </summary>
     ExtraSmall,
 
-    /// <summary>Small spacing between children.</summary>
+    /// <summary>
+    ///     A small space.
+    /// </summary>
     Small,
 
-    /// <summary>Large spacing between children.</summary>
+    /// <summary>
+    ///     A large space.
+    /// </summary>
     Large,
 
-    /// <summary>Extra-large spacing between children.</summary>
+    /// <summary>
+    ///     An extra-large space.
+    /// </summary>
     ExtraLarge,
 }
 

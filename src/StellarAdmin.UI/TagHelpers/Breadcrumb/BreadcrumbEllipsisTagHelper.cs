@@ -6,19 +6,23 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An ellipsis that stands in for collapsed breadcrumb items, rendered as a
-///     presentational <c>&lt;span&gt;</c> with an icon and screen-reader text.
+///     Renders an ellipsis that stands in for breadcrumb items that aren't shown.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-ellipsis")]
 public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="BreadcrumbEllipsisTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the ellipsis icon.</param>
     public BreadcrumbEllipsisTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

@@ -1,23 +1,25 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of an image upload.
+///     Holds the CSS classes added to the parts of an image upload.
 /// </summary>
 public class ImageUploadClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the image upload's container.
+    ///     Gets or sets the CSS classes added to the image upload's container.
     /// </summary>
     public string? Control { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the image.
+    ///     Gets or sets the CSS classes added to the image.
     /// </summary>
     public string? Image { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for the note under the image upload, which shows the accepted
-    ///     types, upload progress, errors and staged changes.
+    ///     Gets or sets the CSS classes added to the note under the image upload.
     /// </summary>
+    /// <remarks>
+    ///     The note shows the accepted types, upload progress, errors and staged changes.
+    /// </remarks>
     public string? Note { get; set; }
 }

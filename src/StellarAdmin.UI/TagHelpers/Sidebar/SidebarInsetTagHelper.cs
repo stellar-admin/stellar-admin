@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The main content area shown alongside the sidebar, rendered as a <c>&lt;main&gt;</c> element.
+///     Renders the main content area beside a sidebar, as a <c>&lt;main&gt;</c> element.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-inset")]
 public class SidebarInsetTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "main";

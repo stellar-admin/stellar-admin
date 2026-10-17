@@ -3,20 +3,25 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A marker rendered as a button, making the whole marker activatable.
+///     Renders a marker as a button, so the whole marker can be clicked.
 /// </summary>
+/// <remarks>
+///     The button has <c>type="button"</c> unless the element sets its own <c>type</c>.
+/// </remarks>
 [HtmlTargetElement("sa-marker-button")]
 public class MarkerButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The layout of the marker.
+    ///     Gets or sets the layout of the marker.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="MarkerVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is
+    ///     <see cref="MarkerVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public MarkerVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? MarkerVariant.Default;

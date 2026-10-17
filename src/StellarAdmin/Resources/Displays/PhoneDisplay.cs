@@ -1,10 +1,11 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays a phone number as a <c>tel:</c> link.
+///     Shows a phone number as a <c>tel:</c> link.
 /// </summary>
 /// <remarks>
-///     The default display for properties marked <c>[Phone]</c>.
+///     A value without digits shows as text. This is the default display for properties marked
+///     <c>[Phone]</c>.
 /// </remarks>
 public sealed class PhoneDisplay : FieldDisplay
 {

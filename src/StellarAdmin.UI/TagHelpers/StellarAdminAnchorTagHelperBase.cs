@@ -6,8 +6,8 @@ using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHe
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Base class for StellarAdmin tag helpers that render an anchor (<c>&lt;a&gt;</c>) with ASP.NET
-///     Core routing support (<c>asp-action</c>, <c>asp-controller</c>, <c>asp-page</c>, etc.).
+///     Provides the base class for StellarAdmin tag helpers that render a link and accept the
+///     ASP.NET Core routing attributes, such as <c>asp-action</c> and <c>asp-page</c>.
 /// </summary>
 public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBase
 {
@@ -24,83 +24,93 @@ public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBas
     private const string RouteValuesPrefix = "asp-route-";
 
     /// <summary>
-    ///     The name of the action method.
+    ///     Gets or sets the name of the action method that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if <see cref="Route" /> or <see cref="Page" /> is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-route</c> or <c>asp-page</c>.
     /// </remarks>
     [HtmlAttributeName(ActionAttributeName)]
     public string? Action { get; set; }
 
     /// <summary>
-    ///     The name of the area.
+    ///     Gets or sets the name of the area that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if <see cref="Route" /> is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-route</c>. An empty value points outside any area.
     /// </remarks>
     [HtmlAttributeName(AreaAttributeName)]
     public string? Area { get; set; }
 
     /// <summary>
-    ///     The name of the controller.
+    ///     Gets or sets the name of the controller that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if <see cref="Route" /> or <see cref="Page" /> is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-route</c> or <c>asp-page</c>.
     /// </remarks>
     [HtmlAttributeName(ControllerAttributeName)]
     public string? Controller { get; set; }
 
     /// <summary>
-    ///     The URL fragment name.
+    ///     Gets or sets the fragment added to the end of the URL, after <c>#</c>.
     /// </summary>
+    /// <remarks>
+    ///     Applies only when another routing attribute is set.
+    /// </remarks>
     [HtmlAttributeName(FragmentAttributeName)]
     public string? Fragment { get; set; }
 
     /// <summary>
-    ///     The host name.
+    ///     Gets or sets the host name of the URL.
     /// </summary>
+    /// <remarks>
+    ///     Applies only when another routing attribute is set.
+    /// </remarks>
     [HtmlAttributeName(HostAttributeName)]
     public string? Host { get; set; }
 
     /// <summary>
-    ///     The name of the page.
+    ///     Gets or sets the name of the Razor page that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if <see cref="Route" /> or <see cref="Action" />, <see cref="Controller" />
-    ///     is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-route</c>, <c>asp-action</c> or <c>asp-controller</c>.
     /// </remarks>
     [HtmlAttributeName(PageAttributeName)]
     public string? Page { get; set; }
 
     /// <summary>
-    ///     The name of the page handler.
+    ///     Gets or sets the name of the page handler that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if <see cref="Route" /> or <see cref="Action" />, or <see cref="Controller" />
-    ///     is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-route</c>, <c>asp-action</c> or <c>asp-controller</c>.
     /// </remarks>
     [HtmlAttributeName(PageHandlerAttributeName)]
     public string? PageHandler { get; set; }
 
     /// <summary>
-    ///     The protocol for the URL, such as &quot;http&quot; or &quot;https&quot;.
+    ///     Gets or sets the protocol of the URL, such as <c>https</c>.
     /// </summary>
+    /// <remarks>
+    ///     Applies only when another routing attribute is set.
+    /// </remarks>
     [HtmlAttributeName(ProtocolAttributeName)]
     public string? Protocol { get; set; }
 
     /// <summary>
-    ///     Name of the route.
+    ///     Gets or sets the name of the route that the link points to.
     /// </summary>
     /// <remarks>
-    ///     Must be <c>null</c> if one of <see cref="Action" />, <see cref="Controller" />, <see cref="Area" />
-    ///     or <see cref="Page" /> is non-<c>null</c>.
+    ///     Can't be combined with <c>asp-action</c>, <c>asp-controller</c>, <c>asp-area</c> or
+    ///     <c>asp-page</c>.
     /// </remarks>
     [HtmlAttributeName(RouteAttributeName)]
     public string? Route { get; set; }
 
     /// <summary>
-    ///     Additional parameters for the route.
+    ///     Gets or sets the route values of the link.
     /// </summary>
+    /// <value>
+    ///     The route values, keyed by name. Each <c>asp-route-*</c> attribute adds one value.
+    /// </value>
     [HtmlAttributeName(RouteValuesDictionaryName, DictionaryAttributePrefix = RouteValuesPrefix)]
     public IDictionary<string, string?> RouteValues
     {
@@ -114,18 +124,20 @@ public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBas
     }
 
     /// <summary>
-    ///     Gets or sets the <see cref="Microsoft.AspNetCore.Mvc.Rendering.ViewContext" /> for the current request.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
     /// <summary>
-    ///     Whether a routing target (<c>asp-page</c>, <c>asp-action</c>, <c>asp-controller</c>,
-    ///     <c>asp-route</c>, <c>asp-area</c>, <c>asp-page-handler</c> or <c>asp-route-*</c>) is set.
-    ///     <c>asp-fragment</c>, <c>asp-host</c> and <c>asp-protocol</c> are modifiers and only apply
-    ///     alongside a target.
+    ///     Gets a value that indicates whether a routing attribute sets the link target.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if <c>asp-page</c>, <c>asp-action</c>, <c>asp-controller</c>,
+    ///     <c>asp-route</c>, <c>asp-area</c>, <c>asp-page-handler</c> or an <c>asp-route-*</c>
+    ///     attribute is set; otherwise, <see langword="false" />.
+    /// </value>
     protected bool HasRouteTarget =>
         Page != null
         || Action != null
@@ -136,10 +148,16 @@ public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBas
         || RouteValues.Count > 0;
 
     /// <summary>
-    ///     Lets the framework anchor tag helper resolve the <c>href</c> from the routing attributes.
-    ///     Does nothing when no routing target is set, so an anchor without one keeps (or lacks)
-    ///     the author's <c>href</c> instead of linking to the current action.
+    ///     Sets the <c>href</c> of the output from the routing attributes.
     /// </summary>
+    /// <remarks>
+    ///     Does nothing when <see cref="HasRouteTarget" /> is <see langword="false" />, so the
+    ///     output keeps its own <c>href</c>.
+    /// </remarks>
+    /// <param name="htmlGenerator">The generator that builds the URL.</param>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <param name="output">The output to set the <c>href</c> on.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     protected async Task ApplyRouteAttributesAsync(
         IHtmlGenerator htmlGenerator,
         TagHelperContext context,
@@ -168,6 +186,17 @@ public abstract class StellarAdminAnchorTagHelperBase : StellarAdminTagHelperBas
         await anchorTagHelper.ProcessAsync(context, output);
     }
 
+    /// <summary>
+    ///     Returns a value that indicates whether the link points to the current page or action.
+    /// </summary>
+    /// <remarks>
+    ///     The area, the page and handler or the controller and action, and every
+    ///     <c>asp-route-*</c> value must match the current request.
+    /// </remarks>
+    /// <returns>
+    ///     <see langword="true" /> if the link points to the current request; otherwise,
+    ///     <see langword="false" />.
+    /// </returns>
     protected bool IsActiveRoute()
     {
         var isActionLink = Controller != null || Action != null;

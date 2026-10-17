@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The side of the conversation a bubble sits on.
+///     Specifies the side of the conversation that a bubble sits on.
 /// </summary>
 public enum BubbleAlign
 {
-    /// <summary>Aligns the bubble to the start of the conversation, for incoming messages.</summary>
+    /// <summary>
+    ///     The start of the conversation, for incoming messages.
+    /// </summary>
     Start,
 
-    /// <summary>Aligns the bubble to the end of the conversation, for outgoing messages.</summary>
+    /// <summary>
+    ///     The end of the conversation, for outgoing messages.
+    /// </summary>
     End,
 }
 

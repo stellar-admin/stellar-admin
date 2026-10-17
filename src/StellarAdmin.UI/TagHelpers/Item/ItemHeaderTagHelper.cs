@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of an item, spanning its full width above the main content.
+///     Renders the header of an item, across its full width above the content.
 /// </summary>
 [HtmlTargetElement("sa-item-header")]
 public class ItemHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

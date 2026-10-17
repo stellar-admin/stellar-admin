@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A trailing element within an avatar group that displays the count of additional,
-///     unshown avatars.
+///     Renders the number of avatars that an avatar group doesn't show, at the end of the group.
 /// </summary>
 [HtmlTargetElement("sa-avatar-group-count")]
 public class AvatarGroupCountTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

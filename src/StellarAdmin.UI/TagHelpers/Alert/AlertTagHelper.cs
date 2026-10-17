@@ -5,14 +5,19 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A callout that displays a short, important message to the user, optionally with an
-///     icon, title, and description.
+///     Renders a callout that shows a short, important message.
 /// </summary>
 [HtmlTargetElement("sa-alert")]
 public class AlertTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="AlertTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">
+    ///     The icon options that supply the icon set by <see cref="Icon" />.
+    /// </param>
     public AlertTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
@@ -29,35 +34,50 @@ public class AlertTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The descriptive body text of the alert. When set, the alert renders its description
-    ///     automatically and child content is not allowed.
+    ///     Gets or sets the description of the alert.
     /// </summary>
+    /// <remarks>
+    ///     When <c>title</c>, <c>description</c> or <c>icon</c> is set, the alert renders them
+    ///     and can't have child content.
+    /// </remarks>
     [HtmlAttributeName(DescriptionAttributeName)]
     public string? Description { get; set; }
 
     /// <summary>
-    ///     The name of the icon to display in the alert. When set, the alert renders the icon
-    ///     automatically and child content is not allowed.
+    ///     Gets or sets the name of the icon shown in the alert.
     /// </summary>
+    /// <remarks>
+    ///     When <c>title</c>, <c>description</c> or <c>icon</c> is set, the alert renders them
+    ///     and can't have child content.
+    /// </remarks>
     [HtmlAttributeName(IconAttributeName)]
     public string? Icon { get; set; }
 
     /// <summary>
-    ///     The title text of the alert. When set, the alert renders its title automatically and
-    ///     child content is not allowed.
+    ///     Gets or sets the title of the alert.
     /// </summary>
+    /// <remarks>
+    ///     When <c>title</c>, <c>description</c> or <c>icon</c> is set, the alert renders them
+    ///     and can't have child content.
+    /// </remarks>
     [HtmlAttributeName(TitleAttributeName)]
     public string? Title { get; set; }
 
     /// <summary>
-    ///     The visual style of the alert.
+    ///     Gets or sets the visual style of the alert.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AlertVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="AlertVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public AlertVariant? Variant { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="Exception">
+    ///     The alert has child content and <see cref="Title" />, <see cref="Description" /> or
+    ///     <see cref="Icon" /> is set.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? AlertVariant.Default;

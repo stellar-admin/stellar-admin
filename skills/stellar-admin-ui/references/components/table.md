@@ -6,24 +6,24 @@ generated: true
 
 # Table
 
-A responsive data table, rendered as a `<table>` inside a scrollable container. Compose it with the header, body, footer, row, head, cell, and caption subcomponents. Set `selection` or `row-details` to add row selection or expandable row details: the table is then wrapped in the `sel-table` web component, which receives the table's `id` and other attributes.
+Renders a table in a container that scrolls sideways when the table is too wide.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-table>` | A responsive data table, rendered as a `<table>` inside a scrollable container. Compose it with the header, body, footer, row, head, cell, and caption subcomponents. Set `selection` or `row-details` to add row selection or expandable row details: the table is then wrapped in the `sel-table` web component, which receives the table's `id` and other attributes. |
-| `<sa-table-body>` | The body of a table, rendered as a `<tbody>`; contains the data rows. |
-| `<sa-table-caption>` | A caption for a table, rendered as a `<caption>`; describes the table's contents. |
-| `<sa-table-cell>` | A data cell within a table row, rendered as a `<td>`. |
-| `<sa-table-footer>` | The footer of a table, rendered as a `<tfoot>`; typically holds summary rows. |
-| `<sa-table-head>` | A header cell within a table header row, rendered as a `<th>`. |
-| `<sa-table-header>` | The header section of a table, rendered as a `<thead>`; contains the header row. |
-| `<sa-table-row>` | A row within a table, rendered as a `<tr>`. |
-| `<sa-table-row-detail>` | The details of the table row before it, rendered as a `<tr>` with one cell spanning every column. It is collapsed until the row's `sa-table-row-detail-toggle` expands it. |
-| `<sa-table-row-detail-toggle>` | The button that expands and collapses a row's details, placed in any cell of the row. It controls the `sa-table-row-detail` after its row, or the one named by an `aria-controls` attribute. Renders a chevron when it has no content. |
-| `<sa-table-selection-cell>` | A cell with the checkbox that selects its row, for an `sa-table` with `selection`. The checked checkboxes post their values under `name`. |
-| `<sa-table-selection-head>` | A header cell with the checkbox that selects or clears every row, for an `sa-table` with `selection`. It heads the column of `sa-table-selection-cell` cells. |
+| `<sa-table>` | Renders a table in a container that scrolls sideways when the table is too wide. |
+| `<sa-table-body>` | Renders the body of a table, which holds the data rows, as a `<tbody>`. |
+| `<sa-table-caption>` | Renders a caption that describes a table, as a `<caption>`. |
+| `<sa-table-cell>` | Renders a data cell in a table row, as a `<td>`. |
+| `<sa-table-footer>` | Renders the footer of a table, as a `<tfoot>`. |
+| `<sa-table-head>` | Renders a header cell in a table's header row, as a `<th>`. |
+| `<sa-table-header>` | Renders the header of a table, which holds the header row, as a `<thead>`. |
+| `<sa-table-row>` | Renders a row in a table, as a `<tr>`. |
+| `<sa-table-row-detail>` | Renders the details of the table row before it. |
+| `<sa-table-row-detail-toggle>` | Renders a button that expands and collapses a table row's details. |
+| `<sa-table-selection-cell>` | Renders a table cell with a checkbox that selects its row. |
+| `<sa-table-selection-head>` | Renders a table header cell with a checkbox that selects or clears every row. |
 
 ## Attributes
 
@@ -64,7 +64,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 |-----------|------|---------|--------|
 | `checked` | `bool` | `false` | `true`, `false` |
 | `disabled` | `bool` | `false` | `true`, `false` |
-| `label` | `string` | — | — |
+| `label` | `string` | `Select row` | — |
 | `name` | `string` | — | — |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
@@ -73,7 +73,7 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `label` | `string` | — | — |
+| `label` | `string` | `Select all` | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

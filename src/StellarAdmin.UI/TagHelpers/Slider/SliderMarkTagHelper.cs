@@ -3,18 +3,28 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A mark at one value of a <c>&lt;sa-slider&gt;</c>, labelled with its content when it has
-///     any.
+///     Renders a mark at one value of a slider.
 /// </summary>
+/// <remarks>
+///     The mark's content, if any, is shown as its label. Place the mark inside a
+///     <c>&lt;sa-slider-marks&gt;</c>.
+/// </remarks>
 [HtmlTargetElement("sa-slider-mark", ParentTag = "sa-slider-marks")]
 public class SliderMarkTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The value the mark is placed at, between the slider's minimum and maximum.
+    ///     Gets or sets the value that the mark is placed at.
     /// </summary>
+    /// <value>
+    ///     A value between the slider's minimum and maximum, inclusive.
+    /// </value>
     [HtmlAttributeName("value")]
     public double Value { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <see cref="Value" /> isn't between the slider's minimum and maximum.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var slider =

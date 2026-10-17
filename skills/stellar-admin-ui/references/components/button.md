@@ -6,14 +6,14 @@ generated: true
 
 # Button
 
-Renders a button element for triggering actions.
+Renders a button that triggers an action.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-button>` | Renders a button element for triggering actions. |
-| `<sa-button-link>` | Renders an anchor element styled as a button, with routing support. |
+| `<sa-button>` | Renders a button that triggers an action. |
+| `<sa-button-link>` | Renders a link that looks like a button. |
 
 ## Attributes
 

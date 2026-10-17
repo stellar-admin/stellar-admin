@@ -8,12 +8,20 @@ public sealed class UserMenuBuilder
     private readonly UserMenuOptions _options;
 
     /// <summary>
-    ///     The claim whose value is the URL of the user's picture.
+    ///     Sets the type of the claim whose value is the URL of the user's picture.
     /// </summary>
+    /// <value>
+    ///     The claim type. The default is <c>picture</c>.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or white space.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to <c>picture</c>. Without a picture, the avatar shows the user's initials.
+    ///     Without a picture, the avatar shows the user's initials.
     /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
     public string AvatarClaimType
     {
         set
@@ -25,13 +33,22 @@ public sealed class UserMenuBuilder
     }
 
     /// <summary>
-    ///     The claim shown under the user's name.
+    ///     Sets the type of the claim shown under the user's name.
     /// </summary>
+    /// <value>
+    ///     The claim type. The default is the email address, from the
+    ///     <see cref="System.Security.Claims.ClaimTypes.Email" /> or <c>email</c> claim.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or white space.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to the email address claim, <see cref="System.Security.Claims.ClaimTypes.Email" /> or
-    ///     <c>email</c>. Without the claim, the menu shows the name alone.
+    ///     A claim with several values, such as one role claim per role, shows them all. Without
+    ///     the claim, the menu shows the name alone.
     /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
     public string DescriptionClaimType
     {
         set
@@ -43,13 +60,21 @@ public sealed class UserMenuBuilder
     }
 
     /// <summary>
-    ///     The claim shown as the user's name.
+    ///     Sets the type of the claim shown as the user's name.
     /// </summary>
+    /// <value>
+    ///     The claim type. The default is the identity's name, then the
+    ///     <see cref="System.Security.Claims.ClaimTypes.Name" /> or <c>name</c> claim.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or white space.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to the identity's name, then the <see cref="System.Security.Claims.ClaimTypes.Name" />
-    ///     and <c>name</c> claims.
+    ///     Without the claim, the menu shows the description in place of the name.
     /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
     public string NameClaimType
     {
         set
@@ -63,10 +88,18 @@ public sealed class UserMenuBuilder
     internal UserMenuBuilder(UserMenuOptions options) => _options = options;
 
     /// <summary>
-    ///     Adds an item to the end of the menu. The log out item always shows after the items.
+    ///     Adds an item to the end of the menu.
     /// </summary>
-    /// <param name="item">The item, created with a <see cref="UserMenuItem" /> factory.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="item">
+    ///     The item to add, created with one of the static methods of <see cref="UserMenuItem" />.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="item" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The log out item is always shown after the other items.
+    /// </remarks>
     public UserMenuBuilder Add(UserMenuItem item)
     {
         ArgumentNullException.ThrowIfNull(item);
@@ -77,8 +110,12 @@ public sealed class UserMenuBuilder
     }
 
     /// <summary>
-    ///     Removes the items added so far. The log out item is configured with <see cref="Logout" />.
+    ///     Removes the items added so far.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The log out item isn't removed. Hide it with <see cref="Logout" />.
+    /// </remarks>
     public UserMenuBuilder Clear()
     {
         _options.Items.Clear();
@@ -87,11 +124,13 @@ public sealed class UserMenuBuilder
     }
 
     /// <summary>
-    ///     Configures the log out item, which shows after the other items, and the admin panel's logout endpoint
-    ///     it posts to.
+    ///     Configures the log out item and the logout endpoint it posts to.
     /// </summary>
-    /// <param name="configure">Configures log out.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="configure">A delegate that configures log out.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public UserMenuBuilder Logout(Action<LogoutBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);

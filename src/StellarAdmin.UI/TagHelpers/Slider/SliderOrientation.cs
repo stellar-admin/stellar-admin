@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The orientation in which a <c>&lt;sa-slider&gt;</c> is laid out.
+///     Specifies the direction of a slider's track.
 /// </summary>
 public enum SliderOrientation
 {
-    /// <summary>The slider is laid out horizontally.</summary>
+    /// <summary>
+    ///     The track runs from left to right.
+    /// </summary>
     Horizontal,
 
-    /// <summary>The slider is laid out vertically.</summary>
+    /// <summary>
+    ///     The track runs from bottom to top.
+    /// </summary>
     Vertical,
 }
 

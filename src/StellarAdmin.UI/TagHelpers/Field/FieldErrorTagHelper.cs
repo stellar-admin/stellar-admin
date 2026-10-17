@@ -6,14 +6,24 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays the validation error message for a field. When bound with <c>asp-for</c>, it shows
-///     the model's validation message and appears only when that field is invalid.
+///     Renders the validation error message of a field.
 /// </summary>
+/// <remarks>
+///     When bound with <c>asp-for</c>, it shows the model's validation message and appears only
+///     when that property is invalid.
+/// </remarks>
 [HtmlTargetElement("sa-field-error")]
 public class FieldErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="FieldErrorTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders a bound validation message.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public FieldErrorTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
@@ -22,18 +32,19 @@ public class FieldErrorTagHelper : StellarAdminTagHelperBase
     private const string ForAttributeName = "asp-for";
 
     /// <summary>
-    /// An expression to be evaluated against the current model.
+    ///     Gets or sets the model property whose validation message is shown.
     /// </summary>
     [HtmlAttributeName(ForAttributeName)]
     public ModelExpression? For { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="ViewContext"/> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var userClass = output.GetUserSuppliedClass();

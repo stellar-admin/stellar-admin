@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A horizontal divider between fields, optionally with content (such as a label) centered on the line.
+///     Renders a horizontal divider between fields.
 /// </summary>
+/// <remarks>
+///     Content, such as "or", is shown in a gap in the middle of the line.
+/// </remarks>
 [HtmlTargetElement("sa-field-separator")]
 public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

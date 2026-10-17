@@ -4,37 +4,46 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A searchable menu of commands or options, navigated with the keyboard from a single search
-///     input.
+///     Renders a searchable menu of commands or options that the keyboard navigates from one
+///     search input.
 /// </summary>
+/// <remarks>
+///     Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-command")]
 public class CommandTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     How items are narrowed as the user types.
+    ///     Gets or sets how the items are filtered as the user types.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies how the items are filtered. The default is
+    ///     <see cref="CommandFilter.Client" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="CommandFilter.Client" />. Use <see cref="CommandFilter.None" />
-    ///     when the application supplies matching items itself.
+    ///     Use <see cref="CommandFilter.None" /> when the application supplies the matching items
+    ///     itself.
     /// </remarks>
     [HtmlAttributeName("filter")]
     public CommandFilter? Filter { get; set; }
 
     /// <summary>
-    ///     A visually hidden label that names the search input for assistive technology.
+    ///     Gets or sets the visually hidden label of the search input.
     /// </summary>
     [HtmlAttributeName("label")]
     public string? Label { get; set; }
 
     /// <summary>
-    ///     Whether keyboard navigation wraps from the last item to the first and back.
+    ///     Gets or sets a value that indicates whether keyboard navigation wraps around the list.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if moving past the last item goes to the first, and back;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("loop")]
     public bool? Loop { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveFilter = Filter ?? CommandFilter.Client;

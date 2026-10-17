@@ -5,9 +5,13 @@
 /// </summary>
 public enum DetailsOrientation
 {
-    /// <summary>Each label sits above its value.</summary>
+    /// <summary>
+    ///     Places each label above its value.
+    /// </summary>
     Vertical,
 
-    /// <summary>Each label sits beside its value.</summary>
+    /// <summary>
+    ///     Places each label beside its value.
+    /// </summary>
     Horizontal,
 }

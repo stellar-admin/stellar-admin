@@ -3,7 +3,7 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     How an <see cref="ImageEditor" /> is laid out on a form.
+///     Specifies how an <see cref="ImageEditor" /> is laid out on a form.
 /// </summary>
 public enum ImageEditorLayout
 {

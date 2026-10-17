@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The current page in the breadcrumb trail, rendered as a non-interactive
-///     <c>&lt;span&gt;</c> marked with <c>aria-current="page"</c>.
+///     Renders the current page in a breadcrumb, as text that can't be clicked.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-page")]
 public class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

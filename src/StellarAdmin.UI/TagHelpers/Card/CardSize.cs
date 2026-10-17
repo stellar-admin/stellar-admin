@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a <c>&lt;sa-card&gt;</c>, controlling its padding and spacing.
+///     Specifies the size of a card, which sets its padding and spacing.
 /// </summary>
 public enum CardSize
 {
-    /// <summary>The default card size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A compact card with reduced padding and spacing.</summary>
+    /// <summary>
+    ///     A compact size with less padding and spacing.
+    /// </summary>
     Small,
 }
 

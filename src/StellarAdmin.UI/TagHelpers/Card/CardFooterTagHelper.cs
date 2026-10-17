@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer region of a card; typically contains actions or supplementary information.
+///     Renders the footer of a card, which holds actions or extra information.
 /// </summary>
 [HtmlTargetElement("sa-card-footer")]
 public class CardFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The orientation in which a <c>&lt;sa-tab-list&gt;</c> arranges its tabs.
+///     Specifies the direction in which a tab list arranges its tabs.
 /// </summary>
 public enum TabListOrientation
 {
-    /// <summary>The tabs are arranged horizontally.</summary>
+    /// <summary>
+    ///     The tabs are arranged in a row.
+    /// </summary>
     Horizontal,
 
-    /// <summary>The tabs are arranged vertically.</summary>
+    /// <summary>
+    ///     The tabs are arranged in a column.
+    /// </summary>
     Vertical,
 }
 

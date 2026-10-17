@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Where the Add button for inline create is shown.
+///     Specifies where the Add button for inline create is shown.
 /// </summary>
 public enum InlineAddButton
 {
@@ -11,8 +11,8 @@ public enum InlineAddButton
     Header,
 
     /// <summary>
-    ///     Shows the button in the grid, in the first row for <see cref="InlineCreatePosition.Top" />
-    ///     and the last row for <see cref="InlineCreatePosition.Bottom" />.
+    ///     Shows the button in a row at the top or bottom of the grid, depending on the
+    ///     <see cref="InlineCreatePosition" />.
     /// </summary>
     Grid,
 

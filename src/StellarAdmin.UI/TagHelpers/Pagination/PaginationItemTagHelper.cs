@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single item within the pagination list.
+///     Renders an item in the pagination list.
 /// </summary>
 [HtmlTargetElement("sa-pagination-item")]
 public class PaginationItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "li";

@@ -3,10 +3,11 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays a value as a badge, and each item of a collection as its own badge.
+///     Shows a value as a badge.
 /// </summary>
 /// <remarks>
-///     To choose the badge by value, write a display template that switches on it.
+///     A collection shows a badge for each item. To choose the badge by value, write a display
+///     template that switches on it.
 /// </remarks>
 public sealed class BadgeDisplay : FieldDisplay
 {
@@ -14,10 +15,11 @@ public sealed class BadgeDisplay : FieldDisplay
     public override string TemplateName => "Displays/Badge";
 
     /// <summary>
-    ///     The badge variant.
+    ///     Gets or sets the variant of the badge.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BadgeVariant.Secondary" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the variant. The default is
+    ///     <see cref="BadgeVariant.Secondary" />.
+    /// </value>
     public BadgeVariant Variant { get; set; } = BadgeVariant.Secondary;
 }

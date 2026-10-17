@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How an attachment arranges its media and content.
+///     Specifies how an attachment arranges its media and content.
 /// </summary>
 public enum AttachmentOrientation
 {
-    /// <summary>The media sits beside the content, as a row.</summary>
+    /// <summary>
+    ///     The media sits beside the content, as a row.
+    /// </summary>
     Horizontal,
 
-    /// <summary>The media sits above the content, as a card.</summary>
+    /// <summary>
+    ///     The media sits above the content, as a card.
+    /// </summary>
     Vertical,
 }
 

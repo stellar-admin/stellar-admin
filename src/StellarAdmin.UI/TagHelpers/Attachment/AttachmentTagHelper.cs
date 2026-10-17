@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A file or image presented with its media, metadata, upload state, and actions.
+///     Renders a file with its media, details, upload state and actions.
 /// </summary>
 [HtmlTargetElement("sa-attachment")]
 public class AttachmentTagHelper : StellarAdminTagHelperBase
@@ -23,32 +23,36 @@ public class AttachmentTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     How the attachment arranges its media and content.
+    ///     Gets or sets how the attachment arranges its media and content.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AttachmentOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the arrangement. The default is
+    ///     <see cref="AttachmentOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public AttachmentOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     The size of the attachment, controlling its padding and spacing.
+    ///     Gets or sets the size of the attachment.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AttachmentSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="AttachmentSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public AttachmentSize? Size { get; set; }
 
     /// <summary>
-    ///     The point the attachment has reached in its upload lifecycle.
+    ///     Gets or sets how far the attachment has progressed through its upload.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AttachmentState.Done" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the upload state. The default is
+    ///     <see cref="AttachmentState.Done" />.
+    /// </value>
     [HtmlAttributeName("state")]
     public AttachmentState? State { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? AttachmentOrientation.Horizontal;

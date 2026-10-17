@@ -8,18 +8,22 @@ using StellarAdmin.UI;
 
 namespace StellarAdmin;
 
+/// <summary>
+///     Provides extension methods that add the admin panel to the services.
+/// </summary>
 public static class StellarAdminServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
         /// <summary>
-        ///     Adds the StellarAdmin admin panel, its resource management services and the
-        ///     StellarAdmin UI components.
+        ///     Adds the admin panel and the StellarAdmin UI components.
         /// </summary>
+        /// <returns>A builder that configures the admin panel.</returns>
         /// <remarks>
-        ///     This calls <see cref="StellarAdmin.UI.StellarAdminUIExtensions.AddStellarAdminUI(IServiceCollection)" />,
-        ///     which adds a model binder, a value provider and a toast filter to the MVC options for
-        ///     the whole app.
+        ///     This calls
+        ///     <see cref="StellarAdmin.UI.StellarAdminUIExtensions.AddStellarAdminUI(IServiceCollection)" />,
+        ///     which adds a model binder, a value provider and a toast filter to the MVC options
+        ///     for the whole app.
         /// </remarks>
         public StellarAdminBuilder AddStellarAdmin()
         {
@@ -46,10 +50,17 @@ public static class StellarAdminServiceCollectionExtensions
         }
 
         /// <summary>
-        ///     Adds the StellarAdmin admin panel and configures it.
+        ///     Adds and configures the admin panel and the StellarAdmin UI components.
         /// </summary>
-        /// <param name="configure">The configuration delegate used to configure the admin panel.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="configure">A delegate that configures the admin panel.</param>
+        /// <returns>The services, so that calls can be chained.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="configure" /> is <see langword="null" />.
+        /// </exception>
+        /// <remarks>
+        ///     This changes the app's MVC options in the same way as
+        ///     <see cref="AddStellarAdmin(IServiceCollection)" />.
+        /// </remarks>
         public IServiceCollection AddStellarAdmin(Action<StellarAdminBuilder> configure)
         {
             ArgumentNullException.ThrowIfNull(configure);

@@ -1,25 +1,37 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a <c>&lt;sa-badge&gt;</c>.
+///     Specifies the visual style of a badge.
 /// </summary>
 public enum BadgeVariant
 {
-    /// <summary>The default, solid badge style.</summary>
+    /// <summary>
+    ///     The standard, solid style.
+    /// </summary>
     Default,
 
-    /// <summary>A muted, secondary badge style.</summary>
+    /// <summary>
+    ///     A muted, secondary style.
+    /// </summary>
     Secondary,
 
-    /// <summary>A badge styled to indicate a destructive or error state.</summary>
+    /// <summary>
+    ///     A style that signals an error or a destructive outcome.
+    /// </summary>
     Destructive,
 
-    /// <summary>A badge with a transparent background and a visible border.</summary>
+    /// <summary>
+    ///     A transparent background with a visible border.
+    /// </summary>
     Outline,
 
-    /// <summary>A badge with no background or border until interacted with.</summary>
+    /// <summary>
+    ///     No background until the pointer is over the badge.
+    /// </summary>
     Ghost,
 
-    /// <summary>A badge styled to look like a hyperlink.</summary>
+    /// <summary>
+    ///     A style that looks like a link.
+    /// </summary>
     Link,
 }

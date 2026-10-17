@@ -1,27 +1,27 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of an OTP input.
+///     Holds the CSS classes added to the parts of a one-time code input.
 /// </summary>
 public class InputOtpClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the OTP container.
+    ///     Gets or sets the CSS classes added to the container of the slots.
     /// </summary>
     public string? Control { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each slot group.
+    ///     Gets or sets the CSS classes added to each group of slots.
     /// </summary>
     public string? Group { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each group separator.
+    ///     Gets or sets the CSS classes added to each separator between groups.
     /// </summary>
     public string? Separator { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes for each character slot.
+    ///     Gets or sets the CSS classes added to each character slot.
     /// </summary>
     public string? Slot { get; set; }
 }

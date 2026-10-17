@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The layout of a marker.
+///     Specifies the layout of a marker.
 /// </summary>
 public enum MarkerVariant
 {
-    /// <summary>An inline marker, for status updates, notes and actions.</summary>
+    /// <summary>
+    ///     An inline marker for status updates, notes and actions.
+    /// </summary>
     Default,
 
-    /// <summary>A marker with a bottom border separating it from the next row.</summary>
+    /// <summary>
+    ///     A marker with a bottom border that separates it from the next row.
+    /// </summary>
     Border,
 
-    /// <summary>A centered label with a divider line running out to each side.</summary>
+    /// <summary>
+    ///     A centered label with a line on each side.
+    /// </summary>
     Separator,
 }
 

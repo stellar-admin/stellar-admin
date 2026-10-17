@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container that groups an input with add-ons, buttons, or text so they render as a single
-///     combined field.
+///     Renders a group that combines an input with add-ons, buttons or text into one field.
 /// </summary>
 [HtmlTargetElement("sa-input-group")]
 public class InputGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

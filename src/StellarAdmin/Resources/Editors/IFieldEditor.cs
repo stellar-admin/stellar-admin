@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Editors;
 public interface IFieldEditor
 {
     /// <summary>
-    ///     The handler type.
+    ///     Gets the type of the handler that prepares the editor.
     /// </summary>
     Type HandlerType { get; }
 }
@@ -14,6 +14,7 @@ public interface IFieldEditor
 /// <summary>
 ///     Associates a field editor with its handler.
 /// </summary>
+/// <typeparam name="THandler">The type of the handler that prepares the editor.</typeparam>
 public interface IFieldEditor<THandler> : IFieldEditor
     where THandler : IFieldEditorHandler
 {

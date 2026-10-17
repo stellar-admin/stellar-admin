@@ -3,21 +3,26 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A floating panel of rich content anchored to a trigger element, rendered as a native
-///     popover.
+///     Renders a floating panel of content that is anchored to the element that opens it.
 /// </summary>
+/// <remarks>
+///     The panel is a native popover. Open it from a button whose <c>popovertarget</c> is the
+///     panel's <c>id</c>.
+/// </remarks>
 [HtmlTargetElement("sa-popover")]
 public class PopoverTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The position of the popover relative to its anchor.
+    ///     Gets or sets the position of the popover relative to its anchor.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="PositionArea.Bottom" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the position. The default is
+    ///     <see cref="PositionArea.Bottom" />.
+    /// </value>
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

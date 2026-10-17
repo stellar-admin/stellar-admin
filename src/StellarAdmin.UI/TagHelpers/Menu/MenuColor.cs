@@ -1,15 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The color scheme of a floating menu surface (Dropdown Menu content, and future menu
-///     families).
+///     Specifies the color scheme of a floating menu.
 /// </summary>
 public enum MenuColor
 {
-    /// <summary>The menu renders in the current color scheme (opaque <c>popover</c> surface).</summary>
+    /// <summary>
+    ///     The menu uses the page's color scheme.
+    /// </summary>
     Default,
 
-    /// <summary>The menu surface renders in the dark color scheme regardless of the page scheme.</summary>
+    /// <summary>
+    ///     The menu uses the dark color scheme, whatever the page's scheme.
+    /// </summary>
     Inverted,
 }
 

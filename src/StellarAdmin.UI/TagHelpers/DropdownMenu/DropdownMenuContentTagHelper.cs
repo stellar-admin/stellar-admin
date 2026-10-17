@@ -4,21 +4,30 @@ using Microsoft.Extensions.Options;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The popover panel that holds a dropdown menu's items, positioned relative to its trigger.
+///     Renders the panel that holds a dropdown menu's items.
 /// </summary>
+/// <remarks>
+///     The panel takes its id from the enclosing <c>sa-dropdown-menu</c>.
+/// </remarks>
+/// <param name="options">The UI options that supply the menu's color, appearance and accent.</param>
 [HtmlTargetElement("sa-dropdown-menu-content")]
 public class DropdownMenuContentTagHelper(IOptions<StellarAdminUIOptions> options)
     : StellarAdminTagHelperBase()
 {
     /// <summary>
-    ///     Where the panel is placed relative to its trigger.
+    ///     Gets or sets where the panel is placed relative to its trigger.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="PositionArea.BottomSpanRight" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the placement. The default is
+    ///     <see cref="PositionArea.BottomSpanRight" />.
+    /// </value>
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The panel sets an <c>id</c> that differs from the menu's id.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var menuOptions = options.Value.Menu;

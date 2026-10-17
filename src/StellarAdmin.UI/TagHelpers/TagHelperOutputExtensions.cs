@@ -5,8 +5,19 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace StellarAdmin.UI;
 
+/// <summary>
+///     Provides extension methods for <see cref="TagHelperOutput" />.
+/// </summary>
 public static class TagHelperOutputExtensions
 {
+    /// <summary>
+    ///     Returns the <c>class</c> attribute value that the author set on the element.
+    /// </summary>
+    /// <param name="output">The output to read the attribute from.</param>
+    /// <returns>
+    ///     The decoded class names, or an empty string if the element has no <c>class</c>
+    ///     attribute.
+    /// </returns>
     public static string GetUserSuppliedClass(this TagHelperOutput output)
     {
         var value = output.Attributes["class"]?.Value;
@@ -22,9 +33,13 @@ public static class TagHelperOutputExtensions
     }
 
     /// <summary>
-    ///     Appends a declaration to the element's <c>style</c> attribute, preserving any
-    ///     existing (e.g. user-supplied) value.
+    ///     Adds a declaration to the end of the element's <c>style</c> attribute.
     /// </summary>
+    /// <remarks>
+    ///     The existing declarations, such as those the author set, are kept.
+    /// </remarks>
+    /// <param name="output">The output to add the declaration to.</param>
+    /// <param name="declaration">The CSS declaration to add, such as <c>color: red</c>.</param>
     public static void AppendStyle(this TagHelperOutput output, string declaration)
     {
         var existing =

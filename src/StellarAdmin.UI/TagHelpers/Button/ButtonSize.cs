@@ -1,31 +1,47 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a button.
+///     Specifies the size of a button.
 /// </summary>
 public enum ButtonSize
 {
-    /// <summary>The default button size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>An extra-small button.</summary>
+    /// <summary>
+    ///     An extra-small size.
+    /// </summary>
     ExtraSmall,
 
-    /// <summary>A small button.</summary>
+    /// <summary>
+    ///     A small size.
+    /// </summary>
     Small,
 
-    /// <summary>A large button.</summary>
+    /// <summary>
+    ///     A large size.
+    /// </summary>
     Large,
 
-    /// <summary>A square button sized for a single icon.</summary>
+    /// <summary>
+    ///     A square size for a single icon.
+    /// </summary>
     Icon,
 
-    /// <summary>An extra-small square icon button.</summary>
+    /// <summary>
+    ///     An extra-small square size for a single icon.
+    /// </summary>
     IconExtraSmall,
 
-    /// <summary>A small square icon button.</summary>
+    /// <summary>
+    ///     A small square size for a single icon.
+    /// </summary>
     IconSmall,
 
-    /// <summary>A large square icon button.</summary>
+    /// <summary>
+    ///     A large square size for a single icon.
+    /// </summary>
     IconLarge,
 }

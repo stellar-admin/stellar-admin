@@ -6,27 +6,27 @@ generated: true
 
 # DropdownMenu
 
-The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. Set `id` here, not on the content, to choose that id.
+Renders a dropdown menu, which pairs a trigger with its content.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-dropdown-menu>` | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. Set `id` here, not on the content, to choose that id. |
-| `<sa-dropdown-menu-checkbox-item>` | A menu item with a checkable state, rendered as a `<div role="menuitemcheckbox">` with a check indicator. |
-| `<sa-dropdown-menu-content>` | The popover panel that holds a dropdown menu's items, positioned relative to its trigger. |
-| `<sa-dropdown-menu-group>` | Groups related menu items together, exposed to assistive technology as a `role="group"`. |
-| `<sa-dropdown-menu-item>` | A selectable menu item for an action. Renders a button, so inside a form an item with `type="submit"` submits it. Use `sa-dropdown-menu-item-link` for navigation. |
-| `<sa-dropdown-menu-item-link>` | A menu item rendered as a link, navigating to its target when chosen. |
-| `<sa-dropdown-menu-label>` | A non-interactive label used to caption a section of menu items. |
-| `<sa-dropdown-menu-radio-group>` | Groups `sa-dropdown-menu-radio-item` children into a single-selection set and tracks which value is selected. |
-| `<sa-dropdown-menu-radio-item>` | A single option within a `sa-dropdown-menu-radio-group`, rendered as a `<div role="menuitemradio">` with a selection indicator. |
-| `<sa-dropdown-menu-separator>` | A horizontal divider that visually separates groups of menu items. |
-| `<sa-dropdown-menu-shortcut>` | Displays a keyboard shortcut hint, aligned to the trailing edge of a menu item. |
-| `<sa-dropdown-menu-sub>` | Wraps a submenu, pairing a `sa-dropdown-menu-sub-trigger` with its `sa-dropdown-menu-sub-content` and generating the shared id that links them. Set `id` here, not on the sub-content, to choose that id. |
-| `<sa-dropdown-menu-sub-content>` | The popover panel that holds a submenu's items, positioned relative to its sub-trigger. |
-| `<sa-dropdown-menu-sub-trigger>` | The menu item that opens a submenu, rendered with a trailing chevron and wired to its sub-content panel. |
-| `<sa-dropdown-menu-trigger>` | The button that toggles a dropdown menu and anchors its content, styled with button variant and size options. |
+| `<sa-dropdown-menu>` | Renders a dropdown menu, which pairs a trigger with its content. |
+| `<sa-dropdown-menu-checkbox-item>` | Renders a dropdown menu item that can be checked and unchecked. |
+| `<sa-dropdown-menu-content>` | Renders the panel that holds a dropdown menu's items. |
+| `<sa-dropdown-menu-group>` | Groups related items in a dropdown menu. |
+| `<sa-dropdown-menu-item>` | Renders a dropdown menu item that performs an action. |
+| `<sa-dropdown-menu-item-link>` | Renders a dropdown menu item that links to another page. |
+| `<sa-dropdown-menu-label>` | Renders a label for a section of dropdown menu items. |
+| `<sa-dropdown-menu-radio-group>` | Groups `sa-dropdown-menu-radio-item` elements so that only one can be selected. |
+| `<sa-dropdown-menu-radio-item>` | Renders an option in an `sa-dropdown-menu-radio-group`. |
+| `<sa-dropdown-menu-separator>` | Renders a line between groups of dropdown menu items. |
+| `<sa-dropdown-menu-shortcut>` | Renders a keyboard shortcut hint at the end of a dropdown menu item. |
+| `<sa-dropdown-menu-sub>` | Renders a submenu, which pairs an `sa-dropdown-menu-sub-trigger` with its `sa-dropdown-menu-sub-content`. |
+| `<sa-dropdown-menu-sub-content>` | Renders the panel that holds a submenu's items. |
+| `<sa-dropdown-menu-sub-trigger>` | Renders the dropdown menu item that opens a submenu. |
+| `<sa-dropdown-menu-trigger>` | Renders the button that opens and closes a dropdown menu. |
 
 ## Attributes
 
@@ -35,9 +35,9 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `checked` | `bool` | `false` | `true`, `false` |
-| `close-on-click` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
-| `inset` | `bool` | — | `true`, `false` |
+| `close-on-click` | `bool` | `false` | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `inset` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -53,9 +53,9 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `close-on-click` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
-| `inset` | `bool` | — | `true`, `false` |
+| `close-on-click` | `bool` | `true` | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `inset` | `bool` | `false` | `true`, `false` |
 | `variant` | `DropdownMenuItemVariant` | `Default` | `Default`, `Destructive` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -63,9 +63,9 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `close-on-click` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
-| `inset` | `bool` | — | `true`, `false` |
+| `close-on-click` | `bool` | `true` | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `inset` | `bool` | `false` | `true`, `false` |
 | `variant` | `DropdownMenuItemVariant` | `Default` | `Default`, `Destructive` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
@@ -84,7 +84,7 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `inset` | `bool` | — | `true`, `false` |
+| `inset` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-dropdown-menu-radio-group>`
@@ -98,8 +98,8 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `close-on-click` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
+| `close-on-click` | `bool` | `false` | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -114,7 +114,7 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `inset` | `bool` | — | `true`, `false` |
+| `inset` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-dropdown-menu-trigger>`

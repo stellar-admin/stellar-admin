@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The transcript inside a message scroller, stacking its messages.
+///     Renders the transcript of a message scroller, which stacks its messages.
 /// </summary>
+/// <remarks>
+///     Screen readers announce new messages as they are added.
+/// </remarks>
 [HtmlTargetElement("sa-message-scroller-content")]
 public class MessageScrollerContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

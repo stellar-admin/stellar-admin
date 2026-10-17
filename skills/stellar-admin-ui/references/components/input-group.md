@@ -6,18 +6,18 @@ generated: true
 
 # InputGroup
 
-A container that groups an input with add-ons, buttons, or text so they render as a single combined field.
+Renders a group that combines an input with add-ons, buttons or text into one field.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-input-group>` | A container that groups an input with add-ons, buttons, or text so they render as a single combined field. |
-| `<sa-input-group-addon>` | A decoration attached to an input group, such as an icon, text, or button, aligned to one of the input's edges. Clicking the add-on focuses the group's input. |
-| `<sa-input-group-button>` | A button styled to sit inside an input group, typically within an add-on. |
-| `<sa-input-group-input>` | A text input rendered inside an input group, styled to blend into the group so add-ons appear within a single field. |
-| `<sa-input-group-text>` | A run of text or an icon displayed inside an input group, typically within an add-on. |
-| `<sa-input-group-textarea>` | A multi-line text input rendered inside an input group, styled to blend into the group. |
+| `<sa-input-group>` | Renders a group that combines an input with add-ons, buttons or text into one field. |
+| `<sa-input-group-addon>` | Renders an add-on, such as an icon, text or button, at one edge of an input group. |
+| `<sa-input-group-button>` | Renders a button inside an input group, usually in an add-on. |
+| `<sa-input-group-input>` | Renders an input inside an input group. |
+| `<sa-input-group-text>` | Renders text or an icon inside an input group, usually in an add-on. |
+| `<sa-input-group-textarea>` | Renders a multi-line text input inside an input group. |
 
 ## Attributes
 

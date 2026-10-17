@@ -6,18 +6,18 @@ generated: true
 
 # Bubble
 
-A framed message in a conversation, holding its content and any reactions.
+Renders a message in a conversation, with its content and any reactions.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-bubble>` | A framed message in a conversation, holding its content and any reactions. |
-| `<sa-bubble-button-content>` | Bubble content rendered as a button, making the whole bubble activatable. |
-| `<sa-bubble-content>` | The framed surface of a bubble, holding the message text. |
-| `<sa-bubble-content-link>` | Bubble content rendered as an anchor, making the whole bubble a clickable link. |
-| `<sa-bubble-group>` | A container that stacks consecutive bubbles from the same sender. |
-| `<sa-bubble-reactions>` | A row of emoji reactions or small actions, anchored to an edge of the bubble. |
+| `<sa-bubble>` | Renders a message in a conversation, with its content and any reactions. |
+| `<sa-bubble-button-content>` | Renders the content of a bubble as a button, so the whole bubble can be clicked. |
+| `<sa-bubble-content>` | Renders the framed content of a bubble, which holds the message text. |
+| `<sa-bubble-content-link>` | Renders the content of a bubble as a link, so the whole bubble can be clicked. |
+| `<sa-bubble-group>` | Renders a stack of consecutive bubbles from the same sender. |
+| `<sa-bubble-reactions>` | Renders a row of emoji reactions or small actions on an edge of a bubble. |
 
 ## Attributes
 

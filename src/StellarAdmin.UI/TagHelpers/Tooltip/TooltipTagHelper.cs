@@ -16,21 +16,26 @@ namespace StellarAdmin.UI;
  */
 
 /// <summary>
-///     A small floating label that appears when the user hovers or focuses a trigger element,
-///     rendered as a native hint popover.
+///     Renders a small label that appears when the user hovers over or focuses another element.
 /// </summary>
+/// <remarks>
+///     The tooltip is a native popover. Give it an <c>id</c>, and set <c>interestfor</c> on the
+///     element that shows it to that <c>id</c>.
+/// </remarks>
 [HtmlTargetElement("sa-tooltip")]
 public class TooltipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The position of the tooltip relative to its anchor.
+    ///     Gets or sets where the tooltip appears relative to the element that shows it.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="PositionArea.Top" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the position. The default is
+    ///     <see cref="PositionArea.Top" />.
+    /// </value>
     [HtmlAttributeName("position")]
     public PositionArea? Position { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

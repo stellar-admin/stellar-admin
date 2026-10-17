@@ -5,10 +5,14 @@ namespace StellarAdmin.UI;
 /// </summary>
 public enum DataGridSortDirection
 {
-    /// <summary>The data is sorted in ascending order.</summary>
+    /// <summary>
+    ///     Sorts values from lowest to highest.
+    /// </summary>
     Ascending,
 
-    /// <summary>The data is sorted in descending order.</summary>
+    /// <summary>
+    ///     Sorts values from highest to lowest.
+    /// </summary>
     Descending,
 }
 

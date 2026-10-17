@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The main scrollable content region of the sidebar; holds the sidebar's groups and menus.
+///     Renders the scrollable content of a sidebar.
 /// </summary>
+/// <remarks>
+///     The content holds the sidebar's groups and menus.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-content")]
 public class SidebarContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

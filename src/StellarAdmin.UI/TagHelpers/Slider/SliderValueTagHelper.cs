@@ -4,27 +4,35 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays the current value of a <c>&lt;sa-slider&gt;</c>, rendered as an
-///     <c>&lt;output&gt;</c> that the slider fills in the browser and updates as it moves. Inside a
-///     field it shows that field's slider; elsewhere, <see cref="For" /> names the slider.
+///     Renders the current value of a slider, which updates as the slider moves.
 /// </summary>
+/// <remarks>
+///     Inside a field, it shows the value of the field's slider. Elsewhere, set
+///     <see cref="For" />. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-slider-value", TagStructure = TagStructure.WithoutEndTag)]
 public class SliderValueTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The <c>id</c> of the slider whose value is shown. Needed only outside a field, or when a
-    ///     field holds more than one slider.
+    ///     Gets or sets the <c>id</c> of the slider whose value is shown.
     /// </summary>
+    /// <remarks>
+    ///     Needed only outside a field, or when a field holds more than one slider.
+    /// </remarks>
     [HtmlAttributeName("for")]
     public string? For { get; set; }
 
     /// <summary>
-    ///     The zero-based thumb whose value is shown. When omitted, every value is shown, with a
-    ///     range's two values separated by a dash.
+    ///     Gets or sets the zero-based index of the thumb whose value is shown.
     /// </summary>
+    /// <value>
+    ///     The index of a thumb. The default shows every value, with the two values of a range
+    ///     separated by a dash.
+    /// </value>
     [HtmlAttributeName("index")]
     public int? Index { get; set; }
 
+    /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "output";

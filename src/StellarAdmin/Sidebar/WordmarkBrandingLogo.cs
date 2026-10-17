@@ -1,17 +1,18 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     A logo that shows a wordmark image in place of the title.
+///     Represents a logo that shows a wordmark image in place of the title.
 /// </summary>
 public sealed class WordmarkBrandingLogo : BrandingLogo
 {
     /// <summary>
-    ///     The image shown in dark mode, or <c>null</c> to show <see cref="Path" /> in both modes.
+    ///     Gets the URL or app-relative path of the image shown in dark mode, or
+    ///     <see langword="null" /> to show <see cref="Path" /> in both modes.
     /// </summary>
     public string? DarkPath { get; }
 
     /// <summary>
-    ///     The image's URL or app-relative path.
+    ///     Gets the URL or app-relative path of the image.
     /// </summary>
     public string Path { get; }
 

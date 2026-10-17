@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Where a message scroller is scrolled to when it first appears.
+///     Specifies where a message scroller is scrolled to when it first appears.
 /// </summary>
 public enum MessageScrollerPosition
 {
-    /// <summary>The oldest content, at the top of the transcript.</summary>
+    /// <summary>
+    ///     The oldest content, at the top of the transcript.
+    /// </summary>
     Start,
 
-    /// <summary>The newest content, at the bottom of the transcript.</summary>
+    /// <summary>
+    ///     The newest content, at the bottom of the transcript.
+    /// </summary>
     End,
 }
 

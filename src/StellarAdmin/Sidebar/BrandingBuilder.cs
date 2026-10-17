@@ -8,12 +8,18 @@ public sealed class BrandingBuilder
     private readonly BrandingOptions _options;
 
     /// <summary>
-    ///     Where the sidebar header links to.
+    ///     Sets the URL that the sidebar header links to.
     /// </summary>
-    /// <remarks>
-    ///     An absolute URL, or an app-relative path such as <c>~/</c>. Defaults to the admin panel's home page.
-    /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
+    /// <value>
+    ///     An absolute URL, or an app-relative path such as <c>~/</c>. The default is the admin
+    ///     panel's home page.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or white space.
+    /// </exception>
     public string Href
     {
         set
@@ -25,11 +31,15 @@ public sealed class BrandingBuilder
     }
 
     /// <summary>
-    ///     The logo in the sidebar header, or <c>null</c> for none.
+    ///     Sets the logo in the sidebar header.
     /// </summary>
+    /// <value>
+    ///     The logo, or <see langword="null" /> for none. The default is <see langword="null" />.
+    /// </value>
     /// <remarks>
-    ///     Create one with <see cref="BrandingLogo.Icon" />, <see cref="BrandingLogo.Image(string)" /> or
-    ///     <see cref="BrandingLogo.Wordmark(string)" />. Defaults to <c>null</c>.
+    ///     Create a logo with <see cref="BrandingLogo.Icon" />,
+    ///     <see cref="BrandingLogo.Image(string)" /> or
+    ///     <see cref="BrandingLogo.Wordmark(string)" />.
     /// </remarks>
     public BrandingLogo? Logo
     {
@@ -37,10 +47,15 @@ public sealed class BrandingBuilder
     }
 
     /// <summary>
-    ///     The line under the title in the sidebar header, or <c>null</c> for none.
+    ///     Sets the line under the title in the sidebar header.
     /// </summary>
+    /// <value>
+    ///     The subtitle, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>null</c>. A wordmark logo cannot be combined with a subtitle.
+    ///     An empty or white-space value shows no subtitle. A wordmark logo can't be combined with
+    ///     a subtitle.
     /// </remarks>
     public string? Subtitle
     {
@@ -48,13 +63,19 @@ public sealed class BrandingBuilder
     }
 
     /// <summary>
-    ///     The admin panel's name, shown in the sidebar header, the app header and the browser title.
+    ///     Sets the admin panel's name.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the application name made readable, e.g. "Voyager Admin" for <c>Voyager.Admin</c>,
-    ///     or "Admin" when the application has no name.
-    /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
+    /// <value>
+    ///     The name shown in the sidebar header, the app header and the browser title. The default
+    ///     is the application name made readable, such as "Voyager Admin" for
+    ///     <c>Voyager.Admin</c>, or "Admin" when the application has no name.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or white space.
+    /// </exception>
     public string Title
     {
         set

@@ -13,17 +13,20 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Defines a column of a data grid. The cell value comes from, in order of precedence: a
-///     nested <c>sa-data-grid-item-template</c>, plain child content (re-rendered per row), or
-///     the property named by <c>field</c> or selected by <c>field-for</c>. An empty field value
-///     shows <c>empty-text</c>; otherwise a field cell renders through a grid display template
-///     when the column declares a <c>template</c> or the field property carries a
-///     <c>[UIHint]</c>. The header renders a nested
-///     <c>sa-data-grid-header-template</c> when present, otherwise <c>title</c>, otherwise a
-///     field column derives its header from the field's display name. A <c>class</c>
-///     attribute is applied to both the header and body cells of the column. In a row the grid
-///     renders in edit mode, a nested <c>sa-data-grid-edit-template</c> renders instead.
+///     Defines a column of a data grid.
 /// </summary>
+/// <remarks>
+///     <para>
+///         A cell shows the first of these that the column has: an
+///         <c>sa-data-grid-item-template</c>, its content, or the value of <c>field</c> or
+///         <c>field-for</c>. A field value renders through a grid display template when the
+///         column sets <c>template</c> or the property has a <c>[UIHint]</c>.
+///     </para>
+///     <para>
+///         The <c>class</c> applies to the column's header and body cells. In a row in edit mode,
+///         an <c>sa-data-grid-edit-template</c> renders instead.
+///     </para>
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid")]
 public class DataGridColumnTagHelper : StellarAdminTagHelperBase
 {
@@ -31,101 +34,148 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     private readonly ICompositeViewEngine _viewEngine;
 
     /// <summary>
-    ///     The name of a public property on the row item whose value renders in the column's
-    ///     cells, or a dotted path to a nested property (<c>Customer.Name</c>; a null
-    ///     intermediate value renders as a null field value). Ignored when the column has
-    ///     template or inline content. Mutually exclusive with <c>field-for</c>.
+    ///     Gets or sets the name of the item property whose value the cells show.
     /// </summary>
+    /// <value>
+    ///     A property name, or a dotted path to a nested property, such as <c>Customer.Name</c>.
+    /// </value>
+    /// <remarks>
+    ///     Ignored when the column has an item template or content. Can't be combined with
+    ///     <c>field-for</c>. A null value along the path shows as an empty value.
+    /// </remarks>
     [HtmlAttributeName("field")]
     public string? Field { get; set; }
 
     /// <summary>
-    ///     The text a field cell shows when its value is null, blank or an empty collection,
-    ///     instead of rendering a grid display template.
+    ///     Gets or sets the text a cell shows when the field value is empty.
     /// </summary>
+    /// <value>
+    ///     The text for a null or blank value, or an empty collection. The default is the field's
+    ///     null display text, or nothing when it has none.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the field's <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
-    ///     Not used when template-renders-empty passes empty values to the template.
+    ///     The null display text comes from <c>[DisplayFormat(NullDisplayText)]</c>. Not used when
+    ///     <c>template-renders-empty</c> passes empty values to the template.
     /// </remarks>
     [HtmlAttributeName("empty-text")]
     public string? EmptyText { get; set; }
 
     /// <summary>
-    ///     A lambda expression selecting the public property on the row item whose value
-    ///     renders in the column's cells — the typed alternative to <c>field</c>, with IDE
-    ///     completion and compile-time checking. The expression must select a property or a
-    ///     chain of properties (<c>b =&gt; b.Customer.Name</c>; a null intermediate value
-    ///     renders as a null field value), and in markup the lambda parameter needs an
-    ///     explicit type: <c>field-for="(Booking b) =&gt; b.Reference"</c>. All
-    ///     <c>field</c> behavior (templates, formats, metadata, sort defaulting) applies
-    ///     identically, except that field metadata resolves from the lambda parameter type
-    ///     instead of the runtime item type, so <c>[UIHint]</c> templates and display names
-    ///     also work on an empty grid. Mutually exclusive with <c>field</c>.
+    ///     Gets or sets an expression that selects the item property whose value the cells show.
     /// </summary>
+    /// <value>
+    ///     A lambda that selects a property or a chain of properties, with an explicit parameter
+    ///     type, such as <c>field-for="(Booking b) =&gt; b.Reference"</c>.
+    /// </value>
+    /// <remarks>
+    ///     <para>
+    ///         A typed alternative to <c>field</c> that behaves the same way. Can't be combined
+    ///         with <c>field</c>. A null value along the chain shows as an empty value.
+    ///     </para>
+    ///     <para>
+    ///         The property's metadata comes from the parameter type, so <c>[UIHint]</c>
+    ///         templates and display names also work on an empty grid.
+    ///     </para>
+    /// </remarks>
     [HtmlAttributeName("field-for")]
     public LambdaExpression? FieldFor { get; set; }
 
     /// <summary>
-    ///     A composite format string (e.g. <c>{0:C}</c>) applied to the field value.
-    ///     Defaults to the field's <c>[DisplayFormat]</c> format string when omitted. Ignored
-    ///     when the cell renders through a grid display template.
+    ///     Gets or sets the composite format string applied to the field value.
     /// </summary>
+    /// <value>
+    ///     A format string, such as <c>{0:C}</c>. The default is the field's display format.
+    /// </value>
+    /// <remarks>
+    ///     The display format comes from <c>[DisplayFormat(DataFormatString)]</c>. Ignored when
+    ///     the cell renders through a grid display template.
+    /// </remarks>
     [HtmlAttributeName("format")]
     public string? Format { get; set; }
 
     /// <summary>
-    ///     Whether the column header renders a sort link. Requires an
-    ///     <c>sa-data-grid-sort</c> child on the grid declaring the sort URL.
+    ///     Gets or sets a value that indicates whether the column header renders a sort link.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the header renders a sort link; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Requires an <c>sa-data-grid-sort</c> on the grid, and <c>field</c>, <c>field-for</c> or
+    ///     <c>sort-field</c> on the column.
     /// </remarks>
     [HtmlAttributeName("sortable")]
     public bool? Sortable { get; set; }
 
     /// <summary>
-    ///     The sort field substituted for the <c>{sortField}</c> placeholder in the column's sort
-    ///     links, when it differs from the column's field.
+    ///     Gets or sets the value of the <c>{sortField}</c> placeholder in the column's sort links.
     /// </summary>
+    /// <value>
+    ///     The sort field. The default is the column's field name.
+    /// </value>
     [HtmlAttributeName("sort-field")]
     public string? SortField { get; set; }
 
     /// <summary>
-    ///     The name of the grid display template that renders the column's cells, with the
-    ///     field value as the template's model. The name resolves like a partial view
-    ///     named <c>GridDisplayTemplates/{template}</c> (e.g.
-    ///     <c>/Views/Shared/GridDisplayTemplates/</c> or
-    ///     <c>/Pages/Shared/GridDisplayTemplates/</c>), and the template's
-    ///     <c>ViewData.ModelMetadata</c> is the field property's; an application-relative path
-    ///     (<c>~/</c> or <c>/</c>) is used verbatim. Takes precedence over a <c>[UIHint]</c>
-    ///     on the field property. Requires <c>field</c> or <c>field-for</c>.
+    ///     Gets or sets the name of the grid display template that renders the column's cells.
     /// </summary>
+    /// <value>
+    ///     A name that resolves like a partial view named <c>GridDisplayTemplates/{template}</c>,
+    ///     such as one in <c>/Views/Shared/GridDisplayTemplates/</c>. A path that starts with
+    ///     <c>~/</c> or <c>/</c> is used as is.
+    /// </value>
+    /// <remarks>
+    ///     Requires <c>field</c> or <c>field-for</c>. The template's model is the field value, and
+    ///     its metadata is the field property's. Takes precedence over a <c>[UIHint]</c> on the
+    ///     property.
+    /// </remarks>
     [HtmlAttributeName("template")]
     public string? Template { get; set; }
 
     /// <summary>
-    ///     Whether the display template also renders empty values, instead of the empty text.
+    ///     Gets or sets a value that indicates whether the display template also renders empty
+    ///     values.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the template renders empty values instead of the empty text;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>. Has no effect without a template.
+    ///     Has no effect without a template.
     /// </remarks>
     [HtmlAttributeName("template-renders-empty")]
     public bool? TemplateRendersEmpty { get; set; }
 
     /// <summary>
-    ///     The column header text. When omitted on a field column, the header defaults to the
-    ///     field's display name (<c>[Display(Name = ...)]</c>, honoring metadata classes) and
-    ///     then to the property name split on capitals (<c>EmailConfirmed</c> → "Email
-    ///     Confirmed"). A nested <c>sa-data-grid-header-template</c> takes precedence over
-    ///     all of these.
+    ///     Gets or sets the column header text.
     /// </summary>
+    /// <value>
+    ///     The header text. The default is the field's display name, or its property name split
+    ///     into words, such as "Email Confirmed".
+    /// </value>
+    /// <remarks>
+    ///     The display name comes from <c>[Display(Name)]</c>. An
+    ///     <c>sa-data-grid-header-template</c> takes precedence.
+    /// </remarks>
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DataGridColumnTagHelper" /> class.
+    /// </summary>
+    /// <param name="viewEngine">The view engine that finds grid display templates.</param>
+    /// <param name="metadataProvider">The provider of the field properties' metadata.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="viewEngine" /> or <paramref name="metadataProvider" /> is
+    ///     <see langword="null" />.
+    /// </exception>
     public DataGridColumnTagHelper(
         ICompositeViewEngine viewEngine,
         IModelMetadataProvider metadataProvider
@@ -136,6 +186,13 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
             metadataProvider ?? throw new ArgumentNullException(nameof(metadataProvider));
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="Field" /> and <see cref="FieldFor" /> are both set, a sortable column has no
+    ///     field or sort field, <see cref="Template" /> is set without a field, the grid display
+    ///     template isn't found, or <see cref="FieldFor" /> selects something other than a
+    ///     property chain.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var gridContext = GetContext<DataGridContext>(context);

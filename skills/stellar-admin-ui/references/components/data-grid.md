@@ -6,23 +6,23 @@ generated: true
 
 # DataGrid
 
-A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, an `sa-data-grid-selection` child to render a row-selection checkbox column, and an `sa-data-grid-add-row` child to render a row for a button that adds an item. Rows listed in `editing-keys`, and a `new-item`, render in edit mode with their columns' `sa-data-grid-edit-template`s. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given.
+Renders a table of items, with columns declared by `sa-data-grid-column` children.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-data-grid>` | A data grid that renders a full table from declarative column definitions and a data source. Columns are declared with `sa-data-grid-column`; the grid renders the header from the column definitions and re-renders the column content once per data row. The grid renders as a card-style panel; add an `sa-data-grid-pager` child to render a footer bar with paging links and a record-range summary, an `sa-data-grid-sort` child to render sort links on the sortable columns' headers, an `sa-data-grid-selection` child to render a row-selection checkbox column, and an `sa-data-grid-add-row` child to render a row for a button that adds an item. Rows listed in `editing-keys`, and a `new-item`, render in edit mode with their columns' `sa-data-grid-edit-template`s. Querying, sorting, and paging the data remain the application's responsibility — the grid renders the items it is given. |
-| `<sa-data-grid-add-row>` | A full-width row at the top or bottom of the data grid's body, for a button that adds an item. It is shown when the grid has no items too, and hidden while a new row, with the key `new`, is in edit mode. A grid rendered with `rows-only` leaves it out. |
-| `<sa-data-grid-column>` | Defines a column of a data grid. The cell value comes from, in order of precedence: a nested `sa-data-grid-item-template`, plain child content (re-rendered per row), or the property named by `field` or selected by `field-for`. An empty field value shows `empty-text`; otherwise a field cell renders through a grid display template when the column declares a `template` or the field property carries a `[UIHint]`. The header renders a nested `sa-data-grid-header-template` when present, otherwise `title`, otherwise a field column derives its header from the field's display name. A `class` attribute is applied to both the header and body cells of the column. In a row the grid renders in edit mode, a nested `sa-data-grid-edit-template` renders instead. |
-| `<sa-data-grid-edit-template>` | The editor of a data grid column, rendered instead of the column's display in the rows the grid renders in edit mode, with the current item available through `Html.GridItem<T>()`. Field names get the row's prefix, `rows[key]`, so `asp-for="@Html.GridItem<Booking>().Destination"` posts as `rows[24817].Destination`. A column without an edit template keeps its display in an editing row. |
-| `<sa-data-grid-empty>` | Custom content for the data grid's empty state, shown as a single full-width row when the grid has no items. When omitted, the grid renders a default "No records found." message. |
-| `<sa-data-grid-header-template>` | Custom header content for a data grid column, rendered once and taking precedence over the column's `title` attribute. |
-| `<sa-data-grid-item-template>` | The row template of a data grid column, re-rendered once per data row with the current item available through `Html.GridItem<T>()`. Unlike plain child content, the template is never executed during the grid's collect pass, so it can safely dereference the item unconditionally. |
-| `<sa-data-grid-pager>` | A pager that renders page-number, previous, and next links for a paged data set. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); a route value must contain the `{page}` placeholder, which is replaced with the target page number in each link (e.g. `asp-route-pageNo="{page}"`). A route value may also contain the `{pageSize}` placeholder: page links substitute `selected-page-size` when one is supplied and drop the route value otherwise, so a size carries across page navigation only when one was actually chosen, while the links of the footer's page-size selector (`page-size-options`) always substitute the target size and reset the page number to 1. Declared as a child of `sa-data-grid` it renders in the grid's footer bar as compact icon links, alongside a record-range summary when `total-items` is supplied — the footer renders even when there is a single page, showing just the record count. Used standalone it renders the classic labelled pager and nothing at all when there is one page or less. |
-| `<sa-data-grid-row-detail>` | Lets the data grid's rows expand to show details. The content is a row template, rendered once per data row with the current item available through `Html.GridItem<T>()`, below its row and spanning every column. The grid adds a toggle column and wraps its table in the `sel-table` web component, which raises bubbling `rowdetailexpand` and `rowdetailcollapse` events on the detail row, so htmx can load a row's details when it first expands. |
-| `<sa-data-grid-selection>` | Adds row selection to the data grid: a leading checkbox column with a select-all checkbox in the header. Requires the grid's `key-field`, whose value each row's checkbox carries. Renders nothing itself — the grid wraps its table in the `sel-table` web component, to which an `id` and `class` set here are transferred. Read the current selection from the element's `selectedValues` property, or listen for its bubbling `rowselectionchange` event; with a `name` the selection also posts as ordinary checkbox form data. |
-| `<sa-data-grid-sort>` | Declares how the data grid generates its column-sorting links, and the current sort state. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); the route values must contain the `{sortField}` placeholder, replaced with the column's sort field, and the `{sortDirection}` placeholder, replaced with the target direction (`asc` or `desc`) — e.g. `asp-route-sortField="{sortField}" asp-route-sortDirection="{sortDirection}"`. Renders nothing itself; columns opt in with their `sortable` attribute. |
+| `<sa-data-grid>` | Renders a table of items, with columns declared by `sa-data-grid-column` children. |
+| `<sa-data-grid-add-row>` | Renders a full-width row in a data grid, for a button that adds an item. |
+| `<sa-data-grid-column>` | Defines a column of a data grid. |
+| `<sa-data-grid-edit-template>` | Renders the editor of a data grid column in rows that are in edit mode. |
+| `<sa-data-grid-empty>` | Renders custom content in a full-width row when the data grid has no items. |
+| `<sa-data-grid-header-template>` | Renders custom header content for a data grid column. |
+| `<sa-data-grid-item-template>` | Renders the content of a data grid column for each row. |
+| `<sa-data-grid-pager>` | Renders page number, previous and next links for a paged list. |
+| `<sa-data-grid-row-detail>` | Renders details below each data grid row, which users can expand and collapse. |
+| `<sa-data-grid-selection>` | Adds a checkbox column to a data grid, so users can select rows. |
+| `<sa-data-grid-sort>` | Configures the sort links of a data grid's sortable columns and the current sort. |
 
 ## Attributes
 
@@ -51,7 +51,7 @@ A data grid that renders a full table from declarative column definitions and a 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `field` | `string` | — | — |
-| `empty-text` | `string` | `[DisplayFormat(NullDisplayText)]` | — |
+| `empty-text` | `string` | — | — |
 | `field-for` | `LambdaExpression` | — | — |
 | `format` | `string` | — | — |
 | `sortable` | `bool` | `false` | `true`, `false` |

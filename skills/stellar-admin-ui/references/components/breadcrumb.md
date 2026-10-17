@@ -6,19 +6,19 @@ generated: true
 
 # Breadcrumb
 
-A breadcrumb navigation trail, rendered as a `<nav>`; shows the path to the current page. Compose it with the list, item, link, page, separator, and ellipsis subcomponents.
+Renders a breadcrumb that shows the path to the current page.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-breadcrumb>` | A breadcrumb navigation trail, rendered as a `<nav>`; shows the path to the current page. Compose it with the list, item, link, page, separator, and ellipsis subcomponents. |
-| `<sa-breadcrumb-ellipsis>` | An ellipsis that stands in for collapsed breadcrumb items, rendered as a presentational `<span>` with an icon and screen-reader text. |
-| `<sa-breadcrumb-item>` | A single item within the breadcrumb trail, rendered as a `<li>`; wraps a link, page, or separator. |
-| `<sa-breadcrumb-link>` | A navigable link within a breadcrumb item, rendered as an `<a>`; supports the standard anchor routing attributes. |
-| `<sa-breadcrumb-list>` | The ordered list of breadcrumb items, rendered as an `<ol>`. |
-| `<sa-breadcrumb-page>` | The current page in the breadcrumb trail, rendered as a non-interactive `<span>` marked with `aria-current="page"`. |
-| `<sa-breadcrumb-separator>` | A visual separator between breadcrumb items, rendered as a presentational `<li>`; defaults to a chevron icon when no content is supplied. |
+| `<sa-breadcrumb>` | Renders a breadcrumb that shows the path to the current page. |
+| `<sa-breadcrumb-ellipsis>` | Renders an ellipsis that stands in for breadcrumb items that aren't shown. |
+| `<sa-breadcrumb-item>` | Renders an item in a breadcrumb list, which holds a link or the current page. |
+| `<sa-breadcrumb-link>` | Renders a link in a breadcrumb item. |
+| `<sa-breadcrumb-list>` | Renders the ordered list of items in a breadcrumb. |
+| `<sa-breadcrumb-page>` | Renders the current page in a breadcrumb, as text that can't be clicked. |
+| `<sa-breadcrumb-separator>` | Renders a separator between breadcrumb items. |
 
 ## Attributes
 

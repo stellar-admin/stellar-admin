@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The title text within an empty state header.
+///     Renders the title in an empty state's header.
 /// </summary>
 [HtmlTargetElement("sa-empty-title")]
 public class EmptyTitleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

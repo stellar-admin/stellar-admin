@@ -1,17 +1,23 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a sidebar menu link.
+///     Specifies the size of a sidebar menu link.
 /// </summary>
 public enum SidebarMenuLinkSize
 {
-    /// <summary>The standard link height.</summary>
+    /// <summary>
+    ///     The standard height.
+    /// </summary>
     Default,
 
-    /// <summary>A more compact link.</summary>
+    /// <summary>
+    ///     A shorter, more compact link.
+    /// </summary>
     Small,
 
-    /// <summary>A taller link, useful for prominent entries.</summary>
+    /// <summary>
+    ///     A taller link for prominent entries.
+    /// </summary>
     Large,
 }
 

@@ -4,39 +4,47 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A progress bar that visualizes the completion of a task as a filled track. Compose
-///     it with the label and value subcomponents.
+///     Renders a progress bar that shows how far a task has progressed.
 /// </summary>
+/// <remarks>
+///     Add a <c>&lt;sa-progress-label&gt;</c> and a <c>&lt;sa-progress-value&gt;</c> inside to
+///     show a label and the value.
+/// </remarks>
 [HtmlTargetElement("sa-progress")]
 public class ProgressTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The value representing full completion.
+    ///     Gets or sets the value at which the task is complete.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>100</c>.
-    /// </remarks>
+    /// <value>
+    ///     A value greater than <see cref="Min" />. The default is <c>100</c>.
+    /// </value>
     [HtmlAttributeName("max")]
     public double? Max { get; set; }
 
     /// <summary>
-    ///     The value representing no completion.
+    ///     Gets or sets the value at which the task has not started.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>0</c>.
-    /// </remarks>
+    /// <value>
+    ///     A value less than <see cref="Max" />. The default is <c>0</c>.
+    /// </value>
     [HtmlAttributeName("min")]
     public double? Min { get; set; }
 
     /// <summary>
-    ///     The current progress value, between the minimum and maximum.
+    ///     Gets or sets the current progress.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>0</c>.
-    /// </remarks>
+    /// <value>
+    ///     A value from <see cref="Min" /> to <see cref="Max" />. The default is <c>0</c>.
+    /// </value>
     [HtmlAttributeName("value")]
     public double? Value { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <see cref="Min" /> isn't less than <see cref="Max" />, or <see cref="Value" /> is outside
+    ///     that range.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveMin = Min ?? 0;

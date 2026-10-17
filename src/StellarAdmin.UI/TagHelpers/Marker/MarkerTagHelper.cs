@@ -3,20 +3,23 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An inline note in a conversation, such as a status update, a system message or a labeled divider.
+///     Renders a note in a conversation, such as a status update, a system message or a labeled
+///     divider.
 /// </summary>
 [HtmlTargetElement("sa-marker")]
 public class MarkerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The layout of the marker.
+    ///     Gets or sets the layout of the marker.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="MarkerVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is
+    ///     <see cref="MarkerVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public MarkerVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? MarkerVariant.Default;

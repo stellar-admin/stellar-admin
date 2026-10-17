@@ -6,7 +6,7 @@ generated: true
 
 # Toaster
 
-The region that shows toast notifications. Place one in the layout, outside any region that AJAX requests replace.
+Renders the region that shows toast notifications.
 
 <!-- structure:begin -->
 ## Composition and behavior

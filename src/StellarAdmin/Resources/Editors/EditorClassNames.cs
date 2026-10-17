@@ -3,12 +3,12 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Additional CSS classes for the parts of a form editor.
+///     Stores additional CSS classes for the parts of a form editor.
 /// </summary>
 public class EditorClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the visible control.
+    ///     Gets or sets additional CSS classes for the visible control.
     /// </summary>
     public string? Control { get; set; }
 

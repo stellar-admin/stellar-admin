@@ -1,12 +1,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a select.
+///     Specifies additional CSS classes for the parts of a select.
 /// </summary>
 public class SelectClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the select container.
+    ///     Gets or sets additional CSS classes for the element that wraps the select.
     /// </summary>
     public string? Control { get; set; }
 }

@@ -6,12 +6,12 @@ namespace StellarAdmin.UI;
 public enum DetailsVariant
 {
     /// <summary>
-    ///     Fields laid out in a grid with space between them.
+    ///     Lays out the fields in a grid with space between them.
     /// </summary>
     Default,
 
     /// <summary>
-    ///     Fields stacked in rows separated by rules.
+    ///     Stacks the fields in rows with a line between them.
     /// </summary>
     Divided,
 }

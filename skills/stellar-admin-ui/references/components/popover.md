@@ -6,16 +6,16 @@ generated: true
 
 # Popover
 
-A floating panel of rich content anchored to a trigger element, rendered as a native popover.
+Renders a floating panel of content that is anchored to the element that opens it.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-popover>` | A floating panel of rich content anchored to a trigger element, rendered as a native popover. |
-| `<sa-popover-description>` | The descriptive body text of a popover, shown beneath the title. |
-| `<sa-popover-header>` | The header region of a popover; typically contains the title and description. |
-| `<sa-popover-title>` | The title heading of a popover. |
+| `<sa-popover>` | Renders a floating panel of content that is anchored to the element that opens it. |
+| `<sa-popover-description>` | Renders the description of a popover, below its title. |
+| `<sa-popover-header>` | Renders the header of a popover, which usually holds its title and description. |
+| `<sa-popover-title>` | Renders the title of a popover. |
 
 ## Attributes
 

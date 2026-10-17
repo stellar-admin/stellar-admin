@@ -6,7 +6,7 @@ generated: true
 
 # Image
 
-Displays an image as a thumbnail or a figure, with a placeholder when there is none and a broken-image tile when it can't be loaded.
+Renders an image as a thumbnail or a figure.
 
 <!-- structure:begin -->
 ## Composition and behavior
@@ -22,8 +22,8 @@ The upload endpoint you give as `upload-url` receives a multipart POST with the 
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-image>` | Displays an image as a thumbnail or a figure, with a placeholder when there is none and a broken-image tile when it can't be loaded. |
-| `<sa-image-upload>` | An image picker that uploads the picked file straight away and keeps the value the upload returns in a hidden input, which is what the form posts. |
+| `<sa-image>` | Renders an image as a thumbnail or a figure. |
+| `<sa-image-upload>` | Renders an image picker that uploads the picked file straight away. |
 
 ## Attributes
 
@@ -32,10 +32,10 @@ The upload endpoint you give as `upload-url` receives a multipart POST with the 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `alt` | `string` | — | — |
-| `aspect-ratio` | `ImageAspectRatio` | `Square` | `Square`, `Landscape`, `Widescreen`, `Portrait`, `Original` |
+| `aspect-ratio` | `ImageAspectRatio` | — | `Square`, `Landscape`, `Widescreen`, `Portrait`, `Original` |
 | `fit` | `ImageFit` | `Cover` | `Cover`, `Contain` |
 | `interaction` | `ImageInteraction` | `Lightbox` | `Lightbox`, `Preview`, `None` |
-| `size` | `ImageSize` | `Small` | `ExtraSmall`, `Small`, `Medium`, `Large` |
+| `size` | `ImageSize` | — | `ExtraSmall`, `Small`, `Medium`, `Large` |
 | `src` | `string` | — | — |
 | `variant` | `ImageVariant` | `Thumbnail` | `Thumbnail`, `Figure` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
@@ -50,11 +50,11 @@ The upload endpoint you give as `upload-url` receives a multipart POST with the 
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `form` | `string` | — | — |
 | `layout` | `ImageUploadLayout` | `Dropzone` | `Dropzone`, `Compact`, `Attachment`, `Cell` |
-| `max-file-size` | `long` | — | — |
+| `max-file-size` | `long` | `5242880` | — |
 | `src` | `string` | — | — |
 | `upload-url` | `string` | — | — |
 | `value` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

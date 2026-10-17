@@ -6,39 +6,48 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A panel that slides in from an edge of the screen, rendered over a native
-///     <c>&lt;dialog&gt;</c> element. Open and close it with the Invoker Commands API — a
-///     trigger button carrying <c>commandfor</c> and <c>command="show-modal"</c> or
-///     <c>command="close"</c>.
+///     Renders a panel that slides in from an edge of the screen.
 /// </summary>
+/// <remarks>
+///     The sheet is a native <c>&lt;dialog&gt;</c> element. Open it with a button that has
+///     <c>commandfor</c> set to the sheet's <c>id</c> and <c>command="show-modal"</c>. Close it
+///     with <c>command="close"</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sheet")]
 public class SheetTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SheetTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the close button's icon.</param>
     public SheetTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
-    ///     Whether to render the built-in close button in the corner of the sheet.
+    ///     Gets or sets a value that indicates whether the sheet shows a close button in its corner.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>true</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the sheet shows a close button; otherwise,
+    ///     <see langword="false" />. The default is <see langword="true" />.
+    /// </value>
     [HtmlAttributeName("show-close-button")]
     public bool? ShowCloseButton { get; set; }
 
     /// <summary>
-    ///     The edge of the screen the sheet slides in from.
+    ///     Gets or sets the edge of the screen that the sheet slides in from.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SheetSide.Right" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the edge. The default is
+    ///     <see cref="SheetSide.Right" />.
+    /// </value>
     [HtmlAttributeName("side")]
     public SheetSide? Side { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveShowCloseButton = ShowCloseButton ?? true;

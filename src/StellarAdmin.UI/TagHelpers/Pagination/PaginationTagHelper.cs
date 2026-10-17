@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Navigation for moving between pages of content.
+///     Renders navigation for moving between pages of content.
 /// </summary>
 [HtmlTargetElement("sa-pagination")]
 public class PaginationTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "nav";

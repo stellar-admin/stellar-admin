@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Supporting text explaining a questionnaire item.
+///     Renders text that explains a questionnaire item.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-description")]
 public class QuestionnaireDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

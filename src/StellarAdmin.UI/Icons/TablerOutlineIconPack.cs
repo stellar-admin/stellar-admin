@@ -1,14 +1,17 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
+/// <summary>
+///     Supplies the outline Tabler icons.
+/// </summary>
 public sealed class TablerOutlineIconPack : IIconPack
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return TablerOutlineIcons.IconDefinitions;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
     {
         return new Dictionary<SemanticIconRole, string>

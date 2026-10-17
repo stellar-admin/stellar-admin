@@ -6,18 +6,18 @@ generated: true
 
 # Empty
 
-An empty-state container that communicates the absence of content, composed of a header, media, title, description, and content subcomponents.
+Renders an empty state, which tells the user there is no content to show.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-empty>` | An empty-state container that communicates the absence of content, composed of a header, media, title, description, and content subcomponents. |
-| `<sa-empty-content>` | The content region of an empty state; typically contains actions or supplementary elements below the header. |
-| `<sa-empty-description>` | A line of muted descriptive text within an empty state header. |
-| `<sa-empty-header>` | The header region of an empty state; typically contains the media, title, and description. |
-| `<sa-empty-media>` | The media region of an empty state, displaying an icon or illustration above the title. |
-| `<sa-empty-title>` | The title text within an empty state header. |
+| `<sa-empty>` | Renders an empty state, which tells the user there is no content to show. |
+| `<sa-empty-content>` | Renders the content of an empty state below its header, such as actions. |
+| `<sa-empty-description>` | Renders the description in an empty state's header. |
+| `<sa-empty-header>` | Renders the header of an empty state, which holds the media, title and description. |
+| `<sa-empty-media>` | Renders an icon or illustration above an empty state's title. |
+| `<sa-empty-title>` | Renders the title in an empty state's header. |
 
 ## Attributes
 

@@ -6,7 +6,7 @@ generated: true
 
 # Layout
 
-A horizontal flex layout that arranges its children in a row, with configurable alignment, spacing, and justification.
+Renders a layout that arranges its children in a row.
 
 <!-- structure:begin -->
 
@@ -28,9 +28,9 @@ A horizontal flex layout that arranges its children in a row, with configurable 
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-group>` | A horizontal flex layout that arranges its children in a row, with configurable alignment, spacing, and justification. |
-| `<sa-page-container>` | A wrapper for the main content of a page. It centers the content horizontally, applies a consistent gutter, spaces its children vertically, and can constrain the content to a maximum width appropriate for the type of page. |
-| `<sa-stack>` | A vertical flex layout that arranges its children in a column, with configurable alignment, spacing, and justification. |
+| `<sa-group>` | Renders a layout that arranges its children in a row. |
+| `<sa-page-container>` | Renders a container for the main content of a page. |
+| `<sa-stack>` | Renders a layout that arranges its children in a column. |
 
 ## Attributes
 

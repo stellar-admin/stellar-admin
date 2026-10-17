@@ -5,90 +5,114 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Lets the data grid's rows expand to show details. The content is a row template,
-///     rendered once per data row with the current item available through
-///     <c>Html.GridItem&lt;T&gt;()</c>, below its row and spanning every column. The grid adds a
-///     toggle column and wraps its table in the <c>sel-table</c> web component,
-///     which raises bubbling <c>rowdetailexpand</c> and <c>rowdetailcollapse</c> events on
-///     the detail row, so htmx can load a row's details when it first expands.
+///     Renders details below each data grid row, which users can expand and collapse.
 /// </summary>
+/// <remarks>
+///     <para>
+///         The content renders for each row and spans every column. Use
+///         <c>Html.GridItem&lt;T&gt;()</c> to get the row's item. Rows in edit mode have no
+///         details.
+///     </para>
+///     <para>
+///         The details row raises <c>rowdetailexpand</c> and <c>rowdetailcollapse</c> events, so
+///         htmx can load a row's details when it first expands. Requires
+///         <c>stellar-admin.js</c>.
+///     </para>
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-row-detail", ParentTag = "sa-data-grid")]
 public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Where the grid places the buttons that expand and collapse rows.
+    ///     Gets or sets where the grid places the buttons that expand and collapse rows.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DataGridRowDetailToggle.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies where the buttons go. The default is
+    ///     <see cref="DataGridRowDetailToggle.Start" />.
+    /// </value>
     [HtmlAttributeName("toggle")]
     public DataGridRowDetailToggle? Toggle { get; set; }
 
     /// <summary>
-    ///     Whether clicking anywhere in a row toggles its details. Clicks on links, buttons and
-    ///     form controls keep their own behavior.
+    ///     Gets or sets a value that indicates whether clicking anywhere in a row toggles its
+    ///     details.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if a click anywhere in a row toggles its details; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Clicks on links, buttons and form controls keep their own behavior.
     /// </remarks>
     [HtmlAttributeName("row-click")]
     public bool? RowClick { get; set; }
 
     /// <summary>
-    ///     How many rows can be expanded at once.
+    ///     Gets or sets how many rows can be expanded at once.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailExpandMode.Multiple" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies how many rows can be expanded. The default
+    ///     is <see cref="TableRowDetailExpandMode.Multiple" />.
+    /// </value>
     [HtmlAttributeName("expand-mode")]
     public TableRowDetailExpandMode? ExpandMode { get; set; }
 
     /// <summary>
-    ///     How an expanded row and its details are set apart from the rows around them.
+    ///     Gets or sets how an expanded row and its details stand out from the rows around them.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailEmphasis.Band" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the emphasis. The default is
+    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    /// </value>
     [HtmlAttributeName("emphasis")]
     public TableRowDetailEmphasis? Emphasis { get; set; }
 
     /// <summary>
-    ///     The line between an expanded row and its details.
+    ///     Gets or sets the line between an expanded row and its details.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailDivider.Inset" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the line. The default is
+    ///     <see cref="TableRowDetailDivider.Inset" />.
+    /// </value>
     [HtmlAttributeName("divider")]
     public TableRowDetailDivider? Divider { get; set; }
 
     /// <summary>
-    ///     Where the content of a row's details starts.
+    ///     Gets or sets where the content of a row's details starts.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailInset.Aligned" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies where the content starts. The default is
+    ///     <see cref="TableRowDetailInset.Aligned" />.
+    /// </value>
     [HtmlAttributeName("inset")]
     public TableRowDetailInset? Inset { get; set; }
 
     /// <summary>
-    ///     Whether details animate open and closed. Animation is always off when the user
-    ///     prefers reduced motion.
+    ///     Gets or sets a value that indicates whether details animate open and closed.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if details animate; otherwise, <see langword="false" />. The
+    ///     default is <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>.
+    ///     Animation is always off when the user prefers reduced motion.
     /// </remarks>
     [HtmlAttributeName("animate")]
     public bool? Animate { get; set; }
 
     /// <summary>
-    ///     The keys of the rows to render expanded, compared against the grid's
-    ///     <c>key-field</c>, which is then required. Expanding a row in the browser raises
-    ///     <c>rowdetailexpand</c>; a row rendered expanded does not, so render its content
-    ///     directly rather than loading it on expand.
+    ///     Gets or sets the keys of the rows to render expanded.
     /// </summary>
+    /// <remarks>
+    ///     Requires the grid's <c>key-field</c>. A row rendered expanded doesn't raise
+    ///     <c>rowdetailexpand</c>, so render its content directly instead of loading it on expand.
+    /// </remarks>
     [HtmlAttributeName("expanded-keys")]
     public IEnumerable? ExpandedKeys { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="ExpandedKeys" /> is set and the grid has no <c>key-field</c>.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.SuppressOutput();

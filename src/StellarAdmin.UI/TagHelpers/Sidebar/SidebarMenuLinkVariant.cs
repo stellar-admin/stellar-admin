@@ -1,13 +1,17 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a sidebar menu link.
+///     Specifies the visual style of a sidebar menu link.
 /// </summary>
 public enum SidebarMenuLinkVariant
 {
-    /// <summary>The standard, borderless style.</summary>
+    /// <summary>
+    ///     A borderless link.
+    /// </summary>
     Default,
 
-    /// <summary>A bordered style.</summary>
+    /// <summary>
+    ///     A link with a border.
+    /// </summary>
     Outline,
 }

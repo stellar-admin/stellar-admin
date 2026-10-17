@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of an attachment.
+///     Specifies the size of an attachment.
 /// </summary>
 public enum AttachmentSize
 {
-    /// <summary>The default attachment size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>An extra-small attachment.</summary>
+    /// <summary>
+    ///     An extra-small size.
+    /// </summary>
     ExtraSmall,
 
-    /// <summary>A small attachment.</summary>
+    /// <summary>
+    ///     A small size.
+    /// </summary>
     Small,
 }
 

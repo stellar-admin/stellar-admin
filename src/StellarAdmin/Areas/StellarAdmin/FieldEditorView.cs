@@ -4,46 +4,62 @@ using StellarAdmin.Resources.Editors;
 namespace StellarAdmin.Areas.StellarAdmin;
 
 /// <summary>
-///     Base class for field editor templates, exposing the field's configured properties.
+///     Provides the base class for editor templates, with access to the field's settings.
 /// </summary>
-/// <typeparam name="TEditor">The editor configuration the template renders.</typeparam>
+/// <typeparam name="TEditor">The type of the editor that the template renders.</typeparam>
 public abstract class FieldEditorView<TEditor> : RazorPage<object?>
     where TEditor : FieldEditor, new()
 {
     /// <summary>
-    ///     The field's help text, or null to use the property's description.
+    ///     Gets the field's help text, or <see langword="null" /> to use the property's
+    ///     description.
     /// </summary>
     public string? Description => Field?.Description;
 
     /// <summary>
-    ///     The id of the error shown under the editor in a grid cell, or null while the field has
-    ///     no error. A grid template points the editor's <c>aria-describedby</c> at it.
+    ///     Gets the ID of the error shown under the editor in a grid cell, or
+    ///     <see langword="null" /> when the field has no error.
     /// </summary>
+    /// <remarks>
+    ///     Point the editor's <c>aria-describedby</c> at this ID in a grid template.
+    /// </remarks>
     public string? CellErrorId => GridEditorRenderer.GetErrorId(ViewData);
 
     /// <summary>
-    ///     The field's editor configuration. A field without one gets default settings.
+    ///     Gets the field's editor settings.
     /// </summary>
+    /// <value>
+    ///     The field's editor, or an editor with default settings when the field has none.
+    /// </value>
+    /// <exception cref="InvalidOperationException">
+    ///     The field uses an editor of another type.
+    /// </exception>
     public TEditor Editor => field ??= ResolveEditor();
 
     /// <summary>
-    ///     Data prepared for this editor on the current request.
+    ///     Gets the data prepared for the editor on the current request, or
+    ///     <see langword="null" /> when there is none.
     /// </summary>
     public object? EditorData => Field?.EditorData;
 
     /// <summary>
-    ///     The configured field properties, or null when the template renders outside a resource form.
+    ///     Gets the field's settings, or <see langword="null" /> when the template renders outside
+    ///     a resource form.
     /// </summary>
     public FormFieldProperties? Field =>
         ViewData[ViewDataKeys.FormFieldProperties] as FormFieldProperties;
 
     /// <summary>
-    ///     Whether the field is read-only.
+    ///     Gets a value that indicates whether the field is read-only.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the field or its property is read-only; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
     public bool IsReadOnly => Field?.IsReadOnly == true || ViewData.ModelMetadata.IsReadOnly;
 
     /// <summary>
-    ///     The field label, or null to use the property's display name.
+    ///     Gets the field's label, or <see langword="null" /> to use the property's display name.
     /// </summary>
     public string? Title => Field?.Title;
 

@@ -72,7 +72,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J37 | Document the global MVC hooks | Done (2026-10-17) |
 | J38 | Add `class-names` to the field helpers that lack it | Done (2026-10-17) |
 | J39 | Small attribute polish | Done (2026-10-17) |
-| J40 | Rewrite the public XML docs in plain language | Approved |
+| J40 | Rewrite the public XML docs in plain language | Done (2026-10-17) |
 | J41 | Let the choice editors take every field part class | Done (2026-10-17) |
 
 ## Settled
@@ -596,7 +596,22 @@ Progress (2026-10-17):
 - Pilot done: the resource builders and the J5 hooks (`ResourceOptions`, `ResourceScopeOptions`, `ResourceSearchOptions`, `LookupItems`), 44 files. One agent rewrote each batch and a second checked it against the code. The check fixed wrong claims, such as the inline row field rules and the `UseAvatar` empty-string case.
 - Jerrie approved the pilot's wording choices. Write-only properties say "Sets…". Enum properties get a `<value>` that starts "One of the enumeration values that specifies…" and gives the default. Method defaults go in `<remarks>`. Delegate defaults say "The default returns…".
 - Checked after the pilot: the diff touches only `///` lines, the build passes with no doc warnings, all 1435 tests pass and the skills drift check is clean.
-- Remaining: the rest of the public API, in folder batches with the same write-and-check setup.
+
+Done (2026-10-17):
+
+- The rest of the public API follows the convention: StellarAdmin, StellarAdmin.EntityFrameworkCore, the StellarAdmin.UI root and every tag helper folder, 608 files. Eight folder batches each had one agent rewrite the docs and a second check them against the code, which made 46 corrections.
+- The SkillsGenerator reads "The default is" across wrapped lines, so about 50 tag attributes now show their default in the consumer skill tables. Defaults that depend on context, such as the image `aspect-ratio` and `size`, are given in words and show "—".
+- Checked: the diff touches only `///` lines, the build passes with no doc warnings, all 1435 tests pass and the skills drift check is clean.
+
+Follow-ups the agents noticed in the code, not fixed:
+
+- `TempDataKeys.ErrorMessage` is never used.
+- `QuestionnaireItemTagHelper.Required` only writes `data-required`, and no CSS or JS reads it.
+- A non-numeric `groups` value on `sa-input-otp` throws a `FormatException` from `int.Parse`, not an `ArgumentException`.
+- A disabled `sa-slider` still posts its hidden inputs.
+- `SidebarMenuButton` and `SidebarMenuLink` write a valueless `data-active`, while `SidebarMenuSubButton` writes `data-active="true"`.
+- The pagination first and last tag helpers use the `sa-pagination-previous` and `sa-pagination-next` classes.
+- `DataGridColumnTagHelper` uses `string.Format` without an explicit culture.
 
 ### J41. Choice editor class names
 
@@ -649,6 +664,7 @@ Changes the website still needs:
 - [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
 - [ ] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
 - [ ] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs.
+- [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work
 

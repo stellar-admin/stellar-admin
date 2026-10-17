@@ -2,16 +2,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace StellarAdmin.UI;
 
+/// <summary>
+///     Provides extension methods on <see cref="IHtmlHelper" /> for data grid content.
+/// </summary>
 public static class DataGridHtmlHelperExtensions
 {
     extension(IHtmlHelper htmlHelper)
     {
         /// <summary>
-        ///     Returns the data item of the data grid row currently being rendered. Only valid
-        ///     inside the content of an <c>sa-data-grid-column</c>.
+        ///     Returns the item of the data grid row that is being rendered.
         /// </summary>
+        /// <remarks>
+        ///     Use it inside the content of an <c>sa-data-grid-column</c>.
+        /// </remarks>
+        /// <typeparam name="T">The type of the row's item.</typeparam>
+        /// <returns>The row's item.</returns>
         /// <exception cref="InvalidOperationException">
-        ///     No data grid row is being rendered, or the row item is not of type
+        ///     No data grid row is being rendered, or the row's item isn't a
         ///     <typeparamref name="T" />.
         /// </exception>
         public T GridItem<T>()

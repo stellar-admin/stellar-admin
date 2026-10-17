@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A breadcrumb navigation trail, rendered as a <c>&lt;nav&gt;</c>; shows the path to the
-///     current page. Compose it with the list, item, link, page, separator, and ellipsis
-///     subcomponents.
+///     Renders a breadcrumb that shows the path to the current page.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb")]
 public class BreadcrumbTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "nav";

@@ -5,19 +5,27 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A visual separator between breadcrumb items, rendered as a presentational
-///     <c>&lt;li&gt;</c>; defaults to a chevron icon when no content is supplied.
+///     Renders a separator between breadcrumb items.
 /// </summary>
+/// <remarks>
+///     The separator shows its child content, or the icon mapped to
+///     <see cref="SemanticIconRole.BreadcrumbSeparator" /> when it has none.
+/// </remarks>
 [HtmlTargetElement("sa-breadcrumb-separator")]
 public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="BreadcrumbSeparatorTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the default separator icon.</param>
     public BreadcrumbSeparatorTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "li";

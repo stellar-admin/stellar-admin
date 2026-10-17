@@ -6,8 +6,11 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A command menu option rendered as a link, navigating to its target when chosen.
+///     Renders a command menu item as a link.
 /// </summary>
+/// <remarks>
+///     Choosing the item follows the link.
+/// </remarks>
 [HtmlTargetElement("sa-command-item-link")]
 public class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
@@ -15,41 +18,59 @@ public class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     Whether the item shows a check indicator, for example to mark the current page.
+    ///     Gets or sets a value that indicates whether the item shows a check mark.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item shows a check mark, for example to mark the
+    ///     current page; otherwise, <see langword="false" />. The default is
+    ///     <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>. The indicator is hidden when the item has a shortcut.
+    ///     The check mark is hidden when the item has a shortcut.
     /// </remarks>
     [HtmlAttributeName("checked")]
     public bool? Checked { get; set; }
 
     /// <summary>
-    ///     Whether the item is disabled. Disabled items cannot be highlighted or chosen.
+    ///     Gets or sets a value that indicates whether the item is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item can't be highlighted or chosen; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Additional text that the search matches, such as synonyms.
+    ///     Gets or sets additional text that the search matches, such as synonyms.
     /// </summary>
     [HtmlAttributeName("keywords")]
     public string? Keywords { get; set; }
 
     /// <summary>
-    ///     The value reported when the item is chosen and matched by the search.
+    ///     Gets or sets the value that the search matches and that the item reports when chosen.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the item's text.
-    /// </remarks>
+    /// <value>
+    ///     The default is the item's text without its shortcut.
+    /// </value>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CommandItemLinkTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that builds the link's URL.</param>
+    /// <param name="iconOptions">The icon options that supply the check mark.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public CommandItemLinkTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "a";

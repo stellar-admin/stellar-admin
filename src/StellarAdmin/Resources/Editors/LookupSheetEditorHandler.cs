@@ -3,6 +3,8 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Displays a field as a lookup and resolves the selected item.
 /// </summary>
+/// <param name="editor">The editor's configuration.</param>
+/// <param name="services">The request's service provider.</param>
 public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceProvider services)
     : FieldEditorHandler<LookupSheetEditor>(editor)
 {
@@ -10,6 +12,9 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
     public override string TemplateName => "Editors/LookupSheet";
 
     /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <c>UseItems</c> wasn't called on the editor.
+    /// </exception>
     public override async Task<object?> PrepareAsync(
         FieldEditorContext context,
         CancellationToken cancellationToken

@@ -3,29 +3,35 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders a button element for triggering actions.
+///     Renders a button that triggers an action.
 /// </summary>
+/// <remarks>
+///     Like a native button, it submits its form unless <c>type</c> is set.
+/// </remarks>
 [HtmlTargetElement("sa-button")]
 public class ButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.Default" />
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The button variant.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ButtonVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? ButtonSize.Default;

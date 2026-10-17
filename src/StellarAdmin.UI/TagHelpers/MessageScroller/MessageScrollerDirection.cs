@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The end of the transcript a message scroller button scrolls to.
+///     Specifies the end of the transcript that a message scroller button scrolls to.
 /// </summary>
 public enum MessageScrollerDirection
 {
-    /// <summary>Scrolls to the oldest content, at the top of the transcript.</summary>
+    /// <summary>
+    ///     The oldest content, at the top of the transcript.
+    /// </summary>
     Start,
 
-    /// <summary>Scrolls to the newest content, at the bottom of the transcript.</summary>
+    /// <summary>
+    ///     The newest content, at the bottom of the transcript.
+    /// </summary>
     End,
 }
 

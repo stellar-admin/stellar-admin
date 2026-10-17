@@ -5,70 +5,93 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single question, with its title, description, choices, and error. Renders a
-///     <c>&lt;fieldset&gt;</c>.
+///     Renders a question, with its title, description, choices and validation message.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-item")]
 public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="QuestionnaireItemTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the validation message of a bound question.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public QuestionnaireItemTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
     /// <summary>
-    ///     An expression to be evaluated against the current model, naming the answer to this
-    ///     question. Its choices take their name and selected state from it, and its error shows
-    ///     that answer's validation message.
+    ///     Gets or sets the model property that holds the answer.
     /// </summary>
+    /// <remarks>
+    ///     The choices take their name and selected state from the property. The item shows the
+    ///     property's validation message.
+    /// </remarks>
     [HtmlAttributeName("asp-for")]
     public ModelExpression? For { get; set; }
 
     /// <summary>
-    ///     Whether the question accepts more than one answer. Its choices render as checkboxes
-    ///     instead of radio buttons.
+    ///     Gets or sets a value that indicates whether the question accepts more than one answer.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the question accepts more than one answer; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     The choices of a multiple-answer question are checkboxes instead of radio buttons.
     /// </remarks>
     [HtmlAttributeName("multiple")]
     public bool? Multiple { get; set; }
 
     /// <summary>
-    ///     The name the answer posts under. Set automatically when bound with <c>asp-for</c>.
+    ///     Gets or sets the name that the answer posts under.
     /// </summary>
+    /// <value>
+    ///     A form field name. The default is the name of the bound property.
+    /// </value>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     /// <summary>
-    ///     Whether to render the answer's validation message at the end of the question. A bound
-    ///     question renders one unless a <c>sa-questionnaire-error</c> inside it already does;
-    ///     set this to <c>false</c> to leave the message out.
+    ///     Gets or sets a value that indicates whether the answer's validation message shows at
+    ///     the end of the question.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the message shows; otherwise, <see langword="false" />.
+    ///     The default is <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>.
+    ///     Applies only when bound with <c>asp-for</c>. The message is left out when the item holds
+    ///     its own <c>&lt;sa-questionnaire-error&gt;</c>.
     /// </remarks>
     [HtmlAttributeName("show-error")]
     public bool? ShowError { get; set; }
 
     /// <summary>
-    ///     Whether the question must be answered.
+    ///     Gets or sets a value that indicates whether the question must be answered.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the question must be answered; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     This only marks the question. Validate the answer on the model.
     /// </remarks>
     [HtmlAttributeName("required")]
     public bool? Required { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     protected override void OnInit(TagHelperContext context)
     {
         // The question owns the answer, so the choices and the error read the expression from
@@ -85,6 +108,7 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
         );
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "fieldset";

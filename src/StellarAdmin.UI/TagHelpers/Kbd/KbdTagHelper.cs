@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays a single keyboard key or keystroke.
+///     Renders a keyboard key or keystroke.
 /// </summary>
 [HtmlTargetElement("sa-kbd")]
 public class KbdTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "kbd";

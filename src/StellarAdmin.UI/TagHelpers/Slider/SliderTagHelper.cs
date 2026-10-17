@@ -7,100 +7,149 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An input for selecting a numeric value, or a range of values, by dragging one or more
-///     thumbs along a track.
+///     Renders an input that selects a number, or a range of numbers, by dragging thumbs along a
+///     track.
 /// </summary>
+/// <remarks>
+///     Each thumb posts its value in a hidden input. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-slider")]
 public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
 {
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SliderTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the field's label and messages.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public SliderTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
 
     /// <summary>
-    ///     The minimum value the slider can take.
+    ///     Gets or sets the lowest value that the slider can take.
     /// </summary>
+    /// <value>
+    ///     The lowest value, which must be less than the maximum. The default is <c>0</c>.
+    /// </value>
     [HtmlAttributeName("min")]
     public double? Min { get; set; }
 
     /// <summary>
-    ///     The maximum value the slider can take.
+    ///     Gets or sets the highest value that the slider can take.
     /// </summary>
+    /// <value>
+    ///     The highest value, which must be greater than the minimum. The default is <c>100</c>.
+    /// </value>
     [HtmlAttributeName("max")]
     public double? Max { get; set; }
 
     /// <summary>
-    ///     The increment between selectable values.
+    ///     Gets or sets the distance between the values that the slider can take.
     /// </summary>
+    /// <value>
+    ///     The distance, which must be positive. The default is <c>1</c>.
+    /// </value>
     [HtmlAttributeName("step")]
     public double? Step { get; set; }
 
     /// <summary>
-    ///     The minimum distance (in value units) enforced between adjacent thumbs on a range slider.
+    ///     Gets or sets the smallest distance allowed between neighboring thumbs of a range slider.
     /// </summary>
+    /// <value>
+    ///     The distance in slider values. The default is <c>0</c>.
+    /// </value>
     [HtmlAttributeName("min-distance")]
     public double? MinDistance { get; set; }
 
     /// <summary>
-    ///     The orientation of the slider.
+    ///     Gets or sets the direction of the slider's track.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SliderOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the direction. The default is
+    ///     <see cref="SliderOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public SliderOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     How the thumb is positioned relative to its value: <see cref="SliderThumbAlignment.Edge" />
-    ///     keeps the thumb fully within the track at the extremes (the default),
-    ///     <see cref="SliderThumbAlignment.Center" /> centers it on the value so it overhangs the ends.
+    ///     Gets or sets how each thumb is positioned relative to its value.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SliderThumbAlignment.Edge" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the thumb position. The default is
+    ///     <see cref="SliderThumbAlignment.Edge" />.
+    /// </value>
     [HtmlAttributeName("thumb-alignment")]
     public SliderThumbAlignment? ThumbAlignment { get; set; }
 
     /// <summary>
-    ///     Whether the slider is disabled and cannot be interacted with.
+    ///     Gets or sets a value that indicates whether the slider is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the slider is disabled and can't be moved; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     The value(s) of the slider when not bound via <c>asp-for</c>. A single number renders one
-    ///     thumb; a comma-separated list (e.g. <c>"20,80"</c>) renders a thumb per value (range slider).
+    ///     Gets or sets the value of each thumb.
     /// </summary>
+    /// <value>
+    ///     A number, or a comma-separated list of numbers such as <c>20,80</c> for a range slider.
+    ///     Each number must be between the minimum and maximum. The default is a single thumb at
+    ///     the minimum.
+    /// </value>
+    /// <remarks>
+    ///     The slider shows one thumb for each value. Ignored when bound with <c>asp-for</c> to a
+    ///     model value that isn't <see langword="null" /> or empty.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     A template with a <c>{0}</c> placeholder that each displayed value is substituted into,
-    ///     such as <c>"${0}"</c> or <c>"{0} km"</c>. It applies to <c>&lt;sa-slider-value&gt;</c>,
-    ///     generated mark labels and the value announced for each thumb. Numbers are formatted in
-    ///     the current culture, with up to as many decimals as
-    ///     <c>min</c> and <c>step</c> have.
+    ///     Gets or sets the template that each displayed value is shown in.
     /// </summary>
+    /// <value>
+    ///     A template that contains a <c>{0}</c> placeholder for the value, such as <c>${0}</c> or
+    ///     <c>{0} km</c>. The default shows the number alone.
+    /// </value>
+    /// <remarks>
+    ///     The template applies to <c>&lt;sa-slider-value&gt;</c>, generated mark labels and the
+    ///     value that screen readers announce for each thumb. Numbers are formatted in the current
+    ///     culture, with up to as many decimals as the minimum and step have.
+    /// </remarks>
     [HtmlAttributeName("value-format")]
     public string? ValueFormat { get; set; }
 
     /// <summary>
-    ///     Comma-separated accessible names for the thumbs of a range slider, in order, such as
-    ///     <c>"Minimum price,Maximum price"</c>. Without them, every thumb is named by the field
-    ///     label. A label can't contain a comma.
+    ///     Gets or sets the accessible names of the thumbs of a range slider.
     /// </summary>
+    /// <value>
+    ///     A comma-separated list of names in thumb order, such as
+    ///     <c>Minimum price,Maximum price</c>. A name can't contain a comma. The default names
+    ///     every thumb after the field label.
+    /// </value>
     [HtmlAttributeName("thumb-labels")]
     public string? ThumbLabels { get; set; }
 
     /// <summary>
-    ///     The <c>id</c> of the form the slider's posted value belongs to, for associating it with a
-    ///     form it is not nested within.
+    ///     Gets or sets the <c>id</c> of the form that the slider's values post with.
     /// </summary>
+    /// <remarks>
+    ///     Use it when the slider isn't inside the form.
+    /// </remarks>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <see cref="Min" /> isn't less than <see cref="Max" />, <see cref="Step" /> isn't
+    ///     positive, or a value isn't between the minimum and maximum.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <see cref="ValueFormat" /> doesn't contain a <c>{0}</c> placeholder.
+    /// </exception>
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

@@ -1,29 +1,42 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures content displayed in a row's details.
+///     Stores the configuration of content displayed in a row's details.
 /// </summary>
 public sealed class ResourceRowDetailPanelOptions
 {
     /// <summary>
-    ///     Whether the content loads when the row expands. Otherwise it renders with the index, with the row's resource
-    ///     as its model.
+    ///     Gets a value that indicates whether the content loads when the row expands.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the content loads when the row expands; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     Content that doesn't load on demand renders with the index, with the row's resource as
+    ///     its model.
+    /// </remarks>
     public bool LoadsOnDemand => Loader is not null;
 
     /// <summary>
-    ///     The name that identifies the panel among a row's tabs, or null for the only panel.
+    ///     Gets the name that identifies the panel among a row's tabs.
     /// </summary>
+    /// <value>
+    ///     The name, or <see langword="null" /> when the panel is the only one.
+    /// </value>
     public string? Name { get; internal set; }
 
     /// <summary>
-    ///     The name of the partial view that renders the content.
+    ///     Gets the name of the partial view that renders the content.
     /// </summary>
     public string PartialName { get; }
 
     /// <summary>
-    ///     The label of the panel's tab, or null for the only panel.
+    ///     Gets the label of the panel's tab.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> when the panel is the only one.
+    /// </value>
     public string? Title { get; }
 
     internal Func<IServiceProvider, string, CancellationToken, Task<object?>>? Loader { get; }

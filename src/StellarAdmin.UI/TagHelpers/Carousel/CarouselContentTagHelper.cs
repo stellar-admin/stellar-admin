@@ -3,11 +3,18 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The scrollable viewport containing carousel items.
+///     Renders the scrollable viewport that holds the slides of a carousel.
 /// </summary>
+/// <remarks>
+///     Must be placed inside an <c>sa-carousel</c> element.
+/// </remarks>
 [HtmlTargetElement("sa-carousel-content")]
 public class CarouselContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The element isn't inside an <c>sa-carousel</c> element.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var carouselContext =

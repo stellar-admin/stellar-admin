@@ -3,8 +3,10 @@ using System.Linq.Expressions;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Configures lookup items loaded from an EF Core entity set.
+///     Configures the lookup items that load from an entity set.
 /// </summary>
+/// <typeparam name="TEntity">The type of the entities.</typeparam>
+/// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
 public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     where TEntity : class
 {
@@ -16,8 +18,17 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Orders the items by an entity property. Items are ordered by their title by default.
+    ///     Orders the items by an entity property.
     /// </summary>
+    /// <typeparam name="TSort">The type of the property to order by.</typeparam>
+    /// <param name="selector">An expression that selects the property to order by.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="selector" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the items are ordered by their title.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
@@ -30,9 +41,21 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Loads the selected item through a navigation of the form's entity. By default, the navigation is
-    ///     inferred from the field's foreign key.
+    ///     Sets the navigation of the form's entity that loads the selected item.
     /// </summary>
+    /// <typeparam name="TModel">The type of the form's entity.</typeparam>
+    /// <param name="navigation">An expression that selects the navigation property.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="navigation" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="navigation" /> doesn't select a property of
+    ///     <typeparamref name="TModel" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the navigation is inferred from the field's foreign key.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> ReferenceFrom<TModel>(
         Expression<Func<TModel, TEntity?>> navigation
     )
@@ -56,8 +79,22 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Searches the specified properties, ignoring case. The item title is searched by default.
+    ///     Sets the properties a search matches.
     /// </summary>
+    /// <param name="selector">An expression that selects a property to search.</param>
+    /// <param name="moreSelectors">Expressions that select more properties to search.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="selector" /> or <paramref name="moreSelectors" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="moreSelectors" /> contains <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     A search matches items that contain the term in any of the properties, ignoring case.
+    ///     By default, the search matches the item's title.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> SearchOn(
         Expression<Func<TEntity, string?>> selector,
         params Expression<Func<TEntity, string?>>[] moreSelectors
@@ -79,9 +116,19 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays an avatar beside each item's title, with the title's initials when the image URL is null.
-    ///     Replaces other media.
+    ///     Shows an avatar beside each item's title.
     /// </summary>
+    /// <param name="imageUrl">
+    ///     An expression that selects the image URL, or <see langword="null" /> or an empty string
+    ///     to show the initials of the item's title.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="imageUrl" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseAvatar(
         Expression<Func<TEntity, string?>> imageUrl
     )
@@ -94,9 +141,19 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a short code beside each item's title. An item with a null or empty code has no media. Replaces
-    ///     other media.
+    ///     Shows a short code beside each item's title.
     /// </summary>
+    /// <param name="code">
+    ///     An expression that selects the code, or <see langword="null" /> or an empty string to
+    ///     show no media for the item.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="code" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseCode(
         Expression<Func<TEntity, string?>> code
     )
@@ -109,8 +166,15 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays secondary text below each item's title.
+    ///     Shows secondary text below each item's title.
     /// </summary>
+    /// <param name="description">
+    ///     An expression that selects the description, or <see langword="null" /> to show none.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="description" /> is <see langword="null" />.
+    /// </exception>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseDescription(
         Expression<Func<TEntity, string?>> description
     )
@@ -123,9 +187,19 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a registered icon beside each item's title. An item with a null or empty icon name has no media.
-    ///     Replaces other media.
+    ///     Shows a registered icon beside each item's title.
     /// </summary>
+    /// <param name="iconName">
+    ///     An expression that selects the icon name, or <see langword="null" /> or an empty string
+    ///     to show no media for the item.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="iconName" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseIcon(
         Expression<Func<TEntity, string?>> iconName
     )
@@ -138,9 +212,19 @@ public sealed class EfCoreLookupItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a square image beside each item's title. An item with a null or empty image URL has no media.
-    ///     Replaces other media.
+    ///     Shows a square image beside each item's title.
     /// </summary>
+    /// <param name="imageUrl">
+    ///     An expression that selects the image URL, or <see langword="null" /> or an empty string
+    ///     to show no media for the item.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="imageUrl" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media.
+    /// </remarks>
     public EfCoreLookupItemsBuilder<TEntity, TValue> UseImage(
         Expression<Func<TEntity, string?>> imageUrl
     )

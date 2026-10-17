@@ -3,11 +3,11 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays an image from a stored value: a thumbnail in the grid and a figure on the view page.
+///     Shows an image as a thumbnail in the grid and as a figure on the view page.
 /// </summary>
 /// <remarks>
-///     The value is the image's URL unless <see cref="ResolveUrl(Func{string, string})" /> turns
-///     it into one. An empty value shows a placeholder, and an image that fails to load shows a
+///     The value is the image's URL, unless <see cref="ResolveUrl(Func{string, string})" /> turns
+///     it into one. An empty value shows a placeholder. An image that fails to load shows a
 ///     broken-image tile.
 /// </remarks>
 public sealed class ImageDisplay : FieldDisplay
@@ -18,58 +18,77 @@ public sealed class ImageDisplay : FieldDisplay
     public override string TemplateName => "Displays/Image";
 
     /// <inheritdoc />
-    /// <remarks>
-    ///     Always <c>true</c>: an empty value shows a placeholder.
-    /// </remarks>
+    /// <value>
+    ///     Always <see langword="true" />, because an empty value shows a placeholder.
+    /// </value>
     public override bool RendersEmptyValue => true;
 
     /// <summary>
-    ///     The image's shape.
+    ///     Gets or sets the shape of the image.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageAspectRatio.Square" /> in the grid and
+    /// <value>
+    ///     One of the enumeration values that specifies the shape, or <see langword="null" /> for
+    ///     the default. The default is <see cref="ImageAspectRatio.Square" /> in the grid and
     ///     <see cref="ImageAspectRatio.Original" /> on the view page.
-    /// </remarks>
+    /// </value>
     public ImageAspectRatio? AspectRatio { get; set; }
 
     /// <summary>
-    ///     How the image fills its shape.
+    ///     Gets or sets how the image fills its shape.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageFit.Cover" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the fit. The default is
+    ///     <see cref="ImageFit.Cover" />.
+    /// </value>
     public ImageFit Fit { get; set; } = ImageFit.Cover;
 
     /// <summary>
-    ///     What happens when the user clicks or hovers over the image.
+    ///     Gets or sets what happens when the user clicks or hovers over the image.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageDisplayInteraction.Lightbox" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the interaction. The default is
+    ///     <see cref="ImageDisplayInteraction.Lightbox" />.
+    /// </value>
     public ImageDisplayInteraction Interaction { get; set; } = ImageDisplayInteraction.Lightbox;
 
     /// <summary>
-    ///     The image's height in the grid and its maximum height on the view page.
+    ///     Gets or sets the image's height in the grid and its maximum height on the view page.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageDisplaySize.Small" /> in the grid and
+    /// <value>
+    ///     One of the enumeration values that specifies the size, or <see langword="null" /> for
+    ///     the default. The default is <see cref="ImageDisplaySize.Small" /> in the grid and
     ///     <see cref="ImageDisplaySize.Medium" /> on the view page.
-    /// </remarks>
+    /// </value>
     public ImageDisplaySize? Size { get; set; }
 
     /// <summary>
-    ///     Turns the stored value into the image's URL.
+    ///     Sets how the stored value is turned into the image's URL.
     /// </summary>
-    /// <param name="resolve">Returns the URL, or <c>null</c> when there is no image.</param>
+    /// <param name="resolve">
+    ///     A delegate that returns the URL for a stored value, or <see langword="null" /> when
+    ///     there is no image.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="resolve" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The delegate isn't called for an empty value.
+    /// </remarks>
     public void ResolveUrl(Func<string, string?> resolve) => _urlResolver.Set(resolve);
 
     /// <summary>
-    ///     Turns the stored value into the image's URL with the request's services.
+    ///     Sets how the stored value is turned into the image's URL, with the request's services.
     /// </summary>
-    /// <param name="resolve">Returns the URL, or <c>null</c> when there is no image.</param>
+    /// <param name="resolve">
+    ///     A delegate that returns the URL for a stored value, or <see langword="null" /> when
+    ///     there is no image.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="resolve" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     The grid calls it once for each row, so it should compute a URL rather than query
-    ///     for one.
+    ///     The delegate isn't called for an empty value. The grid calls it once for each row, so it
+    ///     should compute a URL rather than query for one.
     /// </remarks>
     public void ResolveUrl(
         Func<string, IServiceProvider, CancellationToken, Task<string?>> resolve

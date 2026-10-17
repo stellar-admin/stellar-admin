@@ -1,28 +1,30 @@
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The delete confirmation dialog of an index page.
-///     One dialog serves every row. The message for the chosen row is filled in when the dialog opens.
+///     Represents the delete confirmation dialog of an index page.
 /// </summary>
+/// <remarks>
+///     One dialog serves every row.
+/// </remarks>
 public sealed class ResourceIndexDeleteDialogViewModel
 {
     /// <summary>
-    ///     The label of the cancel button.
+    ///     Gets the label of the cancel button.
     /// </summary>
     public string CancelLabel { get; }
 
     /// <summary>
-    ///     The label of the confirming button.
+    ///     Gets the label of the confirm button.
     /// </summary>
     public string ConfirmLabel { get; }
 
     /// <summary>
-    ///     The confirmation message.
+    ///     Gets the confirmation message.
     /// </summary>
     public string Message { get; }
 
     /// <summary>
-    ///     The dialog title.
+    ///     Gets the title of the dialog.
     /// </summary>
     public string Title { get; }
 

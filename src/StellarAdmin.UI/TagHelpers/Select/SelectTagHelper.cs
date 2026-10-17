@@ -8,8 +8,7 @@ using FrameworkSelectTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHe
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A styled dropdown for choosing a single option, wrapping a native
-///     <c>&lt;select&gt;</c> element with a custom chevron icon.
+///     Renders a styled native <c>&lt;select&gt;</c> for choosing an option.
 /// </summary>
 [HtmlTargetElement("sa-select")]
 public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
@@ -18,6 +17,14 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
     private readonly IconOptions _iconOptions;
     private FrameworkSelectTagHelper? _frameworkTagHelper;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SelectTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the field and the select.</param>
+    /// <param name="iconOptions">The icon options that supply the dropdown icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public SelectTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : base(htmlGenerator)
     {
@@ -26,21 +33,25 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
     }
 
     /// <summary>
-    ///     The list of options to render, in the same form used by the framework
-    ///     <c>&lt;select&gt;</c> tag helper.
+    ///     Gets or sets the options to render.
     /// </summary>
+    /// <remarks>
+    ///     Child option elements, if any, come before these options.
+    /// </remarks>
     [HtmlAttributeName("asp-items")]
     public IEnumerable<SelectListItem>? Items { get; set; }
 
     /// <summary>
-    ///     The size of the select.
+    ///     Gets or sets the size of the select.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SelectSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="SelectSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public SelectSize? Size { get; set; }
 
+    /// <inheritdoc />
     protected override void OnInit(TagHelperContext context)
     {
         if (For != null || Items != null)
@@ -56,6 +67,7 @@ public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
         }
     }
 
+    /// <inheritdoc />
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

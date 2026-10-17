@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The accessible title of a sheet, rendered as a heading in the sheet header.
+///     Renders the title of a sheet as a heading.
 /// </summary>
 [HtmlTargetElement("sa-sheet-title")]
 public class SheetTitleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "h2";

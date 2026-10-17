@@ -1,32 +1,32 @@
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The current page and available paging controls.
+///     Represents the paging controls of an index page.
 /// </summary>
 public sealed class ResourceIndexPagingViewModel
 {
     /// <summary>
-    ///     The current page number.
+    ///     Gets the number of the current page, starting at 1.
     /// </summary>
     public int Page { get; }
 
     /// <summary>
-    ///     The number of resources per page.
+    ///     Gets the number of resources on a page.
     /// </summary>
     public int PageSize { get; }
 
     /// <summary>
-    ///     The page sizes the user can choose from.
+    ///     Gets the page sizes that the user can choose from.
     /// </summary>
     public IReadOnlyList<int> PageSizes { get; }
 
     /// <summary>
-    ///     The number of resources across all pages.
+    ///     Gets the number of resources on all pages.
     /// </summary>
     public long TotalCount { get; }
 
     /// <summary>
-    ///     The number of pages.
+    ///     Gets the number of pages.
     /// </summary>
     public long TotalPages { get; }
 

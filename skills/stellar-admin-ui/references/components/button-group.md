@@ -6,15 +6,15 @@ generated: true
 
 # ButtonGroup
 
-Groups related buttons together as a single visual unit.
+Renders related buttons as a single unit.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-button-group>` | Groups related buttons together as a single visual unit. |
-| `<sa-button-group-separator>` | Renders a divider between items within a button group. |
-| `<sa-button-group-text>` | Renders a non-interactive text label within a button group. |
+| `<sa-button-group>` | Renders related buttons as a single unit. |
+| `<sa-button-group-separator>` | Renders a separator between items in a button group. |
+| `<sa-button-group-text>` | Renders a text label in a button group. |
 
 ## Attributes
 

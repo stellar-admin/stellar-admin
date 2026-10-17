@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The keyboard shortcut for a command menu item, aligned to the item's end.
+///     Renders the keyboard shortcut of a command menu item, at the item's end.
 /// </summary>
 [HtmlTargetElement("sa-command-shortcut")]
 public class CommandShortcutTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A list of menu items within a sidebar group, rendered as a list.
+///     Renders a menu in a sidebar, as a list of menu items.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu")]
 public class SidebarMenuTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ul";

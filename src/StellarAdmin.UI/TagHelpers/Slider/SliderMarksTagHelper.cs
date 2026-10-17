@@ -3,42 +3,58 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The marks along a <c>&lt;sa-slider&gt;</c>. Contains authored <c>&lt;sa-slider-mark&gt;</c>
-///     elements, or generates a mark every <see cref="Interval" /> when it has none.
+///     Renders marks along a slider.
 /// </summary>
+/// <remarks>
+///     Add <c>&lt;sa-slider-mark&gt;</c> elements to place marks yourself. Without them, a mark is
+///     generated at every <see cref="Interval" />. Place the marks inside a
+///     <c>&lt;sa-slider&gt;</c>.
+/// </remarks>
 [HtmlTargetElement("sa-slider-marks", ParentTag = "sa-slider")]
 public class SliderMarksTagHelper : StellarAdminTagHelperBase
 {
     private const int MaxGeneratedMarks = 200;
 
     /// <summary>
-    ///     The distance between generated marks, starting from the slider's minimum. A mark is
-    ///     always generated at the maximum.
+    ///     Gets or sets the distance between generated marks.
     /// </summary>
+    /// <value>
+    ///     The distance in slider values, which must be positive. The default is the slider's step.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the slider's <c>step</c>.
+    ///     Marks start at the slider's minimum, and a mark is always generated at the maximum. An
+    ///     interval can generate at most 200 marks.
     /// </remarks>
     [HtmlAttributeName("interval")]
     public double? Interval { get; set; }
 
     /// <summary>
-    ///     Which generated marks show their formatted value.
+    ///     Gets or sets which generated marks show their value.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies which marks show their value. The default
+    ///     is <see cref="SliderMarkLabels.None" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="SliderMarkLabels.None" />.
+    ///     Values are formatted with the slider's <c>value-format</c>.
     /// </remarks>
     [HtmlAttributeName("labels")]
     public SliderMarkLabels? Labels { get; set; }
 
     /// <summary>
-    ///     Whether each mark draws a tick on the track.
+    ///     Gets or sets a value that indicates whether each mark draws a tick on the track.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>true</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if each mark draws a tick; otherwise, <see langword="false" />.
+    ///     The default is <see langword="true" />.
+    /// </value>
     [HtmlAttributeName("show-ticks")]
     public bool? ShowTicks { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <see cref="Interval" /> isn't positive, or it would generate more than 200 marks.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var slider =

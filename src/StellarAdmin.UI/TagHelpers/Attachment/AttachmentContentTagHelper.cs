@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The region of an attachment that holds its title and description.
+///     Renders the area of an attachment that holds its title and description.
 /// </summary>
 [HtmlTargetElement("sa-attachment-content")]
 public class AttachmentContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

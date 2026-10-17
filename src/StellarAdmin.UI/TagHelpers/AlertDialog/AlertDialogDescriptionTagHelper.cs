@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The descriptive body text of an alert dialog, shown beneath the title.
+///     Renders the description of an alert dialog, shown below the title.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-description")]
 public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";

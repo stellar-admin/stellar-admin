@@ -4,20 +4,21 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single presentational slot cell within a <c>sa-input-otp</c>. Displays one character of
-///     the code and the active caret. The slot self-assigns its index from the parent's running
-///     counter unless an explicit <c>index</c> is set.
+///     Renders a slot that shows one character of the code in an <c>&lt;sa-input-otp&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-input-otp-slot")]
 public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The zero-based position of this slot. When omitted, the slot takes the next position in
-    ///     document order.
+    ///     Gets or sets the position of the character that the slot shows.
     /// </summary>
+    /// <value>
+    ///     A zero-based position. The default is the next position in document order.
+    /// </value>
     [HtmlAttributeName("index")]
     public int? Index { get; set; }
 
+    /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var inputOtpContext = GetContext<InputOtpContext>(context);

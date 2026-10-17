@@ -6,15 +6,15 @@ generated: true
 
 # Chip
 
-A compact token for a selected or entered value, with optional media before its label and an optional remove button after it.
+Renders a compact token for a selected or entered value.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-chip>` | A compact token for a selected or entered value, with optional media before its label and an optional remove button after it. |
-| `<sa-chip-group>` | Lays out chips and the controls beside them, on the page or in an input-styled box. |
-| `<sa-chip-remove>` | The button that removes a chip, placed after its label. It renders a close icon when it has no content, and requires an `aria-label` that names the chip, such as "Remove Lisbon". |
+| `<sa-chip>` | Renders a compact token for a selected or entered value. |
+| `<sa-chip-group>` | Renders a group of chips and the controls beside them. |
+| `<sa-chip-remove>` | Renders a button that removes a chip. |
 
 ## Attributes
 
@@ -32,8 +32,8 @@ A compact token for a selected or entered value, with optional media before its 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `appearance` | `ChipGroupAppearance` | `Plain` | `Plain`, `Input` |
-| `disabled` | `bool` | — | `true`, `false` |
-| `aria-invalid` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `aria-invalid` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

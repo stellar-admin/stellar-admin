@@ -1,17 +1,24 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How an expanded row and its details are set apart from the rows around them.
+///     Specifies how an expanded table row and its details are set apart from the rows around
+///     them.
 /// </summary>
 public enum TableRowDetailEmphasis
 {
-    /// <summary>No treatment beyond joining the row to its details.</summary>
+    /// <summary>
+    ///     The row and its details are joined, with no other emphasis.
+    /// </summary>
     None,
 
-    /// <summary>A tinted background behind the row and its details.</summary>
+    /// <summary>
+    ///     A tinted background behind the row and its details.
+    /// </summary>
     Band,
 
-    /// <summary>An accent bar along the left edge of the row and its details.</summary>
+    /// <summary>
+    ///     An accent bar along the left edge of the row and its details.
+    /// </summary>
     Rail,
 }
 

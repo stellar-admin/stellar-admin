@@ -3,15 +3,18 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A header section at the top of a page's content, rendered as a <c>&lt;header&gt;</c>
-///     element. Composed with an optional <c>&lt;sa-breadcrumb&gt;</c>,
-///     <c>&lt;sa-page-header-title&gt;</c>, <c>&lt;sa-page-header-description&gt;</c>,
-///     <c>&lt;sa-page-header-actions&gt;</c>, and <c>&lt;sa-page-header-nav&gt;</c> — in that
-///     order, which is also the top-to-bottom order on narrow viewports.
+///     Renders a header at the top of a page's content.
 /// </summary>
+/// <remarks>
+///     Place an optional <c>&lt;sa-breadcrumb&gt;</c>, <c>&lt;sa-page-header-title&gt;</c>,
+///     <c>&lt;sa-page-header-description&gt;</c>, <c>&lt;sa-page-header-actions&gt;</c> and
+///     <c>&lt;sa-page-header-nav&gt;</c> inside, in that order. Narrow screens stack them in the
+///     same order.
+/// </remarks>
 [HtmlTargetElement("sa-page-header")]
 public class PageHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "header";

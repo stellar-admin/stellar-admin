@@ -6,7 +6,7 @@ generated: true
 
 # Separator
 
-A thin dividing line between sections of content, rendered as a `<div>` with `role="separator"`.
+Renders a thin line between sections of content.
 
 ## Attributes
 

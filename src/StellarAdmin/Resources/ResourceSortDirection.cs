@@ -1,17 +1,17 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     The direction of resource ordering.
+///     Specifies the direction in which resources are sorted.
 /// </summary>
 public enum ResourceSortDirection
 {
     /// <summary>
-    ///     Orders values from lowest to highest.
+    ///     Sorts values from lowest to highest.
     /// </summary>
     Ascending,
 
     /// <summary>
-    ///     Orders values from highest to lowest.
+    ///     Sorts values from highest to lowest.
     /// </summary>
     Descending,
 }

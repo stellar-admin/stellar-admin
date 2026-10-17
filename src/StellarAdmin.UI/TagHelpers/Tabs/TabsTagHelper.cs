@@ -3,24 +3,27 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Tabs that switch between panels on the page. Place an <c>sa-tab-list</c> of
-///     <c>sa-tab</c>s and an <c>sa-tab-panel</c> for each tab inside it. Renders the
-///     <c>sel-tabs</c> web component, which raises bubbling <c>tabshow</c> and
-///     <c>tabhide</c> events on the panels, so htmx attributes on an <c>sa-tab-panel</c> can
-///     load its content with <c>hx-trigger="tabshow once"</c>.
+///     Renders tabs that switch between panels on the page.
 /// </summary>
+/// <remarks>
+///     Place a <c>&lt;sa-tab-list&gt;</c> of <c>&lt;sa-tab&gt;</c> elements inside it, and a
+///     <c>&lt;sa-tab-panel&gt;</c> for each tab. To load a panel's content when its tab is first
+///     selected, add htmx attributes with <c>hx-trigger="tabshow once"</c> to the
+///     <c>&lt;sa-tab-panel&gt;</c>. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-tabs")]
 public class TabsTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The id of the panel shown first.
+    ///     Gets or sets the <c>id</c> of the panel that is shown first.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the first tab's panel.
-    /// </remarks>
+    /// <value>
+    ///     The <c>id</c> of a <c>&lt;sa-tab-panel&gt;</c>. The default is the first tab's panel.
+    /// </value>
     [HtmlAttributeName("selected")]
     public string? Selected { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var tabsId = output.Attributes["id"]?.Value?.ToString() is { Length: > 0 } id

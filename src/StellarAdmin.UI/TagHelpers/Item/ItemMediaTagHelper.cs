@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The leading media region of an item, holding an icon, image, or avatar.
+///     Renders the media of an item, such as an icon, image or avatar, at its start.
 /// </summary>
 [HtmlTargetElement("sa-item-media")]
 public class ItemMediaTagHelper : StellarAdminTagHelperBase
@@ -17,14 +17,16 @@ public class ItemMediaTagHelper : StellarAdminTagHelperBase
         };
 
     /// <summary>
-    ///     The kind of media the region contains, which controls its sizing and styling.
+    ///     Gets or sets the kind of media, which sets its size and style.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ItemMediaVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the kind of media. The default is
+    ///     <see cref="ItemMediaVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ItemMediaVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ItemMediaVariant.Default;

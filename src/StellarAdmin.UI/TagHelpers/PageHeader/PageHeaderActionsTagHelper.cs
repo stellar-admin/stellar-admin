@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An action area inside <c>&lt;sa-page-header&gt;</c> for content such as buttons. Aligned
-///     to the end of the title row on regular viewports and placed below the title and
-///     description on narrow viewports.
+///     Renders the area of a page header that holds actions, such as buttons.
 /// </summary>
+/// <remarks>
+///     The actions sit at the end of the title row, or below the title and description on narrow
+///     screens.
+/// </remarks>
 [HtmlTargetElement("sa-page-header-actions")]
 public class PageHeaderActionsTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

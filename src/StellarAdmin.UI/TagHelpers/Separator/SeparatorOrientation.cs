@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The orientation of a <c>&lt;sa-separator&gt;</c>.
+///     Specifies the orientation of a <c>&lt;sa-separator&gt;</c>.
 /// </summary>
 public enum SeparatorOrientation
 {
-    /// <summary>A horizontal separator that divides stacked content.</summary>
+    /// <summary>
+    ///     A horizontal line that divides stacked content.
+    /// </summary>
     Horizontal,
 
-    /// <summary>A vertical separator that divides side-by-side content.</summary>
+    /// <summary>
+    ///     A vertical line that divides side-by-side content.
+    /// </summary>
     Vertical,
 }
 

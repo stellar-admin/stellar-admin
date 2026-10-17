@@ -1,17 +1,23 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     What pointing at or clicking an image does.
+///     Specifies what pointing at or clicking an image does.
 /// </summary>
 public enum ImageInteraction
 {
-    /// <summary>Clicking opens the image larger in a dialog.</summary>
+    /// <summary>
+    ///     Clicking opens a larger image in a dialog.
+    /// </summary>
     Lightbox,
 
-    /// <summary>Hovering shows the image larger beside it.</summary>
+    /// <summary>
+    ///     Pointing shows a larger image beside it.
+    /// </summary>
     Preview,
 
-    /// <summary>Nothing.</summary>
+    /// <summary>
+    ///     Nothing happens.
+    /// </summary>
     None,
 }
 

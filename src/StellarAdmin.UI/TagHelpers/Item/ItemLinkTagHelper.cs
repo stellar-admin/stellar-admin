@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An item rendered as an anchor, making the entire row a clickable link.
+///     Renders an item as a link, so the whole row can be clicked.
 /// </summary>
 [HtmlTargetElement("sa-item-link")]
 public class ItemLinkTagHelper : StellarAdminAnchorTagHelperBase
@@ -13,28 +13,38 @@ public class ItemLinkTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
 
     /// <summary>
-    ///     The size of the item, controlling its padding and spacing.
+    ///     Gets or sets the size of the item, which sets its padding and spacing.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ItemSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size of the item. The default is
+    ///     <see cref="ItemSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ItemSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual style of the item.
+    ///     Gets or sets the visual style of the item.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ItemVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="ItemVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ItemLinkTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that builds the link URL from the routing attributes.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public ItemLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "a";

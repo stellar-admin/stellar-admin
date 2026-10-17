@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Supporting description text for a sheet, shown beneath the title.
+///     Renders the description of a sheet, shown below its title.
 /// </summary>
 [HtmlTargetElement("sa-sheet-description")]
 public class SheetDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";

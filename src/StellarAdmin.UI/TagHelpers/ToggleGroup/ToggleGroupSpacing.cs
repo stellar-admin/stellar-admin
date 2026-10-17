@@ -1,20 +1,28 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The spacing between the items of a toggle group.
+///     Specifies the space between the items of a toggle group.
 /// </summary>
 public enum ToggleGroupSpacing
 {
-    /// <summary>The default spacing between items.</summary>
+    /// <summary>
+    ///     The standard space.
+    /// </summary>
     Default,
 
-    /// <summary>No spacing, which joins the items into a single segmented control.</summary>
+    /// <summary>
+    ///     No space, which joins the items into one control.
+    /// </summary>
     None,
 
-    /// <summary>Small spacing between items.</summary>
+    /// <summary>
+    ///     A small space.
+    /// </summary>
     Small,
 
-    /// <summary>Large spacing between items.</summary>
+    /// <summary>
+    ///     A large space.
+    /// </summary>
     Large,
 }
 

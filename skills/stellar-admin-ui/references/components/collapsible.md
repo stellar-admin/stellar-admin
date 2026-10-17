@@ -6,7 +6,7 @@ generated: true
 
 # Collapsible
 
-A container whose content can be expanded or collapsed. Toggle it with the Invoker Commands API — a trigger button carrying `commandfor` and a custom command.
+Renders a container whose content can be expanded or collapsed.
 
 ## Attributes
 

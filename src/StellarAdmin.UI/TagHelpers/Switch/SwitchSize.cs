@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a <c>&lt;sa-switch&gt;</c>.
+///     Specifies the size of a switch.
 /// </summary>
 public enum SwitchSize
 {
-    /// <summary>The default switch size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A smaller, more compact switch.</summary>
+    /// <summary>
+    ///     A smaller, more compact switch.
+    /// </summary>
     Small,
 }
 

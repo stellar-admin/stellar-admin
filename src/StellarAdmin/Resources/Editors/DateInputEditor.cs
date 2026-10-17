@@ -11,8 +11,12 @@ public sealed class DateInputEditor
         IFieldEditor<DateInputEditorHandler>
 {
     /// <summary>
-    ///     The number of days between accepted dates, or null to accept every day.
+    ///     Gets or sets the number of days between accepted dates.
     /// </summary>
+    /// <value>
+    ///     The number of days, or <see langword="null" /> to accept every day. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public int? Step { get; set; }
 
     internal override TemporalInputAttributes ResolveAttributes(ModelMetadata metadata) =>

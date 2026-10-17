@@ -3,13 +3,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A modal window overlaid on the page, rendered over a native <c>&lt;dialog&gt;</c> element.
-///     Open and close it with the Invoker Commands API — a trigger button carrying
-///     <c>commandfor</c> and <c>command="show-modal"</c> or <c>command="close"</c>.
+///     Renders a modal window over the page.
 /// </summary>
+/// <remarks>
+///     The dialog renders as a native <c>&lt;dialog&gt;</c> element. Open it with a button that
+///     has <c>commandfor</c> and <c>command="show-modal"</c>, and close it with one that has
+///     <c>command="close"</c>. Requires <c>stellar-admin.js</c> to lock page scrolling while the
+///     dialog is open.
+/// </remarks>
 [HtmlTargetElement("sa-dialog")]
 public class DialogTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "dialog";

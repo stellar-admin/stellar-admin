@@ -5,8 +5,7 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The menu item that opens a submenu, rendered with a trailing chevron and wired to its
-///     sub-content panel.
+///     Renders the dropdown menu item that opens a submenu.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-sub-trigger")]
 public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
@@ -14,16 +13,25 @@ public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     Whether the trigger is inset, aligning its text with items that have a leading icon.
+    ///     Gets or sets a value that indicates whether the trigger is inset.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the trigger's text aligns with items that have a leading
+    ///     icon; otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DropdownMenuSubTriggerTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the submenu arrow.</param>
     public DropdownMenuSubTriggerTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

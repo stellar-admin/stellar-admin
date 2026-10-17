@@ -6,38 +6,56 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A group of checkbox options bound to a collection.
+///     Renders a group of checkboxes that posts a set of values.
 /// </summary>
+/// <remarks>
+///     Bind it with <c>asp-for</c> to an array or list, or set <c>name</c>. Add the options as
+///     <c>sa-checkbox-group-item</c> elements or with <c>asp-items</c>.
+/// </remarks>
 [HtmlTargetElement("sa-checkbox-group")]
 public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
 {
     /// <summary>
-    ///     The order in which the options fill the columns set with <c>columns</c>.
+    ///     Gets or sets the order in which the options fill the columns.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the order in which the options fill the
+    ///     columns. The default is <see cref="CheckboxGroupFlow.Across" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="CheckboxGroupFlow.Across" />.
+    ///     Applies only when the group has more than one column.
     /// </remarks>
     [HtmlAttributeName("flow")]
     public CheckboxGroupFlow? Flow { get; set; }
 
     /// <summary>
-    ///     The initially selected values when not using model binding.
+    ///     Gets or sets the selected values when the group isn't bound with <c>asp-for</c>.
     /// </summary>
+    /// <remarks>
+    ///     Can't be combined with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("values")]
     public IEnumerable<string>? Values { get; set; }
 
     /// <summary>
-    ///     The display format of the options.
+    ///     Gets or sets how the options are displayed.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="CheckboxGroupVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies how the options are displayed. The default is
+    ///     <see cref="CheckboxGroupVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public CheckboxGroupVariant? Variant { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CheckboxGroupTagHelper" /> class.
+    /// </summary>
+    /// <param name="generator">The generator that renders the field and its checkboxes.</param>
+    /// <param name="icons">The icon options that supply the mark of a selected checkbox.</param>
     public CheckboxGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
         : base(generator, icons) { }
 
+    /// <inheritdoc />
     protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

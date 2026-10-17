@@ -3,39 +3,42 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A vertical flex layout that arranges its children in a column, with configurable
-///     alignment, spacing, and justification.
+///     Renders a layout that arranges its children in a column.
 /// </summary>
 [HtmlTargetElement("sa-stack")]
 public class StackTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     How the children are aligned along the cross axis (horizontally).
+    ///     Gets or sets how the children align horizontally.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="StackAlign.Stretch" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="StackAlign.Stretch" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public StackAlign? Align { get; set; }
 
     /// <summary>
-    ///     The vertical spacing between children.
+    ///     Gets or sets the space between the children.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="StackGap.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the space. The default is
+    ///     <see cref="StackGap.Default" />.
+    /// </value>
     [HtmlAttributeName("gap")]
     public StackGap? Gap { get; set; }
 
     /// <summary>
-    ///     How the children are distributed along the main axis (vertically).
+    ///     Gets or sets how the children are spread vertically.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="StackJustify.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the spread. The default is
+    ///     <see cref="StackJustify.Start" />.
+    /// </value>
     [HtmlAttributeName("justify")]
     public StackJustify? Justify { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? StackAlign.Stretch;

@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A divider between groups in a command menu. It is hidden while a search is active.
+///     Renders a divider between groups in a command menu.
 /// </summary>
+/// <remarks>
+///     The divider is hidden during a search that the browser filters.
+/// </remarks>
 [HtmlTargetElement("sa-command-separator")]
 public class CommandSeparatorTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

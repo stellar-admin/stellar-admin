@@ -10,14 +10,21 @@ namespace StellarAdmin.Resources.Editors;
 public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGroupEditorHandler>
 {
     /// <summary>
-    ///     How the choices are displayed. Defaults to <see cref="CheckboxGroupAppearance.Default" />.
+    ///     Gets or sets how the choices are displayed.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies how the choices are displayed. The default
+    ///     is <see cref="CheckboxGroupAppearance.Default" />.
+    /// </value>
     public CheckboxGroupAppearance Appearance { get; set; }
 
     /// <summary>
-    ///     The order in which the choices fill the columns set with <see cref="Columns(int)" />. Defaults to
-    ///     <see cref="CheckboxGroupFlow.Across" />.
+    ///     Gets or sets the order in which the choices fill their columns.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the order in which the choices fill their
+    ///     columns. The default is <see cref="CheckboxGroupFlow.Across" />.
+    /// </value>
     public CheckboxGroupFlow Flow { get; set; }
 
     internal FormGridColumnDefinitions? ColumnDefinitions { get; private set; }
@@ -25,9 +32,13 @@ public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGro
     /// <summary>
     ///     Arranges the choices in columns, starting at the medium breakpoint.
     /// </summary>
+    /// <param name="count">The number of columns, from 1 to 12.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="count" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Breakpoints are measured against the field's width. Below the medium breakpoint, the choices use one
-    ///     column.
+    ///     The default is 1. A narrower field uses one column. Breakpoints are measured against the
+    ///     field's width.
     /// </remarks>
     public void Columns(int count)
     {
@@ -37,6 +48,12 @@ public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGro
     /// <summary>
     ///     Arranges the choices in columns at each breakpoint.
     /// </summary>
+    /// <param name="configure">
+    ///     A delegate that sets the number of columns at each breakpoint.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
     ///     Breakpoints are measured against the field's width.
     /// </remarks>

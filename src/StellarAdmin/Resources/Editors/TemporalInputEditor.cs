@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Base class for the date and time input editors.
+///     Provides the shared settings of the date and time input editors.
 /// </summary>
 /// <typeparam name="TValue">The type of the earliest and latest accepted values.</typeparam>
 public abstract class TemporalInputEditor<TValue> : FieldEditor
@@ -13,13 +13,21 @@ public abstract class TemporalInputEditor<TValue> : FieldEditor
     private protected TemporalInputEditor() { }
 
     /// <summary>
-    ///     The latest value the input accepts.
+    ///     Gets or sets the latest value the input accepts.
     /// </summary>
+    /// <value>
+    ///     The latest value, or <see langword="null" /> for no limit. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public TValue? Max { get; set; }
 
     /// <summary>
-    ///     The earliest value the input accepts.
+    ///     Gets or sets the earliest value the input accepts.
     /// </summary>
+    /// <value>
+    ///     The earliest value, or <see langword="null" /> for no limit. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public TValue? Min { get; set; }
 
     internal abstract TemporalInputAttributes ResolveAttributes(ModelMetadata metadata);

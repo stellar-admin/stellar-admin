@@ -1,17 +1,21 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures resource index scopes.
+///     Stores the scopes of a resource's index page.
 /// </summary>
 public sealed class ResourceScopesOptions
 {
     /// <summary>
-    ///     The scope applied when no recognized scope is requested.
+    ///     Gets or sets the identifier of the scope applied when no known scope is requested.
     /// </summary>
+    /// <value>
+    ///     The identifier of one of the <see cref="Items" />, or <see langword="null" /> to apply
+    ///     no scope. The default is <see langword="null" />.
+    /// </value>
     public string? DefaultScope { get; set; }
 
     /// <summary>
-    ///     The scopes displayed in order.
+    ///     Gets the scopes, in display order.
     /// </summary>
     public IList<ResourceScopeOptions> Items { get; } = new List<ResourceScopeOptions>();
 }

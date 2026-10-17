@@ -1,25 +1,37 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a button.
+///     Specifies the visual style of a button.
 /// </summary>
 public enum ButtonVariant
 {
-    /// <summary>The default, primary button style.</summary>
+    /// <summary>
+    ///     The standard, primary style.
+    /// </summary>
     Default,
 
-    /// <summary>A style that signals a destructive action.</summary>
+    /// <summary>
+    ///     A style that signals a destructive action.
+    /// </summary>
     Destructive,
 
-    /// <summary>A button with a border and transparent background.</summary>
+    /// <summary>
+    ///     A border with a transparent background.
+    /// </summary>
     Outline,
 
-    /// <summary>A secondary, lower-emphasis button style.</summary>
+    /// <summary>
+    ///     A quieter, secondary style.
+    /// </summary>
     Secondary,
 
-    /// <summary>A button with no background or border until interacted with.</summary>
+    /// <summary>
+    ///     No background until the pointer is over the button.
+    /// </summary>
     Ghost,
 
-    /// <summary>A button styled as a hyperlink.</summary>
+    /// <summary>
+    ///     A style that looks like a link.
+    /// </summary>
     Link,
 }

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Content shown in a command menu when no items match the search.
+///     Renders the content that a command menu shows when no items match the search.
 /// </summary>
 [HtmlTargetElement("sa-command-empty")]
 public class CommandEmptyTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

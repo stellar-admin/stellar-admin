@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     How a radio group editor displays its choices.
+///     Specifies how a radio group editor displays its choices.
 /// </summary>
 public enum RadioGroupAppearance
 {

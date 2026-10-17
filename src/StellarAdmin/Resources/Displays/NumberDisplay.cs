@@ -1,10 +1,10 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays a number with figures of equal width.
+///     Shows a number with digits of equal width.
 /// </summary>
 /// <remarks>
-///     The default display for numeric properties.
+///     This is the default display for numeric properties.
 /// </remarks>
 public sealed class NumberDisplay : FieldDisplay
 {
@@ -12,10 +12,11 @@ public sealed class NumberDisplay : FieldDisplay
     public override string TemplateName => "Displays/Number";
 
     /// <summary>
-    ///     The format string, such as <c>N2</c> or <c>C</c>.
+    ///     Gets or sets the format string, such as <c>N2</c> or <c>C</c>.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the property's <c>[DisplayFormat]</c>, then the number as is.
-    /// </remarks>
+    /// <value>
+    ///     The format string, or <see langword="null" /> to use the property's
+    ///     <c>[DisplayFormat]</c>, if it has one. The default is <see langword="null" />.
+    /// </value>
     public string? Format { get; set; }
 }

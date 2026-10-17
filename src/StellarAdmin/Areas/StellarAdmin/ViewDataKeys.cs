@@ -1,18 +1,18 @@
 namespace StellarAdmin.Areas.StellarAdmin;
 
 /// <summary>
-///     The <c>ViewData</c> keys the StellarAdmin views communicate through.
+///     Provides the <c>ViewData</c> keys that the admin panel's views use.
 /// </summary>
 public static class ViewDataKeys
 {
     /// <summary>
-    ///     The key for the <see cref="Resources.Displays.FieldDisplay" /> of the display field being
-    ///     rendered.
+    ///     Represents the key for the <see cref="Resources.Displays.FieldDisplay" /> of the field
+    ///     being rendered.
     /// </summary>
     public const string FieldDisplay = "StellarAdminFieldDisplay";
 
     /// <summary>
-    ///     The key for the data prepared for the display field being rendered.
+    ///     Represents the key for the data prepared for the display of the field being rendered.
     /// </summary>
     public const string FieldDisplayData = "StellarAdminFieldDisplayData";
 

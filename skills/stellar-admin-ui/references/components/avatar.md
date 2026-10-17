@@ -6,16 +6,16 @@ generated: true
 
 # Avatar
 
-Displays a user's image, falling back to initials or a name-derived monogram when no image is available.
+Renders a user's image, or their initials when there's no image.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-avatar>` | Displays a user's image, falling back to initials or a name-derived monogram when no image is available. |
-| `<sa-avatar-badge>` | A small badge overlaid on the corner of an avatar, such as a status indicator or icon. |
-| `<sa-avatar-group>` | A container that displays a set of avatars as an overlapping stack. |
-| `<sa-avatar-group-count>` | A trailing element within an avatar group that displays the count of additional, unshown avatars. |
+| `<sa-avatar>` | Renders a user's image, or their initials when there's no image. |
+| `<sa-avatar-badge>` | Renders a small badge on the corner of an avatar, such as a status indicator or icon. |
+| `<sa-avatar-group>` | Renders a set of avatars as an overlapping stack. |
+| `<sa-avatar-group-count>` | Renders the number of avatars that an avatar group doesn't show, at the end of the group. |
 
 ## Attributes
 
@@ -26,7 +26,7 @@ Displays a user's image, falling back to initials or a name-derived monogram whe
 | `initials` | `string` | — | — |
 | `name` | `string` | — | — |
 | `size` | `AvatarSize` | `Default` | `Default`, `Small`, `Large` |
-| `src` | `string` | — | — |
+| `src` | `string` | `null` | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

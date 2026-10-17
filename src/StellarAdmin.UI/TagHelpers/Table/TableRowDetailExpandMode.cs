@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How many rows of a table with row details can be expanded at once.
+///     Specifies how many table rows can show their details at once.
 /// </summary>
 public enum TableRowDetailExpandMode
 {
-    /// <summary>Any number of rows can be expanded.</summary>
+    /// <summary>
+    ///     Any number of rows can be expanded.
+    /// </summary>
     Multiple,
 
-    /// <summary>Expanding a row collapses the row that was expanded.</summary>
+    /// <summary>
+    ///     Expanding a row collapses the row that was expanded.
+    /// </summary>
     Single,
 }
 

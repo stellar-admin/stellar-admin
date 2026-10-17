@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The region of an attachment that holds its action controls.
+///     Renders the area of an attachment that holds its action buttons.
 /// </summary>
 [HtmlTargetElement("sa-attachment-actions")]
 public class AttachmentActionsTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

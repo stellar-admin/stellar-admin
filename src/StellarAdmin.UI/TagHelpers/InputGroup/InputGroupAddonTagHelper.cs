@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A decoration attached to an input group, such as an icon, text, or button, aligned to one of
-///     the input's edges. Clicking the add-on focuses the group's input.
+///     Renders an add-on, such as an icon, text or button, at one edge of an input group.
 /// </summary>
+/// <remarks>
+///     Clicking the add-on, outside its buttons, focuses the group's input.
+/// </remarks>
 [HtmlTargetElement("sa-input-group-addon")]
 public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
 {
@@ -19,14 +21,16 @@ public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
         };
 
     /// <summary>
-    ///     Where the add-on is positioned relative to the input.
+    ///     Gets or sets where the add-on is placed relative to the input.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="InputGroupAddonAlign.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the placement. The default is
+    ///     <see cref="InputGroupAddonAlign.Start" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public InputGroupAddonAlign? Align { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? InputGroupAddonAlign.Start;

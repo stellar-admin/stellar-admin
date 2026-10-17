@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A nested submenu within a sidebar menu item, rendered as a list.
+///     Renders a submenu in a sidebar menu item, as a list.
 /// </summary>
+/// <remarks>
+///     The submenu is hidden while the sidebar is collapsed to icons.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-sub")]
 public class SidebarMenuSubTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ul";

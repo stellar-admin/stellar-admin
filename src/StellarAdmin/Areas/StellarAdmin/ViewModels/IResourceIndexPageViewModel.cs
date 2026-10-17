@@ -4,109 +4,132 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The index page model, without the resource type.
-///     Use it as the <c>@model</c> of a shared index view that you override for every resource.
-///     To override one resource's index view, use <see cref="ResourceIndexPageViewModel{TResource}" />.
+///     Represents the model of an index page, without the resource type.
 /// </summary>
+/// <remarks>
+///     Use it as the <c>@model</c> of an index view that you override for every resource. To
+///     override one resource's index view, use
+///     <see cref="ResourceIndexPageViewModel{TResource}" />.
+/// </remarks>
 public interface IResourceIndexPageViewModel
 {
     /// <summary>
-    ///     Whether resources can be created.
+    ///     Gets a value that indicates whether the resource has a create page.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the resource has a create page; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
     bool CanCreate { get; }
 
     /// <summary>
-    ///     Whether resources can be edited.
+    ///     Gets a value that indicates whether the resource has an edit page.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the resource has an edit page; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
     bool CanEdit { get; }
 
     /// <summary>
-    ///     Whether resources can be viewed.
+    ///     Gets a value that indicates whether the resource has a view page.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the resource has a view page; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
     bool CanView { get; }
 
     /// <summary>
-    ///     The columns displayed in order.
+    ///     Gets the columns of the grid, in display order.
     /// </summary>
     IReadOnlyList<DataGridColumnOptions> Columns { get; }
 
     /// <summary>
-    ///     The create button label.
+    ///     Gets the label of the create button.
     /// </summary>
     string CreateLabel { get; }
 
     /// <summary>
-    ///     The delete confirmation dialog.
+    ///     Gets the delete confirmation dialog, or <see langword="null" /> when resources can't be
+    ///     deleted.
     /// </summary>
     ResourceIndexDeleteDialogViewModel? Delete { get; }
 
     /// <summary>
-    ///     The delete button label.
+    ///     Gets the label of the delete button.
     /// </summary>
     string? DeleteLabel { get; }
 
     /// <summary>
-    ///     The edit link label.
+    ///     Gets the label of the edit link.
     /// </summary>
     string? EditLabel { get; }
 
     /// <summary>
-    ///     The inline rows, or null when resources are neither edited nor created inline.
+    ///     Gets the settings of the inline rows, or <see langword="null" /> when resources are
+    ///     neither edited nor created inline.
     /// </summary>
     ResourceIndexInlineRowsViewModel? InlineRows { get; }
 
     /// <summary>
-    ///     The resources to display.
+    ///     Gets the resources on the current page.
     /// </summary>
     IEnumerable Items { get; }
 
     /// <summary>
-    ///     The paging controls, or null when paging is disabled.
+    ///     Gets the paging controls, or <see langword="null" /> when paging is turned off.
     /// </summary>
     ResourceIndexPagingViewModel? Paging { get; }
 
     /// <summary>
-    ///     The index settings explicitly supplied in the query string.
+    ///     Gets the index settings that the query string supplies.
     /// </summary>
     ResourceIndexQuery Query { get; }
 
     /// <summary>
-    ///     The row details settings, or null when rows do not expand.
+    ///     Gets the row details settings, or <see langword="null" /> when rows don't expand.
     /// </summary>
     ResourceRowDetailsOptions? RowDetails { get; }
 
     /// <summary>
-    ///     Whether only the grid's rows are rendered, for a row request.
+    ///     Gets a value that indicates whether only the grid's rows are rendered.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the request renders only the grid's rows, such as after an
+    ///     inline save; otherwise, <see langword="false" />.
+    /// </value>
     bool RowsOnly { get; }
 
     /// <summary>
-    ///     The scope tabs.
+    ///     Gets the scope tabs, or an empty list when the resource has no scopes.
     /// </summary>
     IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; }
 
     /// <summary>
-    ///     The search box, or null when searching is disabled.
+    ///     Gets the search box, or <see langword="null" /> when search is turned off.
     /// </summary>
     ResourceIndexSearchViewModel? Search { get; }
 
     /// <summary>
-    ///     The selected ordering.
+    ///     Gets the sort order of the list, or <see langword="null" /> when the list is unsorted.
     /// </summary>
     ResourceIndexSortViewModel? Sort { get; }
 
     /// <summary>
-    ///     The page title.
+    ///     Gets the page title.
     /// </summary>
     string Title { get; }
 
     /// <summary>
-    ///     The view link label.
+    ///     Gets the label of the view link.
     /// </summary>
     string? ViewLabel { get; }
 
     /// <summary>
-    ///     Returns the key used in resource links.
+    ///     Returns the key of a resource, for use in links.
     /// </summary>
+    /// <param name="resource">The resource.</param>
+    /// <returns>The key of the resource.</returns>
     string GetKey(object resource);
 }

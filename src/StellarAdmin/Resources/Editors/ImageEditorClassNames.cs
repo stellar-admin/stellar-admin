@@ -1,18 +1,20 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Additional CSS classes for an image editor, its image and its note.
+///     Stores additional CSS classes for the parts of an image editor.
 /// </summary>
 public sealed class ImageEditorClassNames : EditorClassNames
 {
     /// <summary>
-    ///     Additional CSS classes applied to the image.
+    ///     Gets or sets additional CSS classes for the image.
     /// </summary>
     public string? Image { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes applied to the note under the editor, which shows the accepted
-    ///     types, upload progress, errors and staged changes.
+    ///     Gets or sets additional CSS classes for the note under the editor.
     /// </summary>
+    /// <remarks>
+    ///     The note shows the accepted types, upload progress, errors and staged changes.
+    /// </remarks>
     public string? Note { get; set; }
 }

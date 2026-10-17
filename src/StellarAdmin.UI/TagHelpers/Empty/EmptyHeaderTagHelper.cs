@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of an empty state; typically contains the media, title, and description.
+///     Renders the header of an empty state, which holds the media, title and description.
 /// </summary>
 [HtmlTargetElement("sa-empty-header")]
 public class EmptyHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

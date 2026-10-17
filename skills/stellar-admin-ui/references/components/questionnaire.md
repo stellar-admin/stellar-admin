@@ -6,27 +6,27 @@ generated: true
 
 # Questionnaire
 
-A container for one or more questionnaire items. Place it inside your own `<form>`.
+Renders a container for one or more questionnaire items.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-questionnaire>` | A container for one or more questionnaire items. Place it inside your own `<form>`. |
-| `<sa-questionnaire-actions>` | The row holding a questionnaire's navigation buttons. |
+| `<sa-questionnaire>` | Renders a container for one or more questionnaire items. |
+| `<sa-questionnaire-actions>` | Renders the row that holds a questionnaire's navigation buttons. |
 | `<sa-questionnaire-choice>` | Renders a fixed answer to a questionnaire item. |
-| `<sa-questionnaire-choice-description>` | Supporting text explaining a single choice. |
-| `<sa-questionnaire-choices>` | The list of answers for a questionnaire item. |
-| `<sa-questionnaire-description>` | Supporting text explaining a questionnaire item. |
-| `<sa-questionnaire-error>` | Displays the validation message for a questionnaire item's answer. A bound item renders one automatically, so place this only to position the message yourself or to write your own text. |
-| `<sa-questionnaire-input>` | A free-text answer, shown alongside an item's fixed choices. Always give it an accessible name with a visible label, `aria-label`, or `aria-labelledby`. |
-| `<sa-questionnaire-item>` | A single question, with its title, description, choices, and error. Renders a `<fieldset>`. |
-| `<sa-questionnaire-next>` | Moves on to the next question. Renders a submit button, so place it inside your own `<form>`. |
-| `<sa-questionnaire-previous>` | Moves back to the previous question. Renders a submit button, so place it inside your own `<form>`. |
-| `<sa-questionnaire-progress>` | Shows how far through a questionnaire the reader is. Supply `current` and `total` to expose it as a progress bar; supply your own content to replace the default wording. |
-| `<sa-questionnaire-skip>` | Leaves the current question unanswered and moves on. Renders a submit button, so place it inside your own `<form>`. |
-| `<sa-questionnaire-submit>` | Completes the questionnaire. Renders a submit button, so place it inside your own `<form>`. |
-| `<sa-questionnaire-title>` | The question a questionnaire item asks. Renders the item's `<legend>`. |
+| `<sa-questionnaire-choice-description>` | Renders text that explains a choice. |
+| `<sa-questionnaire-choices>` | Renders the list of choices for a questionnaire item. |
+| `<sa-questionnaire-description>` | Renders text that explains a questionnaire item. |
+| `<sa-questionnaire-error>` | Renders the validation message for a questionnaire item's answer. |
+| `<sa-questionnaire-input>` | Renders a free-text answer beside a questionnaire item's choices. |
+| `<sa-questionnaire-item>` | Renders a question, with its title, description, choices and validation message. |
+| `<sa-questionnaire-next>` | Renders a button that moves on to the next question. |
+| `<sa-questionnaire-previous>` | Renders a button that moves back to the previous question. |
+| `<sa-questionnaire-progress>` | Renders how far through a questionnaire the reader is. |
+| `<sa-questionnaire-skip>` | Renders a button that leaves the current question unanswered and moves on. |
+| `<sa-questionnaire-submit>` | Renders a button that completes the questionnaire. |
+| `<sa-questionnaire-title>` | Renders the question that a questionnaire item asks, as the item's `<legend>`. |
 
 ## Attributes
 
@@ -46,7 +46,7 @@ A container for one or more questionnaire items. Place it inside your own `<form
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `shortcuts` | `QuestionnaireShortcuts` | — | `Letters`, `Numbers` |
+| `shortcuts` | `QuestionnaireShortcuts` | `null` | `Letters`, `Numbers` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-questionnaire-input>`

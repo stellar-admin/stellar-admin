@@ -6,15 +6,15 @@ generated: true
 
 # AppHeader
 
-The application's top navigation bar, rendered as a `<header>` element. Typically placed at the top of `<sa-sidebar-inset>` and composed with `<sa-sidebar-trigger>`, `<sa-app-header-separator>`, a breadcrumb, and `<sa-app-header-actions>`.
+Renders the bar at the top of the application, as a `<header>` element.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-app-header>` | The application's top navigation bar, rendered as a `<header>` element. Typically placed at the top of `<sa-sidebar-inset>` and composed with `<sa-sidebar-trigger>`, `<sa-app-header-separator>`, a breadcrumb, and `<sa-app-header-actions>`. |
-| `<sa-app-header-actions>` | A right-aligned area at the end of `<sa-app-header>` for trailing content such as buttons or an avatar. |
-| `<sa-app-header-separator>` | A vertical separator sized for use inside `<sa-app-header>`, typically between the sidebar trigger and the content that follows it. |
+| `<sa-app-header>` | Renders the bar at the top of the application, as a `<header>` element. |
+| `<sa-app-header-actions>` | Renders an area at the end of an app header for content such as buttons or an avatar. |
+| `<sa-app-header-separator>` | Renders a vertical separator sized for an app header. |
 
 ## Examples
 

@@ -1,27 +1,27 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Additional CSS classes for a slider editor, its value and its marks.
+///     Stores additional CSS classes for the parts of a slider editor.
 /// </summary>
 public sealed class SliderEditorClassNames : EditorClassNames
 {
     /// <summary>
-    ///     Additional CSS classes applied to each mark.
+    ///     Gets or sets additional CSS classes for each mark.
     /// </summary>
     public string? Mark { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes applied to each mark's label.
+    ///     Gets or sets additional CSS classes for each mark's label.
     /// </summary>
     public string? MarkLabel { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes applied to the container that holds the marks.
+    ///     Gets or sets additional CSS classes for the container that holds the marks.
     /// </summary>
     public string? Marks { get; set; }
 
     /// <summary>
-    ///     Additional CSS classes applied to the value shown beside the label.
+    ///     Gets or sets additional CSS classes for the value shown beside the label.
     /// </summary>
     public string? Value { get; set; }
 }

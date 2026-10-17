@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A row of emoji reactions or small actions, anchored to an edge of the bubble.
+///     Renders a row of emoji reactions or small actions on an edge of a bubble.
 /// </summary>
 [HtmlTargetElement("sa-bubble-reactions")]
 public class BubbleReactionsTagHelper : StellarAdminTagHelperBase
@@ -21,23 +21,26 @@ public class BubbleReactionsTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The horizontal edge of the bubble the reactions row is anchored to.
+    ///     Gets or sets the horizontal edge of the bubble that the reactions sit at.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BubbleReactionsAlign.End" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the edge. The default is
+    ///     <see cref="BubbleReactionsAlign.End" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public BubbleReactionsAlign? Align { get; set; }
 
     /// <summary>
-    ///     The vertical edge of the bubble the reactions row is anchored to.
+    ///     Gets or sets the vertical edge of the bubble that the reactions sit on.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BubbleReactionsSide.Bottom" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the edge. The default is
+    ///     <see cref="BubbleReactionsSide.Bottom" />.
+    /// </value>
     [HtmlAttributeName("side")]
     public BubbleReactionsSide? Side { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? BubbleReactionsAlign.End;

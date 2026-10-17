@@ -5,10 +5,14 @@
 /// </summary>
 public enum DisplayFieldOrientation
 {
-    /// <summary>The label sits above the value.</summary>
+    /// <summary>
+    ///     Places the label above the value.
+    /// </summary>
     Vertical,
 
-    /// <summary>The label sits beside the value.</summary>
+    /// <summary>
+    ///     Places the label beside the value.
+    /// </summary>
     Horizontal,
 }
 

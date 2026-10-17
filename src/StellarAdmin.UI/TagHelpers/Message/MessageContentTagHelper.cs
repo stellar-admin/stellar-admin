@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The column holding a message's header, message surface and footer.
+///     Renders the column that holds a message's header, body and footer.
 /// </summary>
 [HtmlTargetElement("sa-message-content")]
 public class MessageContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of an alert dialog.
+///     Specifies the size of an alert dialog.
 /// </summary>
 public enum AlertDialogSize
 {
-    /// <summary>The standard alert dialog size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A compact alert dialog size.</summary>
+    /// <summary>
+    ///     A compact size.
+    /// </summary>
     Small,
 }
 

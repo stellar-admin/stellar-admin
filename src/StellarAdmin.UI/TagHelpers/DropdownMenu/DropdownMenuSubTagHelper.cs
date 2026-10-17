@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Wraps a submenu, pairing a <c>sa-dropdown-menu-sub-trigger</c> with its
-///     <c>sa-dropdown-menu-sub-content</c> and generating the shared id that links them. Set
-///     <c>id</c> here, not on the sub-content, to choose that id.
+///     Renders a submenu, which pairs an <c>sa-dropdown-menu-sub-trigger</c> with its
+///     <c>sa-dropdown-menu-sub-content</c>.
 /// </summary>
+/// <remarks>
+///     Set <c>id</c> here, not on the content, to choose the submenu's id.
+/// </remarks>
 [HtmlTargetElement("sa-dropdown-menu-sub")]
 public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var subId =

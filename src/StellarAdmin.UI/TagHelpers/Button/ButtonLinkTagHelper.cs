@@ -4,36 +4,51 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders an anchor element styled as a button, with routing support.
+///     Renders a link that looks like a button.
 /// </summary>
+/// <remarks>
+///     Set <c>href</c> or the <c>asp-*</c> routing attributes.
+/// </remarks>
 [HtmlTargetElement("sa-button-link")]
 public class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ButtonLinkTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">
+    ///     The generator that builds the link's URL from the routing attributes.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public ButtonLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
     /// <summary>
-    ///     The size of the button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.Default" />
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The button variant.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ButtonVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? ButtonSize.Default;

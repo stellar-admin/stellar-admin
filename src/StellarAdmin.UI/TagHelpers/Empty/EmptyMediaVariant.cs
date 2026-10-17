@@ -5,10 +5,14 @@
 /// </summary>
 public enum EmptyMediaVariant
 {
-    /// <summary>The default media style, for illustrations or images.</summary>
+    /// <summary>
+    ///     Shows the media as is, for illustrations or images.
+    /// </summary>
     Default,
 
-    /// <summary>A style suited to a single icon, rendered within a muted container.</summary>
+    /// <summary>
+    ///     Shows a single icon in a muted container.
+    /// </summary>
     Icon,
 }
 

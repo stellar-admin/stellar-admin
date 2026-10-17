@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A small label used to highlight status, counts, or categories.
+///     Renders a small label that highlights a status, count or category.
 /// </summary>
 [HtmlTargetElement("sa-badge")]
 public class BadgeTagHelper : StellarAdminTagHelperBase
@@ -19,14 +19,16 @@ public class BadgeTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The visual style of the badge.
+    ///     Gets or sets the visual style of the badge.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BadgeVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="BadgeVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public BadgeVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? BadgeVariant.Default;

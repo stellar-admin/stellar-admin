@@ -4,99 +4,133 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A responsive data table, rendered as a <c>&lt;table&gt;</c> inside a scrollable
-///     container. Compose it with the header, body, footer, row, head, cell, and caption
-///     subcomponents. Set <c>selection</c> or <c>row-details</c> to add row selection or
-///     expandable row details: the table is then wrapped in the <c>sel-table</c> web
-///     component, which receives the table's <c>id</c> and other attributes.
+///     Renders a table in a container that scrolls sideways when the table is too wide.
 /// </summary>
+/// <remarks>
+///     Build the table from the header, body, footer, row, head, cell and caption tag helpers.
+///     The <c>class</c> attribute applies to the <c>&lt;table&gt;</c> element, and other
+///     attributes, such as <c>id</c>, apply to the element around it. Row selection and row
+///     details require <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-table")]
 public class TableTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether clicking anywhere in a row toggles its details. Clicks on links, buttons and
-    ///     form controls keep their own behavior. Applies with <c>row-details</c>.
+    ///     Gets or sets a value that indicates whether clicking anywhere in a row toggles its
+    ///     details.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if a click anywhere in the row toggles its details; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Clicks on links, buttons and form controls keep their own behavior. Applies only with
+    ///     <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-click")]
     public bool? RowClick { get; set; }
 
     /// <summary>
-    ///     Whether details animate open and closed. Animation is always off when the user
-    ///     prefers reduced motion. Applies with <c>row-details</c>.
+    ///     Gets or sets a value that indicates whether row details animate open and closed.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if details animate; otherwise, <see langword="false" />. The
+    ///     default is <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>.
+    ///     Details don't animate when the user prefers reduced motion. Applies only with
+    ///     <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-detail-animate")]
     public bool? RowDetailAnimate { get; set; }
 
     /// <summary>
-    ///     The line between an expanded row and its details. Applies with <c>row-details</c>.
+    ///     Gets or sets the line between an expanded row and its details.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the line. The default is
+    ///     <see cref="TableRowDetailDivider.Inset" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailDivider.Inset" />.
+    ///     Applies only with <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-detail-divider")]
     public TableRowDetailDivider? RowDetailDivider { get; set; }
 
     /// <summary>
-    ///     How an expanded row and its details are set apart from the rows around them.
-    ///     Applies with <c>row-details</c>.
+    ///     Gets or sets how an expanded row and its details are set apart from the rows around them.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the emphasis. The default is
+    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailEmphasis.Band" />.
+    ///     Applies only with <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-detail-emphasis")]
     public TableRowDetailEmphasis? RowDetailEmphasis { get; set; }
 
     /// <summary>
-    ///     How many rows can be expanded at once. Applies with <c>row-details</c>.
+    ///     Gets or sets how many rows can be expanded at once.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies how many rows can be expanded. The default
+    ///     is <see cref="TableRowDetailExpandMode.Multiple" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailExpandMode.Multiple" />.
+    ///     Applies only with <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-detail-expand-mode")]
     public TableRowDetailExpandMode? RowDetailExpandMode { get; set; }
 
     /// <summary>
-    ///     Where the content of a row's details starts. Applies with <c>row-details</c>.
+    ///     Gets or sets where the content of a row's details starts.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies where the content starts. The default is
+    ///     <see cref="TableRowDetailInset.Aligned" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailInset.Aligned" />.
+    ///     Applies only with <c>row-details</c>.
     /// </remarks>
     [HtmlAttributeName("row-detail-inset")]
     public TableRowDetailInset? RowDetailInset { get; set; }
 
     /// <summary>
-    ///     Lets rows expand to show details. Place an <c>sa-table-row-detail</c> after each
-    ///     expandable row and an <c>sa-table-row-detail-toggle</c> in a cell of that row.
-    ///     Bubbling <c>rowdetailexpand</c> and <c>rowdetailcollapse</c> events are raised
-    ///     on the detail row, so htmx attributes on an <c>sa-table-row-detail</c> can load its
-    ///     details with <c>hx-trigger="rowdetailexpand once"</c>.
+    ///     Gets or sets a value that indicates whether rows can expand to show details.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if rows can expand; otherwise, <see langword="false" />. The
+    ///     default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Place a <c>&lt;sa-table-row-detail&gt;</c> after each row that can expand, and a
+    ///     <c>&lt;sa-table-row-detail-toggle&gt;</c> in a cell of that row. To load details when
+    ///     they expand, add htmx attributes with <c>hx-trigger="rowdetailexpand once"</c> to the
+    ///     <c>&lt;sa-table-row-detail&gt;</c>.
     /// </remarks>
     [HtmlAttributeName("row-details")]
     public bool? RowDetails { get; set; }
 
     /// <summary>
-    ///     Adds row selection: an <c>sa-table-selection-head</c> in the header row selects or
-    ///     clears every row, and an <c>sa-table-selection-cell</c> in each body row selects that
-    ///     row. Selected rows get <c>data-state="selected"</c>, and the selection posts as
-    ///     ordinary checkbox form data. Read the current selection from the
-    ///     <c>sel-table</c> element's <c>selectedValues</c> property, or listen for its bubbling
-    ///     <c>rowselectionchange</c> event (with the values in <c>event.detail.values</c>).
+    ///     Gets or sets a value that indicates whether rows can be selected.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if rows can be selected; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Place a <c>&lt;sa-table-selection-head&gt;</c> in the header row to select or clear
+    ///     every row, and a <c>&lt;sa-table-selection-cell&gt;</c> in each body row. Selected rows
+    ///     get <c>data-state="selected"</c>, and the selection posts as checkbox form data. In
+    ///     script, read the <c>selectedValues</c> property of the <c>sel-table</c> element, or
+    ///     listen for its bubbling <c>rowselectionchange</c> event, whose
+    ///     <c>event.detail.values</c> holds the selected values.
     /// </remarks>
     [HtmlAttributeName("selection")]
     public bool? Selection { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveRowDetails = RowDetails ?? false;

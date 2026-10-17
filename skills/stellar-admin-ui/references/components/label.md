@@ -6,7 +6,7 @@ generated: true
 
 # Label
 
-A caption for a form control, optionally bound to a model expression via `asp-for`.
+Renders a label for a form control.
 
 ## Attributes
 

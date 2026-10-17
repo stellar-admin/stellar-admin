@@ -6,16 +6,16 @@ generated: true
 
 # Accordion
 
-A vertically stacked set of collapsible items, each of which can be expanded to reveal its content.
+Renders a vertical stack of items that each expand to show their content.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-accordion>` | A vertically stacked set of collapsible items, each of which can be expanded to reveal its content. |
-| `<sa-accordion-item>` | A single collapsible item within an accordion, rendered as a native `<details>` element with a title and content region. |
-| `<sa-accordion-item-content>` | The content region of an accordion item, revealed when the item is expanded. |
-| `<sa-accordion-item-title>` | The clickable header of an accordion item that toggles the item open and closed. |
+| `<sa-accordion>` | Renders a vertical stack of items that each expand to show their content. |
+| `<sa-accordion-item>` | Renders a collapsible item in an accordion. |
+| `<sa-accordion-item-content>` | Renders the content of an accordion item, shown when the item is expanded. |
+| `<sa-accordion-item-title>` | Renders the title of an accordion item, which expands and collapses the item when clicked. |
 
 ## Examples
 

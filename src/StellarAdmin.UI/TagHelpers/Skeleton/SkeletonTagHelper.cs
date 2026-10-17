@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A placeholder that shows an animated pulsing shape while content is loading.
+///     Renders a pulsing placeholder shape to show while content loads.
 /// </summary>
+/// <remarks>
+///     Set the size and shape with the <c>class</c> attribute.
+/// </remarks>
 [HtmlTargetElement("sa-skeleton")]
 public class SkeletonTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -3,20 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders a divider between items within a button group.
+///     Renders a separator between items in a button group.
 /// </summary>
 [HtmlTargetElement("sa-button-group-separator")]
 public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The orientation of the separator.
+    ///     Gets or sets the orientation of the separator.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonGroupSeparatorOrientation.Vertical" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the orientation. The default is
+    ///     <see cref="ButtonGroupSeparatorOrientation.Vertical" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public ButtonGroupSeparatorOrientation? Orientation { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation switch

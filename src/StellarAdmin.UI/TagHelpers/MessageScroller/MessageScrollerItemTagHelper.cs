@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single row of a message scroller's transcript, wrapping one message.
+///     Renders a row of a message scroller's transcript, which holds one message.
 /// </summary>
 [HtmlTargetElement("sa-message-scroller-item")]
 public class MessageScrollerItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

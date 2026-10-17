@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Custom content for the data grid's empty state, shown as a single full-width row when
-///     the grid has no items. When omitted, the grid renders a default "No records found."
-///     message.
+///     Renders custom content in a full-width row when the data grid has no items.
 /// </summary>
+/// <remarks>
+///     Without it, the grid shows "No records found.".
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-empty", ParentTag = "sa-data-grid")]
 public class DataGridEmptyTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // Renders content and stores it on the grid context to allow the grid to

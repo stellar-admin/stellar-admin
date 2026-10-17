@@ -6,7 +6,7 @@ generated: true
 
 # Spinner
 
-An animated spinning icon that indicates a loading or busy state.
+Renders a spinning icon that shows that something is loading.
 
 ## Attributes
 

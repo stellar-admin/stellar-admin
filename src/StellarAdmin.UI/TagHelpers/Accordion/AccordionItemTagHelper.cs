@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single collapsible item within an accordion, rendered as a native
-///     <c>&lt;details&gt;</c> element with a title and content region.
+///     Renders a collapsible item in an accordion.
 /// </summary>
+/// <remarks>
+///     The item renders as a native <c>&lt;details&gt;</c> element. Add the <c>open</c> attribute
+///     to expand it when the page loads.
+/// </remarks>
 [HtmlTargetElement("sa-accordion-item")]
 public class AccordionItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "details";

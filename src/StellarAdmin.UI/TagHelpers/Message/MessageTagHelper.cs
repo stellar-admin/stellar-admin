@@ -3,20 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single message in a conversation, laying out its avatar, content, header and footer.
+///     Renders a message in a conversation, with its avatar, content, header and footer.
 /// </summary>
 [HtmlTargetElement("sa-message")]
 public class MessageTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The side of the conversation the message sits on.
+    ///     Gets or sets the side of the conversation that the message sits on.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="MessageAlign.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the side. The default is
+    ///     <see cref="MessageAlign.Start" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public MessageAlign? Align { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? MessageAlign.Start;

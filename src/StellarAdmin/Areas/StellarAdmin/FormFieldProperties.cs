@@ -3,37 +3,43 @@ using StellarAdmin.Resources.Editors;
 namespace StellarAdmin.Areas.StellarAdmin;
 
 /// <summary>
-///     The configured properties available to a form field's editor.
+///     Represents the settings of a form field that its editor template can use.
 /// </summary>
 public sealed record FormFieldProperties
 {
     /// <summary>
-    ///     The help text shown with the field, or null to use the property's description.
+    ///     Gets the help text shown with the field, or <see langword="null" /> to use the
+    ///     property's description.
     /// </summary>
     public string? Description { get; init; }
 
     /// <summary>
-    ///     Data prepared for this editor on the current request.
+    ///     Gets the data prepared for the editor on the current request, or
+    ///     <see langword="null" /> when there is none.
     /// </summary>
     public object? EditorData { get; init; }
 
     /// <summary>
-    ///     The editor's configuration.
+    ///     Gets the editor's settings.
     /// </summary>
     public FieldEditor Editor { get; init; } = new();
 
     /// <summary>
-    ///     The field's property path, or null when the editor is not rendered for a configured field.
+    ///     Gets the property path of the field, or <see langword="null" /> when the editor isn't
+    ///     rendered for a configured field.
     /// </summary>
     public string? FieldName { get; init; }
 
     /// <summary>
-    ///     Whether the field is read-only.
+    ///     Gets a value that indicates whether the field is read-only.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the field is read-only; otherwise, <see langword="false" />.
+    /// </value>
     public bool IsReadOnly { get; init; }
 
     /// <summary>
-    ///     The field label, or null to use the property's display name.
+    ///     Gets the field's label, or <see langword="null" /> to use the property's display name.
     /// </summary>
     public string? Title { get; init; }
 }

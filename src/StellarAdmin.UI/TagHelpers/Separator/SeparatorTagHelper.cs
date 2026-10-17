@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A thin dividing line between sections of content, rendered as a <c>&lt;div&gt;</c>
-///     with <c>role="separator"</c>.
+///     Renders a thin line between sections of content.
 /// </summary>
 [HtmlTargetElement("sa-separator")]
 public class SeparatorTagHelper : StellarAdminTagHelperBase
@@ -16,14 +15,16 @@ public class SeparatorTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The orientation of the separator.
+    ///     Gets or sets the orientation of the separator.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SeparatorOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the orientation. The default is
+    ///     <see cref="SeparatorOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public SeparatorOrientation? Orientation { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? SeparatorOrientation.Horizontal;

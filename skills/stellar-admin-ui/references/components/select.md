@@ -6,7 +6,7 @@ generated: true
 
 # Select
 
-A styled dropdown for choosing a single option, wrapping a native `<select>` element with a custom chevron icon.
+Renders a styled native `<select>` for choosing an option.
 
 ## Attributes
 
@@ -14,7 +14,7 @@ A styled dropdown for choosing a single option, wrapping a native `<select>` ele
 |-----------|------|---------|--------|
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
 | `size` | `SelectSize` | `Default` | `Default`, `Small` |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

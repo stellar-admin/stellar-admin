@@ -1,25 +1,26 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     The user menu's log out item, shown after the other items. It logs the user out by posting a form.
+///     Represents the user menu's log out item.
 /// </summary>
+/// <remarks>
+///     The item is shown after the other items. It logs the user out by posting a form.
+/// </remarks>
 public sealed class LogoutUserMenuItem
 {
     /// <summary>
-    ///     The icon shown before the text, or <c>null</c> for none.
+    ///     Gets the name of the icon shown before the text, or <see langword="null" /> for none.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>log-out</c>.
-    /// </remarks>
     public string? Icon { get; }
 
     /// <summary>
-    ///     The app-relative path the form posts to, or <c>null</c> for the admin panel's logout endpoint.
+    ///     Gets the app-relative path that the form posts to, or <see langword="null" /> for the
+    ///     admin panel's logout endpoint.
     /// </summary>
     public string? Path { get; }
 
     /// <summary>
-    ///     The item text.
+    ///     Gets the text of the item.
     /// </summary>
     public string Text => "Log out";
 

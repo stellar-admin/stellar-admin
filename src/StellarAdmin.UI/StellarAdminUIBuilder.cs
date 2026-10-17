@@ -5,32 +5,38 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Configures the StellarAdmin UI services: icons, menu defaults and form defaults.
+///     Configures the StellarAdmin tag helpers, including icons, menus and forms.
 /// </summary>
 public sealed class StellarAdminUIBuilder
 {
     /// <summary>
-    ///     Gets the services collection.
+    ///     Gets the service collection that the builder configures.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public IServiceCollection Services { get; }
 
     /// <summary>
-    ///     Creates a new instance of <see cref="StellarAdminUIBuilder" />.
+    ///     Initializes a new instance of the <see cref="StellarAdminUIBuilder" /> class.
     /// </summary>
-    /// <param name="services">The services collection.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="services">The service collection to configure.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="services" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminUIBuilder(IServiceCollection services)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
     }
 
     /// <summary>
-    ///     Adds a custom icon, replacing any icon already registered with the same name.
+    ///     Adds an icon.
     /// </summary>
-    /// <param name="name">The name of the icon.</param>
-    /// <param name="iconDefinition">The icon definition.</param>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
+    /// <remarks>
+    ///     The icon replaces any icon already registered with the same name. Names aren't case
+    ///     sensitive.
+    /// </remarks>
+    /// <param name="name">The name that components use to render the icon.</param>
+    /// <param name="iconDefinition">The icon to add.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public StellarAdminUIBuilder AddIcon(string name, IconDefinition iconDefinition)
     {
         Services.Configure<IconOptions>(options => options.AddIcon(name, iconDefinition));
@@ -39,10 +45,13 @@ public sealed class StellarAdminUIBuilder
     }
 
     /// <summary>
-    ///     Registers a new icon pack.
+    ///     Adds the icons of an icon pack and its semantic icon mappings.
     /// </summary>
-    /// <typeparam name="TIconPack">The icon pack to register.</typeparam>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
+    /// <remarks>
+    ///     The pack's icons replace any icons already registered with the same names.
+    /// </remarks>
+    /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public StellarAdminUIBuilder AddIconPack<TIconPack>()
         where TIconPack : IIconPack, new()
     {
@@ -52,8 +61,17 @@ public sealed class StellarAdminUIBuilder
     }
 
     /// <summary>
-    ///     Registers an icon pack with the specified registration settings.
+    ///     Adds the icons of an icon pack, configured by a delegate.
     /// </summary>
+    /// <remarks>
+    ///     The pack's icons replace any icons already registered with the same names.
+    /// </remarks>
+    /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
+    /// <param name="configure">A delegate that configures how the icon pack is added.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminUIBuilder AddIconPack<TIconPack>(Action<IconPackOptions> configure)
         where TIconPack : IIconPack, new()
     {
@@ -67,6 +85,10 @@ public sealed class StellarAdminUIBuilder
     /// <summary>
     ///     Removes all registered icons and semantic icon mappings.
     /// </summary>
+    /// <remarks>
+    ///     Only icons added before this call are removed.
+    /// </remarks>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public StellarAdminUIBuilder ClearIcons()
     {
         Services.Configure<IconOptions>(options => options.ClearIcons());
@@ -75,8 +97,13 @@ public sealed class StellarAdminUIBuilder
     }
 
     /// <summary>
-    ///     Configures the application-wide defaults for forms.
+    ///     Configures the defaults for forms across the application.
     /// </summary>
+    /// <param name="configure">A delegate that configures the form defaults.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminUIBuilder ConfigureForms(Action<StellarAdminFormsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -89,12 +116,13 @@ public sealed class StellarAdminUIBuilder
     }
 
     /// <summary>
-    ///     Configures the application-wide defaults for floating menu surfaces (color,
-    ///     appearance and accent).
+    ///     Configures the look of dropdown menus across the application.
     /// </summary>
-    /// <param name="configure">A callback for configuring <see cref="StellarAdminUIMenuOptions" />.</param>
-    /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="configure">A delegate that configures the menu options.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminUIBuilder ConfigureMenu(Action<StellarAdminUIMenuOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);

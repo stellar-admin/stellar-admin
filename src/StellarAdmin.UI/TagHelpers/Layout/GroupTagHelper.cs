@@ -3,39 +3,42 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A horizontal flex layout that arranges its children in a row, with configurable
-///     alignment, spacing, and justification.
+///     Renders a layout that arranges its children in a row.
 /// </summary>
 [HtmlTargetElement("sa-group")]
 public class GroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     How the children are aligned along the cross axis (vertically).
+    ///     Gets or sets how the children align vertically.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="GroupAlign.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the alignment. The default is
+    ///     <see cref="GroupAlign.Start" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public GroupAlign? Align { get; set; }
 
     /// <summary>
-    ///     The horizontal spacing between children.
+    ///     Gets or sets the space between the children.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="GroupGap.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the space. The default is
+    ///     <see cref="GroupGap.Default" />.
+    /// </value>
     [HtmlAttributeName("gap")]
     public GroupGap? Gap { get; set; }
 
     /// <summary>
-    ///     How the children are distributed along the main axis (horizontally).
+    ///     Gets or sets how the children are spread horizontally.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="GroupJustify.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the spread. The default is
+    ///     <see cref="GroupJustify.Start" />.
+    /// </value>
     [HtmlAttributeName("justify")]
     public GroupJustify? Justify { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? GroupAlign.Start;

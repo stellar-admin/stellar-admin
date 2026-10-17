@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A group of <c>sa-input-otp-slot</c>s within a <c>sa-input-otp</c>. Groups are separated by
-///     a <c>sa-input-otp-separator</c>.
+///     Renders a group of slots in an <c>&lt;sa-input-otp&gt;</c>.
 /// </summary>
+/// <remarks>
+///     Separate groups with an <c>&lt;sa-input-otp-separator&gt;</c>.
+/// </remarks>
 [HtmlTargetElement("sa-input-otp-group")]
 public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var userClass = output.GetUserSuppliedClass();

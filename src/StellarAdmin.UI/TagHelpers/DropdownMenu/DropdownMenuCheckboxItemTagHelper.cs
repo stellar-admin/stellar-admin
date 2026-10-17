@@ -6,8 +6,7 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A menu item with a checkable state, rendered as a
-///     <c>&lt;div role="menuitemcheckbox"&gt;</c> with a check indicator.
+///     Renders a dropdown menu item that can be checked and unchecked.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-checkbox-item")]
 public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
@@ -15,38 +14,55 @@ public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     Whether the item is checked.
+    ///     Gets or sets a value that indicates whether the item is checked.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the item is checked; otherwise, <see langword="false" />. The
+    ///     default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("checked")]
     public bool? Checked { get; set; }
 
     /// <summary>
-    ///     Whether clicking the item closes the menu. Checkbox items stay open on click unless this
-    ///     is set.
+    ///     Gets or sets a value that indicates whether clicking the item closes the menu.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if clicking the item closes the menu; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("close-on-click")]
     public bool? CloseOnClick { get; set; }
 
     /// <summary>
-    ///     Whether the item is disabled.
+    ///     Gets or sets a value that indicates whether the item is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item is disabled and can't be chosen; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Whether the item is inset, aligning its text with items that have a leading icon.
+    ///     Gets or sets a value that indicates whether the item is inset.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item's text aligns with items that have a leading icon;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DropdownMenuCheckboxItemTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the check mark.</param>
     public DropdownMenuCheckboxItemTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var isChecked = Checked ?? false;

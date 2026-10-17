@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a <c>&lt;sa-select&gt;</c>.
+///     Specifies the size of a <c>&lt;sa-select&gt;</c>.
 /// </summary>
 public enum SelectSize
 {
-    /// <summary>The default select size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A smaller, more compact select.</summary>
+    /// <summary>
+    ///     A smaller, more compact size.
+    /// </summary>
     Small,
 }
 

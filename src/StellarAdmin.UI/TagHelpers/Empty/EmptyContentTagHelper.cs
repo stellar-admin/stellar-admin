@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The content region of an empty state; typically contains actions or supplementary
-///     elements below the header.
+///     Renders the content of an empty state below its header, such as actions.
 /// </summary>
 [HtmlTargetElement("sa-empty-content")]
 public class EmptyContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

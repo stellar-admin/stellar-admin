@@ -1,8 +1,11 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     The destination of a sidebar link.
+///     Represents the destination of a sidebar link.
 /// </summary>
+/// <remarks>
+///     Create targets with the static methods of this class.
+/// </remarks>
 public abstract class SidebarLinkTarget
 {
     private protected SidebarLinkTarget() { }
@@ -10,9 +13,15 @@ public abstract class SidebarLinkTarget
     /// <summary>
     ///     Returns a target for an MVC controller action outside any area.
     /// </summary>
-    /// <param name="action">The action name.</param>
-    /// <param name="controller">The controller name.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="action">The name of the action.</param>
+    /// <param name="controller">The name of the controller.</param>
+    /// <returns>The target.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="action" /> or <paramref name="controller" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="action" /> or <paramref name="controller" /> is empty or white space.
+    /// </exception>
     public static SidebarLinkTarget Action(string action, string controller)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(action);
@@ -24,10 +33,18 @@ public abstract class SidebarLinkTarget
     /// <summary>
     ///     Returns a target for an MVC controller action in an area.
     /// </summary>
-    /// <param name="action">The action name.</param>
-    /// <param name="controller">The controller name.</param>
-    /// <param name="area">The area name.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="action">The name of the action.</param>
+    /// <param name="controller">The name of the controller.</param>
+    /// <param name="area">The name of the area.</param>
+    /// <returns>The target.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="action" />, <paramref name="controller" /> or <paramref name="area" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="action" />, <paramref name="controller" /> or <paramref name="area" />
+    ///     is empty or white space.
+    /// </exception>
     public static SidebarLinkTarget Action(string action, string controller, string area)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(action);
@@ -40,8 +57,14 @@ public abstract class SidebarLinkTarget
     /// <summary>
     ///     Returns a target for a Razor Page outside any area.
     /// </summary>
-    /// <param name="page">The page name, e.g. <c>/Reports/Index</c>.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="page">The name of the page, such as <c>/Reports/Index</c>.</param>
+    /// <returns>The target.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="page" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="page" /> is empty or white space.
+    /// </exception>
     public static SidebarLinkTarget Page(string page)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(page);
@@ -52,9 +75,15 @@ public abstract class SidebarLinkTarget
     /// <summary>
     ///     Returns a target for a Razor Page in an area.
     /// </summary>
-    /// <param name="page">The page name, e.g. <c>/Reports/Index</c>.</param>
-    /// <param name="area">The area name.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="page">The name of the page, such as <c>/Reports/Index</c>.</param>
+    /// <param name="area">The name of the area.</param>
+    /// <returns>The target.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="page" /> or <paramref name="area" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="page" /> or <paramref name="area" /> is empty or white space.
+    /// </exception>
     public static SidebarLinkTarget Page(string page, string area)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(page);
@@ -66,8 +95,14 @@ public abstract class SidebarLinkTarget
     /// <summary>
     ///     Returns a target for a URL.
     /// </summary>
-    /// <param name="url">An absolute URL, or an app-relative path such as <c>~/reports</c>.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="url">The absolute URL or app-relative path, such as <c>~/reports</c>.</param>
+    /// <returns>The target.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="url" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="url" /> is empty or white space.
+    /// </exception>
     public static SidebarLinkTarget Url(string url)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(url);

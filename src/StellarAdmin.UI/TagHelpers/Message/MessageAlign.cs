@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The side of the conversation a message sits on.
+///     Specifies the side of the conversation that a message sits on.
 /// </summary>
 public enum MessageAlign
 {
-    /// <summary>Aligns the message to the start of the conversation, for incoming messages.</summary>
+    /// <summary>
+    ///     The start of the conversation, for incoming messages.
+    /// </summary>
     Start,
 
-    /// <summary>Aligns the message to the end of the conversation, for outgoing messages.</summary>
+    /// <summary>
+    ///     The end of the conversation, for outgoing messages.
+    /// </summary>
     End,
 }
 

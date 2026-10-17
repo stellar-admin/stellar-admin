@@ -6,7 +6,7 @@ generated: true
 
 # CheckboxGroup
 
-A group of checkbox options bound to a collection.
+Renders a group of checkboxes that posts a set of values.
 
 <!-- structure:begin -->
 ## When to use
@@ -37,9 +37,9 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-checkbox-group>` | A group of checkbox options bound to a collection. |
-| `<sa-checkbox-group-item>` | An option in a checkbox group. |
-| `<sa-checkbox-group-item-media>` | The media of a checkbox group option, such as an icon, avatar or image. It sits before the option's text, or leads the card in the choice card variant. |
+| `<sa-checkbox-group>` | Renders a group of checkboxes that posts a set of values. |
+| `<sa-checkbox-group-item>` | Renders an option in a checkbox group. |
+| `<sa-checkbox-group-item-media>` | Renders the media of a checkbox group option, such as an icon, avatar or image. |
 
 ## Attributes
 
@@ -51,13 +51,13 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 | `values` | `IEnumerable<string>` | — | — |
 | `variant` | `CheckboxGroupVariant` | `Default` | `Default`, `ChoiceCard` |
 | `columns` | `int` | — | — |
-| `columns-base` | `int` | — | — |
+| `columns-base` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `asp-items` | `IEnumerable<SelectListItem>` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -80,7 +80,7 @@ Use `[MinLength(1)]` to reject an empty collection on the server (`[Required]` a
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `description` | `string` | — | — |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

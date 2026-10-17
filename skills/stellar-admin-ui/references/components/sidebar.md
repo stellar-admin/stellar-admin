@@ -6,7 +6,7 @@ generated: true
 
 # Sidebar
 
-The sidebar panel itself, hosting its header, content, and footer. On desktop it renders as a fixed panel that can collapse; on mobile it becomes an off-canvas drawer.
+Renders a sidebar that holds a header, content and footer.
 
 <!-- structure:begin -->
 
@@ -40,26 +40,26 @@ sa-sidebar-wrapper
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-sidebar>` | The sidebar panel itself, hosting its header, content, and footer. On desktop it renders as a fixed panel that can collapse; on mobile it becomes an off-canvas drawer. |
-| `<sa-sidebar-content>` | The main scrollable content region of the sidebar; holds the sidebar's groups and menus. |
-| `<sa-sidebar-footer>` | The footer region of the sidebar, pinned below its content; typically holds a user menu or secondary actions. |
-| `<sa-sidebar-group>` | A titled section within the sidebar that groups related menu items together. |
-| `<sa-sidebar-group-content>` | The content region of a sidebar group, wrapping the group's menu. |
-| `<sa-sidebar-group-label>` | The label heading for a sidebar group. |
-| `<sa-sidebar-header>` | The header region of the sidebar, pinned above its content; typically holds branding or a workspace switcher. |
-| `<sa-sidebar-inset>` | The main content area shown alongside the sidebar, rendered as a `<main>` element. |
-| `<sa-sidebar-menu>` | A list of menu items within a sidebar group, rendered as a list. |
-| `<sa-sidebar-menu-badge>` | A small badge, typically a count, shown at the end of a sidebar menu item; hidden while the sidebar is collapsed to icons. |
-| `<sa-sidebar-menu-button>` | A button rendered as an entry within a sidebar menu item. |
-| `<sa-sidebar-menu-item>` | A single item within a sidebar menu, rendered as a list item. |
-| `<sa-sidebar-menu-link>` | An anchor rendered as an entry within a sidebar menu item, with routing support; marks itself active when it matches the current route. |
-| `<sa-sidebar-menu-sub>` | A nested submenu within a sidebar menu item, rendered as a list. |
-| `<sa-sidebar-menu-sub-button>` | A button rendered as an entry within a nested sidebar submenu. |
-| `<sa-sidebar-menu-sub-item>` | A single item within a nested sidebar submenu, rendered as a list item. |
-| `<sa-sidebar-menu-sub-link>` | An anchor rendered as an entry within a nested sidebar submenu, with routing support; marks itself active when it matches the current route. |
-| `<sa-sidebar-separator>` | A horizontal separator used to divide sections of the sidebar. |
-| `<sa-sidebar-trigger>` | A button that toggles the open or collapsed state of its parent sidebar. |
-| `<sa-sidebar-wrapper>` | The outermost sidebar container that provides layout and shared state for the sidebar and its inset content. Renders the `sel-sidebar` web component that nested triggers and the backdrop toggle. |
+| `<sa-sidebar>` | Renders a sidebar that holds a header, content and footer. |
+| `<sa-sidebar-content>` | Renders the scrollable content of a sidebar. |
+| `<sa-sidebar-footer>` | Renders the footer of a sidebar, below its content. |
+| `<sa-sidebar-group>` | Renders a section of a sidebar that groups related menu items. |
+| `<sa-sidebar-group-content>` | Renders the content of a sidebar group, which holds the group's menu. |
+| `<sa-sidebar-group-label>` | Renders the label of a sidebar group. |
+| `<sa-sidebar-header>` | Renders the header of a sidebar, above its content. |
+| `<sa-sidebar-inset>` | Renders the main content area beside a sidebar, as a `<main>` element. |
+| `<sa-sidebar-menu>` | Renders a menu in a sidebar, as a list of menu items. |
+| `<sa-sidebar-menu-badge>` | Renders a small badge, such as a count, at the end of a sidebar menu item. |
+| `<sa-sidebar-menu-button>` | Renders a button in a sidebar menu item. |
+| `<sa-sidebar-menu-item>` | Renders an item in a sidebar menu, as a list item. |
+| `<sa-sidebar-menu-link>` | Renders a link in a sidebar menu item. |
+| `<sa-sidebar-menu-sub>` | Renders a submenu in a sidebar menu item, as a list. |
+| `<sa-sidebar-menu-sub-button>` | Renders a button in a sidebar submenu. |
+| `<sa-sidebar-menu-sub-item>` | Renders an item in a sidebar submenu, as a list item. |
+| `<sa-sidebar-menu-sub-link>` | Renders a link in a sidebar submenu. |
+| `<sa-sidebar-separator>` | Renders a horizontal line that divides sections of a sidebar. |
+| `<sa-sidebar-trigger>` | Renders a button that expands and collapses the sidebar. |
+| `<sa-sidebar-wrapper>` | Renders the container that lays out a sidebar beside its main content. |
 
 ## Attributes
 

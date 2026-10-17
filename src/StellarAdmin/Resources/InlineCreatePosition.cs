@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     Where the index grid adds a new row for inline create.
+///     Specifies where the index grid adds a new row for inline create.
 /// </summary>
 public enum InlineCreatePosition
 {

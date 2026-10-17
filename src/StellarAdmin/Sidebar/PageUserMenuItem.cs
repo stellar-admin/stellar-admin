@@ -1,27 +1,27 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     A user menu item that links to a Razor Page.
+///     Represents a user menu item that links to a Razor Page.
 /// </summary>
 public sealed class PageUserMenuItem : UserMenuItem
 {
     /// <summary>
-    ///     The area name, or <c>null</c> for a page outside any area.
+    ///     Gets the name of the area, or <see langword="null" /> for a page outside any area.
     /// </summary>
     public string? Area { get; }
 
     /// <summary>
-    ///     The icon shown before the text, or <c>null</c> for none.
+    ///     Gets the name of the icon shown before the text, or <see langword="null" /> for none.
     /// </summary>
     public string? Icon { get; internal set; }
 
     /// <summary>
-    ///     The page name.
+    ///     Gets the name of the page.
     /// </summary>
     public string PageName { get; }
 
     /// <summary>
-    ///     The item text.
+    ///     Gets the text of the item.
     /// </summary>
     public string Text { get; }
 

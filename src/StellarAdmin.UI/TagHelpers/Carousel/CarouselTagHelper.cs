@@ -3,20 +3,25 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A scrollable collection of slides with optional navigation controls.
+///     Renders a scrollable set of slides with optional navigation controls.
 /// </summary>
+/// <remarks>
+///     Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-carousel")]
 public class CarouselTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The direction in which items scroll.
+    ///     Gets or sets the direction in which the slides scroll.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to Horizontal.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the scroll direction. The default is
+    ///     <see cref="CarouselOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public CarouselOrientation? Orientation { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? CarouselOrientation.Horizontal;

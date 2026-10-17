@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups related buttons together as a single visual unit.
+///     Renders related buttons as a single unit.
 /// </summary>
 [HtmlTargetElement("sa-button-group")]
 public class ButtonGroupTagHelper : StellarAdminTagHelperBase
@@ -16,14 +16,16 @@ public class ButtonGroupTagHelper : StellarAdminTagHelperBase
         };
 
     /// <summary>
-    ///     The direction in which the group lays out its items.
+    ///     Gets or sets the direction in which the group arranges its items.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonGroupOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the direction. The default is
+    ///     <see cref="ButtonGroupOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public ButtonGroupOrientation? Orientation { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? ButtonGroupOrientation.Horizontal;

@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups related fields under a common legend, rendered as a <c>&lt;fieldset&gt;</c> element.
+///     Renders a group of related fields as a <c>&lt;fieldset&gt;</c> element.
 /// </summary>
+/// <remarks>
+///     Use an <c>&lt;sa-field-legend&gt;</c> to caption the group.
+/// </remarks>
 [HtmlTargetElement("sa-field-set")]
 public class FieldSetTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "fieldset";

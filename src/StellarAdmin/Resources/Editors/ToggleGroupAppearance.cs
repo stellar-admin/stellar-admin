@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     How a toggle group editor displays its choices.
+///     Specifies how a toggle group editor displays its choices.
 /// </summary>
 public enum ToggleGroupAppearance
 {

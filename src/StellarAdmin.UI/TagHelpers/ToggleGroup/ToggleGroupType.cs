@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Whether a toggle group allows one or many items to be selected.
+///     Specifies how many items of a toggle group can be selected.
 /// </summary>
 public enum ToggleGroupType
 {
-    /// <summary>Only one item can be selected at a time (radio-backed, scalar binding).</summary>
+    /// <summary>
+    ///     One item can be selected at a time, and the group binds a single value.
+    /// </summary>
     Single,
 
-    /// <summary>Any number of items can be selected (checkbox-backed, collection binding).</summary>
+    /// <summary>
+    ///     Any number of items can be selected, and the group binds a collection.
+    /// </summary>
     Multiple,
 }
 

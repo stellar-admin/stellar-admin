@@ -4,36 +4,49 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A link to a specific page within the pagination.
+///     Renders a pagination link to a page.
 /// </summary>
 [HtmlTargetElement("sa-pagination-link")]
 public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PaginationLinkTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that builds the link URL from the routing attributes.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public PaginationLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
     /// <summary>
-    ///     Whether this link represents the current page.
+    ///     Gets or sets a value that indicates whether the link is for the current page.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the link is for the current page; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     The current page's link is highlighted and announced to screen readers.
     /// </remarks>
     [HtmlAttributeName("active")]
     public bool? Active { get; set; }
 
     /// <summary>
-    ///     The size of the rendered pagination button.
+    ///     Gets or sets the size of the link.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveActive = Active ?? false;

@@ -1,9 +1,12 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     The logo in the sidebar header: an icon, an image beside the title, or a wordmark that
-///     replaces the title.
+///     Represents the logo in the sidebar header.
 /// </summary>
+/// <remarks>
+///     A logo is an icon or an image beside the title, or a wordmark image that replaces the
+///     title.
+/// </remarks>
 public abstract class BrandingLogo
 {
     private protected BrandingLogo() { }
@@ -11,8 +14,14 @@ public abstract class BrandingLogo
     /// <summary>
     ///     Returns a logo that shows an icon in an accent tile beside the title.
     /// </summary>
-    /// <param name="name">The icon name.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="name">The name of the icon.</param>
+    /// <returns>A logo that shows the icon.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="name" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="name" /> is empty or white space.
+    /// </exception>
     public static IconBrandingLogo Icon(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -23,8 +32,16 @@ public abstract class BrandingLogo
     /// <summary>
     ///     Returns a logo that shows a square image beside the title.
     /// </summary>
-    /// <param name="path">An absolute URL, or an app-relative path such as <c>~/img/logo.svg</c>.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="path">
+    ///     The absolute URL or app-relative path of the image, such as <c>~/img/logo.svg</c>.
+    /// </param>
+    /// <returns>A logo that shows the image.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> is empty or white space.
+    /// </exception>
     public static ImageBrandingLogo Image(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -33,11 +50,22 @@ public abstract class BrandingLogo
     }
 
     /// <summary>
-    ///     Returns a logo that shows a square image beside the title, with another image in dark mode.
+    ///     Returns a logo that shows a square image beside the title, with another image in dark
+    ///     mode.
     /// </summary>
-    /// <param name="path">An absolute URL, or an app-relative path such as <c>~/img/logo.svg</c>.</param>
-    /// <param name="darkPath">The image shown in dark mode.</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="path">
+    ///     The absolute URL or app-relative path of the image, such as <c>~/img/logo.svg</c>.
+    /// </param>
+    /// <param name="darkPath">
+    ///     The absolute URL or app-relative path of the image shown in dark mode.
+    /// </param>
+    /// <returns>A logo that shows the images.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> or <paramref name="darkPath" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> or <paramref name="darkPath" /> is empty or white space.
+    /// </exception>
     public static ImageBrandingLogo Image(string path, string darkPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -49,11 +77,20 @@ public abstract class BrandingLogo
     /// <summary>
     ///     Returns a logo that shows a wordmark image in place of the title.
     /// </summary>
+    /// <param name="path">
+    ///     The absolute URL or app-relative path of the image, such as <c>~/img/wordmark.svg</c>.
+    /// </param>
+    /// <returns>A logo that shows the wordmark.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> is empty or white space.
+    /// </exception>
     /// <remarks>
-    ///     The title remains the image's alternative text. A wordmark cannot be combined with a subtitle.
+    ///     The title becomes the image's alternative text. A wordmark can't be combined with a
+    ///     subtitle.
     /// </remarks>
-    /// <param name="path">An absolute URL, or an app-relative path such as <c>~/img/wordmark.svg</c>.</param>
-    /// <exception cref="ArgumentException"></exception>
     public static WordmarkBrandingLogo Wordmark(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -62,14 +99,26 @@ public abstract class BrandingLogo
     }
 
     /// <summary>
-    ///     Returns a logo that shows a wordmark image in place of the title, with another image in dark mode.
+    ///     Returns a logo that shows a wordmark image in place of the title, with another image in
+    ///     dark mode.
     /// </summary>
+    /// <param name="path">
+    ///     The absolute URL or app-relative path of the image, such as <c>~/img/wordmark.svg</c>.
+    /// </param>
+    /// <param name="darkPath">
+    ///     The absolute URL or app-relative path of the image shown in dark mode.
+    /// </param>
+    /// <returns>A logo that shows the wordmarks.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> or <paramref name="darkPath" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> or <paramref name="darkPath" /> is empty or white space.
+    /// </exception>
     /// <remarks>
-    ///     The title remains the image's alternative text. A wordmark cannot be combined with a subtitle.
+    ///     The title becomes the image's alternative text. A wordmark can't be combined with a
+    ///     subtitle.
     /// </remarks>
-    /// <param name="path">An absolute URL, or an app-relative path such as <c>~/img/wordmark.svg</c>.</param>
-    /// <param name="darkPath">The image shown in dark mode.</param>
-    /// <exception cref="ArgumentException"></exception>
     public static WordmarkBrandingLogo Wordmark(string path, string darkPath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);

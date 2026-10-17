@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The direction in which a button group lays out its items.
+///     Specifies the direction in which a button group arranges its items.
 /// </summary>
 public enum ButtonGroupOrientation
 {
-    /// <summary>Items are arranged in a row.</summary>
+    /// <summary>
+    ///     Items are arranged in a row.
+    /// </summary>
     Horizontal,
 
-    /// <summary>Items are stacked in a column.</summary>
+    /// <summary>
+    ///     Items are stacked in a column.
+    /// </summary>
     Vertical,
 }
 

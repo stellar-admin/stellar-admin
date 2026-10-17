@@ -3,32 +3,43 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A scrolling frame for a conversation, holding the transcript and its scroll controls.
+///     Renders a scrolling frame for a conversation, with its transcript and scroll buttons.
 /// </summary>
+/// <remarks>
+///     Requires <c>stellar-admin.js</c> for automatic scrolling and the scroll buttons. Without it,
+///     the transcript still scrolls.
+/// </remarks>
 [HtmlTargetElement("sa-message-scroller")]
 public class MessageScrollerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether the transcript follows new content while the reader is at the newest message.
+    ///     Gets or sets a value that indicates whether the transcript follows new messages.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the newest message stays in view while the reader is at the
+    ///     end of the transcript; otherwise, <see langword="false" />. The default is
+    ///     <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>. Following stops as soon as the reader scrolls away, and
-    ///     resumes when they return to the newest message.
+    ///     Following stops when the reader scrolls away and resumes when they return to the newest
+    ///     message.
     /// </remarks>
     [HtmlAttributeName("auto-scroll")]
     public bool? AutoScroll { get; set; }
 
     /// <summary>
-    ///     Where the transcript is scrolled to when it first appears.
+    ///     Gets or sets where the transcript is scrolled to when it first appears.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="MessageScrollerPosition.End" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the starting position. The default is
+    ///     <see cref="MessageScrollerPosition.End" />.
+    /// </value>
     [HtmlAttributeName("initial-position")]
     public MessageScrollerPosition? InitialPosition { get; set; }
 
     internal string? MessageScrollerId { get; private set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAutoScroll = AutoScroll ?? true;

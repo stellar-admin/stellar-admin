@@ -3,30 +3,35 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A button rendered as an entry within a nested sidebar submenu.
+///     Renders a button in a sidebar submenu.
 /// </summary>
+/// <remarks>
+///     The button has <c>type="button"</c> unless you set <c>type</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-sub-button")]
 public class SidebarMenuSubButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the submenu button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuSubButtonSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="SidebarMenuSubButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public SidebarMenuSubButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     Whether this button represents the active item; when <c>true</c> the button is
-    ///     marked with a <c>data-active</c> attribute for styling.
+    ///     Gets or sets a value that indicates whether the button is the current item.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the button is highlighted as the current item; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("active")]
     public bool? Active { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? SidebarMenuSubButtonSize.Default;

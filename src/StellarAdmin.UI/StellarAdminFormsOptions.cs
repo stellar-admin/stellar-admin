@@ -1,15 +1,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The application-wide defaults for forms.
+///     Provides the defaults for forms across the application.
 /// </summary>
+/// <seealso cref="StellarAdminUIBuilder.ConfigureForms" />
 public sealed class StellarAdminFormsOptions
 {
     /// <summary>
-    ///     The default layout of form sections.
+    ///     Gets or sets the layout of form sections that don't set their own.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="FormSectionLayout.Split" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is
+    ///     <see cref="FormSectionLayout.Split" />.
+    /// </value>
     public FormSectionLayout SectionLayout { get; set; } = FormSectionLayout.Split;
 }

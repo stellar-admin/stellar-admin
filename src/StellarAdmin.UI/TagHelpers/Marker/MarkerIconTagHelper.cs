@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A decorative icon alongside the marker content, hidden from assistive technology.
+///     Renders a decorative icon beside the text of a marker.
 /// </summary>
+/// <remarks>
+///     The icon is hidden from assistive technology.
+/// </remarks>
 [HtmlTargetElement("sa-marker-icon")]
 public class MarkerIconTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

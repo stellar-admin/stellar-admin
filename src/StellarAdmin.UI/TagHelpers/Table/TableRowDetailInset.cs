@@ -1,14 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Where the content of a row's details starts.
+///     Specifies where the content of a table row's details starts.
 /// </summary>
 public enum TableRowDetailInset
 {
-    /// <summary>At the table's edge padding.</summary>
+    /// <summary>
+    ///     The content starts at the row's first cell.
+    /// </summary>
     Bleed,
 
-    /// <summary>In line with the first column after a leading toggle column.</summary>
+    /// <summary>
+    ///     The content starts at the column after the toggle's column.
+    /// </summary>
     Aligned,
 }
 

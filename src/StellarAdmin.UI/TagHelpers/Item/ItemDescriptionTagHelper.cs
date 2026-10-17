@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The secondary descriptive text of an item, rendered beneath its title.
+///     Renders the description of an item, below its title.
 /// </summary>
 [HtmlTargetElement("sa-item-description")]
 public class ItemDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";

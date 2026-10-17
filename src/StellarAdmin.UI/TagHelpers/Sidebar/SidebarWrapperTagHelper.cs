@@ -3,9 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The outermost sidebar container that provides layout and shared state for the sidebar and its inset content.
-///     Renders the <c>sel-sidebar</c> web component that nested triggers and the backdrop toggle.
+///     Renders the container that lays out a sidebar beside its main content.
 /// </summary>
+/// <remarks>
+///     Place the sidebar, its triggers and the <c>&lt;sa-sidebar-inset&gt;</c> inside the wrapper.
+///     Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-wrapper")]
 public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
 {
@@ -15,6 +18,7 @@ public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
 
     internal string? SidebarId { get; private set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // The wrapper renders the `sel-sidebar` web component, which acts as the

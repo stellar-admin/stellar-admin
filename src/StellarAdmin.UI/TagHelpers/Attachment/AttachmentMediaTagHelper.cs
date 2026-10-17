@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The media region of an attachment, holding a file-type icon or a thumbnail preview.
+///     Renders the media of an attachment, such as a file type icon or a thumbnail.
 /// </summary>
 [HtmlTargetElement("sa-attachment-media")]
 public class AttachmentMediaTagHelper : StellarAdminTagHelperBase
@@ -18,14 +18,16 @@ public class AttachmentMediaTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The kind of media the region contains, which controls its sizing and styling.
+    ///     Gets or sets the kind of media shown.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AttachmentMediaVariant.Icon" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the kind of media. The default is
+    ///     <see cref="AttachmentMediaVariant.Icon" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public AttachmentMediaVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? AttachmentMediaVariant.Icon;

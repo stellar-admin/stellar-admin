@@ -6,22 +6,22 @@ generated: true
 
 # Field
 
-Wraps a form control together with its label, description, and error message, arranging them according to the chosen orientation.
+Renders a field that groups a form control with its label, description and error message.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-field>` | Wraps a form control together with its label, description, and error message, arranging them according to the chosen orientation. |
-| `<sa-field-content>` | A container that holds a field's label and description, keeping them stacked together when the field is laid out horizontally alongside its control. |
-| `<sa-field-description>` | Supporting help text for a field. Renders its own content, or falls back to the description from the model metadata when bound with `asp-for`. |
-| `<sa-field-error>` | Displays the validation error message for a field. When bound with `asp-for`, it shows the model's validation message and appears only when that field is invalid. |
-| `<sa-field-group>` | Groups a set of related fields together, arranging them in a column with consistent spacing. |
-| `<sa-field-label>` | The label for a field's control, rendered as a `<label>` element. |
-| `<sa-field-legend>` | The caption for a field set, rendered as a `<legend>` element. |
-| `<sa-field-separator>` | A horizontal divider between fields, optionally with content (such as a label) centered on the line. |
-| `<sa-field-set>` | Groups related fields under a common legend, rendered as a `<fieldset>` element. |
-| `<sa-field-title>` | A title for a field or field set that is styled like a label but is not associated with a control. |
+| `<sa-field>` | Renders a field that groups a form control with its label, description and error message. |
+| `<sa-field-content>` | Renders a container that keeps a field's label and description stacked beside its control. |
+| `<sa-field-description>` | Renders the help text of a field. |
+| `<sa-field-error>` | Renders the validation error message of a field. |
+| `<sa-field-group>` | Renders a group of related fields in a column with consistent spacing. |
+| `<sa-field-label>` | Renders the label of a field's control as a `<label>` element. |
+| `<sa-field-legend>` | Renders the caption of a field set as a `<legend>` element. |
+| `<sa-field-separator>` | Renders a horizontal divider between fields. |
+| `<sa-field-set>` | Renders a group of related fields as a `<fieldset>` element. |
+| `<sa-field-title>` | Renders a title that looks like a field label but isn't tied to a control. |
 
 ## Attributes
 
@@ -29,7 +29,7 @@ Wraps a form control together with its label, description, and error message, ar
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

@@ -3,11 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The scrolling region of a message scroller, wrapping the transcript.
+///     Renders the scrolling area of a message scroller, which holds the transcript.
 /// </summary>
+/// <remarks>
+///     The area can take keyboard focus, so it can be scrolled with the keyboard. Its accessible
+///     name is "Messages" unless the element sets <c>aria-label</c> or <c>aria-labelledby</c>.
+/// </remarks>
 [HtmlTargetElement("sa-message-scroller-viewport")]
 public class MessageScrollerViewportTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

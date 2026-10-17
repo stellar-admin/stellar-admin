@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A full-width navigation area at the bottom of <c>&lt;sa-page-header&gt;</c>, rendered as
-///     a <c>&lt;nav&gt;</c> element. It positions whatever navigation the page provides —
-///     typically an <c>&lt;sa-tab-list&gt;</c> — without imposing any styling of its own.
+///     Renders a full-width navigation area at the bottom of a page header.
 /// </summary>
+/// <remarks>
+///     The area places the page's navigation, such as an <c>&lt;sa-tab-list&gt;</c>, without
+///     styling it.
+/// </remarks>
 [HtmlTargetElement("sa-page-header-nav")]
 public class PageHeaderNavTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "nav";

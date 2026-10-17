@@ -3,14 +3,20 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Adds row selection to the data grid: a leading checkbox column with a select-all
-///     checkbox in the header. Requires the grid's <c>key-field</c>, whose value each row's
-///     checkbox carries. Renders nothing itself — the grid wraps its table in the
-///     <c>sel-table</c> web component, to which an <c>id</c> and <c>class</c> set
-///     here are transferred. Read the current selection from the element's
-///     <c>selectedValues</c> property, or listen for its bubbling <c>rowselectionchange</c>
-///     event; with a <c>name</c> the selection also posts as ordinary checkbox form data.
+///     Adds a checkbox column to a data grid, so users can select rows.
 /// </summary>
+/// <remarks>
+///     <para>
+///         Requires the grid's <c>key-field</c>. Each row's checkbox posts the row's key, and the
+///         header has a checkbox that selects all rows.
+///     </para>
+///     <para>
+///         The grid wraps its table in a <c>sel-table</c> element, which gets the <c>id</c> and
+///         <c>class</c> set here. Read the selection from the element's <c>selectedValues</c>
+///         property, or listen for its <c>rowselectionchange</c> event. Requires
+///         <c>stellar-admin.js</c>.
+///     </para>
+/// </remarks>
 [HtmlTargetElement(
     "sa-data-grid-selection",
     ParentTag = "sa-data-grid",
@@ -19,13 +25,18 @@ namespace StellarAdmin.UI;
 public class DataGridSelectionTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The <c>name</c> of the row checkboxes, making the selected keys post as ordinary
-    ///     form data. When omitted, the checkboxes have no name and the selection is only
-    ///     available client-side.
+    ///     Gets or sets the name of the row checkboxes, so the selected keys post with the form.
     /// </summary>
+    /// <remarks>
+    ///     Without a name, the selection is only available in the browser.
+    /// </remarks>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The grid has no <c>key-field</c>.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.SuppressOutput();

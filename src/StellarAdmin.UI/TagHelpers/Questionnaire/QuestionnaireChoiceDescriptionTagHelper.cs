@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Supporting text explaining a single choice.
+///     Renders text that explains a choice.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-choice-description")]
 public class QuestionnaireChoiceDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

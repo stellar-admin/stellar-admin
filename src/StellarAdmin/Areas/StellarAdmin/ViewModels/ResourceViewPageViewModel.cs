@@ -4,19 +4,22 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The view model of the view page. Deliberately non-generic so the views need no knowledge of the entity
-///     type; the stock HTML helpers resolve field values and metadata from the runtime type of
-///     <see cref="Entity" />.
+///     Represents the model of the view page.
 /// </summary>
+/// <remarks>
+///     The model isn't generic, so a view works for any resource. HTML helpers read field values
+///     and metadata from the runtime type of <see cref="Entity" />.
+/// </remarks>
 public sealed class ResourceViewPageViewModel
 {
     /// <summary>
-    ///     The delete confirmation of the page, or <c>null</c> when the page cannot delete the entity.
+    ///     Gets the page's delete confirmation dialog, or <see langword="null" /> when the
+    ///     resource can't be deleted.
     /// </summary>
     public ResourceFormDeleteDialogViewModel? Delete { get; internal init; }
 
     /// <summary>
-    ///     Request data prepared by the configured field displays.
+    ///     Gets the data that the field displays prepared for the current request.
     /// </summary>
     public IReadOnlyDictionary<FormDisplayFieldOptions, object?> DisplayData
     {
@@ -25,35 +28,47 @@ public sealed class ResourceViewPageViewModel
     } = new Dictionary<FormDisplayFieldOptions, object?>();
 
     /// <summary>
-    ///     The label of the page's edit link, or <c>null</c> when the entity cannot be edited.
+    ///     Gets the label of the page's edit link, or <see langword="null" /> when the resource
+    ///     can't be edited.
     /// </summary>
     public string? EditLabel { get; internal init; }
 
-    /// <summary>The entity the page displays. An overridden view can cast this to the application's type.</summary>
+    /// <summary>
+    ///     Gets the resource or model that the page shows.
+    /// </summary>
+    /// <remarks>
+    ///     An overridden view can cast it to the application's type.
+    /// </remarks>
     public object Entity { get; internal init; } = null!;
 
-    /// <summary>The key of the entity the page displays.</summary>
+    /// <summary>
+    ///     Gets the key of the resource that the page shows.
+    /// </summary>
     public string EntityId { get; internal init; } = "";
 
     /// <summary>
-    ///     All fields as a flat list, including fields inside sections and groups, in display order.
+    ///     Gets all of the page's fields in display order, including the fields inside sections
+    ///     and groups.
     /// </summary>
     public IReadOnlyList<FormDisplayFieldOptions> Fields { get; internal init; } = [];
 
     /// <summary>
-    ///     The page's top-level fields and containers, preserving nested sections and groups for rendering.
+    ///     Gets the page's top-level fields and containers.
     /// </summary>
+    /// <remarks>
+    ///     Containers such as sections and groups hold their own items.
+    /// </remarks>
     public IReadOnlyList<FormItemOptions> Items { get; internal init; } = [];
 
     /// <summary>
-    ///     The layout of the page's sections.
+    ///     Gets the layout of the page's sections, or <see langword="null" /> to use the
+    ///     app-wide default.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the application setting.
-    /// </remarks>
     public FormSectionLayout? SectionLayout { get; internal init; }
 
-    /// <summary>The page title.</summary>
+    /// <summary>
+    ///     Gets the page title.
+    /// </summary>
     public string Title { get; internal init; } = "";
 
     internal FormGridColumnDefinitions Columns { get; init; }

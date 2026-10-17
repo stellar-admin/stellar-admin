@@ -1,18 +1,18 @@
 namespace StellarAdmin.Areas.StellarAdmin;
 
 /// <summary>
-///     The <c>TempData</c> keys the StellarAdmin views communicate through.
+///     Provides the <c>TempData</c> keys that the admin panel's views use.
 /// </summary>
 public static class TempDataKeys
 {
     /// <summary>
-    ///     Carries rejected edit-page deletion messages back to the edit form.
+    ///     Represents the key for the errors of a rejected deletion, shown on the edit or view
+    ///     page.
     /// </summary>
     public const string DeleteErrors = "StellarAdminDeleteErrors";
 
     /// <summary>
-    ///     Carries an error message into the next page render, shown as a destructive
-    ///     alert above the index page's grid.
+    ///     Represents the key for an error message.
     /// </summary>
     public const string ErrorMessage = "StellarAdminErrorMessage";
 }

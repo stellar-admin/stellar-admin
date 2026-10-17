@@ -1,18 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How a command menu narrows its items as the user types.
+///     Specifies how a command menu filters its items as the user types.
 /// </summary>
 public enum CommandFilter
 {
     /// <summary>
-    ///     Items are filtered and ranked in the browser.
+    ///     The browser filters and ranks the items.
     /// </summary>
     Client,
 
     /// <summary>
-    ///     Items are never filtered in the browser; the application replaces the list contents
-    ///     itself, for example with server-rendered results.
+    ///     The browser doesn't filter the items. The application replaces the list contents itself,
+    ///     for example with results from the server.
     /// </summary>
     None,
 }

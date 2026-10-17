@@ -50,7 +50,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `columns` | `int` | — | — |
-| `columns-base` | `int` | — | — |
+| `columns-base` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
@@ -60,7 +60,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

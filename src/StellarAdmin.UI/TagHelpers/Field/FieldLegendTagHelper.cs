@@ -3,20 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The caption for a field set, rendered as a <c>&lt;legend&gt;</c> element.
+///     Renders the caption of a field set as a <c>&lt;legend&gt;</c> element.
 /// </summary>
 [HtmlTargetElement("sa-field-legend")]
 public class FieldLegendTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The visual style applied to the legend.
+    ///     Gets or sets the visual style of the legend.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="FieldLegendVariant.Legend" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="FieldLegendVariant.Legend" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public FieldLegendVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? FieldLegendVariant.Legend;

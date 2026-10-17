@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer region of the sidebar, pinned below its content; typically holds a user menu or secondary actions.
+///     Renders the footer of a sidebar, below its content.
 /// </summary>
+/// <remarks>
+///     The footer usually holds a user menu or secondary actions.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-footer")]
 public class SidebarFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

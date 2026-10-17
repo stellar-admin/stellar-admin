@@ -7,24 +7,37 @@ using Microsoft.Extensions.DependencyInjection;
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Configures the choices of a choice editor. Without items, an enum or Boolean property supplies them.
+///     Configures the choices of a choice editor.
 /// </summary>
+/// <remarks>
+///     Without <c>UseItems</c>, the choices come from the property, which must be an enum without
+///     flags or a Boolean.
+/// </remarks>
 public abstract class ChoiceEditor : FieldEditor
 {
     /// <summary>
-    ///     Additional CSS classes for the parts of the editor.
+    ///     Gets the additional CSS classes for the parts of the editor.
     /// </summary>
     public override ChoiceEditorClassNames ClassNames { get; } = new();
 
     /// <summary>
-    ///     Whether the choices start with an empty choice, which clears the value. Defaults to
-    ///     <see cref="EmptyChoice.Auto" />.
+    ///     Gets or sets whether the choices start with an empty choice, which clears the value.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies whether the choices start with an empty
+    ///     choice. The default is <see cref="EmptyChoice.Auto" />.
+    /// </value>
+    /// <remarks>
+    ///     A collection property never gets an empty choice.
+    /// </remarks>
     public EmptyChoice EmptyChoice { get; set; }
 
     /// <summary>
-    ///     The text of the empty choice.
+    ///     Gets or sets the text of the empty choice.
     /// </summary>
+    /// <value>
+    ///     The text of the empty choice. The default is "Not set".
+    /// </value>
     public string EmptyChoiceText { get; set; } = "Not set";
 
     internal Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>>? ItemsLoader
@@ -38,8 +51,12 @@ public abstract class ChoiceEditor : FieldEditor
     internal virtual bool KeepsEmptyChoiceWhileUnset => false;
 
     /// <summary>
-    ///     Selects a registered provider that supplies choices for each request.
+    ///     Sets a registered provider that supplies the choices for each request.
     /// </summary>
+    /// <typeparam name="TProvider">The type of the provider.</typeparam>
+    /// <remarks>
+    ///     Register <typeparamref name="TProvider" /> as a service.
+    /// </remarks>
     public void UseItems<TProvider>()
         where TProvider : class, IChoiceItemsProvider
     {
@@ -48,8 +65,12 @@ public abstract class ChoiceEditor : FieldEditor
     }
 
     /// <summary>
-    ///     Supplies a fixed set of choices.
+    ///     Sets a fixed list of choices.
     /// </summary>
+    /// <param name="items">The choices, in display order.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="items" /> is <see langword="null" />.
+    /// </exception>
     public void UseItems(IEnumerable<ChoiceItem> items)
     {
         ArgumentNullException.ThrowIfNull(items);
@@ -59,9 +80,16 @@ public abstract class ChoiceEditor : FieldEditor
     }
 
     /// <summary>
-    ///     Supplies a fixed set of choices from select list items. An item without a value posts its text, and its
-    ///     selected state is ignored, since the field's value decides the selection.
+    ///     Sets a fixed list of choices from select list items.
     /// </summary>
+    /// <param name="items">The select list items, in display order.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="items" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     An item without a value posts its text. The field's value decides which choices are
+    ///     selected, so <see cref="SelectListItem.Selected" /> is ignored.
+    /// </remarks>
     public void UseItems(IEnumerable<SelectListItem> items)
     {
         ArgumentNullException.ThrowIfNull(items);
@@ -78,8 +106,14 @@ public abstract class ChoiceEditor : FieldEditor
     }
 
     /// <summary>
-    ///     Supplies choices from a request-aware asynchronous loader.
+    ///     Sets a delegate that loads the choices for each request.
     /// </summary>
+    /// <param name="itemsLoader">
+    ///     A delegate that loads the choices with the request's services.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="itemsLoader" /> is <see langword="null" />.
+    /// </exception>
     public void UseItems(
         Func<IServiceProvider, CancellationToken, Task<IReadOnlyList<ChoiceItem>>> itemsLoader
     )

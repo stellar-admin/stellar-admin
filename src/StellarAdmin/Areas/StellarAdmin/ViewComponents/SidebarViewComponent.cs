@@ -3,9 +3,17 @@ using StellarAdmin.Sidebar;
 
 namespace StellarAdmin.Areas.StellarAdmin.ViewComponents;
 
+/// <summary>
+///     Renders the admin panel sidebar.
+/// </summary>
+/// <param name="sidebarItemsProviders">The providers of the sidebar items.</param>
 public sealed class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> sidebarItemsProviders)
     : ViewComponent
 {
+    /// <summary>
+    ///     Renders the sidebar with the items of every provider.
+    /// </summary>
+    /// <returns>A task that returns the result that renders the sidebar.</returns>
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var sidebarItems = new List<SidebarItem>();

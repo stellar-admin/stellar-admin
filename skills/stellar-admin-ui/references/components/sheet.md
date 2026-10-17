@@ -6,7 +6,7 @@ generated: true
 
 # Sheet
 
-A panel that slides in from an edge of the screen, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`.
+Renders a panel that slides in from an edge of the screen.
 
 <!-- structure:begin -->
 
@@ -31,11 +31,11 @@ sa-sheet
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-sheet>` | A panel that slides in from an edge of the screen, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`. |
-| `<sa-sheet-description>` | Supporting description text for a sheet, shown beneath the title. |
-| `<sa-sheet-footer>` | The footer region of a sheet; typically contains action buttons. |
-| `<sa-sheet-header>` | The header region of a sheet; typically contains the title and description. |
-| `<sa-sheet-title>` | The accessible title of a sheet, rendered as a heading in the sheet header. |
+| `<sa-sheet>` | Renders a panel that slides in from an edge of the screen. |
+| `<sa-sheet-description>` | Renders the description of a sheet, shown below its title. |
+| `<sa-sheet-footer>` | Renders the footer of a sheet. |
+| `<sa-sheet-header>` | Renders the header of a sheet. |
+| `<sa-sheet-title>` | Renders the title of a sheet as a heading. |
 
 ## Attributes
 

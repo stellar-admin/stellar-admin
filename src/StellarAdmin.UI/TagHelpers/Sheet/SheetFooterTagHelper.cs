@@ -3,11 +3,15 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer region of a sheet; typically contains action buttons.
+///     Renders the footer of a sheet.
 /// </summary>
+/// <remarks>
+///     The footer usually holds the sheet's action buttons.
+/// </remarks>
 [HtmlTargetElement("sa-sheet-footer")]
 public class SheetFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

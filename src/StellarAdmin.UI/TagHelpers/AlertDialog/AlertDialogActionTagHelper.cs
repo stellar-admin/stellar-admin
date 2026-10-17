@@ -3,23 +3,27 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The confirming button of an alert dialog. Renders a styled submit button with
-///     <c>value="confirm"</c> so a wrapping <c>&lt;form method="dialog"&gt;</c> closes the dialog
-///     with that <c>returnValue</c> (which the <c>stellarAdmin.alertDialog</c> helper reads as
-///     <c>confirmed: true</c>). Override <c>variant</c> for a destructive action.
+///     Renders the button that confirms an alert dialog.
 /// </summary>
+/// <remarks>
+///     The button submits with the value <c>confirm</c>, unless it sets its own <c>value</c>.
+///     Inside a <c>&lt;form method="dialog"&gt;</c>, it closes the dialog with that return
+///     value.
+/// </remarks>
 [HtmlTargetElement("sa-alert-dialog-action")]
 public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The visual style of the action button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ButtonVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ButtonVariant.Default;

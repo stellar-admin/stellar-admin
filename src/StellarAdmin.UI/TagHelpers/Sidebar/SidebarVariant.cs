@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a sidebar.
+///     Specifies the visual style of a sidebar.
 /// </summary>
 public enum SidebarVariant
 {
-    /// <summary>A standard sidebar flush against the edge of the screen.</summary>
+    /// <summary>
+    ///     A sidebar flush against the edge of the screen.
+    /// </summary>
     Default,
 
-    /// <summary>A sidebar that floats with a border and rounded corners.</summary>
+    /// <summary>
+    ///     A sidebar that floats, with a border and rounded corners.
+    /// </summary>
     Floating,
 
-    /// <summary>A sidebar that insets the main content area within it.</summary>
+    /// <summary>
+    ///     A sidebar that frames the main content area as an inset panel.
+    /// </summary>
     Inset,
 }
 

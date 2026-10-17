@@ -5,27 +5,31 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Supporting help text for a field. Renders its own content, or falls back to the
-///     description from the model metadata when bound with <c>asp-for</c>.
+///     Renders the help text of a field.
 /// </summary>
+/// <remarks>
+///     When the element has no content and is bound with <c>asp-for</c>, it shows the description
+///     from the model metadata. It renders nothing when there's no text to show.
+/// </remarks>
 [HtmlTargetElement("sa-field-description")]
 public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
 {
     private const string ForAttributeName = "asp-for";
 
     /// <summary>
-    /// An expression to be evaluated against the current model.
+    ///     Gets or sets the model property whose description is shown.
     /// </summary>
     [HtmlAttributeName(ForAttributeName)]
     public ModelExpression? For { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="ViewContext"/> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";

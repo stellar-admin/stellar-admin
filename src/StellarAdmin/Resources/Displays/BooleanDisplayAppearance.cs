@@ -1,22 +1,22 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     How a <see cref="BooleanDisplay" /> shows its value.
+///     Specifies how a <see cref="BooleanDisplay" /> shows its value.
 /// </summary>
 public enum BooleanDisplayAppearance
 {
     /// <summary>
-    ///     A check for <c>true</c> and a muted cross for <c>false</c>.
+    ///     Shows an icon for <see langword="true" /> and another for <see langword="false" />.
     /// </summary>
     Icon,
 
     /// <summary>
-    ///     The display's text.
+    ///     Shows the display's text.
     /// </summary>
     Text,
 
     /// <summary>
-    ///     The icon followed by the text.
+    ///     Shows the icon followed by the text.
     /// </summary>
     IconAndText,
 }

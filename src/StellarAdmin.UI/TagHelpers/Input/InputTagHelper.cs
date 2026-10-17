@@ -9,16 +9,26 @@ using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelp
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A form input. Renders a styled <c>&lt;input&gt;</c> for text-like types, and a styled
-///     checkbox or radio button (with its indicator) when the type is <c>checkbox</c> or
-///     <c>radio</c>. Supports model binding via <c>asp-for</c>.
+///     Renders a form input.
 /// </summary>
+/// <remarks>
+///     A <c>checkbox</c> or <c>radio</c> type renders a styled checkbox or radio button with its
+///     indicator. Every other type renders a styled <c>&lt;input&gt;</c>.
+/// </remarks>
 [HtmlTargetElement("sa-input", TagStructure = TagStructure.WithoutEndTag)]
 public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="InputTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders a bound input, label and error.</param>
+    /// <param name="iconOptions">The icon options that supply the checkbox and radio marks.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public InputTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : this(htmlGenerator, iconOptions.Value) { }
 
@@ -30,30 +40,40 @@ public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
     }
 
     /// <summary>
-    ///     The id of the form the input is associated with.
+    ///     Gets or sets the <c>id</c> of the form that the input belongs to.
     /// </summary>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
     /// <summary>
-    ///     A composite format string used to format the bound model value.
+    ///     Gets or sets the composite format string that formats the bound value.
     /// </summary>
+    /// <remarks>
+    ///     Applies only when the input is bound with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("asp-format")]
     public string? Format { get; set; }
 
     /// <summary>
-    ///     The <c>type</c> of the HTML input (for example <c>text</c>, <c>email</c>, <c>checkbox</c>,
-    ///     or <c>radio</c>).
+    ///     Gets or sets the type of the input, such as <c>text</c>, <c>email</c>, <c>checkbox</c> or
+    ///     <c>radio</c>.
     /// </summary>
+    /// <value>
+    ///     The default is the type that suits the bound property, or text when the input isn't bound.
+    /// </value>
     [HtmlAttributeName("type")]
     public string? InputTypeName { get; set; }
 
     /// <summary>
-    ///     The value of the input.
+    ///     Gets or sets the value of the input.
     /// </summary>
+    /// <remarks>
+    ///     A radio button bound with <c>asp-for</c> is selected when its value matches the property.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <inheritdoc />
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

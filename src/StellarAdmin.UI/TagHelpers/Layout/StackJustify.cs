@@ -1,23 +1,33 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     Controls how a <c>&lt;sa-stack&gt;</c> distributes its children along the main axis.
+///     Specifies how a <c>&lt;sa-stack&gt;</c> spreads its children vertically.
 /// </summary>
 public enum StackJustify
 {
-    /// <summary>Children are centered along the main axis.</summary>
+    /// <summary>
+    ///     The children are centered on the main axis.
+    /// </summary>
     Center,
 
-    /// <summary>Children are packed toward the start of the main axis.</summary>
+    /// <summary>
+    ///     The children are packed at the start of the main axis.
+    /// </summary>
     Start,
 
-    /// <summary>Children are packed toward the end of the main axis.</summary>
+    /// <summary>
+    ///     The children are packed at the end of the main axis.
+    /// </summary>
     End,
 
-    /// <summary>Children are spaced with equal gaps between them and none at the edges.</summary>
+    /// <summary>
+    ///     The children have equal space between them and none at the edges.
+    /// </summary>
     SpaceBetween,
 
-    /// <summary>Children are spaced with equal gaps around each of them.</summary>
+    /// <summary>
+    ///     The children have equal space around each of them.
+    /// </summary>
     SpaceAround,
 }
 

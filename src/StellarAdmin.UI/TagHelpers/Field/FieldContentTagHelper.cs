@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container that holds a field's label and description, keeping them stacked together
-///     when the field is laid out horizontally alongside its control.
+///     Renders a container that keeps a field's label and description stacked beside its control.
 /// </summary>
+/// <remarks>
+///     Use it in a horizontal field.
+/// </remarks>
 [HtmlTargetElement("sa-field-content")]
 public class FieldContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

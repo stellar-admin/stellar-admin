@@ -1,12 +1,12 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     A logo that shows an icon in an accent tile beside the title.
+///     Represents a logo that shows an icon in an accent tile beside the title.
 /// </summary>
 public sealed class IconBrandingLogo : BrandingLogo
 {
     /// <summary>
-    ///     The icon name.
+    ///     Gets the name of the icon.
     /// </summary>
     public string Name { get; }
 

@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A labeled radio button within a segmented control.
+///     Renders an option in a segmented control.
 /// </summary>
+/// <remarks>
+///     Must be placed inside an <c>sa-segmented-control</c> element.
+/// </remarks>
 [HtmlTargetElement("sa-segmented-control-item")]
 public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
 {
@@ -15,36 +18,58 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
 
     /// <summary>
-    ///     Whether this option is disabled.
+    ///     Gets or sets a value that indicates whether the option is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the option is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Whether this option is selected, overriding the bound or initial value. A posted value still takes
-    ///     precedence.
+    ///     Gets or sets a value that indicates whether the option is selected.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> to select the option, <see langword="false" /> to clear it, or
+    ///     <see langword="null" /> to follow the bound or initial value. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     A value posted back to a bound control takes precedence.
+    /// </remarks>
     [HtmlAttributeName("selected")]
     public bool? Selected { get; set; }
 
     /// <summary>
-    ///     The value submitted when this option is selected.
+    ///     Gets or sets the value that the control posts when the option is selected.
     /// </summary>
+    /// <remarks>
+    ///     Required.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     The context of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SegmentedControlItemTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the radio button of a bound control.</param>
     public SegmentedControlItemTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator;
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The option isn't inside an <c>sa-segmented-control</c> element, or has no <c>value</c>.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var group =

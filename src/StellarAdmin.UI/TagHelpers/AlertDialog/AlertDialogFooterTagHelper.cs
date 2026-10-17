@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer region of an alert dialog; typically contains the cancel and action buttons.
+///     Renders the footer of an alert dialog, which holds the cancel and confirm buttons.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-footer")]
 public class AlertDialogFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

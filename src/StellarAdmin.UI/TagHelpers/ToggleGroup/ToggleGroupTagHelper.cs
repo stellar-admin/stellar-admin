@@ -6,61 +6,77 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups a set of toggle items into a single-select or multi-select control.
+///     Renders a group of toggle items that lets the user select one item or several.
 /// </summary>
+/// <remarks>
+///     Place <c>&lt;sa-toggle-group-item&gt;</c> elements inside the group. Bind a single value
+///     with <see cref="ToggleGroupType.Single" />, or a collection with
+///     <see cref="ToggleGroupType.Multiple" />. The group works without JavaScript.
+/// </remarks>
 [HtmlTargetElement("sa-toggle-group")]
 public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
 {
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ToggleGroupTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the field's label and messages.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public ToggleGroupTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator) { }
 
     /// <summary>
-    ///     Whether a single item (radio-backed, scalar binding) or multiple items
-    ///     (checkbox-backed, collection binding) can be selected.
+    ///     Gets or sets how many items can be selected.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleGroupType.Single" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies how many items can be selected. The
+    ///     default is <see cref="ToggleGroupType.Single" />.
+    /// </value>
     [HtmlAttributeName("type")]
     public ToggleGroupType? Type { get; set; }
 
     /// <summary>
-    ///     The visual style applied to every item in the group.
+    ///     Gets or sets the visual style of the items.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ToggleVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ToggleVariant? Variant { get; set; }
 
     /// <summary>
-    ///     The size applied to every item in the group.
+    ///     Gets or sets the size of the items.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ToggleSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ToggleSize? Size { get; set; }
 
     /// <summary>
-    ///     The direction in which the group lays out its items.
+    ///     Gets or sets the direction in which the items are arranged.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleGroupOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the direction. The default is
+    ///     <see cref="ToggleGroupOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public ToggleGroupOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     The spacing between items. <see cref="ToggleGroupSpacing.None" /> joins the items into
-    ///     a single segmented control.
+    ///     Gets or sets the space between the items.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleGroupSpacing.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the space. The default is
+    ///     <see cref="ToggleGroupSpacing.Default" />.
+    /// </value>
     [HtmlAttributeName("spacing")]
     public ToggleGroupSpacing? Spacing { get; set; }
 
+    /// <inheritdoc />
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

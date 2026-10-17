@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header section of a table, rendered as a <c>&lt;thead&gt;</c>; contains the header row.
+///     Renders the header of a table, which holds the header row, as a <c>&lt;thead&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-header")]
 public class TableHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "thead";

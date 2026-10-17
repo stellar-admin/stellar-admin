@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container that displays a set of avatars as an overlapping stack.
+///     Renders a set of avatars as an overlapping stack.
 /// </summary>
 [HtmlTargetElement("sa-avatar-group")]
 public class AvatarGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

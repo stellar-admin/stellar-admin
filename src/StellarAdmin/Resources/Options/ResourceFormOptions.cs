@@ -3,43 +3,58 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures a resource form.
+///     Stores the configuration of a resource form.
 /// </summary>
 public abstract class ResourceFormOptions : IFormScope
 {
     /// <summary>
-    ///     All read-only fields in display order, including fields inside layout containers and
-    ///     details sections.
+    ///     Gets every read-only field of the form, in display order.
     /// </summary>
+    /// <value>
+    ///     The read-only fields, including those inside sections, groups and details sections.
+    /// </value>
     public IReadOnlyList<FormDisplayFieldOptions> DisplayFields =>
         EnumerateDisplayFields(Items).ToArray();
 
     /// <summary>
-    ///     All fields in display order, including fields inside layout containers.
+    ///     Gets every editable field of the form, in display order.
     /// </summary>
+    /// <value>
+    ///     The fields, including those inside sections and groups.
+    /// </value>
     public IReadOnlyList<FormFieldOptions> Fields => EnumerateFields(Items).ToArray();
 
     /// <summary>
-    ///     The form's fields and layout containers in display order.
+    ///     Gets the form's top-level fields, sections and groups, in display order.
     /// </summary>
     public IList<FormItemOptions> Items { get; } = new List<FormItemOptions>();
 
     /// <summary>
-    ///     The layout of form sections.
+    ///     Gets or sets the layout of the form's sections.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the application's form settings.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout, or <see langword="null" /> to
+    ///     use <see cref="StellarAdminFormsOptions.SectionLayout" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public FormSectionLayout? SectionLayout { get; set; }
 
     /// <summary>
-    ///     The submit button label.
+    ///     Gets or sets the label of the submit button.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default label of the create or edit
+    ///     page. The default is <see langword="null" />.
+    /// </value>
     public string? SubmitLabel { get; set; }
 
     /// <summary>
-    ///     The page title.
+    ///     Gets or sets the page title.
     /// </summary>
+    /// <value>
+    ///     The title, or <see langword="null" /> to use the default title of the create or edit
+    ///     page. The default is <see langword="null" />.
+    /// </value>
     public string? Title { get; set; }
 
     internal FormGridColumnDefinitions Columns { get; set; }

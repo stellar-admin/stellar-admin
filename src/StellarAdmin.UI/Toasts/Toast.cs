@@ -1,38 +1,55 @@
 namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
-///     A notification shown briefly in the toaster.
+///     Represents a notification shown briefly in the toaster.
 /// </summary>
 public sealed class Toast
 {
     /// <summary>
-    ///     An optional action button.
+    ///     Gets the button shown on the toast.
     /// </summary>
+    /// <value>
+    ///     The button, or <see langword="null" /> to show no button. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public ToastAction? Action { get; init; }
 
     /// <summary>
-    ///     Optional text shown below the title.
+    ///     Gets the text shown below the title.
     /// </summary>
+    /// <value>
+    ///     The text, or <see langword="null" /> to show only the title. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Description { get; init; }
 
     /// <summary>
-    ///     How long the toast stays visible.
+    ///     Gets how long the toast stays visible.
     /// </summary>
+    /// <value>
+    ///     The time the toast stays visible, <see cref="TimeSpan.Zero" /> to keep it open until
+    ///     it's closed, or <see langword="null" /> to use the toaster's duration. The default is
+    ///     <see langword="null" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the toaster's duration. <see cref="TimeSpan.Zero" /> keeps the toast open until it is closed.
+    ///     The value can't be negative.
     /// </remarks>
     public TimeSpan? Duration { get; init; }
 
     /// <summary>
-    ///     The toast title.
+    ///     Gets the title of the toast.
     /// </summary>
+    /// <remarks>
+    ///     The title can't be empty or white space.
+    /// </remarks>
     public required string Title { get; init; }
 
     /// <summary>
-    ///     The kind of message.
+    ///     Gets the kind of message the toast shows.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToastType.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the kind of message. The default is
+    ///     <see cref="ToastType.Default" />.
+    /// </value>
     public ToastType Type { get; init; }
 }

@@ -1,22 +1,25 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     The field a display handler prepares data for.
+///     Provides the field that a display handler prepares data for.
 /// </summary>
+/// <param name="fieldName">The property path of the field.</param>
+/// <param name="model">The model that holds the field.</param>
+/// <param name="value">The value of the field.</param>
 public sealed class FieldDisplayContext(string fieldName, object model, object? value)
 {
     /// <summary>
-    ///     The field's property path.
+    ///     Gets the property path of the field.
     /// </summary>
     public string FieldName { get; } = fieldName;
 
     /// <summary>
-    ///     The form's model.
+    ///     Gets the model that holds the field.
     /// </summary>
     public object Model { get; } = model;
 
     /// <summary>
-    ///     The field's value.
+    ///     Gets the value of the field.
     /// </summary>
     public object? Value { get; } = value;
 }

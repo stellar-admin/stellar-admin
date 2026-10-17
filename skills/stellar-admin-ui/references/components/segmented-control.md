@@ -6,7 +6,7 @@ generated: true
 
 # SegmentedControl
 
-A group of radio buttons styled as a segmented control.
+Renders a group of radio buttons as a segmented control.
 
 <!-- structure:begin -->
 ## Composition and behavior
@@ -24,8 +24,8 @@ Use the component for a single choice from a short list. It has one horizontal a
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-segmented-control>` | A group of radio buttons styled as a segmented control. |
-| `<sa-segmented-control-item>` | A labeled radio button within a segmented control. |
+| `<sa-segmented-control>` | Renders a group of radio buttons as a segmented control. |
+| `<sa-segmented-control-item>` | Renders an option in a segmented control. |
 
 ## Attributes
 
@@ -33,10 +33,10 @@ Use the component for a single choice from a short list. It has one horizontal a
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `required` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -56,8 +56,8 @@ Use the component for a single choice from a short list. It has one horizontal a
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `disabled` | `bool` | — | `true`, `false` |
-| `selected` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
+| `selected` | `bool` | `null` | `true`, `false` |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

@@ -6,7 +6,7 @@ generated: true
 
 # FormSection
 
-Groups form content under a title with an optional description.
+Renders a group of form content under a heading with an optional description.
 
 ## Attributes
 

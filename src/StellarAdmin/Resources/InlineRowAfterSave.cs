@@ -1,13 +1,13 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     What the index grid shows after an inline row is saved.
+///     Specifies what the index grid shows after an inline row is saved.
 /// </summary>
 public enum InlineRowAfterSave
 {
     /// <summary>
-    ///     Reloads the current page with its search, scope, sort and paging. A saved row that the page
-    ///     doesn't show is confirmed by a toast.
+    ///     Reloads the current page with its search, scope, sort and paging. A toast confirms a
+    ///     saved row that the page doesn't show.
     /// </summary>
     ReloadGrid,
 

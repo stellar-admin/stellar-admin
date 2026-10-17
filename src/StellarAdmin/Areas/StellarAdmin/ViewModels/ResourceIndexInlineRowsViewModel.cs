@@ -3,59 +3,70 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The inline rows of an index page, and the row a row request renders in edit mode.
+///     Represents the inline rows of an index page.
 /// </summary>
 public sealed class ResourceIndexInlineRowsViewModel
 {
     /// <summary>
-    ///     The cancel button label.
+    ///     Gets the label of the cancel button.
     /// </summary>
     public required string CancelLabel { get; init; }
 
     /// <summary>
-    ///     The inline create settings, or null when resources are not created inline.
+    ///     Gets the inline create settings, or <see langword="null" /> when resources aren't
+    ///     created inline.
     /// </summary>
     public ResourceInlineCreateOptions? Create { get; init; }
 
     /// <summary>
-    ///     The field each column edits in a new row, by column position, or null when resources
-    ///     are not created inline.
+    ///     Gets the field that each column edits in a new row, by column position, or
+    ///     <see langword="null" /> when resources aren't created inline.
     /// </summary>
+    /// <remarks>
+    ///     An item is <see langword="null" /> for a column that doesn't edit a field.
+    /// </remarks>
     public IReadOnlyList<FormFieldOptions?>? CreateFields { get; init; }
 
     /// <summary>
-    ///     The inline edit settings, or null when resources are not edited inline.
+    ///     Gets the inline edit settings, or <see langword="null" /> when resources aren't
+    ///     edited inline.
     /// </summary>
     public ResourceInlineEditOptions? Edit { get; init; }
 
     /// <summary>
-    ///     The field each column edits in an edited row, by column position, or null when
-    ///     resources are not edited inline.
+    ///     Gets the field that each column edits in an edited row, by column position, or
+    ///     <see langword="null" /> when resources aren't edited inline.
     /// </summary>
+    /// <remarks>
+    ///     An item is <see langword="null" /> for a column that doesn't edit a field.
+    /// </remarks>
     public IReadOnlyList<FormFieldOptions?>? EditFields { get; init; }
 
     /// <summary>
-    ///     The key of the row rendered in edit mode, or null.
+    ///     Gets the key of the row that is being edited, or <see langword="null" /> when no row
+    ///     is being edited.
     /// </summary>
     public string? EditingKey { get; init; }
 
     /// <summary>
-    ///     The edit model of the row rendered in edit mode, or null.
+    ///     Gets the edit model of the row that is being edited, or <see langword="null" /> when
+    ///     no row is being edited.
     /// </summary>
     public object? EditModel { get; init; }
 
     /// <summary>
-    ///     The name of the resource's key property, which keys the grid's rows.
+    ///     Gets the name of the resource's key property.
     /// </summary>
     public required string KeyField { get; init; }
 
     /// <summary>
-    ///     The create model of the new row, or null when no new row is rendered.
+    ///     Gets the create model of the new row, or <see langword="null" /> when there is no new
+    ///     row.
     /// </summary>
     public object? NewItem { get; init; }
 
     /// <summary>
-    ///     The save button label.
+    ///     Gets the label of the save button.
     /// </summary>
     public required string SaveLabel { get; init; }
 

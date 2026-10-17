@@ -8,14 +8,19 @@ using FrameworkAnchorTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHe
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Declares how the data grid generates its column-sorting links, and the current sort
-///     state. Link destinations are specified with the standard routing attributes
-///     (<c>asp-page</c>, <c>asp-action</c>, <c>asp-route-*</c>, etc.); the route values must
-///     contain the <c>{sortField}</c> placeholder, replaced with the column's sort field, and the
-///     <c>{sortDirection}</c> placeholder, replaced with the target direction (<c>asc</c> or
-///     <c>desc</c>) — e.g. <c>asp-route-sortField="{sortField}" asp-route-sortDirection="{sortDirection}"</c>.
-///     Renders nothing itself; columns opt in with their <c>sortable</c> attribute.
+///     Configures the sort links of a data grid's sortable columns and the current sort.
 /// </summary>
+/// <remarks>
+///     <para>
+///         Set the link destination with the routing attributes, such as <c>asp-page</c> and
+///         <c>asp-route-*</c>. The route values must contain the <c>{sortField}</c> placeholder,
+///         which each link replaces with its column's sort field, and the
+///         <c>{sortDirection}</c> placeholder, which it replaces with <c>asc</c> or <c>desc</c>.
+///     </para>
+///     <para>
+///         Renders nothing itself. Columns show a sort link when they set <c>sortable</c>.
+///     </para>
+/// </remarks>
 [HtmlTargetElement(
     "sa-data-grid-sort",
     ParentTag = "sa-data-grid",
@@ -29,6 +34,14 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DataGridSortTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the sort links.</param>
+    /// <param name="iconOptions">The icon options that supply the sort icons.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public DataGridSortTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
@@ -36,42 +49,58 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
     }
 
     /// <summary>
-    ///     The sort field the data is currently sorted by, matched (case-insensitively)
-    ///     against the columns' sort fields to mark the active column. Omit when the data is
-    ///     unsorted.
+    ///     Gets or sets the field the data is sorted by.
     /// </summary>
+    /// <remarks>
+    ///     The column with this sort field, ignoring case, shows as sorted. Leave it out when the
+    ///     data is unsorted.
+    /// </remarks>
     [HtmlAttributeName("sort-field")]
     public string? SortField { get; set; }
 
     /// <summary>
-    ///     The direction the data is currently sorted in.
+    ///     Gets or sets the direction the data is sorted in.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DataGridSortDirection.Ascending" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the sort direction. The default is
+    ///     <see cref="DataGridSortDirection.Ascending" />.
+    /// </value>
     [HtmlAttributeName("sort-direction")]
     public DataGridSortDirection? SortDirection { get; set; }
 
     /// <summary>
-    ///     Whether to carry the current request's query string parameters over into the
-    ///     generated links. Only parameters not already declared as route values are added, so
-    ///     explicit <c>asp-route-*</c> values always win, regardless of attribute order.
+    ///     Gets or sets a value that indicates whether the links keep the current query string.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the links keep the current request's query string
+    ///     parameters; otherwise, <see langword="false" />. The default is
+    ///     <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     <c>asp-route-*</c> values take precedence over query string parameters with the same
+    ///     name.
     /// </remarks>
     [HtmlAttributeName("preserve-query")]
     public bool? PreserveQuery { get; set; }
 
     /// <summary>
-    ///     Query string parameters, comma-separated, that <c>preserve-query</c> must not
-    ///     carry over into the generated links (e.g. <c>preserve-query-except="pageNo"</c>).
-    ///     Use it for parameters a sort click resets: leaving the parameter out of the link
-    ///     falls back to its default, without pinning that default into the URL.
+    ///     Gets or sets the query string parameters that <c>preserve-query</c> leaves out of the
+    ///     links.
     /// </summary>
+    /// <value>
+    ///     A comma-separated list of parameter names, such as <c>pageNo</c>.
+    /// </value>
+    /// <remarks>
+    ///     Use it for parameters that a new sort resets, such as the page number.
+    /// </remarks>
     [HtmlAttributeName("preserve-query-except")]
     public string? PreserveQueryExcept { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     No route value contains <c>{sortField}</c>, or no route value contains
+    ///     <c>{sortDirection}</c>.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.SuppressOutput();

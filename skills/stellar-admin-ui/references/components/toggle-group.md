@@ -6,14 +6,14 @@ generated: true
 
 # ToggleGroup
 
-Groups a set of toggle items into a single-select or multi-select control.
+Renders a group of toggle items that lets the user select one item or several.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-toggle-group>` | Groups a set of toggle items into a single-select or multi-select control. |
-| `<sa-toggle-group-item>` | A single selectable item within a toggle group. |
+| `<sa-toggle-group>` | Renders a group of toggle items that lets the user select one item or several. |
+| `<sa-toggle-group-item>` | Renders an item that can be selected in a toggle group. |
 
 ## Attributes
 
@@ -26,7 +26,7 @@ Groups a set of toggle items into a single-select or multi-select control.
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `orientation` | `ToggleGroupOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `spacing` | `ToggleGroupSpacing` | `Default` | `Default`, `None`, `Small`, `Large` |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -52,7 +52,7 @@ Groups a set of toggle items into a single-select or multi-select control.
 | `variant` | `ToggleVariant` | — | `Default`, `Outline` |
 | `size` | `ToggleSize` | — | `Default`, `Small`, `Large` |
 | `selected` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

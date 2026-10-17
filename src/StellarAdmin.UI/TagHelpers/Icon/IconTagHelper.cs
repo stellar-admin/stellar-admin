@@ -6,8 +6,11 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders an SVG icon from the active icon pack by name.
+///     Renders a registered icon as an <c>&lt;svg&gt;</c> element.
 /// </summary>
+/// <remarks>
+///     Attributes set on the element take precedence over the icon's own attributes.
+/// </remarks>
 [HtmlTargetElement("sa-icon", TagStructure = TagStructure.WithoutEndTag)]
 [OutputElementHint("svg")]
 public class IconTagHelper : StellarAdminTagHelperBase
@@ -40,6 +43,10 @@ public class IconTagHelper : StellarAdminTagHelperBase
         ]
     );
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="IconTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the icons.</param>
     public IconTagHelper(IOptions<IconOptions> iconOptions)
         : this(iconOptions.Value) { }
 
@@ -49,12 +56,15 @@ public class IconTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     The name of the icon to render, looked up in the active icon pack. If no icon
-    ///     matches the name, a fallback "not found" icon is rendered.
+    ///     Gets or sets the name of the icon to render.
     /// </summary>
+    /// <remarks>
+    ///     A placeholder icon is rendered when no icon has the name.
+    /// </remarks>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
+    /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var iconDefinition =

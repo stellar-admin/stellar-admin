@@ -4,8 +4,8 @@ using System.Text;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Resolves the column counts and spans of a responsive grid, and formats them as the inline
-///     variables the StellarAdmin grids read.
+///     Resolves the column counts, spans and starts of a responsive grid, and formats them as
+///     inline styles.
 /// </summary>
 /// <remarks>
 ///     A breakpoint without a value uses the value of the next smaller breakpoint.
@@ -13,34 +13,40 @@ namespace StellarAdmin.UI;
 public static class ResponsiveGrid
 {
     /// <summary>
-    ///     A start that places the item after the item before it, as if no start were set.
+    ///     Represents a start that places the item after the item before it.
     /// </summary>
     public const int AutoStart = 0;
 
     /// <summary>
-    ///     A span that covers every column of its grid.
+    ///     Represents a span that covers every column of its grid.
     /// </summary>
     public const int FullSpan = int.MaxValue;
 
     /// <summary>
-    ///     The largest number of columns a grid can have.
+    ///     Represents the largest number of columns a grid can have.
     /// </summary>
     public const int MaxColumns = 12;
 
     /// <summary>
     ///     Returns the inline style that sets a grid's column counts.
     /// </summary>
+    /// <param name="columns">The column count at each breakpoint.</param>
     /// <returns>
-    ///     The style, or <c>null</c> when every breakpoint has one column.
+    ///     The style, or <see langword="null" /> when every breakpoint has one column.
     /// </returns>
     public static string? ColumnsStyle(GridTiers columns) => Format("--sa-cols", columns);
 
     /// <summary>
     ///     Returns the column count at each breakpoint.
     /// </summary>
+    /// <param name="base">The column count at the smallest width.</param>
+    /// <param name="small">The column count when the grid is at least 30rem wide.</param>
+    /// <param name="medium">The column count when the grid is at least 40rem wide.</param>
+    /// <param name="large">The column count when the grid is at least 56rem wide.</param>
+    /// <returns>The column count at each breakpoint.</returns>
     /// <remarks>
-    ///     A breakpoint without a count uses the count of the next smaller breakpoint; the smallest
-    ///     defaults to 1.
+    ///     A <see langword="null" /> count uses the count of the next smaller breakpoint. The
+    ///     smallest uses 1.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">
     ///     A count is less than 1 or greater than <see cref="MaxColumns" />.
@@ -64,6 +70,9 @@ public static class ResponsiveGrid
     ///     Returns the row count at each breakpoint that fills each column before the next one
     ///     starts.
     /// </summary>
+    /// <param name="columns">The column count at each breakpoint.</param>
+    /// <param name="itemCount">The number of items in the grid.</param>
+    /// <returns>The row count at each breakpoint, at least 1.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
     ///     <paramref name="itemCount" /> is negative.
     /// </exception>
@@ -80,12 +89,17 @@ public static class ResponsiveGrid
     }
 
     /// <summary>
-    ///     Returns the span at each breakpoint, limited to the grid's column count at that
-    ///     breakpoint.
+    ///     Returns an item's span at each breakpoint, limited to the grid's column count there.
     /// </summary>
+    /// <param name="columns">The grid's column count at each breakpoint.</param>
+    /// <param name="base">The span at the smallest width.</param>
+    /// <param name="small">The span when the grid is at least 30rem wide.</param>
+    /// <param name="medium">The span when the grid is at least 40rem wide.</param>
+    /// <param name="large">The span when the grid is at least 56rem wide.</param>
+    /// <returns>The span at each breakpoint.</returns>
     /// <remarks>
-    ///     A breakpoint without a span uses the span of the next smaller breakpoint; the smallest
-    ///     defaults to 1. Use <see cref="FullSpan" /> to span every column.
+    ///     A <see langword="null" /> span uses the span of the next smaller breakpoint. The
+    ///     smallest uses 1. Use <see cref="FullSpan" /> to span every column.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">
     ///     A span is less than 1.
@@ -112,12 +126,19 @@ public static class ResponsiveGrid
     }
 
     /// <summary>
-    ///     Returns the column each breakpoint starts the item at.
+    ///     Returns the column an item starts at, for each breakpoint.
     /// </summary>
+    /// <param name="columns">The grid's column count at each breakpoint.</param>
+    /// <param name="span">The item's span at each breakpoint.</param>
+    /// <param name="base">The start at the smallest width.</param>
+    /// <param name="small">The start when the grid is at least 30rem wide.</param>
+    /// <param name="medium">The start when the grid is at least 40rem wide.</param>
+    /// <param name="large">The start when the grid is at least 56rem wide.</param>
+    /// <returns>The start at each breakpoint.</returns>
     /// <remarks>
-    ///     A breakpoint without a start uses the start of the next smaller breakpoint; the smallest
-    ///     defaults to <see cref="AutoStart" />. A start is dropped at a breakpoint where the grid has
-    ///     one column or the item would extend past the last column.
+    ///     A <see langword="null" /> start uses the start of the next smaller breakpoint. The
+    ///     smallest uses <see cref="AutoStart" />. A start becomes <see cref="AutoStart" /> at a
+    ///     breakpoint where the grid has one column or the item would extend past the last column.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">
     ///     A start is less than <see cref="AutoStart" /> or greater than <see cref="MaxColumns" />.
@@ -147,34 +168,40 @@ public static class ResponsiveGrid
     /// <summary>
     ///     Returns the inline style that sets a grid's row counts.
     /// </summary>
+    /// <param name="rows">The row count at each breakpoint.</param>
     /// <returns>
-    ///     The style, or <c>null</c> when every breakpoint has one row.
+    ///     The style, or <see langword="null" /> when every breakpoint has one row.
     /// </returns>
     public static string? RowsStyle(GridTiers rows) => Format("--sa-rows", rows);
 
     /// <summary>
     ///     Returns the inline style that sets a grid item's spans.
     /// </summary>
+    /// <param name="span">The span at each breakpoint.</param>
     /// <returns>
-    ///     The style, or <c>null</c> when the item spans one column at every breakpoint.
+    ///     The style, or <see langword="null" /> when the item spans one column at every
+    ///     breakpoint.
     /// </returns>
     public static string? SpanStyle(GridTiers span) => Format("--sa-span", span);
 
     /// <summary>
     ///     Returns the inline style that sets a grid item's starts.
     /// </summary>
+    /// <param name="start">The start at each breakpoint.</param>
     /// <returns>
-    ///     The style, or <c>null</c> when the item has no start at any breakpoint.
+    ///     The style, or <see langword="null" /> when the item has no start at any breakpoint.
     /// </returns>
     public static string? StartStyle(GridTiers start) =>
         Format("--sa-start", start, omitted: AutoStart);
 
     /// <summary>
-    ///     Returns a column count, span or start after checking that it is from 1 to
-    ///     <see cref="MaxColumns" />.
+    ///     Checks that a column count, span or start is from 1 to <see cref="MaxColumns" />.
     /// </summary>
+    /// <param name="value">The value to check.</param>
+    /// <param name="paramName">The name of the parameter the value came from.</param>
+    /// <returns>The value.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    ///     The value is less than 1 or greater than <see cref="MaxColumns" />.
+    ///     <paramref name="value" /> is less than 1 or greater than <see cref="MaxColumns" />.
     /// </exception>
     public static int ValidateColumns(int value, string paramName)
     {

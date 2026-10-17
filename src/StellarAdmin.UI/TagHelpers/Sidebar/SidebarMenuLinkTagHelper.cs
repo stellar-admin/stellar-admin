@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An anchor rendered as an entry within a sidebar menu item, with routing support; marks itself active when it matches the current route.
+///     Renders a link in a sidebar menu item.
 /// </summary>
+/// <remarks>
+///     The link is highlighted as the current item when its page or action routing attributes
+///     match the current request.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-link")]
 public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
@@ -25,28 +29,40 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
     private readonly IHtmlGenerator _htmlGenerator;
 
     /// <summary>
-    ///     The size of the menu link.
+    ///     Gets or sets the size of the link.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuLinkSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="SidebarMenuLinkSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public SidebarMenuLinkSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual variant of the menu link.
+    ///     Gets or sets the visual style of the link.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuLinkVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="SidebarMenuLinkVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public SidebarMenuLinkVariant? Variant { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SidebarMenuLinkTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">
+    ///     The generator that resolves the link's <c>href</c> from its routing attributes.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public SidebarMenuLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? SidebarMenuLinkSize.Default;

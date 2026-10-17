@@ -1,29 +1,43 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a bubble.
+///     Specifies the visual style of a bubble.
 /// </summary>
 public enum BubbleVariant
 {
-    /// <summary>A strongly emphasized bubble, for the current user's own messages.</summary>
+    /// <summary>
+    ///     A strong style, for the current user's own messages.
+    /// </summary>
     Default,
 
-    /// <summary>A neutral bubble for standard conversation content.</summary>
+    /// <summary>
+    ///     A neutral style, for standard messages.
+    /// </summary>
     Secondary,
 
-    /// <summary>A lower-emphasis bubble for supporting content.</summary>
+    /// <summary>
+    ///     A quieter style, for supporting content.
+    /// </summary>
     Muted,
 
-    /// <summary>A bubble with a subtle tint of the primary color.</summary>
+    /// <summary>
+    ///     A subtle tint of the primary color.
+    /// </summary>
     Tinted,
 
-    /// <summary>A bordered bubble with no fill.</summary>
+    /// <summary>
+    ///     A border with no fill.
+    /// </summary>
     Outline,
 
-    /// <summary>An unframed bubble, for content that should read as plain text.</summary>
+    /// <summary>
+    ///     No frame, for content that reads as plain text.
+    /// </summary>
     Ghost,
 
-    /// <summary>A bubble styled to convey an error or a failed action.</summary>
+    /// <summary>
+    ///     A style that signals an error or a failed action.
+    /// </summary>
     Destructive,
 }
 

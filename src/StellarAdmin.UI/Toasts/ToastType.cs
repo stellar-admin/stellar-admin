@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
-///     The kind of message a toast shows.
+///     Specifies the kind of message a toast shows.
 /// </summary>
 public enum ToastType
 {

@@ -4,40 +4,52 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays a user's image, falling back to initials or a name-derived monogram when no
-///     image is available.
+///     Renders a user's image, or their initials when there's no image.
 /// </summary>
 [HtmlTargetElement("sa-avatar")]
 public class AvatarTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Explicit initials to display when no image is available. Takes precedence over
-    ///     initials derived from <see cref="Name" />.
+    ///     Gets or sets the initials shown when there's no image.
     /// </summary>
+    /// <value>
+    ///     The default is the initials of the user's name.
+    /// </value>
     [HtmlAttributeName("initials")]
     public string? Initials { get; set; }
 
     /// <summary>
-    ///     The user's name, used as the image's alt text and to derive fallback initials.
+    ///     Gets or sets the user's name.
     /// </summary>
+    /// <remarks>
+    ///     The name is the image's alternative text. Without an image or <c>initials</c>, the
+    ///     avatar shows the first letters of the name's first two words, or the first two letters
+    ///     of a single word.
+    /// </remarks>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     /// <summary>
-    ///     The size of the avatar.
+    ///     Gets or sets the size of the avatar.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AvatarSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="AvatarSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public AvatarSize? Size { get; set; }
 
     /// <summary>
-    ///     The URL of the avatar image. When omitted, a fallback with initials is rendered.
+    ///     Gets or sets the URL of the image.
     /// </summary>
+    /// <value>
+    ///     The URL, or <see langword="null" /> to show initials. The default is
+    ///     <see langword="null" />.
+    /// </value>
     [HtmlAttributeName("src")]
     public string? Source { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAvatarSize = Size ?? AvatarSize.Default;

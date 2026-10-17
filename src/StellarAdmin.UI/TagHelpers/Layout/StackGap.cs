@@ -1,23 +1,33 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The amount of vertical spacing between the children of a <c>&lt;sa-stack&gt;</c>.
+///     Specifies the vertical space between the children of a <c>&lt;sa-stack&gt;</c>.
 /// </summary>
 public enum StackGap
 {
-    /// <summary>The default spacing between children.</summary>
+    /// <summary>
+    ///     The standard space.
+    /// </summary>
     Default,
 
-    /// <summary>Extra-small spacing between children.</summary>
+    /// <summary>
+    ///     An extra-small space.
+    /// </summary>
     ExtraSmall,
 
-    /// <summary>Small spacing between children.</summary>
+    /// <summary>
+    ///     A small space.
+    /// </summary>
     Small,
 
-    /// <summary>Large spacing between children.</summary>
+    /// <summary>
+    ///     A large space.
+    /// </summary>
     Large,
 
-    /// <summary>Extra-large spacing between children.</summary>
+    /// <summary>
+    ///     An extra-large space.
+    /// </summary>
     ExtraLarge,
 }
 

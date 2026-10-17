@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The media region of an empty state, displaying an icon or illustration above the title.
+///     Renders an icon or illustration above an empty state's title.
 /// </summary>
 [HtmlTargetElement("sa-empty-media")]
 public class EmptyMediaTagHelper : StellarAdminTagHelperBase
@@ -18,14 +18,16 @@ public class EmptyMediaTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The visual style of the media region.
+    ///     Gets or sets the visual style of the media.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="EmptyMediaVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="EmptyMediaVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public EmptyMediaVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? EmptyMediaVariant.Default;

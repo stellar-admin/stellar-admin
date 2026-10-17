@@ -1,17 +1,19 @@
 namespace StellarAdmin.Resources;
 
 /// <summary>
-///     The resource labels available when generating page text.
+///     Provides the resource labels that page text can use.
 /// </summary>
+/// <param name="singularLabel">The singular label of the resource.</param>
+/// <param name="pluralLabel">The plural label of the resource.</param>
 public sealed class ResourceLabelContext(string singularLabel, string pluralLabel)
 {
     /// <summary>
-    ///     The plural resource label.
+    ///     Gets the plural label of the resource.
     /// </summary>
     public string PluralLabel { get; } = pluralLabel;
 
     /// <summary>
-    ///     The singular resource label.
+    ///     Gets the singular label of the resource.
     /// </summary>
     public string SingularLabel { get; } = singularLabel;
 }

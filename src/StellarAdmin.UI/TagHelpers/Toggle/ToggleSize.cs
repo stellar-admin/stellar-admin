@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a toggle.
+///     Specifies the size of a toggle.
 /// </summary>
 public enum ToggleSize
 {
-    /// <summary>The default toggle size.</summary>
+    /// <summary>
+    ///     The standard size.
+    /// </summary>
     Default,
 
-    /// <summary>A small toggle.</summary>
+    /// <summary>
+    ///     A small toggle.
+    /// </summary>
     Small,
 
-    /// <summary>A large toggle.</summary>
+    /// <summary>
+    ///     A large toggle.
+    /// </summary>
     Large,
 }
 

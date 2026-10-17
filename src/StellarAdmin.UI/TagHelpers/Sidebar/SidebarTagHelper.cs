@@ -4,39 +4,51 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The sidebar panel itself, hosting its header, content, and footer. On desktop it renders
-///     as a fixed panel that can collapse; on mobile it becomes an off-canvas drawer.
+///     Renders a sidebar that holds a header, content and footer.
 /// </summary>
+/// <remarks>
+///     On wide screens the sidebar is a fixed panel that can collapse. On narrow screens it opens
+///     as a drawer over the page. Place it in a <c>&lt;sa-sidebar-wrapper&gt;</c>. Requires
+///     <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar")]
 public class SidebarTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The visual style of the sidebar.
+    ///     Gets or sets the visual style of the sidebar.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="SidebarVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public SidebarVariant? Variant { get; set; }
 
     /// <summary>
-    ///     The edge of the screen the sidebar is anchored to.
+    ///     Gets or sets the edge of the screen that the sidebar sits on.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarSide.Left" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the edge. The default is
+    ///     <see cref="SidebarSide.Left" />.
+    /// </value>
     [HtmlAttributeName("side")]
     public SidebarSide? Side { get; set; }
 
     /// <summary>
-    ///     How the sidebar behaves when it is collapsed.
+    ///     Gets or sets how the sidebar collapses.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies how the sidebar collapses. The default is
+    ///     <see cref="SidebarCollapsible.OffCanvas" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="SidebarCollapsible.OffCanvas" />.
+    ///     A sidebar that can't collapse is always shown and doesn't open as a drawer on narrow
+    ///     screens.
     /// </remarks>
     [HtmlAttributeName("collapsible")]
     public SidebarCollapsible? Collapsible { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? SidebarVariant.Default;

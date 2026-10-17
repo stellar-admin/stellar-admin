@@ -5,19 +5,26 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A separator placed between <c>sa-input-otp-group</c>s. Renders a Lucide <c>minus</c> icon
-///     by default; supply child content to override it.
+///     Renders a separator between groups of slots in an <c>&lt;sa-input-otp&gt;</c>.
 /// </summary>
+/// <remarks>
+///     The separator shows an icon unless it has content of its own.
+/// </remarks>
 [HtmlTargetElement("sa-input-otp-separator")]
 public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="InputOtpSeparatorTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the separator icon.</param>
     public InputOtpSeparatorTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var userClass = output.GetUserSuppliedClass();

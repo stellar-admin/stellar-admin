@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups <c>sa-dropdown-menu-radio-item</c> children into a single-selection set and tracks
-///     which value is selected.
+///     Groups <c>sa-dropdown-menu-radio-item</c> elements so that only one can be selected.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-radio-group")]
 public class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The value of the currently selected item in the group.
+    ///     Gets or sets the value of the selected item.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var groupName = $"--sa-dropdown-menu-radio-{GetUniqueId(context)}";

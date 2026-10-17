@@ -1,14 +1,18 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Base class for field display handlers.
+///     Provides the base class for field display handlers.
 /// </summary>
+/// <typeparam name="TDisplay">
+///     The type of the display that the handler prepares data for.
+/// </typeparam>
+/// <param name="display">The display settings of the field.</param>
 public abstract class FieldDisplayHandler<TDisplay>(TDisplay display)
     : IFieldDisplayHandler<TDisplay>
     where TDisplay : FieldDisplay
 {
     /// <summary>
-    ///     The display's configuration.
+    ///     Gets the display settings of the field.
     /// </summary>
     protected TDisplay Display { get; } = display;
 

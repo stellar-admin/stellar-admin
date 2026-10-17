@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace StellarAdmin.UI.Icons;
 
 /// <summary>
-///     Configures the icons available to StellarAdmin.
+///     Configures the icons that StellarAdmin components can render.
 /// </summary>
 /// <remarks>
-///     Includes Lucide icons by default. The options are frozen once configured, after which
-///     they can only be read.
+///     The Lucide icon pack is included by default. The icons can't be changed after the options
+///     are configured.
 /// </remarks>
 public sealed class IconOptions
 {
@@ -19,14 +19,33 @@ public sealed class IconOptions
     private FrozenDictionary<string, IconDefinition>? _frozenIcons;
     private FrozenDictionary<SemanticIconRole, string>? _frozenSemanticIcons;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="IconOptions" /> class.
+    /// </summary>
+    /// <remarks>
+    ///     The new instance includes the Lucide icon pack and its semantic icon mappings.
+    /// </remarks>
     public IconOptions()
     {
         AddIconPack<LucideIconPack>();
     }
 
     /// <summary>
-    ///     Adds an icon, replacing any icon already registered with the same name.
+    ///     Adds an icon.
     /// </summary>
+    /// <remarks>
+    ///     The icon replaces any icon already registered with the same name. Names aren't case
+    ///     sensitive.
+    /// </remarks>
+    /// <param name="name">The name that components use to render the icon.</param>
+    /// <param name="iconDefinition">The icon to add.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="name" /> or <paramref name="iconDefinition" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public void AddIcon(string name, IconDefinition iconDefinition)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -37,8 +56,18 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Adds an icon pack and its semantic mappings.
+    ///     Adds the icons of an icon pack and its semantic icon mappings.
     /// </summary>
+    /// <remarks>
+    ///     The pack's icons replace any icons already registered with the same names.
+    /// </remarks>
+    /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
+    /// <exception cref="ArgumentException">
+    ///     The icon pack maps a semantic role to an icon that it doesn't supply.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public void AddIconPack<TIconPack>()
         where TIconPack : IIconPack, new()
     {
@@ -46,8 +75,22 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Adds an icon pack with the specified registration settings.
+    ///     Adds the icons of an icon pack, configured by a delegate.
     /// </summary>
+    /// <remarks>
+    ///     The pack's icons replace any icons already registered with the same names.
+    /// </remarks>
+    /// <typeparam name="TIconPack">The type of the icon pack to add.</typeparam>
+    /// <param name="configure">A delegate that configures how the icon pack is added.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The icon pack maps a semantic role to an icon that it doesn't supply.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public void AddIconPack<TIconPack>(Action<IconPackOptions> configure)
         where TIconPack : IIconPack, new()
     {
@@ -90,6 +133,9 @@ public sealed class IconOptions
     /// <summary>
     ///     Removes all registered icons and semantic icon mappings.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public void ClearIcons()
     {
         ThrowIfFrozen();
@@ -98,16 +144,22 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Returns the registered icon names.
+    ///     Returns the names of the registered icons.
     /// </summary>
+    /// <returns>The names of the registered icons.</returns>
     public string[] GetIconNames()
     {
         return _frozenIcons?.Keys.ToArray() ?? _icons.Keys.ToArray();
     }
 
     /// <summary>
-    ///     Returns the icon name for a semantic role, or null if none is mapped.
+    ///     Returns the name of the icon mapped to a semantic role.
     /// </summary>
+    /// <param name="role">One of the enumeration values that specifies the semantic role.</param>
+    /// <returns>
+    ///     The name of the mapped icon, or <see langword="null" /> if no icon is mapped to
+    ///     <paramref name="role" />.
+    /// </returns>
     public string? GetSemanticIconName(SemanticIconRole role)
     {
         return _frozenSemanticIcons?.GetValueOrDefault(role)
@@ -115,8 +167,22 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Assigns a registered icon to a semantic role.
+    ///     Maps a registered icon to a semantic role.
     /// </summary>
+    /// <remarks>
+    ///     Components render the icon wherever they need the icon for <paramref name="role" />.
+    /// </remarks>
+    /// <param name="role">One of the enumeration values that specifies the semantic role.</param>
+    /// <param name="name">The name of the registered icon.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="name" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     No icon is registered with the name <paramref name="name" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public void MapSemanticIcon(SemanticIconRole role, string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -130,8 +196,16 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Removes an icon and its semantic mappings, returning whether it was registered.
+    ///     Removes an icon and its semantic icon mappings.
     /// </summary>
+    /// <param name="name">The name of the icon to remove.</param>
+    /// <returns>
+    ///     <see langword="true" /> if the icon was registered and is removed; otherwise,
+    ///     <see langword="false" />.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    ///     The options have already been configured.
+    /// </exception>
     public bool RemoveIcon(string name)
     {
         ThrowIfFrozen();
@@ -154,8 +228,17 @@ public sealed class IconOptions
     }
 
     /// <summary>
-    ///     Returns whether an icon exists and supplies its definition.
+    ///     Gets the icon registered with a name.
     /// </summary>
+    /// <param name="name">The name of the icon to get.</param>
+    /// <param name="iconDefinition">
+    ///     When this method returns, contains the icon, or <see langword="null" /> if no icon is
+    ///     registered with <paramref name="name" />. This parameter is treated as uninitialized.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true" /> if an icon is registered with <paramref name="name" />;
+    ///     otherwise, <see langword="false" />.
+    /// </returns>
     public bool TryGetIcon(string name, [NotNullWhen(true)] out IconDefinition? iconDefinition)
     {
         return _frozenIcons?.TryGetValue(name, out iconDefinition)

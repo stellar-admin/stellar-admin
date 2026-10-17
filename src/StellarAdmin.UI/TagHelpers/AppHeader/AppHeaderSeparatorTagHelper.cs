@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A vertical separator sized for use inside <c>&lt;sa-app-header&gt;</c>, typically between
-///     the sidebar trigger and the content that follows it.
+///     Renders a vertical separator sized for an app header.
 /// </summary>
 [HtmlTargetElement("sa-app-header-separator")]
 public class AppHeaderSeparatorTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.SetAttribute("data-slot", "app-header-separator");

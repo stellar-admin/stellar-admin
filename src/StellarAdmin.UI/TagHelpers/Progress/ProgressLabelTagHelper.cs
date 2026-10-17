@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A text label for a progress bar, rendered as a <c>&lt;span&gt;</c>.
+///     Renders a label for a progress bar.
 /// </summary>
 [HtmlTargetElement("sa-progress-label")]
 public class ProgressLabelTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

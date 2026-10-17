@@ -6,14 +6,14 @@ generated: true
 
 # Kbd
 
-Displays a single keyboard key or keystroke.
+Renders a keyboard key or keystroke.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-kbd>` | Displays a single keyboard key or keystroke. |
-| `<sa-kbd-group>` | Groups several `<sa-kbd>` elements to represent a keyboard shortcut or key sequence. |
+| `<sa-kbd>` | Renders a keyboard key or keystroke. |
+| `<sa-kbd-group>` | Renders a group of `<sa-kbd>` keys that form a shortcut or key sequence. |
 
 ## Examples
 

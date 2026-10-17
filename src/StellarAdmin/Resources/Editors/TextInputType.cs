@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     The kind of value a text input editor accepts.
+///     Specifies the kind of value a text input editor accepts.
 /// </summary>
 public enum TextInputType
 {

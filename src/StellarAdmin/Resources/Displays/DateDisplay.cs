@@ -1,10 +1,10 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays a date, a time, or both.
+///     Shows a date, a time or both.
 /// </summary>
 /// <remarks>
-///     The default display for <see cref="DateTime" />, <see cref="DateTimeOffset" />,
+///     This is the default display for <see cref="DateTime" />, <see cref="DateTimeOffset" />,
 ///     <see cref="DateOnly" /> and <see cref="TimeOnly" /> properties.
 /// </remarks>
 public sealed class DateDisplay : FieldDisplay
@@ -13,11 +13,13 @@ public sealed class DateDisplay : FieldDisplay
     public override string TemplateName => "Displays/Date";
 
     /// <summary>
-    ///     The format string, such as <c>d MMM yyyy</c>.
+    ///     Gets or sets the format string, such as <c>d MMM yyyy</c>.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the property's <c>[DisplayFormat]</c>, then <c>d MMM yyyy</c> for dates,
-    ///     <c>HH:mm</c> for times and <c>d MMM yyyy, HH:mm</c> for both.
-    /// </remarks>
+    /// <value>
+    ///     The format string, or <see langword="null" /> to use the property's
+    ///     <c>[DisplayFormat]</c>. Without one, dates use <c>d MMM yyyy</c>, times use
+    ///     <c>HH:mm</c> and values with both use <c>d MMM yyyy, HH:mm</c>. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Format { get; set; }
 }

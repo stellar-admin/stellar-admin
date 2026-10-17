@@ -6,7 +6,7 @@ generated: true
 
 # Skeleton
 
-A placeholder that shows an animated pulsing shape while content is loading.
+Renders a pulsing placeholder shape to show while content loads.
 
 ## Attributes
 

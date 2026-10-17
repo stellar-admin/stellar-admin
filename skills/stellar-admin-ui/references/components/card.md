@@ -6,19 +6,19 @@ generated: true
 
 # Card
 
-A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents.
+Renders a container that groups related content.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-card>` | A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents. |
-| `<sa-card-action>` | An action region within a card header, aligned to the top-right corner; typically contains a button or other interactive control. |
-| `<sa-card-content>` | The main content region of a card. |
-| `<sa-card-description>` | A secondary line of muted text within a card header, describing the card's contents. |
-| `<sa-card-footer>` | The footer region of a card; typically contains actions or supplementary information. |
-| `<sa-card-header>` | The header region of a card; typically contains the title, description, and action. |
-| `<sa-card-title>` | The title text within a card header. |
+| `<sa-card>` | Renders a container that groups related content. |
+| `<sa-card-action>` | Renders an area in the top-right corner of a card header for a button or other control. |
+| `<sa-card-content>` | Renders the main content of a card. |
+| `<sa-card-description>` | Renders the description of a card, as muted text in the card header. |
+| `<sa-card-footer>` | Renders the footer of a card, which holds actions or extra information. |
+| `<sa-card-header>` | Renders the header of a card, which holds the title, description and action. |
+| `<sa-card-title>` | Renders the title of a card. |
 
 ## Attributes
 

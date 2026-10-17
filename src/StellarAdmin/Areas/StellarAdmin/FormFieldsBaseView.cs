@@ -7,20 +7,24 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Areas.StellarAdmin;
 
 /// <summary>
-///     The base class of the views that render a form's fields.
+///     Provides the base class for views that render a form's fields.
 /// </summary>
 /// <typeparam name="TModel">The type of the view's model.</typeparam>
 public abstract class FormFieldsBaseView<TModel> : RazorPage<TModel>
 {
     /// <summary>
-    ///     All form fields as a flat list, including fields inside sections and groups, in display order.
+    ///     Gets all of the form's fields in display order, including the fields inside sections
+    ///     and groups.
     /// </summary>
     public IReadOnlyList<FormFieldOptions> Fields =>
         ViewData[ViewDataKeys.FormFields] as IReadOnlyList<FormFieldOptions> ?? [];
 
     /// <summary>
-    ///     The fields and containers at the current layout level, preserving their nested structure for rendering.
+    ///     Gets the fields and containers at the current layout level.
     /// </summary>
+    /// <remarks>
+    ///     Containers such as sections and groups hold their own items.
+    /// </remarks>
     public IReadOnlyList<FormItemOptions> Items =>
         ViewData[ViewDataKeys.FormItems] as IReadOnlyList<FormItemOptions> ?? Fields;
 

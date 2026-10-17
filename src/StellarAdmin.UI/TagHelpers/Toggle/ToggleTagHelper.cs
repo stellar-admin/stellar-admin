@@ -6,13 +6,26 @@ using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelp
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders a two-state button that can be toggled on or off.
+///     Renders a button that can be pressed on or off.
 /// </summary>
+/// <remarks>
+///     The toggle is a hidden native checkbox, so it posts and binds like any other checkbox. It
+///     works without JavaScript.
+/// </remarks>
 [HtmlTargetElement("sa-toggle")]
 public class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ToggleTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">
+    ///     The generator that renders the bound checkbox and the field's label and messages.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public ToggleTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator)
     {
@@ -20,35 +33,41 @@ public class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
     }
 
     /// <summary>
-    ///     The id of the form this toggle's input belongs to.
+    ///     Gets or sets the <c>id</c> of the form that the toggle posts with.
     /// </summary>
+    /// <remarks>
+    ///     Use it when the toggle isn't inside the form.
+    /// </remarks>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
     /// <summary>
-    ///     The visual style of the toggle.
+    ///     Gets or sets the visual style of the toggle.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ToggleVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ToggleVariant? Variant { get; set; }
 
     /// <summary>
-    ///     The size of the toggle.
+    ///     Gets or sets the size of the toggle.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToggleSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ToggleSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ToggleSize? Size { get; set; }
 
     /// <summary>
-    ///     The value the toggle's input posts when pressed.
+    ///     Gets or sets the value that the toggle posts when it is pressed.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <inheritdoc />
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

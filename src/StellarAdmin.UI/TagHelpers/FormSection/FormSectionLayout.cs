@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The layout of a form section.
+///     Specifies how a form section places its heading and fields.
 /// </summary>
 public enum FormSectionLayout
 {

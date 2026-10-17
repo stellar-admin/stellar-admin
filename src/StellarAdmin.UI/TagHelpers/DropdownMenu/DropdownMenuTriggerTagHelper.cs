@@ -3,30 +3,32 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The button that toggles a dropdown menu and anchors its content, styled with button variant
-///     and size options.
+///     Renders the button that opens and closes a dropdown menu.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-trigger")]
 public class DropdownMenuTriggerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the trigger button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual style of the trigger button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Outline" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="ButtonVariant.Outline" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "button";

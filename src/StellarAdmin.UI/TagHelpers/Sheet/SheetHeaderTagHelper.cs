@@ -3,11 +3,15 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of a sheet; typically contains the title and description.
+///     Renders the header of a sheet.
 /// </summary>
+/// <remarks>
+///     The header usually holds the sheet's title and description.
+/// </remarks>
 [HtmlTargetElement("sa-sheet-header")]
 public class SheetHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

@@ -9,14 +9,19 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An image picker that uploads the picked file straight away and keeps the value the upload
-///     returns in a hidden input, which is what the form posts.
+///     Renders an image picker that uploads the picked file straight away.
 /// </summary>
 /// <remarks>
-///     The file is posted to <see cref="UploadUrl" /> as the multipart field <c>file</c>, with the
-///     form's antiforgery token. The endpoint answers with JSON: <c>{ "value": "...", "url": "..." }</c>
-///     on success, or <c>{ "error": "..." }</c> with an error status. Replacing and removing the
-///     image take effect when the form is saved.
+///     <para>
+///         The file is posted to <see cref="UploadUrl" /> as the multipart field <c>file</c>, with
+///         the form's antiforgery token. The endpoint answers with JSON:
+///         <c>{ "value": "...", "url": "..." }</c> on success, or <c>{ "error": "..." }</c> with an
+///         error status. The form posts the returned value.
+///     </para>
+///     <para>
+///         Replacing and removing the image take effect when the form is saved. Requires
+///         <c>stellar-admin.js</c>.
+///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-image-upload", TagStructure = TagStructure.WithoutEndTag)]
 public class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassNames>
@@ -26,6 +31,14 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassName
 
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ImageUploadTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders a bound label and error.</param>
+    /// <param name="iconOptions">The icon options that supply the control's icons.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public ImageUploadTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
         : base(htmlGenerator)
     {
@@ -33,66 +46,86 @@ public class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassName
     }
 
     /// <summary>
-    ///     The accepted image types, as a comma-separated list of media types.
+    ///     Gets or sets the accepted image types.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to JPEG, PNG, WebP, GIF and AVIF.
-    /// </remarks>
+    /// <value>
+    ///     A comma-separated list of media types. The default is JPEG, PNG, WebP, GIF and AVIF.
+    /// </value>
     [HtmlAttributeName("accept")]
     public string? Accept { get; set; }
 
     /// <summary>
-    ///     Whether the control is disabled.
+    ///     Gets or sets a value that indicates whether the control is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the control is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     The <c>id</c> of the form the value belongs to, for a control outside that form.
+    ///     Gets or sets the <c>id</c> of the form that the value belongs to.
     /// </summary>
+    /// <remarks>
+    ///     Use it when the control is outside that form.
+    /// </remarks>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
     /// <summary>
-    ///     How the control arranges the image and its actions.
+    ///     Gets or sets how the control arranges the image and its actions.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageUploadLayout.Dropzone" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is
+    ///     <see cref="ImageUploadLayout.Dropzone" />.
+    /// </value>
     [HtmlAttributeName("layout")]
     public ImageUploadLayout? Layout { get; set; }
 
     /// <summary>
-    ///     The largest file accepted, in bytes. The browser checks it before uploading; the upload
-    ///     endpoint must check it again.
+    ///     Gets or sets the largest file accepted.
     /// </summary>
+    /// <value>
+    ///     The size in bytes. The default is <c>5242880</c> (5 MB).
+    /// </value>
     /// <remarks>
-    ///     Defaults to 5 MB.
+    ///     The browser checks the size before uploading. The upload endpoint must check it again.
     /// </remarks>
     [HtmlAttributeName("max-file-size")]
     public long? MaxFileSize { get; set; }
 
     /// <summary>
-    ///     The URL of the current image. When omitted, the value is used as the URL.
+    ///     Gets or sets the URL of the current image.
     /// </summary>
+    /// <value>
+    ///     The default is the stored value, used as a URL.
+    /// </value>
     [HtmlAttributeName("src")]
     public string? Source { get; set; }
 
     /// <summary>
-    ///     The URL a picked file is posted to.
+    ///     Gets or sets the URL that a picked file is posted to.
     /// </summary>
+    /// <remarks>
+    ///     Required unless the control is disabled.
+    /// </remarks>
     [HtmlAttributeName("upload-url")]
     public string? UploadUrl { get; set; }
 
     /// <summary>
-    ///     The stored value when not bound with <c>asp-for</c>.
+    ///     Gets or sets the stored value.
     /// </summary>
+    /// <remarks>
+    ///     Used when the control isn't bound with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="UploadUrl" /> is empty and the control isn't disabled.
+    /// </exception>
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

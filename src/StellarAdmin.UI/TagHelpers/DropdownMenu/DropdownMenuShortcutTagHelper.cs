@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays a keyboard shortcut hint, aligned to the trailing edge of a menu item.
+///     Renders a keyboard shortcut hint at the end of a dropdown menu item.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-shortcut")]
 public class DropdownMenuShortcutTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

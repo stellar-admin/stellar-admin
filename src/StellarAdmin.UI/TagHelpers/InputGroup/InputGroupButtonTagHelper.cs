@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A button styled to sit inside an input group, typically within an add-on.
+///     Renders a button inside an input group, usually in an add-on.
 /// </summary>
+/// <remarks>
+///     The button doesn't submit its form unless it has <c>type="submit"</c>.
+/// </remarks>
 [HtmlTargetElement("sa-input-group-button")]
 public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
 {
@@ -20,23 +23,26 @@ public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The size of the button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="InputGroupButtonSize.ExtraSmall" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="InputGroupButtonSize.ExtraSmall" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public InputGroupButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual style of the button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Ghost" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="ButtonVariant.Ghost" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? InputGroupButtonSize.ExtraSmall;

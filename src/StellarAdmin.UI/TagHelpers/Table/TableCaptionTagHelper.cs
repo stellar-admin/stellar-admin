@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A caption for a table, rendered as a <c>&lt;caption&gt;</c>; describes the table's
-///     contents.
+///     Renders a caption that describes a table, as a <c>&lt;caption&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-caption")]
 public class TableCaptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "caption";

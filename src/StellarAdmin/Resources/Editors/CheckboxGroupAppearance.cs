@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     How a checkbox group editor displays its choices.
+///     Specifies how a checkbox group editor displays its choices.
 /// </summary>
 public enum CheckboxGroupAppearance
 {

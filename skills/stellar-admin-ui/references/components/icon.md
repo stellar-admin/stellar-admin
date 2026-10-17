@@ -6,7 +6,7 @@ generated: true
 
 # Icon
 
-Renders an SVG icon from the active icon pack by name.
+Renders a registered icon as an `<svg>` element.
 
 ## Attributes
 

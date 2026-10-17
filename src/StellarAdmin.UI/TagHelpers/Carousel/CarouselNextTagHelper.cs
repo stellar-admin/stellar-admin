@@ -5,36 +5,50 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A button that scrolls to the next carousel position.
+///     Renders a button that scrolls a carousel to the next position.
 /// </summary>
+/// <remarks>
+///     Must be placed inside an <c>sa-carousel</c> element. Shows an arrow icon when the element
+///     has no content.
+/// </remarks>
 [HtmlTargetElement("sa-carousel-next")]
 public class CarouselNextTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     The button size.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to IconSmall.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size of the button. The default is
+    ///     <see cref="ButtonSize.IconSmall" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The button appearance.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to Outline.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style of the button. The
+    ///     default is <see cref="ButtonVariant.Outline" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CarouselNextTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the arrow icon.</param>
     public CarouselNextTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The element isn't inside an <c>sa-carousel</c> element.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var carouselContext =

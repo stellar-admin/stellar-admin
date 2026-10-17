@@ -7,15 +7,26 @@ using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelp
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A toggle control that switches between on and off states. Backed by a native
-///     checkbox so its value model-binds and posts back like any other checkbox, with the
-///     visuals driven entirely by CSS.
+///     Renders a control that switches between on and off.
 /// </summary>
+/// <remarks>
+///     The switch is a native checkbox, so it posts and binds like any other checkbox. It works
+///     without JavaScript.
+/// </remarks>
 [HtmlTargetElement("sa-switch", TagStructure = TagStructure.WithoutEndTag)]
 public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SwitchTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">
+    ///     The generator that renders the bound checkbox and the field's label and messages.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public SwitchTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator)
     {
@@ -23,26 +34,31 @@ public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
     }
 
     /// <summary>
-    ///     The id of the form the switch belongs to, mapped to the <c>form</c> attribute.
+    ///     Gets or sets the <c>id</c> of the form that the switch posts with.
     /// </summary>
+    /// <remarks>
+    ///     Use it when the switch isn't inside the form.
+    /// </remarks>
     [HtmlAttributeName("form")]
     public string? FormName { get; set; }
 
     /// <summary>
-    ///     The size of the switch.
+    ///     Gets or sets the size of the switch.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SwitchSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="SwitchSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public SwitchSize? Size { get; set; }
 
     /// <summary>
-    ///     The value submitted when the switch is on.
+    ///     Gets or sets the value that the switch posts when it is on.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <inheritdoc />
     protected override Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

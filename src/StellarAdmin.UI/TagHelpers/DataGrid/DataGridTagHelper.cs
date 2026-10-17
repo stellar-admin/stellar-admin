@@ -10,73 +10,105 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A data grid that renders a full table from declarative column definitions and a data
-///     source. Columns are declared with <c>sa-data-grid-column</c>; the grid renders the
-///     header from the column definitions and re-renders the column content once per data row.
-///     The grid renders as a card-style panel; add an <c>sa-data-grid-pager</c> child to
-///     render a footer bar with paging links and a record-range summary, an
-///     <c>sa-data-grid-sort</c> child to render sort links on the sortable columns' headers,
-///     an <c>sa-data-grid-selection</c> child to render a row-selection checkbox column, and an
-///     <c>sa-data-grid-add-row</c> child to render a row for a button that adds an item.
-///     Rows listed in <c>editing-keys</c>, and a <c>new-item</c>, render in edit mode with their
-///     columns' <c>sa-data-grid-edit-template</c>s. Querying, sorting, and paging the data remain the application's responsibility — the
-///     grid renders the items it is given.
+///     Renders a table of items, with columns declared by <c>sa-data-grid-column</c> children.
 /// </summary>
+/// <remarks>
+///     <para>
+///         The grid renders as a card. Add an <c>sa-data-grid-pager</c> for paging links, an
+///         <c>sa-data-grid-sort</c> for sort links on sortable columns, an
+///         <c>sa-data-grid-selection</c> for a row selection column and an
+///         <c>sa-data-grid-add-row</c> for a row with a button that adds an item.
+///     </para>
+///     <para>
+///         The grid renders the items it is given. Querying, sorting and paging the data is up to
+///         the application.
+///     </para>
+/// </remarks>
 [HtmlTargetElement("sa-data-grid")]
 public class DataGridTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="DataGridTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the selection checkboxes.</param>
+    /// <param name="iconOptions">The icon options that supply the icons of the grid's controls.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public DataGridTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconOptions = iconOptions.Value;
     }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
     /// <summary>
-    ///     The data items to render, one table row per item. When paging, pass the current
-    ///     page of items, not the full data set.
+    ///     Gets or sets the items to render, one row per item.
     /// </summary>
+    /// <remarks>
+    ///     When paging, pass only the items of the current page.
+    /// </remarks>
     [HtmlAttributeName("items")]
     public IEnumerable? Items { get; set; }
 
     /// <summary>
-    ///     The name of a public property on the row item whose value identifies the row. Row
-    ///     selection and expanded details use it, and a row keeps them when it is replaced in
-    ///     the page.
+    ///     Gets or sets the name of the item property that identifies a row.
     /// </summary>
+    /// <remarks>
+    ///     Row selection, edit mode and expanded row details require it. A row that is replaced in
+    ///     the page keeps its selection and expanded details.
+    /// </remarks>
     [HtmlAttributeName("key-field")]
     public string? KeyField { get; set; }
 
     /// <summary>
-    ///     The keys of the rows to render in edit mode, with their columns' edit templates.
-    ///     Requires <c>key-field</c>.
+    ///     Gets or sets the keys of the rows to render in edit mode.
     /// </summary>
+    /// <remarks>
+    ///     Requires <c>key-field</c>. An editing row renders its columns' edit templates.
+    /// </remarks>
     [HtmlAttributeName("editing-keys")]
     public IEnumerable? EditingKeys { get; set; }
 
     /// <summary>
-    ///     An item to render in edit mode above the other rows, with the key <c>new</c>. Its
-    ///     columns without an edit template are empty. Requires <c>key-field</c>.
+    ///     Gets or sets a new item to render in edit mode above the other rows.
     /// </summary>
+    /// <remarks>
+    ///     Requires <c>key-field</c>. The row has the key <c>new</c>. Its columns without an edit
+    ///     template are empty.
+    /// </remarks>
     [HtmlAttributeName("new-item")]
     public object? NewItem { get; set; }
 
     /// <summary>
-    ///     Renders only the rows, without the grid, its table and its header, for a response
-    ///     that replaces rows in the page. A row in edit mode renders without its details row.
+    ///     Gets or sets a value that indicates whether only the rows are rendered.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if only the rows render, without the grid, its table and its
+    ///     header; otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Use it for a response that replaces rows in the page. A row in edit mode renders
+    ///     without its details row.
     /// </remarks>
     [HtmlAttributeName("rows-only")]
     public bool? RowsOnly { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="EditingKeys" /> or <see cref="NewItem" /> is set without
+    ///     <see cref="KeyField" />, or a column is sortable and the grid has no
+    ///     <c>sa-data-grid-sort</c>.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // Razor writes a null expression bound to a string attribute as an empty string.

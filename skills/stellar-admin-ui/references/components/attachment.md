@@ -6,22 +6,22 @@ generated: true
 
 # Attachment
 
-A file or image presented with its media, metadata, upload state, and actions.
+Renders a file with its media, details, upload state and actions.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-attachment>` | A file or image presented with its media, metadata, upload state, and actions. |
-| `<sa-attachment-action>` | A single action control on an attachment, such as removing or retrying it. |
-| `<sa-attachment-actions>` | The region of an attachment that holds its action controls. |
-| `<sa-attachment-button-trigger>` | An attachment trigger rendered as a button, making the whole attachment activatable while leaving its actions clickable. |
-| `<sa-attachment-content>` | The region of an attachment that holds its title and description. |
-| `<sa-attachment-description>` | The supporting text of an attachment, such as its file type, size, or upload status. |
-| `<sa-attachment-group>` | A horizontally scrolling row of attachments that snaps each one into view. |
-| `<sa-attachment-media>` | The media region of an attachment, holding a file-type icon or a thumbnail preview. |
-| `<sa-attachment-title>` | The name of an attachment, truncated to fit and shimmering while it uploads or processes. |
-| `<sa-attachment-trigger-link>` | An attachment trigger rendered as an anchor, making the whole attachment a clickable link while leaving its actions clickable. |
+| `<sa-attachment>` | Renders a file with its media, details, upload state and actions. |
+| `<sa-attachment-action>` | Renders a button that acts on an attachment, such as removing or retrying it. |
+| `<sa-attachment-actions>` | Renders the area of an attachment that holds its action buttons. |
+| `<sa-attachment-button-trigger>` | Renders a button that makes the whole attachment clickable. |
+| `<sa-attachment-content>` | Renders the area of an attachment that holds its title and description. |
+| `<sa-attachment-description>` | Renders the description of an attachment, such as its file type, size or upload status. |
+| `<sa-attachment-group>` | Renders a row of attachments that scrolls horizontally and snaps each one into view. |
+| `<sa-attachment-media>` | Renders the media of an attachment, such as a file type icon or a thumbnail. |
+| `<sa-attachment-title>` | Renders the name of an attachment, shortened to fit. |
+| `<sa-attachment-trigger-link>` | Renders a link that makes the whole attachment clickable. |
 
 ## Attributes
 

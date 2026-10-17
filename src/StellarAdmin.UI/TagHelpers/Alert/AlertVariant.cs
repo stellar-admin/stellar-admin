@@ -1,13 +1,17 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of an alert.
+///     Specifies the visual style of an alert.
 /// </summary>
 public enum AlertVariant
 {
-    /// <summary>The standard alert appearance.</summary>
+    /// <summary>
+    ///     The standard alert style.
+    /// </summary>
     Default,
 
-    /// <summary>An alert styled to convey an error or destructive situation.</summary>
+    /// <summary>
+    ///     A style that signals an error or a destructive outcome.
+    /// </summary>
     Destructive,
 }

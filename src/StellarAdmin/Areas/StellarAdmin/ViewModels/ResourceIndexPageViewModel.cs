@@ -4,108 +4,74 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The resources and presentation settings for an index page.
+///     Represents the model of an index page.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
 public sealed class ResourceIndexPageViewModel<TResource> : IResourceIndexPageViewModel
 {
-    /// <summary>
-    ///     Whether resources can be created.
-    /// </summary>
+    /// <inheritdoc />
     public bool CanCreate { get; init; }
 
-    /// <summary>
-    ///     Whether resources can be edited.
-    /// </summary>
+    /// <inheritdoc />
     public bool CanEdit { get; init; }
 
-    /// <summary>
-    ///     Whether resources can be viewed.
-    /// </summary>
+    /// <inheritdoc />
     public bool CanView { get; init; }
 
-    /// <summary>
-    ///     The columns displayed in order.
-    /// </summary>
+    /// <inheritdoc />
     public required IReadOnlyList<DataGridColumnOptions> Columns { get; init; }
 
-    /// <summary>
-    ///     The create button label.
-    /// </summary>
+    /// <inheritdoc />
     public required string CreateLabel { get; init; }
 
-    /// <summary>
-    ///     The delete confirmation dialog.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexDeleteDialogViewModel? Delete { get; init; }
 
-    /// <summary>
-    ///     The delete button label.
-    /// </summary>
+    /// <inheritdoc />
     public string? DeleteLabel { get; init; }
 
-    /// <summary>
-    ///     The edit link label.
-    /// </summary>
+    /// <inheritdoc />
     public string? EditLabel { get; init; }
 
-    /// <summary>
-    ///     The inline rows, or null when resources are neither edited nor created inline.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexInlineRowsViewModel? InlineRows { get; init; }
 
     /// <summary>
-    ///     The resources to display.
+    ///     Gets the resources on the current page.
     /// </summary>
     public required IReadOnlyList<TResource> Items { get; init; }
 
     /// <summary>
-    ///     Returns the key used in resource links.
+    ///     Gets a delegate that returns the key of a resource, or <see langword="null" /> when the
+    ///     resource has no key.
     /// </summary>
     public Func<TResource, string>? KeySelector { get; init; }
 
-    /// <summary>
-    ///     The paging controls, or null when paging is disabled.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexPagingViewModel? Paging { get; init; }
 
-    /// <summary>
-    ///     The index settings explicitly supplied in the query string.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexQuery Query { get; init; } = new();
 
-    /// <summary>
-    ///     The row details settings, or null when rows do not expand.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceRowDetailsOptions? RowDetails { get; init; }
 
-    /// <summary>
-    ///     Whether only the grid's rows are rendered, for a row request.
-    /// </summary>
+    /// <inheritdoc />
     public bool RowsOnly { get; init; }
 
-    /// <summary>
-    ///     The scope tabs.
-    /// </summary>
+    /// <inheritdoc />
     public IReadOnlyList<ResourceIndexScopeViewModel> Scopes { get; init; } = [];
 
-    /// <summary>
-    ///     The search box, or null when searching is disabled.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexSearchViewModel? Search { get; init; }
 
-    /// <summary>
-    ///     The selected ordering.
-    /// </summary>
+    /// <inheritdoc />
     public ResourceIndexSortViewModel? Sort { get; init; }
 
-    /// <summary>
-    ///     The page title.
-    /// </summary>
+    /// <inheritdoc />
     public required string Title { get; init; }
 
-    /// <summary>
-    ///     The view link label.
-    /// </summary>
+    /// <inheritdoc />
     public string? ViewLabel { get; init; }
 
     IEnumerable IResourceIndexPageViewModel.Items => Items;

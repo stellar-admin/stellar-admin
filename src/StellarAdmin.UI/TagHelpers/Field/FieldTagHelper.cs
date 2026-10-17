@@ -4,102 +4,123 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Wraps a form control together with its label, description, and error message, arranging them
-///     according to the chosen orientation.
+///     Renders a field that groups a form control with its label, description and error message.
 /// </summary>
 [HtmlTargetElement("sa-field")]
 public class FieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     /// <summary>
-    ///     The number of columns the field spans in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or
-    ///     <c>full</c> for every column.
+    ///     Gets or sets the number of columns the field spans in an <c>&lt;sa-grid&gt;</c>.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is <c>1</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to 1. Limited to the grid's column count at each width.
+    ///     The span is limited to the grid's column count at each width.
     /// </remarks>
     [HtmlAttributeName("column-span")]
     public string? ColumnSpan { get; set; }
 
     /// <summary>
-    ///     The number of columns the field spans when the grid is at least 56rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 56rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the span at 40rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at
+    ///     40rem.
+    /// </value>
     [HtmlAttributeName("column-span-lg")]
     public string? ColumnSpanLarge { get; set; }
 
     /// <summary>
-    ///     The number of columns the field spans when the grid is at least 40rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 40rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the span at 30rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at
+    ///     30rem.
+    /// </value>
     [HtmlAttributeName("column-span-md")]
     public string? ColumnSpanMedium { get; set; }
 
     /// <summary>
-    ///     The number of columns the field spans when the grid is at least 30rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 30rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ColumnSpan" />.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at the
+    ///     smallest width.
+    /// </value>
     [HtmlAttributeName("column-span-sm")]
     public string? ColumnSpanSmall { get; set; }
 
     /// <summary>
-    ///     The column the field starts at in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
-    ///     previous item.
+    ///     Gets or sets the column the field starts at in an <c>&lt;sa-grid&gt;</c>.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is
+    ///     <c>auto</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the field
-    ///     would extend past the last column.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start")]
     public string? ColumnStart { get; set; }
 
     /// <summary>
-    ///     The column the field starts at when the grid is at least 56rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 56rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at 40rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the start at 40rem.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-lg")]
     public string? ColumnStartLarge { get; set; }
 
     /// <summary>
-    ///     The column the field starts at when the grid is at least 40rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at 30rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the start at 30rem.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-md")]
     public string? ColumnStartMedium { get; set; }
 
     /// <summary>
-    ///     The column the field starts at when the grid is at least 30rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 30rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at the smallest width.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="ColumnStart" />.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-sm")]
     public string? ColumnStartSmall { get; set; }
 
     /// <summary>
-    ///     How the field arranges its label, control, and supporting text.
+    ///     Gets or sets how the field arranges its label, control and supporting text.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="FieldOrientation.Vertical" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the arrangement. The default is
+    ///     <see cref="FieldOrientation.Vertical" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public FieldOrientation? Orientation { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     A column span or start isn't valid.
+    /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // The MergeAttributes call below does a simple concatenation of the classes, but this is not correct.

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An individual slide in a carousel.
+///     Renders a slide in a carousel.
 /// </summary>
 [HtmlTargetElement("sa-carousel-item")]
 public class CarouselItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

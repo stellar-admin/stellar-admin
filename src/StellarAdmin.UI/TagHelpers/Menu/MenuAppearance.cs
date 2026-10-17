@@ -1,15 +1,18 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The surface treatment of a floating menu (Dropdown Menu content, and future menu
-///     families).
+///     Specifies the surface style of a floating menu.
 /// </summary>
 public enum MenuAppearance
 {
-    /// <summary>An opaque <c>popover</c> surface.</summary>
+    /// <summary>
+    ///     An opaque surface.
+    /// </summary>
     Solid,
 
-    /// <summary>A frosted "liquid glass" surface (backdrop blur over a translucent background).</summary>
+    /// <summary>
+    ///     A frosted glass surface that blurs the page behind a translucent background.
+    /// </summary>
     Translucent,
 }
 

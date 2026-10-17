@@ -7,75 +7,100 @@ using FrameworkInputTagHelper = Microsoft.AspNetCore.Mvc.TagHelpers.InputTagHelp
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A free-text answer, shown alongside an item's fixed choices. Always give it an
-///     accessible name with a visible label, <c>aria-label</c>, or <c>aria-labelledby</c>.
+///     Renders a free-text answer beside a questionnaire item's choices.
 /// </summary>
+/// <remarks>
+///     Give the input an accessible name with a visible label, <c>aria-label</c> or
+///     <c>aria-labelledby</c>.
+/// </remarks>
 [HtmlTargetElement("sa-questionnaire-input", TagStructure = TagStructure.WithoutEndTag)]
 public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="QuestionnaireInputTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the input of a bound model property.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public QuestionnaireInputTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
     /// <summary>
-    ///     An expression to be evaluated against the current model.
+    ///     Gets or sets the model property that the input is bound to.
     /// </summary>
     [HtmlAttributeName("asp-for")]
     public ModelExpression? For { get; set; }
 
     /// <summary>
-    ///     A composite format string used to format the bound model value.
+    ///     Gets or sets the format string for the bound property's value.
     /// </summary>
+    /// <remarks>
+    ///     Applies only when bound with <c>asp-for</c>.
+    /// </remarks>
     [HtmlAttributeName("asp-format")]
     public string? Format { get; set; }
 
     /// <summary>
-    ///     The <c>type</c> of the HTML input.
+    ///     Gets or sets the <c>type</c> of the input.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>text</c>.
-    /// </remarks>
+    /// <value>
+    ///     An HTML input type. The default is <c>text</c>, or the type that suits the bound
+    ///     property.
+    /// </value>
     [HtmlAttributeName("type")]
     public string? InputTypeName { get; set; }
 
     /// <summary>
-    ///     Whether to render this answer's validation message after the input. The message
-    ///     reports the property this input is bound to, which is not the one the question's
-    ///     choices post; set this to <c>false</c> to place the message yourself.
+    ///     Gets or sets a value that indicates whether the validation message for the input shows
+    ///     after it.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the message shows after the input; otherwise,
+    ///     <see langword="false" />. The default is <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>.
+    ///     Applies only when bound with <c>asp-for</c>. The message is for the input's own property,
+    ///     not the one the choices post. Set this to <see langword="false" /> to place the message
+    ///     yourself.
     /// </remarks>
     [HtmlAttributeName("show-error")]
     public bool? ShowError { get; set; }
 
     /// <summary>
-    ///     Whether this answer and the item's choices replace one another: typing here clears the
-    ///     selected choice, and selecting a choice takes this answer out of the form so only one
-    ///     of the two posts. Set this to <c>false</c> to let both stand and post together.
+    ///     Gets or sets a value that indicates whether the input and the item's choices replace
+    ///     each other.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if only one of the input and the choices posts; otherwise,
+    ///     <see langword="false" /> to post both. The default is <see langword="true" />, or
+    ///     <see langword="false" /> when the item accepts multiple answers.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>, or to <c>false</c> when the item accepts multiple answers.
+    ///     Typing in the input clears the selected choice, and selecting a choice stops the input
+    ///     from posting. Requires <c>stellar-admin.js</c>.
     /// </remarks>
     [HtmlAttributeName("replaces-choices")]
     public bool? ReplacesChoices { get; set; }
 
     /// <summary>
-    ///     The value of the input.
+    ///     Gets or sets the value of the input.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var inputOutput = new TagHelperOutput(

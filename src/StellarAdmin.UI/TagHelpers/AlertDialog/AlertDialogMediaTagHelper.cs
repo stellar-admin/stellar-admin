@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A region within an alert dialog for media such as an icon or illustration.
+///     Renders an area in an alert dialog for media, such as an icon or illustration.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-media")]
 public class AlertDialogMediaTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

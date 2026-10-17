@@ -103,7 +103,8 @@ internal static partial class DocComments
         var value = ValueRegex().Match(doc);
         if (value.Success)
         {
-            var sentence = DefaultSentenceRegex().Match(value.Groups[1].Value);
+            var sentence = DefaultSentenceRegex()
+                .Match(Collapse(StripTripleSlash(value.Groups[1].Value)));
             if (sentence.Success)
             {
                 var text = sentence.Groups[1].Value;

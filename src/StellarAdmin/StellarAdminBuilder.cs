@@ -12,14 +12,14 @@ using StellarAdmin.UI;
 namespace StellarAdmin;
 
 /// <summary>
-///     Provides a fluent API to configure the StellarAdmin admin panel.
+///     Configures the admin panel.
 /// </summary>
 public sealed class StellarAdminBuilder
 {
     private readonly StellarAdminOptions _options;
 
     /// <summary>
-    ///     Gets the services collection.
+    ///     Gets the services that the admin panel is added to.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public IServiceCollection Services { get; }
@@ -31,13 +31,16 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Registers an assembly's controllers and compiled Razor views with MVC.
+    ///     Adds an assembly's controllers and compiled Razor views to MVC.
     /// </summary>
-    /// <param name="assembly">
-    ///     The assembly to register. Registering the same assembly more than once adds it
-    ///     only once.
-    /// </param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="assembly">The assembly to add.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="assembly" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Adding the same assembly more than once adds it only once.
+    /// </remarks>
     public StellarAdminBuilder AddApplicationPart(Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
@@ -62,14 +65,24 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Registers a controller with MVC under the given name, including its assembly's compiled Razor views.
+    ///     Adds a controller to MVC under a name.
     /// </summary>
-    /// <param name="controllerType">
-    ///     The controller type. Registering the same type more than once adds it only once.
+    /// <param name="controllerType">The type of the controller.</param>
+    /// <param name="controllerName">
+    ///     The name that the controller is routed and finds its views under.
     /// </param>
-    /// <param name="controllerName">The name the controller routes and resolves views under.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="controllerType" /> or <paramref name="controllerName" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="controllerName" /> is empty or white space.
+    /// </exception>
+    /// <remarks>
+    ///     This also adds the compiled Razor views of the controller's assembly. Adding the same
+    ///     controller more than once adds it only once.
+    /// </remarks>
     public StellarAdminBuilder AddController(Type controllerType, string controllerName)
     {
         ArgumentNullException.ThrowIfNull(controllerType);
@@ -106,14 +119,22 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Links an additional script on every shell page. The script loads deferred, in
-    ///     registration order.
+    ///     Adds a script to every admin panel page.
     /// </summary>
     /// <param name="path">
-    ///     The app-relative path of the script, e.g. <c>~/js/admin.js</c>. Registering the
-    ///     same path more than once links it only once.
+    ///     The app-relative path of the script, such as <c>~/js/admin.js</c>.
     /// </param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> is empty or white space.
+    /// </exception>
+    /// <remarks>
+    ///     Scripts are deferred and load in the order they are added. Adding the same path more
+    ///     than once adds it only once.
+    /// </remarks>
     public StellarAdminBuilder AddScript(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -129,23 +150,35 @@ public sealed class StellarAdminBuilder
     /// <summary>
     ///     Adds a link to the sidebar.
     /// </summary>
-    /// <param name="label">The link label.</param>
-    /// <param name="target">The link destination.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="label">The label of the link.</param>
+    /// <param name="target">The destination of the link.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="label" /> or <paramref name="target" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="label" /> is empty or white space.
+    /// </exception>
     public StellarAdminBuilder AddSidebarLink(string label, SidebarLinkTarget target)
     {
         return AddSidebarLink(label, target, _ => { });
     }
 
     /// <summary>
-    ///     Adds and configures a link to the sidebar.
+    ///     Adds a link to the sidebar and configures it.
     /// </summary>
-    /// <param name="label">The link label.</param>
-    /// <param name="target">The link destination.</param>
-    /// <param name="configure">Configures the link.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="label">The label of the link.</param>
+    /// <param name="target">The destination of the link.</param>
+    /// <param name="configure">A delegate that configures the link.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="label" />, <paramref name="target" /> or <paramref name="configure" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="label" /> is empty or white space, or <paramref name="configure" /> sets
+    ///     an empty or white-space group or icon.
+    /// </exception>
     public StellarAdminBuilder AddSidebarLink(
         string label,
         SidebarLinkTarget target,
@@ -168,13 +201,21 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Links an additional stylesheet on every shell page.
+    ///     Adds a stylesheet to every admin panel page.
     /// </summary>
     /// <param name="path">
-    ///     The app-relative path of the stylesheet, e.g. <c>~/css/admin.css</c>. Registering the
-    ///     same path more than once links it only once.
+    ///     The app-relative path of the stylesheet, such as <c>~/css/admin.css</c>.
     /// </param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="path" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="path" /> is empty or white space.
+    /// </exception>
+    /// <remarks>
+    ///     Adding the same path more than once adds it only once.
+    /// </remarks>
     public StellarAdminBuilder AddStylesheet(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -188,11 +229,17 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Configures the admin panel's name and the sidebar header: its title, subtitle and logo.
+    ///     Configures the admin panel's name and the title, subtitle and logo in the sidebar
+    ///     header.
     /// </summary>
-    /// <param name="configure">A callback for configuring the <see cref="BrandingBuilder" />.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="InvalidOperationException">The logo is a wordmark and a subtitle is set.</exception>
+    /// <param name="configure">A delegate that configures the branding.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     The logo is a wordmark and a subtitle is set.
+    /// </exception>
     public StellarAdminBuilder ConfigureBranding(Action<BrandingBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -211,11 +258,14 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Configures the StellarAdmin UI components the admin panel renders with: icons,
-    ///     menu defaults and form defaults.
+    ///     Configures the StellarAdmin UI components, such as their icons, menu defaults and form
+    ///     defaults.
     /// </summary>
-    /// <param name="configure">A callback for configuring the <see cref="StellarAdminUIBuilder" />.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="configure">A delegate that configures the UI components.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminBuilder ConfigureUI(Action<StellarAdminUIBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -226,13 +276,17 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Configures the sidebar's user menu: the claims it shows, its items and the logout endpoint.
+    ///     Configures the sidebar's user menu, such as the claims it shows, its items and log out.
     /// </summary>
+    /// <param name="configure">A delegate that configures the user menu.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     The user menu shows only for an authenticated user, so it requires ASP.NET Core authentication.
+    ///     The user menu is shown only to an authenticated user, so it requires ASP.NET Core
+    ///     authentication.
     /// </remarks>
-    /// <param name="configure">A callback for configuring the <see cref="UserMenuBuilder" />.</param>
-    /// <exception cref="ArgumentNullException"></exception>
     public StellarAdminBuilder ConfigureUserMenu(Action<UserMenuBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -245,6 +299,7 @@ public sealed class StellarAdminBuilder
     /// <summary>
     ///     Requires an authenticated user for every admin panel page.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public StellarAdminBuilder RequireAuthorization()
     {
         return RequireAuthorization(Array.Empty<IAuthorizeData>());
@@ -254,7 +309,10 @@ public sealed class StellarAdminBuilder
     ///     Requires every admin panel page to satisfy an authorization policy.
     /// </summary>
     /// <param name="policy">The authorization policy.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="policy" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminBuilder RequireAuthorization(AuthorizationPolicy policy)
     {
         _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(policy));
@@ -263,10 +321,14 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every admin panel page to satisfy an authorization policy built by a delegate.
+    ///     Requires every admin panel page to satisfy an authorization policy that a delegate
+    ///     builds.
     /// </summary>
-    /// <param name="configurePolicy">The delegate that builds the authorization policy.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="configurePolicy">A delegate that builds the authorization policy.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configurePolicy" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminBuilder RequireAuthorization(
         Action<AuthorizationPolicyBuilder> configurePolicy
     )
@@ -277,12 +339,15 @@ public sealed class StellarAdminBuilder
     }
 
     /// <summary>
-    ///     Requires every admin panel page to satisfy the given authorization data.
+    ///     Requires every admin panel page to satisfy authorization data.
     /// </summary>
     /// <param name="authorizeData">
-    ///     The authorization data. When empty, an authenticated user is required.
+    ///     The authorization data. When it's empty, the user must be authenticated.
     /// </param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="authorizeData" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminBuilder RequireAuthorization(params IAuthorizeData[] authorizeData)
     {
         _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(authorizeData));
@@ -294,9 +359,13 @@ public sealed class StellarAdminBuilder
     ///     Requires every admin panel page to satisfy the named authorization policies.
     /// </summary>
     /// <param name="policyNames">
-    ///     The authorization policy names. When empty, an authenticated user is required.
+    ///     The names of the authorization policies. When it's empty, the user must be
+    ///     authenticated.
     /// </param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="policyNames" /> is <see langword="null" />.
+    /// </exception>
     public StellarAdminBuilder RequireAuthorization(params string[] policyNames)
     {
         _options.AuthorizationMetadata.AddRange(AuthorizationMetadata.Create(policyNames));

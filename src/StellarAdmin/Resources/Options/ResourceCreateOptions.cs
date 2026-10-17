@@ -1,17 +1,21 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures a resource's create form.
+///     Stores the configuration of a resource's create form.
 /// </summary>
 public abstract class ResourceCreateOptions : ResourceFormOptions
 {
     /// <summary>
-    ///     The inline row configuration, or null when resources are created on the create page.
+    ///     Gets the configuration of the inline row that creates resources.
     /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when resources are created on the create
+    ///     page.
+    /// </value>
     public ResourceInlineCreateOptions? InlineRow { get; internal set; }
 
     /// <summary>
-    ///     The model used by the create form.
+    ///     Gets the type of the model the create form binds to.
     /// </summary>
     public abstract Type ModelType { get; }
 

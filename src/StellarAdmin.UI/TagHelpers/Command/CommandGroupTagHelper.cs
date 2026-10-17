@@ -4,18 +4,21 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A set of related items in a command menu, with an optional title. The group is hidden
-///     when none of its items match the search.
+///     Renders a set of related items in a command menu.
 /// </summary>
+/// <remarks>
+///     The group is hidden when none of its items match a search that the browser filters.
+/// </remarks>
 [HtmlTargetElement("sa-command-group")]
 public class CommandGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The title shown above the group's items.
+    ///     Gets or sets the heading shown above the group's items.
     /// </summary>
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

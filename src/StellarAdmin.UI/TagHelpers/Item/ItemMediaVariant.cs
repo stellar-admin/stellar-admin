@@ -1,17 +1,23 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The kind of media held by an item's media region.
+///     Specifies the kind of media in an item.
 /// </summary>
 public enum ItemMediaVariant
 {
-    /// <summary>Unstyled media with no special sizing.</summary>
+    /// <summary>
+    ///     Media with no special size or style.
+    /// </summary>
     Default,
 
-    /// <summary>A small icon.</summary>
+    /// <summary>
+    ///     A small icon.
+    /// </summary>
     Icon,
 
-    /// <summary>A full-bleed image or avatar.</summary>
+    /// <summary>
+    ///     An image or avatar that fills the media area.
+    /// </summary>
     Image,
 }
 

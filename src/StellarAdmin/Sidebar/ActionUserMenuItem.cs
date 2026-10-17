@@ -1,32 +1,32 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     A user menu item that links to an MVC controller action.
+///     Represents a user menu item that links to an MVC controller action.
 /// </summary>
 public sealed class ActionUserMenuItem : UserMenuItem
 {
     /// <summary>
-    ///     The action name.
+    ///     Gets the name of the action.
     /// </summary>
     public string ActionName { get; }
 
     /// <summary>
-    ///     The area name, or <c>null</c> for an action outside any area.
+    ///     Gets the name of the area, or <see langword="null" /> for an action outside any area.
     /// </summary>
     public string? Area { get; }
 
     /// <summary>
-    ///     The controller name.
+    ///     Gets the name of the controller.
     /// </summary>
     public string ControllerName { get; }
 
     /// <summary>
-    ///     The icon shown before the text, or <c>null</c> for none.
+    ///     Gets the name of the icon shown before the text, or <see langword="null" /> for none.
     /// </summary>
     public string? Icon { get; internal set; }
 
     /// <summary>
-    ///     The item text.
+    ///     Gets the text of the item.
     /// </summary>
     public string Text { get; }
 

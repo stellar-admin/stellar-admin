@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A secondary line of muted text within a card header, describing the card's contents.
+///     Renders the description of a card, as muted text in the card header.
 /// </summary>
 [HtmlTargetElement("sa-card-description")]
 public class CardDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

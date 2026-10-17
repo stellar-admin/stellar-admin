@@ -11,13 +11,16 @@ public sealed class LookupSheetEditor
         ILookupSheetEditor
 {
     /// <summary>
-    ///     Additional CSS classes for the parts of the editor.
+    ///     Gets the additional CSS classes for the parts of the editor.
     /// </summary>
     public override LookupSheetEditorClassNames ClassNames { get; } = new();
 
     /// <summary>
-    ///     The configured items, or null until items are selected.
+    ///     Gets the items the editor looks up.
     /// </summary>
+    /// <value>
+    ///     The items, or <see langword="null" /> until <c>UseItems</c> is called.
+    /// </value>
     public LookupItems? Items { get; private set; }
 
     internal bool CreateEnabled { get; private set; }
@@ -43,6 +46,10 @@ public sealed class LookupSheetEditor
     /// <summary>
     ///     Configures how the field is displayed in the form.
     /// </summary>
+    /// <param name="configure">A delegate that configures the field.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public void Field(Action<LookupFieldOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -51,15 +58,25 @@ public sealed class LookupSheetEditor
     }
 
     /// <summary>
-    ///     Shows a button for creating a new item while nothing is selected. The item is created with the create form
-    ///     of the resource registered for the items' type.
+    ///     Shows a button that creates a new item while nothing is selected.
     /// </summary>
+    /// <remarks>
+    ///     The create form of the resource registered for the items' type creates the item. That
+    ///     resource must have a create page. Only users who can create the resource see the button.
+    ///     When the items have no type, use <see cref="EnableCreate{TResource}" /> instead.
+    /// </remarks>
     public void EnableCreate() => CreateEnabled = true;
 
     /// <summary>
-    ///     Shows a button for creating a new item while nothing is selected. The item is created with the create form
-    ///     of the specified resource.
+    ///     Shows a button that creates a new item while nothing is selected.
     /// </summary>
+    /// <typeparam name="TResource">
+    ///     The type of the resource whose create form creates the item.
+    /// </typeparam>
+    /// <remarks>
+    ///     The resource must have a create page. Only users who can create the resource see the
+    ///     button.
+    /// </remarks>
     public void EnableCreate<TResource>()
     {
         CreateEnabled = true;
@@ -69,6 +86,10 @@ public sealed class LookupSheetEditor
     /// <summary>
     ///     Configures the sheet in which items are searched.
     /// </summary>
+    /// <param name="configure">A delegate that configures the sheet.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public void Sheet(Action<LookupSheetOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -77,8 +98,12 @@ public sealed class LookupSheetEditor
     }
 
     /// <summary>
-    ///     Supplies the items from an integration's implementation.
+    ///     Sets the items the editor looks up.
     /// </summary>
+    /// <param name="items">The items, such as those an integration package supplies.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="items" /> is <see langword="null" />.
+    /// </exception>
     public void UseItems(LookupItems items)
     {
         ArgumentNullException.ThrowIfNull(items);
@@ -87,8 +112,19 @@ public sealed class LookupSheetEditor
     }
 
     /// <summary>
-    ///     Selects a registered source that supplies the items for each request.
+    ///     Sets a registered source that supplies the items for each request.
     /// </summary>
+    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
+    /// <typeparam name="TEntity">The type of the items.</typeparam>
+    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
+    /// <param name="value">A delegate that returns an item's value.</param>
+    /// <param name="title">A delegate that returns an item's title.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="value" /> or <paramref name="title" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Register <typeparamref name="TSource" /> as a service.
+    /// </remarks>
     public void UseItems<TSource, TEntity, TValue>(
         Func<TEntity, TValue> value,
         Func<TEntity, string> title
@@ -97,8 +133,22 @@ public sealed class LookupSheetEditor
         UseItems<TSource, TEntity, TValue>(value, title, _ => { });
 
     /// <summary>
-    ///     Selects a registered source that supplies the items for each request, and configures what each item contains.
+    ///     Sets a registered source that supplies the items for each request, and configures what
+    ///     each item shows.
     /// </summary>
+    /// <typeparam name="TSource">The type of the source that supplies the items.</typeparam>
+    /// <typeparam name="TEntity">The type of the items.</typeparam>
+    /// <typeparam name="TValue">The type of the value that identifies an item.</typeparam>
+    /// <param name="value">A delegate that returns an item's value.</param>
+    /// <param name="title">A delegate that returns an item's title.</param>
+    /// <param name="configure">A delegate that configures what each item shows.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="value" />, <paramref name="title" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Register <typeparamref name="TSource" /> as a service.
+    /// </remarks>
     public void UseItems<TSource, TEntity, TValue>(
         Func<TEntity, TValue> value,
         Func<TEntity, string> title,

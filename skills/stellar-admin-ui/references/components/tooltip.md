@@ -6,7 +6,7 @@ generated: true
 
 # Tooltip
 
-A small floating label that appears when the user hovers or focuses a trigger element, rendered as a native hint popover.
+Renders a small label that appears when the user hovers over or focuses another element.
 
 ## Attributes
 

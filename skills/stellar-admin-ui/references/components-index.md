@@ -2,62 +2,62 @@
 
 | Component | Tags | Summary |
 |-----------|------|---------|
-| [Accordion](components/accordion.md) | `<sa-accordion>`, `<sa-accordion-item>`, `<sa-accordion-item-content>`, … | A vertically stacked set of collapsible items, each of which can be expanded to reveal its content. |
-| [Alert](components/alert.md) | `<sa-alert>`, `<sa-alert-action>`, `<sa-alert-description>`, … | A callout that displays a short, important message to the user, optionally with an icon, title, and description. |
-| [AlertDialog](components/alert-dialog.md) | `<sa-alert-dialog>`, `<sa-alert-dialog-action>`, `<sa-alert-dialog-cancel>`, … | A modal dialog that interrupts the user to confirm an important action, rendered over a native `<dialog>` element. |
-| [AppHeader](components/app-header.md) | `<sa-app-header>`, `<sa-app-header-actions>`, `<sa-app-header-separator>` | The application's top navigation bar, rendered as a `<header>` element. |
-| [Attachment](components/attachment.md) | `<sa-attachment>`, `<sa-attachment-action>`, `<sa-attachment-actions>`, … | A file or image presented with its media, metadata, upload state, and actions. |
-| [Avatar](components/avatar.md) | `<sa-avatar>`, `<sa-avatar-badge>`, `<sa-avatar-group>`, … | Displays a user's image, falling back to initials or a name-derived monogram when no image is available. |
-| [Badge](components/badge.md) | `<sa-badge>` | A small label used to highlight status, counts, or categories. |
-| [Breadcrumb](components/breadcrumb.md) | `<sa-breadcrumb>`, `<sa-breadcrumb-ellipsis>`, `<sa-breadcrumb-item>`, … | A breadcrumb navigation trail, rendered as a `<nav>`; shows the path to the current page. |
-| [Bubble](components/bubble.md) | `<sa-bubble>`, `<sa-bubble-button-content>`, `<sa-bubble-content>`, … | A framed message in a conversation, holding its content and any reactions. |
-| [Button](components/button.md) | `<sa-button>`, `<sa-button-link>` | Renders a button element for triggering actions. |
-| [ButtonGroup](components/button-group.md) | `<sa-button-group>`, `<sa-button-group-separator>`, `<sa-button-group-text>` | Groups related buttons together as a single visual unit. |
-| [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents. |
-| [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | A scrollable collection of slides with optional navigation controls. |
-| [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>`, `<sa-checkbox-group-item-media>` | A group of checkbox options bound to a collection. |
-| [Chip](components/chip.md) | `<sa-chip>`, `<sa-chip-group>`, `<sa-chip-remove>` | A compact token for a selected or entered value, with optional media before its label and an optional remove button after it. |
-| [Collapsible](components/collapsible.md) | `<sa-collapsible>` | A container whose content can be expanded or collapsed. |
-| [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
-| [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-add-row>`, `<sa-data-grid-column>`, … | A data grid that renders a full table from declarative column definitions and a data source. |
-| [Details](components/details.md) | `<sa-details>`, `<sa-display-field>` | Lays out read-only display fields in a description list. |
-| [Dialog](components/dialog.md) | `<sa-dialog>`, `<sa-dialog-description>`, `<sa-dialog-footer>`, … | A modal window overlaid on the page, rendered over a native `<dialog>` element. |
-| [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | The root of a dropdown menu, pairing a trigger with its content and generating the shared id that links them. |
-| [Empty](components/empty.md) | `<sa-empty>`, `<sa-empty-content>`, `<sa-empty-description>`, … | An empty-state container that communicates the absence of content, composed of a header, media, title, description, and content subcomponents. |
-| [Field](components/field.md) | `<sa-field>`, `<sa-field-content>`, `<sa-field-description>`, … | Wraps a form control together with its label, description, and error message, arranging them according to the chosen orientation. |
-| [FormSection](components/form-section.md) | `<sa-form-section>` | Groups form content under a title with an optional description. |
+| [Accordion](components/accordion.md) | `<sa-accordion>`, `<sa-accordion-item>`, `<sa-accordion-item-content>`, … | Renders a vertical stack of items that each expand to show their content. |
+| [Alert](components/alert.md) | `<sa-alert>`, `<sa-alert-action>`, `<sa-alert-description>`, … | Renders a callout that shows a short, important message. |
+| [AlertDialog](components/alert-dialog.md) | `<sa-alert-dialog>`, `<sa-alert-dialog-action>`, `<sa-alert-dialog-cancel>`, … | Renders a modal dialog that asks the user to confirm an important action. |
+| [AppHeader](components/app-header.md) | `<sa-app-header>`, `<sa-app-header-actions>`, `<sa-app-header-separator>` | Renders the bar at the top of the application, as a `<header>` element. |
+| [Attachment](components/attachment.md) | `<sa-attachment>`, `<sa-attachment-action>`, `<sa-attachment-actions>`, … | Renders a file with its media, details, upload state and actions. |
+| [Avatar](components/avatar.md) | `<sa-avatar>`, `<sa-avatar-badge>`, `<sa-avatar-group>`, … | Renders a user's image, or their initials when there's no image. |
+| [Badge](components/badge.md) | `<sa-badge>` | Renders a small label that highlights a status, count or category. |
+| [Breadcrumb](components/breadcrumb.md) | `<sa-breadcrumb>`, `<sa-breadcrumb-ellipsis>`, `<sa-breadcrumb-item>`, … | Renders a breadcrumb that shows the path to the current page. |
+| [Bubble](components/bubble.md) | `<sa-bubble>`, `<sa-bubble-button-content>`, `<sa-bubble-content>`, … | Renders a message in a conversation, with its content and any reactions. |
+| [Button](components/button.md) | `<sa-button>`, `<sa-button-link>` | Renders a button that triggers an action. |
+| [ButtonGroup](components/button-group.md) | `<sa-button-group>`, `<sa-button-group-separator>`, `<sa-button-group-text>` | Renders related buttons as a single unit. |
+| [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | Renders a container that groups related content. |
+| [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | Renders a scrollable set of slides with optional navigation controls. |
+| [CheckboxGroup](components/checkbox-group.md) | `<sa-checkbox-group>`, `<sa-checkbox-group-item>`, `<sa-checkbox-group-item-media>` | Renders a group of checkboxes that posts a set of values. |
+| [Chip](components/chip.md) | `<sa-chip>`, `<sa-chip-group>`, `<sa-chip-remove>` | Renders a compact token for a selected or entered value. |
+| [Collapsible](components/collapsible.md) | `<sa-collapsible>` | Renders a container whose content can be expanded or collapsed. |
+| [Command](components/command.md) | `<sa-command>`, `<sa-command-dialog>`, `<sa-command-empty>`, … | Renders a searchable menu of commands or options that the keyboard navigates from one search input. |
+| [DataGrid](components/data-grid.md) | `<sa-data-grid>`, `<sa-data-grid-add-row>`, `<sa-data-grid-column>`, … | Renders a table of items, with columns declared by `sa-data-grid-column` children. |
+| [Details](components/details.md) | `<sa-details>`, `<sa-display-field>` | Lays out `sa-display-field` elements in a description list. |
+| [Dialog](components/dialog.md) | `<sa-dialog>`, `<sa-dialog-description>`, `<sa-dialog-footer>`, … | Renders a modal window over the page. |
+| [DropdownMenu](components/dropdown-menu.md) | `<sa-dropdown-menu>`, `<sa-dropdown-menu-checkbox-item>`, `<sa-dropdown-menu-content>`, … | Renders a dropdown menu, which pairs a trigger with its content. |
+| [Empty](components/empty.md) | `<sa-empty>`, `<sa-empty-content>`, `<sa-empty-description>`, … | Renders an empty state, which tells the user there is no content to show. |
+| [Field](components/field.md) | `<sa-field>`, `<sa-field-content>`, `<sa-field-description>`, … | Renders a field that groups a form control with its label, description and error message. |
+| [FormSection](components/form-section.md) | `<sa-form-section>` | Renders a group of form content under a heading with an optional description. |
 | [Grid](components/grid.md) | `<sa-grid>`, `<sa-grid-item>` | Lays out fields and other content in responsive columns. |
-| [Icon](components/icon.md) | `<sa-icon>` | Renders an SVG icon from the active icon pack by name. |
-| [Image](components/image.md) | `<sa-image>`, `<sa-image-upload>` | Displays an image as a thumbnail or a figure, with a placeholder when there is none and a broken-image tile when it can't be loaded. |
-| [Input](components/input.md) | `<sa-input>` | A form input. |
-| [InputGroup](components/input-group.md) | `<sa-input-group>`, `<sa-input-group-addon>`, `<sa-input-group-button>`, … | A container that groups an input with add-ons, buttons, or text so they render as a single combined field. |
-| [InputOtp](components/input-otp.md) | `<sa-input-otp>`, `<sa-input-otp-group>`, `<sa-input-otp-separator>`, … | A segmented one-time-code input. |
-| [Item](components/item.md) | `<sa-item>`, `<sa-item-actions>`, `<sa-item-content>`, … | A flexible row for presenting content, combining media, a title, description, and actions. |
-| [Kbd](components/kbd.md) | `<sa-kbd>`, `<sa-kbd-group>` | Displays a single keyboard key or keystroke. |
-| [Label](components/label.md) | `<sa-label>` | A caption for a form control, optionally bound to a model expression via `asp-for`. |
-| [Layout](components/layout.md) | `<sa-group>`, `<sa-page-container>`, `<sa-stack>` | A horizontal flex layout that arranges its children in a row, with configurable alignment, spacing, and justification. |
-| [Marker](components/marker.md) | `<sa-marker>`, `<sa-marker-button>`, `<sa-marker-content>`, … | An inline note in a conversation, such as a status update, a system message or a labeled divider. |
-| [Message](components/message.md) | `<sa-message>`, `<sa-message-avatar>`, `<sa-message-content>`, … | A single message in a conversation, laying out its avatar, content, header and footer. |
-| [MessageScroller](components/message-scroller.md) | `<sa-message-scroller>`, `<sa-message-scroller-button>`, `<sa-message-scroller-content>`, … | A scrolling frame for a conversation, holding the transcript and its scroll controls. |
-| [PageHeader](components/page-header.md) | `<sa-page-header>`, `<sa-page-header-actions>`, `<sa-page-header-description>`, … | A header section at the top of a page's content, rendered as a `<header>` element. |
-| [Pagination](components/pagination.md) | `<sa-pagination>`, `<sa-pagination-content>`, `<sa-pagination-ellipsis>`, … | Navigation for moving between pages of content. |
-| [Popover](components/popover.md) | `<sa-popover>`, `<sa-popover-description>`, `<sa-popover-header>`, … | A floating panel of rich content anchored to a trigger element, rendered as a native popover. |
-| [Progress](components/progress.md) | `<sa-progress>`, `<sa-progress-label>`, `<sa-progress-value>` | A progress bar that visualizes the completion of a task as a filled track. |
-| [Questionnaire](components/questionnaire.md) | `<sa-questionnaire>`, `<sa-questionnaire-actions>`, `<sa-questionnaire-choice>`, … | A container for one or more questionnaire items. |
-| [RadioGroup](components/radio-group.md) | `<sa-radio-group>`, `<sa-radio-group-item>`, `<sa-radio-group-item-media>` | A group of radio options bound to a scalar value. |
-| [SegmentedControl](components/segmented-control.md) | `<sa-segmented-control>`, `<sa-segmented-control-item>` | A group of radio buttons styled as a segmented control. |
-| [Select](components/select.md) | `<sa-select>` | A styled dropdown for choosing a single option, wrapping a native `<select>` element with a custom chevron icon. |
-| [Separator](components/separator.md) | `<sa-separator>` | A thin dividing line between sections of content, rendered as a `<div>` with `role="separator"`. |
-| [Sheet](components/sheet.md) | `<sa-sheet>`, `<sa-sheet-description>`, `<sa-sheet-footer>`, … | A panel that slides in from an edge of the screen, rendered over a native `<dialog>` element. |
-| [Sidebar](components/sidebar.md) | `<sa-sidebar>`, `<sa-sidebar-content>`, `<sa-sidebar-footer>`, … | The sidebar panel itself, hosting its header, content, and footer. |
-| [Skeleton](components/skeleton.md) | `<sa-skeleton>` | A placeholder that shows an animated pulsing shape while content is loading. |
-| [Slider](components/slider.md) | `<sa-slider>`, `<sa-slider-mark>`, `<sa-slider-marks>`, … | An input for selecting a numeric value, or a range of values, by dragging one or more thumbs along a track. |
-| [Spinner](components/spinner.md) | `<sa-spinner>` | An animated spinning icon that indicates a loading or busy state. |
-| [Switch](components/switch.md) | `<sa-switch>` | A toggle control that switches between on and off states. |
-| [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | A responsive data table, rendered as a `<table>` inside a scrollable container. |
-| [Tabs](components/tabs.md) | `<sa-tab>`, `<sa-tab-link>`, `<sa-tab-list>`, … | A tab within the `<sa-tab-list>` of an `<sa-tabs>`, which shows its panel when selected. |
-| [Textarea](components/textarea.md) | `<sa-textarea>` | A styled multi-line text input that grows with its content. |
-| [Toaster](components/toaster.md) | `<sa-toaster>` | The region that shows toast notifications. |
-| [Toggle](components/toggle.md) | `<sa-toggle>` | Renders a two-state button that can be toggled on or off. |
-| [ToggleGroup](components/toggle-group.md) | `<sa-toggle-group>`, `<sa-toggle-group-item>` | Groups a set of toggle items into a single-select or multi-select control. |
-| [Tooltip](components/tooltip.md) | `<sa-tooltip>` | A small floating label that appears when the user hovers or focuses a trigger element, rendered as a native hint popover. |
+| [Icon](components/icon.md) | `<sa-icon>` | Renders a registered icon as an `<svg>` element. |
+| [Image](components/image.md) | `<sa-image>`, `<sa-image-upload>` | Renders an image as a thumbnail or a figure. |
+| [Input](components/input.md) | `<sa-input>` | Renders a form input. |
+| [InputGroup](components/input-group.md) | `<sa-input-group>`, `<sa-input-group-addon>`, `<sa-input-group-button>`, … | Renders a group that combines an input with add-ons, buttons or text into one field. |
+| [InputOtp](components/input-otp.md) | `<sa-input-otp>`, `<sa-input-otp-group>`, `<sa-input-otp-separator>`, … | Renders a one-time code input with a slot for each character. |
+| [Item](components/item.md) | `<sa-item>`, `<sa-item-actions>`, `<sa-item-content>`, … | Renders a row that combines media, a title, a description and actions. |
+| [Kbd](components/kbd.md) | `<sa-kbd>`, `<sa-kbd-group>` | Renders a keyboard key or keystroke. |
+| [Label](components/label.md) | `<sa-label>` | Renders a label for a form control. |
+| [Layout](components/layout.md) | `<sa-group>`, `<sa-page-container>`, `<sa-stack>` | Renders a layout that arranges its children in a row. |
+| [Marker](components/marker.md) | `<sa-marker>`, `<sa-marker-button>`, `<sa-marker-content>`, … | Renders a note in a conversation, such as a status update, a system message or a labeled divider. |
+| [Message](components/message.md) | `<sa-message>`, `<sa-message-avatar>`, `<sa-message-content>`, … | Renders a message in a conversation, with its avatar, content, header and footer. |
+| [MessageScroller](components/message-scroller.md) | `<sa-message-scroller>`, `<sa-message-scroller-button>`, `<sa-message-scroller-content>`, … | Renders a scrolling frame for a conversation, with its transcript and scroll buttons. |
+| [PageHeader](components/page-header.md) | `<sa-page-header>`, `<sa-page-header-actions>`, `<sa-page-header-description>`, … | Renders a header at the top of a page's content. |
+| [Pagination](components/pagination.md) | `<sa-pagination>`, `<sa-pagination-content>`, `<sa-pagination-ellipsis>`, … | Renders navigation for moving between pages of content. |
+| [Popover](components/popover.md) | `<sa-popover>`, `<sa-popover-description>`, `<sa-popover-header>`, … | Renders a floating panel of content that is anchored to the element that opens it. |
+| [Progress](components/progress.md) | `<sa-progress>`, `<sa-progress-label>`, `<sa-progress-value>` | Renders a progress bar that shows how far a task has progressed. |
+| [Questionnaire](components/questionnaire.md) | `<sa-questionnaire>`, `<sa-questionnaire-actions>`, `<sa-questionnaire-choice>`, … | Renders a container for one or more questionnaire items. |
+| [RadioGroup](components/radio-group.md) | `<sa-radio-group>`, `<sa-radio-group-item>`, `<sa-radio-group-item-media>` | Renders a group of radio buttons that posts a single value. |
+| [SegmentedControl](components/segmented-control.md) | `<sa-segmented-control>`, `<sa-segmented-control-item>` | Renders a group of radio buttons as a segmented control. |
+| [Select](components/select.md) | `<sa-select>` | Renders a styled native `<select>` for choosing an option. |
+| [Separator](components/separator.md) | `<sa-separator>` | Renders a thin line between sections of content. |
+| [Sheet](components/sheet.md) | `<sa-sheet>`, `<sa-sheet-description>`, `<sa-sheet-footer>`, … | Renders a panel that slides in from an edge of the screen. |
+| [Sidebar](components/sidebar.md) | `<sa-sidebar>`, `<sa-sidebar-content>`, `<sa-sidebar-footer>`, … | Renders a sidebar that holds a header, content and footer. |
+| [Skeleton](components/skeleton.md) | `<sa-skeleton>` | Renders a pulsing placeholder shape to show while content loads. |
+| [Slider](components/slider.md) | `<sa-slider>`, `<sa-slider-mark>`, `<sa-slider-marks>`, … | Renders an input that selects a number, or a range of numbers, by dragging thumbs along a track. |
+| [Spinner](components/spinner.md) | `<sa-spinner>` | Renders a spinning icon that shows that something is loading. |
+| [Switch](components/switch.md) | `<sa-switch>` | Renders a control that switches between on and off. |
+| [Table](components/table.md) | `<sa-table>`, `<sa-table-body>`, `<sa-table-caption>`, … | Renders a table in a container that scrolls sideways when the table is too wide. |
+| [Tabs](components/tabs.md) | `<sa-tab>`, `<sa-tab-link>`, `<sa-tab-list>`, … | Renders a tab that shows its panel when selected. |
+| [Textarea](components/textarea.md) | `<sa-textarea>` | Renders a multi-line text input that grows with its content. |
+| [Toaster](components/toaster.md) | `<sa-toaster>` | Renders the region that shows toast notifications. |
+| [Toggle](components/toggle.md) | `<sa-toggle>` | Renders a button that can be pressed on or off. |
+| [ToggleGroup](components/toggle-group.md) | `<sa-toggle-group>`, `<sa-toggle-group-item>` | Renders a group of toggle items that lets the user select one item or several. |
+| [Tooltip](components/tooltip.md) | `<sa-tooltip>` | Renders a small label that appears when the user hovers over or focuses another element. |

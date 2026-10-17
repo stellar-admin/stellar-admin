@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A horizontal divider that visually separates groups of menu items.
+///     Renders a line between groups of dropdown menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-separator")]
 public class DropdownMenuSeparatorTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

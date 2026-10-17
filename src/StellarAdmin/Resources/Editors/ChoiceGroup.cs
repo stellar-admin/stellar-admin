@@ -1,18 +1,29 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     A group of choices. Editors that display groups gather each group's choices at the position of its first choice.
+///     Represents a group of choices.
 /// </summary>
 /// <param name="Text">The group's heading.</param>
+/// <remarks>
+///     Editors that display groups show each group at the position of its first choice.
+/// </remarks>
 public sealed record ChoiceGroup(string Text)
 {
     /// <summary>
-    ///     The secondary text displayed below the group's heading, or null.
+    ///     Gets or sets the secondary text displayed below the group's heading.
     /// </summary>
+    /// <value>
+    ///     The secondary text, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Description { get; init; }
 
     /// <summary>
-    ///     Whether none of the group's choices can be selected.
+    ///     Gets or sets a value that indicates whether the group is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if none of the group's choices can be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     public bool Disabled { get; init; }
 }

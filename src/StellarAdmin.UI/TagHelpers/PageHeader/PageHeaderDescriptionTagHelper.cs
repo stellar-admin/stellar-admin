@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A short description below the title of <c>&lt;sa-page-header&gt;</c>, rendered as a
-///     <c>&lt;p&gt;</c> element.
+///     Renders a short description below the title of a page header.
 /// </summary>
 [HtmlTargetElement("sa-page-header-description")]
 public class PageHeaderDescriptionTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "p";

@@ -6,44 +6,52 @@ namespace StellarAdmin.Resources.Editors;
 ///     Configures an image editor for a property that stores a reference to an image.
 /// </summary>
 /// <remarks>
-///     A picked file uploads straight away to <see cref="StoreImage" />, which saves it and
-///     returns the value to store; the form then saves only that value. StellarAdmin never
-///     deletes images, so files that are replaced, removed or never saved stay where
-///     <see cref="StoreImage" /> put them.
+///     A picked file uploads straight away to the delegate set with <see cref="StoreImage" />.
+///     The form then saves the value that delegate returns. StellarAdmin never deletes images, so
+///     files that are replaced, removed or never saved stay where they were stored.
 /// </remarks>
 public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
 {
     private readonly ImageUrlResolver _urlResolver = new();
 
     /// <summary>
-    ///     The image types the editor accepts, as media types.
+    ///     Gets or sets the image types the editor accepts.
     /// </summary>
+    /// <value>
+    ///     The media types, such as <c>image/png</c>. The default is JPEG, PNG, WebP, GIF and AVIF.
+    /// </value>
     /// <remarks>
-    ///     Defaults to JPEG, PNG, WebP, GIF and AVIF. The server recognises these formats by
-    ///     their content, not only by the type the browser declares.
+    ///     The list must not be empty. The server recognizes the default formats by their
+    ///     content, not only by the type the browser declares.
     /// </remarks>
     public IReadOnlyList<string> AcceptedTypes { get; set; } =
     ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
 
     /// <summary>
-    ///     Additional CSS classes for the image editor, its image and its note.
+    ///     Gets the additional CSS classes for the parts of the editor.
     /// </summary>
     public override ImageEditorClassNames ClassNames { get; } = new();
 
     /// <summary>
-    ///     How the editor is laid out on a form.
+    ///     Gets or sets how the editor is laid out on a form.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is
+    ///     <see cref="ImageEditorLayout.Dropzone" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="ImageEditorLayout.Dropzone" />. In an inline grid row the
-    ///     editor is always a thumbnail button.
+    ///     In an inline row, the editor is always a thumbnail button.
     /// </remarks>
     public ImageEditorLayout Layout { get; set; } = ImageEditorLayout.Dropzone;
 
     /// <summary>
-    ///     The largest file the editor accepts, in bytes.
+    ///     Gets or sets the largest file the editor accepts.
     /// </summary>
+    /// <value>
+    ///     The size in bytes. The default is 5 MB.
+    /// </value>
     /// <remarks>
-    ///     Defaults to 5 MB. The upload request's body limit is raised to allow it.
+    ///     The value must be positive. The upload request's body limit is raised to allow it.
     /// </remarks>
     public long MaxFileSize { get; set; } = 5 * 1024 * 1024;
 
@@ -56,28 +64,49 @@ public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
     }
 
     /// <summary>
-    ///     Turns the stored value into the image's URL.
+    ///     Sets a delegate that turns the stored value into the image's URL.
     /// </summary>
-    /// <param name="resolve">Returns the URL, or <c>null</c> when there is no image.</param>
+    /// <param name="resolve">
+    ///     A delegate that returns the URL, or <see langword="null" /> when there is no image.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="resolve" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the stored value is the URL. An empty value has no image.
+    /// </remarks>
     public void ResolveUrl(Func<string, string?> resolve) => _urlResolver.Set(resolve);
 
     /// <summary>
-    ///     Turns the stored value into the image's URL with the request's services.
+    ///     Sets a delegate that turns the stored value into the image's URL with the request's
+    ///     services.
     /// </summary>
-    /// <param name="resolve">Returns the URL, or <c>null</c> when there is no image.</param>
+    /// <param name="resolve">
+    ///     A delegate that returns the URL, or <see langword="null" /> when there is no image.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="resolve" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     By default, the stored value is the URL. An empty value has no image.
+    /// </remarks>
     public void ResolveUrl(
         Func<string, IServiceProvider, CancellationToken, Task<string?>> resolve
     ) => _urlResolver.Set(resolve);
 
     /// <summary>
-    ///     Saves an uploaded image and returns the value to store in the property.
+    ///     Sets a delegate that saves an uploaded image.
     /// </summary>
     /// <param name="store">
-    ///     Saves the file, which has passed the size and type checks, and returns the value the
-    ///     form saves, such as a file name or a URL.
+    ///     A delegate that saves the file and returns the value the form saves, such as a file
+    ///     name or a URL.
     /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="store" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     Required: the resource's options fail validation without it.
+    ///     An editable image field requires this delegate. The file has already passed the size
+    ///     and type checks. The delegate must not return an empty value.
     /// </remarks>
     public void StoreImage(Func<IFormFile, IServiceProvider, CancellationToken, Task<string>> store)
     {

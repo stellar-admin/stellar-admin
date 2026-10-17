@@ -1,12 +1,18 @@
 namespace StellarAdmin.UI;
 
-/// <summary>The direction in which carousel items scroll.</summary>
+/// <summary>
+///     Specifies the direction in which the slides of a carousel scroll.
+/// </summary>
 public enum CarouselOrientation
 {
-    /// <summary>Items scroll horizontally.</summary>
+    /// <summary>
+    ///     The slides scroll horizontally.
+    /// </summary>
     Horizontal,
 
-    /// <summary>Items scroll vertically.</summary>
+    /// <summary>
+    ///     The slides scroll vertically.
+    /// </summary>
     Vertical,
 }
 

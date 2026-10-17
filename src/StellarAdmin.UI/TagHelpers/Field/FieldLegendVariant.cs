@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style applied to a field set's legend.
+///     Specifies the visual style of a field set's legend.
 /// </summary>
 public enum FieldLegendVariant
 {
-    /// <summary>Styled as a standard legend.</summary>
+    /// <summary>
+    ///     Styled as a legend.
+    /// </summary>
     Legend,
 
-    /// <summary>Styled to match a field label.</summary>
+    /// <summary>
+    ///     Styled like a field label.
+    /// </summary>
     Label,
 }
 

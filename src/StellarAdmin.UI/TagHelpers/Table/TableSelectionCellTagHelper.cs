@@ -7,15 +7,26 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A cell with the checkbox that selects its row, for an <c>sa-table</c> with
-///     <c>selection</c>. The checked checkboxes post their values under <c>name</c>.
+///     Renders a table cell with a checkbox that selects its row.
 /// </summary>
+/// <remarks>
+///     Use it in a <c>&lt;sa-table&gt;</c> with <c>selection</c>. The checked checkboxes post
+///     their values under <see cref="Name" />.
+/// </remarks>
 [HtmlTargetElement("sa-table-selection-cell", TagStructure = TagStructure.WithoutEndTag)]
 public class TableSelectionCellTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TableSelectionCellTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the checkbox.</param>
+    /// <param name="iconOptions">The icon options that supply the checkbox's check mark.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public TableSelectionCellTagHelper(
         IHtmlGenerator htmlGenerator,
         IOptions<IconOptions> iconOptions
@@ -26,48 +37,57 @@ public class TableSelectionCellTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     Whether the row is selected.
+    ///     Gets or sets a value that indicates whether the row is selected.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the row is selected; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("checked")]
     public bool? Checked { get; set; }
 
     /// <summary>
-    ///     Whether the row cannot be selected. Select-all leaves it as it is.
+    ///     Gets or sets a value that indicates whether the row's checkbox is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the row's selection can't be changed; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Selecting or clearing every row leaves a disabled row as it is.
     /// </remarks>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     The checkbox's accessible label, naming the row it selects.
+    ///     Gets or sets the accessible label of the checkbox.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to "Select row".
-    /// </remarks>
+    /// <value>
+    ///     A label that names the row the checkbox selects. The default is <c>Select row</c>.
+    /// </value>
     [HtmlAttributeName("label")]
     public string? Label { get; set; }
 
     /// <summary>
-    ///     The form field name the selected rows' values post under.
+    ///     Gets or sets the form field name that the selected rows' values post under.
     /// </summary>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     /// <summary>
-    ///     The value that identifies the row, such as its key.
+    ///     Gets or sets the value that identifies the row, such as its key.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "td";

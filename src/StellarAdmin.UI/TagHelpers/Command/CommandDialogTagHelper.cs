@@ -6,46 +6,58 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A modal dialog that presents a command menu, typically as a command palette. Open and close
-///     it like any other dialog, for example with an invoker button or <c>showModal()</c>.
+///     Renders a modal dialog that holds a command menu, such as a command palette.
 /// </summary>
+/// <remarks>
+///     Open and close it like any other dialog, for example with an invoker button or
+///     <c>showModal()</c>. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-command-dialog")]
 public class CommandDialogTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
     /// <summary>
-    ///     The dialog's visually hidden description for assistive technology.
+    ///     Gets or sets the visually hidden description of the dialog.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to "Search for a command to run...".
-    /// </remarks>
+    /// <value>
+    ///     The default is <c>Search for a command to run...</c>.
+    /// </value>
     [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
-    ///     Whether the dialog shows a close button in its corner.
+    ///     Gets or sets a value that indicates whether the dialog shows a close button in its corner.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the dialog shows a close button; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>. Pressing Escape always closes the dialog.
+    ///     Pressing Escape always closes the dialog.
     /// </remarks>
     [HtmlAttributeName("show-close-button")]
     public bool? ShowCloseButton { get; set; }
 
     /// <summary>
-    ///     The dialog's visually hidden title for assistive technology.
+    ///     Gets or sets the visually hidden title of the dialog.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to "Command Palette".
-    /// </remarks>
+    /// <value>
+    ///     The default is <c>Command Palette</c>.
+    /// </value>
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CommandDialogTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the close icon.</param>
     public CommandDialogTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveTitle = Title ?? "Command Palette";

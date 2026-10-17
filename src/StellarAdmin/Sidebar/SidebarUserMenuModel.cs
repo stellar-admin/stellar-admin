@@ -1,32 +1,37 @@
 namespace StellarAdmin.Sidebar;
 
 /// <summary>
-///     The signed-in user and their menu items, the model of <c>_SidebarUserMenu.cshtml</c>.
+///     Represents the signed-in user and their menu items, for the <c>_SidebarUserMenu.cshtml</c>
+///     view.
 /// </summary>
 public sealed class SidebarUserMenuModel
 {
     /// <summary>
-    ///     The URL of the user's picture, or <c>null</c> to show initials.
+    ///     Gets the URL of the user's picture, or <see langword="null" /> to show the user's
+    ///     initials.
     /// </summary>
     public string? AvatarUrl { get; }
 
     /// <summary>
-    ///     The line under the name, or <c>null</c> for none.
+    ///     Gets the line under the user's name, or <see langword="null" /> for none.
     /// </summary>
     public string? Description { get; }
 
     /// <summary>
-    ///     The menu items, in the order they are shown.
+    ///     Gets the menu items, in the order they are shown.
     /// </summary>
     public IReadOnlyList<UserMenuItem> Items { get; }
 
     /// <summary>
-    ///     The log out item, shown after the other items, or <c>null</c> when log out is hidden.
+    ///     Gets the log out item, or <see langword="null" /> when log out is hidden.
     /// </summary>
+    /// <remarks>
+    ///     The log out item is shown after the other items.
+    /// </remarks>
     public LogoutUserMenuItem? Logout { get; }
 
     /// <summary>
-    ///     The user's name.
+    ///     Gets the user's name.
     /// </summary>
     public string Name { get; }
 

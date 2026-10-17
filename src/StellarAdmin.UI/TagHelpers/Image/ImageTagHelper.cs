@@ -7,86 +7,106 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays an image as a thumbnail or a figure, with a placeholder when there is none and a
-///     broken-image tile when it can't be loaded.
+///     Renders an image as a thumbnail or a figure.
 /// </summary>
+/// <remarks>
+///     A placeholder is shown when there's no image, and a broken-image tile when it can't be
+///     loaded. The broken-image tile, lightbox and preview require <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-image", TagStructure = TagStructure.WithoutEndTag)]
 public class ImageTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ImageTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the image's icons.</param>
     public ImageTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
-    ///     The image's text alternative, which also names the button that opens the lightbox.
+    ///     Gets or sets the image's text alternative.
     /// </summary>
+    /// <remarks>
+    ///     The text also names the button that opens the lightbox.
+    /// </remarks>
     [HtmlAttributeName("alt")]
     public string? Alt { get; set; }
 
     /// <summary>
-    ///     The shape of the box the image is shown in.
+    ///     Gets or sets the shape of the box the image is shown in.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageAspectRatio.Square" /> for a thumbnail and
-    ///     <see cref="ImageAspectRatio.Original" /> for a figure.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the shape. The default is square for a
+    ///     thumbnail and the image's own shape for a figure.
+    /// </value>
     [HtmlAttributeName("aspect-ratio")]
     public ImageAspectRatio? AspectRatio { get; set; }
 
     /// <summary>
-    ///     How the image fills a box of another shape. Ignored for
-    ///     <see cref="ImageAspectRatio.Original" />.
+    ///     Gets or sets how the image fills a box of another shape.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the fit. The default is
+    ///     <see cref="ImageFit.Cover" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="ImageFit.Cover" />.
+    ///     Ignored when <see cref="AspectRatio" /> is <see cref="ImageAspectRatio.Original" />.
     /// </remarks>
     [HtmlAttributeName("fit")]
     public ImageFit? Fit { get; set; }
 
     /// <summary>
-    ///     What pointing at or clicking the image does.
+    ///     Gets or sets what pointing at or clicking the image does.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageInteraction.Lightbox" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the interaction. The default is
+    ///     <see cref="ImageInteraction.Lightbox" />.
+    /// </value>
     [HtmlAttributeName("interaction")]
     public ImageInteraction? Interaction { get; set; }
 
     /// <summary>
-    ///     The image's height: a thumbnail's height, or a figure's maximum height.
+    ///     Gets or sets the image's height, which is a thumbnail's height or a figure's maximum
+    ///     height.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageSize.Small" /> for a thumbnail and
-    ///     <see cref="ImageSize.Medium" /> for a figure.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the height. The default is small for a
+    ///     thumbnail and medium for a figure.
+    /// </value>
     [HtmlAttributeName("size")]
     public ImageSize? Size { get; set; }
 
     /// <summary>
-    ///     The URL of the image. When empty, a placeholder is shown.
+    ///     Gets or sets the URL of the image.
     /// </summary>
+    /// <remarks>
+    ///     A placeholder is shown when the URL is empty.
+    /// </remarks>
     [HtmlAttributeName("src")]
     public string? Source { get; set; }
 
     /// <summary>
-    ///     Where the image is shown, which sets its sizes and empty and error states.
+    ///     Gets or sets where the image is shown, which sets its sizes and its empty and error states.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ImageVariant.Thumbnail" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the variant. The default is
+    ///     <see cref="ImageVariant.Thumbnail" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ImageVariant? Variant { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public ViewContext? ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveVariant = Variant ?? ImageVariant.Thumbnail;

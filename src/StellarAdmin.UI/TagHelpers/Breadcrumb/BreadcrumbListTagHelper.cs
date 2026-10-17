@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The ordered list of breadcrumb items, rendered as an <c>&lt;ol&gt;</c>.
+///     Renders the ordered list of items in a breadcrumb.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-list")]
 public class BreadcrumbListTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ol";

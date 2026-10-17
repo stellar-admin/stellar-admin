@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI.Toasts;
 
 /// <summary>
-///     Queues toasts to show on the next page or in the current AJAX response.
+///     Queues toasts to show on the next page or in the response to the current script request.
 /// </summary>
 public interface IToastNotifier
 {

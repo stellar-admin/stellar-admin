@@ -5,33 +5,45 @@ using Microsoft.Extensions.Options;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups form content under a title with an optional description.
+///     Renders a group of form content under a heading with an optional description.
 /// </summary>
+/// <param name="options">The forms options that supply the default section layout.</param>
 [HtmlTargetElement("sa-form-section")]
 public class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
     : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Gets or sets the text shown below the section heading.
     /// </summary>
     [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
-    ///     The section layout.
+    ///     Gets or sets how the section places its heading and fields.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout. The default is the
+    ///     application's form section layout.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the application's form section layout.
+    ///     The application's layout is set with <see cref="StellarAdminFormsOptions.SectionLayout" />.
     /// </remarks>
     [HtmlAttributeName("layout")]
     public FormSectionLayout? Layout { get; set; }
 
     /// <summary>
-    ///     The section title.
+    ///     Gets or sets the section heading.
     /// </summary>
+    /// <remarks>
+    ///     Required.
+    /// </remarks>
     [HtmlAttributeName("title")]
     public string Title { get; set; } = string.Empty;
 
+    /// <inheritdoc />
+    /// <exception cref="ArgumentException">
+    ///     <see cref="Title" /> is empty or whitespace.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(Title);

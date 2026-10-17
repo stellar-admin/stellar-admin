@@ -6,15 +6,15 @@ generated: true
 
 # Progress
 
-A progress bar that visualizes the completion of a task as a filled track. Compose it with the label and value subcomponents.
+Renders a progress bar that shows how far a task has progressed.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-progress>` | A progress bar that visualizes the completion of a task as a filled track. Compose it with the label and value subcomponents. |
-| `<sa-progress-label>` | A text label for a progress bar, rendered as a `<span>`. |
-| `<sa-progress-value>` | Displays a progress bar's value, rendered as a `<span>`; falls back to the computed completion percentage when no content is supplied. |
+| `<sa-progress>` | Renders a progress bar that shows how far a task has progressed. |
+| `<sa-progress-label>` | Renders a label for a progress bar. |
+| `<sa-progress-value>` | Renders the value of a progress bar. |
 
 ## Attributes
 

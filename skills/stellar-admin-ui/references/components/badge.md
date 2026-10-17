@@ -6,7 +6,7 @@ generated: true
 
 # Badge
 
-A small label used to highlight status, counts, or categories.
+Renders a small label that highlights a status, count or category.
 
 ## Attributes
 

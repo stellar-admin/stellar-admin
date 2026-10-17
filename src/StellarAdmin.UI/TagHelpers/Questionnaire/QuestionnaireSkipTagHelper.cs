@@ -3,29 +3,36 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Leaves the current question unanswered and moves on. Renders a submit button, so place it inside your own <c>&lt;form&gt;</c>.
+///     Renders a button that leaves the current question unanswered and moves on.
 /// </summary>
+/// <remarks>
+///     The button submits the form, so place it inside your own <c>&lt;form&gt;</c>. With no
+///     content, it shows "Skip".
+/// </remarks>
 [HtmlTargetElement("sa-questionnaire-skip")]
 public class QuestionnaireSkipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="ButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The button variant.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ButtonVariant.Outline" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="ButtonVariant.Outline" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         return QuestionnaireActionRenderingHelper.RenderAsync(

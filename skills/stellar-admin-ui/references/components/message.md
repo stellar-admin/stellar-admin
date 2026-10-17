@@ -6,18 +6,18 @@ generated: true
 
 # Message
 
-A single message in a conversation, laying out its avatar, content, header and footer.
+Renders a message in a conversation, with its avatar, content, header and footer.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-message>` | A single message in a conversation, laying out its avatar, content, header and footer. |
-| `<sa-message-avatar>` | The avatar alongside a message, aligned with the bottom of the message. |
-| `<sa-message-content>` | The column holding a message's header, message surface and footer. |
-| `<sa-message-footer>` | The line below a message, typically holding a timestamp, delivery status or message actions. |
-| `<sa-message-group>` | A container that stacks consecutive messages from the same sender. |
-| `<sa-message-header>` | The line above a message, typically naming the sender. |
+| `<sa-message>` | Renders a message in a conversation, with its avatar, content, header and footer. |
+| `<sa-message-avatar>` | Renders the avatar beside a message, aligned with the bottom of the message. |
+| `<sa-message-content>` | Renders the column that holds a message's header, body and footer. |
+| `<sa-message-footer>` | Renders the line below a message, which usually holds a timestamp, delivery status or actions. |
+| `<sa-message-group>` | Renders a group of consecutive messages from the same sender. |
+| `<sa-message-header>` | Renders the line above a message, which usually names the sender. |
 
 ## Attributes
 

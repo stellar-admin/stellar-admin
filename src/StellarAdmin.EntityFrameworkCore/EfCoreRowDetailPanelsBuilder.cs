@@ -6,8 +6,13 @@ using StellarAdmin.Resources.Builders;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Configures the panels of an EF Core resource's row details, shown as tabs.
+///     Adds the panels shown in a row's details for a resource that EF Core loads.
 /// </summary>
+/// <typeparam name="TContext">The type of the database context that holds the entities.</typeparam>
+/// <typeparam name="TEntity">The type of the entity.</typeparam>
+/// <remarks>
+///     Two or more panels are shown as tabs.
+/// </remarks>
 public sealed class EfCoreRowDetailPanelsBuilder<TContext, TEntity>
     : ResourceRowDetailPanelsBuilder<TEntity>
     where TContext : DbContext
@@ -17,9 +22,25 @@ public sealed class EfCoreRowDetailPanelsBuilder<TContext, TEntity>
         : base(services) { }
 
     /// <summary>
-    ///     Adds a panel that renders a partial view with a model projected from the row's entity when the panel is
-    ///     first shown.
+    ///     Adds a panel that shows a partial view with a model projected from the row's entity.
     /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <param name="title">The title of the panel's tab.</param>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="select">
+    ///     An expression that projects the row's entity to the partial's model.
+    /// </param>
+    /// <returns>A builder that configures the panel.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" />, <paramref name="partialName" /> or <paramref name="select" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
+    /// <remarks>
+    ///     The model loads when the panel is first shown.
+    /// </remarks>
     public ResourceRowDetailPanelBuilder Add<TModel>(
         string title,
         string partialName,

@@ -8,7 +8,7 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Shared binding and field attributes for radio and checkbox groups.
+///     Provides the binding and field attributes shared by radio and checkbox groups.
 /// </summary>
 public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroupClassNames>
 {
@@ -17,63 +17,80 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     private readonly IOptions<IconOptions> _icons;
 
     /// <summary>
-    ///     The number of columns of options when the field is at least 40rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns of options when the field is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at the next smaller width.
+    /// </value>
     /// <remarks>
-    ///     Defaults to 1. Narrower fields use one column, unless <see cref="ColumnsBase" /> or
-    ///     <see cref="ColumnsSmall" /> is set.
+    ///     The same as <c>columns-md</c>. Can't be combined with it.
     /// </remarks>
     [HtmlAttributeName("columns")]
     public int? Columns { get; set; }
 
     /// <summary>
-    ///     The number of columns of options at the smallest width, from 1 to 12.
+    ///     Gets or sets the number of columns of options at the smallest width.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to 1.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is <c>1</c>.
+    /// </value>
     [HtmlAttributeName("columns-base")]
     public int? ColumnsBase { get; set; }
 
     /// <summary>
-    ///     The number of columns of options when the field is at least 56rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns of options when the field is at least 56rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the number of columns at 40rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at the next smaller width.
+    /// </value>
     [HtmlAttributeName("columns-lg")]
     public int? ColumnsLarge { get; set; }
 
     /// <summary>
-    ///     The number of columns of options when the field is at least 40rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns of options when the field is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at the next smaller width.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="Columns" />, otherwise the number of columns at 30rem.
+    ///     Can't be combined with <c>columns</c>.
     /// </remarks>
     [HtmlAttributeName("columns-md")]
     public int? ColumnsMedium { get; set; }
 
     /// <summary>
-    ///     The number of columns of options when the field is at least 30rem wide, from 1 to 12.
+    ///     Gets or sets the number of columns of options when the field is at least 30rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the number of columns at the smallest width.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12. The default is the number of columns at the smallest width.
+    /// </value>
     [HtmlAttributeName("columns-sm")]
     public int? ColumnsSmall { get; set; }
 
     /// <summary>
-    ///     Whether all options are disabled.
+    ///     Gets or sets a value that indicates whether every option is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if every option is disabled; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     Options to render instead of child item tags.
+    ///     Gets or sets the options to render in place of child option elements.
     /// </summary>
+    /// <remarks>
+    ///     Can't be combined with child option elements. Option groups aren't supported.
+    /// </remarks>
     [HtmlAttributeName("asp-items")]
     public IEnumerable<SelectListItem>? Items { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ChoiceGroupTagHelper" /> class.
+    /// </summary>
+    /// <param name="generator">The generator that renders the field and its inputs.</param>
+    /// <param name="icons">The icon options that supply the mark of a selected checkbox.</param>
     protected ChoiceGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
         : base(generator)
     {
@@ -81,6 +98,36 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
         _icons = icons;
     }
 
+    /// <summary>
+    ///     Renders the group and its options.
+    /// </summary>
+    /// <param name="context">The context of the element being rendered.</param>
+    /// <param name="output">The output of the element being rendered.</param>
+    /// <param name="multiple">
+    ///     <see langword="true" /> to render checkboxes; otherwise, <see langword="false" /> to render
+    ///     radio buttons.
+    /// </param>
+    /// <param name="card">
+    ///     <see langword="true" /> to show the options as cards; otherwise, <see langword="false" />.
+    /// </param>
+    /// <param name="down">
+    ///     <see langword="true" /> to fill each column before the next; otherwise,
+    ///     <see langword="false" /> to fill each row first.
+    /// </param>
+    /// <param name="values">
+    ///     The selected values when the group isn't bound, or <see langword="null" /> for none.
+    /// </param>
+    /// <returns>The layout of the field around the group.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     The group has neither <c>asp-for</c> nor <c>name</c>, combines <c>asp-for</c> with
+    ///     <c>name</c>, <c>value</c> or <c>values</c>, or is bound to an unsupported type.
+    ///     -or-
+    ///     The options include an option group, repeat a value, or come from both
+    ///     <see cref="Items" /> and child option elements.
+    ///     -or-
+    ///     A radio group has more than one selected value, a column count is out of range, or
+    ///     <c>columns</c> is combined with <c>columns-md</c>.
+    /// </exception>
     protected async Task<FieldLayout> RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,

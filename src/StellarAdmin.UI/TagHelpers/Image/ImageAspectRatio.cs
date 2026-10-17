@@ -1,23 +1,36 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The shape of the box an image is shown in.
+///     Specifies the shape of the box an image is shown in.
 /// </summary>
 public enum ImageAspectRatio
 {
-    /// <summary>1:1.</summary>
+    /// <summary>
+    ///     A 1:1 box.
+    /// </summary>
     Square,
 
-    /// <summary>4:3.</summary>
+    /// <summary>
+    ///     A 4:3 box.
+    /// </summary>
     Landscape,
 
-    /// <summary>16:9.</summary>
+    /// <summary>
+    ///     A 16:9 box.
+    /// </summary>
     Widescreen,
 
-    /// <summary>3:4.</summary>
+    /// <summary>
+    ///     A 3:4 box.
+    /// </summary>
     Portrait,
 
-    /// <summary>The image's own shape. A thumbnail's width stays between half and three times its height.</summary>
+    /// <summary>
+    ///     The image's own shape.
+    /// </summary>
+    /// <remarks>
+    ///     A thumbnail's width stays between half and three times its height.
+    /// </remarks>
     Original,
 }
 

@@ -3,22 +3,26 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A full-width row at the top or bottom of the data grid's body, for a button that adds
-///     an item. It is shown when the grid has no items too, and hidden while a new row, with the
-///     key <c>new</c>, is in edit mode. A grid rendered with <c>rows-only</c> leaves it out.
+///     Renders a full-width row in a data grid, for a button that adds an item.
 /// </summary>
+/// <remarks>
+///     The row also shows when the grid has no items. It is hidden while a new row, with the key
+///     <c>new</c>, is in edit mode. A grid rendered with <c>rows-only</c> leaves it out.
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-add-row", ParentTag = "sa-data-grid")]
 public class DataGridAddRowTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Where the row is placed.
+    ///     Gets or sets where the row is placed.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DataGridAddRowPosition.Top" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies where the row is placed. The default is
+    ///     <see cref="DataGridAddRowPosition.Top" />.
+    /// </value>
     [HtmlAttributeName("position")]
     public DataGridAddRowPosition? Position { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var gridContext = GetContext<DataGridContext>(context);

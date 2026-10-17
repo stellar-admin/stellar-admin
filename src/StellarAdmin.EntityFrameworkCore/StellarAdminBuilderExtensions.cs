@@ -7,16 +7,29 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Registers EF Core resources.
+///     Provides extension methods that add resources that EF Core loads and saves.
 /// </summary>
 public static class StellarAdminBuilderExtensions
 {
     /// <summary>
-    ///     Adds an EF Core resource.
+    ///     Adds a resource that EF Core loads and saves.
     /// </summary>
+    /// <typeparam name="TContext">
+    ///     The type of the database context that holds the entities.
+    /// </typeparam>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <param name="builder">The builder to add the resource to.</param>
+    /// <returns>A builder that configures the resource.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     The resource's URL slug defaults to the kebab-case plural of the entity type's name,
-    ///     e.g. <c>order-items</c> for <c>OrderItem</c>.
+    ///     The URL slug of the resource is the kebab-case plural of the entity type's name, such as
+    ///     <c>order-items</c> for <c>OrderItem</c>. <typeparamref name="TEntity" /> must be mapped
+    ///     in <typeparamref name="TContext" />, with a single public primary key property of type
+    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
+    ///     Fields of a form that binds the entity must be settable properties that aren't keys,
+    ///     concurrency tokens or generated values. Otherwise, the app fails to start.
     /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder
@@ -30,13 +43,31 @@ public static class StellarAdminBuilderExtensions
     }
 
     /// <summary>
-    ///     Adds an EF Core resource under the specified URL slug.
+    ///     Adds a resource that EF Core loads and saves under a URL slug.
     /// </summary>
-    /// <param name="builder">The StellarAdmin builder.</param>
+    /// <typeparam name="TContext">
+    ///     The type of the database context that holds the entities.
+    /// </typeparam>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <param name="builder">The builder to add the resource to.</param>
     /// <param name="slug">
-    ///     The resource's URL segment: lowercase letters and digits, optionally separated by
-    ///     single hyphens.
+    ///     The URL segment of the resource. It uses lowercase letters and digits, optionally
+    ///     separated by single hyphens.
     /// </param>
+    /// <returns>A builder that configures the resource.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" /> or <paramref name="slug" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="slug" /> is empty, white space or not a valid slug.
+    /// </exception>
+    /// <remarks>
+    ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
+    ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
+    ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
+    ///     must be settable properties that aren't keys, concurrency tokens or generated values.
+    ///     Otherwise, the app fails to start.
+    /// </remarks>
     public static EfCoreResourceBuilder<TContext, TEntity> AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
         string slug
@@ -53,8 +84,27 @@ public static class StellarAdminBuilderExtensions
     }
 
     /// <summary>
-    ///     Adds and configures an EF Core resource.
+    ///     Adds and configures a resource that EF Core loads and saves.
     /// </summary>
+    /// <typeparam name="TContext">
+    ///     The type of the database context that holds the entities.
+    /// </typeparam>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <param name="builder">The builder to add the resource to.</param>
+    /// <param name="configure">A delegate that configures the resource.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The URL slug of the resource is the kebab-case plural of the entity type's name, such as
+    ///     <c>order-items</c> for <c>OrderItem</c>. <typeparamref name="TEntity" /> must be mapped
+    ///     in <typeparamref name="TContext" />, with a single public primary key property of type
+    ///     <see cref="int" />, <see cref="long" />, <see cref="Guid" /> or <see cref="string" />.
+    ///     Fields of a form that binds the entity must be settable properties that aren't keys,
+    ///     concurrency tokens or generated values. Otherwise, the app fails to start.
+    /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
         Action<EfCoreResourceBuilder<TContext, TEntity>> configure
@@ -69,14 +119,33 @@ public static class StellarAdminBuilderExtensions
     }
 
     /// <summary>
-    ///     Adds and configures an EF Core resource under the specified URL slug.
+    ///     Adds and configures a resource that EF Core loads and saves under a URL slug.
     /// </summary>
-    /// <param name="builder">The StellarAdmin builder.</param>
+    /// <typeparam name="TContext">
+    ///     The type of the database context that holds the entities.
+    /// </typeparam>
+    /// <typeparam name="TEntity">The type of the entity.</typeparam>
+    /// <param name="builder">The builder to add the resource to.</param>
     /// <param name="slug">
-    ///     The resource's URL segment: lowercase letters and digits, optionally separated by
-    ///     single hyphens.
+    ///     The URL segment of the resource. It uses lowercase letters and digits, optionally
+    ///     separated by single hyphens.
     /// </param>
-    /// <param name="configure">Configures the resource.</param>
+    /// <param name="configure">A delegate that configures the resource.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="builder" />, <paramref name="slug" /> or <paramref name="configure" />
+    ///     is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="slug" /> is empty, white space or not a valid slug.
+    /// </exception>
+    /// <remarks>
+    ///     <typeparamref name="TEntity" /> must be mapped in <typeparamref name="TContext" />, with
+    ///     a single public primary key property of type <see cref="int" />, <see cref="long" />,
+    ///     <see cref="Guid" /> or <see cref="string" />. Fields of a form that binds the entity
+    ///     must be settable properties that aren't keys, concurrency tokens or generated values.
+    ///     Otherwise, the app fails to start.
+    /// </remarks>
     public static StellarAdminBuilder AddEfCoreResource<TContext, TEntity>(
         this StellarAdminBuilder builder,
         string slug,

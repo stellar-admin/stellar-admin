@@ -1,10 +1,10 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays an enum member by its <c>[Display]</c> name.
+///     Shows an enum member by its <c>[Display]</c> name.
 /// </summary>
 /// <remarks>
-///     The default display for enum properties, except flags.
+///     This is the default display for enum properties, except flags enums.
 /// </remarks>
 public sealed class EnumDisplay : FieldDisplay
 {

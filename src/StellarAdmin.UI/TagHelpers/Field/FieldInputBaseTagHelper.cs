@@ -6,15 +6,26 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Base class for StellarAdmin.UI form-input tag helpers. Wires up <c>asp-for</c> model binding and
-///     the shared field attributes (label, description, error) that wrap an input control.
+///     Provides the base class for form controls that render their own label, description and
+///     error, and bind to the model with <c>asp-for</c>.
 /// </summary>
+/// <remarks>
+///     A derived class renders the control in <see cref="RenderInput" />. This class wraps it in
+///     a field and places it in the enclosing <c>&lt;sa-grid&gt;</c>, if there is one.
+/// </remarks>
 public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private string? _descriptionId;
     private string? _errorId;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="FieldInputBaseTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders a bound label and error.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     protected FieldInputBaseTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
@@ -23,117 +34,156 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     private const string ForAttributeName = "asp-for";
 
     /// <summary>
-    ///     The number of columns the input's field spans in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or
-    ///     <c>full</c> for every column.
+    ///     Gets or sets the number of columns the field spans in an <c>&lt;sa-grid&gt;</c>.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is <c>1</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to 1. Limited to the grid's column count at each width.
+    ///     The span is limited to the grid's column count at each width.
     /// </remarks>
     [HtmlAttributeName("column-span")]
     public string? ColumnSpan { get; set; }
 
     /// <summary>
-    ///     The number of columns the input's field spans when the grid is at least 56rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 56rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the span at 40rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at
+    ///     40rem.
+    /// </value>
     [HtmlAttributeName("column-span-lg")]
     public string? ColumnSpanLarge { get; set; }
 
     /// <summary>
-    ///     The number of columns the input's field spans when the grid is at least 40rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 40rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the span at 30rem.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at
+    ///     30rem.
+    /// </value>
     [HtmlAttributeName("column-span-md")]
     public string? ColumnSpanMedium { get; set; }
 
     /// <summary>
-    ///     The number of columns the input's field spans when the grid is at least 30rem wide, from 1 to
-    ///     12, or <c>full</c>.
+    ///     Gets or sets the number of columns the field spans when the grid is at least 30rem wide.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ColumnSpan" />.
-    /// </remarks>
+    /// <value>
+    ///     A number from 1 to 12, or <c>full</c> for every column. The default is the span at the
+    ///     smallest width.
+    /// </value>
     [HtmlAttributeName("column-span-sm")]
     public string? ColumnSpanSmall { get; set; }
 
     /// <summary>
-    ///     The column the input's field starts at in an <c>&lt;sa-grid&gt;</c>, from 1 to 12, or <c>auto</c> to follow the
-    ///     previous item.
+    ///     Gets or sets the column the field starts at in an <c>&lt;sa-grid&gt;</c>.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is
+    ///     <c>auto</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>auto</c>. Ignored at a width where the grid has one column or the input's field
-    ///     would extend past the last column.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start")]
     public string? ColumnStart { get; set; }
 
     /// <summary>
-    ///     The column the input's field starts at when the grid is at least 56rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 56rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at 40rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the start at 40rem.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-lg")]
     public string? ColumnStartLarge { get; set; }
 
     /// <summary>
-    ///     The column the input's field starts at when the grid is at least 40rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 40rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at 30rem.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the start at 30rem.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-md")]
     public string? ColumnStartMedium { get; set; }
 
     /// <summary>
-    ///     The column the input's field starts at when the grid is at least 30rem wide, from 1 to 12, or
-    ///     <c>auto</c>.
+    ///     Gets or sets the column the field starts at when the grid is at least 30rem wide.
     /// </summary>
+    /// <value>
+    ///     A number from 1 to 12, or <c>auto</c> to follow the previous item. The default is the
+    ///     start at the smallest width.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <see cref="ColumnStart" />.
+    ///     Ignored at a width where the grid has one column or the field would extend past the last
+    ///     column.
     /// </remarks>
     [HtmlAttributeName("column-start-sm")]
     public string? ColumnStartSmall { get; set; }
 
     /// <summary>
-    ///     Supporting help text rendered as the field's description.
+    ///     Gets or sets the field's description.
     /// </summary>
+    /// <value>
+    ///     The default is the description from the bound property's metadata.
+    /// </value>
     [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
-    ///     An error message rendered for the field.
+    ///     Gets or sets an error message to show for the field.
     /// </summary>
+    /// <remarks>
+    ///     Setting it also marks the control as invalid.
+    /// </remarks>
     [HtmlAttributeName("error")]
     public string? Error { get; set; }
 
     /// <summary>
-    ///     An expression to be evaluated against the current model.
+    ///     Gets or sets the model property that the control is bound to.
     /// </summary>
     [HtmlAttributeName(ForAttributeName)]
     public ModelExpression? For { get; set; }
 
     /// <summary>
-    ///     The text rendered as the field's label.
+    ///     Gets or sets the text of the field's label.
     /// </summary>
+    /// <value>
+    ///     The default is the display name of the bound property.
+    /// </value>
     [HtmlAttributeName("label")]
     public string? Label { get; set; }
 
+    /// <summary>
+    ///     Gets the CSS classes added to the field's label, description, error and wrapper.
+    /// </summary>
+    /// <value>
+    ///     The classes, or <see langword="null" /> to add none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     protected virtual FieldClassNames? FieldClasses => null;
 
     /// <summary>
-    ///     The <c>id</c> of the element the automatically rendered label targets. Set by default
-    ///     from the host's <c>id</c> when the input is not model-bound; derived classes may
-    ///     override it when the labelled control gets a different id.
+    ///     Gets or sets the <c>id</c> of the element that the field's label targets.
     /// </summary>
+    /// <value>
+    ///     The default is the host element's <c>id</c> when the control isn't bound with
+    ///     <c>asp-for</c>.
+    /// </value>
+    /// <remarks>
+    ///     Set it in <see cref="RenderInput" /> when the labelled element gets a different
+    ///     <c>id</c>.
+    /// </remarks>
     protected string? LabelForId { get; set; }
 
     // When set, the automatically rendered label gets this id and no for attribute, so a
@@ -141,30 +191,37 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     private protected string? LabelId { get; set; }
 
     /// <summary>
-    ///     The name of the &lt;input&gt; element.
+    ///     Gets or sets the name that the control's value is posted under.
     /// </summary>
-    /// <remarks>
-    ///     Passed through to the generated HTML in all cases. Also used to determine whether <see cref="For" /> is
-    ///     valid with an empty <see cref="ModelExpression.Name" />.
-    /// </remarks>
+    /// <value>
+    ///     The default is the name of the bound property.
+    /// </value>
     [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     /// <summary>
-    ///     Whether to wrap the input in a field along with its label, description, and error. When not set,
-    ///     a field is rendered automatically if a label, description, error, or <see cref="For" /> is supplied
-    ///     and the input is not already nested inside a field.
+    ///     Gets or sets a value that indicates whether the control is wrapped in a field with its
+    ///     label, description and error.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the control is wrapped in a field; otherwise,
+    ///     <see langword="false" />. The default is to wrap it when it has a label, description,
+    ///     error or bound property and isn't already inside a field.
+    /// </value>
     [HtmlAttributeName("wrap-in-field")]
     public bool? WrapInField { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     A column span or start isn't valid.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var fieldLayout = await InternalRenderInput(context, output);
@@ -184,6 +241,18 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
         }
     }
 
+    /// <summary>
+    ///     Renders the control into the output.
+    /// </summary>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <param name="output">The output to render the control into.</param>
+    /// <param name="htmlAttributes">
+    ///     The attributes to pass to the framework's HTML generator, or <see langword="null" /> when
+    ///     there are none.
+    /// </param>
+    /// <returns>
+    ///     A task whose result is the layout of the field's parts around the control.
+    /// </returns>
     protected abstract Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

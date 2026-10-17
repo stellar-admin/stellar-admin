@@ -5,10 +5,14 @@ namespace StellarAdmin.UI;
 /// </summary>
 public enum DropdownMenuItemVariant
 {
-    /// <summary>The standard item style.</summary>
+    /// <summary>
+    ///     Uses the standard item style.
+    /// </summary>
     Default,
 
-    /// <summary>A destructive item style, used for actions such as delete.</summary>
+    /// <summary>
+    ///     Uses a destructive style, for actions such as delete.
+    /// </summary>
     Destructive,
 }
 

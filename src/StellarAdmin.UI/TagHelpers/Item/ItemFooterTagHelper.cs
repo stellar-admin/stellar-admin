@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer region of an item, spanning its full width beneath the main content.
+///     Renders the footer of an item, across its full width below the content.
 /// </summary>
 [HtmlTargetElement("sa-item-footer")]
 public class ItemFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

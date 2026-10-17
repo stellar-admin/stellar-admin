@@ -6,17 +6,17 @@ generated: true
 
 # Dialog
 
-A modal window overlaid on the page, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`.
+Renders a modal window over the page.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-dialog>` | A modal window overlaid on the page, rendered over a native `<dialog>` element. Open and close it with the Invoker Commands API — a trigger button carrying `commandfor` and `command="show-modal"` or `command="close"`. |
-| `<sa-dialog-description>` | The descriptive body text of a dialog, shown beneath the title. |
-| `<sa-dialog-footer>` | The footer region of a dialog; typically contains action buttons. |
-| `<sa-dialog-header>` | The header region of a dialog; typically contains the title and description. |
-| `<sa-dialog-title>` | The title heading of a dialog. |
+| `<sa-dialog>` | Renders a modal window over the page. |
+| `<sa-dialog-description>` | Renders the description of a dialog, below its title. |
+| `<sa-dialog-footer>` | Renders the footer of a dialog, which holds its action buttons. |
+| `<sa-dialog-header>` | Renders the header of a dialog, which holds the title and description. |
+| `<sa-dialog-title>` | Renders the title of a dialog. |
 
 ## Examples
 

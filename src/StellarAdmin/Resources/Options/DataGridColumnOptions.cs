@@ -4,55 +4,74 @@ using StellarAdmin.Resources.Displays;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     A configured column of a data grid.
+///     Stores the configuration of a data grid column.
 /// </summary>
 public sealed class DataGridColumnOptions
 {
     /// <summary>
-    ///     The display that renders the column's cells, or <c>null</c> to render the grid display
-    ///     template the property's <c>[UIHint]</c> names, or the default display for its type.
+    ///     Gets the display that renders the column's cells.
     /// </summary>
+    /// <value>
+    ///     The display, or <see langword="null" /> to use the template the property's
+    ///     <c>[UIHint]</c> names or the default display for its type.
+    /// </value>
     public FieldDisplay? Display { get; internal set; }
 
     /// <summary>
-    ///     The text a cell shows when its value is empty, or <c>null</c> to use the property's
-    ///     <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
+    ///     Gets the text a cell shows when its value is empty.
     /// </summary>
+    /// <value>
+    ///     The text, or <see langword="null" /> to use the property's
+    ///     <c>[DisplayFormat(NullDisplayText)]</c> or an empty cell.
+    /// </value>
     public string? EmptyText { get; internal set; }
 
     /// <summary>
-    ///     The name of the form field the column edits in an inline row, or <c>null</c> to match
-    ///     the field by <see cref="FieldName" />.
+    ///     Gets the name of the form field the column edits in an inline row.
     /// </summary>
+    /// <value>
+    ///     The field name, or <see langword="null" /> to match the field by
+    ///     <see cref="FieldName" />.
+    /// </value>
     public string? EditsFieldName { get; internal set; }
 
     /// <summary>
-    ///     The expression selecting the property that provides the column's cell
-    ///     values.
+    ///     Gets the expression that selects the column's values.
     /// </summary>
     public LambdaExpression FieldExpression { get; }
 
     /// <summary>
-    ///     The property path selected by <see cref="FieldExpression" />, or
-    ///     <c>null</c> when the expression does not select a property path.
+    ///     Gets the property path that <see cref="FieldExpression" /> selects.
     /// </summary>
+    /// <value>
+    ///     The property path, or <see langword="null" /> when the expression doesn't select a
+    ///     property path.
+    /// </value>
     public string? FieldName { get; }
 
     /// <summary>
-    ///     Whether the column header renders a sort link and the column's field can be
-    ///     passed as the containing page's sort field.
+    ///     Gets a value that indicates whether the list can be sorted by the column.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the column's header sorts the list; otherwise,
+    ///     <see langword="false" />.
+    /// </value>
     public bool Sortable { get; internal set; }
 
     /// <summary>
-    ///     The expression used to order the column, or null to use its field expression.
+    ///     Gets the expression that sorts the column.
     /// </summary>
+    /// <value>
+    ///     The expression, or <see langword="null" /> to sort by <see cref="FieldExpression" />.
+    /// </value>
     public LambdaExpression? SortExpression { get; internal set; }
 
     /// <summary>
-    ///     The column header title, or <c>null</c> to derive it from the bound property's
-    ///     metadata.
+    ///     Gets the column's header text.
     /// </summary>
+    /// <value>
+    ///     The header text, or <see langword="null" /> to use the property's display name.
+    /// </value>
     public string? Title { get; internal set; }
 
     internal bool UsesBuiltInRendering { get; set; }

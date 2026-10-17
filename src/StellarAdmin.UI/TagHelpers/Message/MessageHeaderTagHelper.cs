@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The line above a message, typically naming the sender.
+///     Renders the line above a message, which usually names the sender.
 /// </summary>
 [HtmlTargetElement("sa-message-header")]
 public class MessageHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

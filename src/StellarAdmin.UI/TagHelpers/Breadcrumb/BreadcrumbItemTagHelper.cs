@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single item within the breadcrumb trail, rendered as a <c>&lt;li&gt;</c>; wraps a
-///     link, page, or separator.
+///     Renders an item in a breadcrumb list, which holds a link or the current page.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-item")]
 public class BreadcrumbItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "li";

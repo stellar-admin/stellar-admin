@@ -1,28 +1,34 @@
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     A scope tab of an index page.
+///     Represents a scope tab of an index page.
 /// </summary>
 public sealed class ResourceIndexScopeViewModel
 {
     /// <summary>
-    ///     Whether the scope is the one currently applied.
+    ///     Gets a value that indicates whether the scope is selected.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the scope is selected; otherwise, <see langword="false" />.
+    /// </value>
     public bool IsActive { get; }
 
     /// <summary>
-    ///     The value the tab's link puts in the query string.
-    ///     It is <c>null</c> for the default scope, so its link has no scope parameter.
+    ///     Gets the value that the tab's link puts in the query string, or
+    ///     <see langword="null" /> for the default scope.
     /// </summary>
+    /// <remarks>
+    ///     The default scope's link has no scope parameter.
+    /// </remarks>
     public string? QueryValue { get; }
 
     /// <summary>
-    ///     The value identifying the scope in the query string.
+    ///     Gets the identifier of the scope.
     /// </summary>
     public string Slug { get; }
 
     /// <summary>
-    ///     The tab label.
+    ///     Gets the label of the tab.
     /// </summary>
     public string Title { get; }
 

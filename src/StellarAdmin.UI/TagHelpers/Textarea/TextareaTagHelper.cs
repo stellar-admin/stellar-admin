@@ -7,20 +7,33 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A styled multi-line text input that grows with its content. Supports model binding via
-///     <c>asp-for</c>.
+///     Renders a multi-line text input that grows with its content.
 /// </summary>
+/// <remarks>
+///     Bind it to a model property with <c>asp-for</c>. Content inside the element replaces the
+///     bound value.
+/// </remarks>
 [HtmlTargetElement("sa-textarea")]
 public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TextareaTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">
+    ///     The generator that renders the bound textarea and the field's label and messages.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public TextareaTagHelper(IHtmlGenerator htmlGenerator)
         : base(htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }
 
+    /// <inheritdoc />
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
         TagHelperOutput output,

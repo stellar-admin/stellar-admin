@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A horizontally scrolling row of attachments that snaps each one into view.
+///     Renders a row of attachments that scrolls horizontally and snaps each one into view.
 /// </summary>
 [HtmlTargetElement("sa-attachment-group")]
 public class AttachmentGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

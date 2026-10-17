@@ -6,7 +6,7 @@ generated: true
 
 # Carousel
 
-A scrollable collection of slides with optional navigation controls.
+Renders a scrollable set of slides with optional navigation controls.
 
 <!-- structure:begin -->
 ## Composition and behavior
@@ -22,12 +22,12 @@ The light-DOM web component uses native scrolling and Invoker Commands. Without 
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-carousel>` | A scrollable collection of slides with optional navigation controls. |
-| `<sa-carousel-content>` | The scrollable viewport containing carousel items. |
-| `<sa-carousel-indicators>` | Navigation dots for the distinct scroll positions in a carousel. |
-| `<sa-carousel-item>` | An individual slide in a carousel. |
-| `<sa-carousel-next>` | A button that scrolls to the next carousel position. |
-| `<sa-carousel-previous>` | A button that scrolls to the previous carousel position. |
+| `<sa-carousel>` | Renders a scrollable set of slides with optional navigation controls. |
+| `<sa-carousel-content>` | Renders the scrollable viewport that holds the slides of a carousel. |
+| `<sa-carousel-indicators>` | Renders dots that scroll a carousel to each of its positions. |
+| `<sa-carousel-item>` | Renders a slide in a carousel. |
+| `<sa-carousel-next>` | Renders a button that scrolls a carousel to the next position. |
+| `<sa-carousel-previous>` | Renders a button that scrolls a carousel to the previous position. |
 
 ## Attributes
 
@@ -35,7 +35,7 @@ The light-DOM web component uses native scrolling and Invoker Commands. Without 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `orientation` | `CarouselOrientation` | — | `Horizontal`, `Vertical` |
+| `orientation` | `CarouselOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -44,16 +44,16 @@ The light-DOM web component uses native scrolling and Invoker Commands. Without 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | — | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `size` | `ButtonSize` | `IconSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-carousel-previous>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
-| `variant` | `ButtonVariant` | — | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `size` | `ButtonSize` | `IconSmall` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `variant` | `ButtonVariant` | `Outline` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

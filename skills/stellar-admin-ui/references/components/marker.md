@@ -6,17 +6,17 @@ generated: true
 
 # Marker
 
-An inline note in a conversation, such as a status update, a system message or a labeled divider.
+Renders a note in a conversation, such as a status update, a system message or a labeled divider.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-marker>` | An inline note in a conversation, such as a status update, a system message or a labeled divider. |
-| `<sa-marker-button>` | A marker rendered as a button, making the whole marker activatable. |
-| `<sa-marker-content>` | The text content of a marker. |
-| `<sa-marker-icon>` | A decorative icon alongside the marker content, hidden from assistive technology. |
-| `<sa-marker-link>` | A marker rendered as an anchor, making the whole marker a clickable link. |
+| `<sa-marker>` | Renders a note in a conversation, such as a status update, a system message or a labeled divider. |
+| `<sa-marker-button>` | Renders a marker as a button, so the whole marker can be clicked. |
+| `<sa-marker-content>` | Renders the text of a marker. |
+| `<sa-marker-icon>` | Renders a decorative icon beside the text of a marker. |
+| `<sa-marker-link>` | Renders a marker as a link, so the whole marker can be clicked. |
 
 ## Attributes
 

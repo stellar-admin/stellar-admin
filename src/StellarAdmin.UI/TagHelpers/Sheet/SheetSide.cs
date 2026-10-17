@@ -1,20 +1,28 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The edge of the screen a <c>&lt;sa-sheet&gt;</c> slides in from.
+///     Specifies the edge of the screen that a sheet slides in from.
 /// </summary>
 public enum SheetSide
 {
-    /// <summary>The sheet slides in from the top edge.</summary>
+    /// <summary>
+    ///     The sheet slides in from the top edge.
+    /// </summary>
     Top,
 
-    /// <summary>The sheet slides in from the right edge.</summary>
+    /// <summary>
+    ///     The sheet slides in from the right edge.
+    /// </summary>
     Right,
 
-    /// <summary>The sheet slides in from the bottom edge.</summary>
+    /// <summary>
+    ///     The sheet slides in from the bottom edge.
+    /// </summary>
     Bottom,
 
-    /// <summary>The sheet slides in from the left edge.</summary>
+    /// <summary>
+    ///     The sheet slides in from the left edge.
+    /// </summary>
     Left,
 }
 

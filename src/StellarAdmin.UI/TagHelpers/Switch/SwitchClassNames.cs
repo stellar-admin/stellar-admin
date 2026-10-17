@@ -1,12 +1,13 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a switch.
+///     Holds additional CSS classes for the parts of a switch.
 /// </summary>
 public class SwitchClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the switch container.
+    ///     Gets or sets additional CSS classes for the element that wraps the switch's track and
+    ///     thumb.
     /// </summary>
     public string? Control { get; set; }
 }

@@ -6,7 +6,7 @@ generated: true
 
 # Details
 
-Lays out read-only display fields in a description list.
+Lays out `sa-display-field` elements in a description list.
 
 <!-- structure:begin -->
 ## When to use
@@ -40,8 +40,8 @@ The same breakpoints and inline grid variables are available from the public `Re
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-details>` | Lays out read-only display fields in a description list. |
-| `<sa-display-field>` | Displays a labelled read-only value. The value comes from child content, a display template, or the model property selected by `asp-for`. |
+| `<sa-details>` | Lays out `sa-display-field` elements in a description list. |
+| `<sa-display-field>` | Renders a read-only value with a label. |
 
 ## Attributes
 
@@ -50,7 +50,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `columns` | `int` | — | — |
-| `columns-base` | `int` | — | — |
+| `columns-base` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
@@ -64,7 +64,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |
@@ -77,9 +77,9 @@ The same breakpoints and inline grid variables are available from the public `Re
 | `format` | `string` | — | — |
 | `href` | `string` | — | — |
 | `label` | `string` | — | — |
-| `orientation` | `DisplayFieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
+| `orientation` | `DisplayFieldOrientation` | — | `Vertical`, `Horizontal` |
 | `secondary` | `string` | — | — |
-| `template` | `string` | `[UIHint]` | — |
+| `template` | `string` | — | — |
 | `template-renders-empty` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

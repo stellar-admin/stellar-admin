@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container that stacks consecutive bubbles from the same sender.
+///     Renders a stack of consecutive bubbles from the same sender.
 /// </summary>
 [HtmlTargetElement("sa-bubble-group")]
 public class BubbleGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

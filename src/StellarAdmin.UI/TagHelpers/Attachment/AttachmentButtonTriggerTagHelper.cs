@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     An attachment trigger rendered as a button, making the whole attachment activatable while
-///     leaving its actions clickable.
+///     Renders a button that makes the whole attachment clickable.
 /// </summary>
+/// <remarks>
+///     The attachment's action buttons stay clickable.
+/// </remarks>
 [HtmlTargetElement("sa-attachment-button-trigger")]
 public class AttachmentButtonTriggerTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "button";

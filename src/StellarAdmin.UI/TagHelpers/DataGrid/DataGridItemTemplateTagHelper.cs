@@ -3,14 +3,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The row template of a data grid column, re-rendered once per data row with the current
-///     item available through <c>Html.GridItem&lt;T&gt;()</c>. Unlike plain child content, the
-///     template is never executed during the grid's collect pass, so it can safely dereference
-///     the item unconditionally.
+///     Renders the content of a data grid column for each row.
 /// </summary>
+/// <remarks>
+///     Use <c>Html.GridItem&lt;T&gt;()</c> to get the row's item. Unlike the column's plain
+///     content, the template only runs for a row, so it can always use the item.
+/// </remarks>
 [HtmlTargetElement("sa-data-grid-item-template", ParentTag = "sa-data-grid-column")]
 public class DataGridItemTemplateTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columnContext = GetContext<DataGridColumnContext>(context);

@@ -3,24 +3,27 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A modal dialog that interrupts the user to confirm an important action, rendered over a
-///     native <c>&lt;dialog&gt;</c> element. Open and close it with the Invoker Commands API — a
-///     trigger button carrying <c>commandfor</c> and <c>command="show-modal"</c> or
-///     <c>command="close"</c>. Unlike a regular dialog, it is not dismissed by clicking the
-///     backdrop.
+///     Renders a modal dialog that asks the user to confirm an important action.
 /// </summary>
+/// <remarks>
+///     The dialog renders as a native <c>&lt;dialog&gt;</c> element. Open it with a button that
+///     has <c>commandfor</c> and <c>command="show-modal"</c>. Pressing Esc closes it, but clicking
+///     the backdrop doesn't, unless the element sets its own <c>closedby</c>.
+/// </remarks>
 [HtmlTargetElement("sa-alert-dialog")]
 public class AlertDialogTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the alert dialog.
+    ///     Gets or sets the size of the dialog.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="AlertDialogSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="AlertDialogSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public AlertDialogSize? Size { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? AlertDialogSize.Default;

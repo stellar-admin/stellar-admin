@@ -12,7 +12,7 @@ using StellarAdmin.Sidebar;
 namespace StellarAdmin;
 
 /// <summary>
-///     Registers admin panel resources.
+///     Provides extension methods that add resources to the admin panel.
 /// </summary>
 public static partial class StellarAdminBuilderExtensions
 {
@@ -21,20 +21,30 @@ public static partial class StellarAdminBuilderExtensions
         /// <summary>
         ///     Adds a resource.
         /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <returns>A builder that configures the resource.</returns>
         /// <remarks>
-        ///     The resource's URL slug defaults to the kebab-case plural of the resource type's
-        ///     name, e.g. <c>order-items</c> for <c>OrderItem</c>.
+        ///     The URL slug of the resource is the kebab-case plural of the resource type's name,
+        ///     such as <c>order-items</c> for <c>OrderItem</c>.
         /// </remarks>
         public ResourceBuilder<TResource> AddResource<TResource>() =>
             builder.AddResource<TResource>(DefaultSlug<TResource>());
 
         /// <summary>
-        ///     Adds a resource under the specified URL slug.
+        ///     Adds a resource under a URL slug.
         /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
         /// <param name="slug">
-        ///     The resource's URL segment: lowercase letters and digits, optionally separated by
-        ///     single hyphens.
+        ///     The URL segment of the resource. It uses lowercase letters and digits, optionally
+        ///     separated by single hyphens.
         /// </param>
+        /// <returns>A builder that configures the resource.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="slug" /> is <see langword="null" />.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     <paramref name="slug" /> is empty, white space or not a valid slug.
+        /// </exception>
         public ResourceBuilder<TResource> AddResource<TResource>(string slug)
         {
             ArgumentNullException.ThrowIfNull(builder);
@@ -180,6 +190,16 @@ public static partial class StellarAdminBuilderExtensions
         /// <summary>
         ///     Adds and configures a resource.
         /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="configure">A delegate that configures the resource.</param>
+        /// <returns>The builder, so that calls can be chained.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="configure" /> is <see langword="null" />.
+        /// </exception>
+        /// <remarks>
+        ///     The URL slug of the resource is the kebab-case plural of the resource type's name,
+        ///     such as <c>order-items</c> for <c>OrderItem</c>.
+        /// </remarks>
         public StellarAdminBuilder AddResource<TResource>(
             Action<ResourceBuilder<TResource>> configure
         )
@@ -193,13 +213,22 @@ public static partial class StellarAdminBuilderExtensions
         }
 
         /// <summary>
-        ///     Adds and configures a resource under the specified URL slug.
+        ///     Adds and configures a resource under a URL slug.
         /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
         /// <param name="slug">
-        ///     The resource's URL segment: lowercase letters and digits, optionally separated by
-        ///     single hyphens.
+        ///     The URL segment of the resource. It uses lowercase letters and digits, optionally
+        ///     separated by single hyphens.
         /// </param>
-        /// <param name="configure">Configures the resource.</param>
+        /// <param name="configure">A delegate that configures the resource.</param>
+        /// <returns>The builder, so that calls can be chained.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="slug" /> or <paramref name="configure" /> is
+        ///     <see langword="null" />.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     <paramref name="slug" /> is empty, white space or not a valid slug.
+        /// </exception>
         public StellarAdminBuilder AddResource<TResource>(
             string slug,
             Action<ResourceBuilder<TResource>> configure
@@ -214,8 +243,13 @@ public static partial class StellarAdminBuilderExtensions
         }
 
         /// <summary>
-        ///     Configures default page text for resources.
+        ///     Configures the default page text for all resources.
         /// </summary>
+        /// <param name="configure">A delegate that configures the page text.</param>
+        /// <returns>The builder, so that calls can be chained.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="configure" /> is <see langword="null" />.
+        /// </exception>
         public StellarAdminBuilder ConfigureResourceLabels(Action<ResourceLabelsBuilder> configure)
         {
             ArgumentNullException.ThrowIfNull(builder);

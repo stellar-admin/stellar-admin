@@ -3,21 +3,25 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A compact token for a selected or entered value, with optional media before its label and
-///     an optional remove button after it.
+///     Renders a compact token for a selected or entered value.
 /// </summary>
+/// <remarks>
+///     Media can go before the chip's label, and an <c>sa-chip-remove</c> button after it.
+/// </remarks>
 [HtmlTargetElement("sa-chip")]
 public class ChipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether the chip is disabled, which dims it and disables its remove button.
+    ///     Gets or sets a value that indicates whether the chip is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the setting of the chip group that contains it.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the chip is dimmed and its remove button is disabled; otherwise,
+    ///     <see langword="false" />. The default is the setting of the chip group that contains it.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDisabled = Disabled ?? GetContext<ChipContext>(context)?.Disabled ?? false;

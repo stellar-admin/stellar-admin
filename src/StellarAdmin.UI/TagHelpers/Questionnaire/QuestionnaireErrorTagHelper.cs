@@ -6,15 +6,24 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Displays the validation message for a questionnaire item's answer. A bound item renders
-///     one automatically, so place this only to position the message yourself or to write your
-///     own text.
+///     Renders the validation message for a questionnaire item's answer.
 /// </summary>
+/// <remarks>
+///     A bound item renders its message automatically. Add this element only to place the message
+///     yourself or to write your own text.
+/// </remarks>
 [HtmlTargetElement("sa-questionnaire-error")]
 public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="QuestionnaireErrorTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the validation message of a bound item.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public QuestionnaireErrorTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
@@ -29,12 +38,13 @@ public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
     internal ModelExpression? For { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var itemContext = GetContext<QuestionnaireItemContext>(context);

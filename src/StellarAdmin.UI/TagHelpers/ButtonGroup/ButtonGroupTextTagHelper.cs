@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Renders a non-interactive text label within a button group.
+///     Renders a text label in a button group.
 /// </summary>
 [HtmlTargetElement("sa-button-group-text")]
 public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

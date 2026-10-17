@@ -3,33 +3,39 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     A titled section of a form.
+///     Stores the configuration of a titled form section.
 /// </summary>
 public sealed class FormSectionOptions : FormContainerOptions
 {
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Gets the supporting text displayed below the section's title.
     /// </summary>
     public string? Description { get; internal set; }
 
     /// <summary>
-    ///     The layout of the section.
+    ///     Gets the layout of the section.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the form's section layout.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout, or <see langword="null" /> to
+    ///     use the form's section layout.
+    /// </value>
     public FormSectionLayout? Layout { get; internal set; }
 
     /// <summary>
-    ///     Whether the labels of the section's display fields display above or beside their values.
+    ///     Gets whether the labels of the section's read-only fields display above or beside their
+    ///     values.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the orientation, or
+    ///     <see langword="null" /> to use the orientation of the parent section.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the orientation of the section's parent section, then above.
+    ///     A section without a parent displays labels above their values.
     /// </remarks>
     public FieldOrientation? Orientation { get; internal set; }
 
     /// <summary>
-    ///     The section title.
+    ///     Gets the section's title.
     /// </summary>
     public string Title { get; internal set; }
 

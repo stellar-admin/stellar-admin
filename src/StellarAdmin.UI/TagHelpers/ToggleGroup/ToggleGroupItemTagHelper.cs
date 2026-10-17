@@ -4,42 +4,62 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single selectable item within a toggle group.
+///     Renders an item that can be selected in a toggle group.
 /// </summary>
+/// <remarks>
+///     Place the item inside a <c>&lt;sa-toggle-group&gt;</c>. Attributes such as
+///     <c>aria-label</c> apply to the item's visually hidden input.
+/// </remarks>
 [HtmlTargetElement("sa-toggle-group-item")]
 public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The value this item posts when selected.
+    ///     Gets or sets the value that the item posts when it is selected.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     Overrides the parent group's variant for this item.
+    ///     Gets or sets the visual style of the item.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is the group's
+    ///     style.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ToggleVariant? Variant { get; set; }
 
     /// <summary>
-    ///     Overrides the parent group's size for this item.
+    ///     Gets or sets the size of the item.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is the group's size.
+    /// </value>
     [HtmlAttributeName("size")]
     public ToggleSize? Size { get; set; }
 
     /// <summary>
-    ///     Forces the selected state. When unset, selection is derived from the value(s) bound
-    ///     through the parent group's <c>asp-for</c>.
+    ///     Gets or sets a value that indicates whether the item is selected.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item is selected; otherwise, <see langword="false" />.
+    ///     By default, the item is selected when the group's bound value contains the item's
+    ///     value.
+    /// </value>
     [HtmlAttributeName("selected")]
     public bool? Selected { get; set; }
 
     /// <summary>
-    ///     Whether the item is disabled and cannot be selected.
+    ///     Gets or sets a value that indicates whether the item is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item is disabled and can't be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         // The parent group resolves and publishes the shared configuration; the item only

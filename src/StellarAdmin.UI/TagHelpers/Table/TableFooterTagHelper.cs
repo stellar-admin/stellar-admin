@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The footer of a table, rendered as a <c>&lt;tfoot&gt;</c>; typically holds summary rows.
+///     Renders the footer of a table, as a <c>&lt;tfoot&gt;</c>.
 /// </summary>
+/// <remarks>
+///     The footer usually holds summary rows.
+/// </remarks>
 [HtmlTargetElement("sa-table-footer")]
 public class TableFooterTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "tfoot";

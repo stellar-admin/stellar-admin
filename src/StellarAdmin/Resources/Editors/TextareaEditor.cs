@@ -6,13 +6,19 @@ namespace StellarAdmin.Resources.Editors;
 public sealed class TextareaEditor : FieldEditor, IFieldEditor<TextareaEditorHandler>
 {
     /// <summary>
-    ///     Hint text displayed while the text area is empty.
+    ///     Gets or sets the hint text displayed while the text area is empty.
     /// </summary>
     public string? Placeholder { get; set; }
 
     /// <summary>
-    ///     The number of visible text lines, or null to grow with the content. A text area with a row count keeps that
-    ///     height and scrolls longer text.
+    ///     Gets or sets the number of visible lines of text.
     /// </summary>
+    /// <value>
+    ///     The number of lines, or <see langword="null" /> to grow with the content. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     A text area with a number of lines keeps that height and scrolls longer text.
+    /// </remarks>
     public int? Rows { get; set; }
 }

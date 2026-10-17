@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A button rendered as an entry within a sidebar menu item.
+///     Renders a button in a sidebar menu item.
 /// </summary>
+/// <remarks>
+///     The button has <c>type="button"</c> unless you set <c>type</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-button")]
 public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
 {
@@ -22,33 +25,36 @@ public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The size of the menu button.
+    ///     Gets or sets the size of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuButtonSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size. The default is
+    ///     <see cref="SidebarMenuButtonSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public SidebarMenuButtonSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual variant of the menu button.
+    ///     Gets or sets the visual style of the button.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuButtonVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="SidebarMenuButtonVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public SidebarMenuButtonVariant? Variant { get; set; }
 
     /// <summary>
-    ///     Whether this button represents the active item; when <c>true</c> the button is
-    ///     marked with a <c>data-active</c> attribute for styling.
+    ///     Gets or sets a value that indicates whether the button is the current item.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the button is highlighted as the current item; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("active")]
     public bool? Active { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveSize = Size ?? SidebarMenuButtonSize.Default;

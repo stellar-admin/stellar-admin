@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A framed message in a conversation, holding its content and any reactions.
+///     Renders a message in a conversation, with its content and any reactions.
 /// </summary>
 [HtmlTargetElement("sa-bubble")]
 public class BubbleTagHelper : StellarAdminTagHelperBase
@@ -20,23 +20,26 @@ public class BubbleTagHelper : StellarAdminTagHelperBase
     };
 
     /// <summary>
-    ///     The side of the conversation the bubble sits on.
+    ///     Gets or sets the side of the conversation that the bubble sits on.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BubbleAlign.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the side. The default is
+    ///     <see cref="BubbleAlign.Start" />.
+    /// </value>
     [HtmlAttributeName("align")]
     public BubbleAlign? Align { get; set; }
 
     /// <summary>
-    ///     The visual style of the bubble.
+    ///     Gets or sets the visual style of the bubble.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BubbleVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="BubbleVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public BubbleVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveAlign = Align ?? BubbleAlign.Start;

@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container for one or more questionnaire items. Place it inside your own
-///     <c>&lt;form&gt;</c>.
+///     Renders a container for one or more questionnaire items.
 /// </summary>
 /// <remarks>
-///     Handles the shortcut keys assigned by <c>sa-questionnaire-choices</c>, the arrow keys that
-///     move between a question's answers, and a free-text answer replacing the choice a
-///     single-answer question holds. All of it needs <c>stellar-admin.js</c>.
+///     Place it inside your own <c>&lt;form&gt;</c>. The container handles the shortcut keys, the
+///     arrow keys that move between a question's answers, and a free-text answer that replaces
+///     the choices. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire")]
 public class QuestionnaireTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "sel-questionnaire";

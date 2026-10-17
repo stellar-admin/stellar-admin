@@ -3,12 +3,17 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A container whose content can be expanded or collapsed. Toggle it with the Invoker
-///     Commands API — a trigger button carrying <c>commandfor</c> and a custom command.
+///     Renders a container whose content can be expanded or collapsed.
 /// </summary>
+/// <remarks>
+///     Toggle it with a button whose <c>commandfor</c> is the collapsible's <c>id</c> and whose
+///     <c>command</c> is <c>--toggle</c>, <c>--show</c> or <c>--hide</c>. Requires
+///     <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-collapsible")]
 public class CollapsibleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "sel-collapsible";

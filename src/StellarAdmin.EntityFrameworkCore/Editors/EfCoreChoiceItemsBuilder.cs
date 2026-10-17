@@ -3,8 +3,10 @@ using System.Linq.Expressions;
 namespace StellarAdmin.EntityFrameworkCore;
 
 /// <summary>
-///     Configures choices loaded from an EF Core entity set.
+///     Configures the choices that load from an entity set.
 /// </summary>
+/// <typeparam name="TEntity">The type of the entities.</typeparam>
+/// <typeparam name="TValue">The type of the value that identifies an entity.</typeparam>
 public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     where TEntity : class
 {
@@ -16,8 +18,17 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Orders the choices by an entity property. Grouped choices keep this order within their group.
+    ///     Orders the choices by an entity property.
     /// </summary>
+    /// <typeparam name="TSort">The type of the property to order by.</typeparam>
+    /// <param name="selector">An expression that selects the property to order by.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="selector" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Grouped choices keep this order within their group.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> OrderBy<TSort>(
         Expression<Func<TEntity, TSort>> selector
     )
@@ -30,9 +41,19 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays an avatar beside each choice's title, in editors that display media, with the title's initials when
-    ///     the image URL is null. Replaces other media.
+    ///     Shows an avatar beside each choice's title.
     /// </summary>
+    /// <param name="imageUrl">
+    ///     An expression that selects the image URL, or <see langword="null" /> or an empty string
+    ///     to show the initials of the choice's title.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="imageUrl" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media. Editors that can't display media ignore it.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseAvatar(
         Expression<Func<TEntity, string?>> imageUrl
     )
@@ -45,9 +66,19 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a short code beside each choice's title, in editors that display media. A choice with a null or
-    ///     empty code has no media. Replaces other media.
+    ///     Shows a short code beside each choice's title.
     /// </summary>
+    /// <param name="code">
+    ///     An expression that selects the code, or <see langword="null" /> or an empty string to
+    ///     show no media for the choice.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="code" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media. Editors that can't display media ignore it.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseCode(
         Expression<Func<TEntity, string?>> code
     )
@@ -60,8 +91,18 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays secondary text below each choice's title, in editors that display descriptions.
+    ///     Shows secondary text below each choice's title.
     /// </summary>
+    /// <param name="description">
+    ///     An expression that selects the description, or <see langword="null" /> to show none.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="description" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Editors that can't display descriptions ignore it.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseDescription(
         Expression<Func<TEntity, string?>> description
     )
@@ -74,9 +115,19 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Groups the choices by the selected heading, in editors that display groups. Choices with a null heading
-    ///     are not grouped.
+    ///     Groups the choices under headings.
     /// </summary>
+    /// <param name="group">
+    ///     An expression that selects a choice's group heading, or <see langword="null" /> for a
+    ///     choice outside any group.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="group" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Editors that can't display groups ignore them.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseGroup(
         Expression<Func<TEntity, string?>> group
     )
@@ -89,9 +140,19 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a registered icon beside each choice's title, in editors that display media. A choice with a null
-    ///     or empty icon name has no media. Replaces other media.
+    ///     Shows a registered icon beside each choice's title.
     /// </summary>
+    /// <param name="iconName">
+    ///     An expression that selects the icon name, or <see langword="null" /> or an empty string
+    ///     to show no media for the choice.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="iconName" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media. Editors that can't display media ignore it.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseIcon(
         Expression<Func<TEntity, string?>> iconName
     )
@@ -104,9 +165,19 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a square image beside each choice's title, in editors that display media. A choice with a null or
-    ///     empty image URL has no media. Replaces other media.
+    ///     Shows a square image beside each choice's title.
     /// </summary>
+    /// <param name="imageUrl">
+    ///     An expression that selects the image URL, or <see langword="null" /> or an empty string
+    ///     to show no media for the choice.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="imageUrl" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Replaces any other media. Editors that can't display media ignore it.
+    /// </remarks>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseImage(
         Expression<Func<TEntity, string?>> imageUrl
     )

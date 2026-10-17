@@ -1,7 +1,7 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The order in which a checkbox group fills its columns.
+///     Specifies the order in which a checkbox group fills its columns.
 /// </summary>
 public enum CheckboxGroupFlow
 {

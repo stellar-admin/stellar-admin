@@ -1,22 +1,25 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     The form field an editor handler prepares.
+///     Describes the form field an editor handler prepares.
 /// </summary>
+/// <param name="fieldName">The property path of the field.</param>
+/// <param name="model">The model the form renders.</param>
+/// <param name="value">The field's current value.</param>
 public sealed class FieldEditorContext(string fieldName, object model, object? value)
 {
     /// <summary>
-    ///     The property path of the field.
+    ///     Gets the property path of the field.
     /// </summary>
     public string FieldName { get; } = fieldName;
 
     /// <summary>
-    ///     The model the form renders.
+    ///     Gets the model the form renders.
     /// </summary>
     public object Model { get; } = model;
 
     /// <summary>
-    ///     The field's current value.
+    ///     Gets the field's current value.
     /// </summary>
     public object? Value { get; } = value;
 }

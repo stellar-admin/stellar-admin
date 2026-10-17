@@ -6,13 +6,13 @@ generated: true
 
 # Textarea
 
-A styled multi-line text input that grows with its content. Supports model binding via `asp-for`.
+Renders a multi-line text input that grows with its content.
 
 ## Attributes
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

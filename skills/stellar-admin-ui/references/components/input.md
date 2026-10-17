@@ -6,7 +6,7 @@ generated: true
 
 # Input
 
-A form input. Renders a styled `<input>` for text-like types, and a styled checkbox or radio button (with its indicator) when the type is `checkbox` or `radio`. Supports model binding via `asp-for`.
+Renders a form input.
 
 <!-- structure:begin -->
 ## Individual controls and groups
@@ -25,7 +25,7 @@ Prefer a [radio group](radio-group.md) when related options share one bound prop
 | `asp-format` | `string` | — | — |
 | `type` | `string` | — | — |
 | `value` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

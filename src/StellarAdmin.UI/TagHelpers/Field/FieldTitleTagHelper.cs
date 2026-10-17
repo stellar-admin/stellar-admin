@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A title for a field or field set that is styled like a label but is not associated with a control.
+///     Renders a title that looks like a field label but isn't tied to a control.
 /// </summary>
 [HtmlTargetElement("sa-field-title")]
 public class FieldTitleTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

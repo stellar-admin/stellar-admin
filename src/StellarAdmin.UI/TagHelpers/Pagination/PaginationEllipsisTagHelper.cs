@@ -6,13 +6,21 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A non-interactive item that indicates omitted pages within the pagination.
+///     Renders a marker for pages that the pagination leaves out.
 /// </summary>
+/// <remarks>
+///     With no content, the marker shows an ellipsis icon. The marker is hidden from assistive
+///     technology.
+/// </remarks>
 [HtmlTargetElement("sa-pagination-ellipsis")]
 public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PaginationEllipsisTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the default ellipsis icon.</param>
     public PaginationEllipsisTagHelper(IOptions<IconOptions> iconOptions)
         : this(iconOptions.Value) { }
 
@@ -21,6 +29,7 @@ public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
         _iconOptions = iconOptions;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "span";

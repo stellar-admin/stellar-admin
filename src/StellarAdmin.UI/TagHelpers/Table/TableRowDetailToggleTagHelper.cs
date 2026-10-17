@@ -5,30 +5,44 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The button that expands and collapses a row's details, placed in any cell of the row.
-///     It controls the <c>sa-table-row-detail</c> after its row, or the one named by an
-///     <c>aria-controls</c> attribute. Renders a chevron when it has no content.
+///     Renders a button that expands and collapses a table row's details.
 /// </summary>
+/// <remarks>
+///     Place the button in any cell of the row. It controls the
+///     <c>&lt;sa-table-row-detail&gt;</c> after its row, or the one that its
+///     <c>aria-controls</c> attribute names. The button shows a chevron unless you give it
+///     content.
+/// </remarks>
 [HtmlTargetElement("sa-table-row-detail-toggle")]
 public class TableRowDetailToggleTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TableRowDetailToggleTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the chevron icon.</param>
     public TableRowDetailToggleTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
-    ///     Whether the button expands and collapses every row's details instead of one row's,
-    ///     typically placed in a header cell. It is hidden when only one row can be expanded.
+    ///     Gets or sets a value that indicates whether the button expands and collapses every row's
+    ///     details.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the button controls every row; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Place a button that controls every row in a header cell. It is hidden when only one row
+    ///     can be expanded at a time.
     /// </remarks>
     [HtmlAttributeName("all")]
     public bool? All { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var all = All ?? false;

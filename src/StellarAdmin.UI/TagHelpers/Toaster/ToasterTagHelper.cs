@@ -9,13 +9,13 @@ using StellarAdmin.UI.Toasts;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The region that shows toast notifications. Place one in the layout, outside any region
-///     that AJAX requests replace.
+///     Renders the region that shows toast notifications.
 /// </summary>
 /// <remarks>
-///     Toasts added with <see cref="IToastNotifier" /> during a full page load, or before a
-///     redirect to it, appear when the page loads. Classes set on the element apply to the
-///     viewport that positions the toasts.
+///     Place one toaster in the layout, outside any region that AJAX requests replace. Toasts
+///     added with <see cref="IToastNotifier" /> during a full page load, or before a redirect
+///     to the page, appear when the page loads. Classes set on the element apply to the area
+///     that holds the toasts. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-toaster", TagStructure = TagStructure.WithoutEndTag)]
 public class ToasterTagHelper : StellarAdminTagHelperBase
@@ -31,44 +31,61 @@ public class ToasterTagHelper : StellarAdminTagHelperBase
 
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ToasterTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the toast icons.</param>
     public ToasterTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
     /// <summary>
-    ///     How long a toast stays visible when it doesn't set its own duration.
+    ///     Gets or sets how long a toast stays visible when it doesn't set its own duration.
     /// </summary>
+    /// <value>
+    ///     A duration that isn't negative, or <see cref="TimeSpan.Zero" /> to keep toasts open
+    ///     until they are closed. The default is <c>TimeSpan.FromSeconds(5)</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>TimeSpan.FromSeconds(5)</c>. <c>TimeSpan.Zero</c> keeps toasts open
-    ///     until they are closed.
+    ///     Loading toasts don't close on their own unless they set a duration.
     /// </remarks>
     [HtmlAttributeName("duration")]
     public TimeSpan? Duration { get; set; }
 
     /// <summary>
-    ///     The maximum number of toasts visible at once. Older toasts are hidden until newer
-    ///     ones close.
+    ///     Gets or sets the largest number of toasts visible at once.
     /// </summary>
+    /// <value>
+    ///     A number of at least 1. The default is <c>3</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>3</c>.
+    ///     Older toasts are hidden until newer ones close.
     /// </remarks>
     [HtmlAttributeName("limit")]
     public int? Limit { get; set; }
 
     /// <summary>
-    ///     Where on the screen toasts appear.
+    ///     Gets or sets where on the screen toasts appear.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ToasterPosition.BottomRight" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the position. The default is
+    ///     <see cref="ToasterPosition.BottomRight" />.
+    /// </value>
     [HtmlAttributeName("position")]
     public ToasterPosition? Position { get; set; }
 
+    /// <summary>
+    ///     Gets or sets the context of the executing view.
+    /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     <see cref="Duration" /> is negative, or <see cref="Limit" /> is less than 1.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDuration = Duration ?? TimeSpan.FromSeconds(5);

@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups related menu items together, exposed to assistive technology as a
-///     <c>role="group"</c>.
+///     Groups related items in a dropdown menu.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-group")]
 public class DropdownMenuGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

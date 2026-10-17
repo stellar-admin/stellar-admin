@@ -6,20 +6,27 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The search input of a command menu. Attributes the tag does not recognize, such as
-///     <c>name</c>, <c>placeholder</c>, or request attributes for server-side search, are rendered
-///     on the input element.
+///     Renders the search input of a command menu.
 /// </summary>
+/// <remarks>
+///     Other attributes, such as <c>name</c>, <c>placeholder</c> or request attributes for a
+///     search on the server, are rendered on the input.
+/// </remarks>
 [HtmlTargetElement("sa-command-input", TagStructure = TagStructure.WithoutEndTag)]
 public class CommandInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CommandInputTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the search icon.</param>
     public CommandInputTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var commandContext = GetContext<CommandContext>(context);

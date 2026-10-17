@@ -3,17 +3,22 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A non-interactive label used to caption a section of menu items.
+///     Renders a label for a section of dropdown menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-label")]
 public class DropdownMenuLabelTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Whether the label is inset, aligning its text with items that have a leading icon.
+    ///     Gets or sets a value that indicates whether the label is inset.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the label's text aligns with items that have a leading icon;
+    ///     otherwise, <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("inset")]
     public bool? Inset { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

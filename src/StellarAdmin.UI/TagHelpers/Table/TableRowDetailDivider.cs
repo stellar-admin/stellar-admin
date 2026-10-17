@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The line between an expanded row and its details.
+///     Specifies the line between an expanded table row and its details.
 /// </summary>
 public enum TableRowDetailDivider
 {
-    /// <summary>No line.</summary>
+    /// <summary>
+    ///     No line.
+    /// </summary>
     None,
 
-    /// <summary>A line that starts and ends where the details' content does.</summary>
+    /// <summary>
+    ///     A line that starts and ends where the details' content does.
+    /// </summary>
     Inset,
 
-    /// <summary>A line across the table, like the lines between rows.</summary>
+    /// <summary>
+    ///     A line across the table, like the lines between rows.
+    /// </summary>
     FullWidth,
 }
 

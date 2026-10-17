@@ -8,11 +8,12 @@ public sealed class UserMenuItemBuilder
     private readonly Action<string?> _setIcon;
 
     /// <summary>
-    ///     The icon shown before the item's text, or <c>null</c> for none.
+    ///     Sets the icon shown before the item's text.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>null</c>, or <c>log-out</c> for a log out item.
-    /// </remarks>
+    /// <value>
+    ///     The name of the icon, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Icon
     {
         set => _setIcon(value);

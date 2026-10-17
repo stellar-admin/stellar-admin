@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     An untitled group of related form fields.
+///     Stores the configuration of an untitled group of related form fields.
 /// </summary>
 public sealed class FormGroupOptions : FormContainerOptions
 {

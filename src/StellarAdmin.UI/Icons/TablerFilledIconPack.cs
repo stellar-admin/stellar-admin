@@ -1,14 +1,17 @@
 ﻿namespace StellarAdmin.UI.Icons;
 
+/// <summary>
+///     Supplies the filled Tabler icons.
+/// </summary>
 public sealed class TablerFilledIconPack : IIconPack
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return TablerFilledIcons.IconDefinitions;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
     {
         return new Dictionary<SemanticIconRole, string>

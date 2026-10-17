@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Navigation dots for the distinct scroll positions in a carousel.
+///     Renders dots that scroll a carousel to each of its positions.
 /// </summary>
 [HtmlTargetElement("sa-carousel-indicators")]
 public class CarouselIndicatorsTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

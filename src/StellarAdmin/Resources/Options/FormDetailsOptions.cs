@@ -3,47 +3,50 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     A titled section of a form that lists read-only fields.
+///     Stores the configuration of a titled form section that lists read-only fields.
 /// </summary>
 public sealed class FormDetailsOptions : FormItemOptions
 {
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Gets the supporting text displayed below the section's title.
     /// </summary>
     public string? Description { get; internal set; }
 
     /// <summary>
-    ///     The section's read-only fields, in display order.
+    ///     Gets the section's read-only fields, in display order.
     /// </summary>
     public IReadOnlyList<FormDisplayFieldOptions> Fields => MutableFields;
 
     /// <summary>
-    ///     The layout of the section.
+    ///     Gets the layout of the section.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the form's section layout.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the layout, or <see langword="null" /> to
+    ///     use the form's section layout.
+    /// </value>
     public FormSectionLayout? Layout { get; internal set; }
 
     /// <summary>
-    ///     Whether labels display above or beside their values.
+    ///     Gets whether labels display above or beside their values.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to above.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the orientation, or
+    ///     <see langword="null" /> to display labels above their values.
+    /// </value>
     public DetailsOrientation? Orientation { get; internal set; }
 
     /// <summary>
-    ///     The section title.
+    ///     Gets the section's title.
     /// </summary>
     public string Title { get; internal set; }
 
     /// <summary>
-    ///     The visual variant of the list.
+    ///     Gets the visual style of the list.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DetailsVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style, or <see langword="null" /> to
+    ///     use <see cref="DetailsVariant.Default" />.
+    /// </value>
     public DetailsVariant? Variant { get; internal set; }
 
     internal FormGridColumnDefinitions Columns { get; set; }

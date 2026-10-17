@@ -6,21 +6,21 @@ generated: true
 
 # Pagination
 
-Navigation for moving between pages of content.
+Renders navigation for moving between pages of content.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-pagination>` | Navigation for moving between pages of content. |
-| `<sa-pagination-content>` | The list that holds the individual pagination items. |
-| `<sa-pagination-ellipsis>` | A non-interactive item that indicates omitted pages within the pagination. |
-| `<sa-pagination-first>` | A pagination link that navigates to the first page. |
-| `<sa-pagination-item>` | A single item within the pagination list. |
-| `<sa-pagination-last>` | A pagination link that navigates to the last page. |
-| `<sa-pagination-link>` | A link to a specific page within the pagination. |
-| `<sa-pagination-next>` | A pagination link that navigates to the next page. |
-| `<sa-pagination-previous>` | A pagination link that navigates to the previous page. |
+| `<sa-pagination>` | Renders navigation for moving between pages of content. |
+| `<sa-pagination-content>` | Renders the list that holds the pagination items. |
+| `<sa-pagination-ellipsis>` | Renders a marker for pages that the pagination leaves out. |
+| `<sa-pagination-first>` | Renders a pagination link to the first page. |
+| `<sa-pagination-item>` | Renders an item in the pagination list. |
+| `<sa-pagination-last>` | Renders a pagination link to the last page. |
+| `<sa-pagination-link>` | Renders a pagination link to a page. |
+| `<sa-pagination-next>` | Renders a pagination link to the next page. |
+| `<sa-pagination-previous>` | Renders a pagination link to the previous page. |
 
 ## Attributes
 
@@ -28,7 +28,7 @@ Navigation for moving between pages of content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
 | `asp-controller` | `string` | — | — |
@@ -48,7 +48,7 @@ Navigation for moving between pages of content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
 | `asp-controller` | `string` | — | — |
@@ -85,7 +85,7 @@ Navigation for moving between pages of content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
 | `asp-controller` | `string` | — | — |
@@ -103,7 +103,7 @@ Navigation for moving between pages of content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ButtonSize` | — | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
+| `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
 | `asp-action` | `string` | — | — |
 | `asp-area` | `string` | — | — |
 | `asp-controller` | `string` | — | — |

@@ -5,18 +5,27 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A button that toggles the open or collapsed state of its parent sidebar.
+///     Renders a button that expands and collapses the sidebar.
 /// </summary>
+/// <remarks>
+///     Place the button in the same <c>&lt;sa-sidebar-wrapper&gt;</c> as the sidebar. The button
+///     shows a toggle icon unless you give it content. Requires <c>stellar-admin.js</c>.
+/// </remarks>
 [HtmlTargetElement("sa-sidebar-trigger")]
 public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SidebarTriggerTagHelper" /> class.
+    /// </summary>
+    /// <param name="iconOptions">The icon options that supply the toggle icon.</param>
     public SidebarTriggerTagHelper(IOptions<IconOptions> iconOptions)
     {
         _iconOptions = iconOptions.Value;
     }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "button";

@@ -1,17 +1,23 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of an item.
+///     Specifies the visual style of an item.
 /// </summary>
 public enum ItemVariant
 {
-    /// <summary>A plain item with no border or background.</summary>
+    /// <summary>
+    ///     A plain item with no border or background.
+    /// </summary>
     Default,
 
-    /// <summary>An item with a bordered outline.</summary>
+    /// <summary>
+    ///     An item with a border.
+    /// </summary>
     Outline,
 
-    /// <summary>An item with a muted background.</summary>
+    /// <summary>
+    ///     An item with a muted background.
+    /// </summary>
     Muted,
 }
 

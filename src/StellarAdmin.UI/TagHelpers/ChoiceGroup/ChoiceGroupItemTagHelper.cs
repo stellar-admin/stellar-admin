@@ -3,28 +3,49 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Shared attributes for radio and checkbox group options.
+///     Provides the attributes shared by radio and checkbox group options.
 /// </summary>
 public abstract class ChoiceGroupItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Supporting text below the option label.
+    ///     Gets or sets the supporting text shown below the option's label.
     /// </summary>
     [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
-    ///     Whether this option is disabled.
+    ///     Gets or sets a value that indicates whether the option is disabled.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the option is disabled and can't be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     The value submitted when this option is selected.
+    ///     Gets or sets the value that the group posts when the option is selected.
     /// </summary>
+    /// <remarks>
+    ///     Required. Each option in a group needs a different value.
+    /// </remarks>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    /// <summary>
+    ///     Renders the option through the group that contains it.
+    /// </summary>
+    /// <param name="context">The context of the element being rendered.</param>
+    /// <param name="output">The output of the element being rendered.</param>
+    /// <param name="multiple">
+    ///     <see langword="true" /> if the option belongs to a checkbox group; otherwise,
+    ///     <see langword="false" />.
+    /// </param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     The element isn't inside a matching radio or checkbox group, or <see cref="Value" /> is
+    ///     <see langword="null" />.
+    /// </exception>
     protected async Task RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,

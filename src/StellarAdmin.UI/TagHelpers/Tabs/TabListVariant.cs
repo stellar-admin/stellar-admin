@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The visual style of a <c>&lt;sa-tab-list&gt;</c>.
+///     Specifies the visual style of a tab list.
 /// </summary>
 public enum TabListVariant
 {
-    /// <summary>The default style, rendering the tab list on a muted background.</summary>
+    /// <summary>
+    ///     Tabs on a muted background.
+    /// </summary>
     Default,
 
-    /// <summary>A minimal style that marks the active tab with an underline.</summary>
+    /// <summary>
+    ///     Tabs with an underline below the selected tab.
+    /// </summary>
     Line,
 }
 

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The header region of an alert dialog; typically contains the title and description.
+///     Renders the header of an alert dialog, which holds the title and description.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-header")]
 public class AlertDialogHeaderTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

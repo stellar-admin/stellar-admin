@@ -3,12 +3,21 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The panel an <c>&lt;sa-tab&gt;</c> of an <c>&lt;sa-tabs&gt;</c> shows. Its <c>id</c> is
-///     the one the tab's <c>for</c> attribute names.
+///     Renders the panel that a tab shows.
 /// </summary>
+/// <remarks>
+///     Place the panel inside a <c>&lt;sa-tabs&gt;</c>. It needs an <c>id</c>, which the
+///     <c>for</c> attribute of its <c>&lt;sa-tab&gt;</c> names. The panel raises the bubbling
+///     <c>tabshow</c> and <c>tabhide</c> events when the user selects its tab or another tab.
+///     The panel shown when the page loads doesn't raise <c>tabshow</c>.
+/// </remarks>
 [HtmlTargetElement("sa-tab-panel")]
 public class TabPanelTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
+    /// <exception cref="InvalidOperationException">
+    ///     The panel isn't inside a <c>&lt;sa-tabs&gt;</c>, or it has no <c>id</c>.
+    /// </exception>
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var tabs =

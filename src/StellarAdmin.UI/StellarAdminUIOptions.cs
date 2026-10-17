@@ -1,13 +1,13 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Root options for configuring the StellarAdmin tag helpers. Configure it via the <see cref="StellarAdminUIBuilder" />
-///     returned from <c>AddStellarAdminUI()</c>
+///     Provides the options for the StellarAdmin tag helpers.
 /// </summary>
+/// <seealso cref="StellarAdminUIBuilder" />
 public sealed class StellarAdminUIOptions
 {
     /// <summary>
-    ///     Defaults for floating menu surfaces (Dropdown Menu, and future menu families).
+    ///     Gets the look of dropdown menus.
     /// </summary>
     public StellarAdminUIMenuOptions Menu { get; } = new();
 }

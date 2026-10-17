@@ -5,9 +5,13 @@ namespace StellarAdmin.UI;
 /// </summary>
 public enum DataGridAddRowPosition
 {
-    /// <summary>Before the first row.</summary>
+    /// <summary>
+    ///     Places the add row above the first row.
+    /// </summary>
     Top,
 
-    /// <summary>After the last row.</summary>
+    /// <summary>
+    ///     Places the add row below the last row.
+    /// </summary>
     Bottom,
 }

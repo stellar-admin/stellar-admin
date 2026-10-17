@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Base class for all StellarAdmin tag helpers. Provides class-string composition,
-///     named-slot support, and tracks the parent tag-helper stack so children can
-///     locate their parents.
+///     Provides the base class for StellarAdmin tag helpers.
 /// </summary>
+/// <remarks>
+///     A tag helper can find its StellarAdmin ancestors, share context with its descendants and
+///     receive content for named slots.
+/// </remarks>
 public abstract class StellarAdminTagHelperBase : TagHelper
 {
     private const string ParentTagHelperKey = "stellar-admin-parent-tag-helper";
@@ -16,14 +18,22 @@ public abstract class StellarAdminTagHelperBase : TagHelper
         new Dictionary<string, TagHelperContent>();
 
     /// <summary>
-    ///     The immediate ancestor StellarAdmin tag helper, or <c>null</c> when this is a root.
+    ///     Gets the closest StellarAdmin tag helper that contains this one.
     /// </summary>
+    /// <value>
+    ///     The containing tag helper, or <see langword="null" /> if no StellarAdmin tag helper
+    ///     contains this one.
+    /// </value>
     [HtmlAttributeNotBound]
     protected internal StellarAdminTagHelperBase? ParentTagHelper { get; private set; }
 
     /// <summary>
-    ///     Records the parent tag helper and the slot host, then calls <see cref="OnInit" />.
+    ///     Initializes the tag helper.
     /// </summary>
+    /// <remarks>
+    ///     Override <see cref="OnInit" /> to run code when the tag helper is initialized.
+    /// </remarks>
+    /// <param name="context">The context of the executing tag helper.</param>
     public sealed override void Init(TagHelperContext context)
     {
         // Razor gives every tag helper scope its own copy-on-write view of Items, so a value
@@ -50,8 +60,17 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     }
 
     /// <summary>
-    ///     Gets the content a child <c>&lt;sa-slot-content&gt;</c> assigned to a named slot.
+    ///     Gets the content that a child <c>&lt;sa-slot-content&gt;</c> element supplied for a
+    ///     named slot.
     /// </summary>
+    /// <param name="name">The name of the slot.</param>
+    /// <param name="content">
+    ///     When this method returns, contains the content of the slot, or <see langword="null" />
+    ///     if the slot has no content. This parameter is treated as uninitialized.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true" /> if the slot has content; otherwise, <see langword="false" />.
+    /// </returns>
     protected internal bool TryGetNamedSlot(
         string name,
         [NotNullWhen(true)] out TagHelperContent? content
@@ -61,27 +80,38 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     }
 
     /// <summary>
-    ///     Joins class strings into a single <c>class</c> attribute value, skipping null and
-    ///     empty entries. Component class names are emitted verbatim; conflict resolution is
-    ///     the stylesheet's job (author utilities out-rank component rules by cascade layer).
+    ///     Joins CSS class names into a single <c>class</c> attribute value.
     /// </summary>
+    /// <remarks>
+    ///     Entries that are <see langword="null" />, empty or white space are skipped.
+    /// </remarks>
+    /// <param name="classes">The class names to join.</param>
+    /// <returns>The class names, separated by spaces.</returns>
     protected internal static string JoinCssClasses(params string?[] classes)
     {
         return string.Join(' ', classes.Where(c => !string.IsNullOrWhiteSpace(c)));
     }
 
     /// <summary>
-    ///     Runs when the tag helper is initialized, before any child content executes. Override it
-    ///     to publish context for descendants with <see cref="SetContext{T}" />.
+    ///     Runs when the tag helper is initialized, before its child content runs.
     /// </summary>
+    /// <remarks>
+    ///     Override this method to share context with descendants by calling
+    ///     <see cref="SetContext{T}" />.
+    /// </remarks>
+    /// <param name="context">The context of the executing tag helper.</param>
     protected virtual void OnInit(TagHelperContext context) { }
 
     /// <summary>
-    ///     Publishes a context object that descendant tag helpers can read with
-    ///     <see cref="GetContext{T}" />. The value is keyed by its type and stored in
-    ///     <see cref="TagHelperContext.Items" />, so it must be set before the parent renders its
-    ///     children (i.e. before <c>GetChildContentAsync</c>).
+    ///     Shares a context object with descendant tag helpers.
     /// </summary>
+    /// <remarks>
+    ///     Descendants read the object with <see cref="GetContext{T}" />. Call this method before
+    ///     the child content runs, such as in <see cref="OnInit" />.
+    /// </remarks>
+    /// <typeparam name="T">The type that descendants use to read the object.</typeparam>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <param name="value">The object to share.</param>
     protected void SetContext<T>(TagHelperContext context, T value)
         where T : class
     {
@@ -89,9 +119,14 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     }
 
     /// <summary>
-    ///     Reads a context object published by an ancestor tag helper with
-    ///     <see cref="SetContext{T}" />, or <c>null</c> if no ancestor published one.
+    ///     Gets a context object that an ancestor tag helper shared with
+    ///     <see cref="SetContext{T}" />.
     /// </summary>
+    /// <typeparam name="T">The type of the object.</typeparam>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <returns>
+    ///     The shared object, or <see langword="null" /> if no ancestor shared one.
+    /// </returns>
     protected T? GetContext<T>(TagHelperContext context)
         where T : class
     {
@@ -109,12 +144,14 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     }
 
     /// <summary>
-    ///     Returns an identifier unique to this element, for minting DOM ids. Equal to
-    ///     <see cref="TagHelperContext.UniqueId" /> (a per-source-tag compile-time literal)
-    ///     unless an ancestor repeating container published a <see cref="UniqueIdDiscriminator" />,
-    ///     in which case the discriminator is appended so ids stay unique when the same markup
-    ///     is executed multiple times.
+    ///     Returns an identifier that is unique to this element, for use in element ids.
     /// </summary>
+    /// <remarks>
+    ///     The identifier stays unique when a container renders the same markup more than once and
+    ///     shares a <see cref="UniqueIdDiscriminator" />.
+    /// </remarks>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <returns>The unique identifier.</returns>
     protected string GetUniqueId(TagHelperContext context)
     {
         return GetContext<UniqueIdDiscriminator>(context)?.Value is { Length: > 0 } discriminator
@@ -122,6 +159,14 @@ public abstract class StellarAdminTagHelperBase : TagHelper
             : context.UniqueId;
     }
 
+    /// <summary>
+    ///     Returns the closest containing tag helper of a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of the tag helper to find.</typeparam>
+    /// <returns>
+    ///     The closest containing tag helper of type <typeparamref name="T" />, or
+    ///     <see langword="null" /> if none contains this one.
+    /// </returns>
     protected T? GetParentTagHelper<T>()
         where T : StellarAdminTagHelperBase
     {

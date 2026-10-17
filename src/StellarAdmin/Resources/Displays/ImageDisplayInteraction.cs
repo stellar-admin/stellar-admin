@@ -3,22 +3,22 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     What an <see cref="ImageDisplay" /> does when the user clicks or hovers over it.
+///     Specifies what an <see cref="ImageDisplay" /> does when the user clicks or hovers over it.
 /// </summary>
 public enum ImageDisplayInteraction
 {
     /// <summary>
-    ///     A click opens a larger image in a dialog.
+    ///     Opens a larger image in a dialog when the user clicks it.
     /// </summary>
     Lightbox,
 
     /// <summary>
-    ///     Hovering shows a larger image beside it.
+    ///     Shows a larger image beside it when the user hovers over it.
     /// </summary>
     Preview,
 
     /// <summary>
-    ///     Nothing.
+    ///     Does nothing.
     /// </summary>
     None,
 }

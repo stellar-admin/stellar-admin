@@ -6,17 +6,17 @@ generated: true
 
 # PageHeader
 
-A header section at the top of a page's content, rendered as a `<header>` element. Composed with an optional `<sa-breadcrumb>`, `<sa-page-header-title>`, `<sa-page-header-description>`, `<sa-page-header-actions>`, and `<sa-page-header-nav>` — in that order, which is also the top-to-bottom order on narrow viewports.
+Renders a header at the top of a page's content.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-page-header>` | A header section at the top of a page's content, rendered as a `<header>` element. Composed with an optional `<sa-breadcrumb>`, `<sa-page-header-title>`, `<sa-page-header-description>`, `<sa-page-header-actions>`, and `<sa-page-header-nav>` — in that order, which is also the top-to-bottom order on narrow viewports. |
-| `<sa-page-header-actions>` | An action area inside `<sa-page-header>` for content such as buttons. Aligned to the end of the title row on regular viewports and placed below the title and description on narrow viewports. |
-| `<sa-page-header-description>` | A short description below the title of `<sa-page-header>`, rendered as a `<p>` element. |
-| `<sa-page-header-nav>` | A full-width navigation area at the bottom of `<sa-page-header>`, rendered as a `<nav>` element. It positions whatever navigation the page provides — typically an `<sa-tab-list>` — without imposing any styling of its own. |
-| `<sa-page-header-title>` | The page title inside `<sa-page-header>`, rendered as the page's `<h1>` element. Inline trailing content such as an `<sa-badge>` can be placed directly after the title text. |
+| `<sa-page-header>` | Renders a header at the top of a page's content. |
+| `<sa-page-header-actions>` | Renders the area of a page header that holds actions, such as buttons. |
+| `<sa-page-header-description>` | Renders a short description below the title of a page header. |
+| `<sa-page-header-nav>` | Renders a full-width navigation area at the bottom of a page header. |
+| `<sa-page-header-title>` | Renders the title of a page header as the page's `<h1>` heading. |
 
 ## Examples
 

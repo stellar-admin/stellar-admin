@@ -6,7 +6,7 @@ generated: true
 
 # Command
 
-A searchable menu of commands or options, navigated with the keyboard from a single search input.
+Renders a searchable menu of commands or options that the keyboard navigates from one search input.
 
 <!-- structure:begin -->
 ## Composition and behavior
@@ -24,16 +24,16 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-command>` | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
-| `<sa-command-dialog>` | A modal dialog that presents a command menu, typically as a command palette. Open and close it like any other dialog, for example with an invoker button or `showModal()`. |
-| `<sa-command-empty>` | Content shown in a command menu when no items match the search. |
-| `<sa-command-group>` | A set of related items in a command menu, with an optional title. The group is hidden when none of its items match the search. |
-| `<sa-command-input>` | The search input of a command menu. Attributes the tag does not recognize, such as `name`, `placeholder`, or request attributes for server-side search, are rendered on the input element. |
-| `<sa-command-item>` | A selectable option in a command menu. Choosing it dispatches a bubbling `itemselect` event whose detail carries the item's value. |
-| `<sa-command-item-link>` | A command menu option rendered as a link, navigating to its target when chosen. |
-| `<sa-command-list>` | The scrollable list of a command menu's groups and items. When the application supplies results itself, this is the element whose contents it replaces. |
-| `<sa-command-separator>` | A divider between groups in a command menu. It is hidden while a search is active. |
-| `<sa-command-shortcut>` | The keyboard shortcut for a command menu item, aligned to the item's end. |
+| `<sa-command>` | Renders a searchable menu of commands or options that the keyboard navigates from one search input. |
+| `<sa-command-dialog>` | Renders a modal dialog that holds a command menu, such as a command palette. |
+| `<sa-command-empty>` | Renders the content that a command menu shows when no items match the search. |
+| `<sa-command-group>` | Renders a set of related items in a command menu. |
+| `<sa-command-input>` | Renders the search input of a command menu. |
+| `<sa-command-item>` | Renders an option in a command menu. |
+| `<sa-command-item-link>` | Renders a command menu item as a link. |
+| `<sa-command-list>` | Renders the scrollable list that holds the groups and items of a command menu. |
+| `<sa-command-separator>` | Renders a divider between groups in a command menu. |
+| `<sa-command-shortcut>` | Renders the keyboard shortcut of a command menu item, at the item's end. |
 
 ## Attributes
 
@@ -52,9 +52,9 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `description` | `string` | — | — |
+| `description` | `string` | `Search for a command to run...` | — |
 | `show-close-button` | `bool` | `false` | `true`, `false` |
-| `title` | `string` | — | — |
+| `title` | `string` | `Command Palette` | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-command-group>`
@@ -69,7 +69,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `checked` | `bool` | `false` | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `keywords` | `string` | — | — |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
@@ -79,7 +79,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `checked` | `bool` | `false` | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `keywords` | `string` | — | — |
 | `value` | `string` | — | — |
 | `asp-action` | `string` | — | — |

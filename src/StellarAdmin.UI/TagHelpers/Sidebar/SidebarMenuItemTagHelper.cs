@@ -3,11 +3,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A single item within a sidebar menu, rendered as a list item.
+///     Renders an item in a sidebar menu, as a list item.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-menu-item")]
 public class SidebarMenuItemTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "li";

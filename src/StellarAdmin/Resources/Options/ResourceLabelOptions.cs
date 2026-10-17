@@ -1,42 +1,42 @@
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Default page text for resources.
+///     Stores the default text of resource pages.
 /// </summary>
 public sealed class ResourceLabelOptions
 {
     /// <summary>
-    ///     Default create page text.
+    ///     Gets the default text of the create page.
     /// </summary>
     public ResourceCreateLabelOptions Create { get; } = new();
 
     /// <summary>
-    ///     Default delete confirmation text.
+    ///     Gets the default text of the delete confirmation.
     /// </summary>
     public ResourceDeleteLabelOptions Delete { get; } = new();
 
     /// <summary>
-    ///     Default edit page text.
+    ///     Gets the default text of the edit page.
     /// </summary>
     public ResourceEditLabelOptions Edit { get; } = new();
 
     /// <summary>
-    ///     Default index page text.
+    ///     Gets the default text of the index page.
     /// </summary>
     public ResourceIndexLabelOptions Index { get; } = new();
 
     /// <summary>
-    ///     Default lookup editor text.
+    ///     Gets the default text of lookup editors.
     /// </summary>
     public LookupLabelOptions Lookup { get; } = new();
 
     /// <summary>
-    ///     Default text for the sheet that pages load content into.
+    ///     Gets the default text of the sheet that pages load content into.
     /// </summary>
     public ResourceSheetLabelOptions Sheet { get; } = new();
 
     /// <summary>
-    ///     Default view page text.
+    ///     Gets the default text of the view page.
     /// </summary>
     public ResourceViewLabelOptions View { get; } = new();
 }

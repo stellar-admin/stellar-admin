@@ -4,30 +4,37 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A list of tabs: <c>&lt;sa-tab-link&gt;</c>s, each linking to a different view or page, or
-///     inside an <c>&lt;sa-tabs&gt;</c>, <c>&lt;sa-tab&gt;</c>s that switch between panels.
+///     Renders a list of tabs.
 /// </summary>
+/// <remarks>
+///     The list holds <c>&lt;sa-tab-link&gt;</c> elements that link to other pages. Inside a
+///     <c>&lt;sa-tabs&gt;</c>, it holds <c>&lt;sa-tab&gt;</c> elements that switch between
+///     panels.
+/// </remarks>
 [HtmlTargetElement("sa-tab-list")]
 public class TabListTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The orientation in which the tabs are arranged.
+    ///     Gets or sets the direction in which the tabs are arranged.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TabListOrientation.Horizontal" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the direction. The default is
+    ///     <see cref="TabListOrientation.Horizontal" />.
+    /// </value>
     [HtmlAttributeName("orientation")]
     public TabListOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     The visual style of the tab list.
+    ///     Gets or sets the visual style of the tab list.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TabListVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the style. The default is
+    ///     <see cref="TabListVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public TabListVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveOrientation = Orientation ?? TabListOrientation.Horizontal;

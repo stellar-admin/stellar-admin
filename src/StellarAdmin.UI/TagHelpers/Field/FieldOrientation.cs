@@ -1,14 +1,18 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     How a field arranges its label, control, and supporting text.
+///     Specifies how a field arranges its label, control and supporting text.
 /// </summary>
 public enum FieldOrientation
 {
-    /// <summary>The label, control, and supporting text are stacked vertically.</summary>
+    /// <summary>
+    ///     Stacks the label, control and supporting text.
+    /// </summary>
     Vertical,
 
-    /// <summary>The label, control, and supporting text are laid out horizontally.</summary>
+    /// <summary>
+    ///     Places the label, control and supporting text side by side.
+    /// </summary>
     Horizontal,
 }
 

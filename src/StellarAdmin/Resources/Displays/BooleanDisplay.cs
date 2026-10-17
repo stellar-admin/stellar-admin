@@ -1,10 +1,10 @@
 namespace StellarAdmin.Resources.Displays;
 
 /// <summary>
-///     Displays a boolean as an icon, text, or both.
+///     Shows a Boolean value as an icon, text or both.
 /// </summary>
 /// <remarks>
-///     The default display for <see cref="bool" /> properties.
+///     This is the default display for <see cref="bool" /> properties.
 /// </remarks>
 public sealed class BooleanDisplay : FieldDisplay
 {
@@ -12,26 +12,33 @@ public sealed class BooleanDisplay : FieldDisplay
     public override string TemplateName => "Displays/Boolean";
 
     /// <summary>
-    ///     How the value is shown.
+    ///     Gets or sets how the value is shown.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="BooleanDisplayAppearance.Icon" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies how the value is shown. The default is
+    ///     <see cref="BooleanDisplayAppearance.Icon" />.
+    /// </value>
     public BooleanDisplayAppearance Appearance { get; set; } = BooleanDisplayAppearance.Icon;
 
     /// <summary>
-    ///     The text for <c>false</c>, which screen readers announce for the icon.
+    ///     Gets or sets the text for <see langword="false" />.
     /// </summary>
+    /// <value>
+    ///     The text. The default is <c>No</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>No</c>.
+    ///     When only the icon is shown, screen readers still announce the text.
     /// </remarks>
     public string FalseText { get; set; } = "No";
 
     /// <summary>
-    ///     The text for <c>true</c>, which screen readers announce for the icon.
+    ///     Gets or sets the text for <see langword="true" />.
     /// </summary>
+    /// <value>
+    ///     The text. The default is <c>Yes</c>.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>Yes</c>.
+    ///     When only the icon is shown, screen readers still announce the text.
     /// </remarks>
     public string TrueText { get; set; } = "Yes";
 }

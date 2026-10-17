@@ -1,17 +1,17 @@
 namespace StellarAdmin.Areas.StellarAdmin.ViewModels;
 
 /// <summary>
-///     The search box of an index page.
+///     Represents the search box of an index page.
 /// </summary>
 public sealed class ResourceIndexSearchViewModel
 {
     /// <summary>
-    ///     The search box placeholder.
+    ///     Gets the placeholder text of the search box.
     /// </summary>
     public string Placeholder { get; }
 
     /// <summary>
-    ///     The search term entered, or <c>null</c> when the list is unfiltered.
+    ///     Gets the search term, or <see langword="null" /> when the list isn't searched.
     /// </summary>
     public string? Term { get; }
 

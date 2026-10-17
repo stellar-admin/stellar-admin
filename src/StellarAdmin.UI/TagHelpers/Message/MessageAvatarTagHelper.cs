@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The avatar alongside a message, aligned with the bottom of the message.
+///     Renders the avatar beside a message, aligned with the bottom of the message.
 /// </summary>
 [HtmlTargetElement("sa-message-avatar")]
 public class MessageAvatarTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

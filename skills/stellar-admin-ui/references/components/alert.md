@@ -6,16 +6,16 @@ generated: true
 
 # Alert
 
-A callout that displays a short, important message to the user, optionally with an icon, title, and description.
+Renders a callout that shows a short, important message.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-alert>` | A callout that displays a short, important message to the user, optionally with an icon, title, and description. |
-| `<sa-alert-action>` | A region within an alert for interactive elements such as buttons or links. |
-| `<sa-alert-description>` | The descriptive body text of an alert, shown beneath the title. |
-| `<sa-alert-title>` | The title heading of an alert. |
+| `<sa-alert>` | Renders a callout that shows a short, important message. |
+| `<sa-alert-action>` | Renders an area in an alert for controls such as buttons or links. |
+| `<sa-alert-description>` | Renders the description of an alert, shown below the title. |
+| `<sa-alert-title>` | Renders the title of an alert. |
 
 ## Attributes
 

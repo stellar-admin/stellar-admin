@@ -6,7 +6,7 @@ generated: true
 
 # Switch
 
-A toggle control that switches between on and off states. Backed by a native checkbox so its value model-binds and posts back like any other checkbox, with the visuals driven entirely by CSS.
+Renders a control that switches between on and off.
 
 ## Attributes
 
@@ -15,7 +15,7 @@ A toggle control that switches between on and off states. Backed by a native che
 | `form` | `string` | — | — |
 | `size` | `SwitchSize` | `Default` | `Default`, `Small` |
 | `value` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

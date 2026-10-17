@@ -3,29 +3,32 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A flexible row for presenting content, combining media, a title, description, and actions.
+///     Renders a row that combines media, a title, a description and actions.
 /// </summary>
 [HtmlTargetElement("sa-item")]
 public class ItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The size of the item, controlling its padding and spacing.
+    ///     Gets or sets the size of the item, which sets its padding and spacing.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ItemSize.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the size of the item. The default is
+    ///     <see cref="ItemSize.Default" />.
+    /// </value>
     [HtmlAttributeName("size")]
     public ItemSize? Size { get; set; }
 
     /// <summary>
-    ///     The visual style of the item.
+    ///     Gets or sets the visual style of the item.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="ItemVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the visual style. The default is
+    ///     <see cref="ItemVariant.Default" />.
+    /// </value>
     [HtmlAttributeName("variant")]
     public ItemVariant? Variant { get; set; }
 
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

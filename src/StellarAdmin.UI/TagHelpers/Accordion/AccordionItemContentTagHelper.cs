@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     The content region of an accordion item, revealed when the item is expanded.
+///     Renders the content of an accordion item, shown when the item is expanded.
 /// </summary>
 [HtmlTargetElement("sa-accordion-item-content")]
 public class AccordionItemContentTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "div";

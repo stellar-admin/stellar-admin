@@ -6,16 +6,16 @@ generated: true
 
 # InputOtp
 
-A segmented one-time-code input. A single real `<input>` holds the whole code and posts it as one form value; the presentational slot cells (one per character) display the value and the active caret. The `sel-input-otp` web component distributes the value into the cells and drives the active / caret state once hydrated.
+Renders a one-time code input with a slot for each character.
 
 ## Tags
 
 | Tag | Description |
 |-----|-------------|
-| `<sa-input-otp>` | A segmented one-time-code input. A single real `<input>` holds the whole code and posts it as one form value; the presentational slot cells (one per character) display the value and the active caret. The `sel-input-otp` web component distributes the value into the cells and drives the active / caret state once hydrated. |
-| `<sa-input-otp-group>` | A group of `sa-input-otp-slot`s within a `sa-input-otp`. Groups are separated by a `sa-input-otp-separator`. |
-| `<sa-input-otp-separator>` | A separator placed between `sa-input-otp-group`s. Renders a Lucide `minus` icon by default; supply child content to override it. |
-| `<sa-input-otp-slot>` | A single presentational slot cell within a `sa-input-otp`. Displays one character of the code and the active caret. The slot self-assigns its index from the parent's running counter unless an explicit `index` is set. |
+| `<sa-input-otp>` | Renders a one-time code input with a slot for each character. |
+| `<sa-input-otp-group>` | Renders a group of slots in an `<sa-input-otp>`. |
+| `<sa-input-otp-separator>` | Renders a separator between groups of slots in an `<sa-input-otp>`. |
+| `<sa-input-otp-slot>` | Renders a slot that shows one character of the code in an `<sa-input-otp>`. |
 
 ## Attributes
 
@@ -24,14 +24,14 @@ A segmented one-time-code input. A single real `<input>` holds the whole code an
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `maxlength` | `int` | — | — |
-| `pattern` | `string` | — | — |
+| `pattern` | `string` | `^\d*$` | — |
 | `groups` | `string` | — | — |
-| `inputmode` | `string` | — | — |
+| `inputmode` | `string` | `numeric` | — |
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `aria-invalid` | `bool` | — | `true`, `false` |
 | `value` | `string` | — | — |
 | `form` | `string` | — | — |
-| `column-span` | `string` | — | — |
+| `column-span` | `string` | `1` | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
 | `column-span-sm` | `string` | — | — |

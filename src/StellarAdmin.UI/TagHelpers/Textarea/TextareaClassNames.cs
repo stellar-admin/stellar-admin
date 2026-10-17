@@ -1,12 +1,12 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Additional CSS classes for the parts of a textarea.
+///     Holds additional CSS classes for the parts of a textarea.
 /// </summary>
 public class TextareaClassNames : FieldClassNames
 {
     /// <summary>
-    ///     Additional CSS classes for the textarea element.
+    ///     Gets or sets additional CSS classes for the <c>&lt;textarea&gt;</c> element.
     /// </summary>
     public string? Control { get; set; }
 }

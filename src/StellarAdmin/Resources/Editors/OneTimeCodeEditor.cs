@@ -9,8 +9,15 @@ namespace StellarAdmin.Resources.Editors;
 public sealed class OneTimeCodeEditor : FieldEditor, IFieldEditor<OneTimeCodeEditorHandler>
 {
     /// <summary>
-    ///     The number of digits, or null to use the property's maximum length or 6.
+    ///     Gets or sets the number of digits.
     /// </summary>
+    /// <value>
+    ///     The number of digits, or <see langword="null" /> to use the property's maximum length.
+    ///     The default is <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     A property without a maximum length gets 6 digits.
+    /// </remarks>
     public int? Length { get; set; }
 
     internal int ResolveLength(ModelMetadata metadata)

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Groups several <c>&lt;sa-kbd&gt;</c> elements to represent a keyboard shortcut or key sequence.
+///     Renders a group of <c>&lt;sa-kbd&gt;</c> keys that form a shortcut or key sequence.
 /// </summary>
 [HtmlTargetElement("sa-kbd-group")]
 public class KbdGroupTagHelper : StellarAdminTagHelperBase
 {
+    /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "kbd";

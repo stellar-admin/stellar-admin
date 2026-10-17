@@ -1,22 +1,22 @@
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     How a sidebar behaves when it is collapsed.
+///     Specifies how a sidebar collapses.
 /// </summary>
 public enum SidebarCollapsible
 {
     /// <summary>
-    ///     The sidebar slides off-canvas when collapsed.
+    ///     The sidebar slides off the screen when collapsed.
     /// </summary>
     OffCanvas,
 
     /// <summary>
-    ///     The sidebar collapses to a narrow icon rail when collapsed.
+    ///     The sidebar shrinks to a narrow strip of icons when collapsed.
     /// </summary>
     Icon,
 
     /// <summary>
-    ///     The sidebar cannot be collapsed.
+    ///     The sidebar can't be collapsed.
     /// </summary>
     None,
 }
