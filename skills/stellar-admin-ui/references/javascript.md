@@ -170,3 +170,9 @@ window.stellarAdmin.toast.fromResponse(response);
 `fetch` follows redirects, so a toast added before a redirect arrives in the redirected response's header.
 
 If the page already defines `window.stellarAdmin`, the bundle logs a console warning and replaces it.
+
+## Stability
+
+These are part of the public contract and change only as a breaking change: the `window.stellarAdmin` object with `dialog()`, `alertDialog()` and `toast`, the name of the `SA-Toasts` response header, and the CSS layer names and order ([setup](setup.md#optional-tailwind-utilities-in-your-own-markup)).
+
+These are internal and may change in any version: the `<sel-*>` element names, the runtime `data-*` attributes they set, and the JSON inside the `SA-Toasts` header. Read the header only through `toast.fromResponse(...)`.

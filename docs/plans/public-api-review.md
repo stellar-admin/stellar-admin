@@ -26,7 +26,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | Rename it to `value`. ToggleGroup gets `value` for one selection and `values` with `multiple`. Done (2026-10-17) |
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | Keep the explicit type arguments. No change (2026-10-17) |
 | D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | Yes, mirror displays. Done (2026-10-17) |
-| D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | |
+| D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | Stable: `window.stellarAdmin`, the layer order and the `SA-Toasts` header name. Internal: the rest. Done (2026-10-17) |
 | D12 | Replace the row details loader delegate with a class? | Yes. A small abstract `RowDetailsLoader` with `LoadAsync(services, key, cancellationToken)`. | |
 
 ## Just do it
@@ -218,6 +218,11 @@ Candidates:
 - The `sel-*` element names.
 
 Anything marked stable gets documented. Anything else gets a note that it may change.
+
+Done (2026-10-17), documentation only:
+- Stable: `window.stellarAdmin` (`dialog()`, `alertDialog()`, `toast`), the CSS layer names and order (mainly `sa.theme` and `sa.overrides`), and the `SA-Toasts` header name.
+- Internal: the `StellarAdmin.Toasts` TempData key and the `__sa_checkbox_group.` prefix, which are already `internal` constants, plus the `<sel-*>` element names, their runtime `data-*` attributes and the JSON inside the `SA-Toasts` header.
+- `skills/stellar-admin-ui/references/javascript.md` gains a "Stability" section, and `setup.md` says the layer names and order are public API. Skill validation passes and the skills have no drift. No code changed, so no tests ran.
 
 ### D12. Row details loader
 
@@ -734,6 +739,7 @@ Changes the website still needs:
 - [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
 - [ ] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
 - [ ] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors.
+- [ ] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

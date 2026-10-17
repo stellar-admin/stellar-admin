@@ -89,7 +89,7 @@ The [theming](theming.md) guide covers theme files, fonts, dark mode and using t
 
 ## Optional: Tailwind utilities in your own markup
 
-Steps 1–4 style the `<sa-*>` components. `stellar-admin.css` contains no utility classes, so `class="bg-primary"` or `class="mt-4"` in your own Razor does nothing unless the app runs its own Tailwind v4 build. If it does, declare StellarAdmin's layer order first and import the package's Tailwind adapter after Tailwind:
+Steps 1–4 style the `<sa-*>` components. `stellar-admin.css` contains no utility classes, so `class="bg-primary"` or `class="mt-4"` in your own Razor does nothing unless the app runs its own Tailwind v4 build. If it does, declare StellarAdmin's layer order first and import the package's Tailwind adapter after Tailwind. The layer names and their order are a stable part of the public API, so an app can rely on `sa.theme` and `sa.overrides`:
 
 ```css
 @layer theme, base, sa.reset, sa.tokens, sa.components, components, sa.theme, sa.overrides, utilities;
