@@ -8,11 +8,11 @@ public enum ItemSize
     /// <summary>The standard item size.</summary>
     Default,
 
-    /// <summary>A compact item size.</summary>
-    Small,
-
     /// <summary>The most compact item size.</summary>
     ExtraSmall,
+
+    /// <summary>A compact item size.</summary>
+    Small,
 }
 
 internal static class ItemSizeExtensions
@@ -24,8 +24,8 @@ internal static class ItemSizeExtensions
             return size switch
             {
                 ItemSize.Default => "default",
-                ItemSize.Small => "sm",
                 ItemSize.ExtraSmall => "xs",
+                ItemSize.Small => "sm",
                 _ => string.Empty,
             };
         }

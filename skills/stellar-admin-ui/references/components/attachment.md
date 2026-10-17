@@ -30,7 +30,7 @@ A file or image presented with its media, metadata, upload state, and actions.
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `orientation` | `AttachmentOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
-| `size` | `AttachmentSize` | `Default` | `Default`, `Small`, `ExtraSmall` |
+| `size` | `AttachmentSize` | `Default` | `Default`, `ExtraSmall`, `Small` |
 | `state` | `AttachmentState` | `Done` | `Idle`, `Uploading`, `Processing`, `Error`, `Done` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

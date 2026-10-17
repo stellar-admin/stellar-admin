@@ -5,14 +5,14 @@ namespace StellarAdmin.UI;
 /// </summary>
 public enum GroupGap
 {
+    /// <summary>The default spacing between children.</summary>
+    Default,
+
     /// <summary>Extra-small spacing between children.</summary>
     ExtraSmall,
 
     /// <summary>Small spacing between children.</summary>
     Small,
-
-    /// <summary>The default spacing between children.</summary>
-    Default,
 
     /// <summary>Large spacing between children.</summary>
     Large,
@@ -28,9 +28,9 @@ internal static class GroupGapExtensions
         public string GetClassName() =>
             gap switch
             {
+                GroupGap.Default => "sa-group-gap-md",
                 GroupGap.ExtraSmall => "sa-group-gap-xs",
                 GroupGap.Small => "sa-group-gap-sm",
-                GroupGap.Default => "sa-group-gap-md",
                 GroupGap.Large => "sa-group-gap-lg",
                 GroupGap.ExtraLarge => "sa-group-gap-xl",
                 _ => "sa-group-gap-md",

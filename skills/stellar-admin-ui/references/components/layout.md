@@ -39,7 +39,7 @@ A horizontal flex layout that arranges its children in a row, with configurable 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `align` | `GroupAlign` | `Start` | `Stretch`, `Center`, `Start`, `End`, `Baseline` |
-| `gap` | `GroupGap` | `Default` | `ExtraSmall`, `Small`, `Default`, `Large`, `ExtraLarge` |
+| `gap` | `GroupGap` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `ExtraLarge` |
 | `justify` | `GroupJustify` | `Start` | `Center`, `Start`, `End`, `SpaceBetween`, `SpaceAround` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -57,7 +57,7 @@ A horizontal flex layout that arranges its children in a row, with configurable 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `align` | `StackAlign` | `Stretch` | `Stretch`, `Center`, `Start`, `End` |
-| `gap` | `StackGap` | `Default` | `ExtraSmall`, `Small`, `Default`, `Large`, `ExtraLarge` |
+| `gap` | `StackGap` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `ExtraLarge` |
 | `justify` | `StackJustify` | `Start` | `Center`, `Start`, `End`, `SpaceBetween`, `SpaceAround` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

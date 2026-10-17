@@ -30,7 +30,7 @@ A flexible row for presenting content, combining media, a title, description, an
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ItemSize` | `Default` | `Default`, `Small`, `ExtraSmall` |
+| `size` | `ItemSize` | `Default` | `Default`, `ExtraSmall`, `Small` |
 | `variant` | `ItemVariant` | `Default` | `Default`, `Outline`, `Muted` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -40,7 +40,7 @@ A flexible row for presenting content, combining media, a title, description, an
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `ItemSize` | `Default` | `Default`, `Small`, `ExtraSmall` |
+| `size` | `ItemSize` | `Default` | `Default`, `ExtraSmall`, `Small` |
 | `variant` | `ItemVariant` | `Default` | `Default`, `Outline`, `Muted` |
 | `asp-action` | `string` | `null` | — |
 | `asp-area` | `string` | `null` | — |

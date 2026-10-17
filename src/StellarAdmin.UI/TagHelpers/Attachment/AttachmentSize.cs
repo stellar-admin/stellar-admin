@@ -8,11 +8,11 @@ public enum AttachmentSize
     /// <summary>The default attachment size.</summary>
     Default,
 
-    /// <summary>A small attachment.</summary>
-    Small,
-
     /// <summary>An extra-small attachment.</summary>
     ExtraSmall,
+
+    /// <summary>A small attachment.</summary>
+    Small,
 }
 
 internal static class AttachmentSizeExtensions
@@ -23,8 +23,8 @@ internal static class AttachmentSizeExtensions
             size switch
             {
                 AttachmentSize.Default => "default",
-                AttachmentSize.Small => "sm",
                 AttachmentSize.ExtraSmall => "xs",
+                AttachmentSize.Small => "sm",
                 _ => string.Empty,
             };
     }

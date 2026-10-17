@@ -60,7 +60,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J25 | Make the remaining plain `bool` attributes `bool?` | Done (2026-10-17) |
 | J26 | Make icon definitions immutable | Done (2026-10-17) |
 | J27 | Freeze `IconOptions` after startup | Done (2026-10-17) |
-| J28 | Align size and media enum member order | |
+| J28 | Align size and media enum member order | Done (2026-10-17) |
 | J29 | Replace optional parameters with overloads | |
 | J30 | Fix `Enable*` return types and write the rule down | |
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | |
@@ -424,6 +424,14 @@ Done (2026-10-17):
 - Give `GroupGap` and `StackGap` a `Default` that is not `= 2`.
 - Add `Default` to `AttachmentMediaVariant`.
 
+Done (2026-10-17):
+
+- One rule: `Default` comes first, then the other sizes from smallest to largest.
+- `AttachmentSize` and `ItemSize` are now Default, ExtraSmall, Small. `GroupGap` and `StackGap` are now Default, ExtraSmall, Small, Large, ExtraLarge. `ButtonSize` already followed the rule.
+- `ImageSize` keeps no `Default`, because its default depends on context (Small for a thumbnail, Medium for a figure).
+- `AttachmentMediaVariant` is unchanged, because `Icon` already is the default and is 0.
+- Verified with the full test run (1400 passed) and a skills drift check after regenerating the references.
+
 ### J29. Overloads instead of optional parameters
 
 - EF `UseItems(..., configure = null)`.
@@ -532,6 +540,7 @@ Changes the website still needs:
 - [ ] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
 - [ ] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
 - [ ] J27: `icons.mdx` says duplicate `AddIcon` names throw. A same-named icon now replaces the existing one, icons are frozen once configured, and invalid packs fail at startup.
+- [ ] J28: `item.mdx`, `stack.mdx`, `group.mdx` and `attachment.mdx` list `ItemSize`, `StackGap`, `GroupGap` and `AttachmentSize` members in the old order. The new order is Default first, then smallest to largest.
 
 ## Order of work
 
