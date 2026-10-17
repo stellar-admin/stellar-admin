@@ -30,13 +30,15 @@ public class ResourceConfigurationTests
         );
         using var first = services.BuildServiceProvider();
         using var second = services.BuildServiceProvider();
-        var firstOptions = first.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Act
-        firstOptions.Index.Search!.Placeholder = "Changed";
+        var firstOptions = first.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
         var secondOptions = second.GetRequiredService<IOptions<ResourceOptions<Product>>>().Value;
 
         // Assert
+        await Assert
+            .That(secondOptions.Index.Search)
+            .IsNotSameReferenceAs(firstOptions.Index.Search);
         await Assert.That(secondOptions.Index.Search!.Placeholder).IsEqualTo("Find products");
         await Assert
             .That(secondOptions.Index.Search)

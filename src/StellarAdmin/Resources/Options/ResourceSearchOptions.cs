@@ -6,12 +6,12 @@ namespace StellarAdmin.Resources.Options;
 public class ResourceSearchOptions
 {
     /// <summary>
-    ///     Gets or sets the placeholder of the search box.
+    ///     Gets the placeholder of the search box.
     /// </summary>
     /// <value>
     ///     The placeholder, or <see langword="null" /> to use the default from
     ///     <see cref="Builders.ResourceIndexLabelsBuilder.SearchPlaceholder" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? Placeholder { get; set; }
+    public string? Placeholder { get; internal set; }
 }

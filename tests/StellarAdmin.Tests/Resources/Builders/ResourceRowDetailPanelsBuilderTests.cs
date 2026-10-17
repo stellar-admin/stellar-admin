@@ -14,7 +14,7 @@ public class ResourceRowDetailPanelsBuilderTests
     public async Task Add_WithTitle_NamesPanelFromTitle(string title, string expected)
     {
         // Arrange
-        var sut = new ResourceRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
 
         // Act
         sut.Add(title, "_Panel");
@@ -28,7 +28,7 @@ public class ResourceRowDetailPanelsBuilderTests
     public async Task Add_WithoutHandler_RendersWithIndex()
     {
         // Arrange
-        var sut = new ResourceRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
 
         // Act
         sut.Add("Summary", "_ProductSummary");
@@ -44,7 +44,7 @@ public class ResourceRowDetailPanelsBuilderTests
     {
         // Arrange
         var services = new ServiceCollection();
-        var sut = new ResourceRowDetailPanelsBuilder<Product>(services);
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(services);
 
         // Act
         sut.Add<ProductNotes, ProductNotesHandler>("Notes", "_ProductNotes");
@@ -68,7 +68,7 @@ public class ResourceRowDetailPanelsBuilderTests
     )
     {
         // Arrange
-        var sut = new ResourceRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var sut = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
 
         // Act
         Action act = () => sut.Add(title, partialName);

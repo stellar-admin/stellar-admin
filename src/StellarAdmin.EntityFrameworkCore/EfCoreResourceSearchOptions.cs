@@ -11,7 +11,7 @@ public sealed class EfCoreResourceSearchOptions<TEntity> : ResourceSearchOptions
     where TEntity : class
 {
     /// <summary>
-    ///     Gets or sets the delegate that returns the filter expression for a search term.
+    ///     Gets the delegate that returns the filter expression for a search term.
     /// </summary>
     public required Func<string, Expression<Func<TEntity, bool>>> Predicate { get; init; }
 }

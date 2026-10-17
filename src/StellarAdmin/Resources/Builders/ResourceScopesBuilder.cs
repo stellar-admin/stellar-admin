@@ -54,7 +54,7 @@ public sealed class ResourceScopesBuilder<TResource>
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
         _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.Scopes!.Items.Add(new(id, title))
+            options.Index.Scopes!.Items.Add(new() { Id = id, Title = title })
         );
 
         return this;

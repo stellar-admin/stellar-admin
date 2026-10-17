@@ -37,7 +37,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J2 | Make the two tag helper base classes abstract | Done (2026-10-16) |
 | J3 | Make the admin panel controllers and `ResourceLookupQuery` internal | Done (2026-10-16) |
 | J4 | Make view models sealed classes with internal constructors, and drop the public `ViewModels.Internal` namespace | Done (2026-10-16) |
-| J5 | Tidy the protected hooks EF Core uses | |
+| J5 | Tidy the protected hooks EF Core uses | Done (2026-10-17) |
 | J6 | Seal builders, options types, view models and the view component | Done (2026-10-17) |
 | J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract || Done (2026-10-17) |
@@ -269,6 +269,14 @@ Rule for records: keep records for types consumers create and pass in. Use seale
 | `ResourceSearchOptions` | The same |
 | `ResourceOptions<T>.KeySelector` | Internal setter. `UseKey` stays the way in. |
 | `ResourceBuilderBase`, `ResourceIndexBuilderBase`, `LookupItems` | No change. Add docs under J40. |
+
+Done:
+- `RegisterRowDetails` and `AddPanel` take `ResourceRowDetailLoader` (D12).
+- `ResourceRowDetailPanelsBuilder<T>` is abstract with a `protected` constructor. A `private protected` constructor would stop EF Core subclassing it from another assembly. The core uses the new internal `DefaultRowDetailPanelsBuilder<T>`.
+- `ResourceScopeOptions` is a class with required `init` properties `Id` and `Title`, and `EfCoreResourceScopeOptions<T>` is a sealed class.
+- `ResourceSearchOptions.Placeholder` has an internal setter instead of `init`, because `ResourceSearchBuilder` sets it after the options are created.
+- `ResourceOptions<T>.KeySelector` has an internal setter.
+- All 1456 tests pass, the skills have no drift and skill validation passes.
 
 ### J6. Seal everything else
 
@@ -747,6 +755,7 @@ Changes the website still needs:
 - [ ] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
 - [ ] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors.
 - [ ] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
+- [ ] J5: `ResourceScopeOptions` is a class with `Id` and `Title` init properties instead of a positional record, and `ResourceRowDetailPanelsBuilder<T>` is abstract. Affects any website page that shows these types; the app-facing builders are unchanged.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

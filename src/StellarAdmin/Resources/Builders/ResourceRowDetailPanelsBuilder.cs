@@ -12,7 +12,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <remarks>
 ///     Two or more panels are shown as tabs.
 /// </remarks>
-public class ResourceRowDetailPanelsBuilder<TResource>
+public abstract class ResourceRowDetailPanelsBuilder<TResource>
 {
     private readonly List<ResourceRowDetailPanelOptions> _panels = [];
 
@@ -28,8 +28,7 @@ public class ResourceRowDetailPanelsBuilder<TResource>
     ///     <see cref="ResourceRowDetailPanelsBuilder{TResource}" /> class.
     /// </summary>
     /// <param name="services">The service collection to register the panels' handlers in.</param>
-    protected internal ResourceRowDetailPanelsBuilder(IServiceCollection services) =>
-        Services = services;
+    protected ResourceRowDetailPanelsBuilder(IServiceCollection services) => Services = services;
 
     /// <summary>
     ///     Adds a panel that shows a partial view.

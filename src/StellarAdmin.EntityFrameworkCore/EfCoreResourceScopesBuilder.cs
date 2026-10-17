@@ -90,7 +90,12 @@ public sealed class EfCoreResourceScopesBuilder<TEntity>
 
         _services.Configure<ResourceOptions<TEntity>>(options =>
             options.Index.Scopes!.Items.Add(
-                new EfCoreResourceScopeOptions<TEntity>(id, title) { Predicate = predicate }
+                new EfCoreResourceScopeOptions<TEntity>
+                {
+                    Id = id,
+                    Title = title,
+                    Predicate = predicate,
+                }
             )
         );
 

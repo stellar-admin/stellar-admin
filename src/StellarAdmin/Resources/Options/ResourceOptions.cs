@@ -40,7 +40,7 @@ public sealed class ResourceOptions<TResource>
     public ResourceIndexOptions Index { get; internal set; } = new();
 
     /// <summary>
-    ///     Gets or sets the delegate that returns a resource's key as a URL value.
+    ///     Gets the delegate that returns a resource's key as a URL value.
     /// </summary>
     /// <value>
     ///     The delegate, or <see langword="null" /> when no key is configured. The default is
@@ -49,7 +49,7 @@ public sealed class ResourceOptions<TResource>
     /// <remarks>
     ///     <see cref="UseKey" /> sets this delegate.
     /// </remarks>
-    public Func<TResource, string>? KeySelector { get; set; }
+    public Func<TResource, string>? KeySelector { get; internal set; }
 
     /// <summary>
     ///     Gets or sets the label for more than one resource.

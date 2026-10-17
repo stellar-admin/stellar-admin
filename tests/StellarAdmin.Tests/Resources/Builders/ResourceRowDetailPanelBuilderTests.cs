@@ -9,7 +9,7 @@ public class ResourceRowDetailPanelBuilderTests
     public async Task Name_WhenSet_ReplacesNameFromTitle()
     {
         // Arrange
-        var panels = new ResourceRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var panels = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
         var sut = panels.Add("Order history", "_OrderHistory");
 
         // Act
@@ -25,7 +25,7 @@ public class ResourceRowDetailPanelBuilderTests
     public async Task Name_WhenBlank_ThrowsArgumentException(string name)
     {
         // Arrange
-        var panels = new ResourceRowDetailPanelsBuilder<Product>(new ServiceCollection());
+        var panels = new DefaultRowDetailPanelsBuilder<Product>(new ServiceCollection());
         var sut = panels.Add("Orders", "_Orders");
 
         // Act

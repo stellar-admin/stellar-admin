@@ -395,7 +395,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     )
     {
         ArgumentNullException.ThrowIfNull(panels);
-        var builder = new ResourceRowDetailPanelsBuilder<TResource>(Services);
+        var builder = new DefaultRowDetailPanelsBuilder<TResource>(Services);
         panels(builder);
 
         return RegisterRowDetails(builder);
