@@ -75,7 +75,7 @@ public class ResourceViewFieldsBuilderTests
         sut.UseDataSource<ProductDataSource>();
         sut.AllowView(view =>
             view.Fields(fields =>
-                fields.Add(product => product.Name).Orientation = FieldOrientation.Horizontal
+                fields.Add(product => product.Name).Orientation = DisplayFieldOrientation.Horizontal
             )
         );
         using var provider = services.BuildServiceProvider();
@@ -86,7 +86,7 @@ public class ResourceViewFieldsBuilderTests
         // Assert
         await Assert
             .That(options.View!.Fields[0].Orientation)
-            .IsEqualTo(FieldOrientation.Horizontal);
+            .IsEqualTo(DisplayFieldOrientation.Horizontal);
     }
 
     [Test]

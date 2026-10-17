@@ -125,7 +125,7 @@ builder.Services.AddStellarAdmin(admin =>
 | `StellarAdmin.Resources` | StellarAdmin | Data source and handler interfaces, `ResourceOperationResult`, `InlineCreatePosition`, `InlineAddButton` |
 | `StellarAdmin.Sidebar` | StellarAdmin | `SidebarLinkTarget`, `BrandingLogo`, `UserMenuItem` |
 | `StellarAdmin.Areas.StellarAdmin.ViewModels` | StellarAdmin | Page view models for overrides (`ResourceIndexPageViewModel<T>`) |
-| `StellarAdmin.UI` | StellarAdmin.UI | Shared enums: `FormSectionLayout`, `BadgeVariant`, `FieldOrientation`, `DetailsVariant`, `RadioGroupFlow`, `SliderMarkLabels` |
+| `StellarAdmin.UI` | StellarAdmin.UI | Shared enums: `FormSectionLayout`, `BadgeVariant`, `FieldOrientation`, `DetailsOrientation`, `DisplayFieldOrientation`, `DetailsVariant`, `RadioGroupFlow`, `SliderMarkLabels` |
 
 ## Common mistakes
 

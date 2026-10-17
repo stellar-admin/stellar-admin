@@ -93,7 +93,7 @@ public class ResourceViewPageTests
                                 section.Orientation = FieldOrientation.Horizontal;
                                 section.AddGroup(group => group.Add(product => product.Name));
                                 section.Add(product => product.Price).Orientation =
-                                    FieldOrientation.Vertical;
+                                    DisplayFieldOrientation.Vertical;
                             }
                         )
                     )

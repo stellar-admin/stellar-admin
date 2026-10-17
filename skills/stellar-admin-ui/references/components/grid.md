@@ -151,7 +151,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
     </sa-grid-item>
     <sa-grid-item column-span="full" column-span-lg="1">
         <sa-form-section title="Payment" layout="FormSectionLayout.Stacked">
-            <sa-details orientation="FieldOrientation.Horizontal">
+            <sa-details orientation="DetailsOrientation.Horizontal">
                 <sa-display-field asp-for="Total" />
                 <sa-display-field asp-for="Paid" />
                 <sa-display-field asp-for="Balance" />

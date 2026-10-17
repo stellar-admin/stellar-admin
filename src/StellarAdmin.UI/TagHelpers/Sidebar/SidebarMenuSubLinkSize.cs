@@ -1,15 +1,15 @@
 ﻿namespace StellarAdmin.UI;
 
 /// <summary>
-///     The size of a sidebar submenu button or link.
+///     The size of a sidebar submenu link.
 /// </summary>
 public enum SidebarMenuSubLinkSize
 {
+    /// <summary>The standard size.</summary>
+    Default,
+
     /// <summary>A more compact size.</summary>
     Small,
-
-    /// <summary>The standard size.</summary>
-    Medium,
 }
 
 internal static class SidebarMenuSubLinkSizeExtensions
@@ -20,8 +20,8 @@ internal static class SidebarMenuSubLinkSizeExtensions
         {
             return size switch
             {
+                SidebarMenuSubLinkSize.Default => "md",
                 SidebarMenuSubLinkSize.Small => "sm",
-                SidebarMenuSubLinkSize.Medium => "md",
                 _ => string.Empty,
             };
         }

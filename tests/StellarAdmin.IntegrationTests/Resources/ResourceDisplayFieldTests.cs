@@ -435,7 +435,7 @@ public class ResourceDisplayFieldTests
                             details =>
                             {
                                 details.Description = "Read-only values.";
-                                details.Orientation = FieldOrientation.Horizontal;
+                                details.Orientation = DetailsOrientation.Horizontal;
                                 details.Variant = DetailsVariant.Divided;
                                 details.Columns(3);
                                 details.Add(

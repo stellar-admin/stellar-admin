@@ -32,7 +32,7 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 ```
 
 - `AddDisplayField` works wherever `Add` does: the form, a section or a group, and it takes the same `ColumnSpan`, `ColumnSpanFull` and `ColumnStart`.
-- Display field builder: `Title`, `EmptyText`, `Orientation` (`FieldOrientation.Vertical` or `Horizontal`), `UseDisplay<TDisplay>(...)`, `UseBuiltInRendering()`.
+- Display field builder: `Title`, `EmptyText`, `Orientation` (`DisplayFieldOrientation.Vertical` or `Horizontal`), `UseDisplay<TDisplay>(...)`, `UseBuiltInRendering()`.
 - Display fields can read through references (`booking => booking.Customer!.Name`). EF Core resources load them with the record; custom data sources and models must load them.
 - The property needs only a getter. A posted value is ignored.
 - On create, values come from the new model (the factory's values), so unset values show the empty text.
@@ -46,14 +46,14 @@ resource.AllowEdit(edit => edit.Fields(fields =>
 fields.AddDetails("Audit", details =>
 {
     details.Columns(2);
-    details.Orientation = FieldOrientation.Horizontal;
+    details.Orientation = DetailsOrientation.Horizontal;
     details.Variant = DetailsVariant.Divided;
     details.Add(booking => booking.CreatedAt);
     details.Add(booking => booking.UpdatedAt, field => field.EmptyText = "Never");
 });
 ```
 
-Details take `Description`, `Layout`, `Columns`, `ColumnSpan`, `ColumnStart`, `Orientation` and `Variant` (`DetailsVariant.Default` or `Divided`). `FieldOrientation`, `DetailsVariant` and `FormSectionLayout` are in `StellarAdmin.UI`. `AddDetails` exists on form field builders; view pages use `AddSection`.
+Details take `Description`, `Layout`, `Columns`, `ColumnSpan`, `ColumnStart`, `Orientation` (`DetailsOrientation`) and `Variant` (`DetailsVariant.Default` or `Divided`). `DetailsOrientation`, `DisplayFieldOrientation`, `FieldOrientation`, `DetailsVariant` and `FormSectionLayout` are in `StellarAdmin.UI`. `AddDetails` exists on form field builders; view pages use `AddSection`.
 
 ## Read-only through metadata
 

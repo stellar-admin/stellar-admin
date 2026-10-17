@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 public enum SidebarVariant
 {
     /// <summary>A standard sidebar flush against the edge of the screen.</summary>
-    Sidebar,
+    Default,
 
     /// <summary>A sidebar that floats with a border and rounded corners.</summary>
     Floating,
@@ -22,7 +22,7 @@ internal static class SidebarVariantExtensions
         public string GetDataAttributeText() =>
             variant switch
             {
-                SidebarVariant.Sidebar => "sidebar",
+                SidebarVariant.Default => "sidebar",
                 SidebarVariant.Floating => "floating",
                 SidebarVariant.Inset => "inset",
                 _ => string.Empty,

@@ -31,7 +31,7 @@ public sealed class FormDetailsOptions : FormItemOptions
     /// <remarks>
     ///     Defaults to above.
     /// </remarks>
-    public FieldOrientation? Orientation { get; internal set; }
+    public DetailsOrientation? Orientation { get; internal set; }
 
     /// <summary>
     ///     The section title.

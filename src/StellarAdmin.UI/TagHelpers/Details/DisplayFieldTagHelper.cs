@@ -151,10 +151,10 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     /// </summary>
     /// <remarks>
     ///     Defaults to the orientation of the enclosing <c>&lt;sa-details&gt;</c>, otherwise
-    ///     <see cref="FieldOrientation.Vertical" />.
+    ///     <see cref="DisplayFieldOrientation.Vertical" />.
     /// </remarks>
     [HtmlAttributeName("orientation")]
-    public FieldOrientation? Orientation { get; set; }
+    public DisplayFieldOrientation? Orientation { get; set; }
 
     /// <summary>
     ///     Muted text displayed after the value.
@@ -218,7 +218,13 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
         var grid = GetEnclosingGrid(context);
         var details = grid?.Owner as DetailsTagHelper;
         var placementStyle = GridLayout.PlacementStyle(grid, "sa-display-field", this);
-        var effectiveOrientation = Orientation ?? details?.Orientation ?? FieldOrientation.Vertical;
+        var effectiveOrientation =
+            Orientation
+            ?? (
+                details?.Orientation == DetailsOrientation.Horizontal
+                    ? DisplayFieldOrientation.Horizontal
+                    : DisplayFieldOrientation.Vertical
+            );
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;

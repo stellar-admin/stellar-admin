@@ -30,7 +30,7 @@
         </sa-details>
     </sa-form-section>
     <sa-form-section title="Audit" description="Maintained automatically.">
-        <sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal">
+        <sa-details variant="DetailsVariant.Divided" orientation="DetailsOrientation.Horizontal">
             <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
             <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
             <sa-display-field asp-for="Version" />

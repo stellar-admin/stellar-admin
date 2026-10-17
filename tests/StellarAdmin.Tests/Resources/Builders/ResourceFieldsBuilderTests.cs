@@ -23,7 +23,7 @@ public class ResourceFieldsBuilderTests
                     details =>
                     {
                         details.Description = "Read-only values.";
-                        details.Orientation = FieldOrientation.Horizontal;
+                        details.Orientation = DetailsOrientation.Horizontal;
                         details.Variant = DetailsVariant.Divided;
                         details.Add(product => product.ReadOnly, field => field.Title = "Copy");
                         details.Add(product => product.Name).EmptyText = "None";
@@ -40,7 +40,7 @@ public class ResourceFieldsBuilderTests
         var details = (FormDetailsOptions)options.Create!.Items[0];
         await Assert.That(details.Title).IsEqualTo("Audit");
         await Assert.That(details.Description).IsEqualTo("Read-only values.");
-        await Assert.That(details.Orientation).IsEqualTo(FieldOrientation.Horizontal);
+        await Assert.That(details.Orientation).IsEqualTo(DetailsOrientation.Horizontal);
         await Assert.That(details.Variant).IsEqualTo(DetailsVariant.Divided);
         await Assert
             .That(details.Fields.Select(field => field.FieldName))

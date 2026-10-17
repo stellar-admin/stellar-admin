@@ -4,6 +4,13 @@
     var editorTemplates = ViewData[ViewDataKeys.EditorTemplates] as IReadOnlyDictionary<string, string>;
     var columns = (ViewData[ViewDataKeys.FormColumns] as FormGridColumnDefinitions? ?? default).Resolve();
     var orientation = ViewData[ViewDataKeys.FormOrientation] as FieldOrientation?;
+    // A view section's orientation also applies to the display fields in it
+    var displayOrientation = orientation switch
+    {
+        FieldOrientation.Horizontal => DisplayFieldOrientation.Horizontal,
+        FieldOrientation.Vertical => DisplayFieldOrientation.Vertical,
+        _ => (DisplayFieldOrientation?)null,
+    };
 }
 <sa-grid columns-base="@columns.Base" columns-sm="@columns.Small" columns-md="@columns.Medium" columns-lg="@columns.Large">
     @foreach (var item in Items)
@@ -35,7 +42,7 @@
                 using (var scope = BeginField(displayField))
                 {
                     <sa-display-field asp-for="@Model" label="@displayField.Title" empty-text="@displayField.EmptyText" template="@scope.TemplateName" template-renders-empty="@scope.TemplateRendersEmpty"
-                                      orientation="@(displayField.Orientation ?? orientation)" />
+                                      orientation="@(displayField.Orientation ?? displayOrientation)" />
                 }
             }
             else if (item is FormDetailsOptions details)

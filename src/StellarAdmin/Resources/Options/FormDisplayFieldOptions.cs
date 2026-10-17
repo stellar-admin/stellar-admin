@@ -36,7 +36,7 @@ public sealed class FormDisplayFieldOptions : FormItemOptions
     ///     Whether the label displays above or beside the value, or <c>null</c> to use the
     ///     orientation of the field's section.
     /// </summary>
-    public FieldOrientation? Orientation { get; internal set; }
+    public DisplayFieldOrientation? Orientation { get; internal set; }
 
     /// <summary>
     ///     The properties selected by <see cref="FieldExpression" />, in order.

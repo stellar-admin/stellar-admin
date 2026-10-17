@@ -16,7 +16,7 @@ public sealed class ResourceDetailsBuilder<TResource>
     private FormColumnStartDefinitions _columnStart;
     private string? _description;
     private FormSectionLayout? _layout;
-    private FieldOrientation? _orientation;
+    private DetailsOrientation? _orientation;
     private DetailsVariant? _variant;
 
     /// <summary>
@@ -44,7 +44,7 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <remarks>
     ///     Defaults to above.
     /// </remarks>
-    public FieldOrientation? Orientation
+    public DetailsOrientation? Orientation
     {
         set => _orientation = value;
     }

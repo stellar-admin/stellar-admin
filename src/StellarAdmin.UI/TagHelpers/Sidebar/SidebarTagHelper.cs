@@ -14,7 +14,7 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
     ///     The visual style of the sidebar.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="SidebarVariant.Sidebar" />.
+    ///     Defaults to <see cref="SidebarVariant.Default" />.
     /// </remarks>
     [HtmlAttributeName("variant")]
     public SidebarVariant? Variant { get; set; }
@@ -32,16 +32,16 @@ public class SidebarTagHelper : StellarAdminTagHelperBase
     ///     How the sidebar behaves when it is collapsed.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="SidebarCollapsible.Offcanvas" />.
+    ///     Defaults to <see cref="SidebarCollapsible.OffCanvas" />.
     /// </remarks>
     [HtmlAttributeName("collapsible")]
     public SidebarCollapsible? Collapsible { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveVariant = Variant ?? SidebarVariant.Sidebar;
+        var effectiveVariant = Variant ?? SidebarVariant.Default;
         var effectiveSide = Side ?? SidebarSide.Left;
-        var effectiveCollapsible = Collapsible ?? SidebarCollapsible.Offcanvas;
+        var effectiveCollapsible = Collapsible ?? SidebarCollapsible.OffCanvas;
 
         var isFloatingOrInset = effectiveVariant is SidebarVariant.Floating or SidebarVariant.Inset;
 

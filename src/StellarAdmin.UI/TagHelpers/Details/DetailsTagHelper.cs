@@ -58,10 +58,10 @@ public class DetailsTagHelper : StellarAdminTagHelperBase
     ///     How each field arranges its label and value, unless the field sets its own.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="FieldOrientation.Vertical" />.
+    ///     Defaults to <see cref="DetailsOrientation.Vertical" />.
     /// </remarks>
     [HtmlAttributeName("orientation")]
-    public FieldOrientation? Orientation { get; set; }
+    public DetailsOrientation? Orientation { get; set; }
 
     /// <summary>
     ///     The visual style of the list.

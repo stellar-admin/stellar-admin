@@ -12,9 +12,9 @@ public class SidebarMenuSubButtonTagHelper : StellarAdminTagHelperBase
     ///     The size of the submenu button.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuSubLinkSize.Medium" />.
+    ///     Defaults to <see cref="SidebarMenuSubButtonSize.Default" />.
     /// </remarks>
-    public SidebarMenuSubLinkSize? Size { get; set; }
+    public SidebarMenuSubButtonSize? Size { get; set; }
 
     /// <summary>
     ///     Whether this button represents the active item; when <c>true</c> the button is
@@ -27,7 +27,7 @@ public class SidebarMenuSubButtonTagHelper : StellarAdminTagHelperBase
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveSize = Size ?? SidebarMenuSubLinkSize.Medium;
+        var effectiveSize = Size ?? SidebarMenuSubButtonSize.Default;
 
         output.TagName = "button";
         output.TagMode = TagMode.StartTagAndEndTag;

@@ -12,14 +12,18 @@ public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
     ///     The orientation of the separator.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="SeparatorOrientation.Vertical" />.
+    ///     Defaults to <see cref="ButtonGroupSeparatorOrientation.Vertical" />.
     /// </remarks>
     [HtmlAttributeName("orientation")]
-    public SeparatorOrientation? Orientation { get; set; }
+    public ButtonGroupSeparatorOrientation? Orientation { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveOrientation = Orientation ?? SeparatorOrientation.Vertical;
+        var effectiveOrientation = Orientation switch
+        {
+            ButtonGroupSeparatorOrientation.Horizontal => SeparatorOrientation.Horizontal,
+            _ => SeparatorOrientation.Vertical,
+        };
 
         output.Attributes.SetAttribute("data-slot", "button-group-separator");
         output.Attributes.SetAttribute(

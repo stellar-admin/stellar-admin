@@ -64,11 +64,11 @@ public partial class DisplayFieldTagHelperTests
     }
 
     [Test]
-    [Arguments(null, FieldOrientation.Horizontal, "horizontal")]
-    [Arguments(FieldOrientation.Vertical, FieldOrientation.Horizontal, "vertical")]
+    [Arguments(null, DetailsOrientation.Horizontal, "horizontal")]
+    [Arguments(DisplayFieldOrientation.Vertical, DetailsOrientation.Horizontal, "vertical")]
     public async Task ProcessAsync_WhenInsideDetailsWithOrientation_ResolvesFieldOrientation(
-        FieldOrientation? fieldOrientation,
-        FieldOrientation detailsOrientation,
+        DisplayFieldOrientation? fieldOrientation,
+        DetailsOrientation detailsOrientation,
         string expected
     )
     {

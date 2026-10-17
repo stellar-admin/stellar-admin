@@ -16,7 +16,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
     ///     The size of the submenu link.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="SidebarMenuSubLinkSize.Medium" />.
+    ///     Defaults to <see cref="SidebarMenuSubLinkSize.Default" />.
     /// </remarks>
     public SidebarMenuSubLinkSize? Size { get; set; }
 
@@ -27,7 +27,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveSize = Size ?? SidebarMenuSubLinkSize.Medium;
+        var effectiveSize = Size ?? SidebarMenuSubLinkSize.Default;
 
         output.TagName = "a";
         output.TagMode = TagMode.StartTagAndEndTag;

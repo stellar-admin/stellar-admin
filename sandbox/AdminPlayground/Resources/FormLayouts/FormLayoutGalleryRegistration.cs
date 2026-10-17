@@ -676,7 +676,7 @@ internal static class FormLayoutGalleryRegistration
             details =>
             {
                 details.Description = "Orientation = Horizontal and Variant = Divided.";
-                details.Orientation = FieldOrientation.Horizontal;
+                details.Orientation = DetailsOrientation.Horizontal;
                 details.Variant = DetailsVariant.Divided;
                 details.Columns(2);
                 details.Add(model => model.CreatedAt);
@@ -760,7 +760,7 @@ internal static class FormLayoutGalleryRegistration
                             field =>
                             {
                                 field.EmptyText = "Never";
-                                field.Orientation = FieldOrientation.Vertical;
+                                field.Orientation = DisplayFieldOrientation.Vertical;
                             }
                         );
                     }

@@ -67,9 +67,9 @@ sa-sidebar-wrapper
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `variant` | `SidebarVariant` | `Sidebar` | `Sidebar`, `Floating`, `Inset` |
+| `variant` | `SidebarVariant` | `Default` | `Default`, `Floating`, `Inset` |
 | `side` | `SidebarSide` | `Left` | `Left`, `Right` |
-| `collapsible` | `SidebarCollapsible` | `Offcanvas` | `Offcanvas`, `Icon`, `None` |
+| `collapsible` | `SidebarCollapsible` | `OffCanvas` | `OffCanvas`, `Icon`, `None` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -106,7 +106,7 @@ sa-sidebar-wrapper
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `SidebarMenuSubLinkSize` | `Medium` | `Small`, `Medium` |
+| `size` | `SidebarMenuSubButtonSize` | `Default` | `Default`, `Small` |
 | `is-active` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -114,7 +114,7 @@ sa-sidebar-wrapper
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `size` | `SidebarMenuSubLinkSize` | `Medium` | `Small`, `Medium` |
+| `size` | `SidebarMenuSubLinkSize` | `Default` | `Default`, `Small` |
 | `asp-action` | `string` | `null` | — |
 | `asp-area` | `string` | `null` | — |
 | `asp-controller` | `string` | `null` | — |

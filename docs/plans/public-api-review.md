@@ -46,7 +46,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J11 | Add the missing `TagHelper` suffix to five classes | Done (2026-10-17) |
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | Done as `sa-button-link` under D4 (2026-10-17) |
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | Done (2026-10-17) |
-| J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | |
+| J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | Done (2026-10-17) |
 | J15 | Use logical `Start`/`End` names | |
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | |
 | J17 | Use `min`/`max` on Progress | |
@@ -260,6 +260,13 @@ Done (2026-10-17):
 - Add `ButtonGroupSeparatorOrientation`, `DetailsOrientation` and `SidebarMenuSubButtonSize`.
 - Change `SidebarMenuSubLinkSize` from `Small`/`Medium` to `Default`/`Small`.
 - Rename `SidebarVariant.Sidebar` to `Default` and `SidebarCollapsible.Offcanvas` to `OffCanvas`.
+
+Done (2026-10-17):
+
+- Added `ButtonGroupSeparatorOrientation`, `DetailsOrientation`, `DisplayFieldOrientation` and `SidebarMenuSubButtonSize`. `DisplayFieldOrientation` wasn't in the original list, but `sa-display-field` also borrowed `FieldOrientation`.
+- The StellarAdmin details builder and options now use `DetailsOrientation`, and the display field builder and options use `DisplayFieldOrientation`. View sections keep `FieldOrientation` because they also lay out editor fields, and `_FormItems.cshtml` converts it for the display fields in the section.
+- `SidebarMenuSubLinkSize` and `SidebarMenuSubButtonSize` are `Default`/`Small`, and `SidebarVariant.Default` and `SidebarCollapsible.OffCanvas` are renamed. Rendered attributes are unchanged.
+- Verified with the full test run (1385 passed) and a skills drift check. Not checked in a browser.
 
 ### J15. Start and End
 

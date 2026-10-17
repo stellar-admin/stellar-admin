@@ -31,7 +31,7 @@ Groups related buttons together as a single visual unit.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `orientation` | `SeparatorOrientation` | `Vertical` | `Horizontal`, `Vertical` |
+| `orientation` | `ButtonGroupSeparatorOrientation` | `Vertical` | `Horizontal`, `Vertical` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

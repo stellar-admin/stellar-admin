@@ -35,7 +35,7 @@ public sealed class ResourceDisplayFieldBuilder
     /// <remarks>
     ///     Defaults to the orientation of the field's section, then above.
     /// </remarks>
-    public FieldOrientation? Orientation
+    public DisplayFieldOrientation? Orientation
     {
         set => _configuration.Add(options => options.Orientation = value);
     }

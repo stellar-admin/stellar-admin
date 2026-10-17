@@ -8,7 +8,7 @@ public enum SidebarCollapsible
     /// <summary>
     ///     The sidebar slides off-canvas when collapsed.
     /// </summary>
-    Offcanvas,
+    OffCanvas,
 
     /// <summary>
     ///     The sidebar collapses to a narrow icon rail when collapsed.
@@ -28,7 +28,7 @@ internal static class SidebarCollapsibleExtensions
         public string GetDataAttributeText() =>
             collapsible switch
             {
-                SidebarCollapsible.Offcanvas => "offcanvas",
+                SidebarCollapsible.OffCanvas => "offcanvas",
                 SidebarCollapsible.Icon => "icon",
                 SidebarCollapsible.None => "none",
                 _ => string.Empty,

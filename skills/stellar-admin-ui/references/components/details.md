@@ -54,7 +54,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
-| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
+| `orientation` | `DetailsOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `variant` | `DetailsVariant` | `Default` | `Default`, `Divided` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
@@ -77,7 +77,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 | `format` | `string` | — | — |
 | `href` | `string` | — | — |
 | `label` | `string` | — | — |
-| `orientation` | `FieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
+| `orientation` | `DisplayFieldOrientation` | `Vertical` | `Vertical`, `Horizontal` |
 | `secondary` | `string` | — | — |
 | `template` | `string` | `[UIHint]` | — |
 | `template-renders-empty` | `bool` | `false` | `true`, `false` |
@@ -223,7 +223,7 @@ The same breakpoints and inline grid variables are available from the public `Re
     </sa-details>
 </sa-form-section>
 <sa-form-section title="Audit" description="Maintained automatically.">
-    <sa-details variant="DetailsVariant.Divided" orientation="FieldOrientation.Horizontal">
+    <sa-details variant="DetailsVariant.Divided" orientation="DetailsOrientation.Horizontal">
         <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
         <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
         <sa-display-field asp-for="Version" />
