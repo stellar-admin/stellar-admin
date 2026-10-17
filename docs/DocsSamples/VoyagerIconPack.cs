@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using StellarAdmin.UI.Icons;
 
 namespace DocsSamples;
@@ -23,7 +22,7 @@ public class VoyagerIconPack : IIconPack
         ["stroke-linejoin"] = "round",
     };
 
-    public IDictionary<string, IconDefinition> GetIcons()
+    public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return new Dictionary<string, IconDefinition>
         {
@@ -66,6 +65,6 @@ public class VoyagerIconPack : IIconPack
 
     private static SvgShape Shape(string name, params (string Name, string Value)[] attributes)
     {
-        return new SvgShape(name, attributes.ToImmutableDictionary(a => a.Name, a => a.Value));
+        return new SvgShape(name, attributes.ToDictionary(a => a.Name, a => a.Value));
     }
 }

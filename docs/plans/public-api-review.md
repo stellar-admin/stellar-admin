@@ -58,7 +58,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J23 | Give every bound property an explicit attribute name | Done (2026-10-17) |
 | J24 | Make Slider and Progress numbers `double?` | Done (2026-10-17) |
 | J25 | Make the remaining plain `bool` attributes `bool?` | Done (2026-10-17) |
-| J26 | Make icon definitions immutable | |
+| J26 | Make icon definitions immutable | Done (2026-10-17) |
 | J27 | Freeze `IconOptions` after startup | |
 | J28 | Align size and media enum member order | |
 | J29 | Replace optional parameters with overloads | |
@@ -396,6 +396,14 @@ Done (2026-10-17):
 
 `IconDefinition` shares one mutable `List<SvgShape>` per icon across the process. It becomes a sealed class with `IReadOnlyDictionary` and `IReadOnlyList`. `IIconPack.GetIcons()` returns `IReadOnlyDictionary`.
 
+Done (2026-10-17):
+
+- `IconDefinition` and `SvgShape` are sealed classes. Their constructors take `IReadOnlyDictionary`/`IReadOnlyList` and keep read-only copies, so changing the inputs afterwards doesn't change the icon. `SvgShape.Attributes` is `IReadOnlyDictionary` instead of `IImmutableDictionary`, so callers pass a plain `Dictionary`.
+- `IIconPack.GetIcons()` returns `IReadOnlyDictionary<string, IconDefinition>`.
+- The icon generator emits `SvgShape[]` and passes the pack's shared `<svg>` attributes instead of an immutable copy per icon.
+- The Voyager pack, the test packs and the hand-written icons skill reference were updated.
+- Verified with the full test run (1394 passed) and a skills drift check.
+
 ### J27. IconOptions
 
 - Lock the registry after startup.
@@ -514,6 +522,7 @@ Changes the website still needs:
 - [ ] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
 - [ ] J22: `sa-command-group` takes `title` instead of `heading`.
 - [ ] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
+- [ ] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
 
 ## Order of work
 

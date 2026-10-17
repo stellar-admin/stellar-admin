@@ -3,7 +3,7 @@
 public sealed class TablerOutlineIconPack : IIconPack
 {
     /// <inheritdoc/>
-    public IDictionary<string, IconDefinition> GetIcons()
+    public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return TablerOutlineIcons.IconDefinitions;
     }

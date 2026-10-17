@@ -102,9 +102,6 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
     )
     {
         var generatedSource = new StringBuilder();
-        generatedSource.AppendLine("using System.Collections.Frozen;");
-        generatedSource.AppendLine("using System.Collections.Immutable;");
-        generatedSource.AppendLine();
         generatedSource.AppendLine("namespace StellarAdmin.UI.Icons;");
         generatedSource.AppendLine();
         generatedSource.AppendLine($"internal static class {iconPackName}_{letter}_Icons");
@@ -114,7 +111,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
         foreach (var iconKvp in icons)
         {
             generatedSource.AppendLine(
-                $"    public static List<SvgShape> {IconNameToPascalCase(iconKvp.Key)} ="
+                $"    public static readonly SvgShape[] {IconNameToPascalCase(iconKvp.Key)} ="
             );
             generatedSource.AppendLine("    [");
             foreach (var iconShapeKvp in iconKvp.Value)
@@ -130,7 +127,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
                     );
                 }
 
-                generatedSource.AppendLine("            }.ToImmutableDictionary()");
+                generatedSource.AppendLine("            }");
                 generatedSource.AppendLine("        ),");
             }
 
@@ -150,14 +147,13 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
     {
         var generatedSource = new StringBuilder();
         generatedSource.AppendLine("using System.Collections.Frozen;");
-        generatedSource.AppendLine("using System.Collections.Immutable;");
         generatedSource.AppendLine();
         generatedSource.AppendLine("namespace StellarAdmin.UI.Icons;");
         generatedSource.AppendLine();
         generatedSource.AppendLine($"internal static partial class {iconPackName}Icons");
         generatedSource.AppendLine("{");
         generatedSource.AppendLine(
-            "    public static FrozenDictionary<string, IconDefinition> IconDefinitions = new Dictionary<"
+            "    public static readonly FrozenDictionary<string, IconDefinition> IconDefinitions = new Dictionary<"
         );
         generatedSource.AppendLine("        string,");
         generatedSource.AppendLine("        IconDefinition");
@@ -169,7 +165,7 @@ public class IconsFromJsonDefinitionGenerator : IIncrementalGenerator
                 $"{iconPackName}_{iconKvp.Key.Substring(0, 1).ToUpper()}_Icons";
 
             generatedSource.AppendLine(
-                $"        [\"{iconKvp.Key}\"] = new IconDefinition(SvgAttributes.ToImmutableDictionary(), {declarationClassName}.{IconNameToPascalCase(iconKvp.Key)}),"
+                $"        [\"{iconKvp.Key}\"] = new IconDefinition(SvgAttributes, {declarationClassName}.{IconNameToPascalCase(iconKvp.Key)}),"
             );
         }
 

@@ -27,7 +27,6 @@ Draw on the same 24 x 24 grid with a 2 px `currentColor` stroke to stay visually
 ### A single icon — `AddIcon`
 
 ```csharp
-using System.Collections.Immutable;
 using StellarAdmin.UI;
 using StellarAdmin.UI.Icons;
 
@@ -49,11 +48,11 @@ builder.Services.AddStellarAdminUI()
             new SvgShape("rect", new Dictionary<string, string>
             {
                 ["x"] = "3", ["y"] = "7", ["width"] = "18", ["height"] = "13", ["rx"] = "2",
-            }.ToImmutableDictionary()),
+            }),
             new SvgShape("path", new Dictionary<string, string>
             {
                 ["d"] = "M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
-            }.ToImmutableDictionary()),
+            }),
         ]));
 ```
 
@@ -83,7 +82,7 @@ public class VoyagerIconPack : IIconPack
         ["stroke-linejoin"] = "round",
     };
 
-    public IDictionary<string, IconDefinition> GetIcons()
+    public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return new Dictionary<string, IconDefinition>
         {
@@ -97,7 +96,7 @@ public class VoyagerIconPack : IIconPack
 
     private static SvgShape Shape(string name, params (string Name, string Value)[] attributes)
     {
-        return new SvgShape(name, attributes.ToImmutableDictionary(a => a.Name, a => a.Value));
+        return new SvgShape(name, attributes.ToDictionary(a => a.Name, a => a.Value));
     }
 }
 ```
@@ -202,10 +201,10 @@ Supply glyphs compatible with component styling: the accordion indicator points 
 | `IconOptions.MapSemanticIcon(role, name)` | Assigns a registered icon to a semantic role. |
 | `IconOptions.GetSemanticIconName(role)` | Returns the mapped icon name, or `null`. |
 | `IIconPack.GetSemanticIconMappings()` | Returns role-to-name mappings (`IReadOnlyDictionary<SemanticIconRole, string>`); optional. |
-| `IIconPack.GetIcons()` | Returns the icons in the pack, keyed by name (`IDictionary<string, IconDefinition>`). |
+| `IIconPack.GetIcons()` | Returns the icons in the pack, keyed by name (`IReadOnlyDictionary<string, IconDefinition>`). |
 | `IconDefinition.Attributes` | Attributes rendered on the `<svg>` element (`viewBox`, `fill`, `stroke`, …). Attributes on `<sa-icon>` take precedence. |
-| `IconDefinition.Shapes` | The shapes rendered inside the `<svg>`, in order (`List<SvgShape>`). |
+| `IconDefinition.Shapes` | The shapes rendered inside the `<svg>`, in order (`IReadOnlyList<SvgShape>`). |
 | `SvgShape.Name` | The SVG element name — `path`, `circle`, `rect`, `line`, `polyline`. |
-| `SvgShape.Attributes` | Attributes on the shape element — `d`, `cx`, `cy`, `r` (`IImmutableDictionary<string, string>`). |
+| `SvgShape.Attributes` | Attributes on the shape element — `d`, `cx`, `cy`, `r` (`IReadOnlyDictionary<string, string>`). |
 
-Types live in the `StellarAdmin.UI.Icons` namespace.
+Types live in the `StellarAdmin.UI.Icons` namespace. `IconDefinition` and `SvgShape` copy what they are given, so changing a dictionary or list after creating an icon doesn't change the icon.

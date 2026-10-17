@@ -2,7 +2,7 @@
 
 public sealed class LucideIconPack : IIconPack
 {
-    public IDictionary<string, IconDefinition> GetIcons()
+    public IReadOnlyDictionary<string, IconDefinition> GetIcons()
     {
         return LucideIcons.IconDefinitions;
     }

@@ -3,10 +3,9 @@
 public interface IIconPack
 {
     /// <summary>
-    ///     Returns the list of icon definitions supplied by the icon pack.
+    ///     Returns the icons supplied by the icon pack, keyed by name.
     /// </summary>
-    /// <returns></returns>
-    IDictionary<string, IconDefinition> GetIcons();
+    IReadOnlyDictionary<string, IconDefinition> GetIcons();
 
     /// <summary>
     ///     Returns the icon names used for semantic roles.

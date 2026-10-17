@@ -29,7 +29,7 @@ public partial class StellarAdminUIExtensionsTests
 
     private sealed class ReplacementPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>
             {
                 ["check"] = new(

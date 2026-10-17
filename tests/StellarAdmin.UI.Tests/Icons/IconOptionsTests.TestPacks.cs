@@ -6,7 +6,7 @@ public partial class IconOptionsTests
 {
     private sealed class InvalidPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition> { ["new-icon"] = ReplacementPack.Icon };
 
         public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
@@ -15,7 +15,7 @@ public partial class IconOptionsTests
 
     private sealed class LegacyPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>();
 
         public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings()
@@ -26,7 +26,7 @@ public partial class IconOptionsTests
 
     private sealed class MappingOnlyPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>();
 
         public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
@@ -35,7 +35,7 @@ public partial class IconOptionsTests
 
     private sealed class OverridePack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>
             {
                 ["test-dots"] = new(
@@ -52,7 +52,7 @@ public partial class IconOptionsTests
 
     private sealed class PartiallyValidPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition>
             {
                 ["x"] = ReplacementPack.Icon,
@@ -72,7 +72,7 @@ public partial class IconOptionsTests
         public static IconDefinition Icon { get; } =
             new(new Dictionary<string, string> { ["data-test-icon"] = "replacement" }, []);
 
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition> { ["test-dots"] = Icon };
 
         public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
@@ -84,7 +84,7 @@ public partial class IconOptionsTests
 
     private sealed class UnreadableMappingsPack : IIconPack
     {
-        public IDictionary<string, IconDefinition> GetIcons() =>
+        public IReadOnlyDictionary<string, IconDefinition> GetIcons() =>
             new Dictionary<string, IconDefinition> { ["test-dots"] = ReplacementPack.Icon };
 
         public IReadOnlyDictionary<SemanticIconRole, string> GetSemanticIconMappings() =>
