@@ -17,7 +17,7 @@
 }
 
 <sa-toggle-group class="@classes" asp-for="@Model" type="@type" variant="ToggleVariant.Outline"
-                 spacing="@(joined ? 0 : 2)" label="@Title" description="@Description">
+                 spacing="@(joined ? ToggleGroupSpacing.None : ToggleGroupSpacing.Default)" label="@Title" description="@Description">
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;

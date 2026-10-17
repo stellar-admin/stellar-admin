@@ -71,8 +71,9 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J36 | Rename the client events to one style | Done (2026-10-17) |
 | J37 | Document the global MVC hooks | Done (2026-10-17) |
 | J38 | Add `class-names` to the field helpers that lack it | Done (2026-10-17) |
-| J39 | Small attribute polish | |
+| J39 | Small attribute polish | Done (2026-10-17) |
 | J40 | Rewrite the public XML docs in plain language | Approved |
+| J41 | Let the choice editors take every field part class | Approved |
 
 ## Settled
 
@@ -551,6 +552,13 @@ Done (2026-10-17):
 - `sa-toggle-group` `spacing` becomes an enum like `StackGap`.
 - The Slider `thumb-labels` list can't contain a comma: document it or accept a list.
 
+Done (2026-10-17):
+
+- `sa-toggle-group` `spacing` takes the new `ToggleGroupSpacing` enum: `Default` (0.5rem, was `2`), `None` (joined, was `0`), `Small` (0.25rem, was `1`) and `Large` (1rem, was `4`). The rendered `data-spacing` and `--gap` values are unchanged.
+- Updated the admin toggle group editor, the DocsSamples and the regenerated skill reference.
+- `thumb-labels` stays a comma-separated string, and its XML docs now say a label can't contain a comma.
+- Added a spacing test. Verified with the full test run (1435 passed) and a skills drift check.
+
 ### J40. Plain-language XML docs
 
 The XML docs are the IntelliSense text and the API reference. Many only make sense to someone who knows the code. `RegisterRowDetails` says:
@@ -576,6 +584,16 @@ Rules:
 - Each parameter in its own `<param>`.
 
 Start with the hooks in J5 and the resource builders, then the tag helpers. Add the rules and the example to `docs/conventions/xml-documentation.md`.
+
+### J41. Choice editor class names
+
+The checkbox group, segmented control and toggle group editors in the admin panel pass only `ClassNames.Control`, through `class`. `EditorClassNamesMapper` throws when any other part is set. The single-control editors pass every part through `class-names`, and the radio editor writes its own markup with every part plus `Option.*`.
+
+Approved (Jerrie, 2026-10-17):
+
+- The three editors pass `ChoiceGroupClassNames`, `SegmentedControlClassNames` and `ToggleGroupClassNames` through `class-names`, so `Root`, `Label`, `Content`, `Description`, `Error` and `Control` all work. The Control-only check goes.
+- Per-choice classes stay out of scope. Only the radio editor has `Option.*`, and matching it needs new `EditorClassNames` properties.
+- Do it after J39.
 
 ## Website follow-up
 
@@ -610,6 +628,7 @@ Changes the website still needs:
 - [ ] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
 - [ ] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
 - [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
+- [ ] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
 
 ## Order of work
 

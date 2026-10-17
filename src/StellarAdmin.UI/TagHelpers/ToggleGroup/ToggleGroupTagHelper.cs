@@ -52,11 +52,14 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
     public ToggleGroupOrientation? Orientation { get; set; }
 
     /// <summary>
-    ///     Spacing between items. <c>0</c> joins the items into a single segmented control;
-    ///     any other value separates them with a gap. Defaults to <c>2</c>.
+    ///     The spacing between items. <see cref="ToggleGroupSpacing.None" /> joins the items into
+    ///     a single segmented control.
     /// </summary>
+    /// <remarks>
+    ///     Defaults to <see cref="ToggleGroupSpacing.Default" />.
+    /// </remarks>
     [HtmlAttributeName("spacing")]
-    public int? Spacing { get; set; }
+    public ToggleGroupSpacing? Spacing { get; set; }
 
     protected override async Task<FieldLayout> RenderInput(
         TagHelperContext context,
@@ -69,7 +72,7 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
         var effectiveType = Type ?? ToggleGroupType.Single;
         var effectiveVariant = Variant ?? ToggleVariant.Default;
         var effectiveSize = Size ?? ToggleSize.Default;
-        var effectiveSpacing = Spacing ?? 2;
+        var effectiveSpacing = (Spacing ?? ToggleGroupSpacing.Default).GetSpacingUnits();
         var effectiveOrientation = Orientation ?? ToggleGroupOrientation.Horizontal;
 
         // Resolve the shared field name once so every child input posts under the same name
@@ -134,9 +137,9 @@ public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassName
         );
 
         // Layout: sa-toggle-group only carries rounding/shadow, so the flex layout + spacing
-        // live here. When joined (spacing 0) collapse the 1px seam between outline items;
-        // otherwise honour the numeric spacing as a real gap, driving
-        // gap-[--spacing(var(--gap))] from a --gap CSS var (so spacing="2" -> 0.5rem, etc.).
+        // live here. When joined (no spacing) collapse the 1px seam between outline items;
+        // otherwise drive gap-[--spacing(var(--gap))] from a --gap CSS var (so the default
+        // 2 units -> 0.5rem, etc.).
 
         if (effectiveSpacing != 0)
         {

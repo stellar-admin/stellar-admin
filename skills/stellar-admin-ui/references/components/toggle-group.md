@@ -25,7 +25,7 @@ Groups a set of toggle items into a single-select or multi-select control.
 | `variant` | `ToggleVariant` | `Default` | `Default`, `Outline` |
 | `size` | `ToggleSize` | `Default` | `Default`, `Small`, `Large` |
 | `orientation` | `ToggleGroupOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
-| `spacing` | `int` | — | — |
+| `spacing` | `ToggleGroupSpacing` | `Default` | `Default`, `None`, `Small`, `Large` |
 | `column-span` | `string` | — | — |
 | `column-span-lg` | `string` | — | — |
 | `column-span-md` | `string` | — | — |
@@ -76,7 +76,7 @@ Groups a set of toggle items into a single-select or multi-select control.
 *From `Pages/ToggleGroup/_ModelBinding.cshtml`*
 
 ```razor
-<sa-toggle-group asp-for="ResultsView" type="ToggleGroupType.Single" spacing="0" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="ResultsView" type="ToggleGroupType.Single" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="list" aria-label="List view">
         <sa-icon name="list"/>
     </sa-toggle-group-item>
@@ -88,7 +88,7 @@ Groups a set of toggle items into a single-select or multi-select control.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="Amenities" type="ToggleGroupType.Multiple" spacing="0" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="Amenities" type="ToggleGroupType.Multiple" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="wifi" aria-label="Free Wi-Fi">
         <sa-icon name="wifi"/>
     </sa-toggle-group-item>
@@ -100,7 +100,7 @@ Groups a set of toggle items into a single-select or multi-select control.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="Sort" type="ToggleGroupType.Single" spacing="0" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="Sort" type="ToggleGroupType.Single" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="Recommended">
         <sa-icon name="sparkles"/>
         Recommended
@@ -115,7 +115,7 @@ Groups a set of toggle items into a single-select or multi-select control.
     </sa-toggle-group-item>
 </sa-toggle-group>
 
-<sa-toggle-group asp-for="TripStyles" type="ToggleGroupType.Multiple" spacing="0" variant="ToggleVariant.Outline">
+<sa-toggle-group asp-for="TripStyles" type="ToggleGroupType.Multiple" spacing="ToggleGroupSpacing.None" variant="ToggleVariant.Outline">
     <sa-toggle-group-item value="Beach">
         <sa-icon name="sailboat"/>
         Beach

@@ -89,7 +89,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     /// <summary>
     ///     Comma-separated accessible names for the thumbs of a range slider, in order, such as
     ///     <c>"Minimum price,Maximum price"</c>. Without them, every thumb is named by the field
-    ///     label.
+    ///     label. A label can't contain a comma.
     /// </summary>
     [HtmlAttributeName("thumb-labels")]
     public string? ThumbLabels { get; set; }
