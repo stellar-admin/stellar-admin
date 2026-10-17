@@ -6,14 +6,23 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a resource's index page.
+///     Provides the settings shared by the builders that configure a resource's index page.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
+/// <typeparam name="TBuilder">
+///     The type of the derived builder that methods return for chaining.
+/// </typeparam>
 public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     where TBuilder : ResourceIndexBuilderBase<TResource, TBuilder>
 {
     /// <summary>
-    ///     The inline row cancel button label.
+    ///     Sets the label of the cancel button on an inline row.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.CancelLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? CancelLabel
     {
         set =>
@@ -23,8 +32,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The create button label.
+    ///     Sets the label of the create button.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.CreateLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? CreateLabel
     {
         set =>
@@ -34,8 +48,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The message of the toast shown when a resource is added in a new row.
+    ///     Sets the message of the toast shown when a resource is added in a new row.
     /// </summary>
+    /// <value>
+    ///     The message, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.CreatedMessage" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? CreatedMessage
     {
         set =>
@@ -45,8 +64,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The delete button label.
+    ///     Sets the label of the delete button.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.DeleteLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? DeleteLabel
     {
         set =>
@@ -56,8 +80,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The edit link label.
+    ///     Sets the label of the edit link.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.EditLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? EditLabel
     {
         set =>
@@ -67,8 +96,14 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The description of the toast shown when a saved inline row isn't on the reloaded page.
+    ///     Sets the description of the toast shown when a saved inline row isn't on the reloaded
+    ///     page.
     /// </summary>
+    /// <value>
+    ///     The description, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.NotShownMessage" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? NotShownMessage
     {
         set =>
@@ -78,8 +113,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The inline row save button label.
+    ///     Sets the label of the save button on an inline row.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.SaveLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? SaveLabel
     {
         set =>
@@ -89,8 +129,14 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The message of the toast shown when an edited inline row isn't on the reloaded page.
+    ///     Sets the message of the toast shown when an edited inline row isn't on the reloaded
+    ///     page.
     /// </summary>
+    /// <value>
+    ///     The message, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.SavedMessage" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? SavedMessage
     {
         set =>
@@ -100,8 +146,12 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The page title.
+    ///     Sets the page title.
     /// </summary>
+    /// <value>
+    ///     The title, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.Title" />. The default is <see langword="null" />.
+    /// </value>
     public string? Title
     {
         set =>
@@ -109,8 +159,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The view link label.
+    ///     Sets the label of the view link.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the default from
+    ///     <see cref="ResourceIndexLabelsBuilder.ViewLabel" />. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? ViewLabel
     {
         set =>
@@ -119,13 +174,28 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             );
     }
 
+    /// <summary>
+    ///     Gets the service collection the builder adds the resource's configuration to.
+    /// </summary>
     protected IServiceCollection Services { get; }
 
+    /// <summary>
+    ///     Initializes a new instance of the
+    ///     <see cref="ResourceIndexBuilderBase{TResource, TBuilder}" /> class.
+    /// </summary>
+    /// <param name="services">
+    ///     The service collection to add the resource's configuration to.
+    /// </param>
     protected ResourceIndexBuilderBase(IServiceCollection services) => Services = services;
 
     /// <summary>
     ///     Configures the index columns.
     /// </summary>
+    /// <param name="configure">A delegate that adds and configures the columns.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder Columns(Action<ResourceColumnsBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -136,21 +206,52 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Orders resources by the selected column by default.
+    ///     Sorts the index by a column in ascending order by default.
     /// </summary>
+    /// <typeparam name="TProperty">The type of the selected property.</typeparam>
+    /// <param name="field">
+    ///     An expression that selects the property of the column to sort by.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The property must belong to a sortable column. The index uses this order until the user
+    ///     sorts by a column.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="field" /> doesn't select a property of the resource.
+    /// </exception>
     public TBuilder DefaultSortBy<TProperty>(Expression<Func<TResource, TProperty>> field) =>
         ConfigureDefaultSort(field, ResourceSortDirection.Ascending);
 
     /// <summary>
-    ///     Orders resources by the selected column in descending order by default.
+    ///     Sorts the index by a column in descending order by default.
     /// </summary>
+    /// <typeparam name="TProperty">The type of the selected property.</typeparam>
+    /// <param name="field">
+    ///     An expression that selects the property of the column to sort by.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The property must belong to a sortable column. The index uses this order until the user
+    ///     sorts by a column.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="field" /> doesn't select a property of the resource.
+    /// </exception>
     public TBuilder DefaultSortByDescending<TProperty>(
         Expression<Func<TResource, TProperty>> field
     ) => ConfigureDefaultSort(field, ResourceSortDirection.Descending);
 
     /// <summary>
-    ///     Enables index paging.
+    ///     Enables paging on the index.
     /// </summary>
+    /// <returns>A builder that configures paging.</returns>
     public ResourcePagingBuilder<TResource> EnablePaging()
     {
         Services.Configure<ResourceOptions<TResource>>(options => options.Index.Paging = new());
@@ -159,8 +260,13 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures index paging.
+    ///     Enables and configures paging on the index.
     /// </summary>
+    /// <param name="configure">A delegate that configures paging.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder EnablePaging(Action<ResourcePagingBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -170,15 +276,38 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show a partial view, rendered with the index with the row's resource as its model.
+    ///     Shows a partial view when a row is expanded.
     /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     The partial view is rendered with the index page, with the row's resource as its model.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public ResourceRowDetailsBuilder<TResource> EnableRowDetails(string partialName) =>
         RegisterRowDetails(partialName, null);
 
     /// <summary>
-    ///     Lets rows expand to show a partial view, rendered with the index with the row's resource as its model, and
-    ///     configures the rows.
+    ///     Shows a partial view when a row is expanded, and configures the rows.
     /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The partial view is rendered with the index page, with the row's resource as its model.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public TBuilder EnableRowDetails(
         string partialName,
         Action<ResourceRowDetailsBuilder<TResource>> configure
@@ -191,8 +320,21 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show a partial view, with a model the handler loads when the row expands.
+    ///     Shows a partial view with a model that a handler loads when a row is expanded.
     /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     The handler is registered as a scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public ResourceRowDetailsBuilder<TResource> EnableRowDetails<TModel, THandler>(
         string partialName
     )
@@ -207,9 +349,24 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show a partial view, with a model the handler loads when the row expands, and
+    ///     Shows a partial view with a model that a handler loads when a row is expanded, and
     ///     configures the rows.
     /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     The handler is registered as a scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> or <paramref name="configure" /> is
+    ///     <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public TBuilder EnableRowDetails<TModel, THandler>(
         string partialName,
         Action<ResourceRowDetailsBuilder<TResource>> configure
@@ -223,8 +380,19 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show panels, as tabs when there are two or more.
+    ///     Shows one or more panels when a row is expanded.
     /// </summary>
+    /// <param name="panels">A delegate that adds the panels.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <remarks>
+    ///     Two or more panels are shown as tabs.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     No panels are added, a panel has no name, or two panels have the same name.
+    /// </exception>
     public ResourceRowDetailsBuilder<TResource> EnableRowDetails(
         Action<ResourceRowDetailPanelsBuilder<TResource>> panels
     )
@@ -237,8 +405,20 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show panels, as tabs when there are two or more, and configures the rows.
+    ///     Shows one or more panels when a row is expanded, and configures the rows.
     /// </summary>
+    /// <param name="panels">A delegate that adds the panels.</param>
+    /// <param name="configure">A delegate that configures the rows.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     Two or more panels are shown as tabs.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     No panels are added, a panel has no name, or two panels have the same name.
+    /// </exception>
     public TBuilder EnableRowDetails(
         Action<ResourceRowDetailPanelsBuilder<TResource>> panels,
         Action<ResourceRowDetailsBuilder<TResource>> configure
@@ -251,14 +431,29 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Creates a search builder for the resource.
+    ///     Creates a builder that configures searching on the index.
     /// </summary>
+    /// <returns>A builder that configures searching.</returns>
+    /// <remarks>
+    ///     The builder doesn't enable searching, so enable it before using the builder.
+    /// </remarks>
     protected ResourceSearchBuilder<TResource> CreateSearchBuilder() => new(Services);
 
     /// <summary>
-    ///     Lets rows expand to show a partial view, with a model the loader returns for a resource key when the row
-    ///     expands, or with the row's resource when the loader is null.
+    ///     Shows a partial view when a row is expanded.
     /// </summary>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="loader">
+    ///     A delegate that loads the partial's model from the row's key when the row is expanded,
+    ///     or <see langword="null" /> to use the row itself as the model.
+    /// </param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
         string partialName,
         Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
@@ -273,8 +468,16 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Lets rows expand to show the panels the builder added.
+    ///     Shows the panels that a panels builder added when a row is expanded.
     /// </summary>
+    /// <param name="panels">The builder that added the panels.</param>
+    /// <returns>A builder that configures the rows.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="panels" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///     No panels are added, a panel has no name, or two panels have the same name.
+    /// </exception>
     protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
         ResourceRowDetailPanelsBuilder<TResource> panels
     )

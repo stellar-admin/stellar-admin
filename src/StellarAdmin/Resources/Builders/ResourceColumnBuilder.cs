@@ -5,17 +5,21 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures an index column.
+///     Configures a column of the index page.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
 public sealed class ResourceColumnBuilder<TResource>
 {
     private readonly List<Action<DataGridColumnOptions>> _configuration = [];
     private readonly LambdaExpression _field;
 
     /// <summary>
-    ///     The text a cell shows when its value is empty. Defaults to the property's
-    ///     <c>[DisplayFormat(NullDisplayText)]</c>, then an empty cell.
+    ///     Sets the text a cell shows when its value is empty.
     /// </summary>
+    /// <value>
+    ///     The default is the property's <c>[DisplayFormat(NullDisplayText)]</c>, or an empty cell
+    ///     when the property doesn't set one.
+    /// </value>
     /// <remarks>
     ///     Not used with a display that renders empty values itself, such as
     ///     <see cref="ImageDisplay" />.
@@ -26,8 +30,11 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     The column title.
+    ///     Sets the column title.
     /// </summary>
+    /// <value>
+    ///     The default is the property's display name.
+    /// </value>
     public string? Title
     {
         set => _configuration.Add(options => options.Title = value);
@@ -36,11 +43,20 @@ public sealed class ResourceColumnBuilder<TResource>
     internal ResourceColumnBuilder(LambdaExpression field) => _field = field;
 
     /// <summary>
-    ///     Names the form field the column edits in an inline row, when it shows a different
-    ///     property than the field binds.
+    ///     Sets the form field the column edits in an inline row.
     /// </summary>
+    /// <typeparam name="TProperty">The type of the field's property.</typeparam>
+    /// <param name="field">An expression that selects the field's property path.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="field" /> doesn't select a property path.
+    /// </exception>
     /// <remarks>
-    ///     Without it, the column edits the field with the same name as its property path.
+    ///     Use it when the column shows a different property than the field binds. By default,
+    ///     the column edits the field with the same property path.
     /// </remarks>
     public ResourceColumnBuilder<TResource> EditsField<TProperty>(
         Expression<Func<TResource, TProperty>> field
@@ -56,13 +72,23 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     Names the form field the column edits in an inline row, when it shows a different
-    ///     property than the field binds.
+    ///     Sets the form field the column edits in an inline row.
     /// </summary>
     /// <param name="fieldName">
-    ///     The field's property path, such as <c>CountryId</c>, which may name a property of a
+    ///     The field's property path, such as <c>CountryId</c>. It can name a property of a
     ///     separate edit or create model.
     /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="fieldName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="fieldName" /> is empty or consists only of white space.
+    /// </exception>
+    /// <remarks>
+    ///     Use it when the column shows a different property than the field binds. By default,
+    ///     the column edits the field with the same property path.
+    /// </remarks>
     public ResourceColumnBuilder<TResource> EditsField(string fieldName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fieldName);
@@ -73,8 +99,9 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     Enables sorting by the column's field.
+    ///     Lets users sort by the column's property.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceColumnBuilder<TResource> Sortable()
     {
         _configuration.Add(options =>
@@ -87,8 +114,14 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     Enables sorting by the selected expression.
+    ///     Lets users sort the column by a different expression.
     /// </summary>
+    /// <typeparam name="TSort">The type of the value to sort by.</typeparam>
+    /// <param name="selector">An expression that selects the value to sort by.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="selector" /> is <see langword="null" />.
+    /// </exception>
     public ResourceColumnBuilder<TResource> Sortable<TSort>(
         Expression<Func<TResource, TSort>> selector
     )
@@ -105,12 +138,21 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     Uses and configures a display for the column's cells.
+    ///     Renders the column's cells with a display and configures it.
     /// </summary>
+    /// <typeparam name="TDisplay">The type of the display.</typeparam>
+    /// <param name="configure">A delegate that configures the display.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    ///     <typeparamref name="TDisplay" /> has a handler.
+    /// </exception>
     /// <remarks>
     ///     Without a display, the cells render the grid display template their property's
-    ///     <c>[UIHint]</c> names, or the default display for its type. Displays with a handler
-    ///     are not supported in columns.
+    ///     <c>[UIHint]</c> names, or the default display for its type. Columns don't support
+    ///     displays with a handler.
     /// </remarks>
     public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>(Action<TDisplay> configure)
         where TDisplay : FieldDisplay, new()
@@ -137,14 +179,20 @@ public sealed class ResourceColumnBuilder<TResource>
     }
 
     /// <summary>
-    ///     Uses a display for the column's cells.
+    ///     Renders the column's cells with a display.
     /// </summary>
+    /// <typeparam name="TDisplay">The type of the display.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="NotSupportedException">
+    ///     <typeparamref name="TDisplay" /> has a handler.
+    /// </exception>
     public ResourceColumnBuilder<TResource> UseDisplay<TDisplay>()
         where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
 
     /// <summary>
     ///     Renders the cells from the property's metadata instead of a display.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     The value is formatted with the property's <c>[DisplayFormat]</c>.
     /// </remarks>

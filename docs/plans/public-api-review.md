@@ -593,7 +593,10 @@ Progress (2026-10-17):
 - The trial classes already follow them: `QuestionnaireChoiceTagHelper`, `IconDefinition`, `IIconPack` and `StellarAdminUIExtensions`.
 - The SkillsGenerator reads an attribute's default from "The default is …" in `<value>`. It only falls back to `<remarks>` when they mention a default. This also stopped it misreading "Must be `null` if …" (the anchor routing attributes) and the `Name` cref on `name` as defaults, which changed 25 skill reference tables.
 - Checked: the build passes, all 1435 tests pass and the skills drift check is clean.
-- Remaining: the rest of the public API, starting with the J5 hooks and the resource builders, then the tag helpers.
+- Pilot done: the resource builders and the J5 hooks (`ResourceOptions`, `ResourceScopeOptions`, `ResourceSearchOptions`, `LookupItems`), 44 files. One agent rewrote each batch and a second checked it against the code. The check fixed wrong claims, such as the inline row field rules and the `UseAvatar` empty-string case.
+- Jerrie approved the pilot's wording choices. Write-only properties say "Sets…". Enum properties get a `<value>` that starts "One of the enumeration values that specifies…" and gives the default. Method defaults go in `<remarks>`. Delegate defaults say "The default returns…".
+- Checked after the pilot: the diff touches only `///` lines, the build passes with no doc warnings, all 1435 tests pass and the skills drift check is clean.
+- Remaining: the rest of the public API, in folder batches with the same write-and-check setup.
 
 ### J41. Choice editor class names
 

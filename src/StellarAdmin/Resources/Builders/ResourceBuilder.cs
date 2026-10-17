@@ -9,6 +9,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a resource.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
 public sealed class ResourceBuilder<TResource>
     : ResourceBuilderBase<TResource, ResourceBuilder<TResource>>
 {
@@ -18,6 +19,11 @@ public sealed class ResourceBuilder<TResource>
     /// <summary>
     ///     Configures the index page.
     /// </summary>
+    /// <param name="configure">A delegate that configures the index page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceBuilder<TResource> Index(Action<ResourceIndexBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -28,8 +34,14 @@ public sealed class ResourceBuilder<TResource>
     }
 
     /// <summary>
-    ///     Specifies the data source used for the resource.
+    ///     Sets the data source that loads and saves the resource.
     /// </summary>
+    /// <typeparam name="TDataSource">The type of the data source.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="TDataSource" /> as a scoped service if it isn't
+    ///     registered already.
+    /// </remarks>
     public ResourceBuilder<TResource> UseDataSource<TDataSource>()
         where TDataSource : class, IResourceDataSource<TResource>
     {
@@ -45,8 +57,20 @@ public sealed class ResourceBuilder<TResource>
     }
 
     /// <summary>
-    ///     Specifies the property that identifies a resource.
+    ///     Sets the property that identifies a resource.
     /// </summary>
+    /// <typeparam name="TKey">The type of the key property.</typeparam>
+    /// <param name="key">An expression that selects the key property.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="key" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="key" /> doesn't select a property of the resource with a public getter.
+    /// </exception>
+    /// <remarks>
+    ///     The edit page, the view page and deletion need a key.
+    /// </remarks>
     public ResourceBuilder<TResource> UseKey<TKey>(Expression<Func<TResource, TKey>> key)
     {
         ArgumentNullException.ThrowIfNull(key);

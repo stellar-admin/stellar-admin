@@ -6,29 +6,40 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a resource's create page.
 /// </summary>
+/// <typeparam name="TModel">The type of the model the create form binds to.</typeparam>
 public sealed class ResourceCreateBuilder<TModel>
 {
     private readonly Action<Action<ResourceCreateOptions<TModel>>> _configure;
 
     /// <summary>
-    ///     The layout of form sections.
+    ///     Sets the layout of the form's sections.
     /// </summary>
+    /// <value>
+    ///     The default is the layout set in <see cref="StellarAdminFormsOptions.SectionLayout" />.
+    /// </value>
     public FormSectionLayout? SectionLayout
     {
         set => _configure(options => options.SectionLayout = value);
     }
 
     /// <summary>
-    ///     The submit button label.
+    ///     Sets the submit button label.
     /// </summary>
+    /// <value>
+    ///     The default is the label set with
+    ///     <see cref="ResourceCreateLabelsBuilder.SubmitLabel" />.
+    /// </value>
     public string? SubmitLabel
     {
         set => _configure(options => options.SubmitLabel = value);
     }
 
     /// <summary>
-    ///     The page title.
+    ///     Sets the page title.
     /// </summary>
+    /// <value>
+    ///     The default is the title set with <see cref="ResourceCreateLabelsBuilder.Title" />.
+    /// </value>
     public string? Title
     {
         set => _configure(options => options.Title = value);
@@ -38,8 +49,13 @@ public sealed class ResourceCreateBuilder<TModel>
         _configure = configure;
 
     /// <summary>
-    ///     Configures the form fields.
+    ///     Configures the form's fields.
     /// </summary>
+    /// <param name="configure">A delegate that adds and configures the fields.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceCreateBuilder<TModel> Fields(Action<ResourceFieldsBuilder<TModel>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -52,8 +68,16 @@ public sealed class ResourceCreateBuilder<TModel>
     }
 
     /// <summary>
-    ///     Specifies how to instantiate a resource for the create form.
+    ///     Sets the function that creates the model for the create form.
     /// </summary>
+    /// <param name="factory">A function that returns a new model.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="factory" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Without a factory, the model is created with its parameterless constructor.
+    /// </remarks>
     public ResourceCreateBuilder<TModel> UseFactory(Func<TModel> factory)
     {
         ArgumentNullException.ThrowIfNull(factory);
@@ -64,12 +88,14 @@ public sealed class ResourceCreateBuilder<TModel>
     }
 
     /// <summary>
-    ///     Adds resources as new rows in the index grid instead of on the create page.
+    ///     Creates resources in a new row of the index grid instead of on the create page.
     /// </summary>
+    /// <returns>A builder that configures the inline row.</returns>
     /// <remarks>
-    ///     Every field must match an index column, by name or through the column's
-    ///     <c>EditsField</c>, and every <c>[Required]</c> model property must be a field. The
-    ///     create page is not available.
+    ///     Every editable field must match an index column, by name or through
+    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. Every
+    ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
+    ///     The create page is not available.
     /// </remarks>
     public ResourceInlineCreateBuilder UseInlineRow()
     {
@@ -79,12 +105,18 @@ public sealed class ResourceCreateBuilder<TModel>
     }
 
     /// <summary>
-    ///     Adds resources as new rows in the index grid instead of on the create page.
+    ///     Creates resources in a new row of the index grid instead of on the create page.
     /// </summary>
+    /// <param name="configure">A delegate that configures the inline row.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     Every field must match an index column, by name or through the column's
-    ///     <c>EditsField</c>, and every <c>[Required]</c> model property must be a field. The
-    ///     create page is not available.
+    ///     Every editable field must match an index column, by name or through
+    ///     <see cref="ResourceColumnBuilder{TResource}.EditsField(string)" />. Every
+    ///     <c>[Required]</c> model property must have an editable field. The resource needs a key.
+    ///     The create page is not available.
     /// </remarks>
     public ResourceCreateBuilder<TModel> UseInlineRow(Action<ResourceInlineCreateBuilder> configure)
     {

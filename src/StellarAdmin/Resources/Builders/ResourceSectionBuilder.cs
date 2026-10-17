@@ -6,6 +6,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a titled form section and its fields.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the form edits.</typeparam>
 public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TResource>
 {
     private readonly string _title;
@@ -15,19 +16,24 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     private FormSectionLayout? _layout;
 
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Sets the supporting text displayed below the section title.
     /// </summary>
+    /// <value>
+    ///     The supporting text, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Description
     {
         set => _description = value;
     }
 
     /// <summary>
-    ///     The layout of the section.
+    ///     Sets the layout of the section.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the form's section layout.
-    /// </remarks>
+    /// <value>
+    ///     The layout, or <see langword="null" /> to use the form's section layout. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public FormSectionLayout? Layout
     {
         set => _layout = value;
@@ -39,9 +45,14 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// <summary>
     ///     Sets the number of columns the section spans in its parent.
     /// </summary>
+    /// <param name="span">The number of columns to span, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     Without a span, the section spans one column.
     /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     public ResourceSectionBuilder<TResource> ColumnSpan(int span)
     {
         _columnSpan = ColumnSpanBuilder.FromSpan(span);
@@ -52,6 +63,11 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// <summary>
     ///     Sets the number of columns the section spans in its parent at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the span at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceSectionBuilder<TResource> ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         _columnSpan = ColumnSpanBuilder.Build(configure);
@@ -60,8 +76,9 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     }
 
     /// <summary>
-    ///     Spans all columns of the section's parent.
+    ///     Makes the section span all columns of its parent.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceSectionBuilder<TResource> ColumnSpanFull()
     {
         _columnSpan = new(Base: ResponsiveGrid.FullSpan);
@@ -72,10 +89,15 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// <summary>
     ///     Sets the column the section starts at in its parent.
     /// </summary>
+    /// <param name="start">The column to start at, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Defaults to following the item before it. Ignored where the parent has one column or
-    ///     the section would extend past the last column.
+    ///     Without a start, the section follows the item before it. The start is ignored where the
+    ///     parent has one column or the section would extend past the last column.
     /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     public ResourceSectionBuilder<TResource> ColumnStart(int start)
     {
         _columnStart = ColumnStartBuilder.FromStart(start);
@@ -86,6 +108,11 @@ public sealed class ResourceSectionBuilder<TResource> : ResourceFieldsBuilder<TR
     /// <summary>
     ///     Sets the column the section starts at in its parent, at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the start at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceSectionBuilder<TResource> ColumnStart(Action<ColumnStartBuilder> configure)
     {
         _columnStart = ColumnStartBuilder.Build(configure);

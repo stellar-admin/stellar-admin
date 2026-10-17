@@ -6,34 +6,67 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the panels of a row's details, shown as tabs.
+///     Adds the panels shown in a row's details.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
+/// <remarks>
+///     Two or more panels are shown as tabs.
+/// </remarks>
 public class ResourceRowDetailPanelsBuilder<TResource>
 {
     private readonly List<ResourceRowDetailPanelOptions> _panels = [];
 
     /// <summary>
-    ///     The services the panels' handlers are registered in.
+    ///     Gets the service collection that the panels' handlers are registered in.
     /// </summary>
     protected IServiceCollection Services { get; }
 
     internal IReadOnlyList<ResourceRowDetailPanelOptions> Panels => _panels;
 
     /// <summary>
-    ///     Creates a panels builder.
+    ///     Initializes a new instance of the
+    ///     <see cref="ResourceRowDetailPanelsBuilder{TResource}" /> class.
     /// </summary>
+    /// <param name="services">The service collection to register the panels' handlers in.</param>
     protected internal ResourceRowDetailPanelsBuilder(IServiceCollection services) =>
         Services = services;
 
     /// <summary>
-    ///     Adds a panel that renders a partial view with the index, with the row's resource as its model.
+    ///     Adds a panel that shows a partial view.
     /// </summary>
+    /// <param name="title">The title of the panel's tab.</param>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the panel.</returns>
+    /// <remarks>
+    ///     The partial view is rendered with the index page, with the row's resource as its model.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public ResourceRowDetailPanelBuilder Add(string title, string partialName) =>
         AddPanel(title, partialName, null);
 
     /// <summary>
-    ///     Adds a panel that renders a partial view with a model the handler loads when the panel is first shown.
+    ///     Adds a panel that shows a partial view with a model that a handler loads.
     /// </summary>
+    /// <typeparam name="TModel">The type of the partial view's model.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="title">The title of the panel's tab.</param>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <returns>A builder that configures the panel.</returns>
+    /// <remarks>
+    ///     The handler loads the model when the panel is first shown. The handler is registered as
+    ///     a scoped service if it isn't registered already.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     public ResourceRowDetailPanelBuilder Add<TModel, THandler>(string title, string partialName)
         where THandler : class, IResourceRowDetailHandler<TModel>
     {
@@ -72,9 +105,21 @@ public class ResourceRowDetailPanelsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Adds a panel with a model the loader returns for a resource key when the panel is first shown, or with the
-    ///     row's resource when the loader is null.
+    ///     Adds a panel that shows a partial view.
     /// </summary>
+    /// <param name="title">The title of the panel's tab.</param>
+    /// <param name="partialName">The partial view to render.</param>
+    /// <param name="loader">
+    ///     A delegate that loads the partial's model from the row's key when the panel is first
+    ///     shown, or <see langword="null" /> to use the row itself as the model.
+    /// </param>
+    /// <returns>A builder that configures the panel.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="title" /> or <paramref name="partialName" /> is empty or whitespace.
+    /// </exception>
     protected ResourceRowDetailPanelBuilder AddPanel(
         string title,
         string partialName,

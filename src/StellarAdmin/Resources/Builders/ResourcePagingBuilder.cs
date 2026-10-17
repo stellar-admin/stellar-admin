@@ -4,15 +4,22 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures index paging.
+///     Configures paging on a resource's index page.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourcePagingBuilder<TResource>
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The default number of resources per page.
+    ///     Sets the number of resources per page when the user hasn't chosen a page size.
     /// </summary>
+    /// <value>
+    ///     The number of resources per page. The default is 25.
+    /// </value>
+    /// <remarks>
+    ///     The page size must be one of <see cref="PageSizes" />.
+    /// </remarks>
     public int PageSize
     {
         set =>
@@ -22,8 +29,17 @@ public sealed class ResourcePagingBuilder<TResource>
     }
 
     /// <summary>
-    ///     The page sizes available for selection.
+    ///     Sets the page sizes the user can choose from.
     /// </summary>
+    /// <value>
+    ///     The page sizes. The default is 10, 25, 50 and 100.
+    /// </value>
+    /// <remarks>
+    ///     The page sizes must be positive and distinct, and include <see cref="PageSize" />.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public IReadOnlyList<int> PageSizes
     {
         set

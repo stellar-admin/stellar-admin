@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures default page text for resources.
+///     Configures the default text that every resource's pages use.
 /// </summary>
 public sealed class ResourceLabelsBuilder
 {
@@ -12,8 +12,13 @@ public sealed class ResourceLabelsBuilder
     internal ResourceLabelsBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
-    ///     Configures default create page text.
+    ///     Configures the default text of the create page.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default create page text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Create(Action<ResourceCreateLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -24,8 +29,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default delete confirmation text.
+    ///     Configures the default text of the delete confirmation.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default delete confirmation text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Delete(Action<ResourceDeleteLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -36,8 +46,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default edit page text.
+    ///     Configures the default text of the edit page.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default edit page text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Edit(Action<ResourceEditLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -48,8 +63,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default index page text.
+    ///     Configures the default text of the index page.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default index page text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Index(Action<ResourceIndexLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -60,8 +80,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default lookup editor text.
+    ///     Configures the default text of the lookup editor.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default lookup editor text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Lookup(Action<LookupLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -72,8 +97,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default text for the sheet that pages load content into.
+    ///     Configures the default text of the sheet that pages load content into.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default sheet text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder Sheet(Action<ResourceSheetLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -84,8 +114,13 @@ public sealed class ResourceLabelsBuilder
     }
 
     /// <summary>
-    ///     Configures default view page text.
+    ///     Configures the default text of the view page.
     /// </summary>
+    /// <param name="configure">A delegate that sets the default view page text.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceLabelsBuilder View(Action<ResourceViewLabelsBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);

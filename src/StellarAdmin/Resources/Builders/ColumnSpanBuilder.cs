@@ -8,7 +8,8 @@ namespace StellarAdmin.Resources.Builders;
 /// </summary>
 /// <remarks>
 ///     A breakpoint without a span uses the span of the next smaller breakpoint. A span is
-///     limited to the number of columns in its grid.
+///     limited to the number of columns in its grid. Breakpoints are measured against the width
+///     of the item's grid.
 /// </remarks>
 public sealed class ColumnSpanBuilder
 {
@@ -19,8 +20,13 @@ public sealed class ColumnSpanBuilder
     /// <summary>
     ///     Sets the span at the smallest width.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     The default is 1.
     /// </remarks>
     public ColumnSpanBuilder Base(int span)
     {
@@ -32,6 +38,7 @@ public sealed class ColumnSpanBuilder
     /// <summary>
     ///     Spans all columns at the smallest width.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnSpanBuilder BaseFull()
     {
         Span = Span with { Base = ResponsiveGrid.FullSpan };
@@ -40,8 +47,13 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Sets the span when the form is at least 56rem wide.
+    ///     Sets the span when the grid is at least 56rem wide.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnSpanBuilder Large(int span)
     {
         Span = Span with { Large = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
@@ -50,8 +62,9 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Spans all columns when the form is at least 56rem wide.
+    ///     Spans all columns when the grid is at least 56rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnSpanBuilder LargeFull()
     {
         Span = Span with { Large = ResponsiveGrid.FullSpan };
@@ -60,8 +73,13 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Sets the span when the form is at least 40rem wide.
+    ///     Sets the span when the grid is at least 40rem wide.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnSpanBuilder Medium(int span)
     {
         Span = Span with { Medium = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
@@ -70,8 +88,9 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Spans all columns when the form is at least 40rem wide.
+    ///     Spans all columns when the grid is at least 40rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnSpanBuilder MediumFull()
     {
         Span = Span with { Medium = ResponsiveGrid.FullSpan };
@@ -80,8 +99,13 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Sets the span when the form is at least 30rem wide.
+    ///     Sets the span when the grid is at least 30rem wide.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnSpanBuilder Small(int span)
     {
         Span = Span with { Small = ResponsiveGrid.ValidateColumns(span, nameof(span)) };
@@ -90,8 +114,9 @@ public sealed class ColumnSpanBuilder
     }
 
     /// <summary>
-    ///     Spans all columns when the form is at least 30rem wide.
+    ///     Spans all columns when the grid is at least 30rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnSpanBuilder SmallFull()
     {
         Span = Span with { Small = ResponsiveGrid.FullSpan };

@@ -4,15 +4,21 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures default create page text.
+///     Configures the default text of create pages.
 /// </summary>
 public sealed class ResourceCreateLabelsBuilder
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The callback that generates the default create form submit label.
+    ///     Sets the callback that generates the create form's default submit button label.
     /// </summary>
+    /// <value>
+    ///     The default returns <c>Create</c> followed by the singular resource label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> SubmitLabel
     {
         set
@@ -26,8 +32,14 @@ public sealed class ResourceCreateLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default create page title.
+    ///     Sets the callback that generates the create page's default title.
     /// </summary>
+    /// <value>
+    ///     The default returns <c>Create</c> followed by the singular resource label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> Title
     {
         set

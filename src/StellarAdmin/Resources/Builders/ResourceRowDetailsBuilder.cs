@@ -5,17 +5,22 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures the index rows that expand to show details.
+///     Configures how index rows expand to show their details.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
 public sealed class ResourceRowDetailsBuilder<TResource>
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     Whether details animate open and closed. Animation is always off when the user prefers reduced motion.
+    ///     Sets a value that indicates whether details animate open and closed.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if details animate; otherwise, <see langword="false" />. The
+    ///     default is <see langword="true" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>true</c>.
+    ///     Details don't animate when the user prefers reduced motion.
     /// </remarks>
     public bool Animate
     {
@@ -23,55 +28,62 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     The line between an expanded row and its details.
+    ///     Sets the line between an expanded row and its details.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailDivider.Inset" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the line. The default is
+    ///     <see cref="TableRowDetailDivider.Inset" />.
+    /// </value>
     public TableRowDetailDivider Divider
     {
         set => Configure(options => options.Divider = value);
     }
 
     /// <summary>
-    ///     How an expanded row and its details are set apart from the rows around them.
+    ///     Sets how an expanded row and its details are set apart from the rows around them.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailEmphasis.Band" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies the emphasis. The default is
+    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    /// </value>
     public TableRowDetailEmphasis Emphasis
     {
         set => Configure(options => options.Emphasis = value);
     }
 
     /// <summary>
-    ///     How many rows can be expanded at once.
+    ///     Sets how many rows can be expanded at once.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailExpandMode.Multiple" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies how many rows can be expanded. The default
+    ///     is <see cref="TableRowDetailExpandMode.Multiple" />.
+    /// </value>
     public TableRowDetailExpandMode ExpandMode
     {
         set => Configure(options => options.ExpandMode = value);
     }
 
     /// <summary>
-    ///     Where the content of a row's details starts.
+    ///     Sets where the content of a row's details starts.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="TableRowDetailInset.Aligned" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies where the content starts. The default is
+    ///     <see cref="TableRowDetailInset.Aligned" />.
+    /// </value>
     public TableRowDetailInset Inset
     {
         set => Configure(options => options.Inset = value);
     }
 
     /// <summary>
-    ///     Whether clicking anywhere in a row toggles its details. Clicks on links, buttons and form controls keep
-    ///     their own behavior.
+    ///     Sets a value that indicates whether clicking anywhere in a row toggles its details.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if a click anywhere in the row toggles its details; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>false</c>.
+    ///     Clicks on links, buttons and form controls keep their own behavior.
     /// </remarks>
     public bool RowClick
     {
@@ -79,11 +91,12 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Where the buttons that expand and collapse rows are placed.
+    ///     Sets where the buttons that expand and collapse rows are placed.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DataGridRowDetailToggle.Start" />.
-    /// </remarks>
+    /// <value>
+    ///     One of the enumeration values that specifies where the buttons are placed. The default
+    ///     is <see cref="DataGridRowDetailToggle.Start" />.
+    /// </value>
     public DataGridRowDetailToggle Toggle
     {
         set => Configure(options => options.Toggle = value);

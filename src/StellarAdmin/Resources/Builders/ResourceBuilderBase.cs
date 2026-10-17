@@ -7,14 +7,21 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures a resource.
+///     Provides the configuration methods that every resource builder shares.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
+/// <typeparam name="TBuilder">
+///     The type of the derived builder, which the methods return.
+/// </typeparam>
 public abstract class ResourceBuilderBase<TResource, TBuilder>
     where TBuilder : ResourceBuilderBase<TResource, TBuilder>
 {
     /// <summary>
-    ///     The plural resource label.
+    ///     Sets the plural resource label.
     /// </summary>
+    /// <value>
+    ///     The default is the English plural of the singular label.
+    /// </value>
     public string PluralLabel
     {
         set =>
@@ -22,8 +29,11 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     The singular resource label.
+    ///     Sets the singular resource label.
     /// </summary>
+    /// <value>
+    ///     The default is the resource type's name, split into words.
+    /// </value>
     public string SingularLabel
     {
         set =>
@@ -32,13 +42,28 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
             );
     }
 
+    /// <summary>
+    ///     Gets the service collection the resource's configuration is added to.
+    /// </summary>
     protected IServiceCollection Services { get; }
 
+    /// <summary>
+    ///     Initializes a new instance of the
+    ///     <see cref="ResourceBuilderBase{TResource, TBuilder}" /> class.
+    /// </summary>
+    /// <param name="services">
+    ///     The service collection the resource's configuration is added to.
+    /// </param>
     protected ResourceBuilderBase(IServiceCollection services) => Services = services;
 
     /// <summary>
-    ///     Enables and configures the create page.
+    ///     Enables the create page.
     /// </summary>
+    /// <returns>A builder that configures the create page.</returns>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceCreateHandler{TResource}" />.
+    /// </remarks>
     public ResourceCreateBuilder<TResource> AllowCreate()
     {
         Services.Configure<ResourceOptions<TResource>>(options =>
@@ -53,6 +78,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Enables and configures the create page.
     /// </summary>
+    /// <param name="configure">A delegate that configures the create page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceCreateHandler{TResource}" />.
+    /// </remarks>
     public TBuilder AllowCreate(Action<ResourceCreateBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -62,8 +96,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures a create form with a custom model and handler.
+    ///     Enables the create page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the create form binds to.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that creates the resource from the model.
+    /// </typeparam>
+    /// <returns>A builder that configures the create page.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
     public ResourceCreateBuilder<TModel> AllowCreate<TModel, THandler>()
         where THandler : class, IResourceCreateHandler<TModel>
     {
@@ -81,8 +124,21 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures a create form with a custom model and handler.
+    ///     Enables and configures the create page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the create form binds to.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that creates the resource from the model.
+    /// </typeparam>
+    /// <param name="configure">A delegate that configures the create page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
     public TBuilder AllowCreate<TModel, THandler>(Action<ResourceCreateBuilder<TModel>> configure)
         where THandler : class, IResourceCreateHandler<TModel>
     {
@@ -93,8 +149,13 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures resource deletion.
+    ///     Enables deletion of the resource.
     /// </summary>
+    /// <returns>A builder that configures deletion.</returns>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceDeleteHandler{TResource}" />.
+    /// </remarks>
     public ResourceDeleteBuilder<TResource> AllowDelete()
     {
         Services.Configure<ResourceOptions<TResource>>(options => options.Delete = new());
@@ -103,8 +164,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures resource deletion.
+    ///     Enables and configures deletion of the resource.
     /// </summary>
+    /// <param name="configure">A delegate that configures deletion.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceDeleteHandler{TResource}" />.
+    /// </remarks>
     public TBuilder AllowDelete(Action<ResourceDeleteBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -115,8 +185,13 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures the edit page.
+    ///     Enables the edit page.
     /// </summary>
+    /// <returns>A builder that configures the edit page.</returns>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceEditHandler{TResource}" />.
+    /// </remarks>
     public ResourceEditBuilder<TResource> AllowEdit()
     {
         Services.Configure<ResourceOptions<TResource>>(options =>
@@ -132,6 +207,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Enables and configures the edit page.
     /// </summary>
+    /// <param name="configure">A delegate that configures the edit page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceEditHandler{TResource}" />.
+    /// </remarks>
     public TBuilder AllowEdit(Action<ResourceEditBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -142,8 +226,17 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures an edit form with a custom model and handler.
+    ///     Enables the edit page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the edit form binds to.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the model and saves the changes.
+    /// </typeparam>
+    /// <returns>A builder that configures the edit page.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
     public ResourceEditBuilder<TModel> AllowEdit<TModel, THandler>()
         where THandler : class, IResourceEditHandler<TModel>
     {
@@ -163,8 +256,21 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures an edit form with a custom model and handler.
+    ///     Enables and configures the edit page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the edit form binds to.</typeparam>
+    /// <typeparam name="THandler">
+    ///     The type of the handler that loads the model and saves the changes.
+    /// </typeparam>
+    /// <param name="configure">A delegate that configures the edit page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already.
+    /// </remarks>
     public TBuilder AllowEdit<TModel, THandler>(Action<ResourceEditBuilder<TModel>> configure)
         where THandler : class, IResourceEditHandler<TModel>
     {
@@ -175,8 +281,13 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures the view page.
+    ///     Enables the view page.
     /// </summary>
+    /// <returns>A builder that configures the view page.</returns>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceViewHandler{TResource}" />. The view page needs at least one field.
+    /// </remarks>
     public ResourceViewBuilder<TResource> AllowView()
     {
         Services.Configure<ResourceOptions<TResource>>(options =>
@@ -191,6 +302,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Enables and configures the view page.
     /// </summary>
+    /// <param name="configure">A delegate that configures the view page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     The resource's data source must implement
+    ///     <see cref="IResourceViewHandler{TResource}" />. The view page needs at least one field.
+    /// </remarks>
     public TBuilder AllowView(Action<ResourceViewBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
@@ -201,8 +321,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures a view page with a custom model and handler.
+    ///     Enables the view page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the view page shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <returns>A builder that configures the view page.</returns>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already. The view page needs at least one field.
+    /// </remarks>
     public ResourceViewBuilder<TModel> AllowView<TModel, THandler>()
         where THandler : class, IResourceViewHandler<TModel>
     {
@@ -218,8 +345,19 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Enables and configures a view page with a custom model and handler.
+    ///     Enables and configures the view page with its own model and handler.
     /// </summary>
+    /// <typeparam name="TModel">The type of the model the view page shows.</typeparam>
+    /// <typeparam name="THandler">The type of the handler that loads the model.</typeparam>
+    /// <param name="configure">A delegate that configures the view page.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <remarks>
+    ///     Registers <typeparamref name="THandler" /> as a scoped service if it isn't registered
+    ///     already. The view page needs at least one field.
+    /// </remarks>
     public TBuilder AllowView<TModel, THandler>(Action<ResourceViewBuilder<TModel>> configure)
         where THandler : class, IResourceViewHandler<TModel>
     {
@@ -232,6 +370,7 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Requires an authenticated user for the resource's pages.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public TBuilder RequireAuthorization()
     {
         return RequireAuthorization(Array.Empty<IAuthorizeData>());
@@ -240,8 +379,11 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Requires the resource's pages to satisfy an authorization policy.
     /// </summary>
-    /// <param name="policy">The authorization policy.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="policy">The policy to satisfy.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="policy" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder RequireAuthorization(AuthorizationPolicy policy)
     {
         AddAuthorizationMetadata(AuthorizationMetadata.Create(policy));
@@ -250,10 +392,13 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Requires the resource's pages to satisfy an authorization policy built by a delegate.
+    ///     Requires the resource's pages to satisfy an authorization policy that a delegate builds.
     /// </summary>
-    /// <param name="configurePolicy">The delegate that builds the authorization policy.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <param name="configurePolicy">A delegate that builds the policy.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configurePolicy" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder RequireAuthorization(Action<AuthorizationPolicyBuilder> configurePolicy)
     {
         AddAuthorizationMetadata(AuthorizationMetadata.Create(configurePolicy));
@@ -262,12 +407,15 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Requires the resource's pages to satisfy the given authorization data.
+    ///     Requires the resource's pages to satisfy the specified authorization data.
     /// </summary>
     /// <param name="authorizeData">
-    ///     The authorization data. When empty, an authenticated user is required.
+    ///     The authorization data to satisfy. Pass none to require only an authenticated user.
     /// </param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="authorizeData" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder RequireAuthorization(params IAuthorizeData[] authorizeData)
     {
         AddAuthorizationMetadata(AuthorizationMetadata.Create(authorizeData));
@@ -279,9 +427,12 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     ///     Requires the resource's pages to satisfy the named authorization policies.
     /// </summary>
     /// <param name="policyNames">
-    ///     The authorization policy names. When empty, an authenticated user is required.
+    ///     The names of the policies to satisfy. Pass none to require only an authenticated user.
     /// </param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="policyNames" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder RequireAuthorization(params string[] policyNames)
     {
         AddAuthorizationMetadata(AuthorizationMetadata.Create(policyNames));
@@ -292,6 +443,11 @@ public abstract class ResourceBuilderBase<TResource, TBuilder>
     /// <summary>
     ///     Configures the resource's sidebar item.
     /// </summary>
+    /// <param name="configure">A delegate that configures the sidebar item.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public TBuilder SidebarItem(Action<ResourceSidebarItemBuilder<TResource>> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);

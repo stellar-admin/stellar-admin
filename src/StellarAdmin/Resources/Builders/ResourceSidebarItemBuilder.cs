@@ -6,13 +6,20 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a resource's sidebar item.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the item links to.</typeparam>
 public sealed class ResourceSidebarItemBuilder<TResource>
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The sidebar group label.
+    ///     Sets the label of the sidebar group the item appears in.
     /// </summary>
+    /// <value>
+    ///     The group label. The default is "Resources".
+    /// </value>
+    /// <remarks>
+    ///     The label can't be empty or whitespace.
+    /// </remarks>
     public string Group
     {
         set =>
@@ -22,12 +29,15 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     }
 
     /// <summary>
-    ///     The icon shown before the item's label, or <c>null</c> for none.
+    ///     Sets the icon shown before the item's label.
     /// </summary>
+    /// <value>
+    ///     The name of the icon, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to <c>null</c>.
+    ///     The name can't be empty or whitespace.
     /// </remarks>
-    /// <exception cref="ArgumentException"></exception>
     public string? Icon
     {
         set =>
@@ -37,8 +47,15 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     }
 
     /// <summary>
-    ///     The sidebar item label.
+    ///     Sets the label of the item.
     /// </summary>
+    /// <value>
+    ///     The label, or <see langword="null" /> to use the resource's plural label. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     The label can't be empty or whitespace.
+    /// </remarks>
     public string? Label
     {
         set =>
@@ -48,8 +65,11 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     }
 
     /// <summary>
-    ///     The item's order within its group.
+    ///     Sets the position of the item within its group.
     /// </summary>
+    /// <value>
+    ///     The position. Items with lower values appear first. The default is 0.
+    /// </value>
     public int Order
     {
         set =>
@@ -59,8 +79,15 @@ public sealed class ResourceSidebarItemBuilder<TResource>
     }
 
     /// <summary>
-    ///     Whether the item appears in the sidebar.
+    ///     Sets a value that indicates whether the item appears in the sidebar.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the item appears in the sidebar; otherwise,
+    ///     <see langword="false" />. The default is <see langword="true" />.
+    /// </value>
+    /// <remarks>
+    ///     Hiding the item doesn't disable the resource's pages.
+    /// </remarks>
     public bool Visible
     {
         set =>

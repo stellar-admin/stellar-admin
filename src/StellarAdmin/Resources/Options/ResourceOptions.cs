@@ -5,41 +5,64 @@ using Humanizer;
 namespace StellarAdmin.Resources.Options;
 
 /// <summary>
-///     Configures a resource.
+///     Stores the configuration of a resource.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
 public sealed class ResourceOptions<TResource>
 {
     /// <summary>
-    ///     The create page configuration, or null when create is disabled.
+    ///     Gets the configuration of the create page.
     /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the resource has no create page.
+    /// </value>
     public ResourceCreateOptions? Create { get; internal set; }
 
     /// <summary>
-    ///     The delete configuration, or null when delete is disabled.
+    ///     Gets the delete configuration.
     /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when resources can't be deleted.
+    /// </value>
     public ResourceDeleteOptions? Delete { get; internal set; }
 
     /// <summary>
-    ///     The edit page configuration, or null when edit is disabled.
+    ///     Gets the configuration of the edit page.
     /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the resource has no edit page.
+    /// </value>
     public ResourceEditOptions? Edit { get; internal set; }
 
     /// <summary>
-    ///     The index page configuration.
+    ///     Gets the configuration of the index page.
     /// </summary>
     public ResourceIndexOptions Index { get; internal set; } = new();
 
     /// <summary>
-    ///     Returns a resource's key as a URL value.
+    ///     Gets or sets the delegate that returns a resource's key as a URL value.
     /// </summary>
+    /// <value>
+    ///     The delegate, or <see langword="null" /> when no key is configured. The default is
+    ///     <see langword="null" />.
+    /// </value>
+    /// <remarks>
+    ///     <see cref="UseKey" /> sets this delegate.
+    /// </remarks>
     public Func<TResource, string>? KeySelector { get; set; }
 
     /// <summary>
-    ///     The plural resource label.
+    ///     Gets or sets the label for more than one resource.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the English plural of SingularLabel.
-    /// </remarks>
+    /// <value>
+    ///     The plural label. The default is the English plural of <see cref="SingularLabel" />.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or whitespace.
+    /// </exception>
     public string PluralLabel
     {
         get => field ?? SingularLabel.Pluralize();
@@ -51,16 +74,23 @@ public sealed class ResourceOptions<TResource>
     }
 
     /// <summary>
-    ///     The resource's sidebar item configuration.
+    ///     Gets the configuration of the resource's sidebar item.
     /// </summary>
     public ResourceSidebarItemOptions SidebarItem { get; } = new();
 
     /// <summary>
-    ///     The singular resource label.
+    ///     Gets or sets the label for one resource.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the resource type's name with words separated by spaces.
-    /// </remarks>
+    /// <value>
+    ///     The singular label. The default is the name of the resource type split into words,
+    ///     with only the first word capitalized.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     The value is empty or whitespace.
+    /// </exception>
     public string SingularLabel
     {
         get;
@@ -72,8 +102,11 @@ public sealed class ResourceOptions<TResource>
     } = typeof(TResource).Name.Split('`')[0].Humanize();
 
     /// <summary>
-    ///     The view page configuration, or null when the view page is disabled.
+    ///     Gets the configuration of the view page.
     /// </summary>
+    /// <value>
+    ///     The configuration, or <see langword="null" /> when the resource has no view page.
+    /// </value>
     public ResourceViewOptions? View { get; internal set; }
 
     internal Func<
@@ -105,8 +138,19 @@ public sealed class ResourceOptions<TResource>
     >? ViewLoader { get; set; }
 
     /// <summary>
-    ///     Specifies the property that identifies a resource.
+    ///     Sets the property that identifies a resource.
     /// </summary>
+    /// <param name="property">The property that holds the resource's key.</param>
+    /// <remarks>
+    ///     The key is converted to a string with the invariant culture.
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="property" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="property" /> isn't a property of the resource with a public instance
+    ///     getter, or is an indexer.
+    /// </exception>
     public void UseKey(PropertyInfo property)
     {
         ArgumentNullException.ThrowIfNull(property);

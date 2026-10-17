@@ -4,15 +4,24 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures default index page text.
+///     Configures the default text of every resource's index page.
 /// </summary>
+/// <remarks>
+///     Text set on a resource's own index builder overrides these defaults.
+/// </remarks>
 public sealed class ResourceIndexLabelsBuilder
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The callback that generates the default inline row cancel button label.
+    ///     Sets the delegate that returns the default label of the cancel button on an inline row.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Cancel".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> CancelLabel
     {
         set
@@ -24,8 +33,14 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index create button label.
+    ///     Sets the delegate that returns the default label of the create button on the index page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Create".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> CreateLabel
     {
         set
@@ -37,9 +52,16 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default message of the toast shown when a resource is
+    ///     Sets the delegate that returns the default message of the toast shown when a resource is
     ///     added in a new row.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns the resource's
+    ///     singular label followed by "added".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> CreatedMessage
     {
         set
@@ -53,8 +75,15 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index delete button label.
+    ///     Sets the delegate that returns the default label of the delete button on the index page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Delete" followed
+    ///     by the resource's singular label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> DeleteLabel
     {
         set
@@ -66,8 +95,15 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index edit link label.
+    ///     Sets the delegate that returns the default label of the edit link on the index page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Edit" followed by
+    ///     the resource's singular label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> EditLabel
     {
         set
@@ -79,9 +115,16 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default description of the toast shown when a saved
+    ///     Sets the delegate that returns the default description of the toast shown when a saved
     ///     inline row isn't on the reloaded page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "It isn't on this
+    ///     page with the current search, scope and sort.".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> NotShownMessage
     {
         set
@@ -95,8 +138,14 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default inline row save button label.
+    ///     Sets the delegate that returns the default label of the save button on an inline row.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Save".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> SaveLabel
     {
         set
@@ -108,9 +157,16 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default message of the toast shown when an edited inline
-    ///     row isn't on the reloaded page.
+    ///     Sets the delegate that returns the default message of the toast shown when an edited
+    ///     inline row isn't on the reloaded page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns the resource's
+    ///     singular label followed by "saved".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> SavedMessage
     {
         set
@@ -124,8 +180,16 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index search placeholder.
+    ///     Sets the delegate that returns the default placeholder of the search box on the index
+    ///     page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "Search" followed
+    ///     by the resource's plural label and "...".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> SearchPlaceholder
     {
         set
@@ -139,8 +203,15 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index page title.
+    ///     Sets the delegate that returns the default title of the index page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns the resource's
+    ///     plural label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> Title
     {
         set
@@ -152,8 +223,15 @@ public sealed class ResourceIndexLabelsBuilder
     }
 
     /// <summary>
-    ///     The callback that generates the default index view link label.
+    ///     Sets the delegate that returns the default label of the view link on the index page.
     /// </summary>
+    /// <value>
+    ///     A delegate that returns the text for a resource. The default returns "View" followed by
+    ///     the resource's singular label.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public Func<ResourceLabelContext, string> ViewLabel
     {
         set

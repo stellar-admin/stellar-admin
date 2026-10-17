@@ -9,6 +9,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <remarks>
 ///     A breakpoint without a start uses the start of the next smaller breakpoint. A start is
 ///     ignored where the grid has one column or the item would extend past the last column.
+///     Breakpoints are measured against the width of the item's grid.
 /// </remarks>
 public sealed class ColumnStartBuilder
 {
@@ -19,8 +20,13 @@ public sealed class ColumnStartBuilder
     /// <summary>
     ///     Sets the start at the smallest width.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to following the item before it.
+    ///     By default, the item follows the item before it.
     /// </remarks>
     public ColumnStartBuilder Base(int start)
     {
@@ -30,8 +36,13 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Sets the start when the form is at least 56rem wide.
+    ///     Sets the start when the grid is at least 56rem wide.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnStartBuilder Large(int start)
     {
         Start = Start with { Large = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
@@ -40,8 +51,9 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Follows the item before it when the form is at least 56rem wide.
+    ///     Places the item after the item before it when the grid is at least 56rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnStartBuilder LargeAuto()
     {
         Start = Start with { Large = ResponsiveGrid.AutoStart };
@@ -50,8 +62,13 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Sets the start when the form is at least 40rem wide.
+    ///     Sets the start when the grid is at least 40rem wide.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnStartBuilder Medium(int start)
     {
         Start = Start with { Medium = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
@@ -60,8 +77,9 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Follows the item before it when the form is at least 40rem wide.
+    ///     Places the item after the item before it when the grid is at least 40rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnStartBuilder MediumAuto()
     {
         Start = Start with { Medium = ResponsiveGrid.AutoStart };
@@ -70,8 +88,13 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Sets the start when the form is at least 30rem wide.
+    ///     Sets the start when the grid is at least 30rem wide.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     public ColumnStartBuilder Small(int start)
     {
         Start = Start with { Small = ResponsiveGrid.ValidateColumns(start, nameof(start)) };
@@ -80,8 +103,9 @@ public sealed class ColumnStartBuilder
     }
 
     /// <summary>
-    ///     Follows the item before it when the form is at least 30rem wide.
+    ///     Places the item after the item before it when the grid is at least 30rem wide.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ColumnStartBuilder SmallAuto()
     {
         Start = Start with { Small = ResponsiveGrid.AutoStart };

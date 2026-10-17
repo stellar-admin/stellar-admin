@@ -17,17 +17,22 @@ public sealed class ResourceFieldBuilder
     private readonly PropertyInfo[] _propertyPath;
 
     /// <summary>
-    ///     The help text shown with the field. Defaults to the property's
-    ///     <c>[Display(Description)]</c>.
+    ///     Sets the help text shown with the field.
     /// </summary>
+    /// <value>
+    ///     The default is the property's <c>[Display(Description)]</c>.
+    /// </value>
     public string? Description
     {
         set => _configuration.Add(options => options.Description = value);
     }
 
     /// <summary>
-    ///     The field label.
+    ///     Sets the field label.
     /// </summary>
+    /// <value>
+    ///     The default is the property's display name.
+    /// </value>
     public string? Title
     {
         set => _configuration.Add(options => options.Title = value);
@@ -45,10 +50,15 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
-    ///     Sets the number of columns the field spans.
+    ///     Sets the number of columns the field spans at every width.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     The default is 1.
     /// </remarks>
     public ResourceFieldBuilder ColumnSpan(int span)
     {
@@ -61,6 +71,11 @@ public sealed class ResourceFieldBuilder
     /// <summary>
     ///     Sets the number of columns the field spans at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the span at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceFieldBuilder ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         var columnSpan = ColumnSpanBuilder.Build(configure);
@@ -70,8 +85,9 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
-    ///     Spans all columns.
+    ///     Makes the field span all columns.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceFieldBuilder ColumnSpanFull()
     {
         _configuration.Add(options => options.ColumnSpan = new(Base: ResponsiveGrid.FullSpan));
@@ -80,11 +96,16 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
-    ///     Sets the column the field starts at.
+    ///     Sets the column the field starts at, at every width.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to following the item before it. Ignored where the grid has one column or the
-    ///     field would extend past the last column.
+    ///     By default, the field follows the item before it. The start is ignored where the grid
+    ///     has one column or the field would extend past the last column.
     /// </remarks>
     public ResourceFieldBuilder ColumnStart(int start)
     {
@@ -97,6 +118,11 @@ public sealed class ResourceFieldBuilder
     /// <summary>
     ///     Sets the column the field starts at, at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the start at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceFieldBuilder ColumnStart(Action<ColumnStartBuilder> configure)
     {
         var columnStart = ColumnStartBuilder.Build(configure);
@@ -106,8 +132,14 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
-    ///     Uses and configures an editor for this field.
+    ///     Edits the field with an editor and configures it.
     /// </summary>
+    /// <typeparam name="TEditor">The type of the editor.</typeparam>
+    /// <param name="configure">A delegate that configures the editor.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)
         where TEditor : FieldEditor, IFieldEditor, new()
     {
@@ -133,8 +165,10 @@ public sealed class ResourceFieldBuilder
     }
 
     /// <summary>
-    ///     Uses an editor for this field.
+    ///     Edits the field with an editor.
     /// </summary>
+    /// <typeparam name="TEditor">The type of the editor.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceFieldBuilder UseEditor<TEditor>()
         where TEditor : FieldEditor, IFieldEditor, new() => UseEditor<TEditor>(_ => { });
 

@@ -6,6 +6,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a titled section of a view page and its fields.
 /// </summary>
+/// <typeparam name="TModel">The type of the model the view page displays.</typeparam>
 public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuilder<TModel>
 {
     private readonly string _title;
@@ -16,29 +17,40 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     private FieldOrientation? _orientation;
 
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Sets the supporting text displayed below the section title.
     /// </summary>
+    /// <value>
+    ///     The supporting text, or <see langword="null" /> for none. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public string? Description
     {
         set => _description = value;
     }
 
     /// <summary>
-    ///     The layout of the section.
+    ///     Sets the layout of the section.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the page's section layout.
-    /// </remarks>
+    /// <value>
+    ///     The layout, or <see langword="null" /> to use the page's section layout. The default is
+    ///     <see langword="null" />.
+    /// </value>
     public FormSectionLayout? Layout
     {
         set => _layout = value;
     }
 
     /// <summary>
-    ///     Whether the labels of the section's fields display above or beside their values.
+    ///     Sets whether the labels of the section's fields are displayed above or beside their
+    ///     values.
     /// </summary>
+    /// <value>
+    ///     The orientation, or <see langword="null" /> to use the orientation of the section that
+    ///     contains this one. The default is <see langword="null" />.
+    /// </value>
     /// <remarks>
-    ///     Defaults to the orientation of the parent section, then above. A field's own orientation wins.
+    ///     Labels are displayed above their values when no section sets an orientation. A field's
+    ///     own orientation overrides the section's.
     /// </remarks>
     public FieldOrientation? Orientation
     {
@@ -51,9 +63,14 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     /// <summary>
     ///     Sets the number of columns the section spans in its parent.
     /// </summary>
+    /// <param name="span">The number of columns to span, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     Without a span, the section spans one column.
     /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnSpan(int span)
     {
         _columnSpan = ColumnSpanBuilder.FromSpan(span);
@@ -64,6 +81,11 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     /// <summary>
     ///     Sets the number of columns the section spans in its parent at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the span at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         _columnSpan = ColumnSpanBuilder.Build(configure);
@@ -72,8 +94,9 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     }
 
     /// <summary>
-    ///     Spans all columns of the section's parent.
+    ///     Makes the section span all columns of its parent.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceViewSectionBuilder<TModel> ColumnSpanFull()
     {
         _columnSpan = new(Base: ResponsiveGrid.FullSpan);
@@ -84,10 +107,15 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     /// <summary>
     ///     Sets the column the section starts at in its parent.
     /// </summary>
+    /// <param name="start">The column to start at, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
-    ///     Defaults to following the item before it. Ignored where the parent has one column or
-    ///     the section would extend past the last column.
+    ///     Without a start, the section follows the item before it. The start is ignored where the
+    ///     parent has one column or the section would extend past the last column.
     /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnStart(int start)
     {
         _columnStart = ColumnStartBuilder.FromStart(start);
@@ -98,6 +126,11 @@ public sealed class ResourceViewSectionBuilder<TModel> : ResourceViewFieldsBuild
     /// <summary>
     ///     Sets the column the section starts at in its parent, at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the start at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceViewSectionBuilder<TModel> ColumnStart(Action<ColumnStartBuilder> configure)
     {
         _columnStart = ColumnStartBuilder.Build(configure);

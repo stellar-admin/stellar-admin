@@ -7,6 +7,7 @@ namespace StellarAdmin.Resources.Builders;
 /// <summary>
 ///     Configures a titled form section that lists read-only fields.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource the form shows.</typeparam>
 public sealed class ResourceDetailsBuilder<TResource>
 {
     private readonly List<ResourceDisplayFieldBuilder> _fields = [];
@@ -20,7 +21,7 @@ public sealed class ResourceDetailsBuilder<TResource>
     private DetailsVariant? _variant;
 
     /// <summary>
-    ///     Supporting text displayed below the section title.
+    ///     Sets the supporting text displayed below the section title.
     /// </summary>
     public string? Description
     {
@@ -28,33 +29,34 @@ public sealed class ResourceDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     The layout of the section.
+    ///     Sets the layout of the section.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the form's section layout.
-    /// </remarks>
+    /// <value>
+    ///     The default is the form's section layout.
+    /// </value>
     public FormSectionLayout? Layout
     {
         set => _layout = value;
     }
 
     /// <summary>
-    ///     Whether labels display above or beside their values.
+    ///     Sets whether labels display above or beside their values.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to above.
-    /// </remarks>
+    /// <value>
+    ///     The default is <see cref="DetailsOrientation.Vertical" />, which displays labels above
+    ///     their values.
+    /// </value>
     public DetailsOrientation? Orientation
     {
         set => _orientation = value;
     }
 
     /// <summary>
-    ///     The visual variant of the list.
+    ///     Sets the visual variant of the list.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <see cref="DetailsVariant.Default" />.
-    /// </remarks>
+    /// <value>
+    ///     The default is <see cref="DetailsVariant.Default" />.
+    /// </value>
     public DetailsVariant? Variant
     {
         set => _variant = value;
@@ -65,6 +67,15 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <summary>
     ///     Adds a read-only field.
     /// </summary>
+    /// <typeparam name="TProperty">The type of the field's property.</typeparam>
+    /// <param name="field">An expression that selects the property the field shows.</param>
+    /// <returns>A builder that configures the field.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    /// </exception>
     public ResourceDisplayFieldBuilder Add<TProperty>(Expression<Func<TResource, TProperty>> field)
     {
         var fieldBuilder = ResourceDisplayFieldBuilder.Create(field, nameof(field));
@@ -76,6 +87,16 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <summary>
     ///     Adds and configures a read-only field.
     /// </summary>
+    /// <typeparam name="TProperty">The type of the field's property.</typeparam>
+    /// <param name="field">An expression that selects the property the field shows.</param>
+    /// <param name="configure">A delegate that configures the field.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="field" /> or <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     <paramref name="field" /> doesn't select a property path with public getters.
+    /// </exception>
     public ResourceDetailsBuilder<TResource> Add<TProperty>(
         Expression<Func<TResource, TProperty>> field,
         Action<ResourceDisplayFieldBuilder> configure
@@ -89,10 +110,15 @@ public sealed class ResourceDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Sets the number of columns the section spans in its parent.
+    ///     Sets the number of columns the section spans in its parent at every width.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     The default is 1.
     /// </remarks>
     public ResourceDetailsBuilder<TResource> ColumnSpan(int span)
     {
@@ -104,6 +130,11 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <summary>
     ///     Sets the number of columns the section spans in its parent at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the span at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceDetailsBuilder<TResource> ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         _columnSpan = ColumnSpanBuilder.Build(configure);
@@ -112,8 +143,9 @@ public sealed class ResourceDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Spans all columns of the section's parent.
+    ///     Makes the section span all columns of its parent.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceDetailsBuilder<TResource> ColumnSpanFull()
     {
         _columnSpan = new(Base: ResponsiveGrid.FullSpan);
@@ -122,11 +154,16 @@ public sealed class ResourceDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Sets the column the section starts at in its parent.
+    ///     Sets the column the section starts at in its parent, at every width.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to following the item before it. Ignored where the parent has one column or
-    ///     the section would extend past the last column.
+    ///     By default, the section follows the item before it. The start is ignored where the
+    ///     parent has one column or the section would extend past the last column.
     /// </remarks>
     public ResourceDetailsBuilder<TResource> ColumnStart(int start)
     {
@@ -138,6 +175,11 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <summary>
     ///     Sets the column the section starts at in its parent, at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the start at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceDetailsBuilder<TResource> ColumnStart(Action<ColumnStartBuilder> configure)
     {
         _columnStart = ColumnStartBuilder.Build(configure);
@@ -146,11 +188,15 @@ public sealed class ResourceDetailsBuilder<TResource>
     }
 
     /// <summary>
-    ///     Sets the number of columns, starting at the medium breakpoint.
+    ///     Sets the number of columns when the section is at least 40rem wide.
     /// </summary>
+    /// <param name="count">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="count" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to 1. Breakpoints are measured against the section's width. Below the medium
-    ///     breakpoint, the fields use one column.
+    ///     The default is 1. A narrower section uses one column.
     /// </remarks>
     public ResourceDetailsBuilder<TResource> Columns(int count)
     {
@@ -162,6 +208,13 @@ public sealed class ResourceDetailsBuilder<TResource>
     /// <summary>
     ///     Sets the number of columns at each breakpoint.
     /// </summary>
+    /// <param name="configure">
+    ///     A delegate that sets the number of columns at each breakpoint.
+    /// </param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
     ///     Breakpoints are measured against the section's width.
     /// </remarks>

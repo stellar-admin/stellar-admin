@@ -4,15 +4,20 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures resource deletion.
+///     Configures the deletion of a resource.
 /// </summary>
+/// <typeparam name="TResource">The type of the resource.</typeparam>
 public sealed class ResourceDeleteBuilder<TResource>
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The cancel button label.
+    ///     Sets the cancel button label.
     /// </summary>
+    /// <value>
+    ///     The default is the label set with
+    ///     <see cref="ResourceDeleteLabelsBuilder.CancelLabel" />.
+    /// </value>
     public string? CancelLabel
     {
         set =>
@@ -22,8 +27,12 @@ public sealed class ResourceDeleteBuilder<TResource>
     }
 
     /// <summary>
-    ///     The delete confirmation button label.
+    ///     Sets the confirm button label.
     /// </summary>
+    /// <value>
+    ///     The default is the label set with
+    ///     <see cref="ResourceDeleteLabelsBuilder.ConfirmLabel" />.
+    /// </value>
     public string? ConfirmLabel
     {
         set =>
@@ -33,8 +42,11 @@ public sealed class ResourceDeleteBuilder<TResource>
     }
 
     /// <summary>
-    ///     The delete confirmation message.
+    ///     Sets the confirmation message.
     /// </summary>
+    /// <value>
+    ///     The default is the message set with <see cref="ResourceDeleteLabelsBuilder.Message" />.
+    /// </value>
     public string? Message
     {
         set =>
@@ -44,8 +56,11 @@ public sealed class ResourceDeleteBuilder<TResource>
     }
 
     /// <summary>
-    ///     The delete confirmation title.
+    ///     Sets the confirmation title.
     /// </summary>
+    /// <value>
+    ///     The default is the title set with <see cref="ResourceDeleteLabelsBuilder.Title" />.
+    /// </value>
     public string? Title
     {
         set =>

@@ -17,9 +17,12 @@ public sealed class ResourceDisplayFieldBuilder
     private readonly PropertyInfo[] _propertyPath;
 
     /// <summary>
-    ///     The text shown when the value is empty. Defaults to the property's
-    ///     <c>[DisplayFormat(NullDisplayText)]</c>, then a dash.
+    ///     Sets the text shown when the value is empty.
     /// </summary>
+    /// <value>
+    ///     The default is the property's <c>[DisplayFormat(NullDisplayText)]</c>, or a dash when
+    ///     the property doesn't set one.
+    /// </value>
     /// <remarks>
     ///     Not used with a display that renders empty values itself, such as
     ///     <see cref="ImageDisplay" />.
@@ -30,19 +33,23 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Whether the label displays above or beside the value.
+    ///     Sets whether the label displays above or beside the value.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to the orientation of the field's section, then above.
-    /// </remarks>
+    /// <value>
+    ///     The default is the orientation of the field's section, or
+    ///     <see cref="DisplayFieldOrientation.Vertical" /> when the section doesn't set one.
+    /// </value>
     public DisplayFieldOrientation? Orientation
     {
         set => _configuration.Add(options => options.Orientation = value);
     }
 
     /// <summary>
-    ///     The field label.
+    ///     Sets the field label.
     /// </summary>
+    /// <value>
+    ///     The default is the property's display name.
+    /// </value>
     public string? Title
     {
         set => _configuration.Add(options => options.Title = value);
@@ -60,10 +67,15 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Sets the number of columns the field spans.
+    ///     Sets the number of columns the field spans at every width.
     /// </summary>
+    /// <param name="span">The number of columns, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="span" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to 1.
+    ///     The default is 1.
     /// </remarks>
     public ResourceDisplayFieldBuilder ColumnSpan(int span)
     {
@@ -76,6 +88,11 @@ public sealed class ResourceDisplayFieldBuilder
     /// <summary>
     ///     Sets the number of columns the field spans at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the span at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceDisplayFieldBuilder ColumnSpan(Action<ColumnSpanBuilder> configure)
     {
         var columnSpan = ColumnSpanBuilder.Build(configure);
@@ -85,8 +102,9 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Spans all columns.
+    ///     Makes the field span all columns.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceDisplayFieldBuilder ColumnSpanFull()
     {
         _configuration.Add(options => options.ColumnSpan = new(Base: ResponsiveGrid.FullSpan));
@@ -95,11 +113,16 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Sets the column the field starts at.
+    ///     Sets the column the field starts at, at every width.
     /// </summary>
+    /// <param name="start">The column number, from 1 to 12.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     <paramref name="start" /> is less than 1 or greater than 12.
+    /// </exception>
     /// <remarks>
-    ///     Defaults to following the item before it. Ignored where the grid has one column or the
-    ///     field would extend past the last column.
+    ///     By default, the field follows the item before it. The start is ignored where the grid
+    ///     has one column or the field would extend past the last column.
     /// </remarks>
     public ResourceDisplayFieldBuilder ColumnStart(int start)
     {
@@ -112,6 +135,11 @@ public sealed class ResourceDisplayFieldBuilder
     /// <summary>
     ///     Sets the column the field starts at, at each breakpoint.
     /// </summary>
+    /// <param name="configure">A delegate that sets the start at each breakpoint.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     public ResourceDisplayFieldBuilder ColumnStart(Action<ColumnStartBuilder> configure)
     {
         var columnStart = ColumnStartBuilder.Build(configure);
@@ -121,8 +149,14 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Uses and configures a display for this field.
+    ///     Renders the field with a display and configures it.
     /// </summary>
+    /// <typeparam name="TDisplay">The type of the display.</typeparam>
+    /// <param name="configure">A delegate that configures the display.</param>
+    /// <returns>The builder, so that calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="configure" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
     ///     Without a display, the field renders the display template its property's
     ///     <c>[UIHint]</c> names, or the default display for its type.
@@ -156,14 +190,17 @@ public sealed class ResourceDisplayFieldBuilder
     }
 
     /// <summary>
-    ///     Uses a display for this field.
+    ///     Renders the field with a display.
     /// </summary>
+    /// <typeparam name="TDisplay">The type of the display.</typeparam>
+    /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceDisplayFieldBuilder UseDisplay<TDisplay>()
         where TDisplay : FieldDisplay, new() => UseDisplay<TDisplay>(_ => { });
 
     /// <summary>
     ///     Renders the value from the property's metadata instead of a display.
     /// </summary>
+    /// <returns>The builder, so that calls can be chained.</returns>
     /// <remarks>
     ///     The value is formatted with the property's <c>[DisplayFormat]</c>, a boolean shows an
     ///     icon, and email addresses and web addresses become links.

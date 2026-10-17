@@ -10,34 +10,50 @@ public sealed class ResourceInlineCreateBuilder
     private readonly Action<Action<ResourceInlineCreateOptions>> _configure;
 
     /// <summary>
-    ///     Where the Add button is shown. Defaults to <see cref="InlineAddButton.Both" />.
+    ///     Sets where the Add button is shown.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies where the button is shown. The default is
+    ///     <see cref="InlineAddButton.Both" />.
+    /// </value>
     public InlineAddButton AddButton
     {
         set => _configure(options => options.AddButton = value);
     }
 
     /// <summary>
-    ///     What the grid shows after the new row is saved. Defaults to
-    ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
+    ///     Sets what the grid shows after the new row is saved.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies what the grid shows. The default is
+    ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
+    /// </value>
     public InlineRowAfterSave AfterSave
     {
         set => _configure(options => options.AfterSave = value);
     }
 
     /// <summary>
-    ///     Whether the other rows and the page's controls are dimmed and locked while the new row is edited,
-    ///     until it is saved or cancelled. Defaults to <c>true</c>.
+    ///     Sets a value that indicates whether the rest of the page is dimmed while the new row is
+    ///     edited.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the other rows and the page's controls are dimmed and locked
+    ///     until the new row is saved or cancelled; otherwise, <see langword="false" />. The
+    ///     default is <see langword="true" />.
+    /// </value>
     public bool DimOtherRows
     {
         set => _configure(options => options.DimOtherRows = value);
     }
 
     /// <summary>
-    ///     Where the new row is added. Defaults to <see cref="InlineCreatePosition.Top" />.
+    ///     Sets where the new row is added.
     /// </summary>
+    /// <value>
+    ///     One of the enumeration values that specifies where the row is added. The default is
+    ///     <see cref="InlineCreatePosition.Top" />.
+    /// </value>
     public InlineCreatePosition Position
     {
         set => _configure(options => options.Position = value);

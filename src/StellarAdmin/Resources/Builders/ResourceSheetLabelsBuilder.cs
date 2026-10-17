@@ -4,15 +4,21 @@ using StellarAdmin.Resources.Options;
 namespace StellarAdmin.Resources.Builders;
 
 /// <summary>
-///     Configures default text for the sheet that pages load content into.
+///     Configures the default text of the sheet that pages load content into.
 /// </summary>
 public sealed class ResourceSheetLabelsBuilder
 {
     private readonly IServiceCollection _services;
 
     /// <summary>
-    ///     The description shown when the sheet's content could not be loaded.
+    ///     Sets the description shown when the sheet's content can't be loaded.
     /// </summary>
+    /// <value>
+    ///     The text. The default is "The content could not be loaded.".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public string ErrorDescription
     {
         set
@@ -26,8 +32,14 @@ public sealed class ResourceSheetLabelsBuilder
     }
 
     /// <summary>
-    ///     The title shown when the sheet's content could not be loaded.
+    ///     Sets the title shown when the sheet's content can't be loaded.
     /// </summary>
+    /// <value>
+    ///     The text. The default is "Something went wrong".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public string ErrorTitle
     {
         set
@@ -39,8 +51,14 @@ public sealed class ResourceSheetLabelsBuilder
     }
 
     /// <summary>
-    ///     The label of the button that loads the sheet's content again.
+    ///     Sets the label of the button that loads the sheet's content again.
     /// </summary>
+    /// <value>
+    ///     The text. The default is "Try again".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public string RetryLabel
     {
         set
@@ -52,8 +70,14 @@ public sealed class ResourceSheetLabelsBuilder
     }
 
     /// <summary>
-    ///     The description shown when a form in the sheet could not be saved.
+    ///     Sets the description shown when a form in the sheet can't be saved.
     /// </summary>
+    /// <value>
+    ///     The text. The default is "Your changes could not be saved.".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    ///     The value is <see langword="null" />.
+    /// </exception>
     public string SaveErrorDescription
     {
         set
