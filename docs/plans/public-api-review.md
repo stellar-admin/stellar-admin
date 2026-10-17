@@ -54,7 +54,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J19 | Use one naming scheme for DataGrid sort and paging | Done (2026-10-17) |
 | J20 | Use `maxlength` on Input OTP and `aria-invalid` on Chip Group | Done (2026-10-17) |
 | J21 | Use `show-error` and `wrap-in-field` instead of `render-*` | Done (2026-10-17) |
-| J22 | Rename `heading` on `sa-command-group` to `title` | |
+| J22 | Rename `heading` on `sa-command-group` to `title` | Done (2026-10-17) |
 | J23 | Give every bound property an explicit attribute name | |
 | J24 | Make Slider and Progress numbers `double?` | |
 | J25 | Make the remaining plain `bool` attributes `bool?` | |
@@ -348,6 +348,12 @@ Done (2026-10-17), with a changed name:
 
 `heading` on `sa-command-group` (`UI/Command/CommandGroupTagHelper.cs:17`) becomes `title`.
 
+Done (2026-10-17):
+
+- `sa-command-group` takes `title` (`Title`), matching `sa-command-dialog`. The rendered markup, including the `command-group-heading` data-slot that themes style, is unchanged.
+- The command palette, DocsSamples, ComponentPlayground, tests and the command skill reference were updated.
+- Verified with the full test run (1385 passed) and a skills drift check.
+
 ### J23. Explicit attribute names
 
 33 bound properties take their attribute name from the C# name, so renaming the property silently renames the attribute. They are on Carousel, CheckboxGroup, ChoiceGroup, FormSection, RadioGroup, SegmentedControl and the Sidebar menu helpers.
@@ -484,6 +490,7 @@ Changes the website still needs:
 - [ ] J19: `sa-data-grid-sort` takes `sort-field` with `{sortField}`/`{sortDirection}`. `sa-data-grid-pager` takes `page` with `{page}`/`{pageSize}`.
 - [ ] J20: `sa-input-otp` takes `maxlength`. `sa-chip-group` takes `aria-invalid` instead of `invalid`.
 - [ ] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
+- [ ] J22: `sa-command-group` takes `title` instead of `heading`.
 
 ## Order of work
 

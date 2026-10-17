@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A set of related items in a command menu, with an optional heading. The group is hidden
+///     A set of related items in a command menu, with an optional title. The group is hidden
 ///     when none of its items match the search.
 /// </summary>
 [HtmlTargetElement("sa-command-group")]
 public class CommandGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     The heading shown above the group's items.
+    ///     The title shown above the group's items.
     /// </summary>
-    [HtmlAttributeName("heading")]
-    public string? Heading { get; set; }
+    [HtmlAttributeName("title")]
+    public string? Title { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -31,7 +31,7 @@ public class CommandGroupTagHelper : StellarAdminTagHelperBase
         var items = new TagBuilder("div");
         items.Attributes["role"] = "group";
 
-        if (!string.IsNullOrEmpty(Heading))
+        if (!string.IsNullOrEmpty(Title))
         {
             // Groups rendered in a loop share a unique id, so number them within their command
             var commandContext = GetContext<CommandContext>(context);
@@ -45,7 +45,7 @@ public class CommandGroupTagHelper : StellarAdminTagHelperBase
             heading.Attributes["id"] = headingId;
             heading.Attributes["aria-hidden"] = "true";
             heading.Attributes["data-slot"] = "command-group-heading";
-            heading.InnerHtml.Append(Heading);
+            heading.InnerHtml.Append(Title);
             output.PreContent.AppendHtml(heading);
 
             items.Attributes["aria-labelledby"] = headingId;

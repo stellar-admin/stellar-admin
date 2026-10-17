@@ -102,7 +102,7 @@ public class CommandTagHelperTests
             new TagHelperAttributeList(),
             (_, _) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
         );
-        await new CommandGroupTagHelper { Heading = heading }.ProcessAsync(context, output);
+        await new CommandGroupTagHelper { Title = heading }.ProcessAsync(context, output);
         using var writer = new StringWriter();
         output.WriteTo(writer, HtmlEncoder.Default);
 

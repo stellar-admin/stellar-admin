@@ -122,7 +122,7 @@
             <sa-command-empty>No demos found.</sa-command-empty>
             @foreach (var demoGroup in DemoNavigation.Groups)
             {
-                <sa-command-group heading="@demoGroup.Title">
+                <sa-command-group title="@demoGroup.Title">
                     @foreach (var demoItem in demoGroup.Items)
                     {
                         <sa-command-item-link asp-page="@demoItem.Page" keywords="@demoGroup.Title"

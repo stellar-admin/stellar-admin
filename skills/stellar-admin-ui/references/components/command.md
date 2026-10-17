@@ -11,7 +11,7 @@ A searchable menu of commands or options, navigated with the keyboard from a sin
 <!-- structure:begin -->
 ## Composition and behavior
 
-Put one `<sa-command-input>` and one `<sa-command-list>` inside `<sa-command>`. The list holds `<sa-command-empty>`, `<sa-command-item>`/`<sa-command-item-link>` entries, optional `<sa-command-group heading="...">` sections and `<sa-command-separator>` between groups. Name the menu with `label` (a visually hidden label for the input); a placeholder is not a label. Focus stays in the input: arrows, Home/End and Ctrl+N/J/P/K move the highlighted item via `aria-activedescendant`, and Enter chooses it. `loop="true"` wraps navigation.
+Put one `<sa-command-input>` and one `<sa-command-list>` inside `<sa-command>`. The list holds `<sa-command-empty>`, `<sa-command-item>`/`<sa-command-item-link>` entries, optional `<sa-command-group title="...">` sections and `<sa-command-separator>` between groups. Name the menu with `label` (a visually hidden label for the input); a placeholder is not a label. Focus stays in the input: arrows, Home/End and Ctrl+N/J/P/K move the highlighted item via `aria-activedescendant`, and Enter chooses it. `loop="true"` wraps navigation.
 
 With the default `filter="CommandFilter.Client"`, items are fuzzy-matched on their `value` (default: their text, excluding the shortcut) plus `keywords`, ranked within their own group (groups keep their order), and non-matches, empty groups and separators are hidden. Choosing an item (click or Enter) dispatches a bubbling `itemselect` event with `event.detail.value`; link items also navigate. Use `checked="true"` for a check mark (hidden when the item has a shortcut) and move it yourself in an `itemselect` handler by setting `data-checked="true"`.
 
@@ -27,7 +27,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 | `<sa-command>` | A searchable menu of commands or options, navigated with the keyboard from a single search input. |
 | `<sa-command-dialog>` | A modal dialog that presents a command menu, typically as a command palette. Open and close it like any other dialog, for example with an invoker button or `showModal()`. |
 | `<sa-command-empty>` | Content shown in a command menu when no items match the search. |
-| `<sa-command-group>` | A set of related items in a command menu, with an optional heading. The group is hidden when none of its items match the search. |
+| `<sa-command-group>` | A set of related items in a command menu, with an optional title. The group is hidden when none of its items match the search. |
 | `<sa-command-input>` | The search input of a command menu. Attributes the tag does not recognize, such as `name`, `placeholder`, or request attributes for server-side search, are rendered on the input element. |
 | `<sa-command-item>` | A selectable option in a command menu. Choosing it dispatches a bubbling `itemselect` event whose detail carries the item's value. |
 | `<sa-command-item-link>` | A command menu option rendered as a link, navigating to its target when chosen. |
@@ -61,7 +61,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `heading` | `string` | — | — |
+| `title` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-command-item>`
@@ -104,7 +104,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
     <sa-command-input placeholder="Type a command or search..." />
     <sa-command-list>
         <sa-command-empty>No results found.</sa-command-empty>
-        <sa-command-group heading="Suggestions">
+        <sa-command-group title="Suggestions">
             <sa-command-item>
                 <sa-icon name="plane" />
                 <span>Search flights</span>
@@ -119,7 +119,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
             </sa-command-item>
         </sa-command-group>
         <sa-command-separator />
-        <sa-command-group heading="Account">
+        <sa-command-group title="Account">
             <sa-command-item>
                 <sa-icon name="luggage" />
                 <span>My trips</span>
@@ -153,7 +153,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
         <sa-command-input placeholder="Type a command or search..." />
         <sa-command-list>
             <sa-command-empty>No results found.</sa-command-empty>
-            <sa-command-group heading="Destinations">
+            <sa-command-group title="Destinations">
                 <sa-command-item value="lisbon" keywords="portugal">
                     <sa-icon name="map-pin" />
                     <span>Lisbon</span>
@@ -168,7 +168,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
                 </sa-command-item>
             </sa-command-group>
             <sa-command-separator />
-            <sa-command-group heading="Bookings">
+            <sa-command-group title="Bookings">
                 <sa-command-item-link href="#">
                     <sa-icon name="ticket" />
                     <span>Upcoming bookings</span>
@@ -204,7 +204,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
         <sa-command-input placeholder="Type a command or search..." />
         <sa-command-list>
             <sa-command-empty>No results found.</sa-command-empty>
-            <sa-command-group heading="Suggestions">
+            <sa-command-group title="Suggestions">
                 <sa-command-item>
                     <sa-icon name="plane" />
                     <span>Search flights</span>
@@ -219,7 +219,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
                 </sa-command-item>
             </sa-command-group>
             <sa-command-separator />
-            <sa-command-group heading="Account">
+            <sa-command-group title="Account">
                 <sa-command-item>
                     <sa-icon name="luggage" />
                     <span>My trips</span>
@@ -263,7 +263,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
     <sa-command-input placeholder="Search currencies..." />
     <sa-command-list>
         <sa-command-empty>No currency found.</sa-command-empty>
-        <sa-command-group heading="Display prices in">
+        <sa-command-group title="Display prices in">
             <sa-command-item value="USD" keywords="us dollar united states">
                 <span>US dollar</span>
                 <span class="text-muted-foreground">USD</span>

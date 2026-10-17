@@ -27,7 +27,7 @@
             }
             @foreach (var group in groups)
             {
-                <sa-command-group heading="@group.Label">
+                <sa-command-group title="@group.Label">
                     @foreach (var item in group.Items)
                     {
                         await RenderItem(item, group.Label);
