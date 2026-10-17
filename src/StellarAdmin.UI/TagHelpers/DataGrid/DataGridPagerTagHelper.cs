@@ -372,7 +372,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             Protocol = Protocol,
             Route = Route,
             RouteValues = SubstitutePlaceholders(pageNo: 1, pageSize),
-            IsActive = PageSize == pageSize,
+            Active = PageSize == pageSize,
         };
         await tabLinkTagHelper.ProcessAsync(context, linkOutput);
 
@@ -488,7 +488,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             Protocol = Protocol,
             Route = Route,
             RouteValues = SubstitutePlaceholders(targetPage, SelectedPageSize),
-            IsActive = isActive,
+            Active = isActive,
             Size = compact ? ButtonSize.IconSmall : null,
         };
     }

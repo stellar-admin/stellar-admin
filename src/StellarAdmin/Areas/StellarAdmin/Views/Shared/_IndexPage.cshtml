@@ -34,7 +34,7 @@
                         <sa-tab-list id="index-page-scopes" hx-boost:inherited="true">
                             @foreach (var scope in Model.Scopes)
                             {
-                                <sa-tab-link is-active="scope.IsActive" asp-action="Index" asp-route-id="@((string?)null)"
+                                <sa-tab-link active="scope.IsActive" asp-action="Index" asp-route-id="@((string?)null)"
                                              asp-route-scope="@scope.QueryValue" asp-route-search="@Model.Query.Search"
                                              asp-route-sortBy="@Model.Query.SortBy" asp-route-sortDirection="@Model.Query.SortDirection"
                                              asp-route-pageSize="@Model.Query.PageSize">

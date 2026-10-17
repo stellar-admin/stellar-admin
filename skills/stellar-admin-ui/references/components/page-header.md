@@ -87,7 +87,7 @@ A header section at the top of a page's content, rendered as a `<header>` elemen
     </sa-page-header-actions>
     <sa-page-header-nav aria-label="Page sections">
         <sa-tab-list variant="TabListVariant.Line">
-            <sa-tab-link is-active="true" href="#">Overview</sa-tab-link>
+            <sa-tab-link active="true" href="#">Overview</sa-tab-link>
             <sa-tab-link href="#">
                 Contracts
                 <sa-badge variant="BadgeVariant.Secondary">36</sa-badge>

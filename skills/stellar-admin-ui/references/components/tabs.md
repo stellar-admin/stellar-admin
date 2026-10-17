@@ -35,7 +35,7 @@ A tab within the `<sa-tab-list>` of an `<sa-tabs>`, which shows its panel when s
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `disabled` | `bool` | `false` | `true`, `false` |
-| `is-active` | `bool` | — | `true`, `false` |
+| `active` | `bool` | — | `true`, `false` |
 | `asp-action` | `string` | `null` | — |
 | `asp-area` | `string` | `null` | — |
 | `asp-controller` | `string` | `null` | — |

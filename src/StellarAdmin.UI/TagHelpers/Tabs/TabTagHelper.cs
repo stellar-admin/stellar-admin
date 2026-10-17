@@ -22,7 +22,7 @@ public class TabTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>false</c>.
     /// </remarks>
     [HtmlAttributeName("disabled")]
-    public bool? IsDisabled { get; set; }
+    public bool? Disabled { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -59,7 +59,7 @@ public class TabTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("data-active", "");
         }
 
-        if (IsDisabled ?? false)
+        if (Disabled ?? false)
         {
             output.Attributes.SetAttribute("disabled", "disabled");
         }

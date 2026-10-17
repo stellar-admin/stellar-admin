@@ -66,7 +66,7 @@ Navigation for moving between pages of content.
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `is-active` | `bool` | `false` | `true`, `false` |
+| `active` | `bool` | `false` | `true`, `false` |
 | `size` | `ButtonSize` | `Default` | `Default`, `ExtraSmall`, `Small`, `Large`, `Icon`, `IconExtraSmall`, `IconSmall`, `IconLarge` |
 | `asp-action` | `string` | `null` | — |
 | `asp-area` | `string` | `null` | — |
@@ -134,7 +134,7 @@ Navigation for moving between pages of content.
             <sa-pagination-link href="#">1</sa-pagination-link>
         </sa-pagination-item>
         <sa-pagination-item>
-            <sa-pagination-link href="#" is-active="true">2</sa-pagination-link>
+            <sa-pagination-link href="#" active="true">2</sa-pagination-link>
         </sa-pagination-item>
         <sa-pagination-item>
             <sa-pagination-link href="#">3</sa-pagination-link>
@@ -180,7 +180,7 @@ Navigation for moving between pages of content.
             <sa-pagination-link asp-controller="Booking"
                                  asp-action="List"
                                  asp-route-page="2"
-                                 is-active="true">
+                                 active="true">
                 2
             </sa-pagination-link>
         </sa-pagination-item>

@@ -50,7 +50,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J15 | Use logical `Start`/`End` names | Done (2026-10-17) |
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | Done (2026-10-17) |
 | J17 | Use `min`/`max` on Progress | Done (2026-10-17) |
-| J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | |
+| J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | Done (2026-10-17) |
 | J19 | Use one naming scheme for DataGrid sort and paging | |
 | J20 | Bind `invalid` and `maxlength` | |
 | J21 | Use `show-*` instead of `render-*` | |
@@ -302,6 +302,13 @@ Done (2026-10-17):
 ### J18. Active and disabled
 
 `is-active` on Pagination, TabLink and the Sidebar menu buttons becomes `active`. `IsDisabled` on `TabTagHelper` and `TabLinkTagHelper` becomes `Disabled`.
+
+Done (2026-10-17):
+
+- `PaginationLink`, `TabLink`, `SidebarMenuButton` and `SidebarMenuSubButton` now use `active`/`Active`. The Sidebar buttons got an explicit `[HtmlAttributeName("active")]`.
+- `Tab` and `TabLink` use `Disabled`. Internal callers (the pagination shortcuts and the DataGrid pager) were updated.
+- Markup in the admin index page, DocsSamples and the ComponentPlayground now uses `active=`. The skills were regenerated, and the conventions reference's kebab-case example now uses `MinDistance`.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J19. DataGrid sort and paging
 

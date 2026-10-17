@@ -80,7 +80,7 @@ sa-sidebar-wrapper
 |-----------|------|---------|--------|
 | `size` | `SidebarMenuButtonSize` | `Default` | `Default`, `Small`, `Large` |
 | `variant` | `SidebarMenuButtonVariant` | `Default` | `Default`, `Outline` |
-| `is-active` | `bool` | `false` | `true`, `false` |
+| `active` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-sidebar-menu-link>`
@@ -107,7 +107,7 @@ sa-sidebar-wrapper
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `size` | `SidebarMenuSubButtonSize` | `Default` | `Default`, `Small` |
-| `is-active` | `bool` | `false` | `true`, `false` |
+| `active` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-sidebar-menu-sub-link>`

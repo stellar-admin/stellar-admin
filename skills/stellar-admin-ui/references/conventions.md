@@ -18,7 +18,7 @@ Each component reference lists the enum type and its allowed members. When an en
 
 ## 2. Attributes are kebab-case
 
-A bound C# property maps to a kebab-case HTML attribute: `ShowCloseButton` → `show-close-button`, `IsActive` → `is-active`.
+A bound C# property maps to a kebab-case HTML attribute: `ShowCloseButton` → `show-close-button`, `MinDistance` → `min-distance`.
 
 ## 3. Unlisted attributes pass straight through
 

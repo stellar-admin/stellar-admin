@@ -49,7 +49,7 @@ public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
             Protocol = Protocol,
             Route = Route,
             RouteValues = RouteValues,
-            IsActive = false,
+            Active = false,
             Size = Size,
         };
         await linkTagHelper.ProcessAsync(context, output);

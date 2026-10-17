@@ -19,14 +19,14 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
     ///     Defaults to <c>false</c>.
     /// </remarks>
     [HtmlAttributeName("disabled")]
-    public bool? IsDisabled { get; set; }
+    public bool? Disabled { get; set; }
 
     /// <summary>
     ///     Whether this tab is the currently selected one. When not set, it is inferred from whether
     ///     the tab's route matches the current request.
     /// </summary>
-    [HtmlAttributeName("is-active")]
-    public bool? IsActive { get; set; }
+    [HtmlAttributeName("active")]
+    public bool? Active { get; set; }
 
     public TabLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
@@ -35,14 +35,14 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveIsDisabled = IsDisabled ?? false;
+        var effectiveDisabled = Disabled ?? false;
 
         output.TagName = "a";
         output.TagMode = TagMode.StartTagAndEndTag;
 
         await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
 
-        var isActive = IsActive ?? IsActiveRoute();
+        var isActive = Active ?? IsActiveRoute();
         output.Attributes.SetAttribute("role", "tab");
         output.Attributes.SetAttribute("data-slot", "tabs-trigger");
         output.Attributes.SetAttribute("aria-selected", isActive ? "true" : "false");
@@ -51,8 +51,8 @@ public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
             output.Attributes.SetAttribute("data-active", "");
         }
 
-        output.Attributes.SetAttribute("aria-disabled", effectiveIsDisabled ? "true" : "false");
-        if (effectiveIsDisabled)
+        output.Attributes.SetAttribute("aria-disabled", effectiveDisabled ? "true" : "false");
+        if (effectiveDisabled)
         {
             if (output.Attributes.TryGetAttribute("href", out var hrefAttribute))
             {

@@ -44,7 +44,8 @@ public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <c>false</c>.
     /// </remarks>
-    public bool? IsActive { get; set; }
+    [HtmlAttributeName("active")]
+    public bool? Active { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -62,7 +63,7 @@ public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "sidebar-menu-button");
         output.Attributes.SetAttribute("data-sidebar", "menu-button");
         output.Attributes.SetAttribute("data-size", effectiveSize.GetDataAttributeText());
-        if (IsActive ?? false)
+        if (Active ?? false)
         {
             output.Attributes.SetAttribute("data-active", null);
         }

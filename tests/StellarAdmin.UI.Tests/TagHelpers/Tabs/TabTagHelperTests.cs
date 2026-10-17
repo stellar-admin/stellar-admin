@@ -80,7 +80,7 @@ public class TabTagHelperTests
     public async Task ProcessAsync_WhenDisabled_DisablesButton()
     {
         // Arrange
-        var sut = new TabTagHelper { For = "summary", IsDisabled = true };
+        var sut = new TabTagHelper { For = "summary", Disabled = true };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(

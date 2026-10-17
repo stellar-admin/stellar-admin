@@ -22,8 +22,8 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// <remarks>
     ///     Defaults to <c>false</c>.
     /// </remarks>
-    [HtmlAttributeName("is-active")]
-    public bool? IsActive { get; set; }
+    [HtmlAttributeName("active")]
+    public bool? Active { get; set; }
 
     /// <summary>
     ///     The size of the rendered pagination button.
@@ -36,7 +36,7 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveIsActive = IsActive ?? false;
+        var effectiveActive = Active ?? false;
         var effectiveSize = Size ?? ButtonSize.Default;
 
         output.TagName = "a";
@@ -44,12 +44,12 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         await ApplyRouteAttributesAsync(_htmlGenerator, context, output);
 
-        if (effectiveIsActive)
+        if (effectiveActive)
         {
             output.Attributes.SetAttribute("aria-current", "page");
         }
         output.Attributes.SetAttribute("data-slot", "pagination-link");
-        output.Attributes.SetAttribute("data-active", effectiveIsActive ? "true" : "false");
+        output.Attributes.SetAttribute("data-active", effectiveActive ? "true" : "false");
         output.Attributes.SetAttribute(
             "class",
             JoinCssClasses("sa-pagination-link", output.GetUserSuppliedClass())
@@ -57,7 +57,7 @@ public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 
         ButtonRenderingHelper.RenderAttributes(
             output,
-            effectiveIsActive ? ButtonVariant.Outline : ButtonVariant.Ghost,
+            effectiveActive ? ButtonVariant.Outline : ButtonVariant.Ghost,
             effectiveSize
         );
     }
