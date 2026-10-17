@@ -744,39 +744,51 @@ The pass:
 
 Changes the website still needs:
 
-- [ ] D4: `sa-linkbutton` → `sa-button-link`, `sa-attachment-link-trigger` → `sa-attachment-trigger-link`, `sa-bubble-link-content` → `sa-bubble-content-link`, `sa-command-link-item` → `sa-command-item-link`.
-- [ ] D4: link items in dropdown menus use `sa-dropdown-menu-item-link`. `sa-dropdown-menu-item` is a button and takes `type="submit"`.
-- [ ] J13: `InputGroupAddOn*` → `InputGroupAddon*`, the enum is `InputGroupAddonAlign` and the property is `Align`.
-- [ ] J14: `ButtonGroupSeparatorOrientation`, `DetailsOrientation`, `DisplayFieldOrientation` and `SidebarMenuSubButtonSize` replace borrowed enums. `SidebarMenuSubLinkSize` is `Default`/`Small`, `SidebarVariant.Sidebar` → `Default`, `SidebarCollapsible.Offcanvas` → `OffCanvas`.
-- [ ] J15: `InputGroupAddonAlign` members are `Start`/`End`/`Top`/`Bottom`. `DataGridRowDetailToggle` members are `Start`/`End`/`None`.
-- [ ] J16: the toast API needs `using StellarAdmin.UI.Toasts;`.
-- [ ] J17: `sa-progress` takes `min`/`max`.
-- [ ] J18: `is-active` → `active` on Pagination, TabLink and the Sidebar menu buttons. `IsDisabled` → `Disabled` on Tab and TabLink.
-- [ ] J19: `sa-data-grid-sort` takes `sort-field` with `{sortField}`/`{sortDirection}`. `sa-data-grid-pager` takes `page` with `{page}`/`{pageSize}`.
-- [ ] J20: `sa-input-otp` takes `maxlength`. `sa-chip-group` takes `aria-invalid` instead of `invalid`.
-- [ ] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
-- [ ] J22: `sa-command-group` takes `title` instead of `heading`.
-- [ ] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
-- [ ] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
-- [ ] J27: `icons.mdx` says duplicate `AddIcon` names throw. A same-named icon now replaces the existing one, icons are frozen once configured, and invalid packs fail at startup.
-- [ ] J28: `item.mdx`, `stack.mdx`, `group.mdx` and `attachment.mdx` list `ItemSize`, `StackGap`, `GroupGap` and `AttachmentSize` members in the old order. The new order is Default first, then smallest to largest.
-- [ ] J35: the website's licence notices in the docs list shadcn/ui and tw-animate-css. Match them to `THIRD-PARTY-NOTICES.txt`: Tailwind, Lucide, Tabler, cmdk, Lit, interestfor and htmx.
-- [ ] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
-- [ ] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
-- [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
-- [ ] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
-- [ ] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs.
-- [ ] D2: add the "Your own field inputs" guide from the UI skill's `references/forms.md` to the forms docs.
-- [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
-- [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
-- [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
-- [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
-- [ ] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
-- [ ] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors.
-- [ ] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
-- [ ] J5: `ResourceScopeOptions` is a class with `Id` and `Title` init properties instead of a positional record, and `ResourceRowDetailPanelsBuilder<T>` is abstract. Affects any website page that shows these types; the app-facing builders are unchanged.
-- [ ] J10: `ResourceOptions<T>` and the options under it are read-only, so a page that shows `services.Configure<ResourceOptions<T>>` or sets these options must use the builders instead. Custom data sources can still read them.
-- [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
+- [x] D4: `sa-linkbutton` → `sa-button-link`, `sa-attachment-link-trigger` → `sa-attachment-trigger-link`, `sa-bubble-link-content` → `sa-bubble-content-link`, `sa-command-link-item` → `sa-command-item-link`.
+- [x] D4: link items in dropdown menus use `sa-dropdown-menu-item-link`. `sa-dropdown-menu-item` is a button and takes `type="submit"`.
+- [x] J13: `InputGroupAddOn*` → `InputGroupAddon*`, the enum is `InputGroupAddonAlign` and the property is `Align`.
+- [x] J14: `ButtonGroupSeparatorOrientation`, `DetailsOrientation`, `DisplayFieldOrientation` and `SidebarMenuSubButtonSize` replace borrowed enums. `SidebarMenuSubLinkSize` is `Default`/`Small`, `SidebarVariant.Sidebar` → `Default`, `SidebarCollapsible.Offcanvas` → `OffCanvas`.
+- [x] J15: `InputGroupAddonAlign` members are `Start`/`End`/`Top`/`Bottom`. `DataGridRowDetailToggle` members are `Start`/`End`/`None`.
+- [x] J16: the toast API needs `using StellarAdmin.UI.Toasts;`.
+- [x] J17: `sa-progress` takes `min`/`max`.
+- [x] J18: `is-active` → `active` on Pagination, TabLink and the Sidebar menu buttons. `IsDisabled` → `Disabled` on Tab and TabLink.
+- [x] J19: `sa-data-grid-sort` takes `sort-field` with `{sortField}`/`{sortDirection}`. `sa-data-grid-pager` takes `page` with `{page}`/`{pageSize}`.
+- [x] J20: `sa-input-otp` takes `maxlength`. `sa-chip-group` takes `aria-invalid` instead of `invalid`.
+- [x] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
+- [x] J22: `sa-command-group` takes `title` instead of `heading`.
+- [x] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
+- [x] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
+- [x] J27: `icons.mdx` says duplicate `AddIcon` names throw. A same-named icon now replaces the existing one, icons are frozen once configured, and invalid packs fail at startup.
+- [x] J28: `item.mdx`, `stack.mdx`, `group.mdx` and `attachment.mdx` list `ItemSize`, `StackGap`, `GroupGap` and `AttachmentSize` members in the old order. The new order is Default first, then smallest to largest.
+- [x] J35: the website's licence notices in the docs list shadcn/ui and tw-animate-css. Match them to `THIRD-PARTY-NOTICES.txt`: Tailwind, Lucide, Tabler, cmdk, Lit, interestfor and htmx.
+- [x] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
+- [x] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
+- [x] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
+- [x] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
+- [x] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs. Nothing to change: the website has no admin panel pages yet.
+- [x] D2: add the "Your own field inputs" guide from the UI skill's `references/forms.md` to the forms docs.
+- [x] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`. Nothing to change: the website has no admin panel pages yet.
+- [x] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
+- [x] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
+- [x] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
+- [x] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
+- [x] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors. Nothing to change: the website has no admin panel pages yet.
+- [x] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
+- [x] J5: `ResourceScopeOptions` is a class with `Id` and `Title` init properties instead of a positional record, and `ResourceRowDetailPanelsBuilder<T>` is abstract. Affects any website page that shows these types; the app-facing builders are unchanged. Nothing to change: the website has no admin panel pages yet.
+- [x] J10: `ResourceOptions<T>` and the options under it are read-only, so a page that shows `services.Configure<ResourceOptions<T>>` or sets these options must use the builders instead. Custom data sources can still read them. Nothing to change: the website has no admin panel pages yet.
+- [x] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
+
+Done (2026-10-17), in `../website-rename` on `stellaradmin-rename`, not pushed:
+- `5bc3ed13` regenerated the demos, snippets and inline examples.
+- `a2aaf875` updated the component pages. Six agents checked each page against the tag helper source, the skill references and this checklist, and brought the API tables in line with the current XML docs (J40). It also adds the D2 guide to the Field page and the regenerated Progress min/max demo.
+- `1f92c6b7` updated the guide pages: icons (J26, J27), installation (J37), JavaScript and design tokens (D11), and the acknowledgements licences (J35).
+- `docs/DocsSamples/Pages/Progress/_MinMax.cshtml` still used `minimum`/`maximum`, so it now uses `min`/`max` (J17).
+- No old names are left in the website content. Lint, type check and build pass.
+
+Found during the pass, not fixed:
+- The Badge page says long text wraps, but the CSS keeps it on one line (`docs/DocsSamples/Pages/Badge/_LongText.cshtml` and `badge.mdx`).
+- The skill generator leaves the inherited `class-names` out of the attribute tables, for example on the checkbox group and input.
+- Pages for Carousel, Dialog, Message Scroller, Slider and Table still name `<sel-*>` elements, which D11 says may change.
 
 ## Order of work
 
