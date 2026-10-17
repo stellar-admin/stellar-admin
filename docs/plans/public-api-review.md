@@ -41,7 +41,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J6 | Seal builders, options types, view models and the view component | Done (2026-10-17) |
 | J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract || Done (2026-10-17) |
-| J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | |
+| J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | Done (2026-10-17) |
 | J10 | Make the resource options read-only | |
 | J11 | Add the missing `TagHelper` suffix to five classes | |
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | |
@@ -213,7 +213,10 @@ Done:
 
 ### J9. StellarAdminOptions
 
-Keep building the options up front. That is deliberate, see the comment in `StellarAdminServiceCollectionExtensions.cs`. Nothing outside the assembly reads them, so make the type internal. That also closes the public `Scripts` and `Stylesheets` lists that skip `AddScript`'s de-duplication. Seal `StellarAdminBuilder` and make its constructor internal, so only `AddStellarAdmin` creates one.
+Done:
+- `StellarAdminOptions` is internal, including `Scripts` and `Stylesheets`, so scripts and stylesheets go through `AddScript` and `AddStylesheet` and their de-duplication. The options are still built up front, as the comment in `StellarAdminServiceCollectionExtensions.cs` explains.
+- The `StellarAdminBuilder` constructor is internal, so only `AddStellarAdmin` creates one. J6 already sealed the builder.
+- All 1378 tests pass.
 
 ### J10. Resource options read-only
 

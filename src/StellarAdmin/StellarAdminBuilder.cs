@@ -24,13 +24,7 @@ public sealed class StellarAdminBuilder
     [EditorBrowsable(EditorBrowsableState.Never)]
     public IServiceCollection Services { get; }
 
-    /// <summary>
-    ///     Creates a new instance of <see cref="StellarAdminBuilder" />.
-    /// </summary>
-    /// <param name="services">The services collection.</param>
-    /// <param name="options">The options the builder configures.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public StellarAdminBuilder(IServiceCollection services, StellarAdminOptions options)
+    internal StellarAdminBuilder(IServiceCollection services, StellarAdminOptions options)
     {
         Services = services ?? throw new ArgumentNullException(nameof(services));
         _options = options ?? throw new ArgumentNullException(nameof(options));
