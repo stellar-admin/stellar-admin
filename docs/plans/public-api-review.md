@@ -460,6 +460,31 @@ Rules:
 
 Start with the hooks in J5 and the resource builders, then the tag helpers. Add the rules and the example to `docs/conventions/xml-documentation.md`.
 
+## Website follow-up
+
+The website is updated in one pass after the remaining renames, or before the NuGet preview if that comes first (Jerrie, 2026-10-17). The pass works in the `../website-rename` worktree on `stellaradmin-rename`. Each item that changes markup or public names adds a line here when it is done.
+
+The pass:
+
+1. Update the hand-written MDX for every item below.
+2. Run `dotnet run --project docs/DocsSamplesGenerator` with `STELLARADMIN_WEBSITE_DIR=../website-rename` to regenerate the demos and snippets.
+3. Run `pnpm examples:export` in the website for the inline examples.
+4. Search the website for the old names, then run its lint, type check and build.
+
+Changes the website still needs:
+
+- [ ] D4: `sa-linkbutton` → `sa-button-link`, `sa-attachment-link-trigger` → `sa-attachment-trigger-link`, `sa-bubble-link-content` → `sa-bubble-content-link`, `sa-command-link-item` → `sa-command-item-link`.
+- [ ] D4: link items in dropdown menus use `sa-dropdown-menu-item-link`. `sa-dropdown-menu-item` is a button and takes `type="submit"`.
+- [ ] J13: `InputGroupAddOn*` → `InputGroupAddon*`, the enum is `InputGroupAddonAlign` and the property is `Align`.
+- [ ] J14: `ButtonGroupSeparatorOrientation`, `DetailsOrientation`, `DisplayFieldOrientation` and `SidebarMenuSubButtonSize` replace borrowed enums. `SidebarMenuSubLinkSize` is `Default`/`Small`, `SidebarVariant.Sidebar` → `Default`, `SidebarCollapsible.Offcanvas` → `OffCanvas`.
+- [ ] J15: `InputGroupAddonAlign` members are `Start`/`End`/`Top`/`Bottom`. `DataGridRowDetailToggle` members are `Start`/`End`/`None`.
+- [ ] J16: the toast API needs `using StellarAdmin.UI.Toasts;`.
+- [ ] J17: `sa-progress` takes `min`/`max`.
+- [ ] J18: `is-active` → `active` on Pagination, TabLink and the Sidebar menu buttons. `IsDisabled` → `Disabled` on Tab and TabLink.
+- [ ] J19: `sa-data-grid-sort` takes `sort-field` with `{sortField}`/`{sortDirection}`. `sa-data-grid-pager` takes `page` with `{page}`/`{pageSize}`.
+- [ ] J20: `sa-input-otp` takes `maxlength`. `sa-chip-group` takes `aria-invalid` instead of `invalid`.
+- [ ] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
+
 ## Order of work
 
 1. Settle the D items.
@@ -468,4 +493,4 @@ Start with the hooks in J5 and the resource builders, then the tag helpers. Add 
 4. Packaging and docs: J35–J40.
 5. J34 last, so the analyzers record the final API.
 
-Each step updates samples, DocsSamples, consumer skills and website docs that use a changed name.
+Each step updates samples, DocsSamples and consumer skills that use a changed name, and adds the website changes to the website follow-up.
