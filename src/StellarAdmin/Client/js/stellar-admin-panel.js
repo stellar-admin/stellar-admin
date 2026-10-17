@@ -181,12 +181,6 @@ document.addEventListener("click", (event) => {
   }
 });
 
-// The user menu's log out item is a menu item in a form that posts to the logout endpoint. The menu dispatches a click
-// on the item for the mouse and the keyboard alike, so the click submits the form.
-document.addEventListener("click", (event) => {
-  event.target.closest("[data-user-menu-logout]")?.closest("form")?.requestSubmit();
-});
-
 // Index grid inline rows. One row is edited at a time: Edit or Add cancels the row being edited first. In the row,
 // Enter in a text field saves and Escape cancels, focusing the row's Edit button or the Add button again. A row's
 // message, which follows it with the errors no cell shows, goes when the row is cancelled or a save's response

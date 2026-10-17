@@ -1,0 +1,56 @@
+﻿@page
+@model ComponentPlayground.Pages.Demo.DropdownMenuItems
+
+@* Fixture for util/dropdown-menu/check.mjs: plain, link, disabled and submitting menu items *@
+@if (Model.Posted is not null)
+{
+    <p id="posted">posted:@Model.Posted</p>
+}
+<div class="p-8">
+    <sa-dropdown-menu id="check-menu">
+        <sa-dropdown-menu-trigger id="check-trigger" variant="ButtonVariant.Outline">Actions</sa-dropdown-menu-trigger>
+        <sa-dropdown-menu-content class="w-56">
+            <sa-dropdown-menu-item id="plain" onclick="window.plainClicks = (window.plainClicks ?? 0) + 1">
+                <sa-icon name="copy"/>
+                Plain
+            </sa-dropdown-menu-item>
+            <sa-dropdown-menu-item id="stay" close-on-click="false"
+                                   onclick="window.stayClicks = (window.stayClicks ?? 0) + 1">
+                Stay open
+            </sa-dropdown-menu-item>
+            <sa-dropdown-menu-item id="disabled" disabled="true"
+                                   onclick="window.disabledClicks = (window.disabledClicks ?? 0) + 1">
+                Disabled
+            </sa-dropdown-menu-item>
+            <sa-dropdown-menu-item-link id="link" href="#linked">
+                <sa-icon name="link"/>
+                Link
+            </sa-dropdown-menu-item-link>
+            <sa-dropdown-menu-separator/>
+            <form method="post" asp-page-handler="Choose">
+                <sa-dropdown-menu-item id="submit" type="submit" name="choice" value="logout"
+                                       variant="DropdownMenuItemVariant.Destructive">
+                    <sa-icon name="log-out"/>
+                    Submit
+                </sa-dropdown-menu-item>
+            </form>
+            <form method="post" asp-page-handler="Choose">
+                <sa-dropdown-menu-item id="disabled-submit" type="submit" name="choice" value="disabled"
+                                       disabled="true">
+                    Disabled submit
+                </sa-dropdown-menu-item>
+            </form>
+            <sa-dropdown-menu-sub>
+                <sa-dropdown-menu-sub-trigger id="sub-trigger">More</sa-dropdown-menu-sub-trigger>
+                <sa-dropdown-menu-sub-content>
+                    <sa-dropdown-menu-item id="nested" onclick="window.nestedClicks = (window.nestedClicks ?? 0) + 1">
+                        Nested
+                    </sa-dropdown-menu-item>
+                </sa-dropdown-menu-sub-content>
+            </sa-dropdown-menu-sub>
+        </sa-dropdown-menu-content>
+    </sa-dropdown-menu>
+    <p class="mt-4">
+        <button id="outside" type="button">Outside</button>
+    </p>
+</div>

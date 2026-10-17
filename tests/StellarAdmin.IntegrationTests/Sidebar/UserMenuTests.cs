@@ -66,7 +66,9 @@ public class UserMenuTests
             .That(document.TextContents(MenuEntries))
             .IsEquivalentTo(["", "Log out"], CollectionOrdering.Matching);
 
-        var logout = footer.RequiredElement("form [data-user-menu-logout]");
+        var logout = footer.RequiredElement(
+            "form button[type='submit'][data-slot='dropdown-menu-item']"
+        );
         await Assert.That(logout.GetAttribute("data-variant")).IsEqualTo("destructive");
         await Assert
             .That(logout.Closest("form")!.GetAttribute("action"))
@@ -269,7 +271,7 @@ public class UserMenuTests
         await Assert
             .That(
                 document.TextContents(
-                    "#sa-user-menu [data-slot='dropdown-menu-separator'], #sa-user-menu [data-link-problem] .truncate, #sa-user-menu [data-user-menu-logout]"
+                    "#sa-user-menu [data-slot='dropdown-menu-separator'], #sa-user-menu [data-link-problem] .truncate, #sa-user-menu button[type='submit']"
                 )
             )
             .IsEquivalentTo(expectedEntries, CollectionOrdering.Matching);

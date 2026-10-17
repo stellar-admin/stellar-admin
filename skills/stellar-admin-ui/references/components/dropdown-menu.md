@@ -1,6 +1,6 @@
 ---
 component: DropdownMenu
-tags: [sa-dropdown-menu, sa-dropdown-menu-checkbox-item, sa-dropdown-menu-content, sa-dropdown-menu-group, sa-dropdown-menu-item, sa-dropdown-menu-label, sa-dropdown-menu-radio-group, sa-dropdown-menu-radio-item, sa-dropdown-menu-separator, sa-dropdown-menu-shortcut, sa-dropdown-menu-sub, sa-dropdown-menu-sub-content, sa-dropdown-menu-sub-trigger, sa-dropdown-menu-trigger]
+tags: [sa-dropdown-menu, sa-dropdown-menu-checkbox-item, sa-dropdown-menu-content, sa-dropdown-menu-group, sa-dropdown-menu-item, sa-dropdown-menu-item-link, sa-dropdown-menu-label, sa-dropdown-menu-radio-group, sa-dropdown-menu-radio-item, sa-dropdown-menu-separator, sa-dropdown-menu-shortcut, sa-dropdown-menu-sub, sa-dropdown-menu-sub-content, sa-dropdown-menu-sub-trigger, sa-dropdown-menu-trigger]
 generated: true
 ---
 
@@ -16,7 +16,8 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 | `<sa-dropdown-menu-checkbox-item>` | A menu item with a checkable state, rendered as a `<div role="menuitemcheckbox">` with a check indicator. |
 | `<sa-dropdown-menu-content>` | The popover panel that holds a dropdown menu's items, positioned relative to its trigger. |
 | `<sa-dropdown-menu-group>` | Groups related menu items together, exposed to assistive technology as a `role="group"`. |
-| `<sa-dropdown-menu-item>` | A selectable menu item. Renders as a `<div role="menuitem">`, or as an `<a role="menuitem">` when the author supplies a URL — either a raw `href` or ASP.NET routing attributes (`asp-page`, `asp-action`/`asp-controller`, `asp-route-*`, …). The `sel-dropdown-menu` web component activates items by `role`, so both elements behave identically. |
+| `<sa-dropdown-menu-item>` | A selectable menu item for an action. Renders a button, so inside a form an item with `type="submit"` submits it. Use `sa-dropdown-menu-item-link` for navigation. |
+| `<sa-dropdown-menu-item-link>` | A menu item rendered as a link, navigating to its target when chosen. |
 | `<sa-dropdown-menu-label>` | A non-interactive label used to caption a section of menu items. |
 | `<sa-dropdown-menu-radio-group>` | Groups `sa-dropdown-menu-radio-item` children into a single-selection set and tracks which value is selected. |
 | `<sa-dropdown-menu-radio-item>` | A single option within a `sa-dropdown-menu-radio-group`, rendered as a `<div role="menuitemradio">` with a selection indicator. |
@@ -54,7 +55,16 @@ The root of a dropdown menu, pairing a trigger with its content and generating t
 |-----------|------|---------|--------|
 | `close-on-click` | `bool` | — | `true`, `false` |
 | `disabled` | `bool` | — | `true`, `false` |
-| `href` | `string` | — | — |
+| `inset` | `bool` | — | `true`, `false` |
+| `variant` | `DropdownMenuItemVariant` | `Default` | `Default`, `Destructive` |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-dropdown-menu-item-link>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `close-on-click` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | — | `true`, `false` |
 | `inset` | `bool` | — | `true`, `false` |
 | `variant` | `DropdownMenuItemVariant` | `Default` | `Default`, `Destructive` |
 | `asp-action` | `string` | `null` | — |

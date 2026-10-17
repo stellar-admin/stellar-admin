@@ -82,6 +82,11 @@
     }
     & > svg:last-child { margin-inline-start: auto; }
   }
+  /* Plain items are buttons, which size to their content and centre it */
+  button.sa-dropdown-menu-item {
+    width: 100%;
+    text-align: start;
+  }
   .sa-dropdown-menu-item[data-variant="destructive"] {
     color: var(--sa-color-danger-text);
     &:is(:focus, [data-highlighted]) {

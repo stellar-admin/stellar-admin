@@ -60,6 +60,7 @@ internal static class DemoNavigation
             [
                 new DemoItem("Breadcrumb", "/Demo/Breadcrumb"),
                 new DemoItem("Command", "/Demo/Command"),
+                new DemoItem("Dropdown Menu Items", "/Demo/DropdownMenuItems"),
                 new DemoItem("Pagination", "/Demo/Pagination"),
                 new DemoItem("Tabs", "/Demo/Tabs"),
             ]

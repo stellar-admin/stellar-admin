@@ -74,6 +74,9 @@
   .my-4 {
     margin-block: calc(var(--sa-unit) * 4);
   }
+  .mt-4 {
+    margin-top: calc(var(--sa-unit) * 4);
+  }
   .mb-1 {
     margin-bottom: calc(var(--sa-unit) * 1);
   }
@@ -375,6 +378,9 @@
   }
   .w-48 {
     width: calc(var(--sa-unit) * 48);
+  }
+  .w-56 {
+    width: calc(var(--sa-unit) * 56);
   }
   .w-\[100px\] {
     width: 100px;

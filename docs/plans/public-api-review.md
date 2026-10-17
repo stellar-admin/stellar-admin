@@ -19,7 +19,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D1 | Seal the concrete tag helpers? | Yes. ASP.NET leaves its own tag helpers open, but opening later is free and sealing later breaks people. | |
 | D2 | Support custom field inputs built on `FieldInputBaseTagHelper`? | Yes. Fix its awkward members and document it. | |
 | D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | |
-| D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link`. `sa-dropdown-menu-item` pending. Renames done (2026-10-17) |
+| D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link` and `sa-dropdown-menu-item-link`. Done (2026-10-17) |
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | |
@@ -115,7 +115,10 @@ Done:
 - The tag helper classes and files were renamed to match: `ButtonLinkTagHelper`, `AttachmentTriggerLinkTagHelper`, `BubbleContentLinkTagHelper` and `CommandItemLinkTagHelper`.
 - Dashboard views, DocsSamples, ComponentPlayground, the port-shadcn-component skill and the consumer skills were updated, and the skill references regenerated.
 
-Pending: `sa-dropdown-menu-item` still becomes a link when given `href`. Whether it splits into `sa-dropdown-menu-item-link` is undecided.
+- `sa-dropdown-menu-item` split in two. `sa-dropdown-menu-item` now renders `<button type="button" role="menuitem">`, and `type="submit"` submits its form without script. `sa-dropdown-menu-item-link` renders `<a role="menuitem">` and takes `href` or the `asp-*` routing attributes. Both share `close-on-click`, `disabled`, `inset` and `variant`.
+- The user menu's links use `sa-dropdown-menu-item-link`, and its log out item is a submit item, so the click handler in `stellar-admin-panel.js` is gone.
+- No reason for the earlier `<div>` was recorded. The sidebar branding plan reused the existing item and submitted its form from script.
+- Verification: unit tests for both tag helpers, the user menu integration tests, and `util/dropdown-menu/check.mjs`, a browser check on a ComponentPlayground fixture with trusted input. All 18 browser checks passed in headless Chromium, including Enter and Space running an item once, a submit item submitting once, disabled items, submenus and matching styles for button and link items in the four playground themes. Not checked in Firefox or Safari.
 
 ### D5. Breakpoint attributes
 
