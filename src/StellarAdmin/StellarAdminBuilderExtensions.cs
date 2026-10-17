@@ -57,9 +57,9 @@ public static partial class StellarAdminBuilderExtensions
                     options =>
                         options.Index.Paging is not { } paging
                         || paging.PageSize > 0
-                            && paging.PageSizes is { Length: > 0 }
+                            && paging.PageSizes is { Count: > 0 }
                             && paging.PageSizes.All(size => size > 0)
-                            && paging.PageSizes.Distinct().Count() == paging.PageSizes.Length
+                            && paging.PageSizes.Distinct().Count() == paging.PageSizes.Count
                             && paging.PageSizes.Contains(paging.PageSize),
                     "Paging requires positive, distinct page sizes including the default page size."
                 )

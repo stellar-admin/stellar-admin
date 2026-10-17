@@ -147,4 +147,4 @@ Field names are unprefixed model property names. Rejected writes must not persis
 
 ## How configuration composes
 
-Builder property setters register options configuration that runs when options resolve, so registering the same resource type again adds to the earlier configuration, and later assignments win. This lets a shared extension method set defaults and the app override them. Registering the same type under a different slug throws. Options can also be configured through `IOptions<ResourceOptions<T>>` (`StellarAdmin.Resources.Options`) with the standard `Configure` and `PostConfigure`.
+Builder property setters register options configuration that runs when options resolve, so registering the same resource type again adds to the earlier configuration, and later assignments win. This lets a shared extension method set defaults and the app override them. Registering the same type under a different slug throws. The resolved `ResourceOptions<T>` (`StellarAdmin.Resources.Options`) is read-only: a custom data source can read it through `IOptions<ResourceOptions<T>>`, but configuration goes through the builders.

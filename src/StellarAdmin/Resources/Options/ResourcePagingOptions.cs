@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourcePagingOptions
 {
     /// <summary>
-    ///     Gets or sets the number of resources per page when the user hasn't picked a page size.
+    ///     Gets the number of resources per page when the user hasn't picked a page size.
     /// </summary>
     /// <value>
     ///     The number of resources. The default is 25.
@@ -14,10 +14,10 @@ public sealed class ResourcePagingOptions
     /// <remarks>
     ///     The value must be one of <see cref="PageSizes" />.
     /// </remarks>
-    public int PageSize { get; set; } = 25;
+    public int PageSize { get; internal set; } = 25;
 
     /// <summary>
-    ///     Gets or sets the page sizes the user can pick from.
+    ///     Gets the page sizes the user can pick from.
     /// </summary>
     /// <value>
     ///     The page sizes. The default is 10, 25, 50 and 100.
@@ -25,5 +25,5 @@ public sealed class ResourcePagingOptions
     /// <remarks>
     ///     The sizes must be positive and distinct, and there must be at least one.
     /// </remarks>
-    public int[] PageSizes { get; set; } = [10, 25, 50, 100];
+    public IReadOnlyList<int> PageSizes { get; internal set; } = [10, 25, 50, 100];
 }

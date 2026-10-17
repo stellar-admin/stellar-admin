@@ -31,7 +31,7 @@ public sealed class ResourceColumnsBuilder<TResource>
 
         var column = new ResourceColumnBuilder<TResource>(field);
         _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.Columns.Add(column.Build())
+            options.Index.MutableColumns.Add(column.Build())
         );
 
         return column;
@@ -65,7 +65,9 @@ public sealed class ResourceColumnsBuilder<TResource>
     /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceColumnsBuilder<TResource> Clear()
     {
-        _services.Configure<ResourceOptions<TResource>>(options => options.Index.Columns.Clear());
+        _services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.MutableColumns.Clear()
+        );
 
         return this;
     }

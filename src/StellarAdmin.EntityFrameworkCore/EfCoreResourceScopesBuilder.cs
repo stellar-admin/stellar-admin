@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
-using StellarAdmin.Resources.Options;
+using StellarAdmin.Resources.Builders;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
@@ -8,30 +8,11 @@ namespace StellarAdmin.EntityFrameworkCore;
 ///     Configures the scopes that filter the index page of a resource that EF Core loads.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity.</typeparam>
-public sealed class EfCoreResourceScopesBuilder<TEntity>
+public sealed class EfCoreResourceScopesBuilder<TEntity> : ResourceScopesBuilderBase<TEntity>
     where TEntity : class
 {
-    private readonly IServiceCollection _services;
-
-    /// <summary>
-    ///     Sets the scope that applies when the request doesn't name a known scope.
-    /// </summary>
-    /// <value>
-    ///     The identifier of the scope, or <see langword="null" /> to apply no scope. The default
-    ///     is <see langword="null" />.
-    /// </value>
-    /// <remarks>
-    ///     The identifier must match a scope added with <c>Add</c>.
-    /// </remarks>
-    public string? DefaultScope
-    {
-        set =>
-            _services.Configure<ResourceOptions<TEntity>>(options =>
-                options.Index.Scopes!.DefaultScope = value
-            );
-    }
-
-    internal EfCoreResourceScopesBuilder(IServiceCollection services) => _services = services;
+    internal EfCoreResourceScopesBuilder(IServiceCollection services)
+        : base(services) { }
 
     /// <summary>
     ///     Adds a scope that shows every resource.
@@ -88,15 +69,13 @@ public sealed class EfCoreResourceScopesBuilder<TEntity>
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
-        _services.Configure<ResourceOptions<TEntity>>(options =>
-            options.Index.Scopes!.Items.Add(
-                new EfCoreResourceScopeOptions<TEntity>
-                {
-                    Id = id,
-                    Title = title,
-                    Predicate = predicate,
-                }
-            )
+        AddScope(
+            new EfCoreResourceScopeOptions<TEntity>
+            {
+                Id = id,
+                Title = title,
+                Predicate = predicate,
+            }
         );
 
         return this;

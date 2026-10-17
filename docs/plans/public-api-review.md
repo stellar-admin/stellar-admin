@@ -42,7 +42,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract || Done (2026-10-17) |
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | Done (2026-10-17) |
-| J10 | Make the resource options read-only to everyone, not internal | On hold with J5 |
+| J10 | Make the resource options read-only to everyone, not internal | Done (2026-10-17) |
 | J11 | Add the missing `TagHelper` suffix to five classes | Done (2026-10-17) |
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | Done as `sa-button-link` under D4 (2026-10-17) |
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | Done (2026-10-17) |
@@ -316,6 +316,16 @@ Done:
 ### J10. Resource options read-only
 
 Keep `ResourceOptions<T>`, `ResourceIndexOptions` and `ResourceFormOptions` public, because EF Core reads them and there is no `InternalsVisibleTo` (Jerrie, 2026-10-17). Make them read-only to everyone instead. `Columns` and `Items` become `IReadOnlyList`, and the public setters on `ResourceIndexOptions`, `ResourceFormOptions` and `KeySelector` become internal. EF Core writes `Index.Scopes`, `Index.Search`, `Scopes.Items` and `Scopes.DefaultScope` today, so it needs public builder hooks for those first. That is J5's work, so J10 is on hold with J5. `DataGridColumnOptions`, `FormFieldOptions`, `FormItemOptions` and `FormDisplayFieldOptions` already have only internal setters.
+
+Done:
+- New public `ResourceScopesBuilderBase<T>` with a protected constructor that turns scopes on, the `DefaultScope` setter, and protected `AddScope(ResourceScopeOptions)`. `ResourceScopesBuilder<T>` and `EfCoreResourceScopesBuilder<T>` are sealed subclasses.
+- `ResourceIndexBuilderBase.CreateSearchBuilder` now takes `Func<ResourceSearchOptions>` and stores the result. It takes a delegate rather than the options object Jerrie approved, because one shared instance let a placeholder set in one service provider show up in another (`SeparateProviders_DoNotShareSearchConfiguration` caught it). Scope options are immutable, so `AddScope` takes the object.
+- EF Core no longer writes to the options.
+- The public setters on `ResourceIndexOptions`, `ResourceFormOptions`, `ResourceViewOptions`, `ResourceDeleteOptions`, `ResourcePagingOptions`, `ResourceRowDetailsOptions`, `ResourceScopesOptions`, `ResourceInlineCreateOptions`, `ResourceInlineEditOptions` and `ResourceCreateOptions<T>.Factory` are internal, and their docs say "Gets".
+- `Index.Columns`, `Items` on form and view options, `RowDetails.Panels` and `Scopes.Items` are `IReadOnlyList`, backed by internal `Mutable…` lists like `FormContainerOptions`. `PageSizes` is `IReadOnlyList<int>`.
+- `ResourceLabelOptions` and the `Lookup*Options` stay settable, because apps configure them.
+- The `resources.md` consumer skill no longer says apps can configure `ResourceOptions<T>` with `Configure` and `PostConfigure`.
+- All 1456 tests pass. The skills have no drift and skill validation passes.
 
 ### J11. TagHelper suffix
 
@@ -756,6 +766,7 @@ Changes the website still needs:
 - [ ] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors.
 - [ ] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
 - [ ] J5: `ResourceScopeOptions` is a class with `Id` and `Title` init properties instead of a positional record, and `ResourceRowDetailPanelsBuilder<T>` is abstract. Affects any website page that shows these types; the app-facing builders are unchanged.
+- [ ] J10: `ResourceOptions<T>` and the options under it are read-only, so a page that shows `services.Configure<ResourceOptions<T>>` or sets these options must use the builders instead. Custom data sources can still read them.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

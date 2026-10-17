@@ -6,42 +6,42 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceIndexOptions
 {
     /// <summary>
-    ///     Gets or sets the label of the cancel button on an inline row.
+    ///     Gets the label of the cancel button on an inline row.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.CancelLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? CancelLabel { get; set; }
+    public string? CancelLabel { get; internal set; }
 
     /// <summary>
     ///     Gets the columns, in display order.
     /// </summary>
-    public IList<DataGridColumnOptions> Columns { get; } = new List<DataGridColumnOptions>();
+    public IReadOnlyList<DataGridColumnOptions> Columns => MutableColumns;
 
     /// <summary>
-    ///     Gets or sets the label of the create button.
+    ///     Gets the label of the create button.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.CreateLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? CreateLabel { get; set; }
+    public string? CreateLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the message of the toast shown when a resource is added in a new row.
+    ///     Gets the message of the toast shown when a resource is added in a new row.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.CreatedMessage" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? CreatedMessage { get; set; }
+    public string? CreatedMessage { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the sort order used when the user hasn't sorted the list.
+    ///     Gets the sort order used when the user hasn't sorted the list.
     /// </summary>
     /// <value>
     ///     The sort order, or <see langword="null" /> to use the data source's order. The default
@@ -50,30 +50,30 @@ public sealed class ResourceIndexOptions
     /// <remarks>
     ///     The sort order must select a sortable column.
     /// </remarks>
-    public ResourceSort? DefaultSort { get; set; }
+    public ResourceSort? DefaultSort { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the label of the delete button.
+    ///     Gets the label of the delete button.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.DeleteLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? DeleteLabel { get; set; }
+    public string? DeleteLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the label of the edit link.
+    ///     Gets the label of the edit link.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.EditLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? EditLabel { get; set; }
+    public string? EditLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the description of the toast shown when a saved inline row isn't on the
+    ///     Gets the description of the toast shown when a saved inline row isn't on the
     ///     reloaded page.
     /// </summary>
     /// <value>
@@ -81,38 +81,38 @@ public sealed class ResourceIndexOptions
     ///     <see cref="ResourceIndexLabelOptions.NotShownMessage" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? NotShownMessage { get; set; }
+    public string? NotShownMessage { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the paging configuration.
+    ///     Gets the paging configuration.
     /// </summary>
     /// <value>
     ///     The configuration, or <see langword="null" /> when the list isn't paged. The default is
     ///     <see langword="null" />.
     /// </value>
-    public ResourcePagingOptions? Paging { get; set; }
+    public ResourcePagingOptions? Paging { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the configuration of rows that expand to show details.
+    ///     Gets the configuration of rows that expand to show details.
     /// </summary>
     /// <value>
     ///     The configuration, or <see langword="null" /> when rows don't expand. The default is
     ///     <see langword="null" />.
     /// </value>
-    public ResourceRowDetailsOptions? RowDetails { get; set; }
+    public ResourceRowDetailsOptions? RowDetails { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the label of the save button on an inline row.
+    ///     Gets the label of the save button on an inline row.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.SaveLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? SaveLabel { get; set; }
+    public string? SaveLabel { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the message of the toast shown when an edited inline row isn't on the
+    ///     Gets the message of the toast shown when an edited inline row isn't on the
     ///     reloaded page.
     /// </summary>
     /// <value>
@@ -120,42 +120,44 @@ public sealed class ResourceIndexOptions
     ///     <see cref="ResourceIndexLabelOptions.SavedMessage" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? SavedMessage { get; set; }
+    public string? SavedMessage { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the scopes configuration.
+    ///     Gets the scopes configuration.
     /// </summary>
     /// <value>
     ///     The configuration, or <see langword="null" /> when the list has no scopes. The default
     ///     is <see langword="null" />.
     /// </value>
-    public ResourceScopesOptions? Scopes { get; set; }
+    public ResourceScopesOptions? Scopes { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the search configuration.
+    ///     Gets the search configuration.
     /// </summary>
     /// <value>
     ///     The configuration, or <see langword="null" /> when the list can't be searched. The
     ///     default is <see langword="null" />.
     /// </value>
-    public ResourceSearchOptions? Search { get; set; }
+    public ResourceSearchOptions? Search { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the page title.
+    ///     Gets the page title.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.Title" />. The default is <see langword="null" />.
     /// </value>
-    public string? Title { get; set; }
+    public string? Title { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the label of the view link.
+    ///     Gets the label of the view link.
     /// </summary>
     /// <value>
     ///     The text, or <see langword="null" /> to use
     ///     <see cref="ResourceIndexLabelOptions.ViewLabel" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public string? ViewLabel { get; set; }
+    public string? ViewLabel { get; internal set; }
+
+    internal List<DataGridColumnOptions> MutableColumns { get; } = [];
 }

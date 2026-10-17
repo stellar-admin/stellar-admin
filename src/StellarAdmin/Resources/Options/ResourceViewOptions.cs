@@ -19,7 +19,7 @@ public abstract class ResourceViewOptions : IFormScope
     /// <summary>
     ///     Gets the page's top-level fields, sections and groups, in display order.
     /// </summary>
-    public IList<FormItemOptions> Items { get; } = new List<FormItemOptions>();
+    public IReadOnlyList<FormItemOptions> Items => MutableItems;
 
     /// <summary>
     ///     Gets the type of the model the page displays.
@@ -27,25 +27,29 @@ public abstract class ResourceViewOptions : IFormScope
     public abstract Type ModelType { get; }
 
     /// <summary>
-    ///     Gets or sets the layout of the page's sections.
+    ///     Gets the layout of the page's sections.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the layout, or <see langword="null" /> to
     ///     use <see cref="StellarAdminFormsOptions.SectionLayout" />. The default is
     ///     <see langword="null" />.
     /// </value>
-    public FormSectionLayout? SectionLayout { get; set; }
+    public FormSectionLayout? SectionLayout { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets the page title.
+    ///     Gets the page title.
     /// </summary>
     /// <value>
     ///     The title, or <see langword="null" /> to use
     ///     <see cref="ResourceViewLabelOptions.Title" />. The default is <see langword="null" />.
     /// </value>
-    public string? Title { get; set; }
+    public string? Title { get; internal set; }
 
     internal FormGridColumnDefinitions Columns { get; set; }
+
+    internal List<FormItemOptions> MutableItems { get; } = [];
+
+    IList<FormItemOptions> IFormScope.Items => MutableItems;
 
     FormGridColumnDefinitions IFormScope.Columns
     {

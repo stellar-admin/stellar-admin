@@ -17,12 +17,7 @@ public sealed class ResourceIndexBuilder<TResource>
     ///     Enables scopes, which filter the index with tabs.
     /// </summary>
     /// <returns>A builder that configures the scopes.</returns>
-    public ResourceScopesBuilder<TResource> EnableScopes()
-    {
-        Services.Configure<ResourceOptions<TResource>>(options => options.Index.Scopes = new());
-
-        return new(Services);
-    }
+    public ResourceScopesBuilder<TResource> EnableScopes() => new(Services);
 
     /// <summary>
     ///     Enables and configures scopes, which filter the index with tabs.
@@ -46,12 +41,7 @@ public sealed class ResourceIndexBuilder<TResource>
     ///     Enables searching on the index.
     /// </summary>
     /// <returns>A builder that configures searching.</returns>
-    public ResourceSearchBuilder<TResource> EnableSearch()
-    {
-        Services.Configure<ResourceOptions<TResource>>(options => options.Index.Search = new());
-
-        return CreateSearchBuilder();
-    }
+    public ResourceSearchBuilder<TResource> EnableSearch() => CreateSearchBuilder(() => new());
 
     /// <summary>
     ///     Enables and configures searching on the index.

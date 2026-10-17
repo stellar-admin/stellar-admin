@@ -6,16 +6,16 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceInlineEditOptions
 {
     /// <summary>
-    ///     Gets or sets what the grid shows after a row is saved.
+    ///     Gets what the grid shows after a row is saved.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies what the grid shows. The default is
     ///     <see cref="InlineRowAfterSave.ReloadGrid" />.
     /// </value>
-    public InlineRowAfterSave AfterSave { get; set; } = InlineRowAfterSave.ReloadGrid;
+    public InlineRowAfterSave AfterSave { get; internal set; } = InlineRowAfterSave.ReloadGrid;
 
     /// <summary>
-    ///     Gets or sets a value that indicates whether the rest of the page is dimmed while a row
+    ///     Gets a value that indicates whether the rest of the page is dimmed while a row
     ///     is edited.
     /// </summary>
     /// <value>
@@ -23,5 +23,5 @@ public sealed class ResourceInlineEditOptions
     ///     until the row is saved or canceled; otherwise, <see langword="false" />. The default is
     ///     <see langword="true" />.
     /// </value>
-    public bool DimOtherRows { get; set; } = true;
+    public bool DimOtherRows { get; internal set; } = true;
 }

@@ -8,7 +8,7 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceRowDetailsOptions
 {
     /// <summary>
-    ///     Gets or sets a value that indicates whether details animate open and closed.
+    ///     Gets a value that indicates whether details animate open and closed.
     /// </summary>
     /// <value>
     ///     <see langword="true" /> if details animate; otherwise, <see langword="false" />. The
@@ -17,45 +17,46 @@ public sealed class ResourceRowDetailsOptions
     /// <remarks>
     ///     Details don't animate when the user prefers reduced motion.
     /// </remarks>
-    public bool Animate { get; set; } = true;
+    public bool Animate { get; internal set; } = true;
 
     /// <summary>
-    ///     Gets or sets the line between an expanded row and its details.
+    ///     Gets the line between an expanded row and its details.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the line. The default is
     ///     <see cref="DataGridRowDetailDivider.Inset" />.
     /// </value>
-    public DataGridRowDetailDivider Divider { get; set; } = DataGridRowDetailDivider.Inset;
+    public DataGridRowDetailDivider Divider { get; internal set; } = DataGridRowDetailDivider.Inset;
 
     /// <summary>
-    ///     Gets or sets how an expanded row and its details are set apart from the rows around
+    ///     Gets how an expanded row and its details are set apart from the rows around
     ///     them.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the emphasis. The default is
     ///     <see cref="DataGridRowDetailEmphasis.Band" />.
     /// </value>
-    public DataGridRowDetailEmphasis Emphasis { get; set; } = DataGridRowDetailEmphasis.Band;
+    public DataGridRowDetailEmphasis Emphasis { get; internal set; } =
+        DataGridRowDetailEmphasis.Band;
 
     /// <summary>
-    ///     Gets or sets how many rows can be expanded at once.
+    ///     Gets how many rows can be expanded at once.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies how many rows can be expanded. The default
     ///     is <see cref="DataGridRowDetailExpandMode.Multiple" />.
     /// </value>
-    public DataGridRowDetailExpandMode ExpandMode { get; set; } =
+    public DataGridRowDetailExpandMode ExpandMode { get; internal set; } =
         DataGridRowDetailExpandMode.Multiple;
 
     /// <summary>
-    ///     Gets or sets where the content of a row's details starts.
+    ///     Gets where the content of a row's details starts.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies where the content starts. The default is
     ///     <see cref="DataGridRowDetailInset.Aligned" />.
     /// </value>
-    public DataGridRowDetailInset Inset { get; set; } = DataGridRowDetailInset.Aligned;
+    public DataGridRowDetailInset Inset { get; internal set; } = DataGridRowDetailInset.Aligned;
 
     /// <summary>
     ///     Gets the content displayed in a row's details.
@@ -63,11 +64,10 @@ public sealed class ResourceRowDetailsOptions
     /// <value>
     ///     The panels, in display order. More than one panel is shown as tabs.
     /// </value>
-    public IList<ResourceRowDetailPanelOptions> Panels { get; } =
-        new List<ResourceRowDetailPanelOptions>();
+    public IReadOnlyList<ResourceRowDetailPanelOptions> Panels => MutablePanels;
 
     /// <summary>
-    ///     Gets or sets a value that indicates whether clicking anywhere in a row toggles its
+    ///     Gets a value that indicates whether clicking anywhere in a row toggles its
     ///     details.
     /// </summary>
     /// <value>
@@ -77,14 +77,16 @@ public sealed class ResourceRowDetailsOptions
     /// <remarks>
     ///     Clicks on links, buttons and form controls keep their own behavior.
     /// </remarks>
-    public bool RowClick { get; set; }
+    public bool RowClick { get; internal set; }
 
     /// <summary>
-    ///     Gets or sets where the buttons that expand and collapse rows are placed.
+    ///     Gets where the buttons that expand and collapse rows are placed.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies where the buttons are placed. The default
     ///     is <see cref="DataGridRowDetailToggle.Start" />.
     /// </value>
-    public DataGridRowDetailToggle Toggle { get; set; } = DataGridRowDetailToggle.Start;
+    public DataGridRowDetailToggle Toggle { get; internal set; } = DataGridRowDetailToggle.Start;
+
+    internal List<ResourceRowDetailPanelOptions> MutablePanels { get; } = [];
 }

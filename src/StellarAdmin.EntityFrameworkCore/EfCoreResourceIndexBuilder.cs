@@ -134,12 +134,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     ///     Enables scopes, which filter the index with tabs.
     /// </summary>
     /// <returns>A builder that configures the scopes.</returns>
-    public EfCoreResourceScopesBuilder<TEntity> EnableScopes()
-    {
-        Services.Configure<ResourceOptions<TEntity>>(options => options.Index.Scopes = new());
-
-        return new(Services);
-    }
+    public EfCoreResourceScopesBuilder<TEntity> EnableScopes() => new(Services);
 
     /// <summary>
     ///     Enables and configures scopes, which filter the index with tabs.
@@ -174,14 +169,9 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
     )
     {
         ArgumentNullException.ThrowIfNull(predicate);
-        Services.Configure<ResourceOptions<TEntity>>(options =>
-            options.Index.Search = new EfCoreResourceSearchOptions<TEntity>
-            {
-                Predicate = predicate,
-            }
+        return CreateSearchBuilder(() =>
+            new EfCoreResourceSearchOptions<TEntity> { Predicate = predicate }
         );
-
-        return CreateSearchBuilder();
     }
 
     /// <summary>

@@ -7,29 +7,10 @@ namespace StellarAdmin.Resources.Builders;
 ///     Configures the scopes that filter a resource's index page.
 /// </summary>
 /// <typeparam name="TResource">The type of the resource the index lists.</typeparam>
-public sealed class ResourceScopesBuilder<TResource>
+public sealed class ResourceScopesBuilder<TResource> : ResourceScopesBuilderBase<TResource>
 {
-    private readonly IServiceCollection _services;
-
-    /// <summary>
-    ///     Sets the scope that applies when the request doesn't name a known scope.
-    /// </summary>
-    /// <value>
-    ///     The identifier of the scope, or <see langword="null" /> to apply no scope. The default
-    ///     is <see langword="null" />.
-    /// </value>
-    /// <remarks>
-    ///     The identifier must match a scope added with <see cref="Add" />.
-    /// </remarks>
-    public string? DefaultScope
-    {
-        set =>
-            _services.Configure<ResourceOptions<TResource>>(options =>
-                options.Index.Scopes!.DefaultScope = value
-            );
-    }
-
-    internal ResourceScopesBuilder(IServiceCollection services) => _services = services;
+    internal ResourceScopesBuilder(IServiceCollection services)
+        : base(services) { }
 
     /// <summary>
     ///     Adds a scope, which is shown as a tab that filters the index.
@@ -53,9 +34,7 @@ public sealed class ResourceScopesBuilder<TResource>
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
 
-        _services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.Scopes!.Items.Add(new() { Id = id, Title = title })
-        );
+        AddScope(new ResourceScopeOptions { Id = id, Title = title });
 
         return this;
     }

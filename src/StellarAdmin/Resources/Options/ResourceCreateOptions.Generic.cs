@@ -7,13 +7,13 @@ namespace StellarAdmin.Resources.Options;
 public sealed class ResourceCreateOptions<TModel> : ResourceCreateOptions
 {
     /// <summary>
-    ///     Gets or sets the delegate that creates the form's model.
+    ///     Gets the delegate that creates the form's model.
     /// </summary>
     /// <value>
     ///     The delegate, or <see langword="null" /> to use the model's parameterless constructor.
     ///     The default is <see langword="null" />.
     /// </value>
-    public Func<TModel>? Factory { get; set; }
+    public Func<TModel>? Factory { get; internal set; }
 
     /// <inheritdoc />
     public override Type ModelType => typeof(TModel);

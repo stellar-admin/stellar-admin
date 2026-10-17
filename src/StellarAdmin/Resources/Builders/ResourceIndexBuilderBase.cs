@@ -428,13 +428,30 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     }
 
     /// <summary>
-    ///     Creates a builder that configures searching on the index.
+    ///     Enables searching on the index and creates a builder that configures it.
     /// </summary>
+    /// <param name="createSearch">
+    ///     A delegate that creates the search options, which the data source reads.
+    /// </param>
     /// <returns>A builder that configures searching.</returns>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="createSearch" /> is <see langword="null" />.
+    /// </exception>
     /// <remarks>
-    ///     The builder doesn't enable searching, so enable it before using the builder.
+    ///     The delegate runs each time the resource's options are created, so each service
+    ///     provider gets its own search options.
     /// </remarks>
-    protected ResourceSearchBuilder<TResource> CreateSearchBuilder() => new(Services);
+    protected ResourceSearchBuilder<TResource> CreateSearchBuilder(
+        Func<ResourceSearchOptions> createSearch
+    )
+    {
+        ArgumentNullException.ThrowIfNull(createSearch);
+        Services.Configure<ResourceOptions<TResource>>(options =>
+            options.Index.Search = createSearch()
+        );
+
+        return new(Services);
+    }
 
     /// <summary>
     ///     Shows a partial view when a row is expanded.
@@ -458,7 +475,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(partialName);
         Services.Configure<ResourceOptions<TResource>>(options =>
-            options.Index.RowDetails = new() { Panels = { new(partialName, loader) } }
+            options.Index.RowDetails = new() { MutablePanels = { new(partialName, loader) } }
         );
 
         return new(Services);
@@ -509,7 +526,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
             options.Index.RowDetails = new();
             foreach (var panel in registered)
             {
-                options.Index.RowDetails.Panels.Add(panel);
+                options.Index.RowDetails.MutablePanels.Add(panel);
             }
         });
 
