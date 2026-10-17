@@ -43,6 +43,7 @@ Canonical development skills live in `.agents/skills/`; `.claude/skills/` contai
 - [prototype-component](.agents/skills/prototype-component/SKILL.md): visual exploration for new components before extraction.
 - [port-shadcn-component](.agents/skills/port-shadcn-component/SKILL.md): port upstream components through library, samples, website, and consumer references.
 - [embed-website-components](.agents/skills/embed-website-components/SKILL.md): shared workflow for generated inline website examples.
+- [csharp-docs](.agents/skills/csharp-docs/SKILL.md): XML documentation wording for C# APIs, from [github/awesome-copilot](https://github.com/github/awesome-copilot/tree/main/skills/csharp-docs). The [XML documentation](docs/conventions/xml-documentation.md) convention overrides it on internal members, `<value>` and examples.
 
 See [agent setup](docs/agents.md) for discovery and handoffs. Theme variables and tokens are specified in [docs/design/tokens.md](docs/design/tokens.md).
 

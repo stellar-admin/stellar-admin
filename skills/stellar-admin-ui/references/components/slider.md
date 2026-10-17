@@ -46,7 +46,7 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | `Name` | — |
+| `name` | `string` | — | — |
 | `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

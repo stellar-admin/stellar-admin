@@ -16,6 +16,15 @@ internal static partial class DocComments
     [GeneratedRegex(@"<remarks>(.*?)</remarks>", RegexOptions.Singleline)]
     private static partial Regex RemarksRegex();
 
+    [GeneratedRegex(@"<value>(.*?)</value>", RegexOptions.Singleline)]
+    private static partial Regex ValueRegex();
+
+    [GeneratedRegex(@"The default is(.*)", RegexOptions.Singleline)]
+    private static partial Regex DefaultSentenceRegex();
+
+    [GeneratedRegex(@"<see\s+langword=""([^""]+)""\s*/>")]
+    private static partial Regex LangwordRegex();
+
     [GeneratedRegex("cref=\"[^\"]*?\\.([A-Za-z0-9_]+)\"")]
     private static partial Regex CrefRegex();
 
@@ -82,27 +91,49 @@ internal static partial class DocComments
     }
 
     /// <summary>
-    /// The default-value hint mined from <c>&lt;remarks&gt;</c>: the last segment of the first
-    /// <c>cref</c>, else the inner text of the first <c>&lt;c&gt;</c>. Returns "—" when absent.
+    /// The default-value hint: the first <c>langword</c>, <c>cref</c> or <c>&lt;c&gt;</c> after
+    /// "The default is" in <c>&lt;value&gt;</c>, else the last segment of the first <c>cref</c> or
+    /// the inner text of the first <c>&lt;c&gt;</c> in a <c>&lt;remarks&gt;</c> that mentions a
+    /// default. Returns "—" when absent.
     /// </summary>
     public static string Default(SyntaxNode node)
     {
         var doc = RawDocComment(node);
+
+        var value = ValueRegex().Match(doc);
+        if (value.Success)
+        {
+            var sentence = DefaultSentenceRegex().Match(value.Groups[1].Value);
+            if (sentence.Success)
+            {
+                var text = sentence.Groups[1].Value;
+                var langword = LangwordRegex().Match(text);
+                var hint = FirstCodeHint(text);
+                if (langword.Success && (hint == null || langword.Index < hint.Value.Index))
+                    return langword.Groups[1].Value;
+                if (hint != null)
+                    return hint.Value.Text;
+            }
+        }
+
         var remarks = RemarksRegex().Match(doc);
-        if (!remarks.Success)
+        if (!remarks.Success || !remarks.Groups[1].Value.Contains("efault"))
             return "—";
 
-        var body = remarks.Groups[1].Value;
+        return FirstCodeHint(remarks.Groups[1].Value)?.Text ?? "—";
+    }
 
+    private static (int Index, string Text)? FirstCodeHint(string body)
+    {
         var cref = CrefRegex().Match(body);
         if (cref.Success)
-            return cref.Groups[1].Value;
+            return (cref.Index, cref.Groups[1].Value);
 
         var code = CodeRegex().Match(body);
         if (code.Success)
-            return Collapse(code.Groups[1].Value);
+            return (code.Index, Collapse(code.Groups[1].Value));
 
-        return "—";
+        return null;
     }
 
     private static string StripTripleSlash(string value)

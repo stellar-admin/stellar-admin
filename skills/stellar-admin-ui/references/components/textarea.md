@@ -24,7 +24,7 @@ A styled multi-line text input that grows with its content. Supports model bindi
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | `Name` | — |
+| `name` | `string` | — | — |
 | `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

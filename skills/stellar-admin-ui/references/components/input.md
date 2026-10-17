@@ -37,7 +37,7 @@ Prefer a [radio group](radio-group.md) when related options share one bound prop
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | `Name` | — |
+| `name` | `string` | — | — |
 | `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

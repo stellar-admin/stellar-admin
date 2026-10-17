@@ -38,7 +38,7 @@ Groups a set of toggle items into a single-select or multi-select control.
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | `Name` | — |
+| `name` | `string` | — | — |
 | `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

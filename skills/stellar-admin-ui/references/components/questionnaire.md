@@ -14,7 +14,7 @@ A container for one or more questionnaire items. Place it inside your own `<form
 |-----|-------------|
 | `<sa-questionnaire>` | A container for one or more questionnaire items. Place it inside your own `<form>`. |
 | `<sa-questionnaire-actions>` | The row holding a questionnaire's navigation buttons. |
-| `<sa-questionnaire-choice>` | A fixed answer to a questionnaire item, rendered as a native radio button — or a checkbox when the item accepts multiple answers. |
+| `<sa-questionnaire-choice>` | Renders a fixed answer to a questionnaire item. |
 | `<sa-questionnaire-choice-description>` | Supporting text explaining a single choice. |
 | `<sa-questionnaire-choices>` | The list of answers for a questionnaire item. |
 | `<sa-questionnaire-description>` | Supporting text explaining a questionnaire item. |
@@ -34,7 +34,7 @@ A container for one or more questionnaire items. Place it inside your own `<form
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `checked` | `bool` | — | `true`, `false` |
+| `checked` | `bool` | `false` | `true`, `false` |
 | `disabled` | `bool` | `false` | `true`, `false` |
 | `shortcut` | `string` | — | — |
 | `value` | `string` | — | — |

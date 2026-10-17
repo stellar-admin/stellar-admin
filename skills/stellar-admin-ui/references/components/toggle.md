@@ -28,7 +28,7 @@ Renders a two-state button that can be toggled on or off.
 | `error` | `string` | — | — |
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
-| `name` | `string` | `Name` | — |
+| `name` | `string` | — | — |
 | `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 

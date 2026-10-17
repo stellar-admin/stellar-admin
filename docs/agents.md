@@ -20,6 +20,6 @@ For simultaneous work, isolate each affected repository with its own worktree an
 
 ## Discovery check
 
-From a fresh session in a standalone product checkout, ask: “Without changing files, list the project instructions you loaded, the development skills available, and where to find conventions, theme tokens, plans, and consumer-reference generation commands.” Confirm the root instructions, four development skills, and product-relative references are available without a parent workspace. Repeat in a website-only checkout to confirm its local entry point and verification commands.
+From a fresh session in a standalone product checkout, ask: “Without changing files, list the project instructions you loaded, the development skills available, and where to find conventions, theme tokens, plans, and consumer-reference generation commands.” Confirm the root instructions, five development skills, and product-relative references are available without a parent workspace. Repeat in a website-only checkout to confirm its local entry point and verification commands.
 
 Filesystem/link checks alone do not prove agent adherence. Report fresh-session validation separately and identify any unavailable client or authentication failure. Discovery references: [Codex instructions](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude memory](https://code.claude.com/docs/en/memory), and [Claude skills](https://code.claude.com/docs/en/skills).

@@ -9,15 +9,26 @@ using StellarAdmin.UI.Icons;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     A fixed answer to a questionnaire item, rendered as a native radio button — or a
-///     checkbox when the item accepts multiple answers.
+///     Renders a fixed answer to a questionnaire item.
 /// </summary>
+/// <remarks>
+///     The choice renders as a native radio button, or as a checkbox when the item accepts
+///     multiple answers.
+/// </remarks>
 [HtmlTargetElement("sa-questionnaire-choice")]
 public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="QuestionnaireChoiceTagHelper" /> class.
+    /// </summary>
+    /// <param name="htmlGenerator">The generator that renders the radio button of a bound question.</param>
+    /// <param name="iconOptions">The icon options that supply the mark of a selected checkbox.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     <paramref name="htmlGenerator" /> is <see langword="null" />.
+    /// </exception>
     public QuestionnaireChoiceTagHelper(
         IHtmlGenerator htmlGenerator,
         IOptions<IconOptions> iconOptions
@@ -28,42 +39,56 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     }
 
     /// <summary>
-    ///     Whether the choice is selected. Ignored when the question is bound with
-    ///     <c>asp-for</c>, which takes its state from the model.
+    ///     Gets or sets a value that indicates whether the choice is selected.
     /// </summary>
+    /// <value>
+    ///     <see langword="true" /> if the choice is selected; otherwise, <see langword="false" />.
+    ///     The default is <see langword="false" />.
+    /// </value>
+    /// <remarks>
+    ///     Ignored when the question is bound with <c>asp-for</c>, which takes the selected state
+    ///     from the model.
+    /// </remarks>
     [HtmlAttributeName("checked")]
     public bool? Checked { get; set; }
 
     /// <summary>
-    ///     Whether the choice is disabled and cannot be selected.
+    ///     Gets or sets a value that indicates whether the choice is disabled.
     /// </summary>
-    /// <remarks>
-    ///     Defaults to <c>false</c>.
-    /// </remarks>
+    /// <value>
+    ///     <see langword="true" /> if the choice is disabled and can't be selected; otherwise,
+    ///     <see langword="false" />. The default is <see langword="false" />.
+    /// </value>
     [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
-    ///     The shortcut key shown beside the choice, which selects it when pressed. Overrides
-    ///     the key the choices container would assign, and requires <c>stellar-admin.js</c>. Use
-    ///     a single character, since the key is matched against one key press.
+    ///     Gets or sets the shortcut key that selects the choice.
     /// </summary>
+    /// <value>
+    ///     A single character, shown beside the choice. The default is the next key that the
+    ///     choices container assigns.
+    /// </value>
+    /// <remarks>
+    ///     Requires <c>stellar-admin.js</c>.
+    /// </remarks>
     [HtmlAttributeName("shortcut")]
     public string? Shortcut { get; set; }
 
     /// <summary>
-    ///     The value the answer posts when the choice is selected.
+    ///     Gets or sets the value that the answer posts when the choice is selected.
     /// </summary>
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>
-    ///     Gets the <see cref="ViewContext" /> of the executing view.
+    ///     Gets or sets the context of the executing view.
     /// </summary>
     [HtmlAttributeNotBound]
     [ViewContext]
     public required ViewContext ViewContext { get; set; }
 
+    /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var effectiveDisabled = Disabled ?? false;

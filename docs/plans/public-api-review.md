@@ -585,6 +585,16 @@ Rules:
 
 Start with the hooks in J5 and the resource builders, then the tag helpers. Add the rules and the example to `docs/conventions/xml-documentation.md`.
 
+Progress (2026-10-17):
+
+- Installed the [csharp-docs](../../.agents/skills/csharp-docs/SKILL.md) skill from github/awesome-copilot in `.agents/skills/`, with a `.claude/skills/` link.
+- Jerrie approved the rules after a trial on four classes. Follow the skill's wording, but leave internal members undocumented, add `<value>` only when it adds something, put defaults in `<value>`, put behaviour notes in `<remarks>`, document only the exceptions the member throws itself, and skip examples.
+- `docs/conventions/xml-documentation.md` now holds these rules and the `RegisterRowDetails` example.
+- The trial classes already follow them: `QuestionnaireChoiceTagHelper`, `IconDefinition`, `IIconPack` and `StellarAdminUIExtensions`.
+- The SkillsGenerator reads an attribute's default from "The default is …" in `<value>`. It only falls back to `<remarks>` when they mention a default. This also stopped it misreading "Must be `null` if …" (the anchor routing attributes) and the `Name` cref on `name` as defaults, which changed 25 skill reference tables.
+- Checked: the build passes, all 1435 tests pass and the skills drift check is clean.
+- Remaining: the rest of the public API, starting with the J5 hooks and the resource builders, then the tag helpers.
+
 ### J41. Choice editor class names
 
 The checkbox group, segmented control and toggle group editors in the admin panel pass only `ClassNames.Control`, through `class`. `EditorClassNamesMapper` throws when any other part is set. The single-control editors pass every part through `class-names`, and the radio editor writes its own markup with every part plus `Option.*`.

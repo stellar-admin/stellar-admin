@@ -6,7 +6,7 @@ using StellarAdmin.UI.Toasts;
 namespace StellarAdmin.UI;
 
 /// <summary>
-///     Extensions for registering the StellarAdmin UI services.
+///     Provides extension methods that register the StellarAdmin UI services.
 /// </summary>
 public static class StellarAdminUIExtensions
 {
@@ -36,7 +36,7 @@ public static class StellarAdminUIExtensions
         ///         </item>
         ///     </list>
         /// </remarks>
-        /// <returns>The <see cref="StellarAdminUIBuilder" /> instance.</returns>
+        /// <returns>A builder that configures the StellarAdmin UI services.</returns>
         public StellarAdminUIBuilder AddStellarAdminUI()
         {
             // Freezing after every Configure call, and resolving at startup, makes a bad icon
@@ -82,9 +82,11 @@ public static class StellarAdminUIExtensions
         /// <remarks>
         ///     This changes the app's MVC options in the same way as <see cref="AddStellarAdminUI(IServiceCollection)" />.
         /// </remarks>
-        /// <param name="configure">The configuration delegate used to configure the StellarAdmin UI services.</param>
-        /// <returns>The <see cref="IServiceCollection" /> instance.</returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="configure">A delegate that configures the StellarAdmin UI services.</param>
+        /// <returns>The service collection, so that calls can be chained.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="configure" /> is <see langword="null" />.
+        /// </exception>
         public IServiceCollection AddStellarAdminUI(Action<StellarAdminUIBuilder> configure)
         {
             ArgumentNullException.ThrowIfNull(configure);

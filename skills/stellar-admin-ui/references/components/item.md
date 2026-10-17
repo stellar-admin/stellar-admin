@@ -42,15 +42,15 @@ A flexible row for presenting content, combining media, a title, description, an
 |-----------|------|---------|--------|
 | `size` | `ItemSize` | `Default` | `Default`, `ExtraSmall`, `Small` |
 | `variant` | `ItemVariant` | `Default` | `Default`, `Outline`, `Muted` |
-| `asp-action` | `string` | `null` | — |
-| `asp-area` | `string` | `null` | — |
-| `asp-controller` | `string` | `null` | — |
+| `asp-action` | `string` | — | — |
+| `asp-area` | `string` | — | — |
+| `asp-controller` | `string` | — | — |
 | `asp-fragment` | `string` | — | — |
 | `asp-host` | `string` | — | — |
-| `asp-page` | `string` | `null` | — |
-| `asp-page-handler` | `string` | `null` | — |
+| `asp-page` | `string` | — | — |
+| `asp-page-handler` | `string` | — | — |
 | `asp-protocol` | `string` | — | — |
-| `asp-route` | `string` | `null` | — |
+| `asp-route` | `string` | — | — |
 | `asp-all-route-data` | `IDictionary<string, string?>` | — | — |
 | `asp-route-*` | `IDictionary<string, string?>` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
