@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Shared binding and field attributes for radio and checkbox groups.
 /// </summary>
-public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
+public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroupClassNames>
 {
     private static readonly object SequenceKey = new();
     private readonly IHtmlGenerator _generator;
@@ -200,7 +200,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
                     Disabled == true || disabled,
                     invalid,
                     selected.Contains(formatted),
-                    css
+                    JoinCssClasses(ClassNames?.Item, css)
                 );
             },
         };
@@ -238,7 +238,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         output.Attributes.SetAttribute("role", multiple ? "group" : "radiogroup");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-field-group", output.GetUserSuppliedClass())
+            JoinCssClasses("sa-field-group", ClassNames?.Control, output.GetUserSuppliedClass())
         );
         // The options fill a grid measured against the field around the group. Flowing down, each
         // breakpoint also gets the row count that fills a column before the next one starts.

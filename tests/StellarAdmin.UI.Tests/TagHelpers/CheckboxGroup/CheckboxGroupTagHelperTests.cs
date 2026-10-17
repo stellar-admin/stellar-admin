@@ -3,7 +3,7 @@ using StellarAdmin.UI.Tests.Support;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.CheckboxGroup;
 
-public class CheckboxGroupTagHelperTests
+public partial class CheckboxGroupTagHelperTests
 {
     [Test]
     [Arguments(CheckboxGroupVariant.Default)]

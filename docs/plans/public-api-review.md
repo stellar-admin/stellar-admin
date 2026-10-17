@@ -70,7 +70,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
 | J36 | Rename the client events to one style | Done (2026-10-17) |
 | J37 | Document the global MVC hooks | Done (2026-10-17) |
-| J38 | Add `class-names` to the field helpers that lack it | |
+| J38 | Add `class-names` to the field helpers that lack it | Done (2026-10-17) |
 | J39 | Small attribute polish | |
 | J40 | Rewrite the public XML docs in plain language | Approved |
 
@@ -538,6 +538,14 @@ Done (2026-10-17):
 
 `ToggleTagHelper`, `SegmentedControlTagHelper` and the choice groups lack `class-names`.
 
+Done (2026-10-17):
+
+- `sa-toggle` takes `ToggleClassNames`: the field parts plus `Control`.
+- `sa-segmented-control` takes `SegmentedControlClassNames`: the field parts plus `Control` and `Item`, which adds to every option.
+- `sa-checkbox-group` and `sa-radio-group` share `ChoiceGroupClassNames` on `ChoiceGroupTagHelper`: the field parts plus `Control` and `Item`. `Item` applies to child items and `asp-items` options alike.
+- `Control` adds to the same element as `class`.
+- Added a `class-names` test for each helper. Verified with the full test run (1431 passed) and a skills drift check.
+
 ### J39. Small attribute polish
 
 - `sa-toggle-group` `spacing` becomes an enum like `StackGap`.
@@ -601,6 +609,7 @@ Changes the website still needs:
 - [ ] J35: the website's licence notices in the docs list shadcn/ui and tw-animate-css. Match them to `THIRD-PARTY-NOTICES.txt`: Tailwind, Lucide, Tabler, cmdk, Lit, interestfor and htmx.
 - [ ] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
 - [ ] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
+- [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
 
 ## Order of work
 

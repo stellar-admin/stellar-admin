@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     A group of radio buttons styled as a segmented control.
 /// </summary>
 [HtmlTargetElement("sa-segmented-control")]
-public class SegmentedControlTagHelper : FieldInputBaseTagHelper
+public class SegmentedControlTagHelper : FieldInputBaseTagHelper<SegmentedControlClassNames>
 {
     /// <summary>
     ///     Whether all options are disabled.
@@ -49,6 +49,7 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
                 && entry.Errors.Count > 0;
         var group = new SegmentedControlContext
         {
+            ClassNames = ClassNames,
             Disabled = Disabled ?? false,
             For = For,
             Invalid = invalid,
@@ -88,7 +89,11 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
 
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-segmented-control", output.GetUserSuppliedClass())
+            JoinCssClasses(
+                "sa-segmented-control",
+                ClassNames?.Control,
+                output.GetUserSuppliedClass()
+            )
         );
 
         // Render the options before the field wrapper so its label can target a native radio.

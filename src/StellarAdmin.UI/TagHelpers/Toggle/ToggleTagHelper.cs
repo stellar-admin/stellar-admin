@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders a two-state button that can be toggled on or off.
 /// </summary>
 [HtmlTargetElement("sa-toggle")]
-public class ToggleTagHelper : FieldInputBaseTagHelper
+public class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
@@ -131,7 +131,7 @@ public class ToggleTagHelper : FieldInputBaseTagHelper
                 effectiveVariant,
                 effectiveSize,
                 includeGroupItemToken: false,
-                userClass
+                JoinCssClasses(ClassNames?.Control, userClass)
             )
         );
 

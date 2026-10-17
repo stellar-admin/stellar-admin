@@ -122,7 +122,11 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
         output.Attributes.SetAttribute("data-slot", "segmented-control-item");
         output.Attributes.SetAttribute(
             "class",
-            JoinCssClasses("sa-segmented-control-item", output.GetUserSuppliedClass())
+            JoinCssClasses(
+                "sa-segmented-control-item",
+                group.ClassNames?.Item,
+                output.GetUserSuppliedClass()
+            )
         );
 
         var content = await output.GetChildContentAsync();
