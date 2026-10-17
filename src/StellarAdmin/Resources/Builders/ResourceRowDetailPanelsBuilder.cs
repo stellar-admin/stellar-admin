@@ -72,18 +72,8 @@ public class ResourceRowDetailPanelsBuilder<TResource>
     {
         Services.TryAddScoped<THandler>();
 
-        return AddPanel(title, partialName, CreateHandlerLoader<TModel, THandler>());
+        return AddPanel(title, partialName, new HandlerRowDetailLoader<TModel, THandler>());
     }
-
-    internal static Func<
-        IServiceProvider,
-        string,
-        CancellationToken,
-        Task<object?>
-    > CreateHandlerLoader<TModel, THandler>()
-        where THandler : class, IResourceRowDetailHandler<TModel> =>
-        async (services, id, cancellationToken) =>
-            await services.GetRequiredService<THandler>().FindAsync(id, cancellationToken);
 
     // "Order history" becomes "order-history"
     private static string CreateName(string title)
@@ -110,7 +100,7 @@ public class ResourceRowDetailPanelsBuilder<TResource>
     /// <param name="title">The title of the panel's tab.</param>
     /// <param name="partialName">The partial view to render.</param>
     /// <param name="loader">
-    ///     A delegate that loads the partial's model from the row's key when the panel is first
+    ///     The object that loads the partial's model from the row's key when the panel is first
     ///     shown, or <see langword="null" /> to use the row itself as the model.
     /// </param>
     /// <returns>A builder that configures the panel.</returns>
@@ -123,7 +113,7 @@ public class ResourceRowDetailPanelsBuilder<TResource>
     protected ResourceRowDetailPanelBuilder AddPanel(
         string title,
         string partialName,
-        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
+        ResourceRowDetailLoader? loader
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);

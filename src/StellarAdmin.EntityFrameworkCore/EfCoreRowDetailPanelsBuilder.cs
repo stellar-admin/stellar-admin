@@ -52,7 +52,7 @@ public sealed class EfCoreRowDetailPanelsBuilder<TContext, TEntity>
         return AddPanel(
             title,
             partialName,
-            EfCoreRowDetailLoader.Create<TContext, TEntity, TModel>(select)
+            new EfCoreRowDetailLoader<TContext, TEntity, TModel>(select)
         );
     }
 }

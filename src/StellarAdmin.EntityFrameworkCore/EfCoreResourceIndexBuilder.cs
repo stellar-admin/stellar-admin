@@ -70,7 +70,7 @@ public sealed class EfCoreResourceIndexBuilder<TContext, TEntity>
 
         return RegisterRowDetails(
             partialName,
-            EfCoreRowDetailLoader.Create<TContext, TEntity, TModel>(select)
+            new EfCoreRowDetailLoader<TContext, TEntity, TModel>(select)
         );
     }
 

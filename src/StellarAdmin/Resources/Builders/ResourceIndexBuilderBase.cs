@@ -342,10 +342,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     {
         Services.TryAddScoped<THandler>();
 
-        return RegisterRowDetails(
-            partialName,
-            ResourceRowDetailPanelsBuilder<TResource>.CreateHandlerLoader<TModel, THandler>()
-        );
+        return RegisterRowDetails(partialName, new HandlerRowDetailLoader<TModel, THandler>());
     }
 
     /// <summary>
@@ -444,7 +441,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// </summary>
     /// <param name="partialName">The partial view to render.</param>
     /// <param name="loader">
-    ///     A delegate that loads the partial's model from the row's key when the row is expanded,
+    ///     The object that loads the partial's model from the row's key when the row is expanded,
     ///     or <see langword="null" /> to use the row itself as the model.
     /// </param>
     /// <returns>A builder that configures the rows.</returns>
@@ -456,7 +453,7 @@ public abstract class ResourceIndexBuilderBase<TResource, TBuilder>
     /// </exception>
     protected ResourceRowDetailsBuilder<TResource> RegisterRowDetails(
         string partialName,
-        Func<IServiceProvider, string, CancellationToken, Task<object?>>? loader
+        ResourceRowDetailLoader? loader
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(partialName);

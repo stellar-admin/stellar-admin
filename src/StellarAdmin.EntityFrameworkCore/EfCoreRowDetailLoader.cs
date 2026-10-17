@@ -1,35 +1,37 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using StellarAdmin.Resources;
 
 namespace StellarAdmin.EntityFrameworkCore;
 
-internal static class EfCoreRowDetailLoader
+// Projects the entity with the resource ID; null when the ID is not a valid key or the entity does not exist
+internal sealed class EfCoreRowDetailLoader<TContext, TEntity, TModel>(
+    Expression<Func<TEntity, TModel>> select
+) : ResourceRowDetailLoader
+    where TContext : DbContext
+    where TEntity : class
 {
-    // Projects the entity with the resource ID; null when the ID is not a valid key or the entity does not exist
-    public static Func<IServiceProvider, string, CancellationToken, Task<object?>> Create<
-        TContext,
-        TEntity,
-        TModel
-    >(Expression<Func<TEntity, TModel>> select)
-        where TContext : DbContext
-        where TEntity : class =>
-        async (services, id, cancellationToken) =>
+    public override async Task<object?> LoadAsync(
+        IServiceProvider services,
+        string key,
+        CancellationToken cancellationToken
+    )
+    {
+        var db = services.GetRequiredService<TContext>();
+        if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, key, out var predicate))
         {
-            var db = services.GetRequiredService<TContext>();
-            if (!EfCoreResourceKey.TryCreatePredicate<TEntity>(db, id, out var predicate))
-            {
-                return null;
-            }
+            return null;
+        }
 
-            // A list distinguishes a missing entity from a projection to a default value
-            var models = await db.Set<TEntity>()
-                .AsNoTracking()
-                .Where(predicate)
-                .Select(select)
-                .Take(1)
-                .ToListAsync(cancellationToken);
+        // A list distinguishes a missing entity from a projection to a default value
+        var models = await db.Set<TEntity>()
+            .AsNoTracking()
+            .Where(predicate)
+            .Select(select)
+            .Take(1)
+            .ToListAsync(cancellationToken);
 
-            return models.Count == 0 ? null : models[0];
-        };
+        return models.Count == 0 ? null : models[0];
+    }
 }

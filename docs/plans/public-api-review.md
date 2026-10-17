@@ -27,7 +27,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | Keep the explicit type arguments. No change (2026-10-17) |
 | D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | Yes, mirror displays. Done (2026-10-17) |
 | D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | Stable: `window.stellarAdmin`, the layer order and the `SA-Toasts` header name. Internal: the rest. Done (2026-10-17) |
-| D12 | Replace the row details loader delegate with a class? | Yes. A small abstract `RowDetailsLoader` with `LoadAsync(services, key, cancellationToken)`. | |
+| D12 | Replace the row details loader delegate with a class? | Yes. A small abstract `RowDetailsLoader` with `LoadAsync(services, key, cancellationToken)`. | Yes, named `ResourceRowDetailLoader`. Done (2026-10-17) |
 
 ## Just do it
 
@@ -227,6 +227,13 @@ Done (2026-10-17), documentation only:
 ### D12. Row details loader
 
 `RegisterRowDetails` and `AddPanel` take a `Func<IServiceProvider,string,CancellationToken,Task<object>>`. A class has a readable name and can gain members later without breaking anyone.
+
+Done (2026-10-17):
+- New public abstract `ResourceRowDetailLoader` in `StellarAdmin.Resources` with `LoadAsync(IServiceProvider services, string key, CancellationToken cancellationToken)`. It's named after `IResourceRowDetailHandler`.
+- The protected `ResourceIndexBuilderBase.RegisterRowDetails` and `ResourceRowDetailPanelsBuilder.AddPanel` take `ResourceRowDetailLoader?`. Null still uses the row as the model.
+- Core's handler wrapper is the internal `HandlerRowDetailLoader<TModel, THandler>`, and the EF projection loader is the internal `EfCoreRowDetailLoader<TContext, TEntity, TModel>`. No app-facing API changed.
+- The internal view and edit loaders on `ResourceOptions` keep their delegates, since they aren't public.
+- The skills have no drift, and all 1456 tests pass.
 
 ### J1. Dead public types
 
