@@ -798,6 +798,8 @@ Found during the pass and fixed afterwards (2026-10-17):
 - The skills generator keyed classes by bare name, so the generic `FieldInputBaseTagHelper<TClassNames>` collided with the non-generic base and the inherited `class-names` was missing. Classes are now keyed by name and arity, and type parameters are replaced by the derived tag's type arguments. 12 input references gained a `class-names` row.
 - Component pages no longer name `<sel-*>` elements. The JavaScript page keeps the element table as background, with a note that the names are internal and that the `id` given to the `<sa-*>` tag lands on the element with the API. The table now covers every current element, and the `<sa-table-selection>` row and the `whenDefined` advice are replaced.
 
+Merged (2026-10-17): Jerrie merged `stellaradmin-rename` into the website's `master` (PR #4, `da7a9c26`), ahead of the first NuGet release. The `../website-rename` worktree and the local and remote branches are deleted, and `../website` on `master` is the website checkout again. A fresh DocsSamplesGenerator export into `../website` (492 demos) changed only generated IDs and antiforgery tokens in 32 demos; it was committed and pushed as `c464d7c0`. Jerrie spot-checked the Table, Toggle Group, Data Grid, Sidebar, Command, Input OTP, Details and Image Upload pages.
+
 ## Order of work
 
 1. Settle the D items.
