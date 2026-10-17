@@ -23,10 +23,10 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `min` | `int` | — | — |
-| `max` | `int` | — | — |
-| `step` | `int` | — | — |
-| `min-distance` | `int` | — | — |
+| `min` | `double` | — | — |
+| `max` | `double` | — | — |
+| `step` | `double` | — | — |
+| `min-distance` | `double` | — | — |
 | `orientation` | `SliderOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
 | `thumb-alignment` | `SliderThumbAlignment` | `Edge` | `Center`, `Edge` |
 | `disabled` | `bool` | `false` | `true`, `false` |
@@ -56,14 +56,14 @@ An input for selecting a numeric value, or a range of values, by dragging one or
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `value` | `int` | — | — |
+| `value` | `double` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-slider-marks>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `interval` | `int` | `step` | — |
+| `interval` | `double` | `step` | — |
 | `labels` | `SliderMarkLabels` | `None` | `None`, `Ends`, `All` |
 | `show-ticks` | `bool` | `true` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |

@@ -17,7 +17,7 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>100</c>.
     /// </remarks>
     [HtmlAttributeName("max")]
-    public int? Max { get; set; }
+    public double? Max { get; set; }
 
     /// <summary>
     ///     The value representing no completion.
@@ -26,7 +26,7 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>0</c>.
     /// </remarks>
     [HtmlAttributeName("min")]
-    public int? Min { get; set; }
+    public double? Min { get; set; }
 
     /// <summary>
     ///     The current progress value, between the minimum and maximum.
@@ -35,7 +35,7 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>0</c>.
     /// </remarks>
     [HtmlAttributeName("value")]
-    public int? Value { get; set; }
+    public double? Value { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -77,8 +77,8 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
         output.PostContent.AppendHtml(trackTagBuilder);
     }
 
-    private int GetPercentageCompleted(int minimum, int maximum, int value)
+    private int GetPercentageCompleted(double minimum, double maximum, double value)
     {
-        return (int)Math.Round(((double)(value - minimum) / (maximum - minimum)) * 100);
+        return (int)Math.Round((value - minimum) / (maximum - minimum) * 100);
     }
 }

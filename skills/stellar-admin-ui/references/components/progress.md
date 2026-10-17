@@ -22,9 +22,9 @@ A progress bar that visualizes the completion of a task as a filled track. Compo
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `max` | `int` | `100` | — |
-| `min` | `int` | `0` | — |
-| `value` | `int` | `0` | — |
+| `max` | `double` | `100` | — |
+| `min` | `double` | `0` | — |
+| `value` | `double` | `0` | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples

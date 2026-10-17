@@ -6,7 +6,7 @@ using StellarAdmin.UI;
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Configures a slider editor for a whole-number property. Bounds left unset come from the property's
+///     Configures a slider editor for a numeric property. Bounds left unset come from the property's
 ///     <see cref="RangeAttribute" />.
 /// </summary>
 public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler>
@@ -21,7 +21,7 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     /// <summary>
     ///     The interval between ticks, or null for no ticks.
     /// </summary>
-    public int? MarkInterval { get; set; }
+    public double? MarkInterval { get; set; }
 
     /// <summary>
     ///     Which marks are labelled with their value. Defaults to <see cref="SliderMarkLabels.Ends" />,
@@ -32,12 +32,12 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     /// <summary>
     ///     The largest value, or null to use the property's range or 100.
     /// </summary>
-    public int? Max { get; set; }
+    public double? Max { get; set; }
 
     /// <summary>
     ///     The smallest value, or null to use the property's range or 0.
     /// </summary>
-    public int? Min { get; set; }
+    public double? Min { get; set; }
 
     /// <summary>
     ///     Whether the current value is shown beside the label. Defaults to true.
@@ -47,7 +47,7 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     /// <summary>
     ///     The interval between values, or null for 1.
     /// </summary>
-    public int? Step { get; set; }
+    public double? Step { get; set; }
 
     /// <summary>
     ///     How values are displayed, with <c>{0}</c> standing for the number, such as <c>{0} km</c>, or
@@ -64,32 +64,30 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     /// </summary>
     /// <param name="value">The value to mark, between the slider's bounds.</param>
     /// <param name="label">The text shown under the mark, or null for a tick alone.</param>
-    public void AddMark(int value, string? label = null) => _marks.Add(new(value, label));
+    public void AddMark(double value, string? label = null) => _marks.Add(new(value, label));
 
     internal SliderAttributes ResolveAttributes(ModelMetadata metadata)
     {
         var range = metadata.ValidatorMetadata.OfType<RangeAttribute>().FirstOrDefault();
 
         return new SliderAttributes(
-            Min ?? ToInt32(range?.Minimum),
-            Max ?? ToInt32(range?.Maximum),
+            Min ?? ToDouble(range?.Minimum),
+            Max ?? ToDouble(range?.Maximum),
             Step
         );
     }
 
-    private static int? ToInt32(object? bound) =>
+    private static double? ToDouble(object? bound) =>
         bound switch
         {
             int value => value,
-            double value
-                when value == Math.Floor(value) && value is >= int.MinValue and <= int.MaxValue =>
-                (int)value,
-            string text when int.TryParse(text, CultureInfo.InvariantCulture, out var value) =>
+            double value when double.IsFinite(value) => value,
+            string text when double.TryParse(text, CultureInfo.InvariantCulture, out var value) =>
                 value,
             _ => null,
         };
 }
 
-internal sealed record SliderAttributes(int? Min, int? Max, int? Step);
+internal sealed record SliderAttributes(double? Min, double? Max, double? Step);
 
-internal sealed record SliderEditorMark(int Value, string? Label);
+internal sealed record SliderEditorMark(double Value, string? Label);

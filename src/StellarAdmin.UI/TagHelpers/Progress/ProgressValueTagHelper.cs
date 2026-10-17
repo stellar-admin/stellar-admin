@@ -35,10 +35,10 @@ public class ProgressValueTagHelper : StellarAdminTagHelperBase
     {
         var (minimum, maximum, value) = GetValues();
 
-        return (double)(value - minimum) / (maximum - minimum);
+        return (value - minimum) / (maximum - minimum);
     }
 
-    private (int Minimum, int Maximum, int Value) GetValues()
+    private (double Minimum, double Maximum, double Value) GetValues()
     {
         var parentProgressTagHelper = GetParentTagHelper<ProgressTagHelper>();
         return parentProgressTagHelper == null

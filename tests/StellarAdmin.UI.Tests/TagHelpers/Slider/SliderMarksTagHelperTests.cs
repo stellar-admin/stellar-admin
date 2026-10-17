@@ -44,6 +44,28 @@ public class SliderMarksTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenStepIsFractional_GeneratesMarksWithoutRoundingNoise()
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SliderMarksTagHelper();
+
+        // Act
+        using var html = await RenderInSliderAsync(
+            context,
+            sut,
+            slider =>
+            {
+                slider.Max = 1;
+                slider.Step = 0.1;
+            }
+        );
+
+        // Assert
+        await Assert.That(MarkValues(html)).IsEqualTo("0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenLabelsAreEnds_LabelsMinimumAndMaximumWithValueFormat()
     {
         // Arrange

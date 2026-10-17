@@ -23,6 +23,13 @@ import { customElement } from "lit/decorators.js";
  */
 let labelCount = 0;
 
+/** The number of decimal places in a number, including one written in exponent notation. */
+function countDecimals(value: number) {
+  const [mantissa, exponent] = String(value).split("e");
+  const fraction = mantissa.split(".")[1]?.length ?? 0;
+  return Math.max(0, fraction - Number(exponent ?? 0));
+}
+
 @customElement("sel-slider")
 export class Slider extends LitElement {
   override createRenderRoot() {
@@ -32,6 +39,7 @@ export class Slider extends LitElement {
   #min = 0;
   #max = 100;
   #step = 1;
+  #decimals = 0;
   #minDistance = 0;
   #vertical = false;
   #edgeAligned = false;
@@ -54,7 +62,10 @@ export class Slider extends LitElement {
 
     this.#min = this.#numAttr("min", 0);
     this.#max = this.#numAttr("max", 100);
-    this.#step = Math.max(this.#numAttr("step", 1), 1);
+    const step = this.#numAttr("step", 1);
+    this.#step = step > 0 ? step : 1;
+    // Stepped values share the decimals of the minimum and step, like the server's formatting
+    this.#decimals = Math.max(countDecimals(this.#min), countDecimals(this.#step));
     this.#minDistance = this.#numAttr("data-min-distance", 0);
     this.#vertical = this.getAttribute("data-orientation") === "vertical";
     this.#edgeAligned = this.getAttribute("data-thumb-alignment") === "edge";
@@ -73,10 +84,13 @@ export class Slider extends LitElement {
     try {
       this.#numberFormat = new Intl.NumberFormat(
         this.getAttribute("data-value-locale") ?? "en-US",
-        { maximumFractionDigits: 0 },
+        { maximumFractionDigits: this.#decimals },
       );
     } catch {
-      // An unknown locale keeps the default, which matches the server's invariant culture
+      // An unknown locale falls back to the server's invariant culture
+      this.#numberFormat = new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: this.#decimals,
+      });
     }
     this.#outputs = this.#findOutputs();
     this.#nameThumbs();
@@ -207,7 +221,9 @@ export class Slider extends LitElement {
 
   #snap(raw: number) {
     const steps = Math.round((raw - this.#min) / this.#step);
-    return this.#clampToRange(this.#min + steps * this.#step);
+    // Round away the floating-point noise of fractional steps, such as 0.1 + 0.2
+    const value = Number((this.#min + steps * this.#step).toFixed(this.#decimals));
+    return this.#clampToRange(value);
   }
 
   #nearestThumb(value: number) {
@@ -228,7 +244,7 @@ export class Slider extends LitElement {
     const lowerBound = index > 0 ? this.#values[index - 1] + this.#minDistance : this.#min;
     const upperBound =
       index < this.#values.length - 1 ? this.#values[index + 1] - this.#minDistance : this.#max;
-    const clamped = this.#clamp(value, lowerBound, upperBound);
+    const clamped = Number(this.#clamp(value, lowerBound, upperBound).toFixed(this.#decimals));
 
     if (clamped === this.#values[index]) return;
     this.#values[index] = clamped;
@@ -305,7 +321,9 @@ export class Slider extends LitElement {
 
     const root = this.getRootNode() as Document | ShadowRoot;
     const label =
-      this.closest('[data-slot="field"]')?.querySelector<HTMLElement>('[data-slot="field-label"]') ??
+      this.closest('[data-slot="field"]')?.querySelector<HTMLElement>(
+        '[data-slot="field-label"]',
+      ) ??
       (this.id ? root.querySelector<HTMLElement>(`label[for="${CSS.escape(this.id)}"]`) : null);
     if (!label) return;
 

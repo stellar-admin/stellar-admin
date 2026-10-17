@@ -11,7 +11,7 @@ internal static class SliderMarkRenderer
 {
     public static IEnumerable<KeyValuePair<string, string>> GetAttributes(
         SliderContext slider,
-        int value,
+        double value,
         string? userClass
     )
     {
@@ -69,7 +69,7 @@ internal static class SliderMarkRenderer
         return content;
     }
 
-    public static TagBuilder Build(SliderContext slider, bool showTick, int value, string? label)
+    public static TagBuilder Build(SliderContext slider, bool showTick, double value, string? label)
     {
         var mark = new TagBuilder("span");
         foreach (var (name, attributeValue) in GetAttributes(slider, value, null))
@@ -88,7 +88,7 @@ internal static class SliderMarkRenderer
         return mark;
     }
 
-    public static void EnsureWithinBounds(SliderContext slider, int value, string paramName)
+    public static void EnsureWithinBounds(SliderContext slider, double value, string paramName)
     {
         if (value < slider.Min || value > slider.Max)
         {
@@ -102,9 +102,9 @@ internal static class SliderMarkRenderer
     // A mark sits where its thumb's centre would. Edge-aligned thumbs travel a track shortened by
     // their own size, so the centre is offset by half a thumb. slider.css sets the thumb size as
     // --_slider-thumb (the client's measurement once it has one); 1rem stands in without the CSS.
-    private static string PositionStyle(SliderContext slider, int value)
+    private static string PositionStyle(SliderContext slider, double value)
     {
-        var fraction = (double)(value - slider.Min) / (slider.Max - slider.Min);
+        var fraction = (value - slider.Min) / (slider.Max - slider.Min);
         var side = slider.Orientation == SliderOrientation.Vertical ? "bottom" : "left";
         if (slider.ThumbAlignment == SliderThumbAlignment.Center)
         {

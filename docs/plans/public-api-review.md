@@ -56,7 +56,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J21 | Use `show-error` and `wrap-in-field` instead of `render-*` | Done (2026-10-17) |
 | J22 | Rename `heading` on `sa-command-group` to `title` | Done (2026-10-17) |
 | J23 | Give every bound property an explicit attribute name | Done (2026-10-17) |
-| J24 | Make Slider and Progress numbers `double?` | |
+| J24 | Make Slider and Progress numbers `double?` | Done (2026-10-17) |
 | J25 | Make the remaining plain `bool` attributes `bool?` | |
 | J26 | Make icon definitions immutable | |
 | J27 | Freeze `IconOptions` after startup | |
@@ -369,6 +369,14 @@ Done (2026-10-17):
 
 Slider `Min`, `Max`, `Step`, `MinDistance` and mark `Value`, and Progress `Value`, `Min` and `Max` become `double?`, so `step="0.5"` works. `SliderEditor` follows.
 
+Done (2026-10-17):
+
+- `sa-slider` `min`/`max`/`step`/`min-distance`, `sa-slider-marks` `interval`, `sa-slider-mark` `value` and `sa-progress` `min`/`max`/`value` are doubles. `sa-slider-value` `index` stays an int.
+- Bound and authored slider values are read as doubles, so a `decimal` or `double` model is no longer truncated. A step that isn't positive throws.
+- Values are formatted with up to as many decimals as `min` and `step` have, on the server and in `sel-slider`. Generated marks and client snapping round away floating-point noise, so a 0.1 step gives 0.3, not 0.30000000000000004.
+- `SliderEditor` `Min`, `Max`, `Step`, `MarkInterval` and `AddMark` take doubles, and fractional `[Range]` bounds now apply. Its docs say numeric instead of whole-number.
+- Verified with the full test run (1390 passed), the client build and a skills drift check. Client snapping wasn't checked in a browser.
+
 ### J25. Nullable booleans
 
 - Questionnaire item: `Required`, `Multiple`.
@@ -498,6 +506,7 @@ Changes the website still needs:
 - [ ] J20: `sa-input-otp` takes `maxlength`. `sa-chip-group` takes `aria-invalid` instead of `invalid`.
 - [ ] J21: `render-error` → `show-error` on the Questionnaire item and input. `render-field` → `wrap-in-field` on the field inputs.
 - [ ] J22: `sa-command-group` takes `title` instead of `heading`.
+- [ ] J24: `slider.mdx` says values are formatted without decimals. They now take up to as many decimals as `min` and `step` have.
 
 ## Order of work
 

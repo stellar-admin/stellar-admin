@@ -1,7 +1,7 @@
 namespace StellarAdmin.Resources.Editors;
 
 /// <summary>
-///     Displays a whole-number field as a slider.
+///     Displays a numeric field as a slider.
 /// </summary>
 public sealed class SliderEditorHandler(SliderEditor editor)
     : FieldEditorHandler<SliderEditor>(editor)

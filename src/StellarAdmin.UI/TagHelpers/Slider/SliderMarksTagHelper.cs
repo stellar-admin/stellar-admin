@@ -19,7 +19,7 @@ public class SliderMarksTagHelper : StellarAdminTagHelperBase
     ///     Defaults to the slider's <c>step</c>.
     /// </remarks>
     [HtmlAttributeName("interval")]
-    public int? Interval { get; set; }
+    public double? Interval { get; set; }
 
     /// <summary>
     ///     Which generated marks show their formatted value.
@@ -93,7 +93,11 @@ public class SliderMarksTagHelper : StellarAdminTagHelperBase
         }
     }
 
-    private List<int> GenerateValues(SliderContext slider, bool showTicks, SliderMarkLabels labels)
+    private List<double> GenerateValues(
+        SliderContext slider,
+        bool showTicks,
+        SliderMarkLabels labels
+    )
     {
         // Without a tick, an unlabelled mark would render nothing
         if (!showTicks && labels != SliderMarkLabels.All)
@@ -108,7 +112,7 @@ public class SliderMarksTagHelper : StellarAdminTagHelperBase
         }
 
         // Every interval from the minimum, plus the maximum when the intervals miss it
-        var count = (slider.Max - slider.Min + interval - 1) / interval + 1;
+        var count = Math.Ceiling(Math.Round((slider.Max - slider.Min) / interval, 9)) + 1;
         if (count > MaxGeneratedMarks)
         {
             throw new ArgumentOutOfRangeException(
@@ -117,9 +121,17 @@ public class SliderMarksTagHelper : StellarAdminTagHelperBase
             );
         }
 
-        var values = new List<int>();
-        for (var value = slider.Min; value < slider.Max; value += interval)
+        var decimals = Math.Max(slider.Decimals, SliderContext.CountDecimals(interval));
+        var values = new List<double>();
+        for (var index = 0; ; index++)
         {
+            // Multiplying rather than accumulating keeps each mark's floating-point error its own
+            var value = SliderContext.Round(slider.Min + index * interval, decimals);
+            if (value >= slider.Max)
+            {
+                break;
+            }
+
             values.Add(value);
         }
         values.Add(slider.Max);

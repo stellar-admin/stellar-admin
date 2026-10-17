@@ -20,25 +20,25 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     ///     The minimum value the slider can take.
     /// </summary>
     [HtmlAttributeName("min")]
-    public int? Min { get; set; }
+    public double? Min { get; set; }
 
     /// <summary>
     ///     The maximum value the slider can take.
     /// </summary>
     [HtmlAttributeName("max")]
-    public int? Max { get; set; }
+    public double? Max { get; set; }
 
     /// <summary>
     ///     The increment between selectable values.
     /// </summary>
     [HtmlAttributeName("step")]
-    public int? Step { get; set; }
+    public double? Step { get; set; }
 
     /// <summary>
     ///     The minimum distance (in value units) enforced between adjacent thumbs on a range slider.
     /// </summary>
     [HtmlAttributeName("min-distance")]
-    public int? MinDistance { get; set; }
+    public double? MinDistance { get; set; }
 
     /// <summary>
     ///     The orientation of the slider.
@@ -80,7 +80,8 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     ///     A template with a <c>{0}</c> placeholder that each displayed value is substituted into,
     ///     such as <c>"${0}"</c> or <c>"{0} km"</c>. It applies to <c>&lt;sa-slider-value&gt;</c>,
     ///     generated mark labels and the value announced for each thumb. Numbers are formatted in
-    ///     the current culture without decimals.
+    ///     the current culture, with up to as many decimals as
+    ///     <c>min</c> and <c>step</c> have.
     /// </summary>
     [HtmlAttributeName("value-format")]
     public string? ValueFormat { get; set; }
@@ -118,6 +119,16 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         {
             throw new ArgumentOutOfRangeException(nameof(Min), "Min must be less than Max");
         }
+
+        if (effectiveStep <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(Step), "Step must be positive");
+        }
+
+        var decimals = Math.Max(
+            SliderContext.CountDecimals(effectiveMin),
+            SliderContext.CountDecimals(effectiveStep)
+        );
 
         var values = ResolveValues(effectiveMin, effectiveMax);
         foreach (var value in values)
@@ -219,6 +230,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
                 Min = effectiveMin,
                 Max = effectiveMax,
                 Step = effectiveStep,
+                Decimals = decimals,
                 Values = values,
                 Orientation = effectiveOrientation,
                 ThumbAlignment = effectiveThumbAlignment,
@@ -277,7 +289,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             {
                 thumb.Attributes.Add(
                     "aria-valuetext",
-                    SliderContext.FormatValue(value, valueFormat, culture)
+                    SliderContext.FormatValue(value, valueFormat, culture, decimals)
                 );
             }
             if (effectiveDisabled)
@@ -336,20 +348,20 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
     ///     otherwise a single thumb at <paramref name="min" />. Bound values are clamped to the
     ///     bounds, because a model can hold any number, such as 0 before a range applies.
     /// </summary>
-    private IReadOnlyList<int> ResolveValues(int min, int max)
+    private IReadOnlyList<double> ResolveValues(double min, double max)
     {
         if (For?.Model is { } model and not string)
         {
             if (model is IEnumerable enumerable)
             {
-                var fromModel = new List<int>();
+                var fromModel = new List<double>();
                 foreach (var item in enumerable)
                 {
                     if (item != null)
                     {
                         fromModel.Add(
                             Math.Clamp(
-                                Convert.ToInt32(item, CultureInfo.InvariantCulture),
+                                Convert.ToDouble(item, CultureInfo.InvariantCulture),
                                 min,
                                 max
                             )
@@ -364,7 +376,10 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
             }
             else
             {
-                return [Math.Clamp(Convert.ToInt32(model, CultureInfo.InvariantCulture), min, max)];
+                return
+                [
+                    Math.Clamp(Convert.ToDouble(model, CultureInfo.InvariantCulture), min, max),
+                ];
             }
         }
 
@@ -372,7 +387,7 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         {
             return Value
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(v => int.Parse(v, CultureInfo.InvariantCulture))
+                .Select(v => double.Parse(v, CultureInfo.InvariantCulture))
                 .ToList();
         }
 
@@ -402,8 +417,8 @@ public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
         return null;
     }
 
-    private static double Percent(int value, int min, int max) =>
-        (double)(value - min) / (max - min) * 100d;
+    private static double Percent(double value, double min, double max) =>
+        (value - min) / (max - min) * 100d;
 
     private static string FormatPercent(double percent) =>
         percent.ToString("0.####", CultureInfo.InvariantCulture);

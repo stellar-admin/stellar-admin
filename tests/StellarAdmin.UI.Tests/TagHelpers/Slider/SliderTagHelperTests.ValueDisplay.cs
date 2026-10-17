@@ -34,6 +34,35 @@ public partial class SliderTagHelperTests
     }
 
     [Test]
+    public async Task ProcessAsync_WhenStepIsFractional_FormatsValuesWithStepDecimals()
+    {
+        // Arrange
+        CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+        using var context = new RenderingContext();
+        var sut = new SliderTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            Max = 10,
+            Step = 0.25,
+            Value = "2.5",
+            ValueFormat = "{0} km",
+            Name = "Distance",
+        };
+
+        // Act
+        using var html = await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        var thumb = html.QuerySelector("[role=slider]");
+        await Assert.That(html.QuerySelector("sel-slider")?.GetAttribute("step")).IsEqualTo("0.25");
+        await Assert.That(thumb?.GetAttribute("aria-valuenow")).IsEqualTo("2.5");
+        await Assert.That(thumb?.GetAttribute("aria-valuetext")).IsEqualTo("2,5 km");
+        await Assert
+            .That(html.QuerySelector("input[type=hidden]")?.GetAttribute("value"))
+            .IsEqualTo("2.5");
+    }
+
+    [Test]
     public async Task ProcessAsync_WhenValueFormatIsNotSet_OmitsValueText()
     {
         // Arrange
@@ -73,6 +102,28 @@ public partial class SliderTagHelperTests
         await Assert
             .That(html.QuerySelector("sel-slider")?.HasAttribute("data-value-format"))
             .IsFalse();
+    }
+
+    [Test]
+    [Arguments(0d)]
+    [Arguments(-1d)]
+    public async Task ProcessAsync_WhenStepIsNotPositive_ThrowsArgumentOutOfRangeException(
+        double step
+    )
+    {
+        // Arrange
+        using var context = new RenderingContext();
+        var sut = new SliderTagHelper(context.Generator)
+        {
+            ViewContext = context.ViewContext,
+            Step = step,
+        };
+
+        // Act
+        var render = async () => await TagHelperRenderer.RenderAsync(sut);
+
+        // Assert
+        await Assert.That(render).Throws<ArgumentOutOfRangeException>();
     }
 
     [Test]

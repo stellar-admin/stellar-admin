@@ -13,7 +13,7 @@ public class SliderMarkTagHelper : StellarAdminTagHelperBase
     ///     The value the mark is placed at, between the slider's minimum and maximum.
     /// </summary>
     [HtmlAttributeName("value")]
-    public int Value { get; set; }
+    public double Value { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
