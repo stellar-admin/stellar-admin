@@ -26,8 +26,8 @@ public class ChipGroupTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Whether the group's value is invalid, which shows the invalid ring on an input-styled group.
     /// </summary>
-    [HtmlAttributeName("invalid")]
-    public bool? Invalid { get; set; }
+    [HtmlAttributeName("aria-invalid")]
+    public bool? AriaInvalid { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -49,7 +49,7 @@ public class ChipGroupTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("data-disabled", "true");
         }
 
-        if (Invalid ?? false)
+        if (AriaInvalid ?? false)
         {
             output.Attributes.SetAttribute("aria-invalid", "true");
         }

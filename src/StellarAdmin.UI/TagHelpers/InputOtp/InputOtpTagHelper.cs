@@ -16,7 +16,7 @@ namespace StellarAdmin.UI;
 ///     active / caret state once hydrated.
 /// </summary>
 /// <remarks>
-///     Slots can be auto-generated from <c>max-length</c> (optionally split into groups via
+///     Slots can be auto-generated from <c>maxlength</c> (optionally split into groups via
 ///     <c>groups</c>), or composed by hand with <c>sa-input-otp-group</c>,
 ///     <c>sa-input-otp-slot</c>, and <c>sa-input-otp-separator</c> children.
 /// </remarks>
@@ -36,7 +36,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
     /// <summary>
     ///     The number of slots. Defaults to 6 (or the sum of <see cref="Groups" /> when set).
     /// </summary>
-    [HtmlAttributeName("max-length")]
+    [HtmlAttributeName("maxlength")]
     public int? MaxLength { get; set; }
 
     /// <summary>
@@ -377,7 +377,7 @@ public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
             if (MaxLength.HasValue && MaxLength.Value != sum)
             {
                 throw new ArgumentException(
-                    "The 'groups' sizes must sum to 'max-length'.",
+                    "The 'groups' sizes must sum to 'maxlength'.",
                     nameof(Groups)
                 );
             }

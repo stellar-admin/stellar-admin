@@ -4,13 +4,13 @@
 <sa-page-container class="py-6 lg:py-8">
     <sa-stack>
         <h2 class="bg-gray-100 text-base font-bold">Unbound</h2>
-        <sa-input-otp max-length="6"/>
+        <sa-input-otp maxlength="6"/>
 
         <h2 class="bg-gray-100 text-base font-bold">Grouped (3,3)</h2>
-        <sa-input-otp max-length="6" groups="3,3"/>
+        <sa-input-otp maxlength="6" groups="3,3"/>
 
         <h2 class="bg-gray-100 text-base font-bold">Composition</h2>
-        <sa-input-otp max-length="4">
+        <sa-input-otp maxlength="4">
             <sa-input-otp-group>
                 <sa-input-otp-slot/>
                 <sa-input-otp-slot/>
@@ -23,7 +23,7 @@
         </sa-input-otp>
 
         <h2 class="bg-gray-100 text-base font-bold">Disabled</h2>
-        <sa-input-otp max-length="6" value="123" disabled="true"/>
+        <sa-input-otp maxlength="6" value="123" disabled="true"/>
 
         <h2 class="bg-gray-100 text-base font-bold">Model binding + validation</h2>
         <form method="post" class="flex w-full max-w-md flex-col gap-6">

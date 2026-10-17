@@ -52,7 +52,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J17 | Use `min`/`max` on Progress | Done (2026-10-17) |
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | Done (2026-10-17) |
 | J19 | Use one naming scheme for DataGrid sort and paging | Done (2026-10-17) |
-| J20 | Bind `invalid` and `maxlength` | |
+| J20 | Use `maxlength` on Input OTP and `aria-invalid` on Chip Group | Done (2026-10-17) |
 | J21 | Use `show-*` instead of `render-*` | |
 | J22 | Rename `heading` on `sa-command-group` to `title` | |
 | J23 | Give every bound property an explicit attribute name | |
@@ -324,6 +324,14 @@ Done (2026-10-17):
 ### J20. invalid and maxlength
 
 On `sa-input-otp`, `aria-invalid` becomes `invalid` and `max-length` becomes `maxlength`.
+
+Done (2026-10-17), with a changed decision:
+
+- `sa-input-otp` takes `maxlength`, the native attribute name. The property stays `MaxLength`.
+- `sa-input-otp` keeps `aria-invalid`. It is the standard ARIA state, and `sa-input`, `sa-textarea`, `sa-select`, `sa-checkbox` and `sa-radio` already take it unchanged.
+- `sa-chip-group` was the odd one out, so its `invalid` (`Invalid`) became `aria-invalid` (`AriaInvalid`).
+- Markup in DocsSamples, the ComponentPlayground and the OneTimeCode and MultiLookupSheet editor templates was updated, and the skills were regenerated.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J21. show-* toggles
 

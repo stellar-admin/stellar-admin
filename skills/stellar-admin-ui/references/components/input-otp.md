@@ -23,7 +23,7 @@ A segmented one-time-code input. A single real `<input>` holds the whole code an
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `max-length` | `int` | — | — |
+| `maxlength` | `int` | — | — |
 | `pattern` | `string` | — | — |
 | `groups` | `string` | — | — |
 | `inputmode` | `string` | — | — |
@@ -59,13 +59,13 @@ A segmented one-time-code input. A single real `<input>` holds the whole code an
 *From `Pages/InputOtp/_Intro.cshtml`*
 
 ```razor
-<sa-input-otp max-length="6"/>
+<sa-input-otp maxlength="6"/>
 ```
 
 *From `Pages/InputOtp/_Composition.cshtml`*
 
 ```razor
-<sa-input-otp max-length="6">
+<sa-input-otp maxlength="6">
     <sa-input-otp-group>
         <sa-input-otp-slot/>
         <sa-input-otp-slot/>

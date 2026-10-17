@@ -26,7 +26,11 @@ public class ChipGroupTagHelperTests
     public async Task ProcessAsync_WithInputAppearanceAndInvalid_RendersInvalidInputGroup()
     {
         // Arrange
-        var sut = new ChipGroupTagHelper { Appearance = ChipGroupAppearance.Input, Invalid = true };
+        var sut = new ChipGroupTagHelper
+        {
+            Appearance = ChipGroupAppearance.Input,
+            AriaInvalid = true,
+        };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);

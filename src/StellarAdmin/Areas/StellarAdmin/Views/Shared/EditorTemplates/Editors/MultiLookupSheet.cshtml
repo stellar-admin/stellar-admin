@@ -119,7 +119,7 @@
 
                 case MultiLookupSheetEditorLayout.Chips:
                     <sa-chip-group id="@($"{id}-selected")" data-lookup="selected" hidden="@(items.Count == 0)"
-                                   appearance="ChipGroupAppearance.Input" invalid="isInvalid" class="@classes.Control"
+                                   appearance="ChipGroupAppearance.Input" aria-invalid="isInvalid" class="@classes.Control"
                                    aria-labelledby="@($"{id}-label")" aria-describedby="@describedBy">
                         <span class="contents" data-lookup="items">
                             <partial name="_MultiLookupItems" model="editableItems" />

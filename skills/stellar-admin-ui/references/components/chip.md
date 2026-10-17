@@ -33,7 +33,7 @@ A compact token for a selected or entered value, with optional media before its 
 |-----------|------|---------|--------|
 | `appearance` | `ChipGroupAppearance` | `Plain` | `Plain`, `Input` |
 | `disabled` | `bool` | — | `true`, `false` |
-| `invalid` | `bool` | — | `true`, `false` |
+| `aria-invalid` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples
@@ -148,7 +148,7 @@ A compact token for a selected or entered value, with optional media before its 
     <sa-field-title id="tour-stops-label">Tour stops</sa-field-title>
     <sa-chip-group
         appearance="ChipGroupAppearance.Input"
-        invalid="true"
+        aria-invalid="true"
         aria-labelledby="tour-stops-label"
         aria-describedby="tour-stops-error"
     >
