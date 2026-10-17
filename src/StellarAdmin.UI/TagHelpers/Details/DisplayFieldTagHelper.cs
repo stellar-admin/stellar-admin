@@ -179,7 +179,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
     ///     Defaults to <c>false</c>. Has no effect without a template.
     /// </remarks>
     [HtmlAttributeName("template-renders-empty")]
-    public bool TemplateRendersEmpty { get; set; }
+    public bool? TemplateRendersEmpty { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="ViewContext" /> of the executing view.
@@ -418,7 +418,7 @@ public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
         }
         else if (
             metadata is null
-            || (IsEmpty(value) && !(TemplateRendersEmpty && templateName is not null))
+            || (IsEmpty(value) && !((TemplateRendersEmpty ?? false) && templateName is not null))
         )
         {
             valueElement.Attributes["data-empty"] = "true";

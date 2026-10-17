@@ -35,10 +35,13 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
     public bool? Checked { get; set; }
 
     /// <summary>
-    ///     Whether the choice can be selected.
+    ///     Whether the choice is disabled and cannot be selected.
     /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>.
+    /// </remarks>
     [HtmlAttributeName("disabled")]
-    public bool Disabled { get; set; }
+    public bool? Disabled { get; set; }
 
     /// <summary>
     ///     The shortcut key shown beside the choice, which selects it when pressed. Overrides
@@ -63,6 +66,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        var effectiveDisabled = Disabled ?? false;
         var itemContext = GetContext<QuestionnaireItemContext>(context);
         var type = itemContext?.Multiple ?? false ? "checkbox" : "radio";
 
@@ -72,7 +76,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
         var shortcut =
             Shortcut
             ?? (
-                Disabled
+                effectiveDisabled
                     ? null
                     : GetContext<QuestionnaireChoicesContext>(context)?.TakeNextShortcut()
             );
@@ -174,7 +178,7 @@ public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
             }
         }
 
-        if (Disabled)
+        if (Disabled ?? false)
         {
             input.Attributes["disabled"] = "disabled";
         }

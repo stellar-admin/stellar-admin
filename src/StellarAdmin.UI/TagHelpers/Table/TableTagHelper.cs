@@ -81,7 +81,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>false</c>.
     /// </remarks>
     [HtmlAttributeName("row-details")]
-    public bool RowDetails { get; set; }
+    public bool? RowDetails { get; set; }
 
     /// <summary>
     ///     Adds row selection: an <c>sa-table-selection-head</c> in the header row selects or
@@ -95,10 +95,12 @@ public class TableTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>false</c>.
     /// </remarks>
     [HtmlAttributeName("selection")]
-    public bool Selection { get; set; }
+    public bool? Selection { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        var effectiveRowDetails = RowDetails ?? false;
+        var effectiveSelection = Selection ?? false;
         var userClass = output.GetUserSuppliedClass();
 
         var tableTagBuilder = new TagBuilder("table");
@@ -107,7 +109,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
         tableTagBuilder.InnerHtml.AppendHtml(await output.GetChildContentAsync());
 
         output.TagMode = TagMode.StartTagAndEndTag;
-        if (!Selection && !RowDetails)
+        if (!effectiveSelection && !effectiveRowDetails)
         {
             output.TagName = "div";
             output.Attributes.SetAttribute("data-slot", "table-container");
@@ -121,7 +123,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
         containerTagBuilder.Attributes.Add("class", "sa-table-container");
         containerTagBuilder.InnerHtml.AppendHtml(tableTagBuilder);
 
-        var rowDetails = RowDetails
+        var rowDetails = effectiveRowDetails
             ? new TableRowDetailSettings(
                 RowClick ?? false,
                 RowDetailExpandMode ?? TableRowDetailExpandMode.Multiple,
@@ -134,7 +136,13 @@ public class TableTagHelper : StellarAdminTagHelperBase
 
         output.TagName = "sel-table";
         output.Attributes.RemoveAll("class");
-        foreach (var (name, value) in TableElementRendering.GetAttributes(Selection, rowDetails, false))
+        foreach (
+            var (name, value) in TableElementRendering.GetAttributes(
+                effectiveSelection,
+                rowDetails,
+                false
+            )
+        )
         {
             output.Attributes.SetAttribute(name, value);
         }

@@ -75,7 +75,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>false</c>.
     /// </remarks>
     [HtmlAttributeName("rows-only")]
-    public bool RowsOnly { get; set; }
+    public bool? RowsOnly { get; set; }
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
@@ -107,7 +107,7 @@ public class DataGridTagHelper : StellarAdminTagHelperBase
         // no output.
         await output.GetChildContentAsync(useCachedResult: false);
 
-        if (RowsOnly)
+        if (RowsOnly ?? false)
         {
             output.TagName = null;
             output.Content.SetHtmlContent(

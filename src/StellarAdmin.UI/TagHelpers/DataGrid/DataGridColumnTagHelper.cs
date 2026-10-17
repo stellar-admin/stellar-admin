@@ -110,7 +110,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     ///     Defaults to <c>false</c>. Has no effect without a template.
     /// </remarks>
     [HtmlAttributeName("template-renders-empty")]
-    public bool TemplateRendersEmpty { get; set; }
+    public bool? TemplateRendersEmpty { get; set; }
 
     /// <summary>
     ///     The column header text. When omitted on a field column, the header defaults to the
@@ -265,7 +265,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
 
             var fieldMetadata = GetFieldMetadata(gridContext, fieldName);
             var templateName = Template ?? fieldMetadata?.TemplateHint;
-            if (IsEmpty(value) && !(TemplateRendersEmpty && templateName is not null))
+            if (IsEmpty(value) && !((TemplateRendersEmpty ?? false) && templateName is not null))
             {
                 cellHtml = HtmlEncoder.Default.Encode(
                     EmptyText ?? fieldMetadata?.NullDisplayText ?? ""

@@ -35,7 +35,7 @@ A container for one or more questionnaire items. Place it inside your own `<form
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `checked` | `bool` | — | `true`, `false` |
-| `disabled` | `bool` | — | `true`, `false` |
+| `disabled` | `bool` | `false` | `true`, `false` |
 | `shortcut` | `string` | — | — |
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
@@ -66,10 +66,10 @@ A container for one or more questionnaire items. Place it inside your own `<form
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
 | `asp-for` | `ModelExpression` | — | — |
-| `multiple` | `bool` | — | `true`, `false` |
+| `multiple` | `bool` | `false` | `true`, `false` |
 | `name` | `string` | — | — |
 | `show-error` | `bool` | `true` | `true`, `false` |
-| `required` | `bool` | — | `true`, `false` |
+| `required` | `bool` | `false` | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-questionnaire-next>`

@@ -57,7 +57,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J22 | Rename `heading` on `sa-command-group` to `title` | Done (2026-10-17) |
 | J23 | Give every bound property an explicit attribute name | Done (2026-10-17) |
 | J24 | Make Slider and Progress numbers `double?` | Done (2026-10-17) |
-| J25 | Make the remaining plain `bool` attributes `bool?` | |
+| J25 | Make the remaining plain `bool` attributes `bool?` | Done (2026-10-17) |
 | J26 | Make icon definitions immutable | |
 | J27 | Freeze `IconOptions` after startup | |
 | J28 | Align size and media enum member order | |
@@ -384,6 +384,13 @@ Done (2026-10-17):
 - Table: `RowDetails`, `Selection`.
 - DataGrid: `RowsOnly`.
 - DataGrid column and display field: `TemplateRendersEmpty`.
+
+Done (2026-10-17):
+
+- All eight are `bool?` and resolve to `false` in `ProcessAsync`, so markup and behaviour are unchanged. No other bound property in the library was a plain `bool`.
+- The Questionnaire item and choice properties gained their "Defaults to false" remarks, and the choice's `Disabled` summary now says it cannot be selected.
+- No website change is needed.
+- Verified with the full test run (1390 passed) and a skills drift check.
 
 ### J26. Icon definitions
 

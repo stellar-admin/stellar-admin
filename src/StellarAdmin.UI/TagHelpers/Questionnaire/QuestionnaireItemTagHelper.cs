@@ -30,8 +30,11 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     ///     Whether the question accepts more than one answer. Its choices render as checkboxes
     ///     instead of radio buttons.
     /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>.
+    /// </remarks>
     [HtmlAttributeName("multiple")]
-    public bool Multiple { get; set; }
+    public bool? Multiple { get; set; }
 
     /// <summary>
     ///     The name the answer posts under. Set automatically when bound with <c>asp-for</c>.
@@ -53,8 +56,11 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Whether the question must be answered.
     /// </summary>
+    /// <remarks>
+    ///     Defaults to <c>false</c>.
+    /// </remarks>
     [HtmlAttributeName("required")]
-    public bool Required { get; set; }
+    public bool? Required { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="ViewContext" /> of the executing view.
@@ -73,7 +79,7 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
             new QuestionnaireItemContext
             {
                 For = For,
-                Multiple = Multiple,
+                Multiple = Multiple ?? false,
                 Name = Name,
             }
         );
@@ -94,12 +100,12 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
             output.Attributes.SetAttribute("tabindex", "-1");
         }
 
-        if (Multiple)
+        if (Multiple ?? false)
         {
             output.Attributes.SetAttribute("data-multiple", string.Empty);
         }
 
-        if (Required)
+        if (Required ?? false)
         {
             output.Attributes.SetAttribute("data-required", string.Empty);
         }
