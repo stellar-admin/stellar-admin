@@ -8,8 +8,8 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     A command menu option rendered as a link, navigating to its target when chosen.
 /// </summary>
-[HtmlTargetElement("sa-command-link-item")]
-public class CommandLinkItemTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-command-item-link")]
+public class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
@@ -44,7 +44,7 @@ public class CommandLinkItemTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
-    public CommandLinkItemTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
+    public CommandItemLinkTagHelper(IHtmlGenerator htmlGenerator, IOptions<IconOptions> iconOptions)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
         _iconOptions = iconOptions.Value;

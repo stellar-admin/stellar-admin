@@ -22,7 +22,7 @@ A thin dividing line between sections of content, rendered as a `<div>` with `ro
 *From `Pages/Separator/_Intro.cshtml`*
 
 ```razor
-<sa-linkbutton variant="ButtonVariant.Outline" href="#">View bookings</sa-linkbutton>
+<sa-button-link variant="ButtonVariant.Outline" href="#">View bookings</sa-button-link>
 <sa-separator/>
-<sa-linkbutton variant="ButtonVariant.Outline" href="#">View past trips</sa-linkbutton>
+<sa-button-link variant="ButtonVariant.Outline" href="#">View past trips</sa-button-link>
 ```

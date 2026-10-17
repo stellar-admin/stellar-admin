@@ -29,7 +29,7 @@
                 <sa-slot-outlet name="form-leading-actions"/>
                 <div class="sa-resource-form-actions">
                     <sa-slot-outlet name="pre-form-actions"/>
-                    <sa-linkbutton asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-linkbutton>
+                    <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="form-cancel">Cancel</sa-button-link>
                     <sa-button type="submit">@Model.SubmitLabel</sa-button>
                     <sa-slot-outlet name="post-form-actions"/>
                 </div>

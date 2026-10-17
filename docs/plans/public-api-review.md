@@ -19,7 +19,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D1 | Seal the concrete tag helpers? | Yes. ASP.NET leaves its own tag helpers open, but opening later is free and sealing later breaks people. | |
 | D2 | Support custom field inputs built on `FieldInputBaseTagHelper`? | Yes. Fix its awkward members and document it. | |
 | D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | |
-| D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | |
+| D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link`. `sa-dropdown-menu-item` pending. Renames done (2026-10-17) |
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | |
@@ -44,7 +44,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | Done (2026-10-17) |
 | J10 | Make the resource options read-only to everyone, not internal | On hold with J5 |
 | J11 | Add the missing `TagHelper` suffix to five classes | Done (2026-10-17) |
-| J12 | Rename `sa-linkbutton` to `sa-link-button` | |
+| J12 | Rename `sa-linkbutton` to `sa-link-button` | Done as `sa-button-link` under D4 (2026-10-17) |
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | |
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | |
 | J15 | Use logical `Start`/`End` names | |
@@ -107,7 +107,15 @@ If no:
 
 ### D4. Link versions of components
 
-Today: `sa-linkbutton`, `sa-item-link`, `sa-command-link-item`, `sa-bubble-link-content`, `sa-attachment-link-trigger`, and `sa-dropdown-menu-item`, which becomes a link when given `href`. The other option is one tag per part that renders `<a>` when given `href` or `asp-*`.
+Decided: the link version of a part is `sa-<part>-link`, with no exceptions.
+
+Done:
+
+- `sa-linkbutton` became `sa-button-link`, `sa-attachment-link-trigger` became `sa-attachment-trigger-link`, `sa-bubble-link-content` became `sa-bubble-content-link`, and `sa-command-link-item` became `sa-command-item-link`.
+- The tag helper classes and files were renamed to match: `ButtonLinkTagHelper`, `AttachmentTriggerLinkTagHelper`, `BubbleContentLinkTagHelper` and `CommandItemLinkTagHelper`.
+- Dashboard views, DocsSamples, ComponentPlayground, the port-shadcn-component skill and the consumer skills were updated, and the skill references regenerated.
+
+Pending: `sa-dropdown-menu-item` still becomes a link when given `href`. Whether it splits into `sa-dropdown-menu-item-link` is undecided.
 
 ### D5. Breakpoint attributes
 
@@ -232,7 +240,7 @@ Done:
 
 ### J12. sa-linkbutton
 
-The only tag that isn't kebab-case (`UI/Button/LinkButtonTagHelper.cs:9`). If D4 changes the scheme, follow D4.
+Done: renamed to `sa-button-link` rather than `sa-link-button`, following D4.
 
 ### J13. InputGroupAddon
 

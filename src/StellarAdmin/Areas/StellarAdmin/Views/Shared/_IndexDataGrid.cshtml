@@ -73,20 +73,20 @@
                 }
                 @if (Model.CanView)
                 {
-                    <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                    <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    asp-action="View" asp-route-id="@resourceId" hx-boost="false"
                                    aria-label="@Model.ViewLabel" interestfor="@viewTooltipId">
                         <sa-icon name="eye" />
-                    </sa-linkbutton>
+                    </sa-button-link>
                     <sa-tooltip id="@viewTooltipId">@Model.ViewLabel</sa-tooltip>
                 }
                 @if (Model.CanEdit)
                 {
-                    <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                    <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                    asp-action="Edit" asp-route-id="@resourceId" hx-boost="false"
                                    aria-label="@Model.EditLabel" interestfor="@editTooltipId">
                         <sa-icon name="square-pen" />
-                    </sa-linkbutton>
+                    </sa-button-link>
                     <sa-tooltip id="@editTooltipId">@Model.EditLabel</sa-tooltip>
                 }
                 else if (inline?.EditFields is not null)

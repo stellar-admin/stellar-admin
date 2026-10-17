@@ -1,6 +1,6 @@
 ---
 component: Command
-tags: [sa-command, sa-command-dialog, sa-command-empty, sa-command-group, sa-command-input, sa-command-item, sa-command-link-item, sa-command-list, sa-command-separator, sa-command-shortcut]
+tags: [sa-command, sa-command-dialog, sa-command-empty, sa-command-group, sa-command-input, sa-command-item, sa-command-item-link, sa-command-list, sa-command-separator, sa-command-shortcut]
 generated: true
 ---
 
@@ -11,7 +11,7 @@ A searchable menu of commands or options, navigated with the keyboard from a sin
 <!-- structure:begin -->
 ## Composition and behavior
 
-Put one `<sa-command-input>` and one `<sa-command-list>` inside `<sa-command>`. The list holds `<sa-command-empty>`, `<sa-command-item>`/`<sa-command-link-item>` entries, optional `<sa-command-group heading="...">` sections and `<sa-command-separator>` between groups. Name the menu with `label` (a visually hidden label for the input); a placeholder is not a label. Focus stays in the input: arrows, Home/End and Ctrl+N/J/P/K move the highlighted item via `aria-activedescendant`, and Enter chooses it. `loop="true"` wraps navigation.
+Put one `<sa-command-input>` and one `<sa-command-list>` inside `<sa-command>`. The list holds `<sa-command-empty>`, `<sa-command-item>`/`<sa-command-item-link>` entries, optional `<sa-command-group heading="...">` sections and `<sa-command-separator>` between groups. Name the menu with `label` (a visually hidden label for the input); a placeholder is not a label. Focus stays in the input: arrows, Home/End and Ctrl+N/J/P/K move the highlighted item via `aria-activedescendant`, and Enter chooses it. `loop="true"` wraps navigation.
 
 With the default `filter="CommandFilter.Client"`, items are fuzzy-matched on their `value` (default: their text, excluding the shortcut) plus `keywords`, ranked within their own group (groups keep their order), and non-matches, empty groups and separators are hidden. Choosing an item (click or Enter) dispatches a bubbling `itemselect` event with `event.detail.value`; link items also navigate. Use `checked="true"` for a check mark (hidden when the item has a shortcut) and move it yourself in an `itemselect` handler by setting `data-checked="true"`.
 
@@ -30,7 +30,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 | `<sa-command-group>` | A set of related items in a command menu, with an optional heading. The group is hidden when none of its items match the search. |
 | `<sa-command-input>` | The search input of a command menu. Attributes the tag does not recognize, such as `name`, `placeholder`, or request attributes for server-side search, are rendered on the input element. |
 | `<sa-command-item>` | A selectable option in a command menu. Choosing it dispatches a bubbling `itemselect` event whose detail carries the item's value. |
-| `<sa-command-link-item>` | A command menu option rendered as a link, navigating to its target when chosen. |
+| `<sa-command-item-link>` | A command menu option rendered as a link, navigating to its target when chosen. |
 | `<sa-command-list>` | The scrollable list of a command menu's groups and items. When the application supplies results itself, this is the element whose contents it replaces. |
 | `<sa-command-separator>` | A divider between groups in a command menu. It is hidden while a search is active. |
 | `<sa-command-shortcut>` | The keyboard shortcut for a command menu item, aligned to the item's end. |
@@ -74,7 +74,7 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
 | `value` | `string` | — | — |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
-### `<sa-command-link-item>`
+### `<sa-command-item-link>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
@@ -169,14 +169,14 @@ For server-side search set `filter="CommandFilter.None"`: the menu never hides o
             </sa-command-group>
             <sa-command-separator />
             <sa-command-group heading="Bookings">
-                <sa-command-link-item href="#">
+                <sa-command-item-link href="#">
                     <sa-icon name="ticket" />
                     <span>Upcoming bookings</span>
-                </sa-command-link-item>
-                <sa-command-link-item href="#">
+                </sa-command-item-link>
+                <sa-command-item-link href="#">
                     <sa-icon name="calendar" />
                     <span>Travel calendar</span>
-                </sa-command-link-item>
+                </sa-command-item-link>
             </sa-command-group>
         </sa-command-list>
     </sa-command>

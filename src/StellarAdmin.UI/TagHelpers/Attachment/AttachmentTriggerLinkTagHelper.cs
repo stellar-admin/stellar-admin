@@ -7,12 +7,12 @@ namespace StellarAdmin.UI;
 ///     An attachment trigger rendered as an anchor, making the whole attachment a clickable link
 ///     while leaving its actions clickable.
 /// </summary>
-[HtmlTargetElement("sa-attachment-link-trigger")]
-public class AttachmentLinkTriggerTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-attachment-trigger-link")]
+public class AttachmentTriggerLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public AttachmentLinkTriggerTagHelper(IHtmlGenerator htmlGenerator)
+    public AttachmentTriggerLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

@@ -1,6 +1,6 @@
 ---
 component: Bubble
-tags: [sa-bubble, sa-bubble-button-content, sa-bubble-content, sa-bubble-group, sa-bubble-link-content, sa-bubble-reactions]
+tags: [sa-bubble, sa-bubble-button-content, sa-bubble-content, sa-bubble-content-link, sa-bubble-group, sa-bubble-reactions]
 generated: true
 ---
 
@@ -15,8 +15,8 @@ A framed message in a conversation, holding its content and any reactions.
 | `<sa-bubble>` | A framed message in a conversation, holding its content and any reactions. |
 | `<sa-bubble-button-content>` | Bubble content rendered as a button, making the whole bubble activatable. |
 | `<sa-bubble-content>` | The framed surface of a bubble, holding the message text. |
+| `<sa-bubble-content-link>` | Bubble content rendered as an anchor, making the whole bubble a clickable link. |
 | `<sa-bubble-group>` | A container that stacks consecutive bubbles from the same sender. |
-| `<sa-bubble-link-content>` | Bubble content rendered as an anchor, making the whole bubble a clickable link. |
 | `<sa-bubble-reactions>` | A row of emoji reactions or small actions, anchored to an edge of the bubble. |
 
 ## Attributes
@@ -31,7 +31,7 @@ A framed message in a conversation, holding its content and any reactions.
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
 
-### `<sa-bubble-link-content>`
+### `<sa-bubble-content-link>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
@@ -149,19 +149,19 @@ A framed message in a conversation, holding its content and any reactions.
     </sa-bubble-content>
 </sa-bubble>
 <sa-bubble variant="BubbleVariant.Outline">
-    <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="e-ticket">
+    <sa-bubble-content-link asp-page="/Booking/Document" asp-route-id="e-ticket">
         E-ticket — Cape Town to Osaka
-    </sa-bubble-link-content>
+    </sa-bubble-content-link>
 </sa-bubble>
 <sa-bubble variant="BubbleVariant.Outline">
-    <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="hotel-voucher">
+    <sa-bubble-content-link asp-page="/Booking/Document" asp-route-id="hotel-voucher">
         Hotel voucher — Kyoto, 12 to 19 April
-    </sa-bubble-link-content>
+    </sa-bubble-content-link>
 </sa-bubble>
 <sa-bubble variant="BubbleVariant.Outline">
-    <sa-bubble-link-content asp-page="/Booking/Document" asp-route-id="transfer">
+    <sa-bubble-content-link asp-page="/Booking/Document" asp-route-id="transfer">
         Airport transfer confirmation
-    </sa-bubble-link-content>
+    </sa-bubble-content-link>
 </sa-bubble>
 <sa-bubble variant="BubbleVariant.Secondary">
     <sa-bubble-content>
@@ -169,8 +169,8 @@ A framed message in a conversation, holding its content and any reactions.
     </sa-bubble-content>
 </sa-bubble>
 <sa-bubble variant="BubbleVariant.Outline">
-    <sa-bubble-link-content href="https://www.japan.travel/" target="_blank" rel="noopener noreferrer">
+    <sa-bubble-content-link href="https://www.japan.travel/" target="_blank" rel="noopener noreferrer">
         Japan entry requirements
-    </sa-bubble-link-content>
+    </sa-bubble-content-link>
 </sa-bubble>
 ```

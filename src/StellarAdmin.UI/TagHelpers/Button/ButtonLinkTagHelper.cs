@@ -6,12 +6,12 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Renders an anchor element styled as a button, with routing support.
 /// </summary>
-[HtmlTargetElement("sa-linkbutton")]
-public class LinkButtonTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-button-link")]
+public class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public LinkButtonTagHelper(IHtmlGenerator htmlGenerator)
+    public ButtonLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

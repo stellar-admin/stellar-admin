@@ -8,7 +8,7 @@
             <sa-slot-outlet name="pre-page-actions" />
             @if (Model.CanCreate)
             {
-                <sa-linkbutton asp-action="Create">@Model.CreateLabel</sa-linkbutton>
+                <sa-button-link asp-action="Create">@Model.CreateLabel</sa-button-link>
             }
             else if (Model.InlineRows?.Create is { AddButton: InlineAddButton.Header or InlineAddButton.Both } inlineCreate)
             {

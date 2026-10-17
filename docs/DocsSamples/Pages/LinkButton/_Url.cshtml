@@ -1,17 +1,17 @@
 ﻿<sa-group gap="GroupGap.Small">
     <!-- code begin -->
     <!-- Specify the URL via the href attribute -->
-    <sa-linkbutton variant="ButtonVariant.Outline" href="https://dotnet.microsoft.com/" target="_blank">
+    <sa-button-link variant="ButtonVariant.Outline" href="https://dotnet.microsoft.com/" target="_blank">
         .NET Home Page
-    </sa-linkbutton>
+    </sa-button-link>
     <!-- Specify the Razor Page to navigate to -->
-    <sa-linkbutton variant="ButtonVariant.Outline" asp-page="/Booking/Confirmation" asp-route-id="123">
+    <sa-button-link variant="ButtonVariant.Outline" asp-page="/Booking/Confirmation" asp-route-id="123">
         Booking Confirmation
-    </sa-linkbutton>
+    </sa-button-link>
     <!-- Specify the MVC Controller Action to navigate to -->
-    <sa-linkbutton variant="ButtonVariant.Outline" asp-controller="Booking" asp-action="Confirmation"
+    <sa-button-link variant="ButtonVariant.Outline" asp-controller="Booking" asp-action="Confirmation"
                    asp-route-id="123">
         Booking Confirmation
-    </sa-linkbutton>
+    </sa-button-link>
     <!-- code end -->
 </sa-group>

@@ -70,9 +70,9 @@
                             <sa-table-cell>@booking.Lead</sa-table-cell>
                             <sa-table-cell>@booking.Destination</sa-table-cell>
                             <sa-table-cell class="w-px whitespace-nowrap">
-                                <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" href="#" aria-label="Edit @booking.Reference">
+                                <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" href="#" aria-label="Edit @booking.Reference">
                                     <sa-icon name="square-pen" />
-                                </sa-linkbutton>
+                                </sa-button-link>
                                 <sa-table-row-detail-toggle aria-label="Toggle details for @booking.Reference" />
                             </sa-table-cell>
                         </sa-table-row>
@@ -125,9 +125,9 @@
             <sa-data-grid-column class="w-px whitespace-nowrap">
                 <sa-data-grid-item-template>
                     @{ var booking = Html.GridItem<RowDetailBooking>(); }
-                    <sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" href="#" aria-label="Edit @booking.Reference">
+                    <sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.IconSmall" href="#" aria-label="Edit @booking.Reference">
                         <sa-icon name="square-pen" />
-                    </sa-linkbutton>
+                    </sa-button-link>
                     <sa-table-row-detail-toggle aria-label="Toggle details for @booking.Reference" />
                 </sa-data-grid-item-template>
             </sa-data-grid-column>

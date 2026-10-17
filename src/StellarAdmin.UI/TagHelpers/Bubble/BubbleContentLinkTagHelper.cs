@@ -6,12 +6,12 @@ namespace StellarAdmin.UI;
 /// <summary>
 ///     Bubble content rendered as an anchor, making the whole bubble a clickable link.
 /// </summary>
-[HtmlTargetElement("sa-bubble-link-content")]
-public class BubbleLinkContentTagHelper : StellarAdminAnchorTagHelperBase
+[HtmlTargetElement("sa-bubble-content-link")]
+public class BubbleContentLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 
-    public BubbleLinkContentTagHelper(IHtmlGenerator htmlGenerator)
+    public BubbleContentLinkTagHelper(IHtmlGenerator htmlGenerator)
     {
         _htmlGenerator = htmlGenerator ?? throw new ArgumentNullException(nameof(htmlGenerator));
     }

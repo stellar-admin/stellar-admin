@@ -69,7 +69,7 @@
         switch (item)
         {
             case SidebarActionLinkItem actionLinkItem:
-                <sa-command-link-item asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
+                <sa-command-item-link asp-controller="@actionLinkItem.Controller" asp-action="@actionLinkItem.Action"
                                       asp-area="@actionLinkItem.Area" keywords="@groupLabel"
                                       target="@Target(actionLinkItem)" rel="@Rel(actionLinkItem)">
                     @if (item.Icon is { } icon)
@@ -77,20 +77,20 @@
                         <sa-icon name="@icon"/>
                     }
                     @actionLinkItem.Label
-                </sa-command-link-item>
+                </sa-command-item-link>
                 break;
             case SidebarLinkItem linkItem:
-                <sa-command-link-item href="@Url.Content(linkItem.Href)" keywords="@groupLabel"
+                <sa-command-item-link href="@Url.Content(linkItem.Href)" keywords="@groupLabel"
                                       target="@Target(linkItem)" rel="@Rel(linkItem)">
                     @if (item.Icon is { } icon)
                     {
                         <sa-icon name="@icon"/>
                     }
                     @linkItem.Label
-                </sa-command-link-item>
+                </sa-command-item-link>
                 break;
             case SidebarPageLinkItem pageLinkItem:
-                <sa-command-link-item asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
+                <sa-command-item-link asp-page="@pageLinkItem.Page" asp-area="@pageLinkItem.Area"
                                       keywords="@groupLabel" target="@Target(pageLinkItem)"
                                       rel="@Rel(pageLinkItem)">
                     @if (item.Icon is { } icon)
@@ -98,7 +98,7 @@
                         <sa-icon name="@icon"/>
                     }
                     @pageLinkItem.Label
-                </sa-command-link-item>
+                </sa-command-item-link>
                 break;
         }
     }

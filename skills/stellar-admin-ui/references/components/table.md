@@ -270,10 +270,10 @@ A responsive data table, rendered as a `<table>` inside a scrollable container. 
                     <sa-table-cell>@booking.Destination</sa-table-cell>
                     <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
                     <sa-table-cell class="w-px whitespace-nowrap">
-                        <sa-linkbutton href="#" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
+                        <sa-button-link href="#" variant="ButtonVariant.Outline" size="ButtonSize.IconSmall"
                                        aria-label="Edit @booking.Id">
                             <sa-icon name="square-pen"/>
-                        </sa-linkbutton>
+                        </sa-button-link>
                         <sa-table-row-detail-toggle aria-label="Show itinerary for @booking.Id"/>
                     </sa-table-cell>
                 </sa-table-row>

@@ -92,10 +92,10 @@
                 <sa-command-group heading="@demoGroup.Title">
                     @foreach (var demoItem in demoGroup.Items)
                     {
-                        <sa-command-link-item asp-page="@demoItem.Page" keywords="@demoGroup.Title"
+                        <sa-command-item-link asp-page="@demoItem.Page" keywords="@demoGroup.Title"
                                               checked="@(demoItem.Page == currentPage)">
                             @demoItem.Title
-                        </sa-command-link-item>
+                        </sa-command-item-link>
                     }
                 </sa-command-group>
             }

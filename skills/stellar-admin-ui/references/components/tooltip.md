@@ -37,9 +37,9 @@ A small floating label that appears when the user hovers or focuses a trigger el
 <sa-button variant="ButtonVariant.Outline" interestfor="--tooltip-elements-button">
     Button
 </sa-button>
-<sa-linkbutton variant="ButtonVariant.Outline" interestfor="--tooltip-elements-linkbutton">
+<sa-button-link variant="ButtonVariant.Outline" interestfor="--tooltip-elements-linkbutton">
     Link Button
-</sa-linkbutton>
+</sa-button-link>
 <sa-input interestfor="--tooltip-elements-input"/>
 <sa-textarea interestfor="--tooltip-elements-textarea"></sa-textarea>
 <sa-select interestfor="--tooltip-elements-select">

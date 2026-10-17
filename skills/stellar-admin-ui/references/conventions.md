@@ -82,7 +82,7 @@ See the [forms](forms.md) guide for the full form story.
 Tag helpers that render an `<a>` — Link Button, Breadcrumb links, Pagination links, Tab links, Link Item, Dropdown Menu links, Sidebar menu links — accept either a raw `href` or the standard ASP.NET Core routing attributes (`asp-page`, `asp-controller` / `asp-action`, `asp-route-*`, `asp-area`, `asp-fragment` and friends). Routing attributes are resolved by the framework's own anchor tag helper, so they behave exactly as they do on a plain `<a>`.
 
 ```razor
-<sa-linkbutton asp-page="/Bookings/Edit" asp-route-id="@booking.Id">Edit</sa-linkbutton>
+<sa-button-link asp-page="/Bookings/Edit" asp-route-id="@booking.Id">Edit</sa-button-link>
 ```
 
 ## 7. Overlays open declaratively — never with `onclick`

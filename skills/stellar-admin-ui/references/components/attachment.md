@@ -1,6 +1,6 @@
 ---
 component: Attachment
-tags: [sa-attachment, sa-attachment-action, sa-attachment-actions, sa-attachment-button-trigger, sa-attachment-content, sa-attachment-description, sa-attachment-group, sa-attachment-link-trigger, sa-attachment-media, sa-attachment-title]
+tags: [sa-attachment, sa-attachment-action, sa-attachment-actions, sa-attachment-button-trigger, sa-attachment-content, sa-attachment-description, sa-attachment-group, sa-attachment-media, sa-attachment-title, sa-attachment-trigger-link]
 generated: true
 ---
 
@@ -19,9 +19,9 @@ A file or image presented with its media, metadata, upload state, and actions.
 | `<sa-attachment-content>` | The region of an attachment that holds its title and description. |
 | `<sa-attachment-description>` | The supporting text of an attachment, such as its file type, size, or upload status. |
 | `<sa-attachment-group>` | A horizontally scrolling row of attachments that snaps each one into view. |
-| `<sa-attachment-link-trigger>` | An attachment trigger rendered as an anchor, making the whole attachment a clickable link while leaving its actions clickable. |
 | `<sa-attachment-media>` | The media region of an attachment, holding a file-type icon or a thumbnail preview. |
 | `<sa-attachment-title>` | The name of an attachment, truncated to fit and shimmering while it uploads or processes. |
+| `<sa-attachment-trigger-link>` | An attachment trigger rendered as an anchor, making the whole attachment a clickable link while leaving its actions clickable. |
 
 ## Attributes
 
@@ -44,7 +44,14 @@ A file or image presented with its media, metadata, upload state, and actions.
 | `variant` | `ButtonVariant` | `Ghost` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
-### `<sa-attachment-link-trigger>`
+### `<sa-attachment-media>`
+
+| Attribute | Type | Default | Values |
+|-----------|------|---------|--------|
+| `variant` | `AttachmentMediaVariant` | `Icon` | `Icon`, `Image` |
+| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
+
+### `<sa-attachment-trigger-link>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
@@ -59,13 +66,6 @@ A file or image presented with its media, metadata, upload state, and actions.
 | `asp-route` | `string` | `null` | — |
 | `asp-all-route-data` | `IDictionary<string, string?>` | — | — |
 | `asp-route-*` | `IDictionary<string, string?>` | — | — |
-| `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
-
-### `<sa-attachment-media>`
-
-| Attribute | Type | Default | Values |
-|-----------|------|---------|--------|
-| `variant` | `AttachmentMediaVariant` | `Icon` | `Icon`, `Image` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ## Examples
@@ -335,7 +335,7 @@ A file or image presented with its media, metadata, upload state, and actions.
                 <sa-icon name="x"/>
             </sa-attachment-action>
         </sa-attachment-actions>
-        <sa-attachment-link-trigger href="/gradients/gradient-1.jpg"
+        <sa-attachment-trigger-link href="/gradients/gradient-1.jpg"
                                     aria-label="Download flight-confirmation.pdf"/>
     </sa-attachment>
 </div>

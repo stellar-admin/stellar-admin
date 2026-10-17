@@ -327,7 +327,7 @@ internal static partial class Extractor
 
         // The root tag is the one that is a prefix of the most other tags (e.g. sa-item for the
         // Item family, sa-sidebar for Sidebar). Ties break toward the shortest, then alphabetical.
-        // This is robust to outlier tags (e.g. sa-linkbutton) that don't share the family prefix.
+        // This is robust to outlier tags that don't share the family prefix.
         return tags.OrderByDescending(t =>
                 tags.Count(o =>
                     o.Name != t.Name && o.Name.StartsWith(t.Name + "-", StringComparison.Ordinal)

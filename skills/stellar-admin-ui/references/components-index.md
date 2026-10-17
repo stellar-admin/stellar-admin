@@ -11,7 +11,7 @@
 | [Badge](components/badge.md) | `<sa-badge>` | A small label used to highlight status, counts, or categories. |
 | [Breadcrumb](components/breadcrumb.md) | `<sa-breadcrumb>`, `<sa-breadcrumb-ellipsis>`, `<sa-breadcrumb-item>`, … | A breadcrumb navigation trail, rendered as a `<nav>`; shows the path to the current page. |
 | [Bubble](components/bubble.md) | `<sa-bubble>`, `<sa-bubble-button-content>`, `<sa-bubble-content>`, … | A framed message in a conversation, holding its content and any reactions. |
-| [Button](components/button.md) | `<sa-button>`, `<sa-linkbutton>` | Renders a button element for triggering actions. |
+| [Button](components/button.md) | `<sa-button>`, `<sa-button-link>` | Renders a button element for triggering actions. |
 | [ButtonGroup](components/button-group.md) | `<sa-button-group>`, `<sa-button-group-separator>`, `<sa-button-group-text>` | Groups related buttons together as a single visual unit. |
 | [Card](components/card.md) | `<sa-card>`, `<sa-card-action>`, `<sa-card-content>`, … | A flexible container that groups related content, composed of a header, title, description, content, footer, and action subcomponents. |
 | [Carousel](components/carousel.md) | `<sa-carousel>`, `<sa-carousel-content>`, `<sa-carousel-indicators>`, … | A scrollable collection of slides with optional navigation controls. |

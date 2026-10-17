@@ -93,7 +93,7 @@ Then check the component in DocsSamples (Phase 4) in the default theme against u
 
 `src/StellarAdmin.UI/TagHelpers/<Component>/`, one file per type. Pattern reference: `TagHelpers/Bubble/`.
 
-**Naming: component prefix first, element role last** — `sa-bubble-link-content`, `sa-sidebar-menu-button`, `sa-item-link`, with class names to match. `sa-linkbutton` is a deliberate exception: standalone, not part of a `sa-button` compound.
+**Naming: component prefix first, element role last** — `sa-bubble-content-link`, `sa-sidebar-menu-button`, `sa-item-link`, with class names to match. The link version of a part appends `-link` to the part's tag, as in `sa-button-link` and `sa-command-item-link`.
 
 - Nullable enum properties resolved at the top of `ProcessAsync`: `var effectiveVariant = Variant ?? BubbleVariant.Default;`
 - `GetDataAttributeText()` on each enum in a C# 14 `extension(...)` block; the extension class is `internal` and gets no XML docs.

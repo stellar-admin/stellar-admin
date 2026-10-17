@@ -1,6 +1,6 @@
 ---
 component: Button
-tags: [sa-button, sa-linkbutton]
+tags: [sa-button, sa-button-link]
 generated: true
 ---
 
@@ -13,7 +13,7 @@ Renders a button element for triggering actions.
 | Tag | Description |
 |-----|-------------|
 | `<sa-button>` | Renders a button element for triggering actions. |
-| `<sa-linkbutton>` | Renders an anchor element styled as a button, with routing support. |
+| `<sa-button-link>` | Renders an anchor element styled as a button, with routing support. |
 
 ## Attributes
 
@@ -27,7 +27,7 @@ Renders a button element for triggering actions.
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
 
-### `<sa-linkbutton>`
+### `<sa-button-link>`
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
@@ -61,29 +61,29 @@ Renders a button element for triggering actions.
 *From `Pages/LinkButton/_Intro.cshtml`*
 
 ```razor
-<sa-linkbutton variant="ButtonVariant.Outline" href="#">
+<sa-button-link variant="ButtonVariant.Outline" href="#">
     <sa-icon name="tickets-plane"/>
     View Tickets
-</sa-linkbutton>
-<sa-linkbutton variant="ButtonVariant.Outline" size="ButtonSize.Icon" class="rounded-full" href="#" aria-label="Share">
+</sa-button-link>
+<sa-button-link variant="ButtonVariant.Outline" size="ButtonSize.Icon" class="rounded-full" href="#" aria-label="Share">
     <sa-icon name="share"/>
-</sa-linkbutton>
+</sa-button-link>
 ```
 
 *From `Pages/LinkButton/_Url.cshtml`*
 
 ```razor
 <!-- Specify the URL via the href attribute -->
-<sa-linkbutton variant="ButtonVariant.Outline" href="https://dotnet.microsoft.com/" target="_blank">
+<sa-button-link variant="ButtonVariant.Outline" href="https://dotnet.microsoft.com/" target="_blank">
     .NET Home Page
-</sa-linkbutton>
+</sa-button-link>
 <!-- Specify the Razor Page to navigate to -->
-<sa-linkbutton variant="ButtonVariant.Outline" asp-page="/Booking/Confirmation" asp-route-id="123">
+<sa-button-link variant="ButtonVariant.Outline" asp-page="/Booking/Confirmation" asp-route-id="123">
     Booking Confirmation
-</sa-linkbutton>
+</sa-button-link>
 <!-- Specify the MVC Controller Action to navigate to -->
-<sa-linkbutton variant="ButtonVariant.Outline" asp-controller="Booking" asp-action="Confirmation"
+<sa-button-link variant="ButtonVariant.Outline" asp-controller="Booking" asp-action="Confirmation"
                asp-route-id="123">
     Booking Confirmation
-</sa-linkbutton>
+</sa-button-link>
 ```

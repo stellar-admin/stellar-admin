@@ -10,7 +10,7 @@
         <sa-page-header-title>@Model.Title</sa-page-header-title>
         <sa-page-header-actions>
             <sa-slot-outlet name="pre-page-actions"/>
-            <sa-linkbutton asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-linkbutton>
+            <sa-button-link asp-action="Index" asp-route-id="" variant="ButtonVariant.Outline" data-slot="view-back">Back</sa-button-link>
             @if (Model.Delete is { } delete)
             {
                 <sa-button type="button" variant="ButtonVariant.Destructive"
@@ -18,7 +18,7 @@
             }
             @if (Model.EditLabel is { } editLabel)
             {
-                <sa-linkbutton asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-linkbutton>
+                <sa-button-link asp-action="Edit" asp-route-id="@Model.EntityId">@editLabel</sa-button-link>
             }
             <sa-slot-outlet name="post-page-actions"/>
         </sa-page-header-actions>
