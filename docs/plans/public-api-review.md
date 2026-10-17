@@ -53,7 +53,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | Done (2026-10-17) |
 | J19 | Use one naming scheme for DataGrid sort and paging | Done (2026-10-17) |
 | J20 | Use `maxlength` on Input OTP and `aria-invalid` on Chip Group | Done (2026-10-17) |
-| J21 | Use `show-*` instead of `render-*` | |
+| J21 | Use `show-error` and `wrap-in-field` instead of `render-*` | Done (2026-10-17) |
 | J22 | Rename `heading` on `sa-command-group` to `title` | |
 | J23 | Give every bound property an explicit attribute name | |
 | J24 | Make Slider and Progress numbers `double?` | |
@@ -336,6 +336,13 @@ Done (2026-10-17), with a changed decision:
 ### J21. show-* toggles
 
 `render-error` and `render-field` become `show-error` and `show-field`.
+
+Done (2026-10-17), with a changed name:
+
+- `sa-questionnaire-item` and `sa-questionnaire-input` take `show-error` (`ShowError`).
+- The field inputs take `wrap-in-field` (`WrapInField`) instead of `show-field`, because `show-field="false"` reads as hiding the input when it only skips the field wrapper.
+- Internal callers (InputGroup input and textarea, ChoiceGroup), the grid editor templates, DocsSamples, ComponentPlayground, tests and skills were updated.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J22. Group caption
 

@@ -223,7 +223,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
                 "label",
                 "description",
                 "error",
-                "render-field",
+                "wrap-in-field",
                 "asp-for",
                 "asp-items",
             }
@@ -380,7 +380,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
         await new InputTagHelper(_generator, _icons)
         {
             ViewContext = ViewContext,
-            ShouldRenderField = false,
+            WrapInField = false,
         }.ProcessAsync(context, input);
 
         var field = new FieldTagBuilder(FieldOrientation.Horizontal, card ? null : css);

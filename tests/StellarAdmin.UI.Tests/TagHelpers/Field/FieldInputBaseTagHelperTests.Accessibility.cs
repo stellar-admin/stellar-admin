@@ -149,7 +149,7 @@ public partial class FieldInputBaseTagHelperTests
         sut.Name = "value";
         sut.Description = "Description text";
         sut.Error = "Error text";
-        sut.ShouldRenderField = false;
+        sut.WrapInField = false;
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);

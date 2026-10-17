@@ -161,7 +161,7 @@ public partial class InputTagHelperTests
             Description = "Help",
             Error = "Invalid",
         };
-        sut.ShouldRenderField = false;
+        sut.WrapInField = false;
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);

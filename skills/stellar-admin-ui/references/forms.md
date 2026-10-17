@@ -27,7 +27,7 @@ Any StellarAdmin input goes in the input slot: `<sa-input>`, `<sa-select>`, `<sa
 
 StellarAdmin inputs can **render their own wrapping field** (label + description + error) so you don't write `<sa-field>` by hand. This is the default, preferred style for model-bound forms.
 
-An input renders an implicit field when **any** of `asp-for`, `label`, `description`, or `error` is present — **unless** it is already inside a `<sa-field>` (it never double-wraps). Force it either way with `render-field="true|false"`.
+An input renders an implicit field when **any** of `asp-for`, `label`, `description`, or `error` is present — **unless** it is already inside a `<sa-field>` (it never double-wraps). Force it either way with `wrap-in-field="true|false"`.
 
 **Implicit + model binding (the recommended default):**
 
@@ -166,7 +166,7 @@ You don't need to do this for **implicit** fields: a checkbox, radio or switch t
 <sa-input asp-for="RememberMe" />   @* checkbox, horizontal row, label + description, all automatic *@
 ```
 
-`render-field` only toggles the wrapping field on or off — it doesn't control orientation. To change the layout, write the field explicitly.
+`wrap-in-field` only toggles the wrapping field on or off — it doesn't control orientation. To change the layout, write the field explicitly.
 
 ## Choice cards
 
@@ -200,7 +200,7 @@ The same shape with `data-slot="radio-group"` and `type="radio"` gives radio cho
 ## Rules and gotchas
 
 1. **Prefer implicit + `asp-for`** for model-bound forms; fall back to explicit `<sa-field>` only when you need custom structure.
-2. Implicit wrapping fires on `asp-for` / `label` / `description` / `error`, but **not** inside an existing `<sa-field>`. Override with `render-field`.
+2. Implicit wrapping fires on `asp-for` / `label` / `description` / `error`, but **not** inside an existing `<sa-field>`. Override with `wrap-in-field`.
 3. The error tag is `<sa-field-error>`. Bind `asp-for` for automatic validation; otherwise set `aria-invalid="true"` and supply the message.
 4. Individual checkboxes and radios use `<sa-input type="checkbox|radio">`. There is no `<sa-checkbox>` or `<sa-radio>` tag. Use `<sa-checkbox-group>` for a collection of selected values and `<sa-radio-group>` for one selected value.
 5. Explicit field order is label → input → description → error — except horizontal checkbox/radio/switch rows, which put the input first.

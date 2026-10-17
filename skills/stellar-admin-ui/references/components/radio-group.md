@@ -68,7 +68,7 @@ Use a nullable property with `[Required]` when the server must reject no selecti
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
 | `name` | `string` | `Name` | — |
-| `render-field` | `bool` | — | `true`, `false` |
+| `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

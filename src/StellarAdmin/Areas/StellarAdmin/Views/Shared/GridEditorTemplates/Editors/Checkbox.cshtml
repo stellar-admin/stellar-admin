@@ -5,6 +5,6 @@
 }
 
 <span class="sa-cell-check">
-    <sa-input type="checkbox" render-field="false" asp-for="@Model" disabled="@IsReadOnly"
+    <sa-input type="checkbox" wrap-in-field="false" asp-for="@Model" disabled="@IsReadOnly"
               aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />
 </span>

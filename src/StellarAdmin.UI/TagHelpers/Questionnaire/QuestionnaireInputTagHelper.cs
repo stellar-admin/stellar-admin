@@ -49,8 +49,8 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <c>true</c>.
     /// </remarks>
-    [HtmlAttributeName("render-error")]
-    public bool? RenderError { get; set; }
+    [HtmlAttributeName("show-error")]
+    public bool? ShowError { get; set; }
 
     /// <summary>
     ///     Whether this answer and the item's choices replace one another: typing here clears the
@@ -148,7 +148,7 @@ public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
 
         // The question's own message reports the choices; this one reports the property typed
         // into here, so it sits with the input rather than at the end of the question.
-        if (For != null && RenderError != false)
+        if (For != null && ShowError != false)
         {
             output.PostElement.AppendHtml(await BuildErrorAsync(context));
         }

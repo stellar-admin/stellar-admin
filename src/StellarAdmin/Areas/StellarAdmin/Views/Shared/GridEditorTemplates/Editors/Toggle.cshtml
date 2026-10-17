@@ -5,6 +5,6 @@
 }
 
 <span class="sa-cell-check">
-    <sa-switch render-field="false" size="SwitchSize.Small" asp-for="@Model" disabled="@IsReadOnly"
+    <sa-switch wrap-in-field="false" size="SwitchSize.Small" asp-for="@Model" disabled="@IsReadOnly"
                aria-label="@(Title ?? ViewData.ModelMetadata.GetDisplayName())" aria-describedby="@CellErrorId" />
 </span>

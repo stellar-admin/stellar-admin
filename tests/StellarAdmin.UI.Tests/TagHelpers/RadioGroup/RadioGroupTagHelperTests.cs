@@ -388,7 +388,7 @@ public class RadioGroupTagHelperTests
             ViewContext = context.ViewContext,
             Name = "delivery",
             Label = "Delivery",
-            ShouldRenderField = false,
+            WrapInField = false,
             Items = [new("Standard", "standard")],
         };
 

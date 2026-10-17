@@ -75,7 +75,7 @@ public class InputGroupInputTagHelper : StellarAdminTagHelperBase
             Format = Format,
             FormName = FormName,
             Value = Value,
-            ShouldRenderField = false,
+            WrapInField = false,
         };
         await inputTagHelper.ProcessAsync(context, output);
     }

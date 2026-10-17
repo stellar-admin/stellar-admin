@@ -32,6 +32,6 @@ A caption for a form control, optionally bound to a model expression via `asp-fo
 ```razor
 <div class="grid gap-2">
     <sa-label asp-for="TravellerName"/>
-    <sa-input asp-for="TravellerName" render-field="false"/>
+    <sa-input asp-for="TravellerName" wrap-in-field="false"/>
 </div>
 ```

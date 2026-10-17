@@ -47,8 +47,8 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <c>true</c>.
     /// </remarks>
-    [HtmlAttributeName("render-error")]
-    public bool? RenderError { get; set; }
+    [HtmlAttributeName("show-error")]
+    public bool? ShowError { get; set; }
 
     /// <summary>
     ///     Whether the question must be answered.
@@ -109,7 +109,7 @@ public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
             JoinCssClasses("sa-questionnaire-item", output.GetUserSuppliedClass())
         );
 
-        if (For == null || RenderError == false)
+        if (For == null || ShowError == false)
         {
             return;
         }

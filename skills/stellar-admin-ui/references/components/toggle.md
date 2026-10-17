@@ -29,7 +29,7 @@ Renders a two-state button that can be toggled on or off.
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
 | `name` | `string` | `Name` | — |
-| `render-field` | `bool` | — | `true`, `false` |
+| `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.

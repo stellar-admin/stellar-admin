@@ -228,18 +228,18 @@ A data grid that renders a full table from declarative column definitions and a 
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status">
         <sa-data-grid-edit-template>
-            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+            <sa-select class="sa-cell-editor" wrap-in-field="false" size="SelectSize.Small"
                        asp-for="@Html.GridItem<Booking>().Status" asp-items="Html.GetEnumSelectList<BookingStatus>()" aria-label="Status"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Destination" field="Destination">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
+            <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+            <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
 </sa-data-grid>
@@ -253,19 +253,19 @@ A data grid that renders a full table from declarative column definitions and a 
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status">
         <sa-data-grid-edit-template>
-            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+            <sa-select class="sa-cell-editor" wrap-in-field="false" size="SelectSize.Small"
                        asp-for="@Html.GridItem<Booking>().Status" asp-items="Html.GetEnumSelectList<BookingStatus>()" aria-label="Status"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Destination" field="Destination">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination"
+            <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Destination"
                       placeholder="City, country" aria-label="Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+            <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
 </sa-data-grid>
@@ -324,13 +324,13 @@ A data grid that renders a full table from declarative column definitions and a 
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Destination" field="Destination">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
+            <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Destination" aria-label="Destination"/>
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Destination"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" class="text-right">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
+            <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Booking>().Amount" aria-label="Amount"/>
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Booking>().Amount"/>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>

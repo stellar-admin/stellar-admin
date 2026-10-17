@@ -154,8 +154,8 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     ///     a field is rendered automatically if a label, description, error, or <see cref="For" /> is supplied
     ///     and the input is not already nested inside a field.
     /// </summary>
-    [HtmlAttributeName("render-field")]
-    public bool? ShouldRenderField { get; set; }
+    [HtmlAttributeName("wrap-in-field")]
+    public bool? WrapInField { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="ViewContext" /> of the executing view.
@@ -477,9 +477,9 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     private bool ShouldRenderFieldWrapper()
     {
         // It the user explicitly indicated whether we should render a field, then we honor that
-        if (ShouldRenderField.HasValue)
+        if (WrapInField.HasValue)
         {
-            return ShouldRenderField.Value;
+            return WrapInField.Value;
         }
 
         // If we're rendering inside a field tag helper, we don't render another one

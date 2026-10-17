@@ -44,7 +44,7 @@ A segmented one-time-code input. A single real `<input>` holds the whole code an
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
 | `name` | `string` | `Name` | — |
-| `render-field` | `bool` | — | `true`, `false` |
+| `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-input-otp-slot>`

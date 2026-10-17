@@ -42,7 +42,7 @@ public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
         {
             ViewContext = ViewContext,
             For = For,
-            ShouldRenderField = false,
+            WrapInField = false,
         };
         await textareaTagHelper.ProcessAsync(context, output);
     }

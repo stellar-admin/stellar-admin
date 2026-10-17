@@ -63,7 +63,7 @@ public partial class FieldInputBaseTagHelperTests
         using var context = new RenderingContext();
         var sut = CreateSut("input", context);
         sut.Label = "Destination";
-        sut.ShouldRenderField = false;
+        sut.WrapInField = false;
         sut.ColumnSpan = "2";
         var grid = new GridTagHelper { Columns = 3 };
 

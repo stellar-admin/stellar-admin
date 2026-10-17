@@ -14,21 +14,21 @@
     <sa-data-grid-selection name="selected" />
     <sa-data-grid-column title="Name" field="Name" class="font-medium">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor" render-field="false" asp-for="@Html.GridItem<Tour>().Name" aria-label="Name" />
+            <sa-input class="sa-cell-editor" wrap-in-field="false" asp-for="@Html.GridItem<Tour>().Name" aria-label="Name" />
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().Name" />
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Country">
         <sa-data-grid-item-template>@DataGridEditing.Countries.GetValueOrDefault(Html.GridItem<Tour>().CountryCode ?? "")</sa-data-grid-item-template>
         <sa-data-grid-edit-template>
-            <sa-select class="sa-cell-editor" render-field="false" size="SelectSize.Small"
+            <sa-select class="sa-cell-editor" wrap-in-field="false" size="SelectSize.Small"
                        asp-for="@Html.GridItem<Tour>().CountryCode" asp-items="countries" aria-label="Country" />
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().CountryCode" />
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
     <sa-data-grid-column title="Price" field="Price" format="{0:C0}" class="text-right">
         <sa-data-grid-edit-template>
-            <sa-input class="sa-cell-editor text-right" render-field="false" asp-for="@Html.GridItem<Tour>().Price" aria-label="Price" />
+            <sa-input class="sa-cell-editor text-right" wrap-in-field="false" asp-for="@Html.GridItem<Tour>().Price" aria-label="Price" />
             <sa-field-error class="sa-cell-error" asp-for="@Html.GridItem<Tour>().Price" />
         </sa-data-grid-edit-template>
     </sa-data-grid-column>
@@ -45,7 +45,7 @@
         </sa-data-grid-item-template>
         <sa-data-grid-edit-template>
             <span class="sa-cell-check">
-                <sa-switch render-field="false" size="SwitchSize.Small" asp-for="@Html.GridItem<Tour>().Active" aria-label="Active" />
+                <sa-switch wrap-in-field="false" size="SwitchSize.Small" asp-for="@Html.GridItem<Tour>().Active" aria-label="Active" />
             </span>
         </sa-data-grid-edit-template>
     </sa-data-grid-column>

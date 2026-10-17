@@ -13,7 +13,7 @@ A group of radio buttons styled as a segmented control.
 
 Put `asp-for` on the parent, or use `name` and optional initial `value` for an unbound group. Each child supplies a distinct `value` and label content. Binding takes precedence over the parent's `name` and `value`.
 
-The outer component renders a `div` with `role="radiogroup"`; each item is a label containing a native radio. Supply `aria-label` or `aria-labelledby` for unbound groups. `aria-describedby` on the parent is also applied to each radio. Binding automatically renders the shared field label, description, and validation message. Use `label`, `description`, and `error` for explicit field text. Use `render-field="false"` or nest inside `<sa-field>` for explicit composition.
+The outer component renders a `div` with `role="radiogroup"`; each item is a label containing a native radio. Supply `aria-label` or `aria-labelledby` for unbound groups. `aria-describedby` on the parent is also applied to each radio. Binding automatically renders the shared field label, description, and validation message. Use `label`, `description`, and `error` for explicit field text. Use `wrap-in-field="false"` or nest inside `<sa-field>` for explicit composition.
 
 Attach standard `onchange` or a `change` event listener to the parent. Read `event.target.value`; `event.currentTarget` is the parent. Native changes bubble once per new selection. Initialization, reselecting the current value, reset, and programmatic `checked` assignments do not emit change events. No StellarAdmin JavaScript is required.
 
@@ -49,7 +49,7 @@ Use the component for a single choice from a short list. It has one horizontal a
 | `asp-for` | `ModelExpression` | — | — |
 | `label` | `string` | — | — |
 | `name` | `string` | `Name` | — |
-| `render-field` | `bool` | — | `true`, `false` |
+| `wrap-in-field` | `bool` | — | `true`, `false` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 ### `<sa-segmented-control-item>`
