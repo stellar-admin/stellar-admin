@@ -3,7 +3,7 @@
 /// <summary>
 ///     Where an input group add-on is positioned relative to the input.
 /// </summary>
-public enum InputGroupAddOnVariantAlignment
+public enum InputGroupAddonAlign
 {
     /// <summary>Aligned to the leading (inline start) edge of the input.</summary>
     InlineStart,
@@ -18,18 +18,18 @@ public enum InputGroupAddOnVariantAlignment
     BlockEnd,
 }
 
-internal static class InputGroupAddOnVariantAlignmentExtensions
+internal static class InputGroupAddonAlignExtensions
 {
-    extension(InputGroupAddOnVariantAlignment alignment)
+    extension(InputGroupAddonAlign align)
     {
         public string GetDataAttributeText()
         {
-            return alignment switch
+            return align switch
             {
-                InputGroupAddOnVariantAlignment.InlineStart => "inline-start",
-                InputGroupAddOnVariantAlignment.InlineEnd => "inline-end",
-                InputGroupAddOnVariantAlignment.BlockStart => "block-start",
-                InputGroupAddOnVariantAlignment.BlockEnd => "block-end",
+                InputGroupAddonAlign.InlineStart => "inline-start",
+                InputGroupAddonAlign.InlineEnd => "inline-end",
+                InputGroupAddonAlign.BlockStart => "block-start",
+                InputGroupAddonAlign.BlockEnd => "block-end",
                 _ => string.Empty,
             };
         }

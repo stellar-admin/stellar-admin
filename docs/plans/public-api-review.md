@@ -45,7 +45,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J10 | Make the resource options read-only to everyone, not internal | On hold with J5 |
 | J11 | Add the missing `TagHelper` suffix to five classes | Done (2026-10-17) |
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | Done as `sa-button-link` under D4 (2026-10-17) |
-| J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | |
+| J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | Done (2026-10-17) |
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | |
 | J15 | Use logical `Start`/`End` names | |
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | |
@@ -248,6 +248,12 @@ Done: renamed to `sa-button-link` rather than `sa-link-button`, following D4.
 ### J13. InputGroupAddon
 
 `InputGroupAddonTagHelper`, property `Align`, enum `InputGroupAddonAlign` (from `InputGroupAddOnVariantAlignment`).
+
+Done (2026-10-17):
+
+- Renamed the tag helper, the enum and the property `Alignment` to `Align`, which matches Group, Stack, Message and Bubble. The markup attribute was already `align`, so only the enum name changes in markup.
+- The enum members are unchanged and wait for J15.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J14. Own enums and Sidebar members
 

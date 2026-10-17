@@ -7,38 +7,35 @@ namespace StellarAdmin.UI;
 ///     the input's edges. Clicking the add-on focuses the group's input.
 /// </summary>
 [HtmlTargetElement("sa-input-group-addon")]
-public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
+public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
 {
-    private static readonly Dictionary<
-        InputGroupAddOnVariantAlignment,
-        string?[]
-    > AlignmentClasses = new Dictionary<InputGroupAddOnVariantAlignment, string?[]>
-    {
-        [InputGroupAddOnVariantAlignment.InlineStart] = ["sa-input-group-addon-align-inline-start"],
-        [InputGroupAddOnVariantAlignment.InlineEnd] = ["sa-input-group-addon-align-inline-end"],
-        [InputGroupAddOnVariantAlignment.BlockStart] = ["sa-input-group-addon-align-block-start"],
-        [InputGroupAddOnVariantAlignment.BlockEnd] = ["sa-input-group-addon-align-block-end"],
-    };
+    private static readonly Dictionary<InputGroupAddonAlign, string?[]> AlignClasses =
+        new Dictionary<InputGroupAddonAlign, string?[]>
+        {
+            [InputGroupAddonAlign.InlineStart] = ["sa-input-group-addon-align-inline-start"],
+            [InputGroupAddonAlign.InlineEnd] = ["sa-input-group-addon-align-inline-end"],
+            [InputGroupAddonAlign.BlockStart] = ["sa-input-group-addon-align-block-start"],
+            [InputGroupAddonAlign.BlockEnd] = ["sa-input-group-addon-align-block-end"],
+        };
 
     /// <summary>
     ///     Where the add-on is positioned relative to the input.
     /// </summary>
     /// <remarks>
-    ///     Defaults to <see cref="InputGroupAddOnVariantAlignment.InlineStart" />.
+    ///     Defaults to <see cref="InputGroupAddonAlign.InlineStart" />.
     /// </remarks>
-    [HtmlAttributeName("align")]
-    public InputGroupAddOnVariantAlignment? Alignment { get; set; }
+    public InputGroupAddonAlign? Align { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveAlignment = Alignment ?? InputGroupAddOnVariantAlignment.InlineStart;
+        var effectiveAlign = Align ?? InputGroupAddonAlign.InlineStart;
 
         output.TagName = "div";
         output.TagMode = TagMode.StartTagAndEndTag;
 
         output.Attributes.SetAttribute("role", "group");
         output.Attributes.SetAttribute("data-slot", "input-group-addon");
-        output.Attributes.SetAttribute("data-align", effectiveAlignment.GetDataAttributeText());
+        output.Attributes.SetAttribute("data-align", effectiveAlign.GetDataAttributeText());
 
         output.Attributes.SetAttribute(
             "onclick",
@@ -56,7 +53,7 @@ public class InputGroupAddOnTagHelper : StellarAdminTagHelperBase
             "class",
             JoinCssClasses(
                 new string?[] { "sa-input-group-addon" }
-                    .Union(AlignmentClasses[effectiveAlignment])
+                    .Union(AlignClasses[effectiveAlign])
                     .Append(output.GetUserSuppliedClass())
                     .ToArray()
             )

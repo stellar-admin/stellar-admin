@@ -25,7 +25,7 @@ A container that groups an input with add-ons, buttons, or text so they render a
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `align` | `InputGroupAddOnVariantAlignment` | `InlineStart` | `InlineStart`, `InlineEnd`, `BlockStart`, `BlockEnd` |
+| `align` | `InputGroupAddonAlign` | `InlineStart` | `InlineStart`, `InlineEnd`, `BlockStart`, `BlockEnd` |
 | `class` | `string` | — | Extra Tailwind utilities; merged last, so it overrides defaults. |
 
 > In Razor, enum values are written fully-qualified, e.g. `variant="ButtonVariant.Outline"`.
@@ -78,13 +78,13 @@ A container that groups an input with add-ons, buttons, or text so they render a
     <sa-input-group-addon>
         <sa-icon name="credit-card"/>
     </sa-input-group-addon>
-    <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
         <sa-icon name="check"/>
     </sa-input-group-addon>
 </sa-input-group>
 <sa-input-group>
     <sa-input-group-input placeholder="Card number"/>
-    <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
         <sa-icon name="star"/>
         <sa-icon name="info"/>
     </sa-input-group-addon>
@@ -96,7 +96,7 @@ A container that groups an input with add-ons, buttons, or text so they render a
 ```razor
 <sa-input-group>
     <sa-input-group-input placeholder="https://voyager.travel/trips/VT-48213" readonly/>
-    <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
         <sa-input-group-button
             aria-label="Copy"
             title="Copy"
@@ -111,7 +111,7 @@ A container that groups an input with add-ons, buttons, or text so they render a
         https://
     </sa-input-group-addon>
     <sa-input-group-input id="input-secure-19"/>
-    <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
         <sa-input-group-button
             size="InputGroupButtonSize.IconExtraSmall"
             aria-label="Favourite"
@@ -122,7 +122,7 @@ A container that groups an input with add-ons, buttons, or text so they render a
 </sa-input-group>
 <sa-input-group>
     <sa-input-group-input placeholder="Type to search..."/>
-    <sa-input-group-addon align="InputGroupAddOnVariantAlignment.InlineEnd">
+    <sa-input-group-addon align="InputGroupAddonAlign.InlineEnd">
         <sa-input-group-button variant="ButtonVariant.Secondary">Search</sa-input-group-button>
     </sa-input-group-addon>
 </sa-input-group>
