@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a line between groups of dropdown menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-separator")]
-public class DropdownMenuSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

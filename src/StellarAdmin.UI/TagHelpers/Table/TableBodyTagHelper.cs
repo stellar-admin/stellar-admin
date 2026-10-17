@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the body of a table, which holds the data rows, as a <c>&lt;tbody&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-body")]
-public class TableBodyTagHelper : StellarAdminTagHelperBase
+public sealed class TableBodyTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

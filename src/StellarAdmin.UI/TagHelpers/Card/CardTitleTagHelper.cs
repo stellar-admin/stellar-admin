@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the title of a card.
 /// </summary>
 [HtmlTargetElement("sa-card-title")]
-public class CardTitleTagHelper : StellarAdminTagHelperBase
+public sealed class CardTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

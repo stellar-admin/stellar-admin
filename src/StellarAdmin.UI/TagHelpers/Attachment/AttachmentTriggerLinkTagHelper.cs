@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     attributes.
 /// </remarks>
 [HtmlTargetElement("sa-attachment-trigger-link")]
-public class AttachmentTriggerLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class AttachmentTriggerLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

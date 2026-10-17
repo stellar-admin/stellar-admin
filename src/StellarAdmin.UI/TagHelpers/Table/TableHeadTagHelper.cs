@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a header cell in a table's header row, as a <c>&lt;th&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-head")]
-public class TableHeadTagHelper : StellarAdminTagHelperBase
+public sealed class TableHeadTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

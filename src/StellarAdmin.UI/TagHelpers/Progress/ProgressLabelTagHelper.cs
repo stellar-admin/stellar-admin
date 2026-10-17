@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a label for a progress bar.
 /// </summary>
 [HtmlTargetElement("sa-progress-label")]
-public class ProgressLabelTagHelper : StellarAdminTagHelperBase
+public sealed class ProgressLabelTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

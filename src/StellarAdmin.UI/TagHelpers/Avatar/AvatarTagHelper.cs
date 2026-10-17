@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a user's image, or their initials when there's no image.
 /// </summary>
 [HtmlTargetElement("sa-avatar")]
-public class AvatarTagHelper : StellarAdminTagHelperBase
+public sealed class AvatarTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the initials shown when there's no image.

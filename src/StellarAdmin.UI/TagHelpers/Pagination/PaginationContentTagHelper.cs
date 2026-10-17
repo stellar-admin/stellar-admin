@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the list that holds the pagination items.
 /// </summary>
 [HtmlTargetElement("sa-pagination-content")]
-public class PaginationContentTagHelper : StellarAdminTagHelperBase
+public sealed class PaginationContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

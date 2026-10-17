@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a list of related items.
 /// </summary>
 [HtmlTargetElement("sa-item-group")]
-public class ItemGroupTagHelper : StellarAdminTagHelperBase
+public sealed class ItemGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

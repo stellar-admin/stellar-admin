@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an empty state, which tells the user there is no content to show.
 /// </summary>
 [HtmlTargetElement("sa-empty")]
-public class EmptyTagHelper : StellarAdminTagHelperBase
+public sealed class EmptyTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

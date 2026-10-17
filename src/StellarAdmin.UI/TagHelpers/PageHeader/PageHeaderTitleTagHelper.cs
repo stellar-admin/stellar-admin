@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Inline content, such as an <c>&lt;sa-badge&gt;</c>, can follow the title text.
 /// </remarks>
 [HtmlTargetElement("sa-page-header-title")]
-public class PageHeaderTitleTagHelper : StellarAdminTagHelperBase
+public sealed class PageHeaderTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

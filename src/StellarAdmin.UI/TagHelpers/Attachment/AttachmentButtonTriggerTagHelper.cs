@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The attachment's action buttons stay clickable.
 /// </remarks>
 [HtmlTargetElement("sa-attachment-button-trigger")]
-public class AttachmentButtonTriggerTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentButtonTriggerTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -27,7 +27,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-pager")]
-public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
 {
     private const string PagePlaceholder = "{page}";
     private const string PageSizePlaceholder = "{pageSize}";

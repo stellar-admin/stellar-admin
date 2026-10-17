@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a section of a sidebar that groups related menu items.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-group")]
-public class SidebarGroupTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

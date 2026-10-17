@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a file with its media, details, upload state and actions.
 /// </summary>
 [HtmlTargetElement("sa-attachment")]
-public class AttachmentTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<AttachmentOrientation, string> AttachmentOrientationClasses =
         new()

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     its template places the slot.
 /// </remarks>
 [HtmlTargetElement("sa-slot-content", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class SlotContentTagHelper : StellarAdminTagHelperBase
+public sealed class SlotContentTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the name of the slot that the content fills.

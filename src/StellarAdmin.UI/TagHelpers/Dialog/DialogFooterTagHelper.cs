@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the footer of a dialog, which holds its action buttons.
 /// </summary>
 [HtmlTargetElement("sa-dialog-footer")]
-public class DialogFooterTagHelper : StellarAdminTagHelperBase
+public sealed class DialogFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     <see cref="SemanticIconRole.BreadcrumbSeparator" /> when it has none.
 /// </remarks>
 [HtmlTargetElement("sa-breadcrumb-separator")]
-public class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class BreadcrumbSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

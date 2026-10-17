@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the current page in a breadcrumb, as text that can't be clicked.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-page")]
-public class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
+public sealed class BreadcrumbPageTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

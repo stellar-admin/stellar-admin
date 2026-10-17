@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the keyboard shortcut of a command menu item, at the item's end.
 /// </summary>
 [HtmlTargetElement("sa-command-shortcut")]
-public class CommandShortcutTagHelper : StellarAdminTagHelperBase
+public sealed class CommandShortcutTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

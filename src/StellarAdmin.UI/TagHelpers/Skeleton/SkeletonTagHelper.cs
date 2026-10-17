@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Set the size and shape with the <c>class</c> attribute.
 /// </remarks>
 [HtmlTargetElement("sa-skeleton")]
-public class SkeletonTagHelper : StellarAdminTagHelperBase
+public sealed class SkeletonTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

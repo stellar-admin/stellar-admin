@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a group that combines an input with add-ons, buttons or text into one field.
 /// </summary>
 [HtmlTargetElement("sa-input-group")]
-public class InputGroupTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

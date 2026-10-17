@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders an option in an <c>sa-dropdown-menu-radio-group</c>.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-radio-item")]
-public class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuRadioItemTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

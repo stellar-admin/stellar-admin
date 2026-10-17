@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The icon is hidden from assistive technology.
 /// </remarks>
 [HtmlTargetElement("sa-marker-icon")]
-public class MarkerIconTagHelper : StellarAdminTagHelperBase
+public sealed class MarkerIconTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

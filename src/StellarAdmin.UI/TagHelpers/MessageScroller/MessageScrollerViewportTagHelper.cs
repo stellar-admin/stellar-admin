@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     name is "Messages" unless the element sets <c>aria-label</c> or <c>aria-labelledby</c>.
 /// </remarks>
 [HtmlTargetElement("sa-message-scroller-viewport")]
-public class MessageScrollerViewportTagHelper : StellarAdminTagHelperBase
+public sealed class MessageScrollerViewportTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     <c>sa-checkbox-group-item</c> elements or with <c>asp-items</c>.
 /// </remarks>
 [HtmlTargetElement("sa-checkbox-group")]
-public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
+public sealed class CheckboxGroupTagHelper : ChoiceGroupTagHelper
 {
     /// <summary>
     ///     Gets or sets the order in which the options fill the columns.

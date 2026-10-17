@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-dropdown-menu")]
-public class DropdownMenuTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

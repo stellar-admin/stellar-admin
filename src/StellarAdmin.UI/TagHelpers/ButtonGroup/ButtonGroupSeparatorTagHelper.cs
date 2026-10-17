@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a separator between items in a button group.
 /// </summary>
 [HtmlTargetElement("sa-button-group-separator")]
-public class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class ButtonGroupSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the orientation of the separator.

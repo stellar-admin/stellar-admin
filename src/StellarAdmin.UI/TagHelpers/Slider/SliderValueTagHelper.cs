@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     <see cref="For" />. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-slider-value", TagStructure = TagStructure.WithoutEndTag)]
-public class SliderValueTagHelper : StellarAdminTagHelperBase
+public sealed class SliderValueTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the <c>id</c> of the slider whose value is shown.

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     content, it shows "Previous".
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-previous")]
-public class QuestionnairePreviousTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnairePreviousTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

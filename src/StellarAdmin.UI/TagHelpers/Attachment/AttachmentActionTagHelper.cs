@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a button that acts on an attachment, such as removing or retrying it.
 /// </summary>
 [HtmlTargetElement("sa-attachment-action")]
-public class AttachmentActionTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentActionTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

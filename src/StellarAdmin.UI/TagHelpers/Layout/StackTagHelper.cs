@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a layout that arranges its children in a column.
 /// </summary>
 [HtmlTargetElement("sa-stack")]
-public class StackTagHelper : StellarAdminTagHelperBase
+public sealed class StackTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets how the children align horizontally.

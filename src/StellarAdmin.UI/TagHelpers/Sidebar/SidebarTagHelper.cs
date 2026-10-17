@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar")]
-public class SidebarTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the visual style of the sidebar.

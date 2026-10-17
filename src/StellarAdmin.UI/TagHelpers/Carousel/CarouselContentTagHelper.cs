@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Must be placed inside an <c>sa-carousel</c> element.
 /// </remarks>
 [HtmlTargetElement("sa-carousel-content")]
-public class CarouselContentTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">

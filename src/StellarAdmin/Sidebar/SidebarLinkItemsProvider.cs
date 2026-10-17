@@ -5,7 +5,10 @@ namespace StellarAdmin.Sidebar;
 
 internal sealed class SidebarLinkItemsProvider(StellarAdminOptions options) : ISidebarItemsProvider
 {
-    public async Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)
+    public async Task<IReadOnlyList<SidebarItem>> GetItemsAsync(
+        HttpContext httpContext,
+        CancellationToken cancellationToken
+    )
     {
         var items = new List<SidebarItem>();
         foreach (var link in options.SidebarLinks)
@@ -17,12 +20,7 @@ internal sealed class SidebarLinkItemsProvider(StellarAdminOptions options) : IS
                 continue;
             }
 
-            var item = link.Target.CreateItem(link.Label) with
-            {
-                Icon = link.Icon,
-                OpenInNewTab = link.OpenInNewTab,
-                Order = link.Order,
-            };
+            var item = link.Target.CreateItem(link);
 
             // Each grouped link gets its own group; SidebarItemsMerger merges groups with the
             // same label and sorts their links.

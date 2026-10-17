@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     the backdrop doesn't, unless the element sets its own <c>closedby</c>.
 /// </remarks>
 [HtmlTargetElement("sa-alert-dialog")]
-public class AlertDialogTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the dialog.

@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     the choices. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire")]
-public class QuestionnaireTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

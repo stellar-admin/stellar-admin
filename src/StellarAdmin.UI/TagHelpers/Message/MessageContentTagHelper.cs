@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the column that holds a message's header, body and footer.
 /// </summary>
 [HtmlTargetElement("sa-message-content")]
-public class MessageContentTagHelper : StellarAdminTagHelperBase
+public sealed class MessageContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

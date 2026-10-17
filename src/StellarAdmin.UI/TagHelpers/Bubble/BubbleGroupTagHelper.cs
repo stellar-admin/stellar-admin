@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a stack of consecutive bubbles from the same sender.
 /// </summary>
 [HtmlTargetElement("sa-bubble-group")]
-public class BubbleGroupTagHelper : StellarAdminTagHelperBase
+public sealed class BubbleGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

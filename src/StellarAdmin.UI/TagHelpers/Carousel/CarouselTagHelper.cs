@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-carousel")]
-public class CarouselTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the direction in which the slides scroll.

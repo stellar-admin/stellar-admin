@@ -32,6 +32,8 @@ public abstract class ChoiceGroupItemTagHelper : StellarAdminTagHelperBase
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
+    private protected ChoiceGroupItemTagHelper() { }
+
     /// <summary>
     ///     Renders the option through the group that contains it.
     /// </summary>
@@ -46,7 +48,7 @@ public abstract class ChoiceGroupItemTagHelper : StellarAdminTagHelperBase
     ///     The element isn't inside a matching radio or checkbox group, or <see cref="Value" /> is
     ///     <see langword="null" />.
     /// </exception>
-    protected async Task RenderAsync(
+    private protected async Task RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,
         bool multiple

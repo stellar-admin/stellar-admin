@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     value.
 /// </remarks>
 [HtmlTargetElement("sa-alert-dialog-cancel")]
-public class AlertDialogCancelTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogCancelTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the visual style of the button.

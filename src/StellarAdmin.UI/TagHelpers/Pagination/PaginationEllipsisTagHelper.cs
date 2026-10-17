@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     technology.
 /// </remarks>
 [HtmlTargetElement("sa-pagination-ellipsis")]
-public class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
+public sealed class PaginationEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

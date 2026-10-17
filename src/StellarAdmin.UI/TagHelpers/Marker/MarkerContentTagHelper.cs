@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the text of a marker.
 /// </summary>
 [HtmlTargetElement("sa-marker-content")]
-public class MarkerContentTagHelper : StellarAdminTagHelperBase
+public sealed class MarkerContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

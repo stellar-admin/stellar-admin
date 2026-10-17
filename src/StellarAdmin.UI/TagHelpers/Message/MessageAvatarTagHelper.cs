@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the avatar beside a message, aligned with the bottom of the message.
 /// </summary>
 [HtmlTargetElement("sa-message-avatar")]
-public class MessageAvatarTagHelper : StellarAdminTagHelperBase
+public sealed class MessageAvatarTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

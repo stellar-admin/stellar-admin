@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a row of a message scroller's transcript, which holds one message.
 /// </summary>
 [HtmlTargetElement("sa-message-scroller-item")]
-public class MessageScrollerItemTagHelper : StellarAdminTagHelperBase
+public sealed class MessageScrollerItemTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

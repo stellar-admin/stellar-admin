@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the main content of an item, which usually holds its title and description.
 /// </summary>
 [HtmlTargetElement("sa-item-content")]
-public class ItemContentTagHelper : StellarAdminTagHelperBase
+public sealed class ItemContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

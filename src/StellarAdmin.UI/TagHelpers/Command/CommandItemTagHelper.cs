@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     <c>detail.value</c>.
 /// </remarks>
 [HtmlTargetElement("sa-command-item")]
-public class CommandItemTagHelper : StellarAdminTagHelperBase
+public sealed class CommandItemTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

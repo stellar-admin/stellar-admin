@@ -18,7 +18,7 @@ namespace StellarAdmin.UI;
 ///     that holds the toasts. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-toaster", TagStructure = TagStructure.WithoutEndTag)]
-public class ToasterTagHelper : StellarAdminTagHelperBase
+public sealed class ToasterTagHelper : StellarAdminTagHelperBase
 {
     private static readonly (string Type, SemanticIconRole Role)[] TypeIcons =
     [

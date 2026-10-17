@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Screen readers announce new messages as they are added.
 /// </remarks>
 [HtmlTargetElement("sa-message-scroller-content")]
-public class MessageScrollerContentTagHelper : StellarAdminTagHelperBase
+public sealed class MessageScrollerContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

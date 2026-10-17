@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the button that opens and closes a dropdown menu.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-trigger")]
-public class DropdownMenuTriggerTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuTriggerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

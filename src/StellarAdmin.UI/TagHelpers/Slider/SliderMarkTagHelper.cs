@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     <c>&lt;sa-slider-marks&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-slider-mark", ParentTag = "sa-slider-marks")]
-public class SliderMarkTagHelper : StellarAdminTagHelperBase
+public sealed class SliderMarkTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the value that the mark is placed at.

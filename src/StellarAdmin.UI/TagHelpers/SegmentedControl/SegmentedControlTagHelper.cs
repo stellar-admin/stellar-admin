@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     <c>sa-segmented-control-item</c> elements.
 /// </remarks>
 [HtmlTargetElement("sa-segmented-control")]
-public class SegmentedControlTagHelper : FieldInputBaseTagHelper<SegmentedControlClassNames>
+public sealed class SegmentedControlTagHelper : FieldInputBaseTagHelper<SegmentedControlClassNames>
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether every option is disabled.

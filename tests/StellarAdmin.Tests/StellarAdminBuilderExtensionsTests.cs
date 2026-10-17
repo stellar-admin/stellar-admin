@@ -138,7 +138,12 @@ public class StellarAdminBuilderExtensionsTests
         var items = new List<SidebarItem>();
         foreach (var sidebarProvider in provider.GetServices<ISidebarItemsProvider>())
         {
-            items.AddRange(await sidebarProvider.GetItemsAsync(new DefaultHttpContext()));
+            items.AddRange(
+                await sidebarProvider.GetItemsAsync(
+                    new DefaultHttpContext(),
+                    CancellationToken.None
+                )
+            );
         }
 
         // Assert
@@ -161,19 +166,25 @@ public class StellarAdminBuilderExtensionsTests
         using var provider = services.BuildServiceProvider();
         var sidebarProviders = provider.GetServices<ISidebarItemsProvider>().ToArray();
         var group = (SidebarGroupItem)
-            (await sidebarProviders.Single().GetItemsAsync(new DefaultHttpContext())).Single();
+            (
+                await sidebarProviders
+                    .Single()
+                    .GetItemsAsync(new DefaultHttpContext(), CancellationToken.None)
+            ).Single();
 
         // Assert
         await Assert.That(sidebarProviders.Length).IsEqualTo(1);
-        await Assert.That(group.Items.Length).IsEqualTo(2);
+        await Assert.That(group.Items.Count).IsEqualTo(2);
         await Assert.That(group.Items[0].Label).IsEqualTo("Products");
         await Assert.That(group.Items[1].Label).IsEqualTo("Inventory");
     }
 
     private sealed class CustomSidebarProvider : ISidebarItemsProvider
     {
-        public Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext) =>
-            Task.FromResult<SidebarItem[]>([new SidebarLinkItem("Help", "/help")]);
+        public Task<IReadOnlyList<SidebarItem>> GetItemsAsync(
+            HttpContext httpContext,
+            CancellationToken cancellationToken
+        ) => Task.FromResult<IReadOnlyList<SidebarItem>>([new SidebarLinkItem("Help", "/help")]);
     }
 
     private sealed class InventoryItem;

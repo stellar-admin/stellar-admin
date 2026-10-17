@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders a dropdown menu item that can be checked and unchecked.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-checkbox-item")]
-public class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuCheckboxItemTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

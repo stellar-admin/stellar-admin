@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Must be placed inside an <c>sa-checkbox-group</c> element.
 /// </remarks>
 [HtmlTargetElement("sa-checkbox-group-item")]
-public class CheckboxGroupItemTagHelper : ChoiceGroupItemTagHelper
+public sealed class CheckboxGroupItemTagHelper : ChoiceGroupItemTagHelper
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

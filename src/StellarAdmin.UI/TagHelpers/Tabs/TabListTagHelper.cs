@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     panels.
 /// </remarks>
 [HtmlTargetElement("sa-tab-list")]
-public class TabListTagHelper : StellarAdminTagHelperBase
+public sealed class TabListTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the direction in which the tabs are arranged.

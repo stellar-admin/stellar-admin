@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     has no content.
 /// </remarks>
 [HtmlTargetElement("sa-carousel-next")]
-public class CarouselNextTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselNextTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

@@ -9,7 +9,7 @@ namespace StellarAdmin;
 ///     Renders the standard index page of a resource.
 /// </summary>
 [HtmlTargetElement("sa-index-page", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class IndexPageTagHelper : StellarAdminTemplatedTagHelperBase
+public sealed class IndexPageTagHelper : StellarAdminTemplatedTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the model of the index page to render.

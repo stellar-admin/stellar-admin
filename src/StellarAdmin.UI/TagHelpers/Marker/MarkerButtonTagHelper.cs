@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The button has <c>type="button"</c> unless the element sets its own <c>type</c>.
 /// </remarks>
 [HtmlTargetElement("sa-marker-button")]
-public class MarkerButtonTagHelper : StellarAdminTagHelperBase
+public sealed class MarkerButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the layout of the marker.

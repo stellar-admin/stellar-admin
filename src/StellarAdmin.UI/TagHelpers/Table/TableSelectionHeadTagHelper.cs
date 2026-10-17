@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     <c>&lt;sa-table-selection-cell&gt;</c> cells.
 /// </remarks>
 [HtmlTargetElement("sa-table-selection-head", TagStructure = TagStructure.WithoutEndTag)]
-public class TableSelectionHeadTagHelper : StellarAdminTagHelperBase
+public sealed class TableSelectionHeadTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

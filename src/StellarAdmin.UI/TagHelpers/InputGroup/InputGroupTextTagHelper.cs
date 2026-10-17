@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders text or an icon inside an input group, usually in an add-on.
 /// </summary>
 [HtmlTargetElement("sa-input-group-text")]
-public class InputGroupTextTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupTextTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

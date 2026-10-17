@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     property's display name if it has no content.
 /// </remarks>
 [HtmlTargetElement("sa-field-label")]
-public class FieldLabelTagHelper : StellarAdminTagHelperBase
+public sealed class FieldLabelTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

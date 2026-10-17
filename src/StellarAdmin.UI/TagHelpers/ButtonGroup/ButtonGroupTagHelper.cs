@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders related buttons as a single unit.
 /// </summary>
 [HtmlTargetElement("sa-button-group")]
-public class ButtonGroupTagHelper : StellarAdminTagHelperBase
+public sealed class ButtonGroupTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<ButtonGroupOrientation, string?[]> OrientationClasses =
         new Dictionary<ButtonGroupOrientation, string?[]>

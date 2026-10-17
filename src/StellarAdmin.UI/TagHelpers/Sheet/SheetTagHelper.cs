@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     with <c>command="close"</c>.
 /// </remarks>
 [HtmlTargetElement("sa-sheet")]
-public class SheetTagHelper : StellarAdminTagHelperBase
+public sealed class SheetTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

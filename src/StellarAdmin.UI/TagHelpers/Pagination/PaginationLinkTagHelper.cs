@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a pagination link to a page.
 /// </summary>
 [HtmlTargetElement("sa-pagination-link")]
-public class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class PaginationLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

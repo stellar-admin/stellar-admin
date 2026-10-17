@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     The separator shows an icon unless it has content of its own.
 /// </remarks>
 [HtmlTargetElement("sa-input-otp-separator")]
-public class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class InputOtpSeparatorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

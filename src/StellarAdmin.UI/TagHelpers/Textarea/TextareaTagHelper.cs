@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     bound value.
 /// </remarks>
 [HtmlTargetElement("sa-textarea")]
-public class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
+public sealed class TextareaTagHelper : FieldInputBaseTagHelper<TextareaClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

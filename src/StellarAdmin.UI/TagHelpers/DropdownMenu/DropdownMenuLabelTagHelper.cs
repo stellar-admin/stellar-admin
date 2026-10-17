@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a label for a section of dropdown menu items.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-label")]
-public class DropdownMenuLabelTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuLabelTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether the label is inset.

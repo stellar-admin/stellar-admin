@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders a label for a form control.
 /// </summary>
 [HtmlTargetElement("sa-label")]
-public class LabelTagHelper : StellarAdminTagHelperBase
+public sealed class LabelTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

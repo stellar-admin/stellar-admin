@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Set <c>href</c> or the <c>asp-*</c> routing attributes.
 /// </remarks>
 [HtmlTargetElement("sa-button-link")]
-public class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class ButtonLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

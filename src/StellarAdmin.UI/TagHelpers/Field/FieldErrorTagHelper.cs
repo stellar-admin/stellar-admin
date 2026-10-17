@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     when that property is invalid.
 /// </remarks>
 [HtmlTargetElement("sa-field-error")]
-public class FieldErrorTagHelper : StellarAdminTagHelperBase
+public sealed class FieldErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

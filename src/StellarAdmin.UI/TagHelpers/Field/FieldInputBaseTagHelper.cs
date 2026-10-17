@@ -174,17 +174,9 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     protected virtual FieldClassNames? FieldClasses => null;
 
     /// <summary>
-    ///     Gets or sets the <c>id</c> of the element that the field's label targets.
+    ///     Gets the <c>id</c> of the element that the field's label targets.
     /// </summary>
-    /// <value>
-    ///     The default is the host element's <c>id</c> when the control isn't bound with
-    ///     <c>asp-for</c>.
-    /// </value>
-    /// <remarks>
-    ///     Set it in <see cref="RenderInput" /> when the labelled element gets a different
-    ///     <c>id</c>.
-    /// </remarks>
-    protected string? LabelForId { get; set; }
+    protected string? LabelForId { get; private protected set; }
 
     // When set, the automatically rendered label gets this id and no for attribute, so a
     // non-labelable control (such as a choice group) can reference it with aria-labelledby.
@@ -486,9 +478,18 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
         }
     }
 
-    // Points the control at the field's rendered description and error, after any ids the author
-    // supplied, and marks it invalid when the field has an error unless the author set a value.
-    private protected void ApplyFieldAttributes(
+    /// <summary>
+    ///     Adds the accessibility attributes that connect the control to its field.
+    /// </summary>
+    /// <param name="context">The context of the executing tag helper.</param>
+    /// <param name="attributes">The attributes of the control.</param>
+    /// <param name="layout">The layout that <see cref="RenderInput" /> returns.</param>
+    /// <remarks>
+    ///     Adds <c>aria-describedby</c> for the field's description and error, after any ids
+    ///     already there, and adds <c>aria-invalid</c> when the field has an error, unless the
+    ///     control already has it. Call it from <see cref="RenderInput" />.
+    /// </remarks>
+    protected void ApplyFieldAttributes(
         TagHelperContext context,
         TagHelperAttributeList attributes,
         FieldLayout layout

@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     content.
 /// </remarks>
 [HtmlTargetElement("sa-table-row-detail-toggle")]
-public class TableRowDetailToggleTagHelper : StellarAdminTagHelperBase
+public sealed class TableRowDetailToggleTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

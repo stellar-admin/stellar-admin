@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     value.
 /// </remarks>
 [HtmlTargetElement("sa-alert-dialog-action")]
-public class AlertDialogActionTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogActionTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the visual style of the button.

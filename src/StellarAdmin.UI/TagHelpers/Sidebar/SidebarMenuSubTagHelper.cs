@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The submenu is hidden while the sidebar is collapsed to icons.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-sub")]
-public class SidebarMenuSubTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarMenuSubTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

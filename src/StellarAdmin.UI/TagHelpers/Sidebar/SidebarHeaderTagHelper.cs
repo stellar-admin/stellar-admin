@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The header usually holds branding or a workspace switcher.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-header")]
-public class SidebarHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

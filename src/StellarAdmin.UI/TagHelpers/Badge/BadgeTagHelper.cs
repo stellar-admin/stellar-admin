@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a small label that highlights a status, count or category.
 /// </summary>
 [HtmlTargetElement("sa-badge")]
-public class BadgeTagHelper : StellarAdminTagHelperBase
+public sealed class BadgeTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<BadgeVariant, string> BadgeVariantClasses = new()
     {

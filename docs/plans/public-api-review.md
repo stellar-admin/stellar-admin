@@ -16,9 +16,9 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 
 | # | Question | Recommendation | Outcome |
 | --- | --- | --- | --- |
-| D1 | Seal the concrete tag helpers? | Yes. ASP.NET leaves its own tag helpers open, but opening later is free and sealing later breaks people. | |
-| D2 | Support custom field inputs built on `FieldInputBaseTagHelper`? | Yes. Fix its awkward members and document it. | |
-| D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | |
+| D1 | Seal the concrete tag helpers? | Yes. ASP.NET leaves its own tag helpers open, but opening later is free and sealing later breaks people. | Yes, seal them. Done (2026-10-17) |
+| D2 | Support custom field inputs built on `FieldInputBaseTagHelper`? | Yes. Fix its awkward members and document it. | Yes, keep it open, fix the members and add a guide. Done (2026-10-17) |
+| D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | Yes, keep it public, tidy the models and document it. Done (2026-10-17) |
 | D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link` and `sa-dropdown-menu-item-link`. Done (2026-10-17) |
 | D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | |
@@ -89,6 +89,8 @@ Paths are relative to `src/`. "UI" means `StellarAdmin.UI/TagHelpers/`.
 
 Only 6 of the 319 public UI classes are sealed. Builders, options and view models are sealed under J6 either way. This question covers only the leaf tag helpers, such as `ButtonTagHelper`. Leaving them open lets apps subclass them to change defaults, as people do with ASP.NET's own tag helpers. It also makes every protected member of the base classes a promise.
 
+Done: all 284 concrete public tag helpers in StellarAdmin.UI and StellarAdmin are sealed. Every remaining open tag helper is an abstract base class.
+
 ### D2. Custom field inputs
 
 `FieldInputBaseTagHelper` gives `sa-input`, `sa-select` and the others their label, description, error and grid placement. If it stays open and documented, an app can build its own input with all of that for free. If it closes, apps build fields by hand with `sa-field` and its parts.
@@ -102,9 +104,21 @@ If no:
 - Make the constructors `private protected`.
 - Make `FieldLayout` and `FieldPart` internal.
 
+Done:
+- The `LabelForId` setter is `private protected`. A custom input that needs its label to target another element sets the host's `id`.
+- `ApplyFieldAttributes` is `protected` and documented, so a custom input can add the `aria-describedby` and `aria-invalid` that the built-in inputs get. It was `private protected`.
+- `ChoiceGroupTagHelper`, `ChoiceGroupItemTagHelper` and `ChoiceGroupItemMediaTagHelper` have `private protected` constructors and render methods, so only the checkbox and radio group tag helpers derive from them.
+- The guide is "Your own field inputs" in the UI skill's `references/forms.md`. Its color input example is a test in `FieldInputBaseTagHelperTests.Custom.cs`.
+
 ### D3. Sidebar items provider
 
 `ISidebarItemsProvider` is resolved as a list, so an app can register its own provider today and its items merge into the sidebar and command palette. This is undocumented. If yes: seal `SidebarItem` and its subclasses and turn them from records into plain classes, add a `CancellationToken` to the provider method, and document it. If no: make the provider and items internal, and the sidebar view can no longer be overridden.
+
+Done:
+- `SidebarItem`, `SidebarGroupItem`, `SidebarLinkItemBase`, `SidebarLinkItem`, `SidebarActionLinkItem` and `SidebarPageLinkItem` are plain classes. The concrete ones are sealed, and the abstract ones have `private protected` constructors.
+- Constructors check their strings. `SidebarGroupItem.Items` is an `IReadOnlyList<SidebarLinkItemBase>`. `Icon`, `OpenInNewTab` and `Order` stay `init`.
+- `ISidebarItemsProvider.GetItemsAsync(HttpContext, CancellationToken)` returns `Task<IReadOnlyList<SidebarItem>>`, like `IChoiceItemsProvider`. The sidebar passes `RequestAborted`.
+- The admin panel skill's `references/sidebar.md` has an "Items from code" section.
 
 ### D4. Link versions of components
 
@@ -202,7 +216,7 @@ Done:
 - `ResourceFormOptions` is abstract.
 - `ResourceFieldsBuilder<T>` and `ResourceViewFieldsBuilder<T>` are abstract with internal constructors. The create, edit and view builders use the new internal `ResourceFormFieldsBuilder<T>` and `ResourceViewPageFieldsBuilder<T>`.
 - Left open because types derive from them: `FieldEditor` (J8), `EditorClassNames`, `ChoiceEditorClassNames`, `ResourceRowDetailPanelsBuilder<T>` and `ResourceSearchOptions` (both J5).
-- All 1378 tests pass. Tag helpers are D1.
+- All 1378 tests pass. After D1–D3 and the `UniqueIdDiscriminator` change, all 1437 tests pass (2026-10-17). Tag helpers are D1.
 
 ### J7. Tag helper plumbing
 
@@ -212,7 +226,7 @@ Done:
 - The protected `GetUserSpecifiedClass` is removed. The item tag helpers use the `GetUserSuppliedClass` extension.
 - `Init` is sealed and calls a new protected virtual `OnInit`. `SelectTagHelper`, `QuestionnaireItemTagHelper` and `QuestionnaireChoicesTagHelper` override `OnInit` instead.
 - `ResponsiveGrid` and `GridTiers` stay public, because StellarAdmin uses almost all of them and has no friend access. They get docs under J40.
-- `UniqueIdDiscriminator` stays public for now, because the DataGridSpike sandbox uses it from outside the assembly. Open question.
+- `UniqueIdDiscriminator` is internal. The DataGridSpike sandbox no longer sets it.
 - All 1378 tests pass.
 
 ### J8. Editor contract
@@ -664,6 +678,8 @@ Changes the website still needs:
 - [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
 - [ ] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
 - [ ] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs.
+- [ ] D2: add the "Your own field inputs" guide from the UI skill's `references/forms.md` to the forms docs.
+- [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

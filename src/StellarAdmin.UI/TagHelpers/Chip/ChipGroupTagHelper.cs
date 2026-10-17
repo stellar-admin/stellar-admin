@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a group of chips and the controls beside them.
 /// </summary>
 [HtmlTargetElement("sa-chip-group")]
-public class ChipGroupTagHelper : StellarAdminTagHelperBase
+public sealed class ChipGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets how the group looks.

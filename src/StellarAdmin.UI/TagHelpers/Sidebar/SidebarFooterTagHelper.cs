@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The footer usually holds a user menu or secondary actions.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-footer")]
-public class SidebarFooterTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

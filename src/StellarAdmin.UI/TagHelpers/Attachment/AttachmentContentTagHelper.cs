@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the area of an attachment that holds its title and description.
 /// </summary>
 [HtmlTargetElement("sa-attachment-content")]
-public class AttachmentContentTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

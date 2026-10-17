@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the question that a questionnaire item asks, as the item's <c>&lt;legend&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-title")]
-public class QuestionnaireTitleTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

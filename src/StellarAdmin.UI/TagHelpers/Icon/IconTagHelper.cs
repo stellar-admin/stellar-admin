@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 /// </remarks>
 [HtmlTargetElement("sa-icon", TagStructure = TagStructure.WithoutEndTag)]
 [OutputElementHint("svg")]
-public class IconTagHelper : StellarAdminTagHelperBase
+public sealed class IconTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
     private static readonly IconDefinition NotFoundIcon = new IconDefinition(

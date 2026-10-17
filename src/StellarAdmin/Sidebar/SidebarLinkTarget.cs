@@ -110,26 +110,41 @@ public abstract class SidebarLinkTarget
         return new UrlTarget(url);
     }
 
-    internal abstract SidebarLinkItemBase CreateItem(string label);
+    internal abstract SidebarLinkItemBase CreateItem(SidebarLinkOptions link);
 
     // Admin panel pages render in the StellarAdmin area, which link generation keeps as an ambient
     // value unless the link names another area. An empty area links outside any area.
     private sealed class ActionTarget(string action, string controller, string? area)
         : SidebarLinkTarget
     {
-        internal override SidebarLinkItemBase CreateItem(string label) =>
-            new SidebarActionLinkItem(label, controller, action, area ?? "");
+        internal override SidebarLinkItemBase CreateItem(SidebarLinkOptions link) =>
+            new SidebarActionLinkItem(link.Label, controller, action, area ?? "")
+            {
+                Icon = link.Icon,
+                OpenInNewTab = link.OpenInNewTab,
+                Order = link.Order,
+            };
     }
 
     private sealed class PageTarget(string page, string? area) : SidebarLinkTarget
     {
-        internal override SidebarLinkItemBase CreateItem(string label) =>
-            new SidebarPageLinkItem(label, page, area ?? "");
+        internal override SidebarLinkItemBase CreateItem(SidebarLinkOptions link) =>
+            new SidebarPageLinkItem(link.Label, page, area ?? "")
+            {
+                Icon = link.Icon,
+                OpenInNewTab = link.OpenInNewTab,
+                Order = link.Order,
+            };
     }
 
     private sealed class UrlTarget(string url) : SidebarLinkTarget
     {
-        internal override SidebarLinkItemBase CreateItem(string label) =>
-            new SidebarLinkItem(label, url);
+        internal override SidebarLinkItemBase CreateItem(SidebarLinkOptions link) =>
+            new SidebarLinkItem(link.Label, url)
+            {
+                Icon = link.Icon,
+                OpenInNewTab = link.OpenInNewTab,
+                Order = link.Order,
+            };
     }
 }

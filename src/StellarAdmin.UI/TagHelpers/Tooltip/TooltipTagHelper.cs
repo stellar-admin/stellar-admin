@@ -23,7 +23,7 @@ namespace StellarAdmin.UI;
 ///     element that shows it to that <c>id</c>.
 /// </remarks>
 [HtmlTargetElement("sa-tooltip")]
-public class TooltipTagHelper : StellarAdminTagHelperBase
+public sealed class TooltipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets where the tooltip appears relative to the element that shows it.

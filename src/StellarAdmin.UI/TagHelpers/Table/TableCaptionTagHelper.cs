@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a caption that describes a table, as a <c>&lt;caption&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-table-caption")]
-public class TableCaptionTagHelper : StellarAdminTagHelperBase
+public sealed class TableCaptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

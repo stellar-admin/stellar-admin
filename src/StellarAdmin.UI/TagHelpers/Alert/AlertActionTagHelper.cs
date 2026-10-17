@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an area in an alert for controls such as buttons or links.
 /// </summary>
 [HtmlTargetElement("sa-alert-action")]
-public class AlertActionTagHelper : StellarAdminTagHelperBase
+public sealed class AlertActionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)

@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     because they set their own span and start with <c>column-span</c> and <c>column-start</c>.
 /// </remarks>
 [HtmlTargetElement("sa-grid-item")]
-public class GridItemTagHelper : StellarAdminTagHelperBase, IGridPlacement
+public sealed class GridItemTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     /// <summary>
     ///     Gets or sets the number of columns the item spans in an <c>&lt;sa-grid&gt;</c>.

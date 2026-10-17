@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an area in an alert dialog for media, such as an icon or illustration.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-media")]
-public class AlertDialogMediaTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogMediaTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

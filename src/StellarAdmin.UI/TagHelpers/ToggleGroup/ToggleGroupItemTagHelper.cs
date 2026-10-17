@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     <c>aria-label</c> apply to the item's visually hidden input.
 /// </remarks>
 [HtmlTargetElement("sa-toggle-group-item")]
-public class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
+public sealed class ToggleGroupItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the value that the item posts when it is selected.

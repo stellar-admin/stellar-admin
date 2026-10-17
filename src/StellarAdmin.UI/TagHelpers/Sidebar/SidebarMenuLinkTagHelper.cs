@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     match the current request.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-link")]
-public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private static readonly Dictionary<SidebarMenuLinkSize, string> SizeClasses = new()
     {

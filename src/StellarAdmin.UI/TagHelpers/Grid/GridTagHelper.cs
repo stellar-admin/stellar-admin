@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     through an <c>&lt;sa-grid-item&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-grid")]
-public class GridTagHelper : StellarAdminTagHelperBase
+public sealed class GridTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the number of columns when the grid is at least 40rem wide.

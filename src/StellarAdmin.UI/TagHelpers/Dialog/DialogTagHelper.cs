@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     dialog is open.
 /// </remarks>
 [HtmlTargetElement("sa-dialog")]
-public class DialogTagHelper : StellarAdminTagHelperBase
+public sealed class DialogTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

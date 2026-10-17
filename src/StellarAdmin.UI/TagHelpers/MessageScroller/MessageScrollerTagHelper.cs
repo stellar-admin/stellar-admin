@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     the transcript still scrolls.
 /// </remarks>
 [HtmlTargetElement("sa-message-scroller")]
-public class MessageScrollerTagHelper : StellarAdminTagHelperBase
+public sealed class MessageScrollerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether the transcript follows new messages.

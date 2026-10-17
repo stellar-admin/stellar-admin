@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     With no content, the link shows an arrow icon and the label "Last".
 /// </remarks>
 [HtmlTargetElement("sa-pagination-last")]
-public class PaginationLastTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class PaginationLastTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

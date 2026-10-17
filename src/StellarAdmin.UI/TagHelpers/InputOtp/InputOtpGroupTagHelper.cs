@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Separate groups with an <c>&lt;sa-input-otp-separator&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-input-otp-group")]
-public class InputOtpGroupTagHelper : StellarAdminTagHelperBase
+public sealed class InputOtpGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override void Process(TagHelperContext context, TagHelperOutput output)

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Use <c>sa-dropdown-menu-item-link</c> for navigation.
 /// </remarks>
 [HtmlTargetElement("sa-dropdown-menu-item")]
-public class DropdownMenuItemTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether clicking the item closes the menu.

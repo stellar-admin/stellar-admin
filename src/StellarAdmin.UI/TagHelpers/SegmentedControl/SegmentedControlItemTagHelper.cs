@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     Must be placed inside an <c>sa-segmented-control</c> element.
 /// </remarks>
 [HtmlTargetElement("sa-segmented-control-item")]
-public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
+public sealed class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
 {
     private static readonly object InputIdKey = new();
 

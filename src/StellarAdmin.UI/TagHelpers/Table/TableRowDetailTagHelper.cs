@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     events on this row.
 /// </remarks>
 [HtmlTargetElement("sa-table-row-detail")]
-public class TableRowDetailTagHelper : StellarAdminTagHelperBase
+public sealed class TableRowDetailTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether the details are expanded when the page loads.

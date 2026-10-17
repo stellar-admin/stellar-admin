@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     arrow icon and a screen reader label. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-message-scroller-button")]
-public class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
+public sealed class MessageScrollerButtonTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

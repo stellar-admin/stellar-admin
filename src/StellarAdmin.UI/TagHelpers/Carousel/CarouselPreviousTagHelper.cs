@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     has no content.
 /// </remarks>
 [HtmlTargetElement("sa-carousel-previous")]
-public class CarouselPreviousTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselPreviousTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

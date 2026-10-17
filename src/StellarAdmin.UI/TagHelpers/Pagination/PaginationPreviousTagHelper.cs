@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     With no content, the link shows an arrow icon and the label "Previous".
 /// </remarks>
 [HtmlTargetElement("sa-pagination-previous")]
-public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

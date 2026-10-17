@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     actions.
 /// </summary>
 [HtmlTargetElement("sa-message-footer")]
-public class MessageFooterTagHelper : StellarAdminTagHelperBase
+public sealed class MessageFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Takes precedence over the column's <c>title</c>.
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-header-template", ParentTag = "sa-data-grid-column")]
-public class DataGridHeaderTemplateTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridHeaderTemplateTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

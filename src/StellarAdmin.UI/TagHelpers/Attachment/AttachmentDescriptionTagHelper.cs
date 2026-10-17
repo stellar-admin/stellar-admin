@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the description of an attachment, such as its file type, size or upload status.
 /// </summary>
 [HtmlTargetElement("sa-attachment-description")]
-public class AttachmentDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

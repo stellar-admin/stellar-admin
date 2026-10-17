@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a title that looks like a field label but isn't tied to a control.
 /// </summary>
 [HtmlTargetElement("sa-field-title")]
-public class FieldTitleTagHelper : StellarAdminTagHelperBase
+public sealed class FieldTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

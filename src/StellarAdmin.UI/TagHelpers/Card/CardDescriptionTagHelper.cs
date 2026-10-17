@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the description of a card, as muted text in the card header.
 /// </summary>
 [HtmlTargetElement("sa-card-description")]
-public class CardDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class CardDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -21,7 +21,7 @@ namespace StellarAdmin.UI;
 ///     the property has a <c>[UIHint]</c>.
 /// </remarks>
 [HtmlTargetElement("sa-display-field")]
-public class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
+public sealed class DisplayFieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     private const string DefaultEmptyText = "—";
 

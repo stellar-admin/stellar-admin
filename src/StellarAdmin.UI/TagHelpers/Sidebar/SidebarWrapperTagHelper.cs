@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-wrapper")]
-public class SidebarWrapperTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarWrapperTagHelper : StellarAdminTagHelperBase
 {
     private const string SidebarWidth = "16rem";
     private const string SidebarWidthIcon = "3rem";

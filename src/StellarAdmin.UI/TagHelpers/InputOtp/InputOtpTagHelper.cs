@@ -22,7 +22,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-input-otp")]
-public class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
+public sealed class InputOtpTagHelper : FieldInputBaseTagHelper<InputOtpClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

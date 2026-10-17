@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the title of a sheet as a heading.
 /// </summary>
 [HtmlTargetElement("sa-sheet-title")]
-public class SheetTitleTagHelper : StellarAdminTagHelperBase
+public sealed class SheetTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

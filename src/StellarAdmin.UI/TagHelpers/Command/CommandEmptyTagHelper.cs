@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the content that a command menu shows when no items match the search.
 /// </summary>
 [HtmlTargetElement("sa-command-empty")]
-public class CommandEmptyTagHelper : StellarAdminTagHelperBase
+public sealed class CommandEmptyTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

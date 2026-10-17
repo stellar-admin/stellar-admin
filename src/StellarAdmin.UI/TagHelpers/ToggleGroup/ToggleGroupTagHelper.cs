@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     <see cref="ToggleGroupType.Multiple" />. The group works without JavaScript.
 /// </remarks>
 [HtmlTargetElement("sa-toggle-group")]
-public class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
+public sealed class ToggleGroupTagHelper : FieldInputBaseTagHelper<ToggleGroupClassNames>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="ToggleGroupTagHelper" /> class.

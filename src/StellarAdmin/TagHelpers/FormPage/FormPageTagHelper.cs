@@ -9,7 +9,7 @@ namespace StellarAdmin;
 ///     Renders the standard form page of a resource.
 /// </summary>
 [HtmlTargetElement("sa-form-page", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class FormPageTagHelper : StellarAdminTemplatedTagHelperBase
+public sealed class FormPageTagHelper : StellarAdminTemplatedTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the model of the form page to render.

@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the media of an attachment, such as a file type icon or a thumbnail.
 /// </summary>
 [HtmlTargetElement("sa-attachment-media")]
-public class AttachmentMediaTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentMediaTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<
         AttachmentMediaVariant,

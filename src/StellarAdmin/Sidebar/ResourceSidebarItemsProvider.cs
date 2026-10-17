@@ -9,7 +9,10 @@ internal sealed class ResourceSidebarItemsProvider(
     IServiceProvider services
 ) : ISidebarItemsProvider
 {
-    public async Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext)
+    public async Task<IReadOnlyList<SidebarItem>> GetItemsAsync(
+        HttpContext httpContext,
+        CancellationToken cancellationToken
+    )
     {
         var items = new List<(string ControllerName, ResourceSidebarItem Item, int Index)>();
         foreach (var (resource, index) in resources.Select((resource, index) => (resource, index)))
@@ -49,8 +52,6 @@ internal sealed class ResourceSidebarItemsProvider(
                                         Order = entry.Item.Order,
                                     }
                             )
-                            .Cast<SidebarLinkItemBase>()
-                            .ToArray()
                     )
             )
             .ToArray();

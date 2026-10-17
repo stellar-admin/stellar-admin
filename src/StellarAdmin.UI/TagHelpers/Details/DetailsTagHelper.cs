@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Lays out <c>sa-display-field</c> elements in a description list.
 /// </summary>
 [HtmlTargetElement("sa-details")]
-public class DetailsTagHelper : StellarAdminTagHelperBase
+public sealed class DetailsTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the number of columns when the list is at least 40rem wide.

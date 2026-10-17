@@ -147,8 +147,8 @@ public abstract class StellarAdminTagHelperBase : TagHelper
     ///     Returns an identifier that is unique to this element, for use in element ids.
     /// </summary>
     /// <remarks>
-    ///     The identifier stays unique when a container renders the same markup more than once and
-    ///     shares a <see cref="UniqueIdDiscriminator" />.
+    ///     The identifier stays unique when a StellarAdmin container, such as a data grid, renders
+    ///     the same markup more than once.
     /// </remarks>
     /// <param name="context">The context of the executing tag helper.</param>
     /// <returns>The unique identifier.</returns>

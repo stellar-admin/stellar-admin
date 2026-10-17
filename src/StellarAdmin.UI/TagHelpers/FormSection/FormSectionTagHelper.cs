@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 /// </summary>
 /// <param name="options">The forms options that supply the default section layout.</param>
 [HtmlTargetElement("sa-form-section")]
-public class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
+public sealed class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
     : StellarAdminTagHelperBase
 {
     /// <summary>

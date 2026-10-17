@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     Each thumb posts its value in a hidden input. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-slider")]
-public class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
+public sealed class SliderTagHelper : FieldInputBaseTagHelper<SliderClassNames>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="SliderTagHelper" /> class.

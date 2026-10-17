@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a slide in a carousel.
 /// </summary>
 [HtmlTargetElement("sa-carousel-item")]
-public class CarouselItemTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselItemTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

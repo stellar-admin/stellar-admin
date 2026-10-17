@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an area in the top-right corner of a card header for a button or other control.
 /// </summary>
 [HtmlTargetElement("sa-card-action")]
-public class CardActionTagHelper : StellarAdminTagHelperBase
+public sealed class CardActionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

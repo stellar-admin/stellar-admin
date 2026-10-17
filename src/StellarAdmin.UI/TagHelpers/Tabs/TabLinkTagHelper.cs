@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Renders a tab in a <c>&lt;sa-tab-list&gt;</c> as a link to another page.
 /// </summary>
 [HtmlTargetElement("sa-tab-link")]
-public class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class TabLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

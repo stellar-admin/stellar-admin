@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Must be placed inside an <c>sa-radio-group</c> element.
 /// </remarks>
 [HtmlTargetElement("sa-radio-group-item")]
-public class RadioGroupItemTagHelper : ChoiceGroupItemTagHelper
+public sealed class RadioGroupItemTagHelper : ChoiceGroupItemTagHelper
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

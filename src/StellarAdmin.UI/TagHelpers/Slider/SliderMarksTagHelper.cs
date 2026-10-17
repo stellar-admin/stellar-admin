@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     <c>&lt;sa-slider&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-slider-marks", ParentTag = "sa-slider")]
-public class SliderMarksTagHelper : StellarAdminTagHelperBase
+public sealed class SliderMarksTagHelper : StellarAdminTagHelperBase
 {
     private const int MaxGeneratedMarks = 200;
 

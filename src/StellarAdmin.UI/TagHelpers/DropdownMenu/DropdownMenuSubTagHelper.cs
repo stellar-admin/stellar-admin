@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Set <c>id</c> here, not on the content, to choose the submenu's id.
 /// </remarks>
 [HtmlTargetElement("sa-dropdown-menu-sub")]
-public class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuSubTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

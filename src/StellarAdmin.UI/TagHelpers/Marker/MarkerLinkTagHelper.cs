@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a marker as a link, so the whole marker can be clicked.
 /// </summary>
 [HtmlTargetElement("sa-marker-link")]
-public class MarkerLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class MarkerLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

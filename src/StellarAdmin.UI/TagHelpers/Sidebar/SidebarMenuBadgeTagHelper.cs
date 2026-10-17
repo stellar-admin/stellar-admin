@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The badge is hidden while the sidebar is collapsed to icons.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-badge")]
-public class SidebarMenuBadgeTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarMenuBadgeTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

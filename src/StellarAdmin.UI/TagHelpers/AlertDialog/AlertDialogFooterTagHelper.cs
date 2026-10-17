@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the footer of an alert dialog, which holds the cancel and confirm buttons.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-footer")]
-public class AlertDialogFooterTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

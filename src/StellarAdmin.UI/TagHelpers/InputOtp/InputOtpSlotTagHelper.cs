@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a slot that shows one character of the code in an <c>&lt;sa-input-otp&gt;</c>.
 /// </summary>
 [HtmlTargetElement("sa-input-otp-slot")]
-public class InputOtpSlotTagHelper : StellarAdminTagHelperBase
+public sealed class InputOtpSlotTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the position of the character that the slot shows.

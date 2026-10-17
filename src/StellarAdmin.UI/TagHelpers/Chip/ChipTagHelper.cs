@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Media can go before the chip's label, and an <c>sa-chip-remove</c> button after it.
 /// </remarks>
 [HtmlTargetElement("sa-chip")]
-public class ChipTagHelper : StellarAdminTagHelperBase
+public sealed class ChipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether the chip is disabled.

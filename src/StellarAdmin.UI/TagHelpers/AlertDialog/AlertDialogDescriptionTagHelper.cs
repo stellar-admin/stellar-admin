@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the description of an alert dialog, shown below the title.
 /// </summary>
 [HtmlTargetElement("sa-alert-dialog-description")]
-public class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class AlertDialogDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

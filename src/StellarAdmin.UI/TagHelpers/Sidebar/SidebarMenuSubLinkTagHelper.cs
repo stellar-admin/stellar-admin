@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     match the current request.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-sub-link")]
-public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

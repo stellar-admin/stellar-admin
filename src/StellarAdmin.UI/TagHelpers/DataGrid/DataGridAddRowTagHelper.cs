@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     <c>new</c>, is in edit mode. A grid rendered with <c>rows-only</c> leaves it out.
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-add-row", ParentTag = "sa-data-grid")]
-public class DataGridAddRowTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridAddRowTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets where the row is placed.

@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     With no content, the link shows an arrow icon and the label "First".
 /// </remarks>
 [HtmlTargetElement("sa-pagination-first")]
-public class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class PaginationFirstTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

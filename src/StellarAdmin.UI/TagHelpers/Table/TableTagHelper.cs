@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     details require <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-table")]
-public class TableTagHelper : StellarAdminTagHelperBase
+public sealed class TableTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets a value that indicates whether clicking anywhere in a row toggles its

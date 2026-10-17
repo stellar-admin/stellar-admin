@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders dots that scroll a carousel to each of its positions.
 /// </summary>
 [HtmlTargetElement("sa-carousel-indicators")]
-public class CarouselIndicatorsTagHelper : StellarAdminTagHelperBase
+public sealed class CarouselIndicatorsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -24,7 +24,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-image-upload", TagStructure = TagStructure.WithoutEndTag)]
-public class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassNames>
+public sealed class ImageUploadTagHelper : FieldInputBaseTagHelper<ImageUploadClassNames>
 {
     private const string DefaultAccept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
     private const long DefaultMaxFileSize = 5 * 1024 * 1024;

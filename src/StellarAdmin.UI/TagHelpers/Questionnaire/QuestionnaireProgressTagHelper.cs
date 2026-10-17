@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     bar. Content of your own replaces the text. Set <c>aria-valuetext</c> to match it.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-progress")]
-public class QuestionnaireProgressTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireProgressTagHelper : StellarAdminTagHelperBase
 {
     private const string DefaultLabel = "Questionnaire progress";
 

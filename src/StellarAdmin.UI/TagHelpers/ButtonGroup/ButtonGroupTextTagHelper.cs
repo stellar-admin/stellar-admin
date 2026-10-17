@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a text label in a button group.
 /// </summary>
 [HtmlTargetElement("sa-button-group-text")]
-public class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
+public sealed class ButtonGroupTextTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

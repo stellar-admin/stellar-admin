@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a vertical separator sized for an app header.
 /// </summary>
 [HtmlTargetElement("sa-app-header-separator")]
-public class AppHeaderSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class AppHeaderSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

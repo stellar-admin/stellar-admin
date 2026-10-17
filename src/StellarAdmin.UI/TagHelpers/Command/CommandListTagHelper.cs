@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     When the application supplies the results itself, it replaces the contents of this element.
 /// </remarks>
 [HtmlTargetElement("sa-command-list")]
-public class CommandListTagHelper : StellarAdminTagHelperBase
+public sealed class CommandListTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

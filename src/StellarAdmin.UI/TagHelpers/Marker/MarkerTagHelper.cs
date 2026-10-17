@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     divider.
 /// </summary>
 [HtmlTargetElement("sa-marker")]
-public class MarkerTagHelper : StellarAdminTagHelperBase
+public sealed class MarkerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the layout of the marker.

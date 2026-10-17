@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     styling it.
 /// </remarks>
 [HtmlTargetElement("sa-page-header-nav")]
-public class PageHeaderNavTagHelper : StellarAdminTagHelperBase
+public sealed class PageHeaderNavTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

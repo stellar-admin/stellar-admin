@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The header usually holds the sheet's title and description.
 /// </remarks>
 [HtmlTargetElement("sa-sheet-header")]
-public class SheetHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class SheetHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

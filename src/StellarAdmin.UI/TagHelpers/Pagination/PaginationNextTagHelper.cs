@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     With no content, the link shows an arrow icon and the label "Next".
 /// </remarks>
 [HtmlTargetElement("sa-pagination-next")]
-public class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class PaginationNextTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

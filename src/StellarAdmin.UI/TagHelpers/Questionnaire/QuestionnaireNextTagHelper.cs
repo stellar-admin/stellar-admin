@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     content, it shows "Next".
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-next")]
-public class QuestionnaireNextTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireNextTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

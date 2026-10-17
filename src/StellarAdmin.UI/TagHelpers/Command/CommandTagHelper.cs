@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-command")]
-public class CommandTagHelper : StellarAdminTagHelperBase
+public sealed class CommandTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets how the items are filtered as the user types.

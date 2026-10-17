@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the header of an item, across its full width above the content.
 /// </summary>
 [HtmlTargetElement("sa-item-header")]
-public class ItemHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class ItemHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

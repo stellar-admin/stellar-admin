@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     <c>sa-radio-group-item</c> elements or with <c>asp-items</c>.
 /// </remarks>
 [HtmlTargetElement("sa-radio-group")]
-public class RadioGroupTagHelper : ChoiceGroupTagHelper
+public sealed class RadioGroupTagHelper : ChoiceGroupTagHelper
 {
     /// <summary>
     ///     Gets or sets the order in which the options fill the columns.

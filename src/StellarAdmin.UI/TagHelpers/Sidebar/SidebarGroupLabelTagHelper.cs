@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The label is hidden while the sidebar is collapsed to icons.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-group-label")]
-public class SidebarGroupLabelTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarGroupLabelTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a horizontal line between items in a group.
 /// </summary>
 [HtmlTargetElement("sa-item-separator")]
-public class ItemSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class ItemSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

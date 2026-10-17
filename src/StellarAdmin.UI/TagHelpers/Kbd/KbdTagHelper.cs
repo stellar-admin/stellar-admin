@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a keyboard key or keystroke.
 /// </summary>
 [HtmlTargetElement("sa-kbd")]
-public class KbdTagHelper : StellarAdminTagHelperBase
+public sealed class KbdTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

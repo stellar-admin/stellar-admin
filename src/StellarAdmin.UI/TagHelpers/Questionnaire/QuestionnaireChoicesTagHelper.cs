@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the list of choices for a questionnaire item.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-choices")]
-public class QuestionnaireChoicesTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireChoicesTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the kind of shortcut key that each choice gets.

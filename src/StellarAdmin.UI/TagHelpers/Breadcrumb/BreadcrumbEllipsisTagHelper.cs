@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders an ellipsis that stands in for breadcrumb items that aren't shown.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-ellipsis")]
-public class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
+public sealed class BreadcrumbEllipsisTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

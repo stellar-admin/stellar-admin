@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a vertical stack of items that each expand to show their content.
 /// </summary>
 [HtmlTargetElement("sa-accordion")]
-public class AccordionTagHelper : StellarAdminTagHelperBase
+public sealed class AccordionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

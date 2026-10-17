@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     to update the value.
 /// </remarks>
 [HtmlTargetElement("sa-chip-remove")]
-public class ChipRemoveTagHelper : StellarAdminTagHelperBase
+public sealed class ChipRemoveTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

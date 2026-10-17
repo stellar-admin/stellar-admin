@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the header of a dialog, which holds the title and description.
 /// </summary>
 [HtmlTargetElement("sa-dialog-header")]
-public class DialogHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class DialogHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

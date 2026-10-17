@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the area of an attachment that holds its action buttons.
 /// </summary>
 [HtmlTargetElement("sa-attachment-actions")]
-public class AttachmentActionsTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentActionsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

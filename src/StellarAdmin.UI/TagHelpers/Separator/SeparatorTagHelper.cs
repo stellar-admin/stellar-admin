@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a thin line between sections of content.
 /// </summary>
 [HtmlTargetElement("sa-separator")]
-public class SeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class SeparatorTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<SeparatorOrientation, string> OrientationClasses = new()
     {

@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     from the model metadata. It renders nothing when there's no text to show.
 /// </remarks>
 [HtmlTargetElement("sa-field-description")]
-public class FieldDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class FieldDescriptionTagHelper : StellarAdminTagHelperBase
 {
     private const string ForAttributeName = "asp-for";
 

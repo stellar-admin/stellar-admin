@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Renders a question, with its title, description, choices and validation message.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-item")]
-public class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireItemTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

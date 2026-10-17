@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     without JavaScript.
 /// </remarks>
 [HtmlTargetElement("sa-switch", TagStructure = TagStructure.WithoutEndTag)]
-public class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
+public sealed class SwitchTagHelper : FieldInputBaseTagHelper<SwitchClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Like a native button, it submits its form unless <c>type</c> is set.
 /// </remarks>
 [HtmlTargetElement("sa-button")]
-public class ButtonTagHelper : StellarAdminTagHelperBase
+public sealed class ButtonTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

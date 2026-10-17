@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     The input blends into the group, so the group and its add-ons look like one field.
 /// </remarks>
 [HtmlTargetElement("sa-input-group-input")]
-public class InputGroupInputTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

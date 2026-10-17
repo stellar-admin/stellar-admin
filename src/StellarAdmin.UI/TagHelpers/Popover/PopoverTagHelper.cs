@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     panel's <c>id</c>.
 /// </remarks>
 [HtmlTargetElement("sa-popover")]
-public class PopoverTagHelper : StellarAdminTagHelperBase
+public sealed class PopoverTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the position of the popover relative to its anchor.

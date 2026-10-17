@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a group of related fields in a column with consistent spacing.
 /// </summary>
 [HtmlTargetElement("sa-field-group")]
-public class FieldGroupTagHelper : StellarAdminTagHelperBase
+public sealed class FieldGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     Screen readers announce the spinner as "Loading".
 /// </remarks>
 [HtmlTargetElement("sa-spinner")]
-public class SpinnerTagHelper : StellarAdminTagHelperBase
+public sealed class SpinnerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Without it, the grid shows "No records found.".
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-empty", ParentTag = "sa-data-grid")]
-public class DataGridEmptyTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridEmptyTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

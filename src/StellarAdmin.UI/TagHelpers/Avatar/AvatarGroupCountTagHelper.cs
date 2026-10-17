@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the number of avatars that an avatar group doesn't show, at the end of the group.
 /// </summary>
 [HtmlTargetElement("sa-avatar-group-count")]
-public class AvatarGroupCountTagHelper : StellarAdminTagHelperBase
+public sealed class AvatarGroupCountTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     loaded. The broken-image tile, lightbox and preview require <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-image", TagStructure = TagStructure.WithoutEndTag)]
-public class ImageTagHelper : StellarAdminTagHelperBase
+public sealed class ImageTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

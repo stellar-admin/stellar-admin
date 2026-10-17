@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Renders the title of an accordion item, which expands and collapses the item when clicked.
 /// </summary>
 [HtmlTargetElement("sa-accordion-item-title")]
-public class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
+public sealed class AccordionItemTitleTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

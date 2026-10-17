@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Groups <c>sa-dropdown-menu-radio-item</c> elements so that only one can be selected.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-radio-group")]
-public class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuRadioGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the value of the selected item.

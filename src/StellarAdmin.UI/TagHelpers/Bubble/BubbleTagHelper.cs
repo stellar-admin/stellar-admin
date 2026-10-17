@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a message in a conversation, with its content and any reactions.
 /// </summary>
 [HtmlTargetElement("sa-bubble")]
-public class BubbleTagHelper : StellarAdminTagHelperBase
+public sealed class BubbleTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<BubbleVariant, string> BubbleVariantClasses = new()
     {

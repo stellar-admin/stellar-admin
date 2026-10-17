@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     The text area blends into the group, so the group and its add-ons look like one field.
 /// </remarks>
 [HtmlTargetElement("sa-input-group-textarea")]
-public class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupTextAreaTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

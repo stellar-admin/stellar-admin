@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a short description below the title of a page header.
 /// </summary>
 [HtmlTargetElement("sa-page-header-description")]
-public class PageHeaderDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class PageHeaderDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

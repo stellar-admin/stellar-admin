@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a layout that arranges its children in a row.
 /// </summary>
 [HtmlTargetElement("sa-group")]
-public class GroupTagHelper : StellarAdminTagHelperBase
+public sealed class GroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets how the children align vertically.

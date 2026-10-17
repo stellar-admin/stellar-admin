@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     only one media element.
 /// </remarks>
 [HtmlTargetElement("sa-checkbox-group-item-media", ParentTag = "sa-checkbox-group-item")]
-public class CheckboxGroupItemMediaTagHelper : ChoiceGroupItemMediaTagHelper
+public sealed class CheckboxGroupItemMediaTagHelper : ChoiceGroupItemMediaTagHelper
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

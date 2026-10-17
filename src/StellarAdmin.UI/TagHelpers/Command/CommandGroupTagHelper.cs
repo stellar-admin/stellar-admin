@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     The group is hidden when none of its items match a search that the browser filters.
 /// </remarks>
 [HtmlTargetElement("sa-command-group")]
-public class CommandGroupTagHelper : StellarAdminTagHelperBase
+public sealed class CommandGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the heading shown above the group's items.

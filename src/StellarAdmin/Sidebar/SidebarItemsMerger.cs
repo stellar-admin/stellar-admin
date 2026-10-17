@@ -30,10 +30,10 @@ internal static class SidebarItemsMerger
 
         foreach (var (index, groupItems) in groups.Values)
         {
-            merged[index] = (SidebarGroupItem)merged[index] with
-            {
-                Items = [.. groupItems.OrderBy(item => item.Order)],
-            };
+            merged[index] = new SidebarGroupItem(
+                merged[index].Label,
+                groupItems.OrderBy(item => item.Order)
+            );
         }
 
         return SortUngroupedLinks(merged);

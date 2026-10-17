@@ -22,7 +22,7 @@ namespace StellarAdmin.UI;
     ParentTag = "sa-data-grid",
     TagStructure = TagStructure.WithoutEndTag
 )]
-public class DataGridSelectionTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridSelectionTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the name of the row checkboxes, so the selected keys post with the form.

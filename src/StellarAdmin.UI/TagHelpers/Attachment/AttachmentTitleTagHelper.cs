@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the name of an attachment, shortened to fit.
 /// </summary>
 [HtmlTargetElement("sa-attachment-title")]
-public class AttachmentTitleTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

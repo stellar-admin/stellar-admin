@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     yourself or to write your own text.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-error")]
-public class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireErrorTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

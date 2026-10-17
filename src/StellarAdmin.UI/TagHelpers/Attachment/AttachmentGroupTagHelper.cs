@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a row of attachments that scrolls horizontally and snaps each one into view.
 /// </summary>
 [HtmlTargetElement("sa-attachment-group")]
-public class AttachmentGroupTagHelper : StellarAdminTagHelperBase
+public sealed class AttachmentGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

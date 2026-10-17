@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     <c>showModal()</c>. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-command-dialog")]
-public class CommandDialogTagHelper : StellarAdminTagHelperBase
+public sealed class CommandDialogTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

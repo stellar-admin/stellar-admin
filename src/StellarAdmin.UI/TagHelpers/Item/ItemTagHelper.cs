@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a row that combines media, a title, a description and actions.
 /// </summary>
 [HtmlTargetElement("sa-item")]
-public class ItemTagHelper : StellarAdminTagHelperBase
+public sealed class ItemTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the item, which sets its padding and spacing.

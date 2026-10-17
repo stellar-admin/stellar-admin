@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a dropdown menu item that links to another page.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-item-link")]
-public class DropdownMenuItemLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class DropdownMenuItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

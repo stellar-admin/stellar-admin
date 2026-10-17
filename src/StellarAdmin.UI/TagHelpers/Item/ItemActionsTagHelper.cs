@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the area of an item that holds actions, such as buttons.
 /// </summary>
 [HtmlTargetElement("sa-item-actions")]
-public class ItemActionsTagHelper : StellarAdminTagHelperBase
+public sealed class ItemActionsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

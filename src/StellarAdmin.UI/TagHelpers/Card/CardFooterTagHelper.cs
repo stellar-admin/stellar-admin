@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the footer of a card, which holds actions or extra information.
 /// </summary>
 [HtmlTargetElement("sa-card-footer")]
-public class CardFooterTagHelper : StellarAdminTagHelperBase
+public sealed class CardFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

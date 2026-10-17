@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a group of consecutive messages from the same sender.
 /// </summary>
 [HtmlTargetElement("sa-message-group")]
-public class MessageGroupTagHelper : StellarAdminTagHelperBase
+public sealed class MessageGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

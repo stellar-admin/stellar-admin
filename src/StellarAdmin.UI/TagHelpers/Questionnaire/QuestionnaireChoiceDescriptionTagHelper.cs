@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders text that explains a choice.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-choice-description")]
-public class QuestionnaireChoiceDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireChoiceDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the row that holds a questionnaire's navigation buttons.
 /// </summary>
 [HtmlTargetElement("sa-questionnaire-actions")]
-public class QuestionnaireActionsTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireActionsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Place the tab in the <c>&lt;sa-tab-list&gt;</c> of a <c>&lt;sa-tabs&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-tab")]
-public class TabTagHelper : StellarAdminTagHelperBase
+public sealed class TabTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the <c>id</c> of the <c>&lt;sa-tab-panel&gt;</c> that the tab shows.

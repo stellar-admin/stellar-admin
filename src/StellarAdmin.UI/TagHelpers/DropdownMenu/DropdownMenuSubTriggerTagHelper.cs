@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Renders the dropdown menu item that opens a submenu.
 /// </summary>
 [HtmlTargetElement("sa-dropdown-menu-sub-trigger")]
-public class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
+public sealed class DropdownMenuSubTriggerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

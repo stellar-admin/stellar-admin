@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an item in a breadcrumb list, which holds a link or the current page.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-item")]
-public class BreadcrumbItemTagHelper : StellarAdminTagHelperBase
+public sealed class BreadcrumbItemTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

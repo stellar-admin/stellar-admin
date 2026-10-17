@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an area at the end of an app header for content such as buttons or an avatar.
 /// </summary>
 [HtmlTargetElement("sa-app-header-actions")]
-public class AppHeaderActionsTagHelper : StellarAdminTagHelperBase
+public sealed class AppHeaderActionsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

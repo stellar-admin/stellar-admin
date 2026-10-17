@@ -9,7 +9,7 @@ namespace StellarAdmin;
 ///     Renders the standard view page of a resource.
 /// </summary>
 [HtmlTargetElement("sa-view-page", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class ViewPageTagHelper : StellarAdminTemplatedTagHelperBase
+public sealed class ViewPageTagHelper : StellarAdminTemplatedTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the model of the view page to render.

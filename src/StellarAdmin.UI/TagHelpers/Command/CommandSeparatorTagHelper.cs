@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The divider is hidden during a search that the browser filters.
 /// </remarks>
 [HtmlTargetElement("sa-command-separator")]
-public class CommandSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class CommandSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

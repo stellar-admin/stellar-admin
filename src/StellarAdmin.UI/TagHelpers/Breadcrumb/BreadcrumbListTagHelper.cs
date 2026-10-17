@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the ordered list of items in a breadcrumb.
 /// </summary>
 [HtmlTargetElement("sa-breadcrumb-list")]
-public class BreadcrumbListTagHelper : StellarAdminTagHelperBase
+public sealed class BreadcrumbListTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

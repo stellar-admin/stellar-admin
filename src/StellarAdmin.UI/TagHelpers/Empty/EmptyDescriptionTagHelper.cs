@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the description in an empty state's header.
 /// </summary>
 [HtmlTargetElement("sa-empty-description")]
-public class EmptyDescriptionTagHelper : StellarAdminTagHelperBase
+public sealed class EmptyDescriptionTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

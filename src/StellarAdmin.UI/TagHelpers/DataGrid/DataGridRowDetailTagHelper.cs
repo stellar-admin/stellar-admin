@@ -20,7 +20,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-row-detail", ParentTag = "sa-data-grid")]
-public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets where the grid places the buttons that expand and collapse rows.

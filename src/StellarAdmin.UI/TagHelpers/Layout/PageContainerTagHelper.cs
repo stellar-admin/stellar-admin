@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     limit the content's width.
 /// </remarks>
 [HtmlTargetElement("sa-page-container")]
-public class PageContainerTagHelper : StellarAdminTagHelperBase
+public sealed class PageContainerTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the maximum width of the content.

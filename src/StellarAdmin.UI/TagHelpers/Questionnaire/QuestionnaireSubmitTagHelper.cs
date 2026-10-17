@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     content, it shows "Submit".
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-submit")]
-public class QuestionnaireSubmitTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireSubmitTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Set <c>href</c> or the <c>asp-*</c> routing attributes.
 /// </remarks>
 [HtmlTargetElement("sa-breadcrumb-link")]
-public class BreadcrumbLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class BreadcrumbLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

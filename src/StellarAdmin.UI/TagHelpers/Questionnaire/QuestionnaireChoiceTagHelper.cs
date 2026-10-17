@@ -16,7 +16,7 @@ namespace StellarAdmin.UI;
 ///     multiple answers.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-choice")]
-public class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireChoiceTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a container that groups related content.
 /// </summary>
 [HtmlTargetElement("sa-card")]
-public class CardTagHelper : StellarAdminTagHelperBase
+public sealed class CardTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the card, which sets its padding and spacing.

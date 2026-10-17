@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     With no content, the value shows the percentage complete of the parent progress bar.
 /// </remarks>
 [HtmlTargetElement("sa-progress-value")]
-public class ProgressValueTagHelper : StellarAdminTagHelperBase
+public sealed class ProgressValueTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

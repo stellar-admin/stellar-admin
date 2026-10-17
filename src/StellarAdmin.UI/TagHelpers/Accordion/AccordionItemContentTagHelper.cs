@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders the content of an accordion item, shown when the item is expanded.
 /// </summary>
 [HtmlTargetElement("sa-accordion-item-content")]
-public class AccordionItemContentTagHelper : StellarAdminTagHelperBase
+public sealed class AccordionItemContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

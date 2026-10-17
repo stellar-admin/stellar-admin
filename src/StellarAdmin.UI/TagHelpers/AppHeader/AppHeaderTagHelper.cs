@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Place it at the top of <c>&lt;sa-sidebar-inset&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-app-header")]
-public class AppHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class AppHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -91,7 +91,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     /// </summary>
     /// <param name="generator">The generator that renders the field and its inputs.</param>
     /// <param name="icons">The icon options that supply the mark of a selected checkbox.</param>
-    protected ChoiceGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
+    private protected ChoiceGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)
         : base(generator)
     {
         _generator = generator;
@@ -128,7 +128,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     ///     A radio group has more than one selected value, a column count is out of range, or
     ///     <c>columns</c> is combined with <c>columns-md</c>.
     /// </exception>
-    protected async Task<FieldLayout> RenderAsync(
+    private protected async Task<FieldLayout> RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,
         bool multiple,

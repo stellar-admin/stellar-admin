@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders navigation for moving between pages of content.
 /// </summary>
 [HtmlTargetElement("sa-pagination")]
-public class PaginationTagHelper : StellarAdminTagHelperBase
+public sealed class PaginationTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

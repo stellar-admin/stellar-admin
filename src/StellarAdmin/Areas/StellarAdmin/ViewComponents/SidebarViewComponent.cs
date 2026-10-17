@@ -19,7 +19,9 @@ public sealed class SidebarViewComponent(IEnumerable<ISidebarItemsProvider> side
         var sidebarItems = new List<SidebarItem>();
         foreach (var provider in sidebarItemsProviders)
         {
-            sidebarItems.AddRange(await provider.GetItemsAsync(HttpContext));
+            sidebarItems.AddRange(
+                await provider.GetItemsAsync(HttpContext, HttpContext.RequestAborted)
+            );
         }
 
         // A full path, so the sidebar renders from host pages that use the admin panel layout.

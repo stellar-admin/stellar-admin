@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the media of an item, such as an icon, image or avatar, at its start.
 /// </summary>
 [HtmlTargetElement("sa-item-media")]
-public class ItemMediaTagHelper : StellarAdminTagHelperBase
+public sealed class ItemMediaTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<ItemMediaVariant, string> ItemVariantClasses =
         new Dictionary<ItemMediaVariant, string>

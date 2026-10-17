@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Use an <c>&lt;sa-field-legend&gt;</c> to caption the group.
 /// </remarks>
 [HtmlTargetElement("sa-field-set")]
-public class FieldSetTagHelper : StellarAdminTagHelperBase
+public sealed class FieldSetTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

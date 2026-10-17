@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     screens.
 /// </remarks>
 [HtmlTargetElement("sa-page-header-actions")]
-public class PageHeaderActionsTagHelper : StellarAdminTagHelperBase
+public sealed class PageHeaderActionsTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

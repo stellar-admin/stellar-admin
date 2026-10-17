@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     shows a toggle icon unless you give it content. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-trigger")]
-public class SidebarTriggerTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarTriggerTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

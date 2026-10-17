@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Use it in a horizontal field.
 /// </remarks>
 [HtmlTargetElement("sa-field-content")]
-public class FieldContentTagHelper : StellarAdminTagHelperBase
+public sealed class FieldContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

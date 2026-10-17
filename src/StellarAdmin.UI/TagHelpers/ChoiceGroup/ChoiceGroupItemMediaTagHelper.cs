@@ -7,6 +7,8 @@ namespace StellarAdmin.UI;
 /// </summary>
 public abstract class ChoiceGroupItemMediaTagHelper : StellarAdminTagHelperBase
 {
+    private protected ChoiceGroupItemMediaTagHelper() { }
+
     /// <summary>
     ///     Renders the content as the media of the option that contains it.
     /// </summary>
@@ -21,7 +23,7 @@ public abstract class ChoiceGroupItemMediaTagHelper : StellarAdminTagHelperBase
     ///     The element isn't inside a matching radio or checkbox group option, or the option already
     ///     has media.
     /// </exception>
-    protected async Task RenderAsync(
+    private protected async Task RenderAsync(
         TagHelperContext context,
         TagHelperOutput output,
         bool multiple

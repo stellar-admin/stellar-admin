@@ -16,7 +16,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-edit-template", ParentTag = "sa-data-grid-column")]
-public class DataGridEditTemplateTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridEditTemplateTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the footer of an item, across its full width below the content.
 /// </summary>
 [HtmlTargetElement("sa-item-footer")]
-public class ItemFooterTagHelper : StellarAdminTagHelperBase
+public sealed class ItemFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     Choosing the item follows the link.
 /// </remarks>
 [HtmlTargetElement("sa-command-item-link")]
-public class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class CommandItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

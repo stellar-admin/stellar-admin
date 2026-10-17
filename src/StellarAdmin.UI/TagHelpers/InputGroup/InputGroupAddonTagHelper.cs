@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     Clicking the add-on, outside its buttons, focuses the group's input.
 /// </remarks>
 [HtmlTargetElement("sa-input-group-addon")]
-public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupAddonTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<InputGroupAddonAlign, string?[]> AlignClasses =
         new Dictionary<InputGroupAddonAlign, string?[]>

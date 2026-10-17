@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the title of a popover.
 /// </summary>
 [HtmlTargetElement("sa-popover-title")]
-public class PopoverTitleTagHelper : StellarAdminTagHelperBase
+public sealed class PopoverTitleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

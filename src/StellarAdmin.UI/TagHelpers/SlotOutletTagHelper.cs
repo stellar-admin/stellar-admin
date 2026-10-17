@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     when no <c>&lt;sa-slot-content&gt;</c> fills the slot.
 /// </remarks>
 [HtmlTargetElement("sa-slot-outlet", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class SlotOutletTagHelper : StellarAdminTagHelperBase
+public sealed class SlotOutletTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the name of the slot to render.

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     to expand it when the page loads.
 /// </remarks>
 [HtmlTargetElement("sa-accordion-item")]
-public class AccordionItemTagHelper : StellarAdminTagHelperBase
+public sealed class AccordionItemTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

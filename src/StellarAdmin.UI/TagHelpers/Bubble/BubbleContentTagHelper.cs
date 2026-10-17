@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the framed content of a bubble, which holds the message text.
 /// </summary>
 [HtmlTargetElement("sa-bubble-content")]
-public class BubbleContentTagHelper : StellarAdminTagHelperBase
+public sealed class BubbleContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

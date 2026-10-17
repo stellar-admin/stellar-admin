@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Renders an item as a link, so the whole row can be clicked.
 /// </summary>
 [HtmlTargetElement("sa-item-link")]
-public class ItemLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class ItemLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Content, such as "or", is shown in a gap in the middle of the line.
 /// </remarks>
 [HtmlTargetElement("sa-field-separator")]
-public class FieldSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class FieldSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     The panel shown when the page loads doesn't raise <c>tabshow</c>.
 /// </remarks>
 [HtmlTargetElement("sa-tab-panel")]
-public class TabPanelTagHelper : StellarAdminTagHelperBase
+public sealed class TabPanelTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">

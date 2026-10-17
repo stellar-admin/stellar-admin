@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the caption of a field set as a <c>&lt;legend&gt;</c> element.
 /// </summary>
 [HtmlTargetElement("sa-field-legend")]
-public class FieldLegendTagHelper : StellarAdminTagHelperBase
+public sealed class FieldLegendTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the visual style of the legend.

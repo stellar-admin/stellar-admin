@@ -26,7 +26,7 @@ namespace StellarAdmin.UI;
     ParentTag = "sa-data-grid",
     TagStructure = TagStructure.WithoutEndTag
 )]
-public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
 {
     private const string SortFieldPlaceholder = "{sortField}";
     private const string SortDirectionPlaceholder = "{sortDirection}";

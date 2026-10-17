@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     content, it shows "Skip".
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-skip")]
-public class QuestionnaireSkipTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireSkipTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the size of the button.

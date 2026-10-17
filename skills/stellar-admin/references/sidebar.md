@@ -7,6 +7,7 @@ The sidebar lists each resource and any custom links, in groups, under a header 
 - [Resource items](#resource-items)
 - [Custom links](#custom-links)
 - [Groups and order](#groups-and-order)
+- [Items from code](#items-from-code)
 - [Branding](#branding)
 - [User menu](#user-menu)
 - [Log out](#log-out)
@@ -76,6 +77,42 @@ admin.AddSidebarLink("Help centre", SidebarLinkTarget.Url("https://help.voyager.
 - Icons are optional per item, and an item without one reserves no space, so give every item in a group an icon or none.
 - Within a group, items sort by `Order`. With equal orders, resource items and links don't interleave: set `Order` explicitly to mix them.
 - Groups appear in the order their label is first registered. There is no group order setting, so register the resource or link of the group that should come first earlier.
+
+## Items from code
+
+When the items depend on the request or on data, implement `ISidebarItemsProvider` (in `StellarAdmin.Sidebar`) and register it as a service. Its items merge with the resource items and custom links, in the sidebar and the command palette:
+
+```csharp
+using StellarAdmin.Sidebar;
+
+public sealed class RecentTripsSidebarItemsProvider(VoyagerDbContext db) : ISidebarItemsProvider
+{
+    public async Task<IReadOnlyList<SidebarItem>> GetItemsAsync(
+        HttpContext httpContext,
+        CancellationToken cancellationToken
+    )
+    {
+        var trips = await db.Trips
+            .OrderByDescending(trip => trip.UpdatedAt)
+            .Take(3)
+            .ToListAsync(cancellationToken);
+
+        return
+        [
+            new SidebarGroupItem(
+                "Recent trips",
+                trips.Select(trip => new SidebarLinkItem(trip.Name, $"~/Trips/{trip.Id}") { Icon = "plane" })
+            ),
+        ];
+    }
+}
+
+builder.Services.AddScoped<ISidebarItemsProvider, RecentTripsSidebarItemsProvider>();
+```
+
+- Return `SidebarGroupItem`s and links: `SidebarLinkItem(label, href)`, `SidebarActionLinkItem(label, controller, action, area)` and `SidebarPageLinkItem(label, page, area)`. An empty area links outside any area, and `null` keeps the current one, which is the admin panel's.
+- Links take `Icon`, `Order` and `OpenInNewTab`. Groups and order work as above, so a group with the label of an existing group joins it.
+- The provider runs on every admin page, so keep it fast. Hide items the user mustn't see yourself, using `httpContext.User`.
 
 ## Branding
 

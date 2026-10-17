@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The footer usually holds summary rows.
 /// </remarks>
 [HtmlTargetElement("sa-table-footer")]
-public class TableFooterTagHelper : StellarAdminTagHelperBase
+public sealed class TableFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

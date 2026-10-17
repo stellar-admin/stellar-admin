@@ -39,9 +39,6 @@ public class SpikeGridTagHelper : StellarAdminTagHelperBase
         var ctx = new SpikeGridContext();
         SetContext(context, ctx);
 
-        var idDiscriminator = new UniqueIdDiscriminator();
-        SetContext(context, idDiscriminator);
-
         // Collect pass: columns register themselves and suppress output.
         await output.GetChildContentAsync(useCachedResult: false);
 
@@ -62,7 +59,6 @@ public class SpikeGridTagHelper : StellarAdminTagHelperBase
             ctx.RowIndex = i;
             ctx.Cells.Clear();
             ViewContext.ViewData[SpikeHtmlExtensions.ItemKey] = items[i];
-            idDiscriminator.Value = $"r{i}";
 
             if (Mode == "deferred")
             {

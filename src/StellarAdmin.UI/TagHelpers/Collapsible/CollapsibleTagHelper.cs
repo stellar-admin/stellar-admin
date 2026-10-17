@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-collapsible")]
-public class CollapsibleTagHelper : StellarAdminTagHelperBase
+public sealed class CollapsibleTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

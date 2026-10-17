@@ -404,6 +404,9 @@ public class SidebarLinkTests
     private sealed class FixedSidebarItemsProvider(params SidebarItem[] items)
         : ISidebarItemsProvider
     {
-        public Task<SidebarItem[]> GetItemsAsync(HttpContext httpContext) => Task.FromResult(items);
+        public Task<IReadOnlyList<SidebarItem>> GetItemsAsync(
+            HttpContext httpContext,
+            CancellationToken cancellationToken
+        ) => Task.FromResult<IReadOnlyList<SidebarItem>>(items);
     }
 }

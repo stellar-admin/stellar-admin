@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     Set <c>href</c> or the <c>asp-*</c> routing attributes.
 /// </remarks>
 [HtmlTargetElement("sa-bubble-content-link")]
-public class BubbleContentLinkTagHelper : StellarAdminAnchorTagHelperBase
+public sealed class BubbleContentLinkTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

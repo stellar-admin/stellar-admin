@@ -16,7 +16,7 @@ namespace StellarAdmin.UI;
 ///     indicator. Every other type renders a styled <c>&lt;input&gt;</c>.
 /// </remarks>
 [HtmlTargetElement("sa-input", TagStructure = TagStructure.WithoutEndTag)]
-public class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
+public sealed class InputTagHelper : FieldInputBaseTagHelper<InputClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

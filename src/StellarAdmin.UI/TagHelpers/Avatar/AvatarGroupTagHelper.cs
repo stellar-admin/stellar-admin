@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a set of avatars as an overlapping stack.
 /// </summary>
 [HtmlTargetElement("sa-avatar-group")]
-public class AvatarGroupTagHelper : StellarAdminTagHelperBase
+public sealed class AvatarGroupTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

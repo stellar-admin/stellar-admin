@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     <c>aria-labelledby</c>.
 /// </remarks>
 [HtmlTargetElement("sa-questionnaire-input", TagStructure = TagStructure.WithoutEndTag)]
-public class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
+public sealed class QuestionnaireInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

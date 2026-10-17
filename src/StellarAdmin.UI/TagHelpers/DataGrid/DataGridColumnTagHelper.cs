@@ -28,7 +28,7 @@ namespace StellarAdmin.UI;
 ///     </para>
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-column", ParentTag = "sa-data-grid")]
-public class DataGridColumnTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridColumnTagHelper : StellarAdminTagHelperBase
 {
     private readonly IModelMetadataProvider _metadataProvider;
     private readonly ICompositeViewEngine _viewEngine;

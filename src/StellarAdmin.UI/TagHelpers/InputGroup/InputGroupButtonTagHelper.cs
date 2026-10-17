@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The button doesn't submit its form unless it has <c>type="submit"</c>.
 /// </remarks>
 [HtmlTargetElement("sa-input-group-button")]
-public class InputGroupButtonTagHelper : StellarAdminTagHelperBase
+public sealed class InputGroupButtonTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<InputGroupButtonSize, string> SizeClasses = new Dictionary<
         InputGroupButtonSize,

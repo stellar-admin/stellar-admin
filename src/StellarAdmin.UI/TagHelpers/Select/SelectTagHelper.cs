@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     Renders a styled native <c>&lt;select&gt;</c> for choosing an option.
 /// </summary>
 [HtmlTargetElement("sa-select")]
-public class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
+public sealed class SelectTagHelper : FieldInputBaseTagHelper<SelectClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

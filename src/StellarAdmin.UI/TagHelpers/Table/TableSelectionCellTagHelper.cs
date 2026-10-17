@@ -14,7 +14,7 @@ namespace StellarAdmin.UI;
 ///     their values under <see cref="Name" />.
 /// </remarks>
 [HtmlTargetElement("sa-table-selection-cell", TagStructure = TagStructure.WithoutEndTag)]
-public class TableSelectionCellTagHelper : StellarAdminTagHelperBase
+public sealed class TableSelectionCellTagHelper : StellarAdminTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;

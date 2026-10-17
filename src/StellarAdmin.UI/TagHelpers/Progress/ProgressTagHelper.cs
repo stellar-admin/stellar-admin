@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     show a label and the value.
 /// </remarks>
 [HtmlTargetElement("sa-progress")]
-public class ProgressTagHelper : StellarAdminTagHelperBase
+public sealed class ProgressTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the value at which the task is complete.

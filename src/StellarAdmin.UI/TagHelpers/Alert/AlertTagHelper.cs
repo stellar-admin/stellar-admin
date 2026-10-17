@@ -8,7 +8,7 @@ namespace StellarAdmin.UI;
 ///     Renders a callout that shows a short, important message.
 /// </summary>
 [HtmlTargetElement("sa-alert")]
-public class AlertTagHelper : StellarAdminTagHelperBase
+public sealed class AlertTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     works without JavaScript.
 /// </remarks>
 [HtmlTargetElement("sa-toggle")]
-public class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
+public sealed class ToggleTagHelper : FieldInputBaseTagHelper<ToggleClassNames>
 {
     private readonly IHtmlGenerator _htmlGenerator;
 

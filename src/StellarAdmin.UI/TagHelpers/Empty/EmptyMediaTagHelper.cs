@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders an icon or illustration above an empty state's title.
 /// </summary>
 [HtmlTargetElement("sa-empty-media")]
-public class EmptyMediaTagHelper : StellarAdminTagHelperBase
+public sealed class EmptyMediaTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<EmptyMediaVariant, string> VariantClasses = new Dictionary<
         EmptyMediaVariant,

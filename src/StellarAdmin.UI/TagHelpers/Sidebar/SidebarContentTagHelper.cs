@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The content holds the sidebar's groups and menus.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-content")]
-public class SidebarContentTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

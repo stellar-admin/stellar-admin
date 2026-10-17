@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a message in a conversation, with its avatar, content, header and footer.
 /// </summary>
 [HtmlTargetElement("sa-message")]
-public class MessageTagHelper : StellarAdminTagHelperBase
+public sealed class MessageTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the side of the conversation that the message sits on.

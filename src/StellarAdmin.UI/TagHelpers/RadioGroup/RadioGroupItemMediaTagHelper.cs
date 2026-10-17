@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 ///     only one media element.
 /// </remarks>
 [HtmlTargetElement("sa-radio-group-item-media", ParentTag = "sa-radio-group-item")]
-public class RadioGroupItemMediaTagHelper : ChoiceGroupItemMediaTagHelper
+public sealed class RadioGroupItemMediaTagHelper : ChoiceGroupItemMediaTagHelper
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

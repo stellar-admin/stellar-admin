@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     content, the template only runs for a row, so it can always use the item.
 /// </remarks>
 [HtmlTargetElement("sa-data-grid-item-template", ParentTag = "sa-data-grid-column")]
-public class DataGridItemTemplateTagHelper : StellarAdminTagHelperBase
+public sealed class DataGridItemTemplateTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

@@ -13,7 +13,7 @@ namespace StellarAdmin.UI;
 ///     search on the server, are rendered on the input.
 /// </remarks>
 [HtmlTargetElement("sa-command-input", TagStructure = TagStructure.WithoutEndTag)]
-public class CommandInputTagHelper : StellarAdminTagHelperBase
+public sealed class CommandInputTagHelper : StellarAdminTagHelperBase
 {
     private readonly IconOptions _iconOptions;
 

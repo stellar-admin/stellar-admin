@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the line above a message, which usually names the sender.
 /// </summary>
 [HtmlTargetElement("sa-message-header")]
-public class MessageHeaderTagHelper : StellarAdminTagHelperBase
+public sealed class MessageHeaderTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

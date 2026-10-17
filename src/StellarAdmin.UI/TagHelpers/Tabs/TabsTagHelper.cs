@@ -12,7 +12,7 @@ namespace StellarAdmin.UI;
 ///     <c>&lt;sa-tab-panel&gt;</c>. Requires <c>stellar-admin.js</c>.
 /// </remarks>
 [HtmlTargetElement("sa-tabs")]
-public class TabsTagHelper : StellarAdminTagHelperBase
+public sealed class TabsTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets the <c>id</c> of the panel that is shown first.

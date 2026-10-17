@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     Renders a field that groups a form control with its label, description and error message.
 /// </summary>
 [HtmlTargetElement("sa-field")]
-public class FieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
+public sealed class FieldTagHelper : StellarAdminTagHelperBase, IGridPlacement
 {
     /// <summary>
     ///     Gets or sets the number of columns the field spans in an <c>&lt;sa-grid&gt;</c>.

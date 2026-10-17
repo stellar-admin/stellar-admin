@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders the content of an empty state below its header, such as actions.
 /// </summary>
 [HtmlTargetElement("sa-empty-content")]
-public class EmptyContentTagHelper : StellarAdminTagHelperBase
+public sealed class EmptyContentTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

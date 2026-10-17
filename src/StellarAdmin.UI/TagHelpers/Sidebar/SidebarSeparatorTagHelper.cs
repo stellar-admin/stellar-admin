@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a horizontal line that divides sections of a sidebar.
 /// </summary>
 [HtmlTargetElement("sa-sidebar-separator")]
-public class SidebarSeparatorTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarSeparatorTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

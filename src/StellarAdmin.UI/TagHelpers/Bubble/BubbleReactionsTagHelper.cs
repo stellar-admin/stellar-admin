@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     Renders a row of emoji reactions or small actions on an edge of a bubble.
 /// </summary>
 [HtmlTargetElement("sa-bubble-reactions")]
-public class BubbleReactionsTagHelper : StellarAdminTagHelperBase
+public sealed class BubbleReactionsTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<BubbleReactionsAlign, string> AlignClasses = new()
     {

@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The footer usually holds the sheet's action buttons.
 /// </remarks>
 [HtmlTargetElement("sa-sheet-footer")]
-public class SheetFooterTagHelper : StellarAdminTagHelperBase
+public sealed class SheetFooterTagHelper : StellarAdminTagHelperBase
 {
     /// <inheritdoc />
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

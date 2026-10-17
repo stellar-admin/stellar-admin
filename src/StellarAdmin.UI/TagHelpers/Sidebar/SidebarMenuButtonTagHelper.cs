@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     The button has <c>type="button"</c> unless you set <c>type</c>.
 /// </remarks>
 [HtmlTargetElement("sa-sidebar-menu-button")]
-public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
+public sealed class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
 {
     private static readonly Dictionary<SidebarMenuButtonSize, string> SizeClasses = new()
     {

@@ -11,7 +11,7 @@ namespace StellarAdmin.UI;
 /// </remarks>
 /// <param name="options">The UI options that supply the menu's color, appearance and accent.</param>
 [HtmlTargetElement("sa-dropdown-menu-sub-content")]
-public class DropdownMenuSubContentTagHelper(IOptions<StellarAdminUIOptions> options)
+public sealed class DropdownMenuSubContentTagHelper(IOptions<StellarAdminUIOptions> options)
     : StellarAdminTagHelperBase()
 {
     /// <summary>

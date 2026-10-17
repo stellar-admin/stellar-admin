@@ -197,6 +197,56 @@ For a richer selectable row, wrap a horizontal field in a `<sa-field-label>` so 
 
 The same shape with `data-slot="radio-group"` and `type="radio"` gives radio choice cards.
 
+## Your own field inputs
+
+To build a control that gets the label, description, error and `<sa-grid>` placement of `<sa-input>`, derive from `FieldInputBaseTagHelper`. Render the control in `RenderInput`, call `ApplyFieldAttributes` so the control points at its description and error, and return the layout of the field's parts:
+
+```csharp
+[HtmlTargetElement("app-color-input", TagStructure = TagStructure.WithoutEndTag)]
+public sealed class ColorInputTagHelper : FieldInputBaseTagHelper
+{
+    private readonly IHtmlGenerator _generator;
+
+    public ColorInputTagHelper(IHtmlGenerator generator)
+        : base(generator)
+    {
+        _generator = generator;
+    }
+
+    protected override Task<FieldLayout> RenderInput(
+        TagHelperContext context,
+        TagHelperOutput output,
+        IDictionary<string, object?>? htmlAttributes
+    )
+    {
+        output.TagName = "input";
+        output.TagMode = TagMode.SelfClosing;
+        if (For != null)
+        {
+            output.MergeAttributes(
+                _generator.GenerateTextBox(ViewContext, For.ModelExplorer, For.Name, For.Model, null, htmlAttributes)
+            );
+        }
+
+        output.Attributes.SetAttribute("type", "color");
+        ApplyFieldAttributes(context, output.Attributes, FieldLayout.Stacked);
+        return Task.FromResult(FieldLayout.Stacked);
+    }
+}
+```
+
+Register the assembly with `@addTagHelper *, MyApp` and use it like any input. `asp-for`, `name`, `label`, `description`, `error`, `wrap-in-field` and the `column-span-*` and `column-start-*` attributes all work:
+
+```razor
+<sa-grid columns="2">
+    <app-color-input asp-for="BrandColor" description="Used for buttons and links." />
+</sa-grid>
+```
+
+- Bind with the framework's `IHtmlGenerator`, as above, so a bound control gets the `id` and `name` that its label and validation expect. Without `asp-for`, the base class gives the control an `id` and copies `name` for you.
+- `FieldLayout.Stacked`, `FieldLayout.StackedDescriptionFirst` and `FieldLayout.ControlFirst` cover the usual arrangements. Build a `FieldLayout` to choose other parts, order or orientation.
+- To accept `class-names` for the field's parts, derive from `FieldInputBaseTagHelper<TClassNames>` with a class that inherits `FieldClassNames`, and add `ClassNames?.Control` to the control's classes yourself.
+
 ## Rules and gotchas
 
 1. **Prefer implicit + `asp-for`** for model-bound forms; fall back to explicit `<sa-field>` only when you need custom structure.
