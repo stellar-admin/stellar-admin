@@ -10,7 +10,7 @@ namespace StellarAdmin.UI;
 ///     A pagination link that navigates to the previous page.
 /// </summary>
 [HtmlTargetElement("sa-pagination-previous")]
-public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
+public class PaginationPreviousTagHelper : StellarAdminAnchorTagHelperBase
 {
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
@@ -21,7 +21,7 @@ public class PaginationPreviousLinkTagHelper : StellarAdminAnchorTagHelperBase
     [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
-    public PaginationPreviousLinkTagHelper(
+    public PaginationPreviousTagHelper(
         IHtmlGenerator htmlGenerator,
         IOptions<IconOptions> iconOptions
     )

@@ -7,7 +7,7 @@ namespace StellarAdmin.UI;
 ///     unshown avatars.
 /// </summary>
 [HtmlTargetElement("sa-avatar-group-count")]
-public class AvatarGroupCount : StellarAdminTagHelperBase
+public class AvatarGroupCountTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

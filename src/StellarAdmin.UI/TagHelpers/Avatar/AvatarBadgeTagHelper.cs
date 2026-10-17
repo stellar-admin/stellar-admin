@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     A small badge overlaid on the corner of an avatar, such as a status indicator or icon.
 /// </summary>
 [HtmlTargetElement("sa-avatar-badge")]
-public class AvatarBadge : StellarAdminTagHelperBase
+public class AvatarBadgeTagHelper : StellarAdminTagHelperBase
 {
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

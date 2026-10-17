@@ -6,7 +6,7 @@ namespace StellarAdmin.UI;
 ///     A region within an alert for interactive elements such as buttons or links.
 /// </summary>
 [HtmlTargetElement("sa-alert-action")]
-public class AlertAction : StellarAdminTagHelperBase
+public class AlertActionTagHelper : StellarAdminTagHelperBase
 {
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

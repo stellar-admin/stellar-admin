@@ -42,8 +42,8 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J7 | Make tag helper plumbing internal or protected || Done (2026-10-17) |
 | J8 | Make only `FieldEditorView` and `FormFieldProperties` the documented editor contract || Done (2026-10-17) |
 | J9 | Make `StellarAdminOptions` internal and give `StellarAdminBuilder` an internal constructor | Done (2026-10-17) |
-| J10 | Make the resource options read-only | |
-| J11 | Add the missing `TagHelper` suffix to five classes | |
+| J10 | Make the resource options read-only to everyone, not internal | On hold with J5 |
+| J11 | Add the missing `TagHelper` suffix to five classes | Done (2026-10-17) |
 | J12 | Rename `sa-linkbutton` to `sa-link-button` | |
 | J13 | Rename `InputGroupAddOn*` to `InputGroupAddon*` | |
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | |
@@ -220,15 +220,15 @@ Done:
 
 ### J10. Resource options read-only
 
-- `ResourceIndexOptions.Columns` is a mutable list whose items can't be constructed. `ResourceFormOptions.Items` is the same.
-- `ResourceIndexOptions` has public setters, so `services.Configure<ResourceOptions<T>>(...)` is a second, undocumented way to configure a resource.
-- `ResourceSidebarItemOptions` has a public constructor but only internal setters.
-- Make `ResourceOptions<T>`, `ResourceIndexOptions`, `ResourceFormOptions` and `ResourceSidebarItemOptions` internal.
-- `DataGridColumnOptions`, `FormFieldOptions` and `FormItemOptions` stay public because view models expose them. Make them read-only.
+Keep `ResourceOptions<T>`, `ResourceIndexOptions` and `ResourceFormOptions` public, because EF Core reads them and there is no `InternalsVisibleTo` (Jerrie, 2026-10-17). Make them read-only to everyone instead. `Columns` and `Items` become `IReadOnlyList`, and the public setters on `ResourceIndexOptions`, `ResourceFormOptions` and `KeySelector` become internal. EF Core writes `Index.Scopes`, `Index.Search`, `Scopes.Items` and `Scopes.DefaultScope` today, so it needs public builder hooks for those first. That is J5's work, so J10 is on hold with J5. `DataGridColumnOptions`, `FormFieldOptions`, `FormItemOptions` and `FormDisplayFieldOptions` already have only internal setters.
 
 ### J11. TagHelper suffix
 
-`AlertAction`, `AvatarBadge`, `AvatarGroupCount` and `SidebarMenuBadge` get the suffix. `PaginationPreviousLinkTagHelper` becomes `PaginationPreviousTagHelper`.
+Done:
+- `AlertAction`, `AvatarBadge`, `AvatarGroupCount` and `SidebarMenuBadge` are now `…TagHelper`, and their files are renamed to match.
+- `PaginationPreviousLinkTagHelper` is now `PaginationPreviousTagHelper`, matching its file and `PaginationNextTagHelper`.
+- The element names don't change, so markup is unaffected.
+- All 1378 tests pass.
 
 ### J12. sa-linkbutton
 
