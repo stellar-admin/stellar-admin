@@ -10,13 +10,13 @@
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;
-        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Title, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
         <sa-segmented-control-item value="@choice.Value" selected="@selected" disabled="@choice.Disabled">
             @if (media is not null)
             {
                 <partial name="_ItemMedia" model="media" />
             }
-            @choice.Text
+            @choice.Title
         </sa-segmented-control-item>
     }
 </sa-segmented-control>

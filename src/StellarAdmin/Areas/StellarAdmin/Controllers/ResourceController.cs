@@ -1571,7 +1571,7 @@ internal sealed class ResourceController<TResource>(
             ? selected
             : selected
                 .Where(item =>
-                    item.Text.Contains(term, StringComparison.CurrentCultureIgnoreCase)
+                    item.Title.Contains(term, StringComparison.CurrentCultureIgnoreCase)
                     || item.Description?.Contains(term, StringComparison.CurrentCultureIgnoreCase)
                         == true
                 )

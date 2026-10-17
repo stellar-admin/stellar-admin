@@ -39,7 +39,7 @@ public class ResourceReferenceTests
 
         // Assert
         await Assert
-            .That(string.Join(',', choices.Select(choice => choice.Text)))
+            .That(string.Join(',', choices.Select(choice => choice.Title)))
             .IsEqualTo("Beverage,Office,Technology");
         await Assert
             .That(choices.Select(choice => choice.Value).ToArray())

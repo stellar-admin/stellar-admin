@@ -5,11 +5,11 @@ namespace StellarAdmin.Resources.Editors;
 ///     and ignore the rest.
 /// </summary>
 /// <param name="Value">The value posted when the choice is selected.</param>
-/// <param name="Text">The choice's text.</param>
-public sealed record ChoiceItem(string Value, string Text)
+/// <param name="Title">The choice's title.</param>
+public sealed record ChoiceItem(string Value, string Title)
 {
     /// <summary>
-    ///     The secondary text displayed below the choice's text, or null.
+    ///     The secondary text displayed below the choice's title, or null.
     /// </summary>
     public string? Description { get; init; }
 
@@ -24,7 +24,7 @@ public sealed record ChoiceItem(string Value, string Text)
     public ChoiceGroup? Group { get; init; }
 
     /// <summary>
-    ///     The media displayed beside the choice's text, or null. Editors that can't display media ignore it.
+    ///     The media displayed beside the choice's title, or null. Editors that can't display media ignore it.
     /// </summary>
     public ItemMedia? Media { get; init; }
 }

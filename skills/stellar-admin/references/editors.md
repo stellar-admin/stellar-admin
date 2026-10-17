@@ -139,7 +139,7 @@ fields.Add(tour => tour.GuideCode).UseEditor<RadioGroupEditor>(guide =>
 });
 ```
 
-A `ChoiceItem(Value, Text)` also takes `Description`, `Disabled`, `Group` (`new ChoiceGroup("Europe")`) and `Media`. Values are strings, formatted and bound in the current culture. Each editor shows what it supports: descriptions in radio and checkbox groups, groups only in selects, media everywhere except selects.
+A `ChoiceItem(Value, Title)` also takes `Description`, `Disabled`, `Group` (`new ChoiceGroup("Europe")`) and `Media`. Values are strings, formatted and bound in the current culture. Each editor shows what it supports: descriptions in radio and checkbox groups, groups only in selects, media everywhere except selects.
 
 ## The empty choice
 

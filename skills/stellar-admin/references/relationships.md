@@ -29,7 +29,7 @@ fields.Add(tour => tour.GuideId).UseEditor<SelectEditor>(select =>
         items => items.OrderBy(guide => guide.Name)));
 ```
 
-- The query projects only value, text and the configured extras; it honours global query filters.
+- The query projects only value, title and the configured extras; it honours global query filters.
 - The items builder: `OrderBy`, `UseDescription`, `UseGroup` (option groups in a select), and media with `UseIcon`, `UseAvatar`, `UseImage` or `UseCode`.
 - An optional key (`int? GuideId` without `[Required]`) gets a "Not set" choice; relabel it with `EmptyChoiceText`.
 - `RadioGroupEditor` with `Appearance = RadioGroupAppearance.Cards` and the same `UseItems` shows the related rows as cards.

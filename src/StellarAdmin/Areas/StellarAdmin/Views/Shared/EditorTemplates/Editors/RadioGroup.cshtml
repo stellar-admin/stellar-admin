@@ -30,7 +30,7 @@
             var id = TagBuilder.CreateSanitizedId($"{Html.IdForModel()}_{choice.Value}", "_");
             var disabled = IsReadOnly || choice.Disabled;
             var isChecked = emptyChecked && choice.Value == "" ? "checked" : null;
-            var media = ItemMediaViewModel.Create(choice.Media, choice.Text, cards ? ItemMediaPlacement.Card : ItemMediaPlacement.Inline, classes.Media);
+            var media = ItemMediaViewModel.Create(choice.Media, choice.Title, cards ? ItemMediaPlacement.Card : ItemMediaPlacement.Inline, classes.Media);
 
             if (cards)
             {
@@ -41,7 +41,7 @@
                             <partial name="_ItemMedia" model="media" />
                         }
                         <sa-field-content class="@classes.Option.Content">
-                            <sa-field-title class="@classes.Option.Label">@choice.Text</sa-field-title>
+                            <sa-field-title class="@classes.Option.Label">@choice.Title</sa-field-title>
 
                             @if (!string.IsNullOrEmpty(choice.Description))
                             {
@@ -65,7 +65,7 @@
                             {
                                 <partial name="_ItemMedia" model="media" />
                             }
-                            @choice.Text
+                            @choice.Title
                         </sa-field-label>
 
                         @if (!string.IsNullOrEmpty(choice.Description))

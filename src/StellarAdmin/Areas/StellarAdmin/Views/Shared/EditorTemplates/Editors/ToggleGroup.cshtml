@@ -21,7 +21,7 @@
     @foreach (var choice in choices)
     {
         bool? selected = emptySelected && choice.Value == "" ? true : null;
-        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Title, ItemMediaPlacement.Inline, Editor.ClassNames.Media);
         <sa-toggle-group-item value="@choice.Value" selected="@selected" disabled="@(IsReadOnly || choice.Disabled)">
             @if (chips)
             {
@@ -31,7 +31,7 @@
             {
                 <partial name="_ItemMedia" model="media" />
             }
-            @choice.Text
+            @choice.Title
         </sa-toggle-group-item>
     }
 </sa-toggle-group>

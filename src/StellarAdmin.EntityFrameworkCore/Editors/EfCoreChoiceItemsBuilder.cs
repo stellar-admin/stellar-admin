@@ -30,7 +30,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays an avatar beside each choice's text, in editors that display media, with the text's initials when
+    ///     Displays an avatar beside each choice's title, in editors that display media, with the title's initials when
     ///     the image URL is null. Replaces other media.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseAvatar(
@@ -45,7 +45,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a short code beside each choice's text, in editors that display media. A choice with a null or
+    ///     Displays a short code beside each choice's title, in editors that display media. A choice with a null or
     ///     empty code has no media. Replaces other media.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseCode(
@@ -60,7 +60,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays secondary text below each choice's text, in editors that display descriptions.
+    ///     Displays secondary text below each choice's title, in editors that display descriptions.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseDescription(
         Expression<Func<TEntity, string?>> description
@@ -89,7 +89,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a registered icon beside each choice's text, in editors that display media. A choice with a null
+    ///     Displays a registered icon beside each choice's title, in editors that display media. A choice with a null
     ///     or empty icon name has no media. Replaces other media.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseIcon(
@@ -104,7 +104,7 @@ public sealed class EfCoreChoiceItemsBuilder<TEntity, TValue>
     }
 
     /// <summary>
-    ///     Displays a square image beside each choice's text, in editors that display media. A choice with a null or
+    ///     Displays a square image beside each choice's title, in editors that display media. A choice with a null or
     ///     empty image URL has no media. Replaces other media.
     /// </summary>
     public EfCoreChoiceItemsBuilder<TEntity, TValue> UseImage(

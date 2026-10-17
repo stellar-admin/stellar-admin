@@ -41,7 +41,7 @@ internal static class EfCoreChoiceItemsLoader
                             "Choice item values cannot be null."
                         );
                     items.Add(
-                        new ChoiceItem(itemValue, row.Text)
+                        new ChoiceItem(itemValue, row.Title)
                         {
                             Description = row.Description,
                             Group = row.Group is null ? null : new ChoiceGroup(row.Group),
@@ -74,7 +74,7 @@ internal static class EfCoreChoiceItemsLoader
             Expression.New(
                 constructor,
                 Rebind(options.ValueExpression, entity),
-                Rebind(options.TextExpression, entity),
+                Rebind(options.TitleExpression, entity),
                 RebindOrNull(options.DescriptionExpression, entity),
                 RebindOrNull(options.GroupExpression, entity),
                 RebindOrNull(options.Media?.Selector, entity)
@@ -93,7 +93,7 @@ internal static class EfCoreChoiceItemsLoader
 
     private sealed record ChoiceItemProjection<TValue>(
         TValue Value,
-        string Text,
+        string Title,
         string? Description,
         string? Group,
         string? Media

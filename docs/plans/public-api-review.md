@@ -63,7 +63,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J28 | Align size and media enum member order | Done (2026-10-17) |
 | J29 | Replace optional parameters with overloads | Done (2026-10-17) |
 | J30 | Fix `Enable*` return types and write the rule down | Done (2026-10-17) |
-| J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | |
+| J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | Done (2026-10-17) |
 | J32 | Configure menu and forms options the same way | |
 | J33 | Fix small builder naming issues | |
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | |
@@ -460,6 +460,13 @@ Done (2026-10-17):
 ### J31. Core LookupItemsBuilder
 
 `LookupItemsBuilder<TEntity>` returns `this`, gets an internal constructor and moves to `Builders`. The label parameter gets one name across choices and lookups.
+
+Done (2026-10-17):
+
+- `LookupItemsBuilder<TEntity>` moved to `StellarAdmin.Resources.Builders`, has an internal constructor, and its `Use*` methods return the builder. Its tests moved to match.
+- The label is called `title` everywhere. The EF choice `UseItems` parameter `text` became `title`, and `ChoiceItem.Text` became `ChoiceItem.Title`, with the views, internals and XML docs updated.
+- The editors and relationships skill references were updated.
+- Verified with the full test run (1422 passed) and a skills drift check. The website doesn't mention these APIs.
 
 ### J32. Menu and forms options
 

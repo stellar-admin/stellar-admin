@@ -14,7 +14,7 @@
                    columns-lg="@columns?.Large" flow="@Editor.Flow">
     @foreach (var choice in choices)
     {
-        var media = ItemMediaViewModel.Create(choice.Media, choice.Text, placement, Editor.ClassNames.Media);
+        var media = ItemMediaViewModel.Create(choice.Media, choice.Title, placement, Editor.ClassNames.Media);
 
         // A bound empty description still renders its paragraph, so the attribute is left out instead
         if (string.IsNullOrEmpty(choice.Description))
@@ -24,7 +24,7 @@
                 {
                     <sa-checkbox-group-item-media><partial name="_ItemMedia" model="media" /></sa-checkbox-group-item-media>
                 }
-                @choice.Text
+                @choice.Title
             </sa-checkbox-group-item>
         }
         else
@@ -34,7 +34,7 @@
                 {
                     <sa-checkbox-group-item-media><partial name="_ItemMedia" model="media" /></sa-checkbox-group-item-media>
                 }
-                @choice.Text
+                @choice.Title
             </sa-checkbox-group-item>
         }
     }

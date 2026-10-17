@@ -16,7 +16,7 @@ public enum ToggleGroupCheckPlacement
     Start,
 
     /// <summary>
-    ///     After the choice's text.
+    ///     After the choice's title.
     /// </summary>
     End,
 }

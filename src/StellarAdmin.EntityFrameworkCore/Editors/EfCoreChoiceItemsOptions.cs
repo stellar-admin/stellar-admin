@@ -11,7 +11,7 @@ internal sealed class EfCoreChoiceItemsOptions<TEntity, TValue>
 
     internal EfCoreItemMedia<TEntity>? Media { get; set; }
 
-    internal Expression<Func<TEntity, string>> TextExpression { get; }
+    internal Expression<Func<TEntity, string>> TitleExpression { get; }
 
     internal Expression<Func<TEntity, TValue>> ValueExpression { get; }
 
@@ -19,10 +19,10 @@ internal sealed class EfCoreChoiceItemsOptions<TEntity, TValue>
 
     internal EfCoreChoiceItemsOptions(
         Expression<Func<TEntity, TValue>> valueExpression,
-        Expression<Func<TEntity, string>> textExpression
+        Expression<Func<TEntity, string>> titleExpression
     )
     {
         ValueExpression = valueExpression;
-        TextExpression = textExpression;
+        TitleExpression = titleExpression;
     }
 }

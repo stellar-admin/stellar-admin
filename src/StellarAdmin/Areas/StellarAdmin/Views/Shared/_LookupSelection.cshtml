@@ -5,7 +5,7 @@
     var isCard = Model.Layout == LookupSheetEditorLayout.Card;
 
     var placement = isCard ? ItemMediaPlacement.LookupLarge : ItemMediaPlacement.Lookup;
-    var media = Model.ShowMedia && item is not null ? ItemMediaViewModel.Create(item.Media, item.Text, placement, Model.MediaClass) : null;
+    var media = Model.ShowMedia && item is not null ? ItemMediaViewModel.Create(item.Media, item.Title, placement, Model.MediaClass) : null;
 }
 
 @* The editable layouts mark their parts with data-lookup, so selecting a result can swap in that result's parts *@
@@ -18,7 +18,7 @@
         }
     </sa-item-media>
     <sa-item-content data-lookup="text" class="min-w-0 gap-0">
-        <sa-item-title class="w-full text-sm"><span class="truncate" data-lookup="title">@item?.Text</span></sa-item-title>
+        <sa-item-title class="w-full text-sm"><span class="truncate" data-lookup="title">@item?.Title</span></sa-item-title>
         @if (!string.IsNullOrEmpty(item?.Description))
         {
             <sa-item-description class="truncate text-xs">@item.Description</sa-item-description>
@@ -31,7 +31,7 @@ else if (Model.IsReadOnly)
     {
         <partial name="_ItemMedia" model="media" />
     }
-    <span class="min-w-0 truncate">@item?.Text</span>
+    <span class="min-w-0 truncate">@item?.Title</span>
 }
 else
 {
@@ -42,6 +42,6 @@ else
         }
     </span>
     <span class="flex min-w-0 items-center" data-lookup="text">
-        <span class="truncate" data-lookup="title">@item?.Text</span>
+        <span class="truncate" data-lookup="title">@item?.Title</span>
     </span>
 }

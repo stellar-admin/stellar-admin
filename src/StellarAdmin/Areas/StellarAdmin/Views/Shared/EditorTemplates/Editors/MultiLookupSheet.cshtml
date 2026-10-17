@@ -39,7 +39,7 @@
     var hasMedia = options.ShowMedia && Editor.Items?.MediaType is not null;
 
     ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
-        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, Editor.ClassNames.Media) : null;
+        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Title, placement, Editor.ClassNames.Media) : null;
 }
 
 <sa-field class="@classes.Root">
@@ -64,7 +64,7 @@
                         {
                             <partial name="_ItemMedia" model="media" />
                         }
-                        @item.Text
+                        @item.Title
                     </sa-chip>
                 }
             </sa-chip-group>

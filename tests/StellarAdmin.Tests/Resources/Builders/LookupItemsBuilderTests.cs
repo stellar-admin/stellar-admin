@@ -1,9 +1,25 @@
+using StellarAdmin.Resources.Builders;
 using StellarAdmin.Resources.Editors;
 
-namespace StellarAdmin.Tests.Resources.Editors;
+namespace StellarAdmin.Tests.Resources.Builders;
 
 public class LookupItemsBuilderTests
 {
+    [Test]
+    public async Task UseMethods_ReturnTheSameBuilder()
+    {
+        // Arrange
+        var sut = new LookupItemsBuilder<string>();
+
+        // Act
+        var result = sut.UseDescription(entity => entity).UseIcon(_ => "plane");
+
+        // Assert
+        await Assert.That(result).IsSameReferenceAs(sut);
+        await Assert.That(sut.Description!("lisbon")).IsEqualTo("lisbon");
+        await Assert.That(sut.MediaType).IsEqualTo(typeof(ItemMedia.Icon));
+    }
+
     [Test]
     [Arguments("")]
     [Arguments(null)]

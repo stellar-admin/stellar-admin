@@ -11,7 +11,7 @@
     var removeText = labels.Lookup.RemoveLabel(labelContext);
 
     ItemMediaViewModel? Media(ChoiceItem item, ItemMediaPlacement placement) =>
-        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Text, placement, editor.ClassNames.Media) : null;
+        options.ShowMedia ? ItemMediaViewModel.Create(item.Media, item.Title, placement, editor.ClassNames.Media) : null;
 }
 
 @* The selected items of an editable field, rendered with the field and again as items are selected in the sheet *@
@@ -33,14 +33,14 @@
                 {
                     <partial name="_ItemMedia" model="media" />
                 }
-                @item.Text
-                <sa-chip-remove aria-label="@($"{removeText} {item.Text}")" data-lookup="remove" />
+                @item.Title
+                <sa-chip-remove aria-label="@($"{removeText} {item.Title}")" data-lookup="remove" />
             </sa-chip>
         }
         break;
 
     default:
-        var named = items.Take(2).Select(item => item.Text);
+        var named = items.Take(2).Select(item => item.Title);
         var summary = items.Count > 2
             ? $"{string.Join(", ", named)} {labels.Lookup.MoreText(new LookupLabelContext(Model.Label, editor.SheetOptions.MinimumSearchLength, null) { Count = items.Count - 2 })}"
             : string.Join(", ", named);

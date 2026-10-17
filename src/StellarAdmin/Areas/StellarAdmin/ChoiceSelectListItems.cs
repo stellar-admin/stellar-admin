@@ -37,7 +37,7 @@ internal static class ChoiceSelectListItems
             options.Add(
                 (
                     position,
-                    new SelectListItem(choice.Text, choice.Value, false, choice.Disabled)
+                    new SelectListItem(choice.Title, choice.Value, false, choice.Disabled)
                     {
                         Group = group,
                     }
