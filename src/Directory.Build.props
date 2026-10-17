@@ -17,5 +17,6 @@
   <ItemGroup>
     <None Include="..\..\assets\logo\stellar-admin-symbol.png" Pack="true" PackagePath="" />
     <None Include="..\..\readme.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

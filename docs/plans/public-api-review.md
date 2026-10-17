@@ -67,7 +67,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J32 | Configure menu and forms options the same way | On hold (menu options to be removed) |
 | J33 | Fix small builder naming issues | Done (2026-10-17) |
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | |
-| J35 | Pack `THIRD-PARTY-NOTICES.txt` | |
+| J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
 | J36 | Rename the client events to one style | |
 | J37 | Document the global MVC hooks | |
 | J38 | Add `class-names` to the field helpers that lack it | |
@@ -502,6 +502,14 @@ Add PublicApiAnalyzers once the other items are done. Set a package validation b
 ### J35. Third-party notices
 
 The packages embed Lucide and Tabler icon data and shadcn-derived CSS, and their licences require the notice.
+
+Done (2026-10-17):
+
+- `src/Directory.Build.props` packs `THIRD-PARTY-NOTICES.txt` at the package root, so all three packages carry it.
+- shadcn/ui and tw-animate-css were removed from the file. The components follow shadcn's structure but use none of its code, and nothing uses tw-animate-css any more.
+- Tailwind stays because `stellar-admin-panel.css` is built with the Tailwind CLI. cmdk stays because `command-score.ts` is a port of its scorer.
+- Lit and interestfor were added because `stellar-admin.js` bundles them. htmx was added as a courtesy, since its 0BSD licence asks for no notice.
+- Verified with `dotnet pack`: each of the three packages contains the file. The test suite wasn't run, because no code changed.
 
 ### J36. Client event names
 
