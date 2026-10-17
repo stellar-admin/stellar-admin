@@ -111,7 +111,7 @@ public partial class DisplayFieldTagHelperTests
         sut.Label = "Notes";
         sut.ColumnSpan = columnSpan;
         sut.ColumnSpanLarge = columnSpanLarge;
-        var details = new DetailsTagHelper { Columns = columns };
+        var details = new DetailsTagHelper { ColumnsMedium = columns };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -163,7 +163,7 @@ public partial class DisplayFieldTagHelperTests
         sut.Label = "Notes";
         sut.ColumnStart = "1";
         sut.ColumnStartLarge = "2";
-        var details = new DetailsTagHelper { Columns = 3 };
+        var details = new DetailsTagHelper { ColumnsMedium = 3 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -202,7 +202,7 @@ public partial class DisplayFieldTagHelperTests
         var sut = CreateSut(context);
         sut.Label = "Booking";
         sut.ColumnSpan = "full";
-        var grid = new GridTagHelper { Columns = 3 };
+        var grid = new GridTagHelper { ColumnsMedium = 3 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(

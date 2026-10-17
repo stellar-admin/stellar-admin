@@ -25,7 +25,7 @@ public class FieldTagHelperTests
     {
         // Arrange
         var sut = new FieldTagHelper { ColumnSpan = "2", ColumnSpanLarge = "full" };
-        var grid = new GridTagHelper { Columns = 3, ColumnsLarge = 4 };
+        var grid = new GridTagHelper { ColumnsMedium = 3, ColumnsLarge = 4 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -44,7 +44,7 @@ public class FieldTagHelperTests
     {
         // Arrange
         var sut = new FieldTagHelper { ColumnStart = "1" };
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -63,7 +63,7 @@ public class FieldTagHelperTests
         // Arrange
         var sut = new FieldTagHelper { ColumnSpan = "2" };
         var item = new GridItemTagHelper();
-        var grid = new GridTagHelper { Columns = 3 };
+        var grid = new GridTagHelper { ColumnsMedium = 3 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(

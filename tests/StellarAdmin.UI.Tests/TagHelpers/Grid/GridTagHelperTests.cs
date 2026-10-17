@@ -60,20 +60,12 @@ public class GridTagHelperTests
     }
 
     [Test]
-    [Arguments(3, null, null, null, null, "--sa-cols-md:3;--sa-cols-lg:3")]
-    [Arguments(3, null, 2, null, 4, "--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:4")]
-    [Arguments(
-        null,
-        2,
-        null,
-        null,
-        null,
-        "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2"
-    )]
-    [Arguments(null, null, null, 2, null, "--sa-cols-md:2;--sa-cols-lg:2")]
+    [Arguments(null, null, 3, null, "--sa-cols-md:3;--sa-cols-lg:3")]
+    [Arguments(null, 2, 3, 4, "--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:4")]
+    [Arguments(2, null, null, null, "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2")]
+    [Arguments(2, null, 3, null, "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:3")]
     public async Task ProcessAsync_WhenColumnsAreSet_WritesColumnVariablesOnContent(
         int? columns,
-        int? columnsBase,
         int? columnsSmall,
         int? columnsMedium,
         int? columnsLarge,
@@ -84,7 +76,6 @@ public class GridTagHelperTests
         var sut = new GridTagHelper
         {
             Columns = columns,
-            ColumnsBase = columnsBase,
             ColumnsSmall = columnsSmall,
             ColumnsMedium = columnsMedium,
             ColumnsLarge = columnsLarge,
@@ -106,24 +97,11 @@ public class GridTagHelperTests
     [Arguments(null, 13)]
     public async Task ProcessAsync_WhenColumnsAreOutOfRange_ThrowsInvalidOperationException(
         int? columns,
-        int? columnsBase
+        int? columnsSmall
     )
     {
         // Arrange
-        var sut = new GridTagHelper { Columns = columns, ColumnsBase = columnsBase };
-
-        // Act
-        Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);
-
-        // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
-    }
-
-    [Test]
-    public async Task ProcessAsync_WhenColumnsAndColumnsMediumAreSet_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var sut = new GridTagHelper { Columns = 2, ColumnsMedium = 3 };
+        var sut = new GridTagHelper { Columns = columns, ColumnsSmall = columnsSmall };
 
         // Act
         Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);

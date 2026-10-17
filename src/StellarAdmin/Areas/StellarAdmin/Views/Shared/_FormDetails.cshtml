@@ -11,7 +11,7 @@
 }
 
 <sa-form-section title="@details.Title" description="@details.Description" layout="@layout">
-    <sa-details columns-base="@columns.Base" columns-sm="@columns.Small" columns-md="@columns.Medium" columns-lg="@columns.Large"
+    <sa-details columns="@columns.Base" columns-sm="@columns.Small" columns-md="@columns.Medium" columns-lg="@columns.Large"
                 orientation="@details.Orientation" variant="@details.Variant">
         @foreach (var field in details.Fields)
         {

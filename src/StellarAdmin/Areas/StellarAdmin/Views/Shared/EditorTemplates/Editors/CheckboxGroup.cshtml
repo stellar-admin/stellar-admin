@@ -10,7 +10,7 @@
 
 <sa-checkbox-group class-names="@classes" asp-for="@Model"
                    label="@Title" description="@Description" disabled="@IsReadOnly" variant="@variant"
-                   columns-base="@columns?.Base" columns-sm="@columns?.Small" columns-md="@columns?.Medium"
+                   columns="@columns?.Base" columns-sm="@columns?.Small" columns-md="@columns?.Medium"
                    columns-lg="@columns?.Large" flow="@Editor.Flow">
     @foreach (var choice in choices)
     {

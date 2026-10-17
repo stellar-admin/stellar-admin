@@ -9,25 +9,16 @@ namespace StellarAdmin.UI;
 public sealed class DetailsTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Gets or sets the number of columns when the list is at least 40rem wide.
-    /// </summary>
-    /// <value>
-    ///     A number from 1 to 12. The default is the number of columns at 30rem.
-    /// </value>
-    /// <remarks>
-    ///     The same as <c>columns-md</c>. Can't be combined with it.
-    /// </remarks>
-    [HtmlAttributeName("columns")]
-    public int? Columns { get; set; }
-
-    /// <summary>
     ///     Gets or sets the number of columns at the smallest width.
     /// </summary>
     /// <value>
     ///     A number from 1 to 12. The default is <c>1</c>.
     /// </value>
-    [HtmlAttributeName("columns-base")]
-    public int? ColumnsBase { get; set; }
+    /// <remarks>
+    ///     Wider breakpoints use this count unless they set their own.
+    /// </remarks>
+    [HtmlAttributeName("columns")]
+    public int? Columns { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of columns when the list is at least 56rem wide.
@@ -44,9 +35,6 @@ public sealed class DetailsTagHelper : StellarAdminTagHelperBase
     /// <value>
     ///     A number from 1 to 12. The default is the number of columns at 30rem.
     /// </value>
-    /// <remarks>
-    ///     Can't be combined with <c>columns</c>.
-    /// </remarks>
     [HtmlAttributeName("columns-md")]
     public int? ColumnsMedium { get; set; }
 
@@ -84,15 +72,13 @@ public sealed class DetailsTagHelper : StellarAdminTagHelperBase
 
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
-    ///     <see cref="Columns" /> and <see cref="ColumnsMedium" /> are both set, or a column count
-    ///     is less than 1 or greater than 12.
+    ///     A column count is less than 1 or greater than 12.
     /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columns = GridLayout.ResolveColumns(
             "sa-details",
             Columns,
-            ColumnsBase,
             ColumnsSmall,
             ColumnsMedium,
             ColumnsLarge

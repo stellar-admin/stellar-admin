@@ -26,7 +26,7 @@ Bind a field with `asp-for`; the label comes from `[Display(Name)]` unless `labe
 
 ## Columns and spans
 
-Columns and spans work as in [`<sa-grid>`](grid.md). The columns respond to the list's container width, not the viewport. `columns` sets the count from 40rem; the list has one column below that unless `columns-base` or `columns-sm` is set. `columns-base`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one. Set either `columns` or `columns-md`, not both. Counts are 1 to 12.
+Columns and spans work as in [`<sa-grid>`](grid.md). The columns respond to the list's container width, not the viewport. `columns`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one, so `columns-md="2"` gives one column below 40rem and two from there up. Counts are 1 to 12.
 
 `column-span`, `column-span-sm`, `column-span-md` and `column-span-lg` set a field's span the same way: a number from 1 to 12 or `full` for every column (for example `column-span="full" column-span-lg="2"`). Each span is limited to the column count at that width; an invalid value throws when the page renders. `column-start`, `column-start-sm`, `column-start-md` and `column-start-lg` start a field at a column (1 to 12, or `auto`), as in [`<sa-grid>`](grid.md).
 
@@ -49,8 +49,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `columns` | `int` | — | — |
-| `columns-base` | `int` | `1` | — |
+| `columns` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
@@ -88,7 +87,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 *From `Pages/Details/_Intro.cshtml`*
 
 ```razor
-<sa-details columns="2">
+<sa-details columns-md="2">
     <sa-display-field asp-for="Reference" />
     <sa-display-field asp-for="Status" />
     <sa-display-field asp-for="LeadTraveller" />
@@ -104,7 +103,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 *From `Pages/Details/_Columns.cshtml`*
 
 ```razor
-<sa-details columns="3" columns-sm="2" columns-lg="4">
+<sa-details columns-md="3" columns-sm="2" columns-lg="4">
     <sa-display-field asp-for="Reference" />
     <sa-display-field asp-for="LeadTraveller" />
     <sa-display-field asp-for="Email" column-span="2" />
@@ -120,7 +119,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 *From `Pages/Details/_Starts.cshtml`*
 
 ```razor
-<sa-details columns="3">
+<sa-details columns-md="3">
     <sa-display-field asp-for="Reference" />
     <sa-display-field asp-for="LeadTraveller" />
     <sa-display-field asp-for="Departure" column-start="1" />
@@ -133,7 +132,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 *From `Pages/Details/_EmptyValues.cshtml`*
 
 ```razor
-<sa-details columns="2">
+<sa-details columns-md="2">
     @* A dash by default *@
     <sa-display-field asp-for="PromoCode" />
     @* [DisplayFormat(NullDisplayText = "None")] *@
@@ -147,7 +146,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 *From `Pages/Details/_Templates.cshtml`*
 
 ```razor
-<sa-details columns="3">
+<sa-details columns-md="3">
     @* [UIHint("BookingStatus")] renders DisplayTemplates/BookingStatus *@
     <sa-display-field asp-for="Status" />
     @* A named template *@
@@ -173,7 +172,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 ```razor
 <form>
     <sa-form-section title="Booking" description="Who is travelling and where.">
-        <sa-grid columns="2">
+        <sa-grid columns-md="2">
             <sa-display-field asp-for="Reference" />
             <sa-input asp-for="LeadTraveller" />
             <sa-input asp-for="Email" />
@@ -182,7 +181,7 @@ The same breakpoints and inline grid variables are available from the public `Re
         </sa-grid>
     </sa-form-section>
     <sa-form-section title="Audit" description="Maintained automatically.">
-        <sa-details columns="2">
+        <sa-details columns-md="2">
             <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
             <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
             <sa-display-field asp-for="Version" />
@@ -205,7 +204,7 @@ The same breakpoints and inline grid variables are available from the public `Re
 </sa-page-header>
 
 <sa-form-section title="Booking" description="Who is travelling and where.">
-    <sa-details columns="2">
+    <sa-details columns-md="2">
         <sa-display-field asp-for="Reference" />
         <sa-display-field asp-for="Status" />
         <sa-display-field asp-for="LeadTraveller" />

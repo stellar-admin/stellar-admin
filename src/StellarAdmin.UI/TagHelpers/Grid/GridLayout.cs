@@ -13,32 +13,17 @@ internal static class GridLayout
     public static GridTiers ResolveColumns(
         string elementName,
         int? columns,
-        int? columnsBase,
         int? columnsSmall,
         int? columnsMedium,
         int? columnsLarge
     )
     {
-        if (columns is not null && columnsMedium is not null)
-        {
-            throw new InvalidOperationException(
-                $"The <{elementName}> element can set either the columns or the columns-md "
-                    + "attribute, not both."
-            );
-        }
-
         ValidateColumns(elementName, "columns", columns);
-        ValidateColumns(elementName, "columns-base", columnsBase);
         ValidateColumns(elementName, "columns-sm", columnsSmall);
         ValidateColumns(elementName, "columns-md", columnsMedium);
         ValidateColumns(elementName, "columns-lg", columnsLarge);
 
-        return ResponsiveGrid.ResolveColumns(
-            columnsBase,
-            columnsSmall,
-            columnsMedium ?? columns,
-            columnsLarge
-        );
+        return ResponsiveGrid.ResolveColumns(columns, columnsSmall, columnsMedium, columnsLarge);
     }
 
     // Parses the span and start attributes, so an invalid value throws wherever the element is,

@@ -24,7 +24,7 @@
                     <sa-table-cell class="text-right">@booking.Amount.ToString("N2")</sa-table-cell>
                 </sa-table-row>
                 <sa-table-row-detail expanded="@(booking.Id == "TRP-4822")">
-                    <sa-details columns="4">
+                    <sa-details columns-md="4">
                         <sa-display-field asp-for="@booking.Status" />
                         <sa-display-field asp-for="@details.Traveller" label="Lead traveller" />
                         <sa-display-field asp-for="@details.Email" href="mailto:@details.Email" />

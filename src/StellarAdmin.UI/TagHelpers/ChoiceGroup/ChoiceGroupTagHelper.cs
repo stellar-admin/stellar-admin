@@ -17,25 +17,16 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     private readonly IOptions<IconOptions> _icons;
 
     /// <summary>
-    ///     Gets or sets the number of columns of options when the field is at least 40rem wide.
-    /// </summary>
-    /// <value>
-    ///     A number from 1 to 12. The default is the number of columns at the next smaller width.
-    /// </value>
-    /// <remarks>
-    ///     The same as <c>columns-md</c>. Can't be combined with it.
-    /// </remarks>
-    [HtmlAttributeName("columns")]
-    public int? Columns { get; set; }
-
-    /// <summary>
     ///     Gets or sets the number of columns of options at the smallest width.
     /// </summary>
     /// <value>
     ///     A number from 1 to 12. The default is <c>1</c>.
     /// </value>
-    [HtmlAttributeName("columns-base")]
-    public int? ColumnsBase { get; set; }
+    /// <remarks>
+    ///     Wider breakpoints use this count unless they set their own.
+    /// </remarks>
+    [HtmlAttributeName("columns")]
+    public int? Columns { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of columns of options when the field is at least 56rem wide.
@@ -52,9 +43,6 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     /// <value>
     ///     A number from 1 to 12. The default is the number of columns at the next smaller width.
     /// </value>
-    /// <remarks>
-    ///     Can't be combined with <c>columns</c>.
-    /// </remarks>
     [HtmlAttributeName("columns-md")]
     public int? ColumnsMedium { get; set; }
 
@@ -125,8 +113,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
     ///     The options include an option group, repeat a value, or come from both
     ///     <see cref="Items" /> and child option elements.
     ///     -or-
-    ///     A radio group has more than one selected value, a column count is out of range, or
-    ///     <c>columns</c> is combined with <c>columns-md</c>.
+    ///     A radio group has more than one selected value, or a column count is out of range.
     /// </exception>
     private protected async Task<FieldLayout> RenderAsync(
         TagHelperContext context,
@@ -140,7 +127,6 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper<ChoiceGroup
         var columns = GridLayout.ResolveColumns(
             multiple ? "sa-checkbox-group" : "sa-radio-group",
             Columns,
-            ColumnsBase,
             ColumnsSmall,
             ColumnsMedium,
             ColumnsLarge

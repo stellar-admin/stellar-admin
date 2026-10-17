@@ -416,7 +416,7 @@ public class RadioGroupTagHelperTests
         {
             ViewContext = context.ViewContext,
             Name = "seat",
-            ColumnsBase = 2,
+            Columns = 2,
             Flow = RadioGroupFlow.Down,
             Items = [new("Aisle", "aisle"), new("Middle", "middle"), new("Window", "window")],
         };

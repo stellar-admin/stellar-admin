@@ -11,7 +11,7 @@ Lays out fields and other content in responsive columns.
 <!-- structure:begin -->
 ## When to use
 
-Use `<sa-grid>` to lay out a form's fields in columns; it replaces hand-written `grid` divs and stacks in narrow containers. The columns respond to the grid's container width, not the viewport. `columns` sets the count from 40rem; the grid has one column below that unless `columns-base` or `columns-sm` is set. `columns-base`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one. Set either `columns` or `columns-md`, not both. Counts are 1 to 12.
+Use `<sa-grid>` to lay out a form's fields in columns; it replaces hand-written `grid` divs and stacks in narrow containers. The columns respond to the grid's container width, not the viewport. `columns`, `columns-sm`, `columns-md` and `columns-lg` set the count at the smallest width, 30rem, 40rem and 56rem, and an unset width inherits the next smaller one, so `columns-md="2"` gives one column below 40rem and two from there up. Counts are 1 to 12.
 
 ## Spans and starts
 
@@ -22,12 +22,12 @@ The same elements take `column-start`, `column-start-sm`, `column-start-md` and 
 Wrap anything else, such as a [`<sa-form-section>`](form-section.md) or [`<sa-details>`](details.md), in `<sa-grid-item>` to give it a span or a start. `<sa-grid-item>` must be a direct child of `<sa-grid>`. An invalid span or start value, or an `<sa-grid-item>` outside `<sa-grid>`, throws when the page renders.
 
 ```razor
-<sa-grid columns="3" columns-sm="2">
+<sa-grid columns-md="3" columns-sm="2">
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="Email" column-span="2" />
     <sa-display-field asp-for="Reference" column-start="1" />
     <sa-grid-item column-span="full" column-span-lg="2">
-        <sa-details columns="2" columns-sm="2">...</sa-details>
+        <sa-details columns-md="2" columns-sm="2">...</sa-details>
     </sa-grid-item>
 </sa-grid>
 ```
@@ -49,8 +49,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `columns` | `int` | — | — |
-| `columns-base` | `int` | `1` | — |
+| `columns` | `int` | `1` | — |
 | `columns-lg` | `int` | — | — |
 | `columns-md` | `int` | — | — |
 | `columns-sm` | `int` | — | — |
@@ -75,7 +74,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 *From `Pages/Grid/_Intro.cshtml`*
 
 ```razor
-<sa-grid columns="2">
+<sa-grid columns-md="2">
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="LastName" />
     <sa-input asp-for="Email" column-span="full" description="We send the itinerary here." />
@@ -87,7 +86,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 *From `Pages/Grid/_Spans.cshtml`*
 
 ```razor
-<sa-grid columns="3" columns-sm="2" columns-lg="4">
+<sa-grid columns-md="3" columns-sm="2" columns-lg="4">
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="LastName" />
     <sa-input asp-for="Email" column-span="2" />
@@ -105,7 +104,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 *From `Pages/Grid/_Starts.cshtml`*
 
 ```razor
-<sa-grid columns="3">
+<sa-grid columns-md="3">
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="LastName" />
     <sa-input asp-for="Departure" column-start="1" />
@@ -117,7 +116,7 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 *From `Pages/Grid/_DisplayFields.cshtml`*
 
 ```razor
-<sa-grid columns="3">
+<sa-grid columns-md="3">
     <sa-display-field asp-for="Reference" />
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="LastName" />
@@ -136,14 +135,14 @@ A `<sa-details>` nested in a grid item measures its own width, so set `columns-s
 *From `Pages/Grid/_GridItems.cshtml`*
 
 ```razor
-<sa-grid columns="3">
+<sa-grid columns-md="3">
     <sa-input asp-for="FirstName" />
     <sa-input asp-for="LastName" />
     <sa-input asp-for="Phone" />
     <sa-input asp-for="SendConfirmation" column-span="full" />
     <sa-grid-item column-span="full" column-span-lg="2">
         <sa-form-section title="Audit" description="Maintained automatically." layout="FormSectionLayout.Stacked">
-            <sa-details columns="2" columns-sm="2">
+            <sa-details columns-md="2" columns-sm="2">
                 <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
                 <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
             </sa-details>

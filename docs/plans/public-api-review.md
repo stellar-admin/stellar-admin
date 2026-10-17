@@ -20,7 +20,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D2 | Support custom field inputs built on `FieldInputBaseTagHelper`? | Yes. Fix its awkward members and document it. | Yes, keep it open, fix the members and add a guide. Done (2026-10-17) |
 | D3 | Keep `ISidebarItemsProvider` public so apps can add their own sidebar items? | Yes. Tidy the models and document it. | Yes, keep it public, tidy the models and document it. Done (2026-10-17) |
 | D4 | One scheme for link versions of components? | `sa-<component>-link` everywhere, with `sa-link-button`. | `sa-<component>-link` everywhere, including `sa-button-link` and `sa-dropdown-menu-item-link`. Done (2026-10-17) |
-| D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | |
+| D5 | What does an attribute like `columns` mean with no breakpoint suffix? | The smallest width, everywhere. | The smallest width, and `columns-base` goes. Done (2026-10-17) |
 | D6 | `PositionArea`: rename, or split into `side` and `align`? | Rename it and document `Top` vs `TopCenter`. | |
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | |
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | |
@@ -138,6 +138,12 @@ Done:
 ### D5. Breakpoint attributes
 
 On `sa-grid` (`UI/Grid/GridTagHelper.cs:15`), `sa-details` and the choice groups, `columns` applies from 40rem up, and `columns-base` is the smallest width. On fields, `sa-grid-item` and `sa-display-field`, `column-span` and `column-start` are the smallest width. The recommendation drops `columns-base`. Today's `columns` becomes `columns-md` or `columns-sm`, whichever names 40rem.
+
+Done:
+- `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` sets the smallest width, and wider widths inherit it. `columns-base` is gone, and `columns` can now be combined with `columns-md`.
+- The admin panel views, DocsSamples and the UI skill's grid, details, choice group and forms references use `columns-md` where they meant 40rem.
+- `sandbox/html/grid.html` is an old prototype and still shows `columns-base`.
+- The build is clean apart from older warnings, the skills have no drift, and all 1435 tests pass (2026-10-17). Two conflict tests went with the old rule.
 
 ### D6. PositionArea
 
@@ -680,6 +686,7 @@ Changes the website still needs:
 - [ ] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs.
 - [ ] D2: add the "Your own field inputs" guide from the UI skill's `references/forms.md` to the forms docs.
 - [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
+- [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

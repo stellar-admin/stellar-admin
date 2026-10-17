@@ -122,7 +122,7 @@ if (!ModelState.IsValid) return Page();
     <sa-field-description>We use this to deliver your tickets.</sa-field-description>
     <sa-field-group>
         <sa-input asp-for="Street" />
-        <sa-grid columns="2">
+        <sa-grid columns-md="2">
             <sa-input asp-for="City" />
             <sa-input asp-for="PostalCode" />
         </sa-grid>
@@ -238,7 +238,7 @@ public sealed class ColorInputTagHelper : FieldInputBaseTagHelper
 Register the assembly with `@addTagHelper *, MyApp` and use it like any input. `asp-for`, `name`, `label`, `description`, `error`, `wrap-in-field` and the `column-span-*` and `column-start-*` attributes all work:
 
 ```razor
-<sa-grid columns="2">
+<sa-grid columns-md="2">
     <app-color-input asp-for="BrandColor" description="Used for buttons and links." />
 </sa-grid>
 ```

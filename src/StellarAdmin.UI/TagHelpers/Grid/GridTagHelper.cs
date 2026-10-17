@@ -14,25 +14,16 @@ namespace StellarAdmin.UI;
 public sealed class GridTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
-    ///     Gets or sets the number of columns when the grid is at least 40rem wide.
-    /// </summary>
-    /// <value>
-    ///     A number from 1 to 12. The default is the number of columns at 30rem.
-    /// </value>
-    /// <remarks>
-    ///     Same as <c>columns-md</c>. Set one or the other, not both.
-    /// </remarks>
-    [HtmlAttributeName("columns")]
-    public int? Columns { get; set; }
-
-    /// <summary>
     ///     Gets or sets the number of columns at the smallest width.
     /// </summary>
     /// <value>
     ///     A number from 1 to 12. The default is <c>1</c>.
     /// </value>
-    [HtmlAttributeName("columns-base")]
-    public int? ColumnsBase { get; set; }
+    /// <remarks>
+    ///     Wider breakpoints use this count unless they set their own.
+    /// </remarks>
+    [HtmlAttributeName("columns")]
+    public int? Columns { get; set; }
 
     /// <summary>
     ///     Gets or sets the number of columns when the grid is at least 56rem wide.
@@ -49,9 +40,6 @@ public sealed class GridTagHelper : StellarAdminTagHelperBase
     /// <value>
     ///     A number from 1 to 12. The default is the number of columns at 30rem.
     /// </value>
-    /// <remarks>
-    ///     Same as <c>columns</c>. Set one or the other, not both.
-    /// </remarks>
     [HtmlAttributeName("columns-md")]
     public int? ColumnsMedium { get; set; }
 
@@ -66,14 +54,13 @@ public sealed class GridTagHelper : StellarAdminTagHelperBase
 
     /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
-    ///     A column count is outside 1 to 12, or both <c>columns</c> and <c>columns-md</c> are set.
+    ///     A column count is outside 1 to 12.
     /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var columns = GridLayout.ResolveColumns(
             "sa-grid",
             Columns,
-            ColumnsBase,
             ColumnsSmall,
             ColumnsMedium,
             ColumnsLarge

@@ -151,7 +151,7 @@ public partial class CheckboxGroupTagHelperTests
         {
             ViewContext = context.ViewContext,
             Name = "amenities",
-            Columns = 2,
+            ColumnsMedium = 2,
             Items = [new("Wi-Fi", "wifi"), new("Lounge", "lounge"), new("Transfer", "transfer")],
         };
 
@@ -227,7 +227,7 @@ public partial class CheckboxGroupTagHelperTests
     [Test]
     [Arguments(0, null)]
     [Arguments(13, null)]
-    [Arguments(2, 3)]
+    [Arguments(1, 13)]
     public async Task ProcessAsync_WithInvalidColumns_ThrowsInvalidOperationException(
         int columns,
         int? columnsMedium

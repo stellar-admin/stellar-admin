@@ -2,14 +2,14 @@
 
 <div class="w-full">
     <!-- code begin -->
-    <sa-grid columns="3">
+    <sa-grid columns-md="3">
         <sa-input asp-for="FirstName" />
         <sa-input asp-for="LastName" />
         <sa-input asp-for="Phone" />
         <sa-input asp-for="SendConfirmation" column-span="full" />
         <sa-grid-item column-span="full" column-span-lg="2">
             <sa-form-section title="Audit" description="Maintained automatically." layout="FormSectionLayout.Stacked">
-                <sa-details columns="2" columns-sm="2">
+                <sa-details columns-md="2" columns-sm="2">
                     <sa-display-field asp-for="CreatedAt" secondary="by @Model.CreatedBy" />
                     <sa-display-field asp-for="UpdatedAt" secondary="by @Model.UpdatedBy" />
                 </sa-details>

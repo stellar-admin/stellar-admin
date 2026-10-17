@@ -17,7 +17,7 @@ public partial class FieldInputBaseTagHelperTests
         var sut = CreateSut(kind, context);
         sut.Label = "Destination";
         sut.ColumnSpan = "full";
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -42,7 +42,7 @@ public partial class FieldInputBaseTagHelperTests
         var sut = CreateSut("input", context);
         sut.Label = "Destination";
         sut.ColumnStartMedium = "2";
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -65,7 +65,7 @@ public partial class FieldInputBaseTagHelperTests
         sut.Label = "Destination";
         sut.WrapInField = false;
         sut.ColumnSpan = "2";
-        var grid = new GridTagHelper { Columns = 3 };
+        var grid = new GridTagHelper { ColumnsMedium = 3 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -88,7 +88,7 @@ public partial class FieldInputBaseTagHelperTests
         var sut = CreateSut("input", context);
         sut.ColumnSpan = "2";
         var field = new FieldTagHelper();
-        var grid = new GridTagHelper { Columns = 3 };
+        var grid = new GridTagHelper { ColumnsMedium = 3 };
         var control = string.Empty;
 
         // Act

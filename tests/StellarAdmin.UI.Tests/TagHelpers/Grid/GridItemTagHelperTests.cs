@@ -9,7 +9,7 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper();
-        var grid = new GridTagHelper { Columns = 3 };
+        var grid = new GridTagHelper { ColumnsMedium = 3 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -110,7 +110,7 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper { ColumnSpan = "2", ColumnStartLarge = "3" };
-        var grid = new GridTagHelper { Columns = 2, ColumnsLarge = 4 };
+        var grid = new GridTagHelper { ColumnsMedium = 2, ColumnsLarge = 4 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -129,7 +129,7 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper { ColumnSpan = "full" };
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -188,7 +188,7 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper { ColumnSpanLarge = columnSpan };
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         Func<Task> act = () =>
@@ -211,7 +211,7 @@ public class GridItemTagHelperTests
     {
         // Arrange
         var sut = new GridItemTagHelper { ColumnStartMedium = columnStart };
-        var grid = new GridTagHelper { Columns = 2 };
+        var grid = new GridTagHelper { ColumnsMedium = 2 };
 
         // Act
         Func<Task> act = () =>

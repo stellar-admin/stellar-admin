@@ -57,21 +57,13 @@ public class DetailsTagHelperTests
     }
 
     [Test]
-    [Arguments(3, null, null, null, null, "--sa-cols-md:3;--sa-cols-lg:3")]
-    [Arguments(3, null, 2, null, 4, "--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:4")]
-    [Arguments(null, null, null, 2, null, "--sa-cols-md:2;--sa-cols-lg:2")]
-    [Arguments(null, null, 2, null, null, "--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2")]
-    [Arguments(
-        null,
-        2,
-        null,
-        null,
-        null,
-        "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2"
-    )]
+    [Arguments(null, null, 3, null, "--sa-cols-md:3;--sa-cols-lg:3")]
+    [Arguments(null, 2, 3, 4, "--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:4")]
+    [Arguments(null, 2, null, null, "--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2")]
+    [Arguments(2, null, null, null, "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:2;--sa-cols-lg:2")]
+    [Arguments(2, null, 3, null, "--sa-cols:2;--sa-cols-sm:2;--sa-cols-md:3;--sa-cols-lg:3")]
     public async Task ProcessAsync_WhenColumnsAreSet_WritesColumnVariablesOnList(
         int? columns,
-        int? columnsBase,
         int? columnsSmall,
         int? columnsMedium,
         int? columnsLarge,
@@ -82,7 +74,6 @@ public class DetailsTagHelperTests
         var sut = new DetailsTagHelper
         {
             Columns = columns,
-            ColumnsBase = columnsBase,
             ColumnsSmall = columnsSmall,
             ColumnsMedium = columnsMedium,
             ColumnsLarge = columnsLarge,
@@ -107,19 +98,6 @@ public class DetailsTagHelperTests
     {
         // Arrange
         var sut = new DetailsTagHelper { Columns = columns, ColumnsLarge = columnsLarge };
-
-        // Act
-        Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);
-
-        // Assert
-        await Assert.That(act).Throws<InvalidOperationException>();
-    }
-
-    [Test]
-    public async Task ProcessAsync_WhenColumnsAndColumnsMediumAreSet_ThrowsInvalidOperationException()
-    {
-        // Arrange
-        var sut = new DetailsTagHelper { Columns = 2, ColumnsMedium = 3 };
 
         // Act
         Func<Task> act = () => TagHelperRenderer.RenderAsync(sut);
