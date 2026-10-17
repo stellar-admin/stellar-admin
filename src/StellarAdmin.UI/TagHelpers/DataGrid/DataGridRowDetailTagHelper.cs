@@ -9,7 +9,7 @@ namespace StellarAdmin.UI;
 ///     rendered once per data row with the current item available through
 ///     <c>Html.GridItem&lt;T&gt;()</c>, below its row and spanning every column. The grid adds a
 ///     toggle column and wraps its table in the <c>sel-table</c> web component,
-///     which raises bubbling <c>row-detail-expand</c> and <c>row-detail-collapse</c> events on
+///     which raises bubbling <c>rowdetailexpand</c> and <c>rowdetailcollapse</c> events on
 ///     the detail row, so htmx can load a row's details when it first expands.
 /// </summary>
 [HtmlTargetElement("sa-data-grid-row-detail", ParentTag = "sa-data-grid")]
@@ -83,7 +83,7 @@ public class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     The keys of the rows to render expanded, compared against the grid's
     ///     <c>key-field</c>, which is then required. Expanding a row in the browser raises
-    ///     <c>row-detail-expand</c>; a row rendered expanded does not, so render its content
+    ///     <c>rowdetailexpand</c>; a row rendered expanded does not, so render its content
     ///     directly rather than loading it on expand.
     /// </summary>
     [HtmlAttributeName("expanded-keys")]

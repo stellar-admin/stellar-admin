@@ -29,12 +29,12 @@ function setAttributeIfChanged(element: Element, name: string, value: string) {
  *   - data-inset="aligned|bleed"  (aligned starts the content at the column after
  *     the toggle's column; bleed at the row's first cell)
  *
- * Expanding or collapsing a row raises a bubbling `row-detail-expand` or
- * `row-detail-collapse` event on the detail row (detail: `{ row, detailRow }`),
+ * Expanding or collapsing a row raises a bubbling `rowdetailexpand` or
+ * `rowdetailcollapse` event on the detail row (detail: `{ row, detailRow }`),
  * after the change, so the expanded content is visible when the event fires.
  * Server-rendered state raises no events. Because the event fires on the detail
  * row, htmx attributes on that row need no `from:` modifier:
- * `hx-get="…" hx-trigger="row-detail-expand once" hx-target="find [data-slot=table-row-detail-content]"`.
+ * `hx-get="…" hx-trigger="rowdetailexpand once" hx-target="find [data-slot=table-row-detail-content]"`.
  *
  * Rows with a `data-key` are remembered by key: when a script or htmx replaces a detail
  * row, the detail row that takes its place under a row with the same key is expanded or
@@ -221,7 +221,7 @@ export class TableRowDetails {
   /** Raises the event for the detail row's current state. */
   #dispatch(detailRow: HTMLTableRowElement) {
     detailRow.dispatchEvent(
-      new CustomEvent(this.#isOpen(detailRow) ? "row-detail-expand" : "row-detail-collapse", {
+      new CustomEvent(this.#isOpen(detailRow) ? "rowdetailexpand" : "rowdetailcollapse", {
         bubbles: true,
         detail: { row: this.#rowFor(detailRow), detailRow },
       }),

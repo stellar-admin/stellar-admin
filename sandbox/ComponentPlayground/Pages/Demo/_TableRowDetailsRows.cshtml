@@ -21,7 +21,7 @@
             @* Loads on first expand. The event fires on the detail row; htmx 4 writes the
                closest-ancestor source as <closest tr/> (htmx 2: from:closest tr). *@
             <div hx-get="?handler=Details&id=@booking.Id"
-                 hx-trigger="row-detail-expand from:<closest tr/> once"
+                 hx-trigger="rowdetailexpand from:<closest tr/> once"
                  hx-swap="outerHTML"
                  class="flex flex-col gap-2"
                  aria-busy="true">

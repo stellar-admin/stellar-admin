@@ -53,7 +53,7 @@
 
         const syncButton = () => deleteButton.hidden = selection.selectedValues.length === 0;
 
-        selection.addEventListener("selection-change", syncButton);
+        selection.addEventListener("rowselectionchange", syncButton);
         customElements.whenDefined("sel-table").then(syncButton);
 
         deleteButton.addEventListener("click", () =>

@@ -33,9 +33,9 @@
 
         const syncButton = () => deleteButton.hidden = selection.selectedValues.length === 0;
 
-        // selection-change fires on every user-driven change; the initial
+        // rowselectionchange fires on every user-driven change; the initial
         // server-rendered selection is read once the component is defined.
-        selection.addEventListener("selection-change", syncButton);
+        selection.addEventListener("rowselectionchange", syncButton);
         customElements.whenDefined("sel-table").then(syncButton);
 
         deleteButton.addEventListener("click", () =>

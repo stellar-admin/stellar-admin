@@ -12,7 +12,7 @@ public class TableRowDetailTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Whether the details render expanded. Expanding a row in the browser raises
-    ///     <c>row-detail-expand</c>; a row rendered expanded does not, so render its content
+    ///     <c>rowdetailexpand</c>; a row rendered expanded does not, so render its content
     ///     directly rather than loading it on expand.
     /// </summary>
     /// <remarks>

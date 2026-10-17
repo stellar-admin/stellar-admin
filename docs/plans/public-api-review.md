@@ -68,7 +68,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J33 | Fix small builder naming issues | Done (2026-10-17) |
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
-| J36 | Rename the client events to one style | |
+| J36 | Rename the client events to one style | Done (2026-10-17) |
 | J37 | Document the global MVC hooks | |
 | J38 | Add `class-names` to the field helpers that lack it | |
 | J39 | Small attribute polish | |
@@ -515,6 +515,15 @@ Done (2026-10-17):
 
 `selection-change` (`sel-table`) vs `checkedchange`, `valuechange` and `itemselect`. Pick one style.
 
+Done (2026-10-17):
+
+- Every client event is now one lowercase word, like the browser's own events.
+- Public: `selection-change` → `rowselectionchange`, which avoids the browser's `selectionchange` on `document`. `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand` and `row-detail-collapse` → `rowdetailcollapse`. `itemselect`, `checkedchange` and `valuechange` were already in this style.
+- Internal to StellarAdmin: `lookup-select` → `lookupselect`, `lookup-created` → `lookupcreated` and `lookup-retry` → `lookupretry`. The `admin-lookup-created` element keeps its name.
+- The `row-detail-expand-mode` attribute is unchanged.
+- Updated the XML docs, the `_IndexDataGrid` and `_LookupSheet` triggers, the sandbox, DocsSamples, the tests and the regenerated skill references.
+- Verified with the full test run (1428 passed) and a skills drift check.
+
 ### J37. Global MVC hooks
 
 Document that `AddStellarAdminUI` adds a model binder for form collections, a value provider and a global toast filter.
@@ -583,6 +592,8 @@ Changes the website still needs:
 - [ ] J26: `icons.mdx` uses `IReadOnlyDictionary<string, IconDefinition> GetIcons()`, `IReadOnlyList<SvgShape>` and `IReadOnlyDictionary<string, string>` for shape attributes, and drops the `.ToImmutableDictionary()` calls.
 - [ ] J27: `icons.mdx` says duplicate `AddIcon` names throw. A same-named icon now replaces the existing one, icons are frozen once configured, and invalid packs fail at startup.
 - [ ] J28: `item.mdx`, `stack.mdx`, `group.mdx` and `attachment.mdx` list `ItemSize`, `StackGap`, `GroupGap` and `AttachmentSize` members in the old order. The new order is Default first, then smallest to largest.
+- [ ] J35: the website's licence notices in the docs list shadcn/ui and tw-animate-css. Match them to `THIRD-PARTY-NOTICES.txt`: Tailwind, Lucide, Tabler, cmdk, Lit, interestfor and htmx.
+- [ ] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
 
 ## Order of work
 

@@ -16,7 +16,7 @@ A tab within the `<sa-tab-list>` of an `<sa-tabs>`, which shows its panel when s
 | `<sa-tab-link>` | A single tab within a `<sa-tab-list>`, rendered as a link to its target view. |
 | `<sa-tab-list>` | A list of tabs: `<sa-tab-link>`s, each linking to a different view or page, or inside an `<sa-tabs>`, `<sa-tab>`s that switch between panels. |
 | `<sa-tab-panel>` | The panel an `<sa-tab>` of an `<sa-tabs>` shows. Its `id` is the one the tab's `for` attribute names. |
-| `<sa-tabs>` | Tabs that switch between panels on the page. Place an `sa-tab-list` of `sa-tab`s and an `sa-tab-panel` for each tab inside it. Renders the `sel-tabs` web component, which raises bubbling `tab-show` and `tab-hide` events on the panels, so htmx attributes on an `sa-tab-panel` can load its content with `hx-trigger="tab-show once"`. |
+| `<sa-tabs>` | Tabs that switch between panels on the page. Place an `sa-tab-list` of `sa-tab`s and an `sa-tab-panel` for each tab inside it. Renders the `sel-tabs` web component, which raises bubbling `tabshow` and `tabhide` events on the panels, so htmx attributes on an `sa-tab-panel` can load its content with `hx-trigger="tabshow once"`. |
 
 ## Attributes
 
@@ -156,9 +156,9 @@ A tab within the `<sa-tab-list>` of an `<sa-tabs>`, which shows its panel when s
 
 <script>
     (() => {
-        // With htmx, hx-get="…" hx-trigger="tab-show once" on the panel does the same.
+        // With htmx, hx-get="…" hx-trigger="tabshow once" on the panel does the same.
         const panel = document.getElementById("tabs-load-documents");
-        panel.addEventListener("tab-show", async () => {
+        panel.addEventListener("tabshow", async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
             panel.innerHTML = `
                 <ul class="text-muted-foreground list-disc space-y-1 ps-5 text-sm">

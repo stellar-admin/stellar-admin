@@ -177,7 +177,7 @@
                     if (panel.LoadsOnDemand)
                     {
                         <div hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()) })"
-                             hx-trigger='row-detail-expand from:"closest tr" once'
+                             hx-trigger='rowdetailexpand from:"closest tr" once'
                              hx-target="this" hx-swap="outerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                             <partial name="_IndexRowDetailLoading" />
                         </div>
@@ -206,7 +206,7 @@
                                 @* The first panel loads when the row expands, the others when their tab is first shown *@
                                 <sa-tab-panel id="@panelId"
                                               hx-get="@Url.Action("RowDetail", new { id = Model.GetKey(Html.GridItem<object>()), panel = panel.Name })"
-                                              hx-trigger='@(index == 0 ? "row-detail-expand from:\"closest tr\" once" : "tab-show once")'
+                                              hx-trigger='@(index == 0 ? "rowdetailexpand from:\"closest tr\" once" : "tabshow once")'
                                               hx-target="this" hx-swap="innerHTML" hx-select="" hx-select-oob="" hx-push-url="false">
                                     <partial name="_IndexRowDetailLoading" />
                                 </sa-tab-panel>

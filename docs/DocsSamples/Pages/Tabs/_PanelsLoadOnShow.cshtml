@@ -18,9 +18,9 @@
 
 <script>
     (() => {
-        // With htmx, hx-get="…" hx-trigger="tab-show once" on the panel does the same.
+        // With htmx, hx-get="…" hx-trigger="tabshow once" on the panel does the same.
         const panel = document.getElementById("tabs-load-documents");
-        panel.addEventListener("tab-show", async () => {
+        panel.addEventListener("tabshow", async () => {
             await new Promise((resolve) => setTimeout(resolve, 800));
             panel.innerHTML = `
                 <ul class="text-muted-foreground list-disc space-y-1 ps-5 text-sm">

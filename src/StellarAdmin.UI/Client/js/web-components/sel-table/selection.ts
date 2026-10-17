@@ -18,7 +18,7 @@ interface Remembered {
  * ordinary form data. Without JavaScript the row checkboxes still work and
  * still post; only select-all and the row highlight are lost.
  *
- * A bubbling `selection-change` custom event (detail: `{ values }`) fires on the table
+ * A bubbling `rowselectionchange` custom event (detail: `{ values }`) fires on the table
  * on every user-driven change. It does NOT fire for the initial server-rendered state.
  *
  * Rows with a `data-key` are remembered by key: when a script or htmx replaces a row, the
@@ -122,7 +122,7 @@ export class TableSelection {
 
     this.#syncState();
     this.#host.dispatchEvent(
-      new CustomEvent("selection-change", {
+      new CustomEvent("rowselectionchange", {
         bubbles: true,
         detail: { values: this.selectedValues },
       }),

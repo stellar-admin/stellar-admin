@@ -25,7 +25,7 @@
 @section Scripts {
     <script src="/js/htmx.min.js"></script>
     <script>
-        document.addEventListener("selection-change", (event) => {
+        document.addEventListener("rowselectionchange", (event) => {
             document.getElementById("selected-tours").textContent = event.detail.values.join(", ") || "none";
         });
     </script>

@@ -95,7 +95,7 @@ public class ResourceRowDetailsTests
         await Assert
             .That(loader.GetAttribute("hx-get"))
             .IsEqualTo("/stellaradmin/products/rowdetail/7");
-        await Assert.That(loader.GetAttribute("hx-trigger")).Contains("row-detail-expand");
+        await Assert.That(loader.GetAttribute("hx-trigger")).Contains("rowdetailexpand");
         await Assert.That(document.QuerySelector("[data-test='notes']")).IsNull();
     }
 
@@ -261,12 +261,12 @@ public class ResourceRowDetailsTests
             .IsEqualTo("/stellaradmin/products/rowdetail/7?panel=notes");
         await Assert
             .That(notes.GetAttribute("hx-trigger"))
-            .IsEqualTo("row-detail-expand from:\"closest tr\" once");
+            .IsEqualTo("rowdetailexpand from:\"closest tr\" once");
         var archived = document.RequiredElement("#--resource-row-detail-1-archived-notes");
         await Assert
             .That(archived.GetAttribute("hx-get"))
             .IsEqualTo("/stellaradmin/products/rowdetail/7?panel=archived-notes");
-        await Assert.That(archived.GetAttribute("hx-trigger")).IsEqualTo("tab-show once");
+        await Assert.That(archived.GetAttribute("hx-trigger")).IsEqualTo("tabshow once");
         await Assert
             .That(
                 document.RequiredElement("#--resource-row-detail-1-summary").HasAttribute("hx-get")

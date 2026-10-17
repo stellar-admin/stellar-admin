@@ -16,11 +16,11 @@ const TAB = '[role="tab"]';
  * The arrow keys move between the enabled tabs along the list's `aria-orientation`
  * (Home and End jump to the first and last) and select the tab they move to.
  *
- * Selecting a tab raises a bubbling `tab-hide` event on the panel it hides, then
- * `tab-show` on the panel it shows (detail: `{ tab, panel }`), after the change, so
+ * Selecting a tab raises a bubbling `tabhide` event on the panel it hides, then
+ * `tabshow` on the panel it shows (detail: `{ tab, panel }`), after the change, so
  * the shown panel is visible when the event fires. The initial state raises no
  * events. Because the event fires on the panel, htmx attributes on the panel need
- * no `from:` modifier: `hx-get="…" hx-trigger="tab-show once"`.
+ * no `from:` modifier: `hx-get="…" hx-trigger="tabshow once"`.
  */
 @customElement("sel-tabs")
 export class Tabs extends LitElement {
@@ -67,10 +67,10 @@ export class Tabs extends LitElement {
     }
 
     const previousPanel = previous && this.#panelFor(previous);
-    if (previousPanel) this.#dispatch("tab-hide", previous, previousPanel);
+    if (previousPanel) this.#dispatch("tabhide", previous, previousPanel);
 
     const panel = this.#panelFor(tab);
-    if (panel) this.#dispatch("tab-show", tab, panel);
+    if (panel) this.#dispatch("tabshow", tab, panel);
   }
 
   #owns(element: Element) {
@@ -86,7 +86,7 @@ export class Tabs extends LitElement {
     return controls ? document.getElementById(controls) : null;
   }
 
-  #dispatch(type: "tab-show" | "tab-hide", tab: HTMLElement, panel: HTMLElement) {
+  #dispatch(type: "tabshow" | "tabhide", tab: HTMLElement, panel: HTMLElement) {
     panel.dispatchEvent(new CustomEvent(type, { bubbles: true, detail: { tab, panel } }));
   }
 

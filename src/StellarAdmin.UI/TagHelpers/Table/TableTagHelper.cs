@@ -73,9 +73,9 @@ public class TableTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Lets rows expand to show details. Place an <c>sa-table-row-detail</c> after each
     ///     expandable row and an <c>sa-table-row-detail-toggle</c> in a cell of that row.
-    ///     Bubbling <c>row-detail-expand</c> and <c>row-detail-collapse</c> events are raised
+    ///     Bubbling <c>rowdetailexpand</c> and <c>rowdetailcollapse</c> events are raised
     ///     on the detail row, so htmx attributes on an <c>sa-table-row-detail</c> can load its
-    ///     details with <c>hx-trigger="row-detail-expand once"</c>.
+    ///     details with <c>hx-trigger="rowdetailexpand once"</c>.
     /// </summary>
     /// <remarks>
     ///     Defaults to <c>false</c>.
@@ -89,7 +89,7 @@ public class TableTagHelper : StellarAdminTagHelperBase
     ///     row. Selected rows get <c>data-state="selected"</c>, and the selection posts as
     ///     ordinary checkbox form data. Read the current selection from the
     ///     <c>sel-table</c> element's <c>selectedValues</c> property, or listen for its bubbling
-    ///     <c>selection-change</c> event (with the values in <c>event.detail.values</c>).
+    ///     <c>rowselectionchange</c> event (with the values in <c>event.detail.values</c>).
     /// </summary>
     /// <remarks>
     ///     Defaults to <c>false</c>.

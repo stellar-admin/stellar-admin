@@ -476,7 +476,7 @@ class AdminLookupPicker extends HTMLElement {
       const selection = item.querySelector("template[data-lookup='selection']");
       this.closest("dialog").close();
       this.#editor.dispatchEvent(
-        new CustomEvent("lookup-select", {
+        new CustomEvent("lookupselect", {
           bubbles: true,
           detail: { value: event.detail.value, selection },
         }),
@@ -575,11 +575,11 @@ class AdminLookupPicker extends HTMLElement {
 
     const editor = this.#editor;
     editor.beginEdit();
-    editor.addEventListener("lookup-created", this.#onCreated);
+    editor.addEventListener("lookupcreated", this.#onCreated);
     this.closest("dialog")?.addEventListener(
       "close",
       () => {
-        editor.removeEventListener("lookup-created", this.#onCreated);
+        editor.removeEventListener("lookupcreated", this.#onCreated);
         editor.endEdit();
       },
       { once: true },
@@ -702,7 +702,7 @@ class AdminLookupPicker extends HTMLElement {
 
   #search() {
     this.#results.replaceChildren(this.#template("loading"));
-    this.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookup-retry"));
+    this.querySelector("[data-lookup='search']").dispatchEvent(new Event("lookupretry"));
   }
 
   // The count, and the Selected view and Clear all are only enabled with a selection, though the Selected view stays
@@ -761,7 +761,7 @@ class AdminCreateSheet extends HTMLElement {
 
 customElements.define("admin-create-sheet", AdminCreateSheet);
 
-// Replaces the create form once the item is created: it closes its level and sends lookup-created with the new
+// Replaces the create form once the item is created: it closes its level and sends lookupcreated with the new
 // item's key from the hidden input it names, in the level below. The editor that owns the input decides what to do
 // with it; a single-select editor selects it in place of its value. Without a key, the level only closes.
 class AdminLookupCreated extends HTMLElement {
@@ -771,26 +771,26 @@ class AdminLookupCreated extends HTMLElement {
 
     this.closest("dialog")?.close();
     if (key) {
-      input?.dispatchEvent(new CustomEvent("lookup-created", { bubbles: true, detail: { key } }));
+      input?.dispatchEvent(new CustomEvent("lookupcreated", { bubbles: true, detail: { key } }));
     }
   }
 }
 
 customElements.define("admin-lookup-created", AdminLookupCreated);
 
-// A lookup editor: the picker sends a selection to its hidden input as lookup-select, a create form sends a created
-// item's key as lookup-created, and Clear empties it. It shows either the selection or the empty buttons, and moves
+// A lookup editor: the picker sends a selection to its hidden input as lookupselect, a create form sends a created
+// item's key as lookupcreated, and Clear empties it. It shows either the selection or the empty buttons, and moves
 // focus to the button that is still shown.
 class AdminLookupSheetEditor extends HTMLElement {
   constructor() {
     super();
 
-    this.addEventListener("lookup-select", (event) => {
+    this.addEventListener("lookupselect", (event) => {
       this.#setValue(event.detail.value, event.detail.selection);
       this.querySelector("[data-lookup='selected'] [data-lookup='open']").focus();
     });
 
-    this.addEventListener("lookup-created", (event) => this.#selectCreated(event.detail.key));
+    this.addEventListener("lookupcreated", (event) => this.#selectCreated(event.detail.key));
 
     this.addEventListener("click", (event) => {
       if (event.target.closest("[data-lookup='clear']")) {
@@ -819,7 +819,7 @@ class AdminLookupSheetEditor extends HTMLElement {
     }
 
     this.dispatchEvent(
-      new CustomEvent("lookup-select", {
+      new CustomEvent("lookupselect", {
         detail: {
           value: selection?.dataset.value ?? key,
           selection: selection ?? this.#keySelection(key),
