@@ -114,21 +114,4 @@ public sealed class StellarAdminUIBuilder
 
         return this;
     }
-
-    /// <summary>
-    ///     Configures the look of dropdown menus across the application.
-    /// </summary>
-    /// <param name="configure">A delegate that configures the menu options.</param>
-    /// <returns>The builder, so that calls can be chained.</returns>
-    /// <exception cref="ArgumentNullException">
-    ///     <paramref name="configure" /> is <see langword="null" />.
-    /// </exception>
-    public StellarAdminUIBuilder ConfigureMenu(Action<StellarAdminUIMenuOptions> configure)
-    {
-        ArgumentNullException.ThrowIfNull(configure);
-
-        Services.Configure<StellarAdminUIOptions>(options => configure(options.Menu));
-
-        return this;
-    }
 }

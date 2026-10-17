@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 using StellarAdmin.UI.Tests.Support;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.DropdownMenu;
@@ -11,7 +10,7 @@ public class DropdownMenuSubContentTagHelperTests
     {
         // Arrange
         using var context = new RenderingContext();
-        var sut = new DropdownMenuSubContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuSubContentTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -35,7 +34,7 @@ public class DropdownMenuSubContentTagHelperTests
     public async Task ProcessAsync_WhenContentHasItsOwnId_ThrowsInvalidOperationException()
     {
         // Arrange
-        var sut = new DropdownMenuSubContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuSubContentTagHelper();
 
         // Act
         var render = async () =>
@@ -57,7 +56,7 @@ public class DropdownMenuSubContentTagHelperTests
     public async Task ProcessAsync_WithNoPlacement_UsesDefaultPlacement()
     {
         // Arrange
-        var sut = new DropdownMenuSubContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuSubContentTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);
@@ -73,7 +72,7 @@ public class DropdownMenuSubContentTagHelperTests
     public async Task ProcessAsync_WithSideAndAlign_WritesPlacement()
     {
         // Arrange
-        var sut = new DropdownMenuSubContentTagHelper(Options.Create(new StellarAdminUIOptions()))
+        var sut = new DropdownMenuSubContentTagHelper()
         {
             Side = DropdownMenuSide.Left,
             Align = DropdownMenuAlign.End,

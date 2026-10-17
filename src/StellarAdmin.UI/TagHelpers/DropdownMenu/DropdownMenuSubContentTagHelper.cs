@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 
 namespace StellarAdmin.UI;
 
@@ -9,10 +8,8 @@ namespace StellarAdmin.UI;
 /// <remarks>
 ///     The panel takes its id from the enclosing <c>sa-dropdown-menu-sub</c>.
 /// </remarks>
-/// <param name="options">The UI options that supply the menu's color, appearance and accent.</param>
 [HtmlTargetElement("sa-dropdown-menu-sub-content")]
-public sealed class DropdownMenuSubContentTagHelper(IOptions<StellarAdminUIOptions> options)
-    : StellarAdminTagHelperBase()
+public sealed class DropdownMenuSubContentTagHelper : StellarAdminTagHelperBase
 {
     /// <summary>
     ///     Gets or sets how the panel lines up with its trigger.
@@ -40,7 +37,6 @@ public sealed class DropdownMenuSubContentTagHelper(IOptions<StellarAdminUIOptio
     /// </exception>
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var menuOptions = options.Value.Menu;
         var side = (Side ?? DropdownMenuSide.Right).GetDataAttributeText();
         var align = (Align ?? DropdownMenuAlign.Start).GetDataAttributeText();
 
@@ -88,9 +84,6 @@ public sealed class DropdownMenuSubContentTagHelper(IOptions<StellarAdminUIOptio
             JoinCssClasses(
                 "sa-dropdown-menu-sub-content",
                 "sa-dropdown-menu-subcontent",
-                MenuSurfaceInternals.ColorToken(menuOptions.Color),
-                MenuSurfaceInternals.AppearanceToken(menuOptions.Appearance),
-                MenuSurfaceInternals.AccentToken(menuOptions.Accent),
                 AnchorPlacement.GetClassName(side, align),
                 output.GetUserSuppliedClass()
             )

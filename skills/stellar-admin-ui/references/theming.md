@@ -144,30 +144,6 @@ Copy `stellar-admin.tailwind.css` from the package's static assets (`_content/St
 <div class="rounded-lg border border-gray-200 bg-white text-gray-900 p-4">...</div>
 ```
 
-## Menu surfaces (`Program.cs`)
-
-Floating menu surfaces — Dropdown Menu content and sub-menus — have three app-wide appearance settings, configured once by chaining `ConfigureMenu` off `AddStellarAdminUI()`:
-
-```csharp
-using StellarAdmin.UI;
-
-builder.Services.AddStellarAdminUI()
-    .ConfigureMenu(menu =>
-    {
-        menu.Color = MenuColor.Inverted;              // Default | Inverted
-        menu.Appearance = MenuAppearance.Translucent; // Solid | Translucent
-        menu.Accent = MenuAccent.Bold;                // Subtle | Bold
-    });
-```
-
-| Setting | Values | Meaning |
-|---------|--------|---------|
-| `Color` | `Default`, `Inverted` | `Default` renders the menu in the page's current scheme; `Inverted` renders it in the dark scheme regardless of the page. |
-| `Appearance` | `Solid`, `Translucent` | `Solid` is an opaque popover surface; `Translucent` is frosted, with a backdrop blur. |
-| `Accent` | `Subtle`, `Bold` | The highlight on the focused or hovered item — `Subtle` uses the muted accent color, `Bold` a solid primary highlight. |
-
-Defaults are `Color=Default`, `Appearance=Solid`, `Accent=Subtle` — only call `ConfigureMenu` to change them.
-
 ## Upgrading from theme bundles
 
 Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, `stellar-admin.shadcn.nova.css`, …), the admin panel's `ConfigureTheme`, and shadcn-named variables (`--primary`, `--radius`) for customization. If the installed package still has those bundles, follow that version's documentation instead of this guide. When upgrading, link `stellar-admin.css` instead, move any customization to variables in a theme file, and replace overrides of `--primary`, `--background` and the other shadcn variables, which the components no longer read, with the matching variables (`--sa-accent`, `--sa-neutral-hue`, …). The former themes are not reproduced; pick the closest look in the theme builder.
@@ -180,4 +156,3 @@ Earlier packages shipped one bundle per theme (`stellar-admin.observatory.css`, 
 4. Load web fonts from the app layout; the stylesheet never fetches them.
 5. Enable dark mode with the `dark` class on an ancestor, with `color-scheme` alongside it; don't write dark CSS of your own.
 6. In your own CSS, read the `--sa-color-*`, `--sa-radius-*` and `--sa-space-*` tokens instead of hard-coded colours and sizes. Tailwind utilities need the app's own Tailwind build plus the adapter.
-7. Configure menu options once via `ConfigureMenu`, chained off `AddStellarAdminUI()`.

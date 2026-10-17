@@ -137,4 +137,4 @@ A theme that needs one component to differ writes a rule in `sa.overrides`. A ne
 
 ## Private variables
 
-`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes, `sa-menu-accent-bold`) and dark mode set them to pick a component's values. Scripts also publish measured values on components (`--_slider-thumb-measured`, `--sa-table-row-detail-width`, `-inset-start`, `-inset-end`); these are internal too.
+`--_*` variables are internal and may change in any release. Modifier classes (variants, sizes) and dark mode set them to pick a component's values. Scripts also publish measured values on components (`--_slider-thumb-measured`, `--sa-table-row-detail-width`, `-inset-start`, `-inset-end`); these are internal too.

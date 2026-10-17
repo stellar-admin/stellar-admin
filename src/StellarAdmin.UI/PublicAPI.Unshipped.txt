@@ -913,7 +913,7 @@ StellarAdmin.UI.DropdownMenuCheckboxItemTagHelper.Inset.set -> void
 StellarAdmin.UI.DropdownMenuContentTagHelper
 StellarAdmin.UI.DropdownMenuContentTagHelper.Align.get -> StellarAdmin.UI.DropdownMenuAlign?
 StellarAdmin.UI.DropdownMenuContentTagHelper.Align.set -> void
-StellarAdmin.UI.DropdownMenuContentTagHelper.DropdownMenuContentTagHelper(Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.StellarAdminUIOptions!>! options) -> void
+StellarAdmin.UI.DropdownMenuContentTagHelper.DropdownMenuContentTagHelper() -> void
 StellarAdmin.UI.DropdownMenuContentTagHelper.Side.get -> StellarAdmin.UI.DropdownMenuSide?
 StellarAdmin.UI.DropdownMenuContentTagHelper.Side.set -> void
 StellarAdmin.UI.DropdownMenuGroupTagHelper
@@ -969,7 +969,7 @@ StellarAdmin.UI.DropdownMenuSide.Top = 0 -> StellarAdmin.UI.DropdownMenuSide
 StellarAdmin.UI.DropdownMenuSubContentTagHelper
 StellarAdmin.UI.DropdownMenuSubContentTagHelper.Align.get -> StellarAdmin.UI.DropdownMenuAlign?
 StellarAdmin.UI.DropdownMenuSubContentTagHelper.Align.set -> void
-StellarAdmin.UI.DropdownMenuSubContentTagHelper.DropdownMenuSubContentTagHelper(Microsoft.Extensions.Options.IOptions<StellarAdmin.UI.StellarAdminUIOptions!>! options) -> void
+StellarAdmin.UI.DropdownMenuSubContentTagHelper.DropdownMenuSubContentTagHelper() -> void
 StellarAdmin.UI.DropdownMenuSubContentTagHelper.Side.get -> StellarAdmin.UI.DropdownMenuSide?
 StellarAdmin.UI.DropdownMenuSubContentTagHelper.Side.set -> void
 StellarAdmin.UI.DropdownMenuSubTagHelper
@@ -1519,15 +1519,6 @@ StellarAdmin.UI.MarkerVariant
 StellarAdmin.UI.MarkerVariant.Border = 1 -> StellarAdmin.UI.MarkerVariant
 StellarAdmin.UI.MarkerVariant.Default = 0 -> StellarAdmin.UI.MarkerVariant
 StellarAdmin.UI.MarkerVariant.Separator = 2 -> StellarAdmin.UI.MarkerVariant
-StellarAdmin.UI.MenuAccent
-StellarAdmin.UI.MenuAccent.Bold = 1 -> StellarAdmin.UI.MenuAccent
-StellarAdmin.UI.MenuAccent.Subtle = 0 -> StellarAdmin.UI.MenuAccent
-StellarAdmin.UI.MenuAppearance
-StellarAdmin.UI.MenuAppearance.Solid = 0 -> StellarAdmin.UI.MenuAppearance
-StellarAdmin.UI.MenuAppearance.Translucent = 1 -> StellarAdmin.UI.MenuAppearance
-StellarAdmin.UI.MenuColor
-StellarAdmin.UI.MenuColor.Default = 0 -> StellarAdmin.UI.MenuColor
-StellarAdmin.UI.MenuColor.Inverted = 1 -> StellarAdmin.UI.MenuColor
 StellarAdmin.UI.MessageAlign
 StellarAdmin.UI.MessageAlign.End = 1 -> StellarAdmin.UI.MessageAlign
 StellarAdmin.UI.MessageAlign.Start = 0 -> StellarAdmin.UI.MessageAlign
@@ -2083,24 +2074,12 @@ StellarAdmin.UI.StellarAdminUIBuilder.AddIconPack<TIconPack>() -> StellarAdmin.U
 StellarAdmin.UI.StellarAdminUIBuilder.AddIconPack<TIconPack>(System.Action<StellarAdmin.UI.Icons.IconPackOptions!>! configure) -> StellarAdmin.UI.StellarAdminUIBuilder!
 StellarAdmin.UI.StellarAdminUIBuilder.ClearIcons() -> StellarAdmin.UI.StellarAdminUIBuilder!
 StellarAdmin.UI.StellarAdminUIBuilder.ConfigureForms(System.Action<StellarAdmin.UI.StellarAdminFormsBuilder!>! configure) -> StellarAdmin.UI.StellarAdminUIBuilder!
-StellarAdmin.UI.StellarAdminUIBuilder.ConfigureMenu(System.Action<StellarAdmin.UI.StellarAdminUIMenuOptions!>! configure) -> StellarAdmin.UI.StellarAdminUIBuilder!
 StellarAdmin.UI.StellarAdminUIBuilder.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 StellarAdmin.UI.StellarAdminUIBuilder.StellarAdminUIBuilder(Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> void
 StellarAdmin.UI.StellarAdminUIExtensions
 StellarAdmin.UI.StellarAdminUIExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!)
 StellarAdmin.UI.StellarAdminUIExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!).AddStellarAdminUI() -> StellarAdmin.UI.StellarAdminUIBuilder!
 StellarAdmin.UI.StellarAdminUIExtensions.extension(Microsoft.Extensions.DependencyInjection.IServiceCollection!).AddStellarAdminUI(System.Action<StellarAdmin.UI.StellarAdminUIBuilder!>! configure) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-StellarAdmin.UI.StellarAdminUIMenuOptions
-StellarAdmin.UI.StellarAdminUIMenuOptions.Accent.get -> StellarAdmin.UI.MenuAccent
-StellarAdmin.UI.StellarAdminUIMenuOptions.Accent.set -> void
-StellarAdmin.UI.StellarAdminUIMenuOptions.Appearance.get -> StellarAdmin.UI.MenuAppearance
-StellarAdmin.UI.StellarAdminUIMenuOptions.Appearance.set -> void
-StellarAdmin.UI.StellarAdminUIMenuOptions.Color.get -> StellarAdmin.UI.MenuColor
-StellarAdmin.UI.StellarAdminUIMenuOptions.Color.set -> void
-StellarAdmin.UI.StellarAdminUIMenuOptions.StellarAdminUIMenuOptions() -> void
-StellarAdmin.UI.StellarAdminUIOptions
-StellarAdmin.UI.StellarAdminUIOptions.Menu.get -> StellarAdmin.UI.StellarAdminUIMenuOptions!
-StellarAdmin.UI.StellarAdminUIOptions.StellarAdminUIOptions() -> void
 StellarAdmin.UI.SwitchClassNames
 StellarAdmin.UI.SwitchClassNames.Control.get -> string?
 StellarAdmin.UI.SwitchClassNames.Control.set -> void

@@ -19,8 +19,10 @@ For TUnit, follow the [official console-project setup](https://tunit.dev/docs/ge
 The three packaged projects use PublicApiAnalyzers. Each lists its public API in `PublicAPI.Shipped.txt` (what a released package contains) and `PublicAPI.Unshipped.txt` (changes since then). Adding, removing or changing a public member fails the build with RS0016 or RS0017 until the list is updated. Update it from the repository root, with the project whose API changed:
 
 ```bash
-AllowMissingPrunePackageData=true dotnet format analyzers src/StellarAdmin/StellarAdmin.csproj --diagnostics RS0016 RS0017 --severity error
+AllowMissingPrunePackageData=true dotnet format analyzers src/StellarAdmin/StellarAdmin.csproj --diagnostics RS0016 --severity error
 ```
+
+The command adds entries for new and changed members (RS0016). It doesn't remove entries for deleted members, so delete those lines from `PublicAPI.Unshipped.txt` by hand; the RS0017 errors name them.
 
 Review the diff of `PublicAPI.Unshipped.txt` like code: it is the public API change. When a package is released, move the Unshipped entries to Shipped. The packaged projects also report CS1591 for a public member without an XML comment.
 

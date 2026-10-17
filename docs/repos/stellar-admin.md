@@ -21,7 +21,7 @@ services.AddStellarAdminUI();   // namespace StellarAdmin.UI — returns Stellar
 services.AddStellarAdmin();     // namespace StellarAdmin — returns StellarAdminBuilder; calls AddStellarAdminUI()
 ```
 
-`AddStellarAdminUI(Action<StellarAdminUIBuilder>)` and `AddStellarAdmin(Action<StellarAdminBuilder>)` are also available, and `admin.ConfigureUI(ui => ...)` configures the UI builder from the panel. `AddStellarAdminUI()` registers `IconOptions` (namespace `StellarAdmin.UI.Icons`), which includes Lucide icons by default, and the UI options. Custom icons and packs, menu defaults (`ConfigureMenu()`) and form defaults (`ConfigureForms()`) are configured by `StellarAdminUIBuilder`; each service provider owns its options instance. Consumers inject `IOptions<IconOptions>` and resolve `.Value` in their constructors. Repeated registration preserves overrides. UI-only apps select a theme by linking their own theme variable file; admin panel apps add it with `admin.AddStylesheet(...)`.
+`AddStellarAdminUI(Action<StellarAdminUIBuilder>)` and `AddStellarAdmin(Action<StellarAdminBuilder>)` are also available, and `admin.ConfigureUI(ui => ...)` configures the UI builder from the panel. `AddStellarAdminUI()` registers `IconOptions` (namespace `StellarAdmin.UI.Icons`), which includes Lucide icons by default. Custom icons and packs and form defaults (`ConfigureForms()`) are configured by `StellarAdminUIBuilder`; each service provider owns its options instance. Consumers inject `IOptions<IconOptions>` and resolve `.Value` in their constructors. Repeated registration preserves overrides. UI-only apps select a theme by linking their own theme variable file; admin panel apps add it with `admin.AddStylesheet(...)`.
 
 ## Repository layout
 
@@ -79,7 +79,6 @@ Theme web fonts are optional: each font stack prefers its family and falls back 
 - Each component's rules live in `Client/css/components/<component>.css`, in `@layer sa.components` (private variables that differ by mode in `@layer sa.tokens`). A file must not rely on another file's order: a rule that adjusts another component's part out-ranks it by selector.
 - A component class name passed to `JoinCssClasses` is emitted verbatim on the element. A name with no rule renders as a harmless dead class.
 - State/variant styling keys off the `data-*` attributes tag helpers emit (`[data-side]`, `[data-orientation]`, `[data-anchor-side]`, …) and native state (`:checked`, `:has()`), never off marker classes.
-- One marker-class exception: `MenuColor.Inverted` emits the literal `dark` class (re-scopes the tokens on the element), which a stylesheet rule cannot express.
 
 ### Established C# patterns (follow these — they're enforced in review)
 

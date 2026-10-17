@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 using StellarAdmin.UI.Tests.Support;
 
 namespace StellarAdmin.UI.Tests.TagHelpers.DropdownMenu;
@@ -10,7 +9,7 @@ public class DropdownMenuContentTagHelperTests
     public async Task ProcessAsync_WhenMenuHasId_UsesItForTriggerAndContent()
     {
         // Arrange
-        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuContentTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -32,7 +31,7 @@ public class DropdownMenuContentTagHelperTests
     public async Task ProcessAsync_WhenContentRepeatsMenuId_Renders()
     {
         // Arrange
-        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuContentTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(
@@ -55,7 +54,7 @@ public class DropdownMenuContentTagHelperTests
     public async Task ProcessAsync_WhenContentHasItsOwnId_ThrowsInvalidOperationException()
     {
         // Arrange
-        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuContentTagHelper();
 
         // Act
         var render = async () =>
@@ -77,7 +76,7 @@ public class DropdownMenuContentTagHelperTests
     public async Task ProcessAsync_WithNoPlacement_UsesDefaultPlacement()
     {
         // Arrange
-        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()));
+        var sut = new DropdownMenuContentTagHelper();
 
         // Act
         using var html = await TagHelperRenderer.RenderAsync(sut);
@@ -93,7 +92,7 @@ public class DropdownMenuContentTagHelperTests
     public async Task ProcessAsync_WithSideAndAlign_WritesPlacement()
     {
         // Arrange
-        var sut = new DropdownMenuContentTagHelper(Options.Create(new StellarAdminUIOptions()))
+        var sut = new DropdownMenuContentTagHelper()
         {
             Side = DropdownMenuSide.Right,
             Align = DropdownMenuAlign.End,

@@ -64,7 +64,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J29 | Replace optional parameters with overloads | Done (2026-10-17) |
 | J30 | Fix `Enable*` return types and write the rule down | Done (2026-10-17) |
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | Done (2026-10-17) |
-| J32 | Configure menu and forms options the same way | On hold (menu options to be removed) |
+| J32 | Configure menu and forms options the same way | Done by removing the menu options (2026-10-17) |
 | J33 | Fix small builder naming issues | Done (2026-10-17) |
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | Analyzers and CS1591 done (2026-10-17); package validation after the preview |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
@@ -568,6 +568,13 @@ Done (2026-10-17):
 
 On hold (2026-10-17): Jerrie plans to remove the menu options (`ConfigureMenu`, `StellarAdminUIMenuOptions` and `StellarAdminUIOptions.Menu`) now that StellarAdmin has its own stylesheets instead of following shadcn. Come back to this once that's decided, since only the forms half may remain.
 
+Done (2026-10-17): Jerrie chose to remove the menu options and their classes, so only `ConfigureForms` remains.
+- Removed `ConfigureMenu`, `StellarAdminUIMenuOptions`, `MenuColor`, `MenuAppearance`, `MenuAccent` and `MenuSurfaceInternals`. `StellarAdminUIOptions` held only `Menu`, so it is removed too, and the dropdown content tag helpers no longer take options.
+- Removed `menu.css` (`sa-menu-translucent`, `sa-menu-accent-bold`). The defaults never added a class, so menus render as before. `.dark` stays as the general dark mode class.
+- No DocsSamples, samples or tests used the options. The theming skill reference, `tokens.md`, `options-builders.md` and the product guide no longer mention them. `sandbox/html/token-spec` is an old prototype and keeps its copy.
+- `dotnet format analyzers` adds PublicAPI entries but doesn't remove deleted ones, so `docs/development.md` now says to delete those lines by hand.
+- All 1456 tests pass. The skills have no drift and skill validation passes.
+
 ### J33. Small builder naming issues
 
 - `Base(...)`/`BaseFull()` vs the `Default` tier name in the convention: align them.
@@ -776,6 +783,7 @@ Changes the website still needs:
 - [x] D11: state which client contracts are stable (`window.stellarAdmin`, the CSS layer order, the `SA-Toasts` header name) and that `<sel-*>` names, runtime `data-*` attributes and the toast header JSON may change. Affects the website's JavaScript and setup/theming pages.
 - [x] J5: `ResourceScopeOptions` is a class with `Id` and `Title` init properties instead of a positional record, and `ResourceRowDetailPanelsBuilder<T>` is abstract. Affects any website page that shows these types; the app-facing builders are unchanged. Nothing to change: the website has no admin panel pages yet.
 - [x] J10: `ResourceOptions<T>` and the options under it are read-only, so a page that shows `services.Configure<ResourceOptions<T>>` or sets these options must use the builders instead. Custom data sources can still read them. Nothing to change: the website has no admin panel pages yet.
+- [x] J32: remove the "Menu surfaces" section from `theming.mdx` and the `ConfigureMenu` note in `dropdown-menu.mdx`.
 - [x] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 Done (2026-10-17), in `../website-rename` on `stellaradmin-rename`, not pushed:

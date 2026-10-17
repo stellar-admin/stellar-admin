@@ -1,11 +1,11 @@
-/* Dropdown menu: the menu and submenu popovers and their rows. The surface modifiers are in menu.css.
+/* Dropdown menu: the menu and submenu popovers and their rows.
    Replaces: .sa-dropdown-menu-content, .sa-dropdown-menu-content-logical, .sa-dropdown-menu-sub-content,
    .sa-dropdown-menu-subcontent, .sa-dropdown-menu-item, .sa-dropdown-menu-checkbox-item,
    .sa-dropdown-menu-radio-item, .sa-dropdown-menu-item-indicator, .sa-dropdown-menu-sub-trigger,
    .sa-dropdown-menu-label, .sa-dropdown-menu-separator, .sa-dropdown-menu-shortcut */
 
 @layer sa.components {
-  /* Defaults the surface modifiers (menu.css) replace; :where() keeps them below any modifier. */
+  /* The surface colours; :where() keeps them easy to override from a theme. */
   :where(.sa-dropdown-menu-content, .sa-dropdown-menu-sub-content) {
     --_bg: var(--sa-color-surface-raised);
     --_highlight-bg: var(--sa-color-highlight);

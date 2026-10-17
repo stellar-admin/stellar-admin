@@ -45,7 +45,6 @@ public static class StellarAdminUIExtensions
                 .AddOptions<IconOptions>()
                 .PostConfigure(options => options.Freeze())
                 .ValidateOnStart();
-            services.AddOptions<StellarAdminUIOptions>();
             services.AddHttpContextAccessor();
             services.TryAddScoped<IToastNotifier, TempDataToastNotifier>();
             services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
