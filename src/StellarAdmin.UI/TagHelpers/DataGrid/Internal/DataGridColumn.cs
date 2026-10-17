@@ -14,7 +14,7 @@ internal sealed class DataGridColumn
     /// <summary>Whether the column header renders a sort link.</summary>
     public bool Sortable { get; init; }
 
-    /// <summary>The sort field of a sortable column, substituted for <c>{sort}</c> in its links.</summary>
+    /// <summary>The sort field of a sortable column, substituted for <c>{sortField}</c> in its links.</summary>
     public string? SortField { get; init; }
 
     /// <summary>Whether the column has an edit template, which editing rows render.</summary>

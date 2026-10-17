@@ -13,8 +13,8 @@ namespace StellarAdmin.UI;
 ///     A pager that renders page-number, previous, and next links for a paged data set. Link
 ///     destinations are specified with the standard routing attributes (<c>asp-page</c>,
 ///     <c>asp-action</c>, <c>asp-route-*</c>, etc.); a route value must contain the
-///     <c>{pageNo}</c> placeholder, which is replaced with the target page number in each
-///     link (e.g. <c>asp-route-pageNo="{pageNo}"</c>). A route value may also contain the
+///     <c>{page}</c> placeholder, which is replaced with the target page number in each
+///     link (e.g. <c>asp-route-pageNo="{page}"</c>). A route value may also contain the
 ///     <c>{pageSize}</c> placeholder: page links substitute <c>selected-page-size</c> when
 ///     one is supplied and drop the route value otherwise, so a size carries across page
 ///     navigation only when one was actually chosen, while the links of the footer's
@@ -28,7 +28,7 @@ namespace StellarAdmin.UI;
 [HtmlTargetElement("sa-data-grid-pager")]
 public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
 {
-    private const string PageNoPlaceholder = "{pageNo}";
+    private const string PagePlaceholder = "{page}";
     private const string PageSizePlaceholder = "{pageSize}";
 
     private readonly IHtmlGenerator _htmlGenerator;
@@ -43,8 +43,8 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
     /// <summary>
     ///     The current page number (1-based).
     /// </summary>
-    [HtmlAttributeName("page-no")]
-    public long? PageNo { get; set; }
+    [HtmlAttributeName("page")]
+    public long? CurrentPage { get; set; }
 
     /// <summary>
     ///     The total number of pages. The page links render only when there is more than one
@@ -66,7 +66,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
     ///     (e.g. "8,24,48"). When supplied, the footer renders a "Rows per page" tab list of
     ///     links, one per size; the current <see cref="PageSize" /> renders as the active tab.
     ///     Each link substitutes its size for the <c>{pageSize}</c> placeholder and resets the
-    ///     <c>{pageNo}</c> placeholder to 1. Only rendered within an <c>sa-data-grid</c>.
+    ///     <c>{page}</c> placeholder to 1. Only rendered within an <c>sa-data-grid</c>.
     /// </summary>
     [HtmlAttributeName("page-size-options")]
     public string? PageSizeOptions { get; set; }
@@ -111,10 +111,10 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             return;
         }
 
-        if (PageNo is not { } pageNo)
+        if (CurrentPage is not { } pageNo)
         {
             throw new InvalidOperationException(
-                "<sa-data-grid-pager> requires the page-no attribute."
+                "<sa-data-grid-pager> requires the page attribute."
             );
         }
 
@@ -136,11 +136,11 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
             }
         }
 
-        if (!RouteValues.Any(value => value.Value?.Contains(PageNoPlaceholder) == true))
+        if (!RouteValues.Any(value => value.Value?.Contains(PagePlaceholder) == true))
         {
             throw new InvalidOperationException(
-                "<sa-data-grid-pager> requires a route value containing the {pageNo} page "
-                    + "number placeholder, e.g. asp-route-pageNo=\"{pageNo}\"."
+                "<sa-data-grid-pager> requires a route value containing the {page} page "
+                    + "number placeholder, e.g. asp-route-pageNo=\"{page}\"."
             );
         }
 
@@ -457,7 +457,7 @@ public class DataGridPagerTagHelper : StellarAdminAnchorTagHelperBase
                 continue;
             }
 
-            var substituted = value?.Replace(PageNoPlaceholder, pageNoText);
+            var substituted = value?.Replace(PagePlaceholder, pageNoText);
             if (pageSizeText is not null)
             {
                 substituted = substituted?.Replace(PageSizePlaceholder, pageSizeText);

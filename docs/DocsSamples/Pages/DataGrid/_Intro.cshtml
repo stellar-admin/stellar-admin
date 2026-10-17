@@ -4,16 +4,16 @@
         ? (int?)Math.Max(requestedPageSize, 1)
         : null;
     var pageSize = selectedPageSize ?? 3;
-    var pageNo = int.TryParse(Context.Request.Query["pageNo"], out var requestedPage)
+    var currentPage = int.TryParse(Context.Request.Query["pageNo"], out var requestedPage)
         ? Math.Max(requestedPage, 1)
         : 1;
-    var sortBy = Context.Request.Query["sortBy"].ToString();
+    var sortField = Context.Request.Query["sortBy"].ToString();
     var sortDirection = Context.Request.Query["sortDir"] == "desc"
         ? DataGridSortDirection.Descending
         : DataGridSortDirection.Ascending;
 
     IEnumerable<Booking> bookings = StaticData.Bookings;
-    bookings = (sortBy.ToLowerInvariant(), sortDirection) switch
+    bookings = (sortField.ToLowerInvariant(), sortDirection) switch
     {
         ("destination", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Destination),
         ("destination", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Destination),
@@ -21,26 +21,26 @@
         ("amount", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Amount),
         _ => bookings
     };
-    var pageOfBookings = bookings.Skip((pageNo - 1) * pageSize).Take(pageSize);
+    var pageOfBookings = bookings.Skip((currentPage - 1) * pageSize).Take(pageSize);
     var totalPages = (int)Math.Ceiling(StaticData.Bookings.Length / (double)pageSize);
 }
 <sa-data-grid items="pageOfBookings" key-field="Id">
     <sa-data-grid-selection name="selectedBookings" id="booking-grid-selection"/>
-    <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
+    <sa-data-grid-sort sort-field="@sortField" sort-direction="sortDirection"
                        asp-page="/DataGrid/Index"
-                       asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"
+                       asp-route-sortBy="{sortField}" asp-route-sortDir="{sortDirection}"
                        preserve-query="true" preserve-query-except="pageNo"/>
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination" sortable="true"/>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" sortable="true" class="text-right"/>
     <sa-data-grid-empty>No bookings found.</sa-data-grid-empty>
-    <sa-data-grid-pager page-no="pageNo" total-pages="totalPages"
+    <sa-data-grid-pager page="currentPage" total-pages="totalPages"
                         page-size="pageSize" selected-page-size="selectedPageSize"
                         total-items="StaticData.Bookings.Length"
                         page-size-options="3,5,10"
                         asp-page="/DataGrid/Index"
-                        asp-route-pageNo="{pageNo}" asp-route-pageSize="{pageSize}"
+                        asp-route-pageNo="{page}" asp-route-pageSize="{pageSize}"
                         preserve-query="true"/>
 </sa-data-grid>
 <sa-button id="booking-grid-delete" variant="ButtonVariant.Destructive" class="mt-4" hidden>

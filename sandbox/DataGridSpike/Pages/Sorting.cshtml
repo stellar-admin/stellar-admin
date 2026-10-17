@@ -26,8 +26,8 @@
 
 <h2>A: ambient address, sort-field override, preserve-query</h2>
 <sa-data-grid items="bookings">
-    <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
-                       asp-route-s="{sort}" asp-route-d="{dir}"
+    <sa-data-grid-sort sort-field="@sortBy" sort-direction="sortDirection"
+                       asp-route-s="{sortField}" asp-route-d="{sortDirection}"
                        asp-route-p="1"
                        preserve-query="true"/>
     <sa-data-grid-column title="Reference" field="Reference" sortable="true"/>

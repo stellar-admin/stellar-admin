@@ -19,10 +19,10 @@ A data grid that renders a full table from declarative column definitions and a 
 | `<sa-data-grid-empty>` | Custom content for the data grid's empty state, shown as a single full-width row when the grid has no items. When omitted, the grid renders a default "No records found." message. |
 | `<sa-data-grid-header-template>` | Custom header content for a data grid column, rendered once and taking precedence over the column's `title` attribute. |
 | `<sa-data-grid-item-template>` | The row template of a data grid column, re-rendered once per data row with the current item available through `Html.GridItem<T>()`. Unlike plain child content, the template is never executed during the grid's collect pass, so it can safely dereference the item unconditionally. |
-| `<sa-data-grid-pager>` | A pager that renders page-number, previous, and next links for a paged data set. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); a route value must contain the `{pageNo}` placeholder, which is replaced with the target page number in each link (e.g. `asp-route-pageNo="{pageNo}"`). A route value may also contain the `{pageSize}` placeholder: page links substitute `selected-page-size` when one is supplied and drop the route value otherwise, so a size carries across page navigation only when one was actually chosen, while the links of the footer's page-size selector (`page-size-options`) always substitute the target size and reset the page number to 1. Declared as a child of `sa-data-grid` it renders in the grid's footer bar as compact icon links, alongside a record-range summary when `total-items` is supplied — the footer renders even when there is a single page, showing just the record count. Used standalone it renders the classic labelled pager and nothing at all when there is one page or less. |
+| `<sa-data-grid-pager>` | A pager that renders page-number, previous, and next links for a paged data set. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); a route value must contain the `{page}` placeholder, which is replaced with the target page number in each link (e.g. `asp-route-pageNo="{page}"`). A route value may also contain the `{pageSize}` placeholder: page links substitute `selected-page-size` when one is supplied and drop the route value otherwise, so a size carries across page navigation only when one was actually chosen, while the links of the footer's page-size selector (`page-size-options`) always substitute the target size and reset the page number to 1. Declared as a child of `sa-data-grid` it renders in the grid's footer bar as compact icon links, alongside a record-range summary when `total-items` is supplied — the footer renders even when there is a single page, showing just the record count. Used standalone it renders the classic labelled pager and nothing at all when there is one page or less. |
 | `<sa-data-grid-row-detail>` | Lets the data grid's rows expand to show details. The content is a row template, rendered once per data row with the current item available through `Html.GridItem<T>()`, below its row and spanning every column. The grid adds a toggle column and wraps its table in the `sel-table` web component, which raises bubbling `row-detail-expand` and `row-detail-collapse` events on the detail row, so htmx can load a row's details when it first expands. |
 | `<sa-data-grid-selection>` | Adds row selection to the data grid: a leading checkbox column with a select-all checkbox in the header. Requires the grid's `key-field`, whose value each row's checkbox carries. Renders nothing itself — the grid wraps its table in the `sel-table` web component, to which an `id` and `class` set here are transferred. Read the current selection from the element's `selectedValues` property, or listen for its bubbling `selection-change` event; with a `name` the selection also posts as ordinary checkbox form data. |
-| `<sa-data-grid-sort>` | Declares how the data grid generates its column-sorting links, and the current sort state. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); the route values must contain the `{sort}` placeholder, replaced with the column's sort field, and the `{dir}` placeholder, replaced with the target direction (`asc` or `desc`) — e.g. `asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"`. Renders nothing itself; columns opt in with their `sortable` attribute. |
+| `<sa-data-grid-sort>` | Declares how the data grid generates its column-sorting links, and the current sort state. Link destinations are specified with the standard routing attributes (`asp-page`, `asp-action`, `asp-route-*`, etc.); the route values must contain the `{sortField}` placeholder, replaced with the column's sort field, and the `{sortDirection}` placeholder, replaced with the target direction (`asc` or `desc`) — e.g. `asp-route-sortField="{sortField}" asp-route-sortDirection="{sortDirection}"`. Renders nothing itself; columns opt in with their `sortable` attribute. |
 
 ## Attributes
 
@@ -65,7 +65,7 @@ A data grid that renders a full table from declarative column definitions and a 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `page-no` | `long` | — | — |
+| `page` | `long` | — | — |
 | `total-pages` | `long` | — | — |
 | `page-size` | `long` | — | — |
 | `page-size-options` | `string` | — | — |
@@ -110,7 +110,7 @@ A data grid that renders a full table from declarative column definitions and a 
 
 | Attribute | Type | Default | Values |
 |-----------|------|---------|--------|
-| `sort-by` | `string` | — | — |
+| `sort-field` | `string` | — | — |
 | `sort-direction` | `DataGridSortDirection` | `Ascending` | `Ascending`, `Descending` |
 | `preserve-query` | `bool` | `false` | `true`, `false` |
 | `preserve-query-except` | `string` | — | — |
@@ -136,16 +136,16 @@ A data grid that renders a full table from declarative column definitions and a 
         ? (int?)Math.Max(requestedPageSize, 1)
         : null;
     var pageSize = selectedPageSize ?? 3;
-    var pageNo = int.TryParse(Context.Request.Query["pageNo"], out var requestedPage)
+    var currentPage = int.TryParse(Context.Request.Query["pageNo"], out var requestedPage)
         ? Math.Max(requestedPage, 1)
         : 1;
-    var sortBy = Context.Request.Query["sortBy"].ToString();
+    var sortField = Context.Request.Query["sortBy"].ToString();
     var sortDirection = Context.Request.Query["sortDir"] == "desc"
         ? DataGridSortDirection.Descending
         : DataGridSortDirection.Ascending;
 
     IEnumerable<Booking> bookings = StaticData.Bookings;
-    bookings = (sortBy.ToLowerInvariant(), sortDirection) switch
+    bookings = (sortField.ToLowerInvariant(), sortDirection) switch
     {
         ("destination", DataGridSortDirection.Ascending) => bookings.OrderBy(b => b.Destination),
         ("destination", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Destination),
@@ -153,26 +153,26 @@ A data grid that renders a full table from declarative column definitions and a 
         ("amount", DataGridSortDirection.Descending) => bookings.OrderByDescending(b => b.Amount),
         _ => bookings
     };
-    var pageOfBookings = bookings.Skip((pageNo - 1) * pageSize).Take(pageSize);
+    var pageOfBookings = bookings.Skip((currentPage - 1) * pageSize).Take(pageSize);
     var totalPages = (int)Math.Ceiling(StaticData.Bookings.Length / (double)pageSize);
 }
 <sa-data-grid items="pageOfBookings" key-field="Id">
     <sa-data-grid-selection name="selectedBookings" id="booking-grid-selection"/>
-    <sa-data-grid-sort sort-by="@sortBy" sort-direction="sortDirection"
+    <sa-data-grid-sort sort-field="@sortField" sort-direction="sortDirection"
                        asp-page="/DataGrid/Index"
-                       asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"
+                       asp-route-sortBy="{sortField}" asp-route-sortDir="{sortDirection}"
                        preserve-query="true" preserve-query-except="pageNo"/>
     <sa-data-grid-column title="Booking #" field="Id" class="font-medium"/>
     <sa-data-grid-column title="Status" field="Status"/>
     <sa-data-grid-column title="Destination" field="Destination" sortable="true"/>
     <sa-data-grid-column title="Amount" field="Amount" format="{0:C}" sortable="true" class="text-right"/>
     <sa-data-grid-empty>No bookings found.</sa-data-grid-empty>
-    <sa-data-grid-pager page-no="pageNo" total-pages="totalPages"
+    <sa-data-grid-pager page="currentPage" total-pages="totalPages"
                         page-size="pageSize" selected-page-size="selectedPageSize"
                         total-items="StaticData.Bookings.Length"
                         page-size-options="3,5,10"
                         asp-page="/DataGrid/Index"
-                        asp-route-pageNo="{pageNo}" asp-route-pageSize="{pageSize}"
+                        asp-route-pageNo="{page}" asp-route-pageSize="{pageSize}"
                         preserve-query="true"/>
 </sa-data-grid>
 <sa-button id="booking-grid-delete" variant="ButtonVariant.Destructive" class="mt-4" hidden>

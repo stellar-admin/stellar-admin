@@ -51,7 +51,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | Done (2026-10-17) |
 | J17 | Use `min`/`max` on Progress | Done (2026-10-17) |
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | Done (2026-10-17) |
-| J19 | Use one naming scheme for DataGrid sort and paging | |
+| J19 | Use one naming scheme for DataGrid sort and paging | Done (2026-10-17) |
 | J20 | Bind `invalid` and `maxlength` | |
 | J21 | Use `show-*` instead of `render-*` | |
 | J22 | Rename `heading` on `sa-command-group` to `title` | |
@@ -313,6 +313,13 @@ Done (2026-10-17):
 ### J19. DataGrid sort and paging
 
 `sort-by` becomes `sort-field`, matching columns. The route placeholders become `{sortField}`/`{sortDirection}` and `{page}`/`{pageSize}`, and `page-no` becomes `page`.
+
+Done (2026-10-17):
+
+- `sa-data-grid-sort` takes `sort-field` (`SortField`), and its placeholders are `{sortField}` and `{sortDirection}`.
+- `sa-data-grid-pager` takes `page`, backed by `CurrentPage` because the anchor base already has `Page` for `asp-page`. Its placeholders are `{page}` and `{pageSize}`.
+- The XML docs, error messages, admin index grid, DocsSamples DataGrid intro, DataGridSpike pages and data-grid skill reference were updated. The admin's own query keys (`sortBy`, `page`) and the DocsSamples query keys are unchanged, and Razor Pages reserves `page` as a route value, so examples keep `asp-route-pageNo="{page}"`.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J20. invalid and maxlength
 

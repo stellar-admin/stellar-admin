@@ -11,9 +11,9 @@ namespace StellarAdmin.UI;
 ///     Declares how the data grid generates its column-sorting links, and the current sort
 ///     state. Link destinations are specified with the standard routing attributes
 ///     (<c>asp-page</c>, <c>asp-action</c>, <c>asp-route-*</c>, etc.); the route values must
-///     contain the <c>{sort}</c> placeholder, replaced with the column's sort field, and the
-///     <c>{dir}</c> placeholder, replaced with the target direction (<c>asc</c> or
-///     <c>desc</c>) — e.g. <c>asp-route-sortBy="{sort}" asp-route-sortDir="{dir}"</c>.
+///     contain the <c>{sortField}</c> placeholder, replaced with the column's sort field, and the
+///     <c>{sortDirection}</c> placeholder, replaced with the target direction (<c>asc</c> or
+///     <c>desc</c>) — e.g. <c>asp-route-sortField="{sortField}" asp-route-sortDirection="{sortDirection}"</c>.
 ///     Renders nothing itself; columns opt in with their <c>sortable</c> attribute.
 /// </summary>
 [HtmlTargetElement(
@@ -23,8 +23,8 @@ namespace StellarAdmin.UI;
 )]
 public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
 {
-    private const string SortFieldPlaceholder = "{sort}";
-    private const string DirectionPlaceholder = "{dir}";
+    private const string SortFieldPlaceholder = "{sortField}";
+    private const string SortDirectionPlaceholder = "{sortDirection}";
 
     private readonly IHtmlGenerator _htmlGenerator;
     private readonly IconOptions _iconOptions;
@@ -40,8 +40,8 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
     ///     against the columns' sort fields to mark the active column. Omit when the data is
     ///     unsorted.
     /// </summary>
-    [HtmlAttributeName("sort-by")]
-    public string? SortBy { get; set; }
+    [HtmlAttributeName("sort-field")]
+    public string? SortField { get; set; }
 
     /// <summary>
     ///     The direction the data is currently sorted in.
@@ -108,16 +108,16 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
         if (!RouteValues.Any(value => value.Value?.Contains(SortFieldPlaceholder) == true))
         {
             throw new InvalidOperationException(
-                "<sa-data-grid-sort> requires a route value containing the {sort} sort field "
-                    + "placeholder, e.g. asp-route-sortBy=\"{sort}\"."
+                "<sa-data-grid-sort> requires a route value containing the {sortField} sort field "
+                    + "placeholder, e.g. asp-route-sortField=\"{sortField}\"."
             );
         }
 
-        if (!RouteValues.Any(value => value.Value?.Contains(DirectionPlaceholder) == true))
+        if (!RouteValues.Any(value => value.Value?.Contains(SortDirectionPlaceholder) == true))
         {
             throw new InvalidOperationException(
-                "<sa-data-grid-sort> requires a route value containing the {dir} sort "
-                    + "direction placeholder, e.g. asp-route-sortDir=\"{dir}\"."
+                "<sa-data-grid-sort> requires a route value containing the {sortDirection} sort "
+                    + "direction placeholder, e.g. asp-route-sortDirection=\"{sortDirection}\"."
             );
         }
 
@@ -131,7 +131,7 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
     /// </summary>
     internal DataGridSortDirection? GetActiveDirection(string sortField)
     {
-        return string.Equals(sortField, SortBy, StringComparison.OrdinalIgnoreCase)
+        return string.Equals(sortField, SortField, StringComparison.OrdinalIgnoreCase)
             ? SortDirection ?? DataGridSortDirection.Ascending
             : null;
     }
@@ -212,7 +212,7 @@ public class DataGridSortTagHelper : StellarAdminAnchorTagHelperBase
             value =>
                 value
                     .Value?.Replace(SortFieldPlaceholder, sortField)
-                    .Replace(DirectionPlaceholder, direction.GetQueryValueText()),
+                    .Replace(SortDirectionPlaceholder, direction.GetQueryValueText()),
             StringComparer.OrdinalIgnoreCase
         );
     }

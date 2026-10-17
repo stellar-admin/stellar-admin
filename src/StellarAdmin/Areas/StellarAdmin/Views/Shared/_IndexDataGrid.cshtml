@@ -32,9 +32,9 @@
               editing-keys="@(inline?.EditingKey is { } editingKey ? new[] { editingKey } : null)"
               new-item="inline?.NewItem" rows-only="Model.RowsOnly" data-inline-dim="@dim">
     <sa-data-grid-sort asp-action="Index" asp-route-id="@((string?)null)"
-                       asp-route-sortBy="{sort}" asp-route-sortDirection="{dir}"
+                       asp-route-sortBy="{sortField}" asp-route-sortDirection="{sortDirection}"
                        preserve-query="true" preserve-query-except="page"
-                       sort-by="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
+                       sort-field="@Model.Sort?.By" sort-direction="@Model.Sort?.Direction" />
     @for (var index = 0; index < Model.Columns.Count; index++)
     {
         var column = Model.Columns[index];
@@ -226,9 +226,9 @@
     @if (Model.Paging is { } paging)
     {
         <sa-data-grid-pager asp-action="Index" asp-route-id="@((string?)null)"
-                            asp-route-page="{pageNo}" asp-route-pageSize="{pageSize}"
+                            asp-route-page="{page}" asp-route-pageSize="{pageSize}"
                             preserve-query="true"
-                            page-no="paging.Page" page-size="paging.PageSize"
+                            page="paging.Page" page-size="paging.PageSize"
                             selected-page-size="@(Model.Query.PageSize is null ? null : (int?)paging.PageSize)" total-items="paging.TotalCount"
                             total-pages="paging.TotalPages" page-size-options="@string.Join(',', paging.PageSizes)" />
     }

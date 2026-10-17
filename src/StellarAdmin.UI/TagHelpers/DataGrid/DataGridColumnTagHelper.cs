@@ -84,7 +84,7 @@ public class DataGridColumnTagHelper : StellarAdminTagHelperBase
     public bool? Sortable { get; set; }
 
     /// <summary>
-    ///     The sort field substituted for the <c>{sort}</c> placeholder in the column's sort
+    ///     The sort field substituted for the <c>{sortField}</c> placeholder in the column's sort
     ///     links, when it differs from the column's field.
     /// </summary>
     [HtmlAttributeName("sort-field")]
