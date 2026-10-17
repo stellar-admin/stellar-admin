@@ -44,8 +44,8 @@ public class ProgressValueTagHelper : StellarAdminTagHelperBase
         return parentProgressTagHelper == null
             ? (0, 100, 0)
             : (
-                parentProgressTagHelper.Minimum ?? 0,
-                parentProgressTagHelper.Maximum ?? 100,
+                parentProgressTagHelper.Min ?? 0,
+                parentProgressTagHelper.Max ?? 100,
                 parentProgressTagHelper.Value ?? 0
             );
     }

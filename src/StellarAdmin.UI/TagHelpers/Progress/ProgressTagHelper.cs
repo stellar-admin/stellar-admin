@@ -16,8 +16,8 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <c>100</c>.
     /// </remarks>
-    [HtmlAttributeName("maximum")]
-    public int? Maximum { get; set; }
+    [HtmlAttributeName("max")]
+    public int? Max { get; set; }
 
     /// <summary>
     ///     The value representing no completion.
@@ -25,8 +25,8 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <c>0</c>.
     /// </remarks>
-    [HtmlAttributeName("minimum")]
-    public int? Minimum { get; set; }
+    [HtmlAttributeName("min")]
+    public int? Min { get; set; }
 
     /// <summary>
     ///     The current progress value, between the minimum and maximum.
@@ -39,24 +39,18 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var effectiveMinimum = Minimum ?? 0;
-        var effectiveMaximum = Maximum ?? 100;
+        var effectiveMin = Min ?? 0;
+        var effectiveMax = Max ?? 100;
         var effectiveValue = Value ?? 0;
 
-        if (effectiveMinimum >= effectiveMaximum)
+        if (effectiveMin >= effectiveMax)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(Minimum),
-                "Minimum must be less than Maximum"
-            );
+            throw new ArgumentOutOfRangeException(nameof(Min), "Min must be less than Max");
         }
 
-        if (effectiveValue < effectiveMinimum || effectiveValue > effectiveMaximum)
+        if (effectiveValue < effectiveMin || effectiveValue > effectiveMax)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(Value),
-                "Must be between Minimum and Maximum"
-            );
+            throw new ArgumentOutOfRangeException(nameof(Value), "Must be between Min and Max");
         }
 
         output.TagName = "div";
@@ -77,7 +71,7 @@ public class ProgressTagHelper : StellarAdminTagHelperBase
         indicatorTagBuilder.Attributes.Add("class", JoinCssClasses("sa-progress-indicator"));
         indicatorTagBuilder.Attributes.Add(
             "style",
-            $"inset-inline-start: 0px; height: inherit; width: {GetPercentageCompleted(effectiveMinimum, effectiveMaximum, effectiveValue)}%;"
+            $"inset-inline-start: 0px; height: inherit; width: {GetPercentageCompleted(effectiveMin, effectiveMax, effectiveValue)}%;"
         );
         trackTagBuilder.InnerHtml.AppendHtml(indicatorTagBuilder);
         output.PostContent.AppendHtml(trackTagBuilder);

@@ -49,7 +49,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J14 | Give components their own enums where they borrow another's, and fix the Sidebar enum members | Done (2026-10-17) |
 | J15 | Use logical `Start`/`End` names | Done (2026-10-17) |
 | J16 | Move the toast API to `StellarAdmin.UI.Toasts` | Done (2026-10-17) |
-| J17 | Use `min`/`max` on Progress | |
+| J17 | Use `min`/`max` on Progress | Done (2026-10-17) |
 | J18 | Use `active` instead of `is-active`, and `Disabled` instead of `IsDisabled` | |
 | J19 | Use one naming scheme for DataGrid sort and paging | |
 | J20 | Bind `invalid` and `maxlength` | |
@@ -292,6 +292,12 @@ Done (2026-10-17):
 ### J17. Progress bounds
 
 `minimum`/`maximum` (`UI/Progress/ProgressTagHelper.cs:19,28`) become `min`/`max`.
+
+Done (2026-10-17):
+
+- The attributes are now `min`/`max` and the properties `Min`/`Max`, matching Slider. The validation messages say Min and Max.
+- The ComponentPlayground Progress demo and the progress skill reference were updated.
+- Verified with the full test run (1385 passed) and a skills drift check.
 
 ### J18. Active and disabled
 
