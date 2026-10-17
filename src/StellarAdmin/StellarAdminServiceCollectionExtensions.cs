@@ -16,6 +16,11 @@ public static class StellarAdminServiceCollectionExtensions
         ///     Adds the StellarAdmin admin panel, its resource management services and the
         ///     StellarAdmin UI components.
         /// </summary>
+        /// <remarks>
+        ///     This calls <see cref="StellarAdmin.UI.StellarAdminUIExtensions.AddStellarAdminUI(IServiceCollection)" />,
+        ///     which adds a model binder, a value provider and a toast filter to the MVC options for
+        ///     the whole app.
+        /// </remarks>
         public StellarAdminBuilder AddStellarAdmin()
         {
             services.AddMvc();

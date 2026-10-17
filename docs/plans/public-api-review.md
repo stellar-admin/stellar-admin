@@ -69,7 +69,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J34 | Add PublicApiAnalyzers, and package validation after the preview | |
 | J35 | Pack `THIRD-PARTY-NOTICES.txt` | Done (2026-10-17) |
 | J36 | Rename the client events to one style | Done (2026-10-17) |
-| J37 | Document the global MVC hooks | |
+| J37 | Document the global MVC hooks | Done (2026-10-17) |
 | J38 | Add `class-names` to the field helpers that lack it | |
 | J39 | Small attribute polish | |
 | J40 | Rewrite the public XML docs in plain language | Approved |
@@ -528,6 +528,12 @@ Done (2026-10-17):
 
 Document that `AddStellarAdminUI` adds a model binder for form collections, a value provider and a global toast filter.
 
+Done (2026-10-17):
+
+- `AddStellarAdminUI()` has remarks saying it changes the MVC options for the whole app. They list the checkbox group model binder, the value provider that reads the form on every form post, and the global toast result filter.
+- The `configure` overload and `AddStellarAdmin()` point to those remarks.
+- Verified with the full test run (1428 passed) and a skills drift check.
+
 ### J38. class-names
 
 `ToggleTagHelper`, `SegmentedControlTagHelper` and the choice groups lack `class-names`.
@@ -594,6 +600,7 @@ Changes the website still needs:
 - [ ] J28: `item.mdx`, `stack.mdx`, `group.mdx` and `attachment.mdx` list `ItemSize`, `StackGap`, `GroupGap` and `AttachmentSize` members in the old order. The new order is Default first, then smallest to largest.
 - [ ] J35: the website's licence notices in the docs list shadcn/ui and tw-animate-css. Match them to `THIRD-PARTY-NOTICES.txt`: Tailwind, Lucide, Tabler, cmdk, Lit, interestfor and htmx.
 - [ ] J36: events are renamed: `selection-change` → `rowselectionchange`, `tab-show` → `tabshow`, `tab-hide` → `tabhide`, `row-detail-expand` → `rowdetailexpand`, `row-detail-collapse` → `rowdetailcollapse`. Affects `tabs.mdx`, `table.mdx` and their includes.
+- [ ] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
 
 ## Order of work
 
