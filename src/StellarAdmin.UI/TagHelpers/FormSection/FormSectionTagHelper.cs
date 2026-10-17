@@ -14,6 +14,7 @@ public class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
     /// <summary>
     ///     Supporting text displayed below the section title.
     /// </summary>
+    [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
@@ -22,11 +23,13 @@ public class FormSectionTagHelper(IOptions<StellarAdminFormsOptions> options)
     /// <remarks>
     ///     Defaults to the application's form section layout.
     /// </remarks>
+    [HtmlAttributeName("layout")]
     public FormSectionLayout? Layout { get; set; }
 
     /// <summary>
     ///     The section title.
     /// </summary>
+    [HtmlAttributeName("title")]
     public string Title { get; set; } = string.Empty;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

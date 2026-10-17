@@ -17,11 +17,13 @@ public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
     /// <remarks>
     ///     Defaults to <see cref="CheckboxGroupFlow.Across" />.
     /// </remarks>
+    [HtmlAttributeName("flow")]
     public CheckboxGroupFlow? Flow { get; set; }
 
     /// <summary>
     ///     The initially selected values when not using model binding.
     /// </summary>
+    [HtmlAttributeName("values")]
     public IEnumerable<string>? Values { get; set; }
 
     /// <summary>
@@ -30,6 +32,7 @@ public class CheckboxGroupTagHelper : ChoiceGroupTagHelper
     /// <remarks>
     ///     Defaults to <see cref="CheckboxGroupVariant.Default" />.
     /// </remarks>
+    [HtmlAttributeName("variant")]
     public CheckboxGroupVariant? Variant { get; set; }
 
     public CheckboxGroupTagHelper(IHtmlGenerator generator, IOptions<IconOptions> icons)

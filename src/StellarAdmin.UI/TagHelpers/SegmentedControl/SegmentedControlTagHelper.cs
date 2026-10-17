@@ -12,16 +12,19 @@ public class SegmentedControlTagHelper : FieldInputBaseTagHelper
     /// <summary>
     ///     Whether all options are disabled.
     /// </summary>
+    [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
     ///     Whether an option must be selected before submitting the form.
     /// </summary>
+    [HtmlAttributeName("required")]
     public bool? Required { get; set; }
 
     /// <summary>
     ///     The initially selected value when not using model binding.
     /// </summary>
+    [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     public SegmentedControlTagHelper(IHtmlGenerator htmlGenerator)

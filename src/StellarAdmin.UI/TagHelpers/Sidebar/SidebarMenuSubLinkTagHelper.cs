@@ -18,6 +18,7 @@ public class SidebarMenuSubLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuSubLinkSize.Default" />.
     /// </remarks>
+    [HtmlAttributeName("size")]
     public SidebarMenuSubLinkSize? Size { get; set; }
 
     public SidebarMenuSubLinkTagHelper(IHtmlGenerator htmlGenerator)

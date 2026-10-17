@@ -17,17 +17,20 @@ public class SegmentedControlItemTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Whether this option is disabled.
     /// </summary>
+    [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
     ///     Whether this option is selected, overriding the bound or initial value. A posted value still takes
     ///     precedence.
     /// </summary>
+    [HtmlAttributeName("selected")]
     public bool? Selected { get; set; }
 
     /// <summary>
     ///     The value submitted when this option is selected.
     /// </summary>
+    [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     /// <summary>

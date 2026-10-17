@@ -65,6 +65,7 @@ public abstract class ChoiceGroupTagHelper : FieldInputBaseTagHelper
     /// <summary>
     ///     Whether all options are disabled.
     /// </summary>
+    [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>

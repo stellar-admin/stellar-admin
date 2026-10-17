@@ -55,7 +55,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J20 | Use `maxlength` on Input OTP and `aria-invalid` on Chip Group | Done (2026-10-17) |
 | J21 | Use `show-error` and `wrap-in-field` instead of `render-*` | Done (2026-10-17) |
 | J22 | Rename `heading` on `sa-command-group` to `title` | Done (2026-10-17) |
-| J23 | Give every bound property an explicit attribute name | |
+| J23 | Give every bound property an explicit attribute name | Done (2026-10-17) |
 | J24 | Make Slider and Progress numbers `double?` | |
 | J25 | Make the remaining plain `bool` attributes `bool?` | |
 | J26 | Make icon definitions immutable | |
@@ -357,6 +357,13 @@ Done (2026-10-17):
 ### J23. Explicit attribute names
 
 33 bound properties take their attribute name from the C# name, so renaming the property silently renames the attribute. They are on Carousel, CheckboxGroup, ChoiceGroup, FormSection, RadioGroup, SegmentedControl and the Sidebar menu helpers.
+
+Done (2026-10-17):
+
+- 32 properties now declare `[HtmlAttributeName]` with the name Razor derived before, so markup is unchanged. Besides the components above, the list included `FieldInputBaseTagHelper.Name` and `InputGroupAddonTagHelper.Align`.
+- `TagHelperAttributeNamesTests` fails when a public tag helper in StellarAdmin.UI has a bound property without `HtmlAttributeName` or `HtmlAttributeNotBound`. The three StellarAdmin tag helpers already name their only property and aren't covered by the test.
+- No website change is needed.
+- Verified with the full test run (1386 passed) and a skills drift check.
 
 ### J24. Numbers
 

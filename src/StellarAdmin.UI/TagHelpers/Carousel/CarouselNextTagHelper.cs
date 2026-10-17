@@ -18,6 +18,7 @@ public class CarouselNextTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to IconSmall.
     /// </remarks>
+    [HtmlAttributeName("size")]
     public ButtonSize? Size { get; set; }
 
     /// <summary>
@@ -26,6 +27,7 @@ public class CarouselNextTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to Outline.
     /// </remarks>
+    [HtmlAttributeName("variant")]
     public ButtonVariant? Variant { get; set; }
 
     public CarouselNextTagHelper(IOptions<IconOptions> iconOptions)

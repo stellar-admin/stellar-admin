@@ -30,6 +30,7 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuLinkSize.Default" />.
     /// </remarks>
+    [HtmlAttributeName("size")]
     public SidebarMenuLinkSize? Size { get; set; }
 
     /// <summary>
@@ -38,6 +39,7 @@ public class SidebarMenuLinkTagHelper : StellarAdminAnchorTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuLinkVariant.Default" />.
     /// </remarks>
+    [HtmlAttributeName("variant")]
     public SidebarMenuLinkVariant? Variant { get; set; }
 
     public SidebarMenuLinkTagHelper(IHtmlGenerator htmlGenerator)

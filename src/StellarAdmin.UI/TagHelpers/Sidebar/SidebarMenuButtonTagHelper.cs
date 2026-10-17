@@ -27,6 +27,7 @@ public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuButtonSize.Default" />.
     /// </remarks>
+    [HtmlAttributeName("size")]
     public SidebarMenuButtonSize? Size { get; set; }
 
     /// <summary>
@@ -35,6 +36,7 @@ public class SidebarMenuButtonTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuButtonVariant.Default" />.
     /// </remarks>
+    [HtmlAttributeName("variant")]
     public SidebarMenuButtonVariant? Variant { get; set; }
 
     /// <summary>

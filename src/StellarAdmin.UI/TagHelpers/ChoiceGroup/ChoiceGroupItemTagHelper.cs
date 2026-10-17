@@ -10,16 +10,19 @@ public abstract class ChoiceGroupItemTagHelper : StellarAdminTagHelperBase
     /// <summary>
     ///     Supporting text below the option label.
     /// </summary>
+    [HtmlAttributeName("description")]
     public string? Description { get; set; }
 
     /// <summary>
     ///     Whether this option is disabled.
     /// </summary>
+    [HtmlAttributeName("disabled")]
     public bool? Disabled { get; set; }
 
     /// <summary>
     ///     The value submitted when this option is selected.
     /// </summary>
+    [HtmlAttributeName("value")]
     public string? Value { get; set; }
 
     protected async Task RenderAsync(

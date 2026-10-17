@@ -147,6 +147,7 @@ public abstract class FieldInputBaseTagHelper : StellarAdminTagHelperBase, IGrid
     ///     Passed through to the generated HTML in all cases. Also used to determine whether <see cref="For" /> is
     ///     valid with an empty <see cref="ModelExpression.Name" />.
     /// </remarks>
+    [HtmlAttributeName("name")]
     public string? Name { get; set; }
 
     /// <summary>

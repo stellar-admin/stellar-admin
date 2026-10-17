@@ -14,6 +14,7 @@ public class CarouselTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to Horizontal.
     /// </remarks>
+    [HtmlAttributeName("orientation")]
     public CarouselOrientation? Orientation { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

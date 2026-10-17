@@ -24,6 +24,7 @@ public class InputGroupAddonTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="InputGroupAddonAlign.Start" />.
     /// </remarks>
+    [HtmlAttributeName("align")]
     public InputGroupAddonAlign? Align { get; set; }
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)

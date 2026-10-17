@@ -14,6 +14,7 @@ public class SidebarMenuSubButtonTagHelper : StellarAdminTagHelperBase
     /// <remarks>
     ///     Defaults to <see cref="SidebarMenuSubButtonSize.Default" />.
     /// </remarks>
+    [HtmlAttributeName("size")]
     public SidebarMenuSubButtonSize? Size { get; set; }
 
     /// <summary>
