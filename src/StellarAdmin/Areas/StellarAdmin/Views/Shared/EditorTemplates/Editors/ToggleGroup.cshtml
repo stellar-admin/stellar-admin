@@ -12,11 +12,10 @@
         _ => null,
     };
     var appearanceClass = joined ? null : chips ? $"sa-toggle-group-wrap sa-toggle-chips {checkClass}".TrimEnd() : "sa-toggle-group-wrap";
-    var classes = string.Join(' ', new[] { appearanceClass, EditorClassNamesMapper.ForToggleGroup(Editor) }.Where(css => css is not null));
     var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
-<sa-toggle-group class="@classes" asp-for="@Model" type="@type" variant="ToggleVariant.Outline"
+<sa-toggle-group class="@appearanceClass" class-names="@EditorClassNamesMapper.ForToggleGroup(Editor)" asp-for="@Model" type="@type" variant="ToggleVariant.Outline"
                  spacing="@(joined ? ToggleGroupSpacing.None : ToggleGroupSpacing.Default)" label="@Title" description="@Description">
     @foreach (var choice in choices)
     {

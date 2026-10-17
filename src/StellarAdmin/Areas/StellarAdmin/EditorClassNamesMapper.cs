@@ -5,7 +5,7 @@ namespace StellarAdmin.Areas.StellarAdmin;
 
 internal static class EditorClassNamesMapper
 {
-    public static string? ForCheckboxGroup(FieldEditor? editor)
+    public static ChoiceGroupClassNames ForCheckboxGroup(FieldEditor? editor)
     {
         if (
             editor is not null
@@ -18,10 +18,17 @@ internal static class EditorClassNamesMapper
             );
         }
 
-        return ControlOnly(
-            editor?.ClassNames,
-            "Checkbox group editors support only Control, which styles the choices container."
-        );
+        var classes = editor?.ClassNames;
+
+        return new ChoiceGroupClassNames
+        {
+            Content = classes?.Content,
+            Control = classes?.Control,
+            Description = classes?.Description,
+            Error = classes?.Error,
+            Label = classes?.Label,
+            Root = classes?.Root,
+        };
     }
 
     public static ImageUploadClassNames ForImageUpload(ImageEditor editor)
@@ -168,32 +175,34 @@ internal static class EditorClassNamesMapper
         };
     }
 
-    public static string? ForSegmentedControl(SegmentedControlEditor editor) =>
-        ControlOnly(
-            editor.ClassNames,
-            "Segmented control editors support only Control, which styles the segmented control."
-        );
-
-    public static string? ForToggleGroup(ToggleGroupEditor editor) =>
-        ControlOnly(
-            editor.ClassNames,
-            "Toggle group editors support only Control, which styles the toggle group."
-        );
-
-    private static string? ControlOnly(EditorClassNames? classes, string message)
+    public static SegmentedControlClassNames ForSegmentedControl(SegmentedControlEditor editor)
     {
-        if (
-            classes?.Content is not null
-            || classes?.Description is not null
-            || classes?.Error is not null
-            || classes?.Label is not null
-            || classes?.Root is not null
-        )
-        {
-            throw new InvalidOperationException(message);
-        }
+        var classes = editor.ClassNames;
 
-        return classes?.Control;
+        return new SegmentedControlClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
+    }
+
+    public static ToggleGroupClassNames ForToggleGroup(ToggleGroupEditor editor)
+    {
+        var classes = editor.ClassNames;
+
+        return new ToggleGroupClassNames
+        {
+            Content = classes.Content,
+            Control = classes.Control,
+            Description = classes.Description,
+            Error = classes.Error,
+            Label = classes.Label,
+            Root = classes.Root,
+        };
     }
 
     private static void ValidateScalar(FieldEditor? editor)

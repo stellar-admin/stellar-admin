@@ -73,7 +73,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J38 | Add `class-names` to the field helpers that lack it | Done (2026-10-17) |
 | J39 | Small attribute polish | Done (2026-10-17) |
 | J40 | Rewrite the public XML docs in plain language | Approved |
-| J41 | Let the choice editors take every field part class | Approved |
+| J41 | Let the choice editors take every field part class | Done (2026-10-17) |
 
 ## Settled
 
@@ -595,6 +595,12 @@ Approved (Jerrie, 2026-10-17):
 - Per-choice classes stay out of scope. Only the radio editor has `Option.*`, and matching it needs new `EditorClassNames` properties.
 - Do it after J39.
 
+Done (2026-10-17):
+
+- `EditorClassNamesMapper` maps every field part for the checkbox group, segmented control and toggle group editors, and their templates pass the result through `class-names`. The Control-only check is gone.
+- The toggle group editor keeps its appearance classes on `class`.
+- The integration test that expected a checkbox group `Label` to fail now checks that `Label` and `Root` style the field. Verified with the full test run (1435 passed) and a skills drift check.
+
 ## Website follow-up
 
 The website is updated in one pass after the remaining renames, or before the NuGet preview if that comes first (Jerrie, 2026-10-17). The pass works in the `../website-rename` worktree on `stellaradmin-rename`. Each item that changes markup or public names adds a line here when it is done.
@@ -629,6 +635,7 @@ Changes the website still needs:
 - [ ] J37: the installation page should say that `AddStellarAdminUI()` (and so `AddStellarAdmin()`) adds a checkbox group model binder, a value provider and a global toast result filter to the MVC options for the whole app.
 - [ ] J38: `sa-toggle`, `sa-segmented-control`, `sa-checkbox-group` and `sa-radio-group` take `class-names` (`ToggleClassNames`, `SegmentedControlClassNames` and `ChoiceGroupClassNames`). Add them wherever the docs list each component's attributes.
 - [ ] J39: `sa-toggle-group` `spacing` takes `ToggleGroupSpacing` (`Default`, `None`, `Small`, `Large`) instead of a number. `spacing="0"` becomes `spacing="ToggleGroupSpacing.None"`. The slider docs should say a thumb label can't contain a comma.
+- [ ] J41: the checkbox group, segmented control and toggle group editors accept every `ClassNames` field part, not just `Control`. Remove any Control-only note from the editor docs.
 
 ## Order of work
 

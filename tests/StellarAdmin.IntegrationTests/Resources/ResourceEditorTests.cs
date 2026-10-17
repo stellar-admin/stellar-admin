@@ -36,24 +36,30 @@ public class ResourceEditorTests
     }
 
     [Test]
-    public async Task CheckboxGroupEditor_UnsupportedClassName_FailsRendering()
+    public async Task CheckboxGroupEditor_FieldClassNames_StyleFieldParts()
     {
         // Arrange
         var state = new RoleSelectionState();
         await using var sut = await CreateRoleSelectionHost(
             state,
-            classNames => classNames.Label = "role-label"
+            classNames =>
+            {
+                classNames.Label = "role-label";
+                classNames.Root = "role-root";
+            }
         );
         using var client = sut.GetTestClient();
 
         // Act
-        using var response = await client.GetAsync("/stellaradmin/products/edit/7");
+        var document = await client.GetDocumentAsync("/stellaradmin/products/edit/7");
 
         // Assert
-        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.InternalServerError);
         await Assert
-            .That(await response.Content.ReadAsStringAsync())
-            .Contains("Checkbox group editors support only Control");
+            .That(document.QuerySelectorAll("[data-slot='field'].role-root").Length)
+            .IsEqualTo(1);
+        await Assert
+            .That(document.QuerySelectorAll("[data-slot='field-label'].role-label").Length)
+            .IsEqualTo(1);
     }
 
     [Test]

@@ -5,7 +5,7 @@
     var emptySelected = ChoiceSelection.SelectsEmptyChoice(Model, ViewData.ModelState[Html.NameForModel()]);
 }
 
-<sa-segmented-control class="@EditorClassNamesMapper.ForSegmentedControl(Editor)" asp-for="@Model"
+<sa-segmented-control class-names="@EditorClassNamesMapper.ForSegmentedControl(Editor)" asp-for="@Model"
                       label="@Title" description="@Description" disabled="@IsReadOnly">
     @foreach (var choice in choices)
     {
