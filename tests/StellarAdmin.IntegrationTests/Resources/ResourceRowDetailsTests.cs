@@ -52,9 +52,9 @@ public class ResourceRowDetailsTests
                         {
                             details.RowClick = true;
                             details.ExpandMode = DataGridRowDetailExpandMode.Single;
-                            details.Emphasis = TableRowDetailEmphasis.Rail;
-                            details.Divider = TableRowDetailDivider.FullWidth;
-                            details.Inset = TableRowDetailInset.Bleed;
+                            details.Emphasis = DataGridRowDetailEmphasis.Rail;
+                            details.Divider = DataGridRowDetailDivider.FullWidth;
+                            details.Inset = DataGridRowDetailInset.Bleed;
                             details.Animate = false;
                             details.Toggle = DataGridRowDetailToggle.None;
                         }

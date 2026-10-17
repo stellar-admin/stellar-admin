@@ -24,9 +24,9 @@ public sealed class ResourceRowDetailsOptions
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the line. The default is
-    ///     <see cref="TableRowDetailDivider.Inset" />.
+    ///     <see cref="DataGridRowDetailDivider.Inset" />.
     /// </value>
-    public TableRowDetailDivider Divider { get; set; } = TableRowDetailDivider.Inset;
+    public DataGridRowDetailDivider Divider { get; set; } = DataGridRowDetailDivider.Inset;
 
     /// <summary>
     ///     Gets or sets how an expanded row and its details are set apart from the rows around
@@ -34,9 +34,9 @@ public sealed class ResourceRowDetailsOptions
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the emphasis. The default is
-    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    ///     <see cref="DataGridRowDetailEmphasis.Band" />.
     /// </value>
-    public TableRowDetailEmphasis Emphasis { get; set; } = TableRowDetailEmphasis.Band;
+    public DataGridRowDetailEmphasis Emphasis { get; set; } = DataGridRowDetailEmphasis.Band;
 
     /// <summary>
     ///     Gets or sets how many rows can be expanded at once.
@@ -53,9 +53,9 @@ public sealed class ResourceRowDetailsOptions
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies where the content starts. The default is
-    ///     <see cref="TableRowDetailInset.Aligned" />.
+    ///     <see cref="DataGridRowDetailInset.Aligned" />.
     /// </value>
-    public TableRowDetailInset Inset { get; set; } = TableRowDetailInset.Aligned;
+    public DataGridRowDetailInset Inset { get; set; } = DataGridRowDetailInset.Aligned;
 
     /// <summary>
     ///     Gets the content displayed in a row's details.

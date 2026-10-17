@@ -138,9 +138,9 @@ public partial class DataGridTagHelperTests
         {
             RowClick = true,
             ExpandMode = DataGridRowDetailExpandMode.Single,
-            Emphasis = TableRowDetailEmphasis.Rail,
-            Divider = TableRowDetailDivider.None,
-            Inset = TableRowDetailInset.Bleed,
+            Emphasis = DataGridRowDetailEmphasis.Rail,
+            Divider = DataGridRowDetailDivider.None,
+            Inset = DataGridRowDetailInset.Bleed,
             Animate = false,
         };
 

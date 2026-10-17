@@ -31,7 +31,7 @@ internal static class CustomerResourceRegistration
                     details =>
                     {
                         details.RowClick = true;
-                        details.Emphasis = TableRowDetailEmphasis.Rail;
+                        details.Emphasis = DataGridRowDetailEmphasis.Rail;
                     }
                 );
             });

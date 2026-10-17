@@ -32,9 +32,9 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the line. The default is
-    ///     <see cref="TableRowDetailDivider.Inset" />.
+    ///     <see cref="DataGridRowDetailDivider.Inset" />.
     /// </value>
-    public TableRowDetailDivider Divider
+    public DataGridRowDetailDivider Divider
     {
         set => Configure(options => options.Divider = value);
     }
@@ -44,9 +44,9 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the emphasis. The default is
-    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    ///     <see cref="DataGridRowDetailEmphasis.Band" />.
     /// </value>
-    public TableRowDetailEmphasis Emphasis
+    public DataGridRowDetailEmphasis Emphasis
     {
         set => Configure(options => options.Emphasis = value);
     }
@@ -68,9 +68,9 @@ public sealed class ResourceRowDetailsBuilder<TResource>
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies where the content starts. The default is
-    ///     <see cref="TableRowDetailInset.Aligned" />.
+    ///     <see cref="DataGridRowDetailInset.Aligned" />.
     /// </value>
-    public TableRowDetailInset Inset
+    public DataGridRowDetailInset Inset
     {
         set => Configure(options => options.Inset = value);
     }

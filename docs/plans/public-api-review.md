@@ -165,7 +165,7 @@ Done:
 - `sa-toggle-group` takes `multiple` (`bool?`, default false) instead of `type`. `ToggleGroupType` is removed. The admin panel's toggle group editor sets `multiple` for collections.
 - `sa-questionnaire-item` already had `multiple` as a `bool?`.
 - The table keeps `TableRowDetailExpandMode`, because its default is many rows. `sa-data-grid-row-detail` `expand-mode`, `ResourceRowDetailsOptions.ExpandMode` and `ResourceRowDetailsBuilder.ExpandMode` use a new `DataGridRowDetailExpandMode`.
-- The data grid row detail still borrows `TableRowDetailEmphasis`, `TableRowDetailDivider` and `TableRowDetailInset` from the table. That is a follow-up for Jerrie.
+- The data grid row detail and the admin panel row details options also take new `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` enums instead of the table's (Jerrie, 2026-10-17). All 1449 tests pass after that change.
 - A new test covers radios and checkboxes. The build is clean apart from older warnings, the skills have no drift, and all 1449 tests pass (2026-10-17).
 
 ### D8. Tabs and ToggleGroup values
@@ -703,7 +703,7 @@ Changes the website still needs:
 - [ ] D3: document `ISidebarItemsProvider` from the "Items from code" section of the admin panel skill's `references/sidebar.md`.
 - [ ] D5: `columns` on `sa-grid`, `sa-details`, `sa-radio-group` and `sa-checkbox-group` now sets the smallest width, and `columns-base` is gone. Change `columns="N"` to `columns-md="N"` and `columns-base` to `columns` in `grid.mdx`, `details.mdx`, `form-section.mdx`, the choice group pages and their API tables.
 - [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
-- [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` `expand-mode` and the admin panel row details `ExpandMode` take `DataGridRowDetailExpandMode`. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
+- [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

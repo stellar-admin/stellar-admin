@@ -10,9 +10,9 @@ namespace StellarAdmin.UI;
 internal sealed record TableRowDetailSettings(
     bool RowClick,
     string ExpandMode,
-    TableRowDetailEmphasis Emphasis,
-    TableRowDetailDivider Divider,
-    TableRowDetailInset Inset,
+    string Emphasis,
+    string Divider,
+    string Inset,
     bool Animate
 );
 
@@ -28,9 +28,9 @@ internal static class TableRowDetailRendering
     {
         yield return new("data-row-details", "");
         yield return new("data-expand-mode", settings.ExpandMode);
-        yield return new("data-emphasis", settings.Emphasis.GetDataAttributeText());
-        yield return new("data-divider", settings.Divider.GetDataAttributeText());
-        yield return new("data-inset", settings.Inset.GetDataAttributeText());
+        yield return new("data-emphasis", settings.Emphasis);
+        yield return new("data-divider", settings.Divider);
+        yield return new("data-inset", settings.Inset);
         yield return new("data-animate", settings.Animate ? "true" : "false");
         yield return new("data-row-click", settings.RowClick ? "true" : "false");
     }

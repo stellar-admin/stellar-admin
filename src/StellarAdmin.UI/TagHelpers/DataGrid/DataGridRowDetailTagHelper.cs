@@ -61,30 +61,30 @@ public sealed class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the emphasis. The default is
-    ///     <see cref="TableRowDetailEmphasis.Band" />.
+    ///     <see cref="DataGridRowDetailEmphasis.Band" />.
     /// </value>
     [HtmlAttributeName("emphasis")]
-    public TableRowDetailEmphasis? Emphasis { get; set; }
+    public DataGridRowDetailEmphasis? Emphasis { get; set; }
 
     /// <summary>
     ///     Gets or sets the line between an expanded row and its details.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies the line. The default is
-    ///     <see cref="TableRowDetailDivider.Inset" />.
+    ///     <see cref="DataGridRowDetailDivider.Inset" />.
     /// </value>
     [HtmlAttributeName("divider")]
-    public TableRowDetailDivider? Divider { get; set; }
+    public DataGridRowDetailDivider? Divider { get; set; }
 
     /// <summary>
     ///     Gets or sets where the content of a row's details starts.
     /// </summary>
     /// <value>
     ///     One of the enumeration values that specifies where the content starts. The default is
-    ///     <see cref="TableRowDetailInset.Aligned" />.
+    ///     <see cref="DataGridRowDetailInset.Aligned" />.
     /// </value>
     [HtmlAttributeName("inset")]
-    public TableRowDetailInset? Inset { get; set; }
+    public DataGridRowDetailInset? Inset { get; set; }
 
     /// <summary>
     ///     Gets or sets a value that indicates whether details animate open and closed.
@@ -154,9 +154,9 @@ public sealed class DataGridRowDetailTagHelper : StellarAdminTagHelperBase
             Settings = new TableRowDetailSettings(
                 RowClick ?? false,
                 (ExpandMode ?? DataGridRowDetailExpandMode.Multiple).GetDataAttributeText(),
-                Emphasis ?? TableRowDetailEmphasis.Band,
-                Divider ?? TableRowDetailDivider.Inset,
-                Inset ?? TableRowDetailInset.Aligned,
+                (Emphasis ?? DataGridRowDetailEmphasis.Band).GetDataAttributeText(),
+                (Divider ?? DataGridRowDetailDivider.Inset).GetDataAttributeText(),
+                (Inset ?? DataGridRowDetailInset.Aligned).GetDataAttributeText(),
                 Animate ?? true
             ),
             ExpandedKeys = (ExpandedKeys?.Cast<object?>() ?? [])

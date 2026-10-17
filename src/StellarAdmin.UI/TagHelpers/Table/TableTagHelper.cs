@@ -161,9 +161,9 @@ public sealed class TableTagHelper : StellarAdminTagHelperBase
             ? new TableRowDetailSettings(
                 RowClick ?? false,
                 (RowDetailExpandMode ?? TableRowDetailExpandMode.Multiple).GetDataAttributeText(),
-                RowDetailEmphasis ?? TableRowDetailEmphasis.Band,
-                RowDetailDivider ?? TableRowDetailDivider.Inset,
-                RowDetailInset ?? TableRowDetailInset.Aligned,
+                (RowDetailEmphasis ?? TableRowDetailEmphasis.Band).GetDataAttributeText(),
+                (RowDetailDivider ?? TableRowDetailDivider.Inset).GetDataAttributeText(),
+                (RowDetailInset ?? TableRowDetailInset.Aligned).GetDataAttributeText(),
                 RowDetailAnimate ?? true
             )
             : null;
