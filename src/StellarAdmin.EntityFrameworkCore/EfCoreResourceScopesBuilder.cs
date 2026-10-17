@@ -26,12 +26,30 @@ public sealed class EfCoreResourceScopesBuilder<TEntity>
     internal EfCoreResourceScopesBuilder(IServiceCollection services) => _services = services;
 
     /// <summary>
-    ///     Adds a named resource filter.
+    ///     Adds a named resource filter that shows every record.
+    /// </summary>
+    public EfCoreResourceScopesBuilder<TEntity> Add(string id, string title) =>
+        AddScope(id, title, null);
+
+    /// <summary>
+    ///     Adds a named resource filter that shows the records matching
+    ///     <paramref name="predicate" />.
     /// </summary>
     public EfCoreResourceScopesBuilder<TEntity> Add(
         string id,
         string title,
-        Expression<Func<TEntity, bool>>? predicate = null
+        Expression<Func<TEntity, bool>> predicate
+    )
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        return AddScope(id, title, predicate);
+    }
+
+    private EfCoreResourceScopesBuilder<TEntity> AddScope(
+        string id,
+        string title,
+        Expression<Func<TEntity, bool>>? predicate
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);

@@ -61,7 +61,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J26 | Make icon definitions immutable | Done (2026-10-17) |
 | J27 | Freeze `IconOptions` after startup | Done (2026-10-17) |
 | J28 | Align size and media enum member order | Done (2026-10-17) |
-| J29 | Replace optional parameters with overloads | |
+| J29 | Replace optional parameters with overloads | Done (2026-10-17) |
 | J30 | Fix `Enable*` return types and write the rule down | |
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | |
 | J32 | Configure menu and forms options the same way | |
@@ -439,6 +439,14 @@ Done (2026-10-17):
 - `SliderEditor.AddMark(..., label = null)`.
 - `SidebarLinkTarget.Action(..., area = null)` and `Page(..., area = null)`.
 - `ToastNotifierExtensions.Success/Info/Warning/Error(..., description = null)`.
+
+Done (2026-10-17):
+
+- Each method is now two overloads, one without the last parameter and one where it is required and non-nullable.
+- The longer overloads throw `ArgumentNullException` for a null `configure`, `predicate`, `label` or `description`, and `ArgumentException` for a null or blank `area`.
+- `ResourceController` built the inline-row created toast with a description that can be null, so it now adds the `Toast` directly.
+- Tests cover the null arguments and both overloads of `AddMark` and the toast shortcuts.
+- Verified with the full test run (1421 passed) and a skills drift check. The website needs no change.
 
 ### J30. Enable* return types
 

@@ -59,12 +59,24 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     internal IReadOnlyList<SliderEditorMark> Marks => _marks;
 
     /// <summary>
-    ///     Adds a mark at a value, optionally labelled. Added marks replace the marks generated from
+    ///     Adds an unlabelled mark at a value. Added marks replace the marks generated from
     ///     <see cref="MarkInterval" /> and <see cref="MarkLabels" />.
     /// </summary>
     /// <param name="value">The value to mark, between the slider's bounds.</param>
-    /// <param name="label">The text shown under the mark, or null for a tick alone.</param>
-    public void AddMark(double value, string? label = null) => _marks.Add(new(value, label));
+    public void AddMark(double value) => _marks.Add(new(value, null));
+
+    /// <summary>
+    ///     Adds a labelled mark at a value. Added marks replace the marks generated from
+    ///     <see cref="MarkInterval" /> and <see cref="MarkLabels" />.
+    /// </summary>
+    /// <param name="value">The value to mark, between the slider's bounds.</param>
+    /// <param name="label">The text shown under the mark.</param>
+    public void AddMark(double value, string label)
+    {
+        ArgumentNullException.ThrowIfNull(label);
+
+        _marks.Add(new(value, label));
+    }
 
     internal SliderAttributes ResolveAttributes(ModelMetadata metadata)
     {

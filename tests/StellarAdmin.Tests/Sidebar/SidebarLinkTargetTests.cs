@@ -38,6 +38,18 @@ public class SidebarLinkTargetTests
     }
 
     [Test]
+    public async Task Action_WithNullArea_ThrowsArgumentNullException()
+    {
+        // Arrange
+
+        // Act
+        Action act = () => SidebarLinkTarget.Action("Index", "Reports", null!);
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentNullException>();
+    }
+
+    [Test]
     [Arguments("")]
     [Arguments(" ")]
     public async Task Page_WithBlankArea_ThrowsArgumentException(string area)
@@ -63,6 +75,18 @@ public class SidebarLinkTargetTests
 
         // Assert
         await Assert.That(act).Throws<ArgumentException>();
+    }
+
+    [Test]
+    public async Task Page_WithNullArea_ThrowsArgumentNullException()
+    {
+        // Arrange
+
+        // Act
+        Action act = () => SidebarLinkTarget.Page("/Reports/Index", null!);
+
+        // Assert
+        await Assert.That(act).Throws<ArgumentNullException>();
     }
 
     [Test]

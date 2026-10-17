@@ -8,31 +8,57 @@ public abstract class SidebarLinkTarget
     private protected SidebarLinkTarget() { }
 
     /// <summary>
-    ///     Returns a target for an MVC controller action.
+    ///     Returns a target for an MVC controller action outside any area.
     /// </summary>
     /// <param name="action">The action name.</param>
     /// <param name="controller">The controller name.</param>
-    /// <param name="area">The area name, or <c>null</c> for an action outside any area.</param>
     /// <exception cref="ArgumentException"></exception>
-    public static SidebarLinkTarget Action(string action, string controller, string? area = null)
+    public static SidebarLinkTarget Action(string action, string controller)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(action);
         ArgumentException.ThrowIfNullOrWhiteSpace(controller);
-        ValidateArea(area);
+
+        return new ActionTarget(action, controller, null);
+    }
+
+    /// <summary>
+    ///     Returns a target for an MVC controller action in an area.
+    /// </summary>
+    /// <param name="action">The action name.</param>
+    /// <param name="controller">The controller name.</param>
+    /// <param name="area">The area name.</param>
+    /// <exception cref="ArgumentException"></exception>
+    public static SidebarLinkTarget Action(string action, string controller, string area)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(action);
+        ArgumentException.ThrowIfNullOrWhiteSpace(controller);
+        ArgumentException.ThrowIfNullOrWhiteSpace(area);
 
         return new ActionTarget(action, controller, area);
     }
 
     /// <summary>
-    ///     Returns a target for a Razor Page.
+    ///     Returns a target for a Razor Page outside any area.
     /// </summary>
     /// <param name="page">The page name, e.g. <c>/Reports/Index</c>.</param>
-    /// <param name="area">The area name, or <c>null</c> for a page outside any area.</param>
     /// <exception cref="ArgumentException"></exception>
-    public static SidebarLinkTarget Page(string page, string? area = null)
+    public static SidebarLinkTarget Page(string page)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(page);
-        ValidateArea(area);
+
+        return new PageTarget(page, null);
+    }
+
+    /// <summary>
+    ///     Returns a target for a Razor Page in an area.
+    /// </summary>
+    /// <param name="page">The page name, e.g. <c>/Reports/Index</c>.</param>
+    /// <param name="area">The area name.</param>
+    /// <exception cref="ArgumentException"></exception>
+    public static SidebarLinkTarget Page(string page, string area)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(page);
+        ArgumentException.ThrowIfNullOrWhiteSpace(area);
 
         return new PageTarget(page, area);
     }
@@ -47,14 +73,6 @@ public abstract class SidebarLinkTarget
         ArgumentException.ThrowIfNullOrWhiteSpace(url);
 
         return new UrlTarget(url);
-    }
-
-    private static void ValidateArea(string? area)
-    {
-        if (area is not null)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(area);
-        }
     }
 
     internal abstract SidebarLinkItemBase CreateItem(string label);

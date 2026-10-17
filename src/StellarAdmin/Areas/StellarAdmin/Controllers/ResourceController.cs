@@ -1499,7 +1499,14 @@ internal sealed class ResourceController<TResource>(
         var toasts = HttpContext.RequestServices.GetRequiredService<IToastNotifier>();
         if (createdMessage is not null)
         {
-            toasts.Success(createdMessage, notShown);
+            toasts.Add(
+                new Toast
+                {
+                    Title = createdMessage,
+                    Description = notShown,
+                    Type = ToastType.Success,
+                }
+            );
         }
         else if (notShown is not null)
         {
