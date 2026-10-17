@@ -62,7 +62,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | J27 | Freeze `IconOptions` after startup | Done (2026-10-17) |
 | J28 | Align size and media enum member order | Done (2026-10-17) |
 | J29 | Replace optional parameters with overloads | Done (2026-10-17) |
-| J30 | Fix `Enable*` return types and write the rule down | |
+| J30 | Fix `Enable*` return types and write the rule down | Done (2026-10-17) |
 | J31 | Make the core `LookupItemsBuilder` fluent, like the EF Core one | |
 | J32 | Configure menu and forms options the same way | |
 | J33 | Fix small builder naming issues | |
@@ -451,6 +451,11 @@ Done (2026-10-17):
 ### J30. Enable* return types
 
 A lambda that supplies required data (panels, scopes, a search predicate) returns the sub-builder. A lambda that only configures returns the parent. `EnableScopes` changes to match, and the rule goes into `docs/conventions/options-builders.md`.
+
+Done (2026-10-17):
+
+- No code changed. Every `Enable*` method already returns the feature's builder without a `configure` callback and the parent builder with one, including `EnableScopes`.
+- The registration rule in `docs/conventions/options-builders.md` now covers `Enable*` as well as `Add*`, and says a lambda that supplies required data, such as `EnableRowDetails(panels)`, is not a `configure` callback.
 
 ### J31. Core LookupItemsBuilder
 
