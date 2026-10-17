@@ -65,25 +65,13 @@ public abstract class FieldEditorView<TEditor> : RazorPage<object?>
 
     private TEditor ResolveEditor()
     {
-        switch (Field?.Editor)
+        return Field?.Editor switch
         {
-            case TEditor editor:
-                return editor;
-            case null:
-                return new TEditor();
-        }
-
-        if (Field.Editor.GetType() != typeof(FieldEditor))
-        {
-            throw new InvalidOperationException(
-                $"{Field.Editor.GetType().Name} is not supported by a template for {typeof(TEditor).Name}."
-            );
-        }
-
-        // A field without a selected editor can still carry class names
-        var defaults = new TEditor();
-        Field.Editor.ClassNames.CopyTo(defaults.ClassNames);
-
-        return defaults;
+            TEditor editor => editor,
+            null => new TEditor(),
+            var other => throw new InvalidOperationException(
+                $"{other.GetType().Name} is not supported by a template for {typeof(TEditor).Name}."
+            ),
+        };
     }
 }

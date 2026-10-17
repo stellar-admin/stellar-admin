@@ -23,6 +23,9 @@ public sealed class LookupSheetEditor
     /// </value>
     public LookupItems? Items { get; private set; }
 
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/LookupSheet";
+
     internal bool CreateEnabled { get; private set; }
 
     internal Type? CreateResourceType { get; private set; }

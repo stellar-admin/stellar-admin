@@ -7,7 +7,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a checkbox group editor for a collection property.
 /// </summary>
-public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGroupEditorHandler>
+public sealed class CheckboxGroupEditor : ChoiceEditor
 {
     /// <summary>
     ///     Gets or sets how the choices are displayed.
@@ -26,6 +26,9 @@ public sealed class CheckboxGroupEditor : ChoiceEditor, IFieldEditor<CheckboxGro
     ///     columns. The default is <see cref="CheckboxGroupFlow.Across" />.
     /// </value>
     public CheckboxGroupFlow Flow { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/CheckboxGroup";
 
     internal FormGridColumnDefinitions? ColumnDefinitions { get; private set; }
 

@@ -38,7 +38,6 @@ internal static class GridEditorRenderer
         }
 
         object? editorData = null;
-        string[] templateNames;
         if (field.HandlerType is { } handlerType)
         {
             var handler = (IFieldEditorHandler)
@@ -52,12 +51,11 @@ internal static class GridEditorRenderer
                 context,
                 viewContext.HttpContext.RequestAborted
             );
-            templateNames = [handler.TemplateName];
         }
-        else
-        {
-            templateNames = GetTemplateNames(explorer.Metadata).ToArray();
-        }
+
+        var templateNames = field.Editor is { } editor
+            ? [editor.TemplateName]
+            : GetTemplateNames(explorer.Metadata).ToArray();
 
         var view = FindView(services, viewContext, templateNames);
         if (view is null)

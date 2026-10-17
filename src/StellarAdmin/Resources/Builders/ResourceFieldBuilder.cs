@@ -141,7 +141,7 @@ public sealed class ResourceFieldBuilder
     ///     <paramref name="configure" /> is <see langword="null" />.
     /// </exception>
     public ResourceFieldBuilder UseEditor<TEditor>(Action<TEditor> configure)
-        where TEditor : FieldEditor, IFieldEditor, new()
+        where TEditor : FieldEditor, new()
     {
         ArgumentNullException.ThrowIfNull(configure);
 
@@ -149,8 +149,11 @@ public sealed class ResourceFieldBuilder
         {
             var editor = new TEditor();
             configure(editor);
-            var handlerType = editor.HandlerType;
-            if (!typeof(IFieldEditorHandler<TEditor>).IsAssignableFrom(handlerType))
+            var handlerType = (editor as IFieldEditor)?.HandlerType;
+            if (
+                handlerType is not null
+                && !typeof(IFieldEditorHandler<TEditor>).IsAssignableFrom(handlerType)
+            )
             {
                 throw new InvalidOperationException(
                     $"{handlerType.Name} must implement IFieldEditorHandler<{typeof(TEditor).Name}>."
@@ -170,7 +173,7 @@ public sealed class ResourceFieldBuilder
     /// <typeparam name="TEditor">The type of the editor.</typeparam>
     /// <returns>The builder, so that calls can be chained.</returns>
     public ResourceFieldBuilder UseEditor<TEditor>()
-        where TEditor : FieldEditor, IFieldEditor, new() => UseEditor<TEditor>(_ => { });
+        where TEditor : FieldEditor, new() => UseEditor<TEditor>(_ => { });
 
     internal FormFieldOptions Build()
     {

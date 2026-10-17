@@ -20,7 +20,11 @@ public sealed class FormFieldOptions : FormItemOptions
     /// <summary>
     ///     Gets the editor that renders the field.
     /// </summary>
-    public FieldEditor Editor { get; internal set; } = new();
+    /// <value>
+    ///     The editor, or <see langword="null" /> to render the editor template for the property's
+    ///     type.
+    /// </value>
+    public FieldEditor? Editor { get; internal set; }
 
     /// <summary>
     ///     Gets the expression that selects the property the field edits.

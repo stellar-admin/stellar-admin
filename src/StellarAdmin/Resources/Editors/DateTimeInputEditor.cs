@@ -11,9 +11,7 @@ namespace StellarAdmin.Resources.Editors;
 ///     <see cref="TemporalInputEditor{TValue}.Min" /> and
 ///     <see cref="TemporalInputEditor{TValue}.Max" />.
 /// </remarks>
-public sealed class DateTimeInputEditor
-    : TemporalInputEditor<DateTime>,
-        IFieldEditor<DateTimeInputEditorHandler>
+public sealed class DateTimeInputEditor : TemporalInputEditor<DateTime>
 {
     /// <summary>
     ///     Gets or sets the interval between accepted times.
@@ -23,6 +21,9 @@ public sealed class DateTimeInputEditor
     ///     <see langword="null" />.
     /// </value>
     public TimeSpan? Step { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/DateTimeInput";
 
     internal override TemporalInputAttributes ResolveAttributes(ModelMetadata metadata)
     {

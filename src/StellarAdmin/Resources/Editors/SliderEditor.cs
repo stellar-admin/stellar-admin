@@ -11,7 +11,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <remarks>
 ///     Bounds left unset come from the property's <see cref="RangeAttribute" />.
 /// </remarks>
-public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler>
+public sealed class SliderEditor : FieldEditor
 {
     private readonly List<SliderEditorMark> _marks = [];
 
@@ -78,6 +78,9 @@ public sealed class SliderEditor : FieldEditor, IFieldEditor<SliderEditorHandler
     ///     The interval, or <see langword="null" /> for 1. The default is <see langword="null" />.
     /// </value>
     public double? Step { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/Slider";
 
     /// <summary>
     ///     Gets or sets how values are displayed.

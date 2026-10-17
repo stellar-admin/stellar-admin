@@ -188,9 +188,18 @@ To change a built-in editor's markup everywhere, add `Areas/StellarAdmin/Views/S
 
 For a new editor:
 
-1. A settings class deriving from `FieldEditor` and implementing `IFieldEditor<MyEditorHandler>`.
-2. A handler deriving from `FieldEditorHandler<MyEditor>` (or implementing `IFieldEditorHandler<MyEditor>`), taking the editor and any services in its constructor. `TemplateName` names the editor template; `PrepareAsync(FieldEditorContext context, CancellationToken cancellationToken)` can load request data.
-3. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It inherits `FieldEditorView<MyEditor>` (`@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<MyEditor>`), reads the typed settings from `Editor` and prepared data from `EditorData`, and renders inputs with `asp-for` on the model. `Title`, `Description`, `IsReadOnly` and `CellErrorId` are also available.
-4. `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { ... })`.
+1. A settings class deriving from `FieldEditor` that names its template with `public override string TemplateName => "MyEditor";`.
+2. A template at `Views/Shared/EditorTemplates/{TemplateName}.cshtml` (or under `Areas/StellarAdmin/Views/Shared/`). It inherits `FieldEditorView<MyEditor>` (`@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<MyEditor>`), reads the typed settings from `Editor`, and renders inputs with `asp-for` on the model. `Title`, `Description`, `IsReadOnly` and `CellErrorId` are also available.
+3. `fields.Add(model => model.Property).UseEditor<MyEditor>(editor => { ... })`.
+
+```csharp
+public sealed class ColorEditor : FieldEditor
+{
+    public override string TemplateName => "Color";
+    public bool AllowAlpha { get; set; }
+}
+```
+
+An editor that needs request data also implements `IFieldEditor<THandler>`. The handler derives from `FieldEditorHandler<TEditor>` (or implements `IFieldEditorHandler<TEditor>`), takes the editor and any services in its constructor, and returns data from `PrepareAsync(FieldEditorContext context, CancellationToken cancellationToken)`; the template reads it as `EditorData`.
 
 Write the template's markup with `sa-*` components (stellar-admin-ui skill). For the editor to work in an inline row's cell, add a second template under `GridEditorTemplates/` ([inline editing](inline-editing.md#editors-in-cells)).

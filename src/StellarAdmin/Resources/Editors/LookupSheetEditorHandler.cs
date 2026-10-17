@@ -9,9 +9,6 @@ public sealed class LookupSheetEditorHandler(LookupSheetEditor editor, IServiceP
     : FieldEditorHandler<LookupSheetEditor>(editor)
 {
     /// <inheritdoc />
-    public override string TemplateName => "Editors/LookupSheet";
-
-    /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
     ///     <c>UseItems</c> wasn't called on the editor.
     /// </exception>

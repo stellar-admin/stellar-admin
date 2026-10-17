@@ -27,6 +27,9 @@ public sealed class MultiLookupSheetEditor
     /// </value>
     public LookupItems? Items { get; private set; }
 
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/MultiLookupSheet";
+
     internal bool CreateEnabled { get; private set; }
 
     internal Type? CreateResourceType { get; private set; }

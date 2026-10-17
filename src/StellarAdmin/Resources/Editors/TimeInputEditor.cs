@@ -5,9 +5,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a time of day input editor.
 /// </summary>
-public sealed class TimeInputEditor
-    : TemporalInputEditor<TimeOnly>,
-        IFieldEditor<TimeInputEditorHandler>
+public sealed class TimeInputEditor : TemporalInputEditor<TimeOnly>
 {
     /// <summary>
     ///     Gets or sets the interval between accepted times.
@@ -17,6 +15,9 @@ public sealed class TimeInputEditor
     ///     <see langword="null" />.
     /// </value>
     public TimeSpan? Step { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/TimeInput";
 
     internal override TemporalInputAttributes ResolveAttributes(ModelMetadata metadata) =>
         new(

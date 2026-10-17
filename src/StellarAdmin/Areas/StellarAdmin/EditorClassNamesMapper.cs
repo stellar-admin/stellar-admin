@@ -7,11 +7,7 @@ internal static class EditorClassNamesMapper
 {
     public static ChoiceGroupClassNames ForCheckboxGroup(FieldEditor? editor)
     {
-        if (
-            editor is not null
-            && editor.GetType() != typeof(FieldEditor)
-            && editor is not CheckboxGroupEditor
-        )
+        if (editor is not null && editor is not CheckboxGroupEditor)
         {
             throw new InvalidOperationException(
                 $"{editor.GetType().Name} is not supported by a checkbox group editor."
@@ -50,7 +46,6 @@ internal static class EditorClassNamesMapper
 
     public static InputClassNames ForInput(FieldEditor? editor)
     {
-        ValidateScalar(editor);
         var classes = editor?.ClassNames;
 
         return new InputClassNames
@@ -81,11 +76,7 @@ internal static class EditorClassNamesMapper
 
     public static RadioGroupEditorClassNames ForRadio(FieldEditor? editor)
     {
-        if (
-            editor is not null
-            && editor.GetType() != typeof(FieldEditor)
-            && editor is not RadioGroupEditor
-        )
+        if (editor is not null && editor is not RadioGroupEditor)
         {
             throw new InvalidOperationException(
                 $"{editor.GetType().Name} is not supported by a radio editor."
@@ -112,7 +103,6 @@ internal static class EditorClassNamesMapper
 
     public static SelectClassNames ForSelect(FieldEditor? editor)
     {
-        ValidateScalar(editor);
         var classes = editor?.ClassNames;
 
         return new SelectClassNames
@@ -161,7 +151,6 @@ internal static class EditorClassNamesMapper
 
     public static TextareaClassNames ForTextarea(FieldEditor? editor)
     {
-        ValidateScalar(editor);
         var classes = editor?.ClassNames;
 
         return new TextareaClassNames
@@ -203,19 +192,5 @@ internal static class EditorClassNamesMapper
             Label = classes.Label,
             Root = classes.Root,
         };
-    }
-
-    private static void ValidateScalar(FieldEditor? editor)
-    {
-        if (
-            editor is not null
-            && editor.GetType() != typeof(FieldEditor)
-            && editor is not IFieldEditor
-        )
-        {
-            throw new InvalidOperationException(
-                $"{editor.GetType().Name} requires a compatible editor template. Scalar editors, including flags-enum text fallbacks, accept FieldEditor."
-            );
-        }
     }
 }

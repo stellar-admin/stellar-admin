@@ -20,9 +20,9 @@ public sealed record FormFieldProperties
     public object? EditorData { get; init; }
 
     /// <summary>
-    ///     Gets the editor's settings.
+    ///     Gets the editor's settings, or <see langword="null" /> when the field has no editor.
     /// </summary>
-    public FieldEditor Editor { get; init; } = new();
+    public FieldEditor? Editor { get; init; }
 
     /// <summary>
     ///     Gets the property path of the field, or <see langword="null" /> when the editor isn't

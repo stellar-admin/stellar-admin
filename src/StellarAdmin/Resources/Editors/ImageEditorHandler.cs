@@ -9,9 +9,6 @@ public sealed class ImageEditorHandler(ImageEditor editor, IServiceProvider serv
     : FieldEditorHandler<ImageEditor>(editor)
 {
     /// <inheritdoc />
-    public override string TemplateName => "Editors/Image";
-
-    /// <inheritdoc />
     public override async Task<object?> PrepareAsync(
         FieldEditorContext context,
         CancellationToken cancellationToken

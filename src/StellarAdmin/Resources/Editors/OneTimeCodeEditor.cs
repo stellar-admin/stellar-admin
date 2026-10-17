@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a one-time code editor that shows one box per digit.
 /// </summary>
-public sealed class OneTimeCodeEditor : FieldEditor, IFieldEditor<OneTimeCodeEditorHandler>
+public sealed class OneTimeCodeEditor : FieldEditor
 {
     /// <summary>
     ///     Gets or sets the number of digits.
@@ -19,6 +19,9 @@ public sealed class OneTimeCodeEditor : FieldEditor, IFieldEditor<OneTimeCodeEdi
     ///     A property without a maximum length gets 6 digits.
     /// </remarks>
     public int? Length { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/OneTimeCode";
 
     internal int ResolveLength(ModelMetadata metadata)
     {

@@ -25,7 +25,7 @@ This file is the only tracker. Sub-points go into the item they belong to, never
 | D7 | How to say "single or multiple"? | `multiple` as a `bool?`, like `<select multiple>`. | `multiple` on ToggleGroup. The table and data grid keep an expand-mode enum each. Done (2026-10-17) |
 | D8 | Tabs `selected` and a group `value` on ToggleGroup? | Rename the Tabs attribute to `value`. Add `value` to ToggleGroup. | Rename it to `value`. ToggleGroup gets `value` for one selection and `values` with `multiple`. Done (2026-10-17) |
 | D9 | How should EF `UseItems` take its types? | A set selector, so the types are inferred: `UseItems((AppDbContext db) => db.Customers, c => c.Id, c => c.Name)`. | Keep the explicit type arguments. No change (2026-10-17) |
-| D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | |
+| D10 | Make custom editors work like custom displays? | Yes. Make `FieldEditor` abstract, make the handler optional and put `TemplateName` on the editor. | Yes, mirror displays. Done (2026-10-17) |
 | D11 | Which client contracts are stable? | Stable: the CSS layer order, `window.stellarAdmin.toast` and the `SA-Toasts` header. Not stable: `sel-*` element names and the checkbox field prefix. | |
 | D12 | Replace the row details loader delegate with a class? | Yes. A small abstract `RowDetailsLoader` with `LoadAsync(services, key, cancellationToken)`. | |
 
@@ -194,6 +194,19 @@ Reasoning:
 ### D10. Custom editors vs custom displays
 
 Custom editors are documented in `skills/stellar-admin/references/editors.md`. Today `FieldEditor` is a concrete class with a public constructor, needs a handler, and has `TemplateName` on the handler. `FieldDisplay` is abstract, its handler is optional, and `TemplateName` is on the display.
+
+History (researched 2026-10-17): no recorded reason put `TemplateName` on the handler. The first typed editor, `ResourceEditor` (`9685c9c`), held settings, `TemplateName` and `PrepareAsync` together. Splitting it into options and a DI-activated runtime editor (`9031ef2`) moved `TemplateName` to the runtime side with `PrepareAsync`, and the field editor catalog rename (`d7491cf`) kept it there. Displays, designed later, put `TemplateName` on the display. Every built-in handler returned a constant, so none chose its template from request data.
+
+Done:
+- `FieldEditor` is abstract with `public abstract string TemplateName { get; }`, documented like `FieldDisplay.TemplateName`.
+- The handler is optional: an editor implements `IFieldEditor<THandler>` only when its template needs request data. `UseEditor<TEditor>` requires only `FieldEditor, new()`.
+- `TemplateName` is removed from `IFieldEditorHandler` and `FieldEditorHandler<TEditor>`. `FieldEditorHandler<TEditor>.PrepareAsync` is abstract, like the display handler's. `IFieldEditorHandler<in TEditor>` is contravariant, so one handler can serve a family of editors.
+- The nine handlers that only named a template are deleted (text input, textarea, checkbox, toggle, date, date-time, time, slider, one-time code).
+- `ChoiceEditorHandler<TEditor>` and its five subclasses are replaced by one sealed `ChoiceEditorHandler` that `ChoiceEditor` names, so select, radio group, checkbox group, segmented control and toggle group need no handler of their own.
+- The image and lookup sheet handlers keep `PrepareAsync`. Their editors now name the template.
+- `FormFieldOptions.Editor` and `FormFieldProperties.Editor` are nullable. Null means the field has no editor and renders the template for the property's type. This replaces the plain `new FieldEditor()` placeholder, which no API could give class names any more. `FieldEditorView` creates a default `TEditor` for null, and the class names mapper's scalar check, which only accepted the placeholder or an `IFieldEditor`, is removed.
+- `editors.md` describes the two-step custom editor with an optional handler.
+- A new integration test covers a custom editor without a handler. The resource builder test now gives its field an editor so it still checks that editors are not shared between providers. The skills have no drift, validation passes, and all 1456 tests pass (2026-10-17).
 
 ### D11. Client contracts
 
@@ -720,6 +733,7 @@ Changes the website still needs:
 - [ ] D6: `position="PositionArea.X"` is replaced by `side` and `align` on `sa-popover`, `sa-tooltip`, `sa-dropdown-menu-content` and `sa-dropdown-menu-sub-content`, with per-component enums such as `PopoverSide` and `PopoverAlign`. `XSpanRight` or `XSpanBottom` → `Start`, `XSpanLeft` or `XSpanTop` → `End`, `X` → `Center`, `XCenter` → `CenterWithin`. The corner values are gone. Affects `popover.mdx`, `tooltip.mdx`, `dropdown-menu.mdx`, the sidebar pages and their API tables.
 - [ ] D7: `sa-toggle-group` `type="ToggleGroupType.Multiple"` → `multiple="true"`, and `type="ToggleGroupType.Single"` is dropped. `sa-data-grid-row-detail` and the admin panel row details take `DataGridRowDetailExpandMode`, `DataGridRowDetailEmphasis`, `DataGridRowDetailDivider` and `DataGridRowDetailInset` instead of the `TableRowDetail*` enums. Affects `toggle-group.mdx`, `data-grid.mdx`, the admin panel index page docs and their API tables.
 - [ ] D8: `sa-tabs` `selected` → `value`. `sa-toggle-group` gains `value` and `values`; examples set the group value instead of `selected` on items. Affects `tabs.mdx`, `toggle-group.mdx` and their API tables.
+- [ ] D10: custom editors derive from the abstract `FieldEditor` and override `TemplateName`; the handler (`IFieldEditor<THandler>`) is only for request data. Affects any website page on custom admin panel editors.
 - [ ] J40: the public XML docs were rewritten and many skill reference defaults changed. Regenerate the API reference and the attribute tables from the new docs.
 
 ## Order of work

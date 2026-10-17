@@ -29,7 +29,7 @@ public class ResourceReferenceTests
             category => category.Name,
             items => items.OrderBy(category => category.Name)
         );
-        var handler = new CheckboxGroupEditorHandler(editor, scope.ServiceProvider);
+        var handler = new ChoiceEditorHandler(editor, scope.ServiceProvider);
         var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
 
         // Act
@@ -62,7 +62,7 @@ public class ResourceReferenceTests
                     .UseDescription(category => category.Name + " supplies")
                     .UseGroup(category => category.Id == 2 ? "Food" : null)
         );
-        var handler = new RadioGroupEditorHandler(editor, scope.ServiceProvider);
+        var handler = new ChoiceEditorHandler(editor, scope.ServiceProvider);
         var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
 
         // Act
@@ -116,7 +116,7 @@ public class ResourceReferenceTests
                 }
             }
         );
-        var handler = new RadioGroupEditorHandler(editor, scope.ServiceProvider);
+        var handler = new ChoiceEditorHandler(editor, scope.ServiceProvider);
         var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
 
         // Act
@@ -150,7 +150,7 @@ public class ResourceReferenceTests
             category => category.Name,
             items => items.OrderBy(category => category.Id)
         );
-        var handler = new SelectEditorHandler(editor, scope.ServiceProvider);
+        var handler = new ChoiceEditorHandler(editor, scope.ServiceProvider);
         var context = new FieldEditorContext(nameof(Product.CategoryId), new Product(), null);
         var previousCulture = CultureInfo.CurrentCulture;
         CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");

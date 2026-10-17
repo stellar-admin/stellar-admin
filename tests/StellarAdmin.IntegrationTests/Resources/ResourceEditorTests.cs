@@ -276,6 +276,35 @@ public class ResourceEditorTests
     }
 
     [Test]
+    public async Task CustomEditor_WithoutHandler_RendersTemplateWithoutEditorData()
+    {
+        // Arrange
+        await using var sut = await StellarAdminTestHost.CreateAsync(
+            new([]),
+            resource =>
+                resource.AllowCreate<CreateProductModel, CreateProductHandler>(create =>
+                {
+                    create.UseFactory(() => new(10m));
+                    create.Fields(fields =>
+                        fields
+                            .Add(model => model.ProductName)
+                            .UseEditor<ProductCodeEditor>(options => options.Prefix = "VT-")
+                    );
+                })
+        );
+        using var client = sut.GetTestClient();
+
+        // Act
+        var document = await client.GetDocumentAsync("/stellaradmin/products/create");
+
+        // Assert
+        var input = document.RequiredElement("input[data-custom-editor='product-code']");
+        await Assert.That(input.GetAttribute("name")).IsEqualTo("Entity.ProductName");
+        await Assert.That(input.GetAttribute("data-prefix")).IsEqualTo("VT-");
+        await Assert.That(input.GetAttribute("data-has-editor-data")).IsEqualTo("False");
+    }
+
+    [Test]
     public async Task CustomEditor_CreatePage_ReceivesFactoryValue()
     {
         // Arrange

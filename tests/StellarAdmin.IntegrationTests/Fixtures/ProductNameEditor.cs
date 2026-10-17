@@ -5,4 +5,6 @@ namespace StellarAdmin.IntegrationTests.Fixtures;
 public sealed class ProductNameEditor : FieldEditor, IFieldEditor<ProductNameEditorHandler>
 {
     public string Placeholder { get; set; } = "";
+
+    public override string TemplateName => nameof(ProductNameEditor);
 }

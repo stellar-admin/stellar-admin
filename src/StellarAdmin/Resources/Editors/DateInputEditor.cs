@@ -6,9 +6,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a date input editor.
 /// </summary>
-public sealed class DateInputEditor
-    : TemporalInputEditor<DateOnly>,
-        IFieldEditor<DateInputEditorHandler>
+public sealed class DateInputEditor : TemporalInputEditor<DateOnly>
 {
     /// <summary>
     ///     Gets or sets the number of days between accepted dates.
@@ -18,6 +16,9 @@ public sealed class DateInputEditor
     ///     <see langword="null" />.
     /// </value>
     public int? Step { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/DateInput";
 
     internal override TemporalInputAttributes ResolveAttributes(ModelMetadata metadata) =>
         new(

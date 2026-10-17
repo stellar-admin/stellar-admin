@@ -7,7 +7,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a radio group editor.
 /// </summary>
-public sealed class RadioGroupEditor : ChoiceEditor, IFieldEditor<RadioGroupEditorHandler>
+public sealed class RadioGroupEditor : ChoiceEditor
 {
     /// <summary>
     ///     Gets or sets how the choices are displayed.
@@ -31,6 +31,9 @@ public sealed class RadioGroupEditor : ChoiceEditor, IFieldEditor<RadioGroupEdit
     ///     Gets the additional CSS classes for the parts of the editor and its choices.
     /// </summary>
     public override RadioGroupEditorClassNames ClassNames { get; } = new();
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/RadioGroup";
 
     internal FormGridColumnDefinitions? ColumnDefinitions { get; private set; }
 

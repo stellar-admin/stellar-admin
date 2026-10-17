@@ -6,7 +6,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <remarks>
 ///     A collection property selects several values. Any other property selects one.
 /// </remarks>
-public sealed class ToggleGroupEditor : ChoiceEditor, IFieldEditor<ToggleGroupEditorHandler>
+public sealed class ToggleGroupEditor : ChoiceEditor
 {
     /// <summary>
     ///     Gets or sets how the choices are displayed.
@@ -28,4 +28,7 @@ public sealed class ToggleGroupEditor : ChoiceEditor, IFieldEditor<ToggleGroupEd
     ///     Only <see cref="ToggleGroupAppearance.Chips" /> shows a check mark.
     /// </remarks>
     public ToggleGroupCheckPlacement CheckPlacement { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/ToggleGroup";
 }

@@ -8,8 +8,6 @@ public sealed class ProductNameEditorHandler(
     IWebHostEnvironment environment
 ) : IFieldEditorHandler<ProductNameEditor>
 {
-    public string TemplateName => nameof(ProductNameEditor);
-
     public Task<object?> PrepareAsync(
         FieldEditorContext context,
         CancellationToken cancellationToken

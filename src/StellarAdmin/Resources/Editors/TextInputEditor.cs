@@ -9,7 +9,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <remarks>
 ///     Settings left unset are inferred from the property.
 /// </remarks>
-public sealed class TextInputEditor : FieldEditor, IFieldEditor<TextInputEditorHandler>
+public sealed class TextInputEditor : FieldEditor
 {
     /// <summary>
     ///     Gets or sets the largest number a number input accepts.
@@ -55,6 +55,9 @@ public sealed class TextInputEditor : FieldEditor, IFieldEditor<TextInputEditorH
     ///     Gets or sets the text displayed after the input, such as a unit.
     /// </summary>
     public string? Suffix { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/TextInput";
 
     /// <summary>
     ///     Gets or sets the kind of value the input accepts.

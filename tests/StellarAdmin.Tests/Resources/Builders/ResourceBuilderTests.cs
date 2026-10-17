@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StellarAdmin.Resources;
+using StellarAdmin.Resources.Editors;
 using StellarAdmin.Resources.Options;
 
 namespace StellarAdmin.Tests.Resources.Builders;
@@ -52,7 +53,9 @@ public partial class ResourceBuilderTests
                     "Details",
                     section =>
                         section.AddGroup(outer =>
-                            outer.AddGroup(group => group.Add(product => product.Name))
+                            outer.AddGroup(group =>
+                                group.Add(product => product.Name).UseEditor<TextInputEditor>()
+                            )
                         )
                 )
             )

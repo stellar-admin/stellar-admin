@@ -11,9 +11,6 @@ public sealed class MultiLookupSheetEditorHandler(
 ) : FieldEditorHandler<MultiLookupSheetEditor>(editor)
 {
     /// <inheritdoc />
-    public override string TemplateName => "Editors/MultiLookupSheet";
-
-    /// <inheritdoc />
     /// <exception cref="InvalidOperationException">
     ///     <c>UseItems</c> wasn't called on the editor.
     /// </exception>

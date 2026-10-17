@@ -3,7 +3,7 @@ namespace StellarAdmin.Resources.Editors;
 /// <summary>
 ///     Configures a multi-line text area editor.
 /// </summary>
-public sealed class TextareaEditor : FieldEditor, IFieldEditor<TextareaEditorHandler>
+public sealed class TextareaEditor : FieldEditor
 {
     /// <summary>
     ///     Gets or sets the hint text displayed while the text area is empty.
@@ -21,4 +21,7 @@ public sealed class TextareaEditor : FieldEditor, IFieldEditor<TextareaEditorHan
     ///     A text area with a number of lines keeps that height and scrolls longer text.
     /// </remarks>
     public int? Rows { get; set; }
+
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/Textarea";
 }

@@ -55,6 +55,9 @@ public sealed class ImageEditor : FieldEditor, IFieldEditor<ImageEditorHandler>
     /// </remarks>
     public long MaxFileSize { get; set; } = 5 * 1024 * 1024;
 
+    /// <inheritdoc />
+    public override string TemplateName => "Editors/Image";
+
     internal bool HasStore => StoreImageAsync is not null;
 
     internal Func<IFormFile, IServiceProvider, CancellationToken, Task<string>>? StoreImageAsync

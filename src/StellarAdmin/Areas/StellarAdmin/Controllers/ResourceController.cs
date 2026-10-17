@@ -1334,13 +1334,18 @@ internal sealed class ResourceController<TResource>(
         var templates = new Dictionary<string, string>();
         foreach (var field in fields)
         {
+            if (field.Editor is { } editor)
+            {
+                templates[field.FieldName] = editor.TemplateName;
+            }
+
             if (field.HandlerType is { } handlerType)
             {
                 var handler = (IFieldEditorHandler)
                     ActivatorUtilities.CreateInstance(
                         HttpContext.RequestServices,
                         handlerType,
-                        field.Editor
+                        field.Editor!
                     );
                 var context = new FieldEditorContext(
                     field.FieldName,
@@ -1348,7 +1353,6 @@ internal sealed class ResourceController<TResource>(
                     ResourcePropertyPath.GetValue(model, field.PropertyPath)
                 );
                 data[field.FieldName] = await handler.PrepareAsync(context, cancellationToken);
-                templates[field.FieldName] = handler.TemplateName;
             }
         }
 

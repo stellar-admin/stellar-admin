@@ -13,7 +13,7 @@ namespace StellarAdmin.Resources.Editors;
 ///     Without <c>UseItems</c>, the choices come from the property, which must be an enum without
 ///     flags or a Boolean.
 /// </remarks>
-public abstract class ChoiceEditor : FieldEditor
+public abstract class ChoiceEditor : FieldEditor, IFieldEditor<ChoiceEditorHandler>
 {
     /// <summary>
     ///     Gets the additional CSS classes for the parts of the editor.

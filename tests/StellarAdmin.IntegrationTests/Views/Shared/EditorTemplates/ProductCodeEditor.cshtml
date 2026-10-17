@@ -1,0 +1,3 @@
+@using StellarAdmin.IntegrationTests.Fixtures
+@inherits StellarAdmin.Areas.StellarAdmin.FieldEditorView<ProductCodeEditor>
+<input name="@Html.NameForModel()" value="@Model" data-custom-editor="product-code" data-prefix="@Editor.Prefix" data-has-editor-data="@(EditorData is not null)" />
